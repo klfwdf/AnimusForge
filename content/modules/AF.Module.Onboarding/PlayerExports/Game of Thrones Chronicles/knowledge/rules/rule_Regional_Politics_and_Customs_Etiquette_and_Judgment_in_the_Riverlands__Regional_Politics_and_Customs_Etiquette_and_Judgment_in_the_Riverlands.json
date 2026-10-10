@@ -1,0 +1,151 @@
+{
+  "Id": "rule_Regional_Politics_and_Customs_Etiquette_and_Judgment_in_the_Riverlands",
+  "Keywords": [
+    "Etiquette and Judgment in the Riverlands"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Explanation of Entry Etiquette and Judgment in the Riverlands The lord’s judgment and guest etiquette are very important, because places lacking natural barriers need more trustworthy restraints; when a person is called “just”, the local people may not agree with the southern court’s treatment of words."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "river"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Etiquette and Judgment in the Riverlands"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "river"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Etiquette and Judgment in the Riverlands"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "scholar",
+          "wanderer",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Etiquette and Judgment in the Riverlands"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Etiquette and Judgment in the Riverlands Entry Etiquette and Judgment in the Riverlands The lord’s judgment and guest etiquette are very important, because places lacking natural barriers need more trustworthy restraints; when a person is called “just”, the local people may not agree with the southern court’s treatment of Whether it is valid depends on who can grant the rights, collect the consideration, and actually make the judgment come to fruition in the event of default."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Etiquette and Judgment in the Riverlands Entry Etiquette and Judgment in the Riverlands The lord’s judgment and guest etiquette are very important, because places lacking natural barriers need more trustworthy restraints; when a person is called “just”, the local people may not agree with the southern court’s treatment of The distant system is not empty talk only if it can be implemented in campfires, city gates and inns."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Etiquette and Judgment in the Riverlands Entry Etiquette and Judgment in the Riverlands The lord’s judgment and guest etiquette are very important, because places lacking natural barriers need more trustworthy restraints; when a person is called “just”, the local people may not agree with the southern court’s treatment of If a rule is practiced over and over again, it will find its way into rituals, crafts, and prayers; if it is sustained only by fear, cracks will show at the onset of a crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Etiquette and Judgment in the Riverlands Entry Etiquette and Judgment in the Riverlands The lord’s judgment and guest etiquette are very important, because places lacking natural barriers need more trustworthy restraints; when a person is called “just”, the local people may not agree with the southern court’s treatment of They remember taxes, grain, labor, relief and who can speak for them; these grand names will eventually fall on the family's rice pot."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Etiquette and Judgment in the Riverlands: Entry Etiquette and Judgment in the Riverlands The lord’s judgment and guest etiquette are very important, because places lacking natural barriers need more trustworthy restraints; when a person is called “just”, the local people may not agree with the southern court’s treatment of"
+  ]
+}

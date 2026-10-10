@@ -1,0 +1,211 @@
+{
+  "Id": "rule_thunderbarge",
+  "Keywords": [
+    "Thunderbarge",
+    "Thunderbarge Dwarf Air Force",
+    "Thunderbarge Dwarf Engineering",
+    "Flying Warship",
+    "Thunderbarge Engineers Guild",
+    "Ironclad Airship",
+    "Aerial Fortress",
+    "Ironwing Copperhammer",
+    "Thunderbarge Steam Engine",
+    "Runic Ironclad Armor"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Thunderbarge is the most astonishing modern invention of the Dwarf Engineers Guild—a flying war machine powered by Dwarf steam engines and outfitted with ironclad plating, artillery, and propellers. Capable of crossing Greenskin-controlled territory through the skies to transport envoys, black powder, and runic equipment between isolated Dwarf holds, they are the last hope for the surviving strongholds of the Dwarf realm to maintain contact in an age of doom."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Thunderbarge! Now that is true engineering—not those iron boxes of the humans crawling along the dirt, not those silk wings of the Elves relying on the wind to blow them, and certainly not those sickening daemon-skin bladders of Chaos floating in the sky by foul sorcery! Our Dwarf Thunderbarges rely on steam boilers, riveted ironclad armor, forged-steel propellers, and pure technical willpower. When our Engineers Guild demonstrated the first successfully test-flown airship at the last Council of Kings, the most stubborn Longbeard elder watched it circle three times above Karaz-a-Karak and spoke only a single word—'Passable.' In Khazalid, that is the highest praise. Its only drawback is output—at present, the entire Dwarf realm can field fewer than a dozen or so Thunderbarges in active service, as the construction of each one requires several years of hand-forging and rune-inscription. Yet if the alternative is the cost of hundreds of Dwarf lives—we are willing to build them slowly, and build them right."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "On a strategic level, the Thunderbarge has transformed the possibilities of Dwarf defense. In the past, once an isolated Dwarf hold was besieged by Greenskins or Skaven, its sole means of communication was the Underway—and those subterranean tunnels had often fallen as well. The Thunderbarge enables the Dwarf High King to deliver critical supplies to a besieged hold within days rather than decades. For the allies of the Dwarfs (such as the Empire), the commissioning of Thunderbarges also means that Dwarf promises of reinforcement now carry a realistic prospect of arrival—no ruler calculating on the strategic chessboard of the Old World can any longer assume that the Dwarfs are 'isolated and incapable of sending aid.'"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "The technical lineage of the Thunderbarge can be traced back to a debate within the Dwarf Engineers Guild that lasted four centuries. The traditionalist faction insisted that war machines should be rooted in the earth and that flight violated the natural disposition of the Dwarfs; the radical engineer Ironwing Copperhammer argued that if the Dwarfs could not build flying warships, they would never be able to cross Greenskin territory to rescue their beleaguered kin. Ironwing Copperhammer personally piloted the prototype airship from Karak Kadrin to Karaz-a-Karak—a journey that takes a full year or longer over land—in just four days. The core technology of the airship comprises three key systems: a high-pressure steam engine, rune-reinforced ironclad armor, and an automated Organ Gun battery. The Dean of the Imperial School of Engineers was permitted to tour the airship manufactory once—upon returning, he spoke not a word of the details, yet the gaze he cast upon Imperial Steam Tanks thereafter bore a distinct shade of depression."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "In the manufacturing process of the Thunderbarge, there is a link completely overlooked by the outside world: weaving. The gasbag inside the airship is no simple stitched cowhide—it is a multi-layered, airtight fabric woven by Dwarf women artisans from a blend of specially treated fire-resistant linen thread and ultra-fine steel wire, with each layer coated in rune-reinforced sealing resin. This weaving craft is passed down exclusively from mother to daughter within the families of Dwarf women, because the fiber tension during weaving must be regulated through tactile sensation rather than tool feedback—and the fingers of Dwarf men, coarsened by years of labor beside the forge, cannot perceive micron-level variations in the tension of linen thread. Without the contribution of female weavers, a Thunderbarge would plummet from the sky within three days of launch due to gasbag leakage."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "My clan staked everything on the early research and development of the Thunderbarge—not figuratively, but literally everything we had. My ancestor poured the entire quarterly profits of all our clan's subterranean mine shafts into Ironwing Copperhammer's airship prototype project, because when he saw that crude model at the Council of Kings, he intuitively grasped its meaning: if the sky was no longer a prison for the Dwarfs, being besieged was no longer an irreversible death sentence. After the Council of Kings approved the development, my clan's early investment was rewarded in the form of permanent priority freight rights on the airships—which meant that when Karak Azul was besieged by Skaven, what was airlifted out was not gold, but children. There is no finer return on investment than that."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "While traveling in the northern Worlds Edge Mountains, I saw a Thunderbarge fly past beneath a low cloud bank after a snowstorm—a sight that no language can accurately convey. A flying island of iron glided across the sky at an incomprehensibly slow pace, the roar of its three sets of propellers sounding like a deep, droning meat-grinder of hornets, while the Organ Gun barrels beneath its belly glinted with a cold black sheen in the reflection of the snowfields. It dropped no bombs; it was merely on routine patrol. Yet standing there in the snow, I could not help thinking—the Greenskins have trouble enough underground and on the surface, and now the Dwarfs have decided not to leave even the sky to them."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The impact of the Thunderbarge on the transport industry of the Old World heralds a fundamental structural revolution—though at present almost no one dares place bets upon it. A single airship completes the voyage from Karak Kadrin to Karaz-a-Karak in four days, whereas going by land takes a full year and crosses the territories of at least four Greenskin tribes. If the Dwarfs could expand airship output from the current dozen or so to even thirty vessels, the trade in high-value goods across the northern Empire would be revolutionized—you could airlift royal chartered spices from Altdorf directly to the Kislev front without ever touching a land route. Yet the capital required to expand the airship fleet is so immense that no private merchant guild in the entire Old World could shoulder it alone."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Thunderbarge—the collective term for Dwarf flying steam warships, the most advanced heavy aerial war machines in the Old World",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Thunderbarge Thunderbarge Dwarf Air Force Thunderbarge Dwarf Engineering"
+  ]
+}

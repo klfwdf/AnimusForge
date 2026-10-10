@@ -1,0 +1,184 @@
+{
+  "Id": "rule_Monchug",
+  "Keywords": [
+    "Monchug"
+  ],
+  "RagShortTexts": [
+    "Monchug Khan maintains the balance of various ministries with arbitration and propriety"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": [
+          "clan_khuzait_2"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Monchug Khan? I have no complaints against him. He is sitting on the throne, using the name of Wuerhun, and we recognize this name. He doesn't favor Archite, nor does he suppress us. He listens to both sides in the imperial meeting, and gives an explanation after listening. He doesn't give either side, or neither side. This is justice. Justice on the grassland is never about letting you win, it is about letting you not lose everything. We Kujit do not need a khan to avenge us. Archit took advantage of us men to take possession of Balgard, and we will settle the score ourselves. As long as Khan doesn't stop us. He wouldn't stop it either - he knew it would be useless if he did. Monchug is a man of understanding, the most understanding man on the prairie. He doesn't press you with iron rules like Wu'erhun, but he lets you know that you'd better think clearly before you cross the line. We don’t want to cross the line just yet. Archit is still sitting in Bargaard, let's settle this account first before talking about anything else."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": [
+          "clan_khuzait_3"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Monchug is a descendant of Wuerhun, and the Khan position belongs to his family. We recognize this. But what we recognize is Khan’s position, not him himself. He sat on it, and we gave him soldiers and face, and we did not bang the table in the imperial meeting. It's not that we're afraid of him - we're trying to save face for Wu'er. Monchug knew in his heart that our Achite tribe had never obeyed him. But he doesn't point it out. During the arbitration, he never favored the Wu'erhunnaite headquarters, nor did he suppress us. He was very measured. We recognize this ability. Wu'erhun used swords to silence us, and Monchug used arbitration to make it difficult for us to speak. Shutting up and not opening up have the same result, but the latter is more uncomfortable."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": [
+          "clan_khuzait_1"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Monchug is our khan and our chief. He inherited Wu'erhun's sword, but he used it more sparingly than Wu'erhun. Wu'erhun uses iron rules to crush loose sand into stones, while Monchug uses propriety to pile stones together to prevent them from rolling apart. The difference is that if the iron law is broken once, it cannot be reconnected. If the sense of propriety is still there, the stones will still be piled up. The tribes outside—Achit, Kugit, and Karakugit—each had their own thoughts, but they all lowered their heads and spoke in front of Monchug. Not because they obeyed, but because Monchug let them know that whoever raises his head first will be stabbed first. This tranquility is not maintained by blood, but by ability. We are related by blood, but blood is not valuable on the grassland, ability is."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": [
+          "karakhuzaits"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Monchug has given us money, slaves and fiefdoms. We don't want it. It’s not that it’s too little, it’s that I don’t want it. We are the Karakulgits, not the Khan’s sheep. He sat on the throne of Khan and sent an envoy to say that if you surrender, you will have a roof to live in, hot soup to drink, and you no longer have to follow the grass. We laughed. The roof is for sheep, but the tent is for freedom. We do not submit to him, nor do we rebel against him. He takes care of his city, and we take care of our pastures. He probably doesn't like us, but he didn't send troops to fight either. Not because he is kind, but because he knows that sending troops to chase us deep in the grassland is like shooting at the wind with arrows. Monchug is a sensible person, so we are still fine."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Monchug Khan? I think he's pretty good. He doesn't fight big wars or raise taxes casually. When tribes quarrel, he sends people to mediate. After the mediation is over, they can at least live in peace for a while. In the past, when Wu'erhun Dahan was around, the rules were strict and anyone who broke the rules would be beheaded. Everyone was afraid. Monchug doesn't behead anyone casually, but everyone is also afraid of it - what they are afraid of is the way he looks at you, as if he has already determined your worth. This kind of fear saves effort. Our family gives sheep to Na Yan every year, and Na Yan gives horses to the Khan. We can still live a good life after going around in circles."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Monchug is a Khan, we recognize. But the way we recognize it is different from that in the Wuerhun era. Wuerhun is the wolf king, whoever dares to disobey will be torn to pieces on the spot. Monchug is not a wolf king, but a chess player. He could clearly see every piece on the chessboard, including Achit, Kujit, and Karakujit. He had calculated all the tempers, bottom lines, and weaknesses of each unit. Then he played chess. It's not that he doesn't let the chess pieces move, he lets each chess piece know what will happen after it is moved. When we Nayan spoke at the imperial meeting, he would not interrupt or scold us. After listening, he would say \"Think again\"."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "khuzait"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "I fought with the Khan. He does not rush to the front on the battlefield. His timidity surrounds him. He sits on his horse and watches, and after reading, he gives orders. His orders were very clear - who should move forward on the left wing first, who should move on the right wing later, when to release arrows, and when to charge into battle. Never go wrong. After the battle, he personally came to see the wounded. Without saying anything nice, he just asked, \"Can you still ride a horse?\" If you say yes, he will nod and leave. No, I just nodded. This is the kind of Khan you wouldn’t want to betray. It's not because he will kill you, it's because he already knows that day when you will betray him, and he has even prepared countermeasures for that day. Fighting Monchug saves your life, rebelling against him costs your life. I don't want to waste my life."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Khan of Khuzait is called Monchug."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Monchug was the most successful ruler of the Khuzait Khanate since Ulhun. His model of success deserves comparative study: like Deter of Vlandia, he maintained his rule through arbitration rather than force, but his arbitration was based on unchallenged personal intimidation rather than pure patience and charm. When the Khanate forged by Ulhun with iron laws faced centrifugal inertia, Monchug stabilized the tribes with a precise sense of proportion. He does not destroy centrifugal force, but manages it."
+    }
+  ],
+  "TextMappings": []
+}

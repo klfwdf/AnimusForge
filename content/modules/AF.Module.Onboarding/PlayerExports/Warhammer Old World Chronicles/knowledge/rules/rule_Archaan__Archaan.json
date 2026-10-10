@@ -1,0 +1,209 @@
+{
+  "Id": "rule_Archaan",
+  "Keywords": [
+    "Archaon",
+    "Archaon Everchosen",
+    "Lord of Chaos",
+    "Archaon's Chosen",
+    "Didric",
+    "six artifacts",
+    "Lord of Doom",
+    "Apocalypse Demon Horse"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Archaon, the Everchosen, Lord of Chaos, Lord of Doom—he is the most feared name of our time. Wearing six Chaos artifacts and riding the Apocalypse Demon Horse, the incarnation of destruction commanded the largest Chaos army in history. Legend has it that he was once an Imperial Templar named Diedric Kastner. While pursuing the hidden truth of the Church, he discovered the origin of Chaos. He fell into darkness and embarked on the path to becoming the Chosen One of the Gods."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "chaos_culture"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Archaon is more than the Everchosen - he is the gods' final answer, the flaming sword that will end this corrupt world. He was once a servant of the false gods of the South, but he had the courage to face the truth: Sigmar was but a mortal, and the so-called Empire's faith was nothing more than a tool of power built on lies. Archaon abandoned his hypocritical faith, traveled through the Chaos Wastes, completed the test of the six gods, and obtained six chaos artifacts including the Armor of Morkar, the Eye of Destruction, and the Sword of Doom as a sign of the gods' approval. We follow him not because of fear, but because he represents the ultimate truth - the end of the world is not destruction, but rebirth, and the rule of chaos is the true face of the universe."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Archaon is the most dangerous Everchosen because he is not a pure barbarian berserker - he understands southern civilization, its military system and belief structure, and is able to exploit its weaknesses in a targeted manner. He had received systematic military training among the Knights Templar in the empire and was familiar with the defense deployment of various provinces in the empire. More importantly, his existence alone is enough to unify the warring Chaos tribes, which means that the wave of destruction he leads exceeds any previous invasion in scale and coordination."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 100
+        },
+        "IdentityIds": null
+      },
+      "Content": "The Rise of Archaon is an exquisitely dark saga. His original name was Diedrich Kastner, born into a noble family in Nordland, and was sent to the Knights Templar of Sigmar for training at an early age. His turning point began when he read a forbidden heretical text, the Liber Celestia, which revealed that Sigmar was not a god but a mortal in nature. This discovery drove him to leave the Order and travel north through Kislev and Norsca, deep into the Chaos Wastes. In order to prove that he is worthy of the title of Everchosen, he must find six artifacts of Chaos scattered across the wasteland: Morkar's Armor (the plate armor of the first Everchosen), the Eye of Sheerian (a gem that predicts the future), the Slayer of Kings (the magic sword that imprisoned the demon soul), and the Crown of Chaos. Domination (a crown that unifies the will of chaos), Dorghar (a demonic mount that can travel between the real and non-material realms), and the Seal of Supreme Dominance. These artifacts not only gave him unparalleled power, but also forever bound his destiny to the Chaos Gods."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "One of the most disturbing details of Archaon's story is that his mother sensed something dark about him at birth, when he was still called Diedrich Kastner. The midwife record of Nordland mentioned that 'the child did not cry when he was born, but stared at the midwife with a pair of eyes that did not belong to a baby'. His mother was later kidnapped during a Norsca raid and died in the north - the source of Diedric's hatred of Chaos and his original motivation for joining the Templar Order of Sigmar. But when he discovers in the Book of Heaven that Sigmar is just a mortal, he is shattered not only by his faith, but also by the legitimacy of his entire mother's revenge narrative - if his mother's God is not real, does her death also lose its meaning? It is this question about motherhood, rather than any theological argument, that truly drives Diderik into chaos. The weight of a mother's memory changes the fate of the old world."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "As the leader of Clan Norsca who has come into contact with Archaon's armies, I must admit - we fear him as much as we fear him. Archaon is unlike any Aeon before him: he unites the Horde not with brute force and intimidation, but with silence. He rarely spoke in public - only a few brief words at pre-war meetings, but each word hit the mark. He can respond to your provocations with the most obscure passages of your clan's oldest war song, because he spent years in the wasteland collecting not just artifacts, but the history of every major Norsca clan. This gives him the disturbing ability to know what you're thinking before you even say a word."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "During my wanderings around the Old World, I heard various legends of Archaon in many taverns across the Empire. One of the most chilling comes from an old Kislev mercenary who escaped Norsca - he says that Archaon's mount, Dorga, the Apocalypse Horse, is not a simple demon warhorse, but 'once three different demon princes, fused together by the gods as punishment, and then reshaped into horse form to serve the Everchosen'. These three Daemon Princes were once affiliated with Khorne, Nurgle, and Sinléj respectively—Slaanesh being excluded—which resulted in Dorgar sometimes stopping suddenly in battle and performing actions only the Mad King could do. But most horrifyingly of all, the old mercenary claimed to have witnessed Dorga snort a Chaos Champion it didn't like - and then the champion evaporated."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The economic impact of Archaon's rise was one of the greatest wealth transfer events in the history of the Old World. When he united the Norscan and Wasteland tribes, the entire northern trade system was forced to reorganize: traders who had been smuggling weapons between Norsca and the Empire lost all intermediate markets, as all tribes either joined Archaon's crusade or were annexed and wiped out. On the Imperial side, the prices of weapons, iron ingots, and grain soared within two weeks of news of Archaon's unification reaching the south, while the price of luxury goods plummeted—because no one wanted to stock up on perfume in the event of a siege. The Imperial Mint had to urgently mint a batch of wartime gold coins bearing Sigmar's hammer on the reverse instead of the twin-tailed comet, something that had not been done since the days of Sigmar."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Archaon - the contemporary Eternal Chosen One, the former three Templars Diedric Kastner fell to become the Lord of Doom",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Archaon Archaon Everchosen Lord of Chaos"
+  ]
+}

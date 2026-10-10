@@ -1,0 +1,213 @@
+{
+  "Id": "rule_Sisters_of_Thorns_Sisters_of_Thorns",
+  "Keywords": [
+    "sisters of thorns",
+    "Female Spellcasting Cavalry",
+    "Sacred deer mount",
+    "natural curse",
+    "Thorn Magic",
+    "shadow rider",
+    "Maiden of Thorns",
+    "Deer Rider (Sisters of Thorns Sisters of Thorns)",
+    "Cursed Mage",
+    "bush raid",
+    "Spell riding and shooting",
+    "forest scout"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Thorn Sisters are an elite spellcasting cavalry unit composed of female elves. They ride agile sacred deer, cast thorn magic and natural curses while galloping, and appear on the edge of the battlefield like shadow riders in the forest."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Thorn Sisters represent Athel Loren at its wildest. They only accept women and believe that women have a closer and more direct connection with nature. Their magic is not as gentle and graceful as that of the Spellcaster—the Thorn Sisters' magic is stinging, sharp, and aggressive. They ride \"thorn deer\" - a fiery woodland sacred deer with hooves that can crush rock and horns that can pierce armor. A Sister of Thorns can cast a curse from the back of a galloping deer, causing thorns to grow in the armor of her enemies, twisting their flesh and steel together. The war songs they sing make the blood of their allies boil and the hearts of their enemies tremble with fear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Thorn Sisters are the perfect guerrilla troopers. Use their speed advantage to constantly harass the enemy's flanks and rear, and release a slowing curse while riding and shooting. Don't let them stop - their fighting power reaches its peak during exercise. Works great with the Eagle: The Eagle attracts attention while the Sisters of Thorns unleash magic from behind. They are particularly effective against heavily armored targets, as the curse of thorn magic forms from within the armor."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "The origins of the Sisters of Thorns can be traced back to the \"War of the Withered Vine\", when a group of female elves rejected the traditional role of widowhood after losing their male relatives and took up arms to defend their homeland. Their founding leader \"Mother of Thorns\" Tonalia invented a unique thorn magic system - different from Jiyang and Wuju, but drawn from the defense instinct of the forest itself. The core spells of the Sisters of Thorns include: \"Brambles of Flesh\" - spawning thorns in the enemy's body; \"Light of Antlers\" - causing the antlers of the sacred deer to emit a blinding light; \"Sisters' Binding\" - multiple Thorn Sisters cast spells together to tie large units in place. Their sacred deer mount is a special breed cultivated through magic and can live for hundreds of years."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Sisters of Thorns are my pride – they prove that women don’t need protection from men, and instead, we are the most dangerous hunters. As their leader, I lead by example and ride at the front."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The vows of the Thorn Sisters were lifelong, and they gave up all worldly ties, including clan affiliation. But they still maintain subtle ties with their mother clan. As the clan leader, you should respect their choices and provide a safe forest camp when they need shelter."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Under the moonlight, a group of women riding deer galloped out of the mist. They don't speak, they just pass by you, leaving a bitter floral fragrance in the air. By the time you react, the trunk of a big tree behind you is already covered with thorns."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Sisters of Thorns are an all-female mystical organization. Their initiation ceremony requires candidates to run barefoot through thorn bushes all night to prove their will and resonance with nature. The group is known as sisters, and there is no hierarchy. However, an intuitive tacit understanding is naturally formed during the battle."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Sisters of Thorns - all-female elven spellcasting cavalry who ride sacred deer to cast thorn magic.",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Sisters of Thorns Female Spellcasting Cavalry Sacred Deer Mount"
+  ]
+}

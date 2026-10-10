@@ -1,0 +1,157 @@
+{
+  "Id": "rule_House_Foundations_Baratheon_of_Storms_End",
+  "Keywords": [
+    "Baratheon of Storm's End",
+    "House Baratheon of Storm's End",
+    "Renly Baratheon",
+    "Storm's End Baratheon",
+    "King of Summer"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Storm's End's Baratheon banner revolves around Renly Baratheon and his extensive Stormlands-Reach connections. Renly inherited Storm's End and grew up in the court. His appearance, clothing, politeness and acumen in getting along with others made him easily the center of attention. His understanding of kingship is closer to support than to order: a person who can make lords want to follow, soldiers cheer, and allies see the future at the wedding banquet, can also claim that he is more suitable to rule than the silent legal heir. Tyrell's marriage alliance brings the grain, knights and stage of the rose to the deer's flag, giving Renly's career a summery glory; but the Summer King must prove that cheer can not only start a journey, but also bear every responsibility after it."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "stormlands",
+          "reach"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The nobles of the Stormlands and the Reach saw in Renly a leader who knew how to remember names, distribute honors, and make his allies feel important. Some people think that this is the talent of a king, while others know that this talent also requires constant banquets, positions and victories to support it. The brighter the summer day, the less willing followers are to imagine clouds."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "stormlands",
+          "reach"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Soldiers like beautiful armor, plenty of food, and young lords who are willing to show up in front of their troops. People are attracted by jousting, singing, and generosity. Renly makes it seem like power doesn't always have to be gloomy, but ordinary people will still ultimately measure this grand summer with food collection, casualties and whether they can get home safely."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "crownlands",
+          "dragonstone"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "People who are familiar with inheritance laws would find it difficult to find a priority for Renly before his elder brothers. They can only resort to support, talent and practical strength. Supporters say that the kingdom needs the most suitable person, while opponents ask: If applause can transcend the law, why can't the next more popular person transcend him."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Baratheon of Storm's End Renly gathers followers with Storm's End, Stormland Hope, and the Tyrell Marriage Pact; his royal language values ​​support, charisma, and the ability to let everyone see a common future. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Baratheon of Storm's End Renly gathers followers with Storm's End, Stormland Hope, and the Tyrell Marriage Pact; his royal language values ​​support, charisma, and the ability to let everyone see a common future. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Baratheon of Storm's End Renly gathers followers with Storm's End, Stormland Hope, and the Tyrell Marriage Pact; his royal language values ​​support, charisma, and the ability to let everyone see a common future. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Baratheon of Storm's End Renly gathers followers with Storm's End, Stormland Hope, and the Tyrell Marriage Pact; his royal language values ​​support, charisma, and the ability to let everyone see a common future. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Renly gathers followers with Storm's End, Stormland Hope, and the Tyrell Marriage Pact; his royal language values ​​support, charisma, and the ability to let everyone see a common future."
+  ]
+}

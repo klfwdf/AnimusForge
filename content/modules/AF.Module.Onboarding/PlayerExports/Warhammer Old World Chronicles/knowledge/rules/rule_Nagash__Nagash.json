@@ -1,0 +1,211 @@
+{
+  "Id": "rule_Nagash",
+  "Keywords": [
+    "Nagash Lord of the Dead",
+    "The Origin of Nagash's Necromancy",
+    "Priesthood of Nagash Nehekara",
+    "Dark Pyramid of Nagash",
+    "The Nine Books of Nagash",
+    "Nagash Immortal Lich King",
+    "The Origin of the Undead of Nagash",
+    "Nagashisa City Fortress",
+    "Nagash the Immortal Test",
+    "The Fall and Resurrection of Nagash"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Nagash is one of the most evil and powerful individuals in the history of the Old World. This former funeral priest of Nehekhara used the forbidden magic of the dark elves and the ancient knowledge of the rituals of Mortus as raw materials to forge death itself into a magical power that can be manipulated, stored, and multiplied, thereby creating necromancy. His ambition is not to conquer a kingdom - he wants to turn the entire old world into a silent empire of the undead under his eternal rule, with his dark pyramid as the hub, the nine Nagash scrolls as the code, and his cursed person who can never die and can never truly live as the crown."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Nagash is no ancient legend to us Imperials - he is a never-ending nightmare. Two thousand years ago he planted the seeds of necromancy into the world in the great desert of Nehekhara, and today those seeds are still growing, multiplying, and devouring. At least seven of the nine tomes he created are still scattered in the Old World - any necromancer who can obtain one of these tomes is enough to start a small undead uprising, and it is said that Mannfred von Carstein may have three of these tomes hidden in his private library. Although Nagash himself was defeated twice - once by Alcadissa, the last king of Nehekhara, who shattered his bones with the magic sword Felbula, and once by Sigmar who shattered his reborn form with the war hammer Gael Maraz - he was never truly killed. Every one thousand one hundred and eleven or one thousand six hundred and sixty-six years, he will re-condensate his form in the ruins of Nagashsar, and our Imperial calendar seems to be somehow approaching the point of his next resurrection. Any Imperial officer with a brain will calculate this number before going to bed."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Nagash's military legacy is necromancy - perhaps the Old World's most despairing tool of war for its defenders. An undead army needs no food, no rest, no fear, no fleeing, no infection with diseases, no attrition due to winter, and every time a village is captured, new soldiers will be added to the side. Military commanders fighting against any of Nagash's successors—Vlad, Konrad, Mannfred—had to accept a heavy mathematical premise before going to war: The enemy will become more numerous, and you will never have enough men. Nagash himself no longer personally commands armies, but the spells recorded in his nine tomes—especially mass resurrection, mind control, and death weather manipulation—remain the core tactical cornerstone of all undead armies to this day. From a purely military technical analysis perspective, the tragedy of Nagash is that he was a genius who was so far ahead of his time that he drove himself crazy - if he had devoted the same amount of intelligence to the research of defensive magic, perhaps the Polar Star Gate could still be closed to this day."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "Nagash's complete biography spans over two thousand years of history. He was born during the ancient dynasty of Nehekhara and was a senior funeral priest in the city-state of Chimli. The funeral priests were a senior class of scholars specializing in death, embalming and soul travel in the Nehekhara civilization. Not content with his existing knowledge of mortuary rituals, Nagash traveled to the northern wastes to learn the basic principles of dark magic from captured dark elf sorcerers, and then merged this knowledge with Nehekhara's native Mortus rituals, a religious technique designed to allow the soul to continue its journey after death. He built the Dark Pyramid on the top of Cripps Peak and used it as an energy collection device to begin large-scale necromancy experiments that lasted for hundreds of years. The elixir of immortality he created - a forbidden formula based on human blood and using dark magic as a catalyst - was later stolen and modified by his student Neferata, leading to the birth of the vampire race. His nine tomes are scattered across the Old World, each containing a portion of his knowledge of death magic, philosophy of power, and cosmic order—and the holders of these tomes, almost without exception, are gradually corrupted. His first \"death\" occurred when the Nehekhara coalition attacked Nagashsar - King Alkadisar wielded the only weapon forged by the dwarf rune blacksmith, the magic sword Fairbula, and smashed Nagash's bones into powder, but Nagash's will was re-condensed and formed six hundred years later. His second \"death\" occurred early in the Imperial Calendar when the rising Sigmar encountered Nagash, who had not yet fully recovered from his rebirth, on the banks of the Reik River and crushed him with Gail Maraz. Nagash's cycle rate—once every 1111 years or 1666 years—seems to be qualitatively synchronized with the periodic tides of the magical winds, but no one knows for sure the precise magical mathematics behind either number."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Nagash's story takes on a chilling twist when reread from a female perspective. In his official biography he is a lone genius - a mad sorcerer who conducted forbidden experiments alone in the Dark Pyramid. But in deleted passages from the Dark Tome, Nagash's first involuntary test subjects were all female prisoners of war from Nehekhara - he tested the first batch of elixir formulas on them, recorded each person's time of death, form of death, and behavioral patterns after resurrection, and then compiled these notes into the first of the nine volumes. Neferata - the first vampire - was seen by him as just one of his \"achievements\", a successful experiment and then a nuisance who defected from the laboratory. But Neferata's self-narrative is something else entirely: she took advantage of the chaos of Nagash's defeat to steal the formula, then improved it, and then built her own vampire network—she was not a continuation of Nagash, she was Nagash's transcendent. Nagash created necromancy, but he never understood women's different, more nuanced terror in the face of death than men's - Neferata did, and she transformed that understanding into a more lasting form of immortality."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Nagash's legacy poses the most serious long-term threat to the ruling family - not because he could be resurrected at any time, but because his tome system has created a self-sustaining dark knowledge economy. In our family archives is a volume of investigative reports that have been kept secret since the seventeenth century—tracing the movement of four of the nine Holy Books over the past four hundred years. The results are horrific: the tomes are never sold on the market, they are given away, inherited, arranged to be transferred in the hidden terms of marriage contracts - a secretive network of upper-class necromancers more dense and silent than any of the Elector Count's spies. What is truly immortal about Nagash is not his body - it is the eternal appeal of the knowledge system he created: power, immortality, complete defiance of death - any king or duke who feels the fear of aging at the height of his power is a natural potential customer for the Nagash Scrolls. The reason why my family has never been infiltrated by vampires into the inner circle is not because we have stronger defenses - but because we have an ancient prohibition: any noble with the word \"Feng\" in his surname is not allowed to spend the night in the family castle."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The sand beneath your feet as you walk on the edge of Nehekhara occasionally crushes something - maybe the shell of a scorpion, the skull of a skeletal soldier who once followed Nagash, or even the fingernails that fell off when Nagash himself was last reborn under a dune that hasn't been discovered by grave robbers - believe me, if you've walked deep enough into the no-man's land in that desert, you will hope that you never imagine which body will be the first to stand up when Nagash is resurrected. Rumors among the wanderers say that there are occasional sounds coming from the ruins of Nagashsar - not because of the wind, but because the skeletons who were resurrected by Nagash's great ritual and abandoned again by the army still remember the moment he awakened them, and they will click their jaws slightly at certain moon phases, as if waiting for a new command that will never be given."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "From the perspective of the economic history of the Old World, Nagash's destruction of Nehekhara was the largest structural collapse in the southern market territory of the Old World. Nehekhara was once the most prosperous producer of lapis lazuli, spices, grains and gold in the south - when Nagash's death magic turned it all into a desert, the long-distance trade routes at the southern end of the old world were directly interrupted for hundreds of years. Today in Altdorf's spice market, the so-called \"Nehekhara ancient spices\" are almost all cheap substitutes imported from Araby and Estarly, but the long-established spice merchants in the market still insist on using \"Nehekhara\" as the product name - not because they deceive customers, but because before Nagash destroyed everything, the quality of Nehekhara's spices was a sacred standard for the entire old world, and that standard can never come back. Nagash's economic devastation wasn't just about output - he created a cultural bankruptcy of trust: no merchants anymore believed it was safe to make long-term investments deep in the desert, because investors were forever worried whether they would wake up tomorrow and see the city-state at the end of their supply chain turn into another Nagashtha."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "The birth of Necromancy - a forbidden school created by Nagash by integrating dark elf magic with funeral rituals",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "The Biography of Nagash, Lord of the Undead, The Origin of Nagash's Necromancy, The Priest of Nagash's Nehekhara"
+  ]
+}

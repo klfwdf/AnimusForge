@@ -1,0 +1,152 @@
+{
+  "Id": "rule_World_Mechanics_Dragonglass",
+  "Keywords": [
+    "Dragonglass",
+    "Volcanic Glass"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Dragonglass is the Westeros name for obsidian, a vitreous stone formed from volcanoes with extremely sharp edges but easily broken. The children of the forest used it to make arrowheads, blades and tools, and its traces can also be found in the ruins of the ancestors. Dragonstone There is a large amount of dragon crystal in the underground, and the history of the castle and volcano makes it both practical and mysterious at the same time. When facing steel armor, dragonglass is far less reliable than good steel; when facing white ghosts, it can cause damage that ordinary iron weapons cannot. Its value therefore depends on who the enemy is and whether the wielder believes those warnings from the north."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "dragonstone"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "peasant",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Dragonstone People regard dragonstone as the familiar black stone at the foot of volcanoes. Miners know that it will cut their hands, and craftsmen know that it cannot withstand heavy blows; when the southern nobles suddenly ask for high prices, the first thing the locals think of is who has discovered a new use."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nightswatch",
+          "freefolk"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer",
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Night's Watch and the free folk would not use dragonglass as decoration if they had seen the White Walkers with their own eyes. To them, a crude arrowhead may be worth saving with one's life than a knight's steel sword."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "scholar",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Maesters will compare antiquities, volcanoes, and battlefield testimonies, while clerics tend to interpret it in terms of fire and darkness. A prudent person admits its efficacy, but will not claim that dragon crystal can solve all dangers from cold."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Dragonglass Obsidian produced in volcanoes is sharp and brittle; it was once used by the Children of the Forest and can also harm White Walkers. It is an important mineral deposit in Dragonstone. Whether it is valid depends on who can grant the rights, collect the consideration, and actually make the judgment come to fruition in the event of default."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Dragonglass Obsidian produced in volcanoes is sharp and brittle; it was once used by the Children of the Forest and can also harm White Walkers. It is an important mineral deposit in Dragonstone. The distant system is not empty talk only if it can be implemented in campfires, city gates and inns."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Dragonglass Obsidian produced in volcanoes is sharp and brittle; it was once used by the Children of the Forest and can also harm White Walkers. It is an important mineral deposit in Dragonstone. If a rule is practiced over and over again, it will find its way into rituals, crafts, and prayers; if it is sustained only by fear, cracks will show at the onset of a crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Dragonglass Obsidian produced in volcanoes is sharp and brittle; it was once used by the Children of the Forest and can also harm White Walkers. It is an important mineral deposit in Dragonstone. They remember taxes, grain, labor, relief and who can speak for them; these grand names will eventually fall on the family's rice pot."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Dragonglass: Obsidian produced in volcanoes is sharp and brittle; it was once used by the Children of the Forest and can also harm White Walkers. It is an important mineral deposit in Dragonstone."
+  ]
+}

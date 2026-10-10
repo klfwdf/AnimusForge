@@ -1,0 +1,62 @@
+{
+  "Id": "rule_counterweight_trebuchet",
+  "Keywords": [
+    "Counterweight Trebuchet"
+  ],
+  "RagShortTexts": [
+    "Counterweight trebuchet in siege warfare: high accuracy, capable of repeatedly battering down city walls."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "engineering": 75
+        }
+      },
+      "Content": "Listen while this master craftsman explains it to you. This contraption I build is called a 'counterweight trebuchet' in the trade. Look at its frame—underneath is a wheeled oak base, with two main uprights rising from it and an iron axle mounted across the top, pierced through by a thick hardwood beam that serves as the 'arm.' That arm is not symmetrical: the short end points down, the long end points up. From the short end hangs a great wooden chest bound with iron chains and packed full of rubble and lead weights; from the tip of the long end branch two hemp ropes connected to a cowhide sling.\n\nHow do you work it? Several soldiers crank the windlass at the rear, the gears biting into the ratchet to haul the short arm down bit by bit while the great wooden chest slowly rises until nearly level with the axle. By then the long arm hangs down toward the rear with the sling trailing on the ground; you cradle a millstone-sized stone ball into the sling and hook the slip-loop over the iron prong at the end of the arm. Once all is ready—you shout 'Loose!', the hammer-man knocks free the catch-pin, and that counterweight chest weighing thousands of pounds plunges thundering down. The short arm drops violently, the long arm whips skyward, the sling loop slips free of the hook at the highest arc, and the stone shot hurtles forth with a howling roar straight at the city wall. That is turning falling weight into hurling force—the simple principle of a seesaw, only magnified a hundredfold by my hand.\n\nYou ask what it looks like? Seen from afar, it resembles a tall wooden tower craning its neck; up close, it is all mortise-and-tenon joints, ropes, pulleys, and iron bands. The counterweight chest hangs beneath the short arm like a huge iron belly; the long arm points toward the sky, tapering thin and supple at the tip like a fishing rod. There are windlasses at the four corners of the base and long levers along the sides; on the march the long arm is lowered and hauled by oxen and horses, and on the battlefield it is raised upright with wooden wedges chocking the wheels level. To an onlooker it is a dizzying tangle, but to my eyes every knot and every lever ratio is precisely calculated. So long as the counterweight is heavy enough and the arm properly proportioned, smashing a gatehouse tower to rubble from three hundred paces away is no trouble at all. Now that is a craftsman's pride."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "A counterweight trebuchet? I have never seen one with my own eyes—only heard about it from refugees fleeing the fighting. They say it is a huge wooden contraption taller than a city wall, with a great chest weighing thousands of pounds slung from one end and a long beam like a pole at the other, capable of flinging stones the size of millstones a mile away. The boulders whistle through the air and smash into the walls with a 'boom' that makes the very earth tremble, scattering shattered brick everywhere. They say the moment that thing sounds off, the defenders' knees turn to water. Anyway, if you are on the road and spot a wooden frame standing in the distance that looks neither like a house nor a tower, take a detour at once—I have never seen one, and I never want to."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "A counterweight trebuchet? I will tell you what it is: it is my iron hammer, and the city wall is my nail. Without it, taking a stubborn fortress costs me hundreds, even thousands of lives to plug the breach. With it, all I have to do is wait—wait for that wooden frame to smash the battlements to rubble blow by blow, wait for the defenders' courage to leak away bit by bit.\n\nMy men call it 'the grandfather of battering rams,' and I think they are right. I have used traction mangonels too, but those man-pulled machines send stones drifting like drunkards. This thing, though—once it looses, the point of impact barely shifts. The first stone hits the left side of the gatehouse, the second hits the left side again, and the third brings that whole left section of wall crashing down. The engineers tell me that is called 'repeatable accuracy.' I do not know anything about accuracy; all I know is that by the seventh day of bombardment, the banner on the other side comes down and the city gates swing open.\n\nOf course, building one is no easy matter. Once my steward quarreled with me, saying the cost of a single machine could feed three hundred spearmen for a whole year. I told him that if three hundred spearmen scale a wall, fewer than thirty come back alive—whereas this machine batters the wall today and can keep battering it tomorrow. You work out which one is more expensive.\n\nI hate how clumsy it is too. Yet so long as it stands there, the city opposite trembles. I do not just use it to smash walls; I use it to smash men's hearts.\n\nSo you ask what I think of this thing? It is my bank draft: I sign it in stone, and the enemy pays with his battlements. Expensive it is, and slow it is, but the moment it roars, I know the battle is already seven-tenths won. The remaining three-tenths is nothing more than walking over to pick up the stone lying on the ground."
+    }
+  ],
+  "TextMappings": []
+}

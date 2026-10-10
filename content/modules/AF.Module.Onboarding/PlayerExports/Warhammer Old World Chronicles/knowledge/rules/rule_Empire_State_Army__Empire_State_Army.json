@@ -1,0 +1,212 @@
+{
+  "Id": "rule_Empire_State_Army",
+  "Keywords": [
+    "Empire State Army",
+    "Provincial Regular Army",
+    "Halberdier",
+    "Sword and Shield Soldier",
+    "Musketeers",
+    "disciplinary square",
+    "state soldiers",
+    "Provincial Legion",
+    "Militia call-up",
+    "Imperial Provincial Military Strength",
+    "Imperial Provincial Infantry"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Empire State Army is a regular infantry regiment maintained by each Elector Count territory - they are the backbone of the empire's military power. They are not knights composed of nobles or combat priests sent by the church, but civilian soldiers recruited from various towns and villages and strictly trained. Formed into dense phalanxes under the banners of their respective provinces, halberdiers, sword-and-shielders, and musketeers used discipline and unified action to fend off the Old World's most formidable enemies."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Empire State Troopers—our fathers, brothers, and sons are there, at the front of the line. Behind any grand narrative about the Imperial Army—the charge of knights, the magic light spear, the roar of steam tanks—standing silently are dozens of regiments and tens of thousands of infantry in various provincial uniforms. Each province has its own army-building traditions: Reikland The Halberdiers are famous for their iron discipline, and their regiments march in perfect synchrony, like a monster with millions of legs; the Middenland infantry is mixed with a large number of fanatical followers of the White Wolf Cult. They are not necessarily the most disciplined, but they are certainly the most unafraid of death; the Nordland Army is adept at fighting in swamps and shoals - they do not have a long tradition of conducting large regiment drills on hard soil, but they can use skirmish formations to wear down any invading enemy in extreme terrains. The weapons and equipment of the state armies differ according to the economic strength of the provinces - the Wesenland musketeers are proud of other provinces for their rate of fire, and the loading sequence they trained is imitated by other provinces in the empire; the Stirland is famous for its crossbowmen, because the terrain of their province is hilly and unsuitable for the deployment of musketeers; the state armies of Osterland and Ostermark have a large number of veterans who have had many actual combat experiences with the orcs, which makes them an unyielding line of defense on the eastern border of the empire. But the real power of the state army is not in the hands of the rows of musketeers you see, but what you can't see: behind every state army soldier is a provincial-level system of recruitment, training, supplies and pay to support him on the battlefield."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The command and use of the Imperial State Army are basic military qualities that any lord must master. The establishment of the state army was based on provinces: a complete state army usually consisted of two thousand to four thousand infantry, with several companies of halberdiers, sword and shield soldiers and musketeers under its jurisdiction. The standard tactical phalanx - known as the \"Imperial Phalanx\" - is a three-layered deep formation in which musketeers are placed on the wings and in the front row for continuous firing, and sword, shield and halberdiers form a heavy defense line in the center. The essence of this phalanx lies in rotating shooting: the front row of musketeers does not reload after finishing shooting, but retreats directly through the passage reserved between the second and third rows of musketeers between the infantry companies to the rear to reload, while a new row of musketeers comes forward to take over - this rotation ensures continuous musket fire and provides uninterrupted suppression throughout the entire charge of the orcs. But the state army formation had a common weakness: discipline. When the casualty rate reaches more than 30%, the morale and formation of most state army companies will begin to collapse - only the core veteran companies can continue to fight under such a high casualty rate. Therefore, any experienced commander would avoid putting the cantonal army under excessive casualty pressure: when the enemy charge is about to penetrate the cantonal defense line, the knights on the flanks must launch a counterattack to rescue the cantonal army before then."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "As the largest and most highly organized infantry system in the human world, the Imperial State Army system’s legal basis and history of military organization are the most complete research objects in the military sociology of the old world. According to the Imperial Military Establishment Code - the first national military code in the history of the Empire promulgated by Emperor Magnus I in 2315 of the Imperial Calendar - each Elector Count must maintain a standing state army based on the proportion of the province's population to the total population of the Empire. The specific maintenance ratio is: one active member of the state army for every five hundred male citizens, while maintaining a reserve registration list among men under the age of forty to prepare for full mobilization. The Halberd (halberd) was not chosen randomly as the main weapon of the state army - Emperor Magnus personally ordered the halberd to be institutionalized throughout the empire after observing the halberd's restraint against large monsters and cavalry during military exchanges with the high elves. The proportion of musketeers companies continued to increase in the establishment of the Imperial State Army: from 10% musketeers per regiment during the Magnus period, to 30% musketeers per regiment in 2400 Imperial Calendar, to nearly half and half musketeers and halberds during the reign of Karl Franz. This trend reflects the continued output of the Empire's industrial production capacity - the output of lead bullets in Nunn's munitions factories in the 1930s in the Imperial era increased more than six times that of a century ago - and also reflects a cruel reality: it takes more than two years to train a halberdier who can stand on his feet before a charge of a war horse, while it only takes four months to train a new recruit who can perform basic reloading actions in the musket line. The outstanding battle history of the Imperial State Army includes but is not limited to: the Battle of the Black Flame in 2512 Imperial Calendar (12,000 State Army in Reikland In collaboration with Steele's army, they repelled the 40,000 orc tribe), and the Terrorbeast disaster in 2515 of the Empire (the Nord Territory Army only had 500 Halberdier soldiers annihilating a living Terrorbeast and its beasts without cavalry support). Mutated Servants), and the Stemi Defense Line in 2520 of the Imperial Calendar - the Six Thousand State Army held a fifteen-kilometer-long wooden wall defense line for nine weeks in a snowstorm, during which they repelled eleven charges from Chaos warriors."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Empire State Army was the most direct pain in the war for us women. The knights had the cushion of plate and horses, the battle priests had the armor of faith - but the state soldiers had nothing but the halberds in their hands and the shoulders of their comrades beside them. After every imperial war, thousands of women recognized the names of their husbands or sons from the lists of fallen soldiers sent to them. Many of us would go to the town square before the war started to deliver food to companies of the State Army who were about to go off to war - it was an unspeakable farewell ritual."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The recruitment system of the state army is a core challenge in the management of every imperial family's territory. If there are ten villages in your territory, imperial law stipulates that you must provide recruits to the provincial army headquarters on time in proportion to the number of strong men in each village - but if your territory is in the farming season and you send half of your labor force to the state army, there will be a serious gap in your granary and tax revenue during the autumn harvest. The trick to managing a state's levy rate is a delicate balance: you can request that some of your levies be converted into military pay vouchers and given to the province - but this will weaken your military reputation in the eyes of the Elector Count."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "We mercenaries had a complex contempt and envy of the state troops. Contempt is because these farm boys are inexperienced - they never understand fighting like we do when we survive alone in the wild and face death alone; jealousy is because they have the support of an entire imperial system behind them - whether they are killed in combat or in battle, their families will receive a pension. As for us - no one remembers who you are when you lose, and no one counts for you how many fingers you lost when you win."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The supply contract of the state army was the largest commercial pie in the empire's provinces. Each Elector Count has its own contracted halberd suppliers, uniform weavers, and gunpowder factories—contracts whose combined value exceeds the annual income of some small principalities. Reikland's halberds are uniformly supplied by the Altdorf Royal Forge Guild - a standard ten-foot halberd costs two imperial gold crowns per unit, while the short-handled halberd produced in Midden is one-third lower because it is made of materials from different local iron ores. The colors of the uniform cloth were status symbols for the state armies: Rick red, Midden blue, Tarabek yellow - the commercial supply chain of these dyes was the basis of the textile trade throughout the empire."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Imperial Phalanx - the standard tactical formation of the state army, with musketeers and halberdiers arranged alternately to form a deep defense line and a rotating firing cycle",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Empire State Army Provincial Regular Army Halberdier"
+  ]
+}

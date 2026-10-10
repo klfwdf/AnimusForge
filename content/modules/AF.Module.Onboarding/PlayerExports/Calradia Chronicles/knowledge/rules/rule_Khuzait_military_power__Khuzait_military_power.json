@@ -1,0 +1,221 @@
+{
+  "Id": "rule_Khuzait_military_power",
+  "Keywords": [
+    "Khuzait military power"
+  ],
+  "RagShortTexts": [
+    "Khuzait army cowardly Serdarhan herdsmen recruited guerrillas to restrain the empire"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Our soldiers? That's who we are. The man is a mounted archer, his horse is his life, the bow was passed down from his grandfather, and he exchanged three sheepskins for the long sword. During the war, he followed Na Yan, and my children and I retreated behind with the tribe's sheep. If he wins, he brings something back. If he loses, whether he can come back depends on Chang Shengtian's mood."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Khuzait’s army is a steelyard. At one end are Qixue and the Khan's personal guards, at the other end are the herdsmen levies, and in the middle are Darhan and the Lancers balancing. The battles we fought proved one thing: continuous harassment by mounted archers is the most cost-effective military investment on the continent. For the same money that the Imperial people raise for one uniformed cavalryman, we can raise ten cavalry archers. But we also know that the scale will always be uneven. Ordinary herdsmen had good and bad horses. Some rode Karakhan horses, while others rode inferior beasts of burden. When charging, the formation fell apart as soon as the speed increased. The infantry is even more of a weakness - Darhan only has a few people, and the ordinary infantry can make up for the numbers. They can fight with the wind, but they will collapse immediately if they are charged by the heavy cavalry. But we don't care about infantry."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Khuzait are our most dangerous enemies. This point does not need to be discussed since the time of Wuerhun. The phalanxes and armored cavalry of our Imperial legions have overwhelmed countless opponents, but against the Khuzait horse archers, any advantage is lost in distance. Their cavalry never gets close, they shoot around your phalanx all day long, they disperse when you pursue them, and they come back when you stop. The legion's infantry were heavily armored and shielded, which indeed consumed a lot of their arrows in the exchange of fire, but it also consumed their morale and stamina. When our lines finally loosened, their lancers rushed in from the flanks. No other force on the grassland can stop the Khuzait. Our empire is the only civilized force that can repeatedly fight with them in the front - but the price of the fight is too high. Every expedition to the grassland has to lose half an army."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Khuzait Barbarian? Those on horseback to the east. The soldiers came back and told us that those prairie people would not face you face to face when fighting. They would ride around on their horses and shoot arrows. You would chase them, but if you stopped they would come back again, like flies. They could eat raw meat, drink horse blood, and sleep on horses without tents or supply lines. The legion chased them on the grassland, chasing them until they died of exhaustion."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "char:khuzait_khans_guard",
+          "char:khuzait_kheshig",
+          "char:khuzait_noble_son",
+          "char:khuzait_qanqli",
+          "char:khuzait_torguud"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "We are the arrows of the Khan. Ordinary mounted archers shoot at the enemy, but we shoot at the enemy's eyes. On the battlefield, if we don't release arrows until they reach key positions, we will draw blood as soon as we release them. Turgut is the best archer on the grassland and can shoot down flying geese on horseback. Kangerli specializes in dealing with imperial armored cavalry, and we know where the gaps in their armor are - between the horse's neck and saddle, and the inch behind the shoulder blades. Khan's personal guards do not go into battle easily. We are Khan's shadow. We are where Khan is. Outsiders say we are crazy, but we are indeed crazy. A timid Xue cavalry archer is equipped with three horses, two bows, and a Yanyue sword. He grew up on a horse and has never touched a plow or led an ox. Our war is not an imperial war. They fight for the land and we fight for the pasture. The pasture is alive, and so are we."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "char:khuzait_heavy_horse_archer",
+          "char:khuzait_horse_archer",
+          "char:khuzait_raider",
+          "char:khuzait_tribal_warrior"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Fighting is not an honor, it is a duty. Then Yan Zhengzhao, I will take my horse and bow and go. I can't go. My horse is not a good horse like Xie Xue. It started to pant after carrying me for a long time. I sharpened my own bow. It has good accuracy but doesn't shoot very far. We are the most common people on the battlefield. We surround the enemy and shoot. After shooting a pot of arrows, we go back to get new ones. There is no comparison with Qie Xue. They are eagles in the sky and we are sparrows on the ground. But we were cheap and easy to raise. After the war, we went back to tend the sheep, and the next call came again. Khan relies not on cowardice to conquer the world, but on thousands of herdsmen like me."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "char:khuzait_darkhan",
+          "char:khuzait_footman",
+          "char:khuzait_militia_spearman",
+          "char:khuzait_militia_veteran_spearman",
+          "char:khuzait_nomad",
+          "char:khuzait_spear_infantry",
+          "char:khuzait_spearman"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "We are the most disliked people on the prairie. The Khuzait looked down upon those who walked on two legs, and we were one step below the herdsmen with horses. The exception is Darhan. They have pierced armor and closed-face helmets, and can withstand heavy cavalry when standing on the battlefield. The Khan himself praised them by name. What about our ordinary infantry? Take a spear, sometimes even without armor, and wait for the enemy to rush in front of you. But we are also useful - infantry is needed to attack the city, and infantry is needed to defend the camp. When the cavalry withdraws, we are behind to block the pursuing troops. It's just that every time after a battle, when the spoils are divided, it is always given to the cavalry first, and then to Darhan, and only the remaining scraps get our turn."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "char:khuzait_heavy_lancer",
+          "char:khuzait_horseman",
+          "char:khuzait_lancer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "We are the knife in the gap. When the cavalry archers shoot people so hard that they can no longer lift their heads, we charge. The Yanyue sword was replaced with a lance, and the spurs were clamped and thrust straight into the gap. The equipment is good, the armor is thick, the guns are hard, and the horses are well trained. But we are not timid, nor are we elite. After a battle, the leader pats you on the shoulder and tells you that you are brave, but you have to fight in the next battle. We rushed through the imperial uniformed cavalry, but we couldn't move forward. Their horses are taller than ours, their armor is thicker than ours, and their guns are longer than ours. When they collide, our side falls more. But we are cheap, and if we die, others will make up for it. This is our advantage. Khuzait has no shortage of men or horses."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "char:khuzait_archer",
+          "char:khuzait_hunter",
+          "char:khuzait_marksman",
+          "char:khuzait_militia_archer",
+          "char:khuzait_militia_veteran_archer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "There are few people in Khuzait who are willing to do our job. It is an honor to ride a horse and shoot arrows on the grassland, but it is useless to shoot arrows while standing on the ground. The bows we use are the same as those of mounted archers, and our accuracy is even better than theirs, because we are stable on the ground. We are useful when defending a city, and we are also useful when attacking a city. But no one cares about us. The mounted archers are the wind, we are the stones. When the wind blew over, everyone looked up and saw that no one was paying attention to the stones lying on the ground."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Khuzait military system was the pinnacle form of the nomadic war machine. There is no doubt that the elite cavalry archers with Qixue as the core are the best horse archers on the continent. Their Yanyue Sword is good at slashing and is a deadly weapon for cavalry in melee. Although the Lancers are cheap but plentiful, they are the first line of cannon fodder for them to break through. Darhan is one of the few heavy infantrymen on the grassland who can fight hard. But we also noted two structural weaknesses in our assessment. First, they lack powerful archers and are easily suppressed in confrontations. Second, although the number of horses is large, there is no standardized breeding system, and the quality of horses varies. However, in the open terrain of the eastern part of the continent, these two weaknesses were masked by speed and force size."
+    },
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Khuzait people? Those on horseback to the east. I heard that they fight like flies. They only shoot arrows but don't engage in battle. They will charge you until you have no strength left. They have a kind of khan named Monchug, who has many tribes under him, some listen to him and some don't. They have many horses, and their children can ride horses and shoot arrows. I heard that they had robbed several cities in the empire before. But they are in the east and we are in the west. There is an empire in between, so we can't catch up with them."
+    }
+  ],
+  "TextMappings": []
+}

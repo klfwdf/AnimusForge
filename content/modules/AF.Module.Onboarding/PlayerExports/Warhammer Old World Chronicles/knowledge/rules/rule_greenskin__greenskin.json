@@ -1,0 +1,213 @@
+{
+  "Id": "rule_greenskin",
+  "Keywords": [
+    "Greenskin",
+    "orc",
+    "goblin",
+    "Waaagh",
+    "green tide",
+    "Green skinned furry colossus",
+    "Spore reproduction",
+    "greenskin badlands",
+    "warrior",
+    "leader",
+    "greenskin tribe",
+    "Green-skinned black orc"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Greenskins are the most primitive, savage, and most difficult to eradicate race in the Old World. They include strong, battle-hungry orcs, and numerous, cunning and insidious goblins. The only purpose of the greenskin's existence is to fight - for the orcs, fighting is more important than eating; for the goblins, living is for sneak attacks and escapes. When they are united by a warrior powerful enough to unleash a massive Waaagh!, the entire land will tremble with their war cries."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Listen you little shrimp, green skin is the best! We are not like those weak humans who need to farm and build houses. We are born to fight! The big orcs can hit ten pointy ears or short squats each. Although the goblins are small, they know how to build things - and they can run very fast. It is best to let them rush forward to detect traps during the war. And then there's Waaagh! - when the boss gets big enough and all the boys unite behind his war cry, nothing can stop us. Those humans say we are a disaster, ha! They were just jealous of our happiness - what fun it was to fight!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The nature of the greenskin threat is completely different from that of other races - they don't fight for territory, wealth, or political goals, they simply fight for a good fight. This makes conventional diplomacy and deterrence largely ineffective against them. Greenskins' numerical advantage comes from the way they reproduce: they reproduce through spores, which means that any land occupied by greenskins will continue to produce new greenskins. Dealing with the Greenskins requires completely wiping out their fighting force and incinerating their spores - a Waaagh! Once defeated, the survivors will quickly fight among themselves, but if the source of the spores is not eradicated, new ones will inevitably rise again in the future."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "Greenskins are semi-fungal creatures between animals and civilized races. They reproduce through spores - a greenskin will continue to release tiny spores throughout its life, and these spores will grow into new greenskin individuals in the right environment (moist, dark, nutritious). This is the fundamental reason why greenskins are almost impossible to eradicate completely. The social structure of the Greenskins is based on pure power hierarchy: the strongest orcs naturally become the leader, and duels between the leaders determine the leadership of the tribe. Waaagh! is a unique psychic phenomenon - when enough greenskins gather together and establish a unified warlike mood, a collective psychic field is created. This force field not only strengthens the greenskin's combat effectiveness, but also serves as the basis for the greenskin shaman's spellcasting. Brother Go and Brother Mao - the green-skinned twin gods - are the highest embodiment of this psychic field. The green-skinned subspecies include: ordinary orcs, black orcs (the largest, strongest and rarest with discipline), ordinary goblins, night goblins (cave dwellers who are afraid of light and use poisonous mushrooms), forest goblins (taming giant spiders) and shamans (acting as the psychic spokesperson of Brother Gomao). The Greenskins do not have any form of written history or written civilization, their history is passed down orally from ear to ear in the oral songs of shamans and the names of warlords - and this is often wildly inaccurate, as each telling adds more hyperbole and battle."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Greenskins have no gender - they reproduce via spores, which puts them in a taxonomically gray area that is deeply disturbing to the female rulers of the Empire. They don't need women to perpetuate their species, so they don't have any instinctive concerns about women based on reproductive competition. In the eyes of the greenskins, men and women are just two different types of hitable targets - larger humans (more durable) and smaller humans (easier to knock flat). This lack of gender awareness on the battlefield means that Greenskins do not display a special pattern of violence against women during raiding battles - they use violence equally against all living creatures."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Greenskins are the most enduring threat to my family's lands - more terrifying than a Chaos invasion because with Chaos you can at least predict their direction in diplomacy and defense, the Greenskins pop up out of the ground. Spore contamination is a recurring attrition that is hidden from the family tax books: a village occupied by Greenskins for three months thirty years ago has suffered four smaller, gradually weakening Greenskin attacks over the years. My grandfather set up a special trust fund in the family tree - the Greenskin Reconstruction Reserve - the sole purpose of which was to rebuild villages burned down in Greenskin raids. For four centuries this fund has been used every year without interruption."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Greenskins are the only race that the Rangers will not try to negotiate with. You can bargain with the Imperials and Bretonians, you can use some ancient etiquette to avoid direct conflict with the Elves, and you can bribe the Dwarves with ores and good ale - but there is no possibility of negotiation with the Greenskins. The only currency they accept in exchange is violence: if you demonstrate your ability to beat them to a pulp, they may temporarily retreat in search of easier targets - but that's not a peace deal, it's just their risk-averse instinct. Traveling on the edge of the badlands requires two iron rules: camp before sunset and fortify yourself, and never camp in the same place you were three days ago."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Greenskins' greatest economic impact on Old World markets was not the pillaging itself - it was that they caused certain trade routes to be permanently closed. The northern trade route from Marienburg to the World's Edge Mountains once had three shortcuts through the northern edge of the Badlands. Now it can only bypass the Imperial Highway. The additional transportation cost per year is enough to build two new medium-sized towns. What’s even more fatal is that some specific commodities—such as the high-quality black iron ore produced in the Gray Mountains and used to manufacture Imperial muskets—have experienced periodic supply interruptions due to the Greenskin activity areas passing through. This has caused the Imperial Nun Arsenal to begin to use alternative mineral sources of poorer quality but more stable supply in musket manufacturing, which has led to a slow but real decline in the overall quality of muskets."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Waaagh! - Greenskin's collective psionic rage state, the most powerful spiritual weapon used by the Warlord to unify the tribes.",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Greenskin Orc Goblin"
+  ]
+}

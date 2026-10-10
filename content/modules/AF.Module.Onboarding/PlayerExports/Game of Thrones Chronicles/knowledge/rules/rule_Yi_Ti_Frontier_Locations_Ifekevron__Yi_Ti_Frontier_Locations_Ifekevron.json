@@ -1,0 +1,152 @@
+{
+  "Id": "rule_Yi_Ti_Frontier_Locations_Ifekevron",
+  "Keywords": [
+    "Ifekevron",
+    "Far East"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Ifequeveron is located in the far east of Essos and the Ifequeveron forest zone, politically within the borders of the western edge of the Yi lands and the activities of the ancient forest dwellers. It is a town, a center where surrounding populations, markets, roads and local power converge. Walls and roads tied the surrounding population, storage, and garrison here; even if the flags were changed, this stronghold would still affect how nearby people paid taxes, traded, and sought refuge."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "yiti"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Ifekevron Local families also relied on forest produce, river roads, rice crops, caravans, and gateways to the east; if any road, well, or dock failed, the price would fall first on them."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "yiti"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Ifekevron Ivervelon is located in the power and trade network on the western edge of Yi Di. The rules inside and outside the city gate are determined by the local order; whether the defenders are well fed and whether reinforcements can arrive on time are more important than the rhetoric in the meeting hall in determining whether this stronghold is reliable."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Ifekevron They will also recognize the accents, laws, and certificates of passage on the western edge of Yi Di; reputation can spread far from the tavern, and the real distance must still be measured by wheels, oars, or horse hooves."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Ifekevron Ifverlon is located in the power and trade network on the western edge of Yi Di, and the rules inside and outside the city gate are determined by the local order; after the flag is changed, the roads, granaries, old debts and local trusts still have to be taken over one by one by the new owner."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Ifekevron If you can supply supplies, avoid danger, and find a guide, it is worth marking in your itinerary; if you don't have these three things, no matter how loud your family name is, it won't be able to save the lost."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Stone and wood will decay, but Ivervelon still relies on craftsmen to take care of the workshops, markets, roof tiles, church bells, and streets that have been expanded through the ages. It relies on priests to preserve the Yidi gods, the legend of the dawn, and the taboos passed down orally by the border people. A stronghold was therefore not just a lord's hall, but also a place where weddings and funerals, vows, labor and local memories recurred."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Ifekevron They care about forest products, rivers, rice crops, caravans, and passes to the east. They also care about whether seeds are left after harvesting grain, and whether the city gates are open in times of disaster. When people from afar see coats of arms, what they see is whether there will be food to eat tomorrow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Ifekevron: Ifequeveron is located in the far east of Essos and the Ifequeveron forest zone, politically within the borders of the western edge of the Yi lands and the activities of the ancient forest dwellers. It is a town, a center where surrounding populations, markets, roads and local power converge. Walls and roads tied the surrounding population, storage, and garrison here; even if the flags were changed, this stronghold would still affect how nearby people paid taxes, traded, and sought refuge."
+  ]
+}

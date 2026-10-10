@@ -1,0 +1,151 @@
+{
+  "Id": "rule_House_Foundations_Whitemountain",
+  "Keywords": [
+    "Whitemountain",
+    "House Whitemountain"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The White Mountain family takes Highpoint City as its seat and is one of the few families in the north that believes in the Seven Gods. They once owned the Ironwood Forest, but long-term logging has depleted their forest farm. Therefore, they are even more persistent in claiming that the Forest Clan's Irontree Fort and Ironwood should belong to the White Mountains. Ladd Baishan regarded this idea as the foundation of family dignity and expansion, and old grudges were passed on to his children. Not everyone in the family is willing to let hatred determine their lives: Gwen White Mountain and Ash Forest fall in love and try to get the two families away from their blood debt."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The northern nobles would not decide who belongs to Iron Tree Castle just by listening to one family's genealogy. Old deeds, borders, marriage alliances were as important as who could keep the locals alive during the winter; a lord who could only repeat the accusations of his ancestors had not yet proven himself worthy of the land he was fighting for."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The farmers in the White Mountain Territory are not as enthusiastic as the bard about who the Iron Tree Fort belongs to. What they are concerned about is whether the grain levy will be doubled, whether the forest roads will be passable, and whether the next revenge will burn the winter grain they have worked so hard to hoard."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Young warriors are easily ignited by the slogan of retaking old property, but veterans know that the forest clan will also fight back with bloodshed. The story of Gwen and Ash was whispered by the firepit. Some people called it weak, while others regarded it as the only remaining door to end the feud."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Whitemountain As the Whiteshan clan competes with the Forest Clan for Irontree Keep, their ambitions, old grudges, and Gwen Whiteshan's desire for reconciliation are intertwined. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Whitemountain As the Whiteshan clan competes with the Forest Clan for Irontree Keep, their ambitions, old grudges, and Gwen Whiteshan's desire for reconciliation are intertwined. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Whitemountain As the Whiteshan clan competes with the Forest Clan for Irontree Keep, their ambitions, old grudges, and Gwen Whiteshan's desire for reconciliation are intertwined. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Whitemountain As the Whiteshan clan competes with the Forest Clan for Irontree Keep, their ambitions, old grudges, and Gwen Whiteshan's desire for reconciliation are intertwined. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Whitemountain: As the Whiteshan clan competes with the Forest Clan for Irontree Keep, their ambitions, old grudges, and Gwen Whiteshan's desire for reconciliation are intertwined."
+  ]
+}

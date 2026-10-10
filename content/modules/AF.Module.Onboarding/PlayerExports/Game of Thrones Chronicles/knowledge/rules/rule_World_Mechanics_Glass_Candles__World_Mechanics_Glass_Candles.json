@@ -1,0 +1,154 @@
+{
+  "Id": "rule_World_Mechanics_Glass_Candles",
+  "Keywords": [
+    "Glass Candles",
+    "Obsidian Candles",
+    "Valyrian Relics",
+    "Citadel Vaults"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Glass candles are obsidian artifacts left behind by Valyria, shaped like tall, twisted, sharp-edged tapers. The Citadel keeps several, and novices keeping vigil were once required to spend a night trying to light one so as to learn that some knowledge in this world remains beyond reach. Legends of their power include burning without a wick, letting a man see afar, sending visions through dreams, and even allowing users in different places to speak with one another; their light is said to be uncommonly bright and unlike the color of common flame. Most people have no way to verify such powers. The meaning of the glass candles lies not only in what they can do, but in forcing confident scholars to admit that things once judged impossible may happen again."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "reach"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "scholar",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Skeptics at the Citadel treat a glass candle as a dead object for teaching humility, while a few study whether they have truly begun to wake. What truly unsettles a scholar is not a single candle, but the thought that old theories may have to be rewritten."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "valyrian",
+          "dragonstone"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "scholar",
+          "lord",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Those of Valyrian descent prefer to see in them a surviving corner of lost craft. If obsidian can carry sight and dreams, then the knowledge destroyed in the Doom went far beyond forging steel and riding dragons."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "wanderer",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Outsiders easily take a glass candle for a priceless marvel, yet can hardly tell whether they have bought a relic, a fraud, or something that will peer back at its keeper."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Glass Candles Valyrian obsidian relics said to burn without fire, see across great distances, and enter dreams, standing at the crossroads of Citadel skepticism and the return of magic. Whether it is valid depends on who can grant the rights, collect the consideration, and actually make the judgment come to fruition in the event of default."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Glass Candles Valyrian obsidian relics said to burn without fire, see across great distances, and enter dreams, standing at the crossroads of Citadel skepticism and the return of magic. The distant system is not empty talk only if it can be implemented in campfires, city gates and inns."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Glass Candles Valyrian obsidian relics said to burn without fire, see across great distances, and enter dreams, standing at the crossroads of Citadel skepticism and the return of magic. If a rule is practiced over and over again, it will find its way into rituals, crafts, and prayers; if it is sustained only by fear, cracks will show at the onset of a crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Glass Candles Valyrian obsidian relics said to burn without fire, see across great distances, and enter dreams, standing at the crossroads of Citadel skepticism and the return of magic. They remember taxes, grain, labor, relief and who can speak for them; these grand names will eventually fall on the family's rice pot."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Glass Candles: Valyrian obsidian relics said to burn without fire, see across great distances, and enter dreams, standing at the crossroads of Citadel skepticism and the return of magic."
+  ]
+}

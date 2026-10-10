@@ -1,0 +1,213 @@
+{
+  "Id": "rule_tree_spirit",
+  "Keywords": [
+    "Dryad (tree spirit)",
+    "Medium spirit",
+    "branches intertwined",
+    "physical resistance",
+    "Forest Warrior (tree spirit)",
+    "solid barrier",
+    "living trees",
+    "energy creature",
+    "natural spirit",
+    "moving forest",
+    "indestructible",
+    "wooden body"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Dryads are medium-sized spirit warriors condensed from forest spirits. Their bodies are made of intertwined ancient branches and vines. They have extremely high physical resistance and can crush any invading enemies with indestructible steps."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Dryads are not as clumsy as rumors say. Their movements were slow but extremely powerful, making the earth tremble with every step. What is truly awe-inspiring is their silence - the dryads never speak, they just stand quietly at the edge of the forest, waiting for the call of the spell caster. When battle begins, dryads fight their enemies in incredible ways: their branches can suddenly extend and wrap around enemies, and their roots can emerge from the ground and trip up cavalry. We see them as extensions of our ancestors—each Dryad harbors the spirit of an ancient elf who once lived in Athel Loren."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Dryads are an indispensable pillar in your formation. Place them at the heart of the infantry line and they will absorb the impact like a living wall. Dryads are extremely resistant to conventional weapons—arrows and swords are nearly impossible to penetrate their wooden bodies. But be aware that fire attacks are their nemesis, so be sure to use water magic to protect them. Create a classic synergy with the Glade Guard: Dryad in front, Archer in back."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "According to research in \"Spiritual Science\", the formation of a tree spirit requires at least a five-hundred-year-old tree as a container, and an elf spirit that voluntarily gives up its body and merges into the tree trunk. The academic community divides tree spirits into three levels: \"Twigs\" - young tree spirits that have been formed for less than a hundred years; \"Twigs\" - the main tree spirits that have been around for hundreds to thousands of years; and \"Elder Rings\" - giant tree spirits that have been around for more than a thousand years. The most famous Ring Elder is Durtan, the \"Root Whisperer\". It is said that its root system is spread all over the underground of Athel Loren, and it can sense threats in any corner of the forest through its root veins. The Dryad's weaknesses include fire-based attacks and \"Corruption\" - a form of chaos magic that disintegrates the Dryad's body by corroding the wooden structure."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "I have a group of dryad warriors at my command, and they never retreat from a fight. Watching these silent ancient creatures fight for me makes me feel extremely honored and extremely heavy."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Awakening a dryad requires the assistance of a spellcaster and a lengthy ritual. The number of Dryads available to your clan depends on how many Spellcasters you can support. Dryads are scarce resources, so don't throw them into a fatal battle easily - the death of each tree spirit is the death of an ancestor's spirit."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "You walk into a seemingly ordinary forest until the nearest \"tree\" slowly turns its head and stares at you with a pair of empty eyes. You realize you're standing among a group of sleeping dryads."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Dryads have existed in Athel Loren since ancient times. They were originally awakened by the caster from ordinary ancient trees, but later evolved into an independent spiritual form. The social structure of the dryads is extremely ancient, with the \"annual ring elder\" as the most respected person."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Dryad - a medium-sized spiritual warrior formed from the fusion of ancient trees and elven spirits.",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Tree spirit medium-sized spirit body intertwined branches"
+  ]
+}

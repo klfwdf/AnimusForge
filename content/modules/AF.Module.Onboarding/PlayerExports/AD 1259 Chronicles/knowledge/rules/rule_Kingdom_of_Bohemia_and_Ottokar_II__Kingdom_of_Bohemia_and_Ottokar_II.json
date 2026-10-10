@@ -1,0 +1,23 @@
+{
+  "Id": "rule_Kingdom_of_Bohemia_and_Ottokar_II",
+  "Keywords": [
+    "Kingdom of Bohemia",
+    "Ottokar II",
+    "Premyslid Dynasty",
+    "Kutna Hora Silver",
+    "Duchy of Austria",
+    "Styria"
+  ],
+  "RagShortTexts": [
+    "Ottokar II 'the Iron and Golden King' leveraged Bohemian silver mines and knightly levies to forge Central Europe's most formidable realm."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Kingdom of Bohemia under Přemysl Ottokar II (reigned 1253–1278) stood as the preeminent power of the Holy Roman Empire during the Great Interregnum. Known as the 'Iron and Golden King,' Ottokar drew staggering revenues from the newly opened silver mines of Kutná Hora and Jihlava, using his wealth to hire elite mercenary knights and endow modern stone castles across Central Europe.\n\nExploiting the extinction of the Austrian Babenberg dynasty, Ottokar was elected Duke of Austria in 1251 and wrested the Duchy of Styria from Hungarian control in 1259. His sprawling personal union stretched from the Sudeten mountains to the border of Friuli, making him the undisputed master of Central Europe until challenged by the House of Habsburg."
+    }
+  ],
+  "TextMappings": []
+}

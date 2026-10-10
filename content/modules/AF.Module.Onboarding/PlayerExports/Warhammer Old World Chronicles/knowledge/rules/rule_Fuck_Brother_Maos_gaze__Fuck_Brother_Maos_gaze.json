@@ -1,0 +1,208 @@
+{
+  "Id": "rule_Fuck_Brother_Maos_gaze",
+  "Keywords": [
+    "Fuck Brother Mao’s gaze",
+    "greenskin magic",
+    "Waaagh spell",
+    "energy beam",
+    "Phantom Foot",
+    "The power of Brother Mao",
+    "Psychic Trample"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Gomao Er Ge's gaze is one of the most terrifying Waaagh! spells that the green-skinned shaman can unleash - the caster summons the dual divine power of Go Ge and Mao Er Ge, and two huge green orc phantoms appear in the sky. Their giant feet descend from the sky and trample the enemy, or shoot destructive green energy beams from their eyes to evaporate the entire front line."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Brother Mao’s gaze is the most damn magic in the world! This is the magical power that our great shaman can borrow at the most critical moment - when all the greenskins collectively enter the Waaagh state of rage, Brother Go and Brother Mao will open their eyes in the sky! Do you know how powerful that is? A giant green foot stepped down from the clouds, trampling an entire dwarf fort into mud with a roar, and then a pillar of green light shot out from their eyes, burning a row of big holes in the neatly arranged human lines! This is not like the sissy magic that humans whisper incantations - this is the true power of God summoned by us greenskins with all the boys shouting together!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Brother Gomao's gaze is a disaster-level spell that cannot be solved at the tactical level - once it is successfully cast, it will simultaneously cause a huge trample on the front line, destroy the formation, and apply energy strafing to key nodes in depth. The unique danger of this spell is that its release conditions are directly related to the Waaagh! status of the greenskin army: the higher the overall morale of the greenskin army and the larger the number of people participating in the battle, the stronger the power of this spell. Therefore, the counter-strategy is actually not a response after the spell starts - but a prevention before the spell is cast: continuously suppress the overall morale of the greenskins, snipe the greenskin great shaman as early as possible, and prioritize the destruction of the main orc core of the greenskin army to cut off the accumulation of Waaagh! energy."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "Gorgeous Gaze is the most devastating top spell in the green skinned 'Waaagh! Magic' system. Its theoretical basis is completely different from that of elves' high magic or humans' Sigmar's blessing - it is based on a unique mechanism called the 'collective mind field'. When the number of green skins reaches a critical threshold (estimated by the Imperial School of Magic to be over three thousand to four thousand) and the collective fighting power reaches a climax, the psychic resonance among the green skins will gather in space to form a semi-conscious psychic energy field. The green skinned great shaman directs this energy field to the sky through a special 'Waaagh! Curse Song' - which is actually a specific roar frequency inherited through genetic memory, forming the phantom of two giant eyes and giant feet. The first documented history of this spell occurred during the Great Green Migration in the Nehekhara Desert about 500 BC in the Empire - the priests of Nehekhara recorded in a stone inscription called the \"Green Disaster Inscription\" the event of \"green feet falling from the sky and crushing three pyramids\". The most shocking thing is that this spell is not a manifestation of the shaman's personal ability, but an expression of the collective subconscious of the entire green-skinned race - which means that as long as the green-skinned race exists and gathers together, this spell can theoretically never be banned."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "I once heard from a surviving imperial artillery officer the description of the gaze of Brother Gomao coming to the battlefield - first the sky darkened, a low chant that seemed to come from the other side of the world began to echo in the minds of all the soldiers, and then two eyes appeared in the sky, green, huge, and extremely cold. He said that the scariest thing was not being directly hit by the green light, but the moment before the magic was released - when all the greenskins stopped roaring at the same time, looked up at the same time, and grinned at the same time. In that second you know you are about to see something that even the earth itself cannot bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "During my great-grandfather's reign, he fended off a major greenskin invasion fueled by the gaze of Brother Gomao. At that time, we mobilized all our military reserves - the imperial artillery regiment, the dwarf allies, and even the hired ogre mercenaries - at the most difficult moment, when those giant green eyes appeared in the clouds above the battlefield, everyone was stunned. The record in our family chronicle is that great-grandfather himself mounted a war horse and rushed into the disintegrating army. He personally beheaded two officers who turned and fled to stop the retreat. Then he shouted the family motto at the top of his lungs - 'The dead have no words, the living will not retreat'. I don't know whether his courage really worked, or whether the green-skinned shaman was accidentally injured by the stray arrow of his own big brother at the critical moment - in short, the giant eye dissipated, and we won miserably. But it was still the closest to destruction in the family's history."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "During a battle in the Gray Mountains against the large green-skinned Waaagh!, as a member of the mercenary cavalry regiment, I witnessed the gaze of Brother Gomao. Let me start by saying that no matter how much money you have, gold cannot buy back your teammates who were evaporated by the green beam from around you. The green-skinned shaman stood on the tower of a ruined dwarf fortress, his whole body glowing like a green lantern. He roared a cry that froze everyone's blood, and then two more green eyes appeared in the sky. At that moment all the forest became quiet, all the birds fell down, and then the earth shook. I remember that at least twenty cavalrymen and horses around me were trampled into a pile of iron and flesh. After that battle, everything below my knees was still intact, but my brain above my knees told me: Never again fight an enemy who can summon a living god to look down on you from the sky."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Department of Magic at the University of Altdorf has a complete theory on the Gorgon's gaze - even though they are prohibited from practicing greenskin magic. They call this phenomenon 'the pinnacle example of collective-psychic-embodiment': the simultaneous raging psychic energy of thousands of Greenskins condensed into an observable physical phenomenon under the guidance of the shaman. But theory is one thing, practical impact is another. My insurance company has been undertaking the empire's war policies for a long time. Every time the intelligence center confirms that there is a great shaman accompanying the greenskin army - this can be judged by the campfire traces and specific sacrificial symbols left by the greenskins - our risk assessment model will automatically increase the insurance premium by 30%, and does not guarantee compensation for magic damage."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "The green-skinned shaman channels the collective Waaagh! energy release of an apical destructive spell",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Engage Brother Mao’s staring green-skinned magic spell"
+  ]
+}

@@ -1,0 +1,211 @@
+{
+  "Id": "rule_Lake_God_Witch",
+  "Keywords": [
+    "Witch of the Lake",
+    "Lake Witch",
+    "goddess spokesperson",
+    "Lake God Witch Life Magic",
+    "Lake God Witch Paradise Magic",
+    "Depose the king",
+    "fay",
+    "Sister of the Holy Grail",
+    "witch prophecy",
+    "divine arbitration"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Lake God Witch is the supreme spokesperson of the Lake Goddess in the mortal world - she is not an ordinary witch, but the direct embodiment and mouthpiece of the goddess's will. The Witch of the Lake God masters both the high elven magic of life magic and heavenly magic, and has the only legal power in Bretonnia: she can depose a king by publicly declaring in the Council of Dukes that he has lost the favor of the goddess. No other mortal in all Bretonnia has such authority."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Witch of the Lake - before whom we Bretonnia can only kneel. She is not a mortal of flesh and blood, and although her body is technically human, her soul has been fully inhabited by the Lady of the Lake. The inheritance method of the Lake God Witch is completely secret from the outside world - we only know that when the former Lake God Witch feels that her life is coming to an end, she will walk alone into the waters of the holy lake and join the goddess there, and then after an indeterminate period of time - sometimes a week, sometimes three years - the new Lake God Witch will come out of the same lake, fully grown and already possessing all memories and powers. She never reveals her mortal name - if she ever has one - as her name has become an aspect of the Lake Lady herself. She has the strange ability to control both Jilan and Archie magic at the same time - this is impossible in the definition of the Empire's magic system, because Imperial people can only learn one kind of wind - but the Lake God Witch is not an Empire-licensed mage. She is a channel of the goddess's will rather than a graduate of academics. Whenever the kingdom faces a major crisis—the choice of a king, an invasion, internal disagreements within the Grail Knights—the Dukes gather at the Cathedral of the Holy Grail and ask the Witch of the Lake to come forward and make the final decision. Her rulings are not appealable: if she says the king should be deposed, then all dukes must withdraw their oath of allegiance to the king before the following sunrise - any duke who disobeys is immediately excommunicated by the Witch of the Lake and banished from Bretonnian society."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Witch of the Lake occupies a position in Bretonnia's political chess that is both theoretically overriding and operationally extremely delicate. Legally speaking, her power is unlimited - she can legally depose the king, dissolve the ducal council, and prohibit any knight from waging a holy war of his own. But in practice, she cannot directly command the army - the Lake Witch does not have her own personal armed forces, and all her power relies on the dukes willingly obeying her rulings. This resulted in an exquisite political symmetry: the King of Bretonnia was the highest temporal owner of military power, but the Witch of the Lake was the highest source of divine legitimacy, and the Dukes stood somewhere in between - they needed the King to protect their realm from invasion, and the Witch of the Lake to ensure that the king did not turn into a tyrant. Throughout history, conflicts between the Lake Witch and the King were extremely rare but each time disastrous - when the Lake Witch publicly denounced the King, Bretonnia would descend into the vortex of civil war within months as half of the dukes chose to be loyal to the goddess and the other half to the king."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "The theocratic and legal foundations of the Lake God Witch system constitute a unique and radical case in the study of church-state relations in the old world—that is, an institutional framework in which secular power is reversibly checked and balanced at any time by a clear theocratic agent. In terms of legal definition, the Lake Goddess has \"emergency veto power over the king's power\" - this power is clearly recorded in Bretonnia's constitutional practice. The earliest form appears in Bretonnia's first written law since Gilles I, the \"Bretonnia King Power Law\". Chapter 7 of the third volume of the law stipulates: \"The spokesperson of the Lake Goddess can serve as living evidence of the goddess's will and question the king's qualification to rule at any time.\" However, this law leaves behind a question that has never been fully addressed: Is there a mechanism to depose the Lake Witch if she herself loses the favor of the goddess—but her status as the goddess’ spokesperson gives her the final say on the issue? In the history of law, this gap is known as the \"paradox of the recursion of divine agency\" and has been discussed repeatedly in many high-level legal seminars but has never achieved a solution acceptable to the church. The most high-profile exercise of power by the Witch of the Lake in public records occurred some ten centuries ago in Bretonnia, when the witch Morgana publicly deposed King Urbain III and declared his cousin's husband as the legitimate heir. This deposition was known in official records as \"Morgana's Correction\" for the next eight hundred years, the details of which are deliberately vague. The current Witch of the Lake - often referred to only as the \"Witch Fay\" - is the fifth spokesperson for Bretonnia in the past three hundred years. She is said to be stationed in the Silver Lake Mystery near the Holy Grail Cathedral and rarely travels."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Witch of the Lake represents in the hearts of Bretonnian women the highest and only inviolable form of power we can have in this system. The social structure of Bretonnia as a whole is male - knights, kings, dukes are all male - but the Witch of the Lake is the goddess' spokesperson and can only be a woman, and no man can question her judgment. This provided a kind of spiritual refuge: if a noble woman suffered a grave injustice at the hands of a male relative, her only ultimate appeal was to appeal to the Witch of the Lake—although few actually went that far."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The ruling of the Witch of the Lake is the most unpredictable political variable for any Bretonnia family. You can orchestrate an elaborate generation-long network of marriage alliances to ensure your offspring becomes king, but a mere \"This man does not have the approval of the goddess\" from the Witch of the Lake during the coronation ceremony is enough to wipe out your entire investment. The most cunning family leaders in Bretonnia never put all their weight in the politics of the king - they always maintain a hidden channel of communication on the side of the Witch of the Lake."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Witch of the Lake is more legend than fact to us wanderers in Bretonnia. I know an old mercenary who claims to have seen her at a coronation - he said the air itself felt heavy as she walked past, as if you were standing on a summer afternoon about to rain heavily. I'm not sure I believe it or not. But I know that the toughest knights in all of Bretonnia will lower their voices at the mention of the Witch of the Lake's name - and that's more convincing than any argument."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Lake Witch's impact on Bretonnia's economy was indirect but profound. She had the power to grant amnesty to any knight deemed treasonous by the king - if she exercised this pardon, it would mean that the territorial wealth that would have been confiscated and annexed to the treasury would remain in the hands of the original family. From a businessman's perspective, the order to depose the Witch of the Lake is essentially an irreversible order to redistribute assets - it will trigger the re-attribution of territory and the transfer of legal ownership, thus affecting the distribution of trade licenses in the entire region."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Witch of Fay - the most common title of the Witch of the Lake, the only legitimate goddess spokesperson in all of Bretonnia",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Theological attributes and belief systems of the Lake God Witch"
+  ]
+}

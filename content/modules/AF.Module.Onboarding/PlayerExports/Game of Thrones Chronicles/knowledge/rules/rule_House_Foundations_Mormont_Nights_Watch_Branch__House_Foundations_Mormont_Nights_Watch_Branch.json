@@ -1,0 +1,151 @@
+{
+  "Id": "rule_House_Foundations_Mormont_Nights_Watch_Branch",
+  "Keywords": [
+    "Mormont (Night's Watch Branch)",
+    "Jeor Mormont",
+    "The Old Bear"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Jeor Mormont was once the lord of Bear Island. He later handed over the land and inheritance to his son Jorah and volunteered to wear black. He brought a northern lord's sense of responsibility, food and discipline to the Wall, eventually becoming Commander-in-Chief of the Night's Watch, known as \"Old Bear.\" The Black Oath makes him no longer represent the interests of Bear Island; in his eyes, nobles, illegitimate children, poachers and fugitives, once they take the oath, are just brothers who need to be trained, restrained and protected. The Wall's manpower declined, the South remained indifferent, and the anomalies beyond the Wall became increasingly difficult to explain by ordinary savage raids. Geo's choice was therefore not to found a new line of Mormont, but to commit the rest of an old lord's life to the northern borders that no one was willing to listen to."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nightswatch"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "When the brothers in black looked at Mr. Xiong, they saw not only the commander-in-chief, but also an old lord who understood that his subordinates would be hungry, afraid, and lazy. His orders may not be gentle, but he usually knows who will pay the price. Night's Watch needs more than just warriors, but people who can make a group of criminals and outcasts still act like a legion."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The northern nobles respected Geo's decision to let go of Bear Island, because it was harder to give up land voluntarily than to lose it forcefully. He still carries Mormont's bear nature, but he has given up his family's honor to the Black Oath. To the people in the north, he is both the old owner of Bear Island and a person who can no longer stand for Bear Island."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "freefolk"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The free folk regard the Lord Commander of the Night's Watch as the leader of the crows, and will not let down their guard because of his old age. He organized expeditions and sent out rangers, but he also had to face the fact that the men in black knew less and less about what was beyond the wall. Mr. Xiong deserves attention, not because of his title, but because he is willing to walk into the cold outside the wall."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Mormont (Night's Watch Branch) Jeor Mormont gives up his title as Lord of Bear Isle, dons black and becomes Lord Commander of the Night's Watch; he brings the responsibility of a Northern Lord to the depleted Wall. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Mormont (Night's Watch Branch) Jeor Mormont gives up his title as Lord of Bear Isle, dons black and becomes Lord Commander of the Night's Watch; he brings the responsibility of a Northern Lord to the depleted Wall. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Mormont (Night's Watch Branch) Jeor Mormont gives up his title as Lord of Bear Isle, dons black and becomes Lord Commander of the Night's Watch; he brings the responsibility of a Northern Lord to the depleted Wall. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Mormont (Night's Watch Branch) Jeor Mormont gives up his title as Lord of Bear Isle, dons black and becomes Lord Commander of the Night's Watch; he brings the responsibility of a Northern Lord to the depleted Wall. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Jeor Mormont gives up his title as Lord of Bear Isle, dons black and becomes Lord Commander of the Night's Watch; he brings the responsibility of a Northern Lord to the depleted Wall."
+  ]
+}

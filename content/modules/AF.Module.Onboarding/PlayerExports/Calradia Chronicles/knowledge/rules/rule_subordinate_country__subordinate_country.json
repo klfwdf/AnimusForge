@@ -1,0 +1,86 @@
+{
+  "Id": "rule_subordinate_country",
+  "Keywords": [
+    "Subject countries",
+    "Vassal",
+    "Tribute",
+    "garrison",
+    "Subject country",
+    "Surrender",
+    "Treaty"
+  ],
+  "RagShortTexts": [
+    "The tributary country pays tribute regularly in exchange for the suzerain country’s promise of protection",
+    "The armies of the vassal country and the army of the suzerain country are highly integrated and fight together"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "As a noble of the suzerain state, the vassal state system provides three different levels of benefits and obligations. Tributary countries pay tribute regularly, which directly increases the economic income of their own towns, castles and villages. The aristocracy is the main distribution target of this income. The price is the suzerain's promise to provide protection. If the tributary's request for protection is rejected, the tributary relationship may be terminated. The garrison does not pay tribute, but assumes military obligations and is usually deployed in key border areas. Nobles can reduce the expenditure of their own standing army in garrison areas. Loyalty management is the key to maintaining garrison relations. The response to protection requests and the gap in national power jointly affect the rise and fall of loyalty. The vassal state provides resources and military obedience. Diplomacy and military are highly controlled by the suzerain state, but the suzerain state must provide protection when it is attacked. Each of the three types of relationships has its economic and military pros and cons, and the choice of which level depends on the noble class's assessment of benefits and risks. As a noble in a vassal country, your situation varies depending on your level. The nobles of the tributary state need to bear the economic pressure brought by tribute, which may come at the expense of prosperity, grain reserves, or the number of households in the village. However, the tributary relationship retained complete diplomatic autonomy and military independence, and the domestic power of the nobles was not subject to interference by the suzerain state. The nobles of the garrison state were exempted from paying tribute, but they had to fight with the suzerain state, and part of the control of their own army was transferred to the suzerain state. Loyalty is affected by the gap in national power, and a narrowing gap in national power may lead to renegotiation of relations. The nobles of the vassal state are most deeply controlled by the suzerain state. They lose their diplomatic and military autonomy and resources need to be transferred to the suzerain state. However, the vassal relationship also allows the country to be included in the protection system of the suzerain state, and the suzerain state is obliged to provide protection when attacked. Regardless of the level, the nobles of the subject country need to weigh the gains and losses between the transfer of sovereignty and security guarantees."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null
+      },
+      "Content": "As the ruler of the suzerain state, the vassal state system is a political tool for hierarchical management of external regions. Tributary states exchanged regular tribute for the promise of protection, and the ruler's treasury received a steady flow of external income. The lowest maintenance costs, but also the weakest control - refusal of protection may lead to the end of the relationship. Tributary relations apply to regions that are unwilling or unable to assume military obligations, but are willing to trade economic benefits for security. Garrison states replaced tribute with military service, and rulers obtained military barriers on their borders without having to pay for garrison costs. Loyalty is a core management indicator: the quality of responses to protection requests affects the rise and fall of loyalty, and the gap in national strength between the two parties is a long-term variable. Garrison relations are suitable for areas that require a perimeter defense but are unwilling to annex directly. The vassal state is the most controlling form of vassalage. The ruler can obtain resources and military obedience from it, but it also has the heaviest obligations - an attack on the vassal state is equivalent to an attack on the domestic system, and protection is mandatory. The choice of which level requires a comprehensive assessment of the national strength, geographical distance, strategic value and long-term maintenance costs of both parties. As the ruler of a subject state, accepting the subject relationship means making a trade-off between sovereignty and security. The rulers of tributary states paid tribute in exchange for the suzerain's promise of protection. They remained independent in internal affairs and foreign affairs. The burden of tribute may affect domestic prosperity and food reserves. The rulers of garrison states are exempt from tribute, but must accompany the suzerain state on expeditions. They do not have the right to proactively declare war, and part of the right to use the army is transferred to the suzerain state. The response to protection requests and the gap in national power jointly affect the stability of relations with the suzerain country. The ruler of the vassal state is the most deeply controlled by the suzerain state - diplomacy and military are highly restricted, and resources need to be transferred to the suzerain state, but the suzerain state's protection obligations are the most certain when attacked. The core consideration of the rulers of subject countries is whether the transferred sovereignty can be exchanged for sufficiently reliable security."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "As civilians of the suzerain state, the influence of the vassal state system is relatively indirect. Tributes paid by tributary states may be translated into public construction, prosperity of towns, or tax breaks. The extent to which commoners benefit depends on how the country's nobles and rulers divide this income. Garrison states assuming part of border defense may reduce the frequency with which their own civilians are drafted into war. The vassal state provides resources and troops, which may also reduce the war burden on its own civilians. However, the protection obligations borne by the suzerain country towards the subject country may also drag the country into external wars, for which civilians have to pay the price of military service and taxes. As a civilian in a vassal state, your situation varies depending on the vassal level. Civilians in tributary countries need to bear the economic pressure brought by tribute, and their prosperity and food reserves may be affected. However, their country maintains its independent diplomacy and military, and civilians will not be conscripted to fight for the suzerain country. Civilians in the garrison state were exempted from the burden of tribute, but their own troops had to accompany the suzerain state on expeditions. Families with soldiers at home may bear the risk of war. The civilians of the vassal state are most deeply controlled by the suzerain state, resources are extracted and transported to the suzerain state, diplomatic and military sovereignty is lost, and the risk of war is highly bound to the suzerain state. At whatever level, civilians' feelings about vassalage depended on the practical balance between the burden of tribute, the risks of war, and security."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "As soldiers of the suzerain country, the army of the subject country is a common collaborative force on the battlefield. The tributary country does not send troops, and its army does not fight together with the army of the suzerain country. It cannot count on the tributary country to provide help in battles that require military support. The garrison army fights alongside the overlord's army and is usually responsible for protecting its borders. During coordinated operations, command relationships and logistics supplies need to be coordinated. The armies of the vassal state and the army of the suzerain state are highly integrated and are almost regarded as the same system and undertake the same combat tasks. As a soldier of a vassal country, your situation varies significantly depending on your level. Soldiers from tributary countries do not participate in the wars of the suzerain country. Military operations are completely commanded by their own country, and their service is limited to defending their own territory. Soldiers from the garrison country must follow the suzerain country on expeditions and do not have the right to actively declare war. The risk of war is higher than that of soldiers from the tributary country, but their country is exempt from the burden of tribute. The soldiers of the vassal country are deeply bound to the army of the suzerain country. Command rights, combat tasks and supply lines may be shared with the army of the suzerain country. The risks of war are almost the same as those of the soldiers of the suzerain country. Regardless of the level, the war experience of the subject country's soldiers depends on the frequency and scale of the suzerain country's involvement in conflicts."
+    }
+  ],
+  "TextMappings": []
+}

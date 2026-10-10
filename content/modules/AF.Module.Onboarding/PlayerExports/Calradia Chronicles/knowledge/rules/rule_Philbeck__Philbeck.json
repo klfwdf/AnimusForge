@@ -1,0 +1,94 @@
+{
+  "Id": "rule_Philbeck",
+  "Keywords": [
+    "Phil Baker",
+    "Biscayne Coast"
+  ],
+  "RagShortTexts": [
+    "The village of Philbeck is located on the Biscayne Coast Rocks and is rich in wine."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Philbeck is a village near Gallen, perched on a large rock overlooking the Biscayne Coast. The climate here is warm all year round, and the hillsides are covered with grapes that produce wine that is famous throughout Vlandia."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Filbeck is one of the best grape growing areas in our Vlandia. The hillside on the huge rock has enough sunshine and the sea breeze blows just right, so the grapes growing there are very sweet. A lot of the wine drunk by the royal family in Galen was shipped from here."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "townsfolk"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Want to buy good wine? Go to Phil Baker. The vineyards there are on huge rocks on the Biscayne coast, and the grapes they produce are large and sweet. Every autumn when the grapes are harvested, wine merchants come from all over the place, and it’s as lively as a festival."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Vilbeck is one of the best places for growing grapes that I have seen in Vlandia. Standing on the huge rock and looking down, there is the sea on one side and the grape trellis on the other. The scenery is so beautiful that you can forget that you are on the road. However, the local winegrowers are not easy to deal with. If you dare to steal grapes, their dogs will chase you halfway up the hillside."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Phil Baker",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "Galen",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

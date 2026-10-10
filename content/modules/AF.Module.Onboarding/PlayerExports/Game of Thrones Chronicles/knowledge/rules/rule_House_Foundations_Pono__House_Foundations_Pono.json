@@ -1,0 +1,156 @@
+{
+  "Id": "rule_House_Foundations_Pono",
+  "Keywords": [
+    "Pono",
+    "Khal Pono",
+    "Pono Khalasar"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The name Bono identifies a khalasa, not the eldest son's family within the stone walls. The power of the Dothraki moves with the living and the herds of horses: the Khal must show prowess in conflict, find water and grass in migration, and make distributions so that bloodriders, ko and ordinary riders believe that there is still something to be gained by continuing to follow. Braided hair, bells, and trophies record a person's undefeated reputation, but they cannot permanently lock anyone's loyalty. The camps, the number of people, and the destination of Bono's tribe may all change; what remains unchanged is the law of rule on the Sea of ​​Grass - a Khal who cannot protect his followers or fulfill his promises will sooner or later see the rider turn to another campfire."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Dothraki riders will not ask Bono what castle he owns first, but only ask him if he rides fast enough, if he meets the enemy first, and if he remembers who has followed the longest when dividing the meat. Kaa's name cannot be called power, but the sound of horse hooves behind him is."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "ghiscari",
+          "qartheen"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "notable",
+          "slave"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "When people in slave cities and trade routes heard Bono, they thought of a group of people on horseback who needed to hide their animals, prepare gifts, or hire guards in advance. The rich businessman called it diplomacy, but the driver only called it life-saving."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sarnor",
+          "valyrian"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "scholar",
+          "wanderer",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Those who are familiar with the old history of Caohai know that Khalasa will split, merge and change its name like the wind. The significance of Bono is not in a fixed boundary, but in how many people's fears and hopes he can temporarily tie to the same migration path."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Pono The power of the Dothraki khalasar, which is maintained by the prestige of the Khal and the following of riders, comes from the horses, the trophies and the ability to bring people alive across the sea of ​​grass. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Pono The power of the Dothraki khalasar, which is maintained by the prestige of the Khal and the following of riders, comes from the horses, the trophies and the ability to bring people alive across the sea of ​​grass. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Pono The power of the Dothraki khalasar, which is maintained by the prestige of the Khal and the following of riders, comes from the horses, the trophies and the ability to bring people alive across the sea of ​​grass. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Pono The power of the Dothraki khalasar, which is maintained by the prestige of the Khal and the following of riders, comes from the horses, the trophies and the ability to bring people alive across the sea of ​​grass. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Pono: The power of the Dothraki khalasar, which is maintained by the prestige of the Khal and the following of riders, comes from the horses, the trophies and the ability to bring people alive across the sea of ​​grass."
+  ]
+}

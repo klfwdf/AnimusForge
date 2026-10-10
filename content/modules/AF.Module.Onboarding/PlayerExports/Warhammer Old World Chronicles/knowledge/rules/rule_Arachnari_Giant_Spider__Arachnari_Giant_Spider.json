@@ -1,0 +1,208 @@
+{
+  "Id": "rule_Arachnari_Giant_Spider",
+  "Keywords": [
+    "Arachnari Spider",
+    "Ancient giant spider",
+    "mobile fortress",
+    "Arachna Forest Goblin",
+    "spider worship",
+    "war platform",
+    "giant arthropod"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Arachnari is the largest spider creature known in the Old World - each of its eight giant legs is as big as a century-old tree, and its back is even big enough to carry a small fortress. The forest goblin tribe uses this ancient giant spider as a war platform and mobile temple. It builds arrow towers, stone-throwing positions and religious totems on its back to crush all enemies in its way on the battlefield."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Arachnari is the biggest spider we have ever seen! Big enough to call her 'she' because every one is a spider queen! The lunatics of the forest goblins even built an altar on her back, and they sang and danced all day long and kowtowed to the spider as if she were a god - but this trick really worked. If you respect the Spider Queen, she will let you ride her. If you don't respect her, she will devour you and then put your bones on the shell as decoration! I once followed an Arachnari to attack the Dwarf Fortress. The ground shook when the giant spider walked, and the Dwarf's walls shattered like biscuits under her eight legs. The feeling of riding on Arachnari's back and slashing dwarves is a blast - something all greenskins should experience!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Arachnari Giant Spider is the most difficult non-magical creature encountered on the battlefield so far - its size makes it impossible to be surrounded by conventional cavalry or infantry. Its single-legged step is enough to crush an entire column of soldiers, and the war platform on its back provides continuous fire suppression. The only known weaknesses are three: first, the leg joints - the exoskeleton of the spider's legs has obvious gaps at the joints. Accurate ballistae or artillery fire can break the joints and make it lose the ability to move; second, the eyes - the giant spider has eight large eyes, but the protection of the outer four is relatively weak; third, the morale of the forest goblins - if enough goblin riders can be killed, the rest may give up the fight. But only if your army can survive its giant legs long enough to execute these strategies."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "The origin myths of the Arachnari Spider have surprising overlap in the cultural records of the Wood Elves and Goblins - both attribute it to the descendants of the 'Old Mother'. According to the cross-examination of the Wood Elf \"Athel Loren Shrine Inscription\" and the goblin shaman oral tradition, Arachnari's ancestors may be giant arachnid biological specimens that were introduced to this planet from another dimension in the era of the ancient saints to maintain the insect balance in the early jungle ecosystem. After the disappearance of the Old Ones, these giant spiders degenerated most of their external form variability, but retained an extraordinary sense of perception known to goblin shamans as the 'Memories of the Great Mother'. The most systematic academic observation comes from Professor Brak von Stein's \"Morphology of the Arachnids\" in 2320 Imperial Calendar. He secretly tracked an Arachnari for eighteen months and recorded its complete life cycle: it sheds its skin once a year, and its size increases by about 10% after each molt. Its lifespan is estimated to be about 1,500 years. The most horrifying conclusion was that he recorded the mating behavior of giant spiders - two Arachnari engaged in a four-day and night-long fight at the highest peak of the Gray Mountains, and after descending the mountain, the entire forest was flattened over six square miles."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The most profound memory left to me by the Arachnari giant spider is not its terror, but the strange lamentation chanted by the forest goblins on its back. My scouts intercepted a piece of lyrics, to the effect of: 'The Great Mother Goddess walked through the forest step by step, and every step she took was a dead child - we fill her belly with the flesh and blood of our enemies, so that she will not eat our children again. 'When I read these lyrics, I suddenly realized that the forest goblins worshiped the giant spider not because of madness, but because of fear. The absolute fear of a creature ten thousand times larger than themselves tortured them and gave birth to religion out of madness."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "My grandfather was almost crushed by an Arachnari giant spider during a border battle - his horse was broken into pieces when it was brushed by the spider's leg hair, and he himself was dragged out from under the spider's legs by the guards. After that, my grandfather spent all the family's financial resources to develop a weapon specifically designed to deal with giant spiders - a custom-made siege crossbow, which was placed on a rotatable eight-wheeled chariot. The arrows fired were stainless steel cones that were fifteen feet long. But even more ironically, the only actual use of this weapon came ten years after his death - when another Arak'nari invaded the territory, and we fired two giant arrows but failed to penetrate its head and breastplate. The giant spider left and continued towards the dwarf kingdom in the south without even looking at us."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "In an abandoned forest goblin camp at the southern foot of the Gray Mountains, I saw the shed shell of a dead Arachnari giant spider - the shed empty shell alone occupied half of the mountain. One of the eight legs was turned into a temporary bridge for the night, which was enough to accommodate a truck. Some of the teammates said they would try to drag the shell to the market and sell it, but the captain pointed to the eight red eyes that lit up at the tree line in the distance and said: 'The living one is still around here. 'We left the area as quickly as we could early the next morning."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Do you know how expensive the silk of the Arachnari Spider is? A spider thread is five times as tough as a steel cable of the same thickness and weighs only one-tenth of it. But collecting spider silk is almost impossible - first you have to find a living giant spider, then you have to avoid hundreds of forest gnomes on your back, and then you have to find a way to cut a piece of silk without being eaten by the spider. The Imperial Academy of Engineering's reward list offered 50,000 gold crowns for a complete ten-foot-long section of giant spider silk. It has been posted for forty years, and no one has claimed it yet."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "The largest spider known in the old world, with eight legs like a century-old tree",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Arachnari Spider Ancient Spider Mobile Fortress"
+  ]
+}

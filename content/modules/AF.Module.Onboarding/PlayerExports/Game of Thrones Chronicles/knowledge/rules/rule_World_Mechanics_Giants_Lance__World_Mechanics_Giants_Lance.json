@@ -1,0 +1,154 @@
+{
+  "Id": "rule_World_Mechanics_Giants_Lance",
+  "Keywords": [
+    "Giant's Lance",
+    "Stone",
+    "Snow",
+    "Sky"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Giant's Lance towers over the Vale, with the Eyrie built near its summit and the Gates of the Moon guarding the approach at its foot. The steep path to the Eyrie passes in turn through Stone, Snow, and Sky, growing ever less suited to wagons and formed bodies of troops the higher it climbs; the final stretch relies on winch baskets or narrow mountain tracks to haul men and supplies. Height makes the Eyrie nearly impossible to storm, yet imposes severe limits: winter snows, rockfalls, and lack of farmland cut off supplies, forcing the household to descend to the Gates of the Moon in the cold season. The safety of the Giant's Lance comes from distance and hardship, and its price is distance and hardship alike."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vale"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Knights of the Vale take pride in the steepness of the Giant's Lance, yet know that long defense truly rests on the storehouses at the mountain's foot and each of the waycastles. An enemy may not be able to fight its way up, yet hunger needs no scaling ladders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vale"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Mountain folk, muleteers, and masons do not look upon the Eyrie merely as a wonder. They remember how every sack of grain goes up the mountain and how every block of stone was hauled, knowing that the safety of highborn lords is held aloft by countless frost-cracked hands."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Outsiders gazing up at the peak easily believe it can never fall. Those who understand history and supply add a further word: impregnable and habitable are not the same thing."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Giant's Lance One of the highest and most perilous peaks of the Vale, where the Gates of the Moon and three waycastles leading to the Eyrie turn a natural mountain into an almost sealed defensive system. Whether it is valid depends on who can grant the rights, collect the consideration, and actually make the judgment come to fruition in the event of default."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Giant's Lance One of the highest and most perilous peaks of the Vale, where the Gates of the Moon and three waycastles leading to the Eyrie turn a natural mountain into an almost sealed defensive system. The distant system is not empty talk only if it can be implemented in campfires, city gates and inns."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Giant's Lance One of the highest and most perilous peaks of the Vale, where the Gates of the Moon and three waycastles leading to the Eyrie turn a natural mountain into an almost sealed defensive system. If a rule is practiced over and over again, it will find its way into rituals, crafts, and prayers; if it is sustained only by fear, cracks will show at the onset of a crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Giant's Lance One of the highest and most perilous peaks of the Vale, where the Gates of the Moon and three waycastles leading to the Eyrie turn a natural mountain into an almost sealed defensive system. They remember taxes, grain, labor, relief and who can speak for them; these grand names will eventually fall on the family's rice pot."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Giant's Lance: One of the highest and most perilous peaks of the Vale, where the Gates of the Moon and three waycastles leading to the Eyrie turn a natural mountain into an almost sealed defensive system."
+  ]
+}

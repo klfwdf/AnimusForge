@@ -1,0 +1,212 @@
+{
+  "Id": "rule_Striger_family",
+  "Keywords": [
+    "striger family",
+    "Lost bloodline",
+    "beast form",
+    "lurking in the tomb",
+    "degenerate vampire",
+    "ghoul king",
+    "striger",
+    "Tomb King",
+    "feral vampire",
+    "lost dynasty",
+    "scavenger"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Stryger family was once the most glorious royal family in the vampire bloodline, ruling a long-lost undead empire. Now they have degenerated into the ghoul kings lurking in the tombs - twisted in appearance and corrupt in mind, but still retaining fragmented memories of their former royal power and an eternal thirst for revenge."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Stryger family - the most miserable brothers in our blood family! There once existed an undead dynasty called the \"Striger Empire\" south of the Badlands, and its royal city was said to be as magnificent as today's Kurona. But why do we see the Descendants of Streig now as beast-like monsters covered in filthy fur and feasting on dead bodies in graveyards? Because other bloodlines - including us, the von Carsteins - banded together to destroy the Strig dynasty thousands of years ago because their rule was so high-profile that it threatened the hidden existence of all vampires. The survivors fled into the deepest tombs and the most desolate ruins, and degraded from generation to generation in absolute darkness. Their minds are twisted, but the pride of the king deeply rooted in their blood has never disappeared - when you see a Strigor sitting on a throne made of skeletons, wearing a broken crown of rusty iron, that is when he is replaying the last memory he remembered related to the \"King\"."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "House Striger is generally considered a low-priority threat in strategic assessments - they are unorganized, scattered throughout the ruins, and rarely launch large-scale military operations. But the fatal mistake is to ignore them: Strig's ghoul swarms can tear apart a lone patrol in a short time, and their lairs (usually deep in tombs or abandoned cities) are hellish melee battlefields. The cost of clearing out a Strig's Lair is much higher than other types of dungeon raids, as every underground passage could be filled with hordes of teeth and claws the next second."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "The fall of House Strigger is one of the most tragic chapters in the history of vampire politics. The Strig dynasty reached its peak around 1,800 BC, and controlled territory including the Badlands, the Border Princes, and parts of Nehekhara. Its last Strigg King, Usolan, was defeated by a three-party coalition composed of von Carstein, Blood Dragon and Lahmia in the \"Skeleton King's Rebellion\". Usolan's body was cut up and buried in seven different locations to prevent his resurrection. The remaining Strigg descendants were forced to retreat into more secretive corners in the following hundreds of years. Due to the inability to obtain stable access to high-quality blood, long-term inbreeding in the darkness, and constant survival pressure, their descendants have undergone significant degenerative mutations in their bodies—including body hair growth, protruding facial bones, and claw armor mutations—but in terms of sheer strength and endurance, a complete Strigg King is still one of the most powerful single vampires in the old world."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "There's something heartbreaking about the tragedy of the Striger family - they didn't become monsters of their own free will, but they were betrayed and cornered by their own kind, and then lost themselves in the long darkness. This narrative of \"civilization degenerating into beasts in captivity\" gave me a deeper fear of the ultimate cost of the power game."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "During our migration, our tribe accidentally entered an abandoned dwarf mine occupied by Strig. At first we thought it was just ordinary ghouls - but when we fought our way into the deepest part, there sat a giant Strig King, its eyes still shining with some ancient wisdom. It did not attack us, but asked in a surprisingly fluent Imperial language: \"Is the Empire still there?\" We were speechless and exited the mine."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "In Sylvanian folklore, it is said that if you leave three gold crowns and a jug of strong wine in a cemetery, the Striggs will help you \"slay\" your enemies at night - wiping the corpses and other belongings from the ground. I don't know if this actually works, but I know a few farmers who swear by it."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Strigers are the only vampires who don't need currency - they eat and drink no human food or drink, and require nothing but blood and corpses. This means that the trading model with the Strigg is completely different from any living economy: you need to give them something they value in exchange for them not killing you - usually an ancient relic of kingship or a lost artifact of the Strigg dynasty."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "The Striggs were once the royal family of the undead empire, now they have degenerated into the ghoul kings in the tomb.",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "The family background and political status of the Strig family"
+  ]
+}

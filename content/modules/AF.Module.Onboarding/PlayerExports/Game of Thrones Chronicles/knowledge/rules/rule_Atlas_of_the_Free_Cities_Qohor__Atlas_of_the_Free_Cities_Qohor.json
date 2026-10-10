@@ -1,0 +1,151 @@
+{
+  "Id": "rule_Atlas_of_the_Free_Cities_Qohor",
+  "Keywords": [
+    "Qohor"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Entry Qohor is a river city located on the edge of the forest, far away from the Narrow Sea but connected to the world through trade routes. Temples of the Black Goat, ancient rituals, and mysterious priests make it appear bleak in the eyes of other Free Cities; to the people of Qhor, these beliefs are part of the city's identity and shared identity Qohor is famous for its wood, furs, ironwork, and skilled blacksmithing, and legend has it that a few craftsmen know the art of reforging Valyrian steel. The forest provides resources and barriers to the city, and also keeps wild beasts, bandits, and northern tribes never far away."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "qohorik"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Qohor"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "qohorik"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Qohor"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "scholar",
+          "wanderer",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Qohor"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Qohor Qohor is a river city located on the edge of the forest, far away from the Narrow Sea but connected to the world through trade routes. Temples of the Black Goat, ancient rituals, and mysterious priests make it appear bleak in the eyes of other Free Cities; to the people of Qhor, these beliefs are part of the city's identity and shared identity. They care about water sources, roads, customs and garrison, and know that behind the place names there is often a food road that can keep the castle alive."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Qohor Qohor is a river city located on the edge of the forest, far away from the Narrow Sea but connected to the world through trade routes. Temples of the Black Goat, ancient rituals, and mysterious priests make it appear bleak in the eyes of other Free Cities; to the people of Qhor, these beliefs are part of the city's identity and shared identity. The reputation of a place is often determined by the number of people who died there."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Qohor Qohor is a river city located on the edge of the forest, far away from the Narrow Sea but connected to the world through trade routes. Temples of the Black Goat, ancient rituals, and mysterious priests make it appear bleak in the eyes of other Free Cities; to the people of Qhor, these beliefs are part of the city's identity and shared identity. Stones, trees, rivers or mountain passes can become places of livelihood, and may also be endowed with sanctity, taboos and ancestral memories, so they cannot be measured in terms of money alone."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Qohor Qohor is a river city located on the edge of the forest, far away from the Narrow Sea but connected to the world through trade routes. Temples of the Black Goat, ancient rituals, and mysterious priests make it appear bleak in the eyes of other Free Cities; to the people of Qhor, these beliefs are part of the city's identity and shared identity. They first checked whether the place could draw water, farm, graze, and avoid military disasters; a line of words on the map, and when it landed in the village, it turned out to be firewood, well rope, and winter food."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Qohor: Qohor is a river city located on the edge of the forest, far away from the Narrow Sea but connected to the world through trade routes. Temples of the Black Goat, ancient rituals, and mysterious priests make it appear bleak in the eyes of other Free Cities; to the people of Qhor, these beliefs are part of the city's identity and shared identity."
+  ]
+}

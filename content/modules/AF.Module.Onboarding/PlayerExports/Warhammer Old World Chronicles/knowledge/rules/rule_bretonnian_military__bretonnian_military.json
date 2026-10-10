@@ -1,0 +1,212 @@
+{
+  "Id": "rule_bretonnian_military",
+  "Keywords": [
+    "Bretonnian Military",
+    "Bretonnian Army",
+    "Knights",
+    "Grail Knights",
+    "Knights of the Realm",
+    "Questing Knights",
+    "Bretonnian Pegasus Knights",
+    "Peasant Bowmen",
+    "Feudal Levy",
+    "Knightly Charge",
+    "Army of the Lady"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The core of the Bretonnian army is its knights—from Knights of the Realm and Knights Errant to Questing Knights and Grail Knights, this heavy-cavalry-centered host is the most feared shock force in the Old World. Behind the knights, vast levies of Peasant Bowmen and Men-at-Arms form the second line, providing a screen for the decisive charge of the noble chivalry."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The army of Bretonnia is the sword and lance of the Lady of the Lake upon the earth. Our military structure is simple and majestic: the knights are the point of the blade, the peasants are the flat of the blade, and the Pegasus Knights are the blade of the heavens. Knights of the Realm form the backbone of the Bretonnian chivalry—every one of them a noble scion who has completed his squire's training and proven his mettle on the lists; clad in full plate and mounted atop pureblooded Bretonnian destriers, their momentum in the charge can punch through any shieldwall. Questing Knights are those elite warriors who have set aside their lands and titles to wander the realm in search of the Grail, their armor etched with marks of glory won in distant lands. And the Grail Knights—they are the Chosen of the Lady, each having passed the ultimate trial, their bodies purified by the waters of the Grail until they are nearly impervious to mortal weapons, their lances capable of piercing daemon-hide on the charge. Pegasus Knights serve as our rapid-reaction force against aerial threats and flank raids. Behind the knights, peasants armed with longbows and polearms fill out the battleline—yes, they are no knights, yet a Bretonnian longbowman can put a shaft through an Orc's eye-socket at three hundred paces, a feat matched in the Old World only by Imperial handgunners."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The greatest challenge in commanding a Bretonnian army lies in balancing the knights' impulse for glory against the practical demands of the battlefield. Every Bretonnian knight is instilled from the age of eight with a single conviction—that a glorious charge is a soldier's highest achievement, and that stepping back before the enemy is a disgrace worse than death. This produces the most powerful shock cavalry in the world, yet it also means knights may be goaded by enemy taunts at a critical moment into launching an unauthorized charge, disrupting the rhythm of the entire battleline. Experienced Bretonnian generals use hunting horns, pennants, and prearranged signal systems at the outset of battle to ensure the chivalry charges at the proper moment. As the ultimate deterrent on the field, Grail Knights should never be committed prematurely—hold them in reserve until the enemy's elite square exposes a flaw, for a single perfectly timed Grail Knight charge can decide the outcome of an entire campaign. Although peasant infantry cannot match Imperial halberdiers man for man, their longbows possess devastating lethality in defensive actions—a shrewd Bretonnian commander plants wooden stakes across the front of the field in coordination with massed longbow volleys, forcing the enemy to pay a crippling toll in blood before ever reaching the knights' charge line."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 100
+        },
+        "IdentityIds": null
+      },
+      "Content": "The theoretical foundation of the Bretonnian military system is rooted in the dual structure of its feudal levy and autonomous knightly brotherhoods. Every lord is bound to furnish the King with knights and peasant soldiers in proportion to the size of his fief—an institution explicitly codified in the 'Code of Gilles.' Analyzed at the tactical level, Bretonnian military thought revolves around a single core concept: asymmetric shock—deploying a numerically small but ultra-elite force of knights at the decisive juncture to shatter the enemy's will and formation with an irresistible charge. This stands in stark contrast to the balanced combined-arms doctrine of the Empire—whereas the Empire relies on the coordination of infantry, handgunners, and artillery, Bretonnia stakes virtually everything on its cavalry. That this strategy remains viable is due in part to the peerless quality of Bretonnian warhorses—steeds believed to carry a measure of Elven blood, making them swifter, stronger, and more enduring in battle than any other breed in the world. Equally unique are the Royal Pegasi, a species native to Bretonnia that nests near the alpine lakes of the Grey Mountains."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "To a female lord, Bretonnian military might is more than a banner on the battlefield—it is the guarantee that the castle will not fall while the men are away on crusade. During the three years my husband led his knights in the Crusades against Araby, I single-handedly directed the defense of our border keep and discovered a telling truth: when the men ride off with all the elite chivalry, what remains behind is a contingent of second-tier knights and aging warriors passed over for the expedition for various reasons, along with the entirety of the Peasant Bowmen. I found that if this underestimated garrison is properly organized—veteran knights commanding the tower posts, young peasant bowmen rotating watches along the battlements, and manor women boiling oil and hauling supplies—a border castle can beat back months of continuous Greenskin raiding without a single Grail Knight present. The blind spot of Bretonnian military tradition is its excessive worship of the offensive, whereas as a woman who must hold the home front after the men depart, I learned the power of defense—not the glorious charge, but the unglamorous discipline of making sure the castle gates are barred tight every single night."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "On the level of family strategy, military power in Bretonnia is a generational investment—the resources you pour into training knights in this generation will be redeemed as victory in your grandsons' wars. Within our house's military tradition stand two iron laws: first, the knightly training of the family's eldest son is personally overseen by the most senior retired knight of our bloodline, never entrusted to any hired foreign swordmaster, for while martial skill can be bought for coin, a knight's character can only be honed through self-discipline passed down through the blood; second, every manor managed by our house must maintain at least three able-bodied young peasants trained in the rudiments of the longbow, their training expenses paid out of the family's military budget. On paper this practice violates the Bretonnian statutes forbidding peasants to bear arms, yet every Duke turns a blind eye to it, because everyone knows that when a Greenskin Waaagh! marches on your borders, what matters is not whether it is strictly legal, but whether there is someone standing on the walls. Our family host has never been the largest in Bretonnia by headcount, yet our retreat rate is the lowest—because every family knight riding into battle knows that his mother and sisters are standing atop the towers of the keep behind him."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "I fought in two border clashes in Bretonnia as a hired mercenary, and my deepest impression of that army was not the spectacle of the knightly charge—magnificent though it truly is, what actually keeps you alive is what you see if you are still breathing after the knights crash home. Once Bretonnian cavalry punch into an enemy formation, they execute a whirlwind-like multi-directional carving action—the charge is not a single linear collision, but wave after wave of continuous shock, each wave aimed squarely at the gap torn open by the one before it. This tactic demands extraordinary cohesion among the horsemen, forged through years of shared training on the tournament lists—which is also why a Bretonnian lance formation suffers a temporary dip in combat effectiveness whenever it rotates in newly dubbed Knights Errant. And for a sellsword like me fighting for coin, standing in the ranks of Bretonnian Peasant Bowmen felt far safer than standing in a line of Imperial handgunners—not because the longbow hits harder, but because when Bretonnian peasant archers sweep the field after a battle, they never spare a single enemy wounded still twitching on the ground, knowing full well that if they do, that wounded foe might heal up next year and lead more of his kin back to burn down their village."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The logistical supply chain of the Bretonnian military is the most underestimated commercial defense market in the Old World—a single suit of full plate requires at least three master armorers working continuously for months, the specialized shaft of a knight's heavy war-lance comes from a single grove of a specific ash variety in the Gisoreux valley, and the feed formula for a Bretonnian destrier contains special fodder varieties not cultivated on Imperial farms. Our merchant house specializes in military grain provisioning for Bretonnian castles, and an iron rule is written into my ledgers: the oats and bean-cake consumed each day by a single Grail Knight's warhorse equal the combined daily rations of four peasant families, and Bretonnian law forbids peasants from refusing to supply fodder for their lord's warhorses—meaning that whenever military grain runs short, peasant households within five miles of a castle automatically enter famine conditions, and no one ever reports this to higher authority because it is custom rather than crisis. On a ledger, the combat readiness of a Bretonnian army can be precisely converted into the stockpile levels of a few key commodities—whenever the oats stored in a castle's cellars drop below the winter minimum line, the probability of private duels breaking out among the noble knights rises by thirty percent."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Asymmetric Shock—the core tactical doctrine of Bretonnia, winning at the decisive moment with a small force of ultra-elite cavalry",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "The core of the Bretonnian army is its knights—from Knights of the Realm to Questing Knights"
+  ]
+}

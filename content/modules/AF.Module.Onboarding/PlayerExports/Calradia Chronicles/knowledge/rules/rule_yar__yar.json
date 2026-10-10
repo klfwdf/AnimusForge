@@ -1,0 +1,28 @@
+{
+  "Id": "rule_yar",
+  "Keywords": [
+    "Jar"
+  ],
+  "RagShortTexts": [
+    "Nord Chieftain"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Yael is the title of the tribal chief of Nord."
+    }
+  ],
+  "TextMappings": []
+}

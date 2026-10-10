@@ -1,0 +1,64 @@
+{
+  "Id": "rule_Uchalion_Plateau",
+  "Keywords": [
+    "Uchalion Plateau",
+    "Battanian Highlands"
+  ],
+  "RagShortTexts": [
+    "The Uchalion Plateau is the highest plateau on the Calradian continent.",
+    "The Battanians live in a primitive manner on the Uchalion Plateau."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Uchalion Plateau? Isn't that the Battanian Highlands? The Battanians live up there—primitively as can be, still gnawing on raw meat."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "scouting": 120
+        }
+      },
+      "Content": "The Uchalion Plateau is the highest plateau on the Calradian continent and the last stronghold of the Battanian people. Cold, rainy, densely forested, rich in iron ore, and easy to defend yet hard to attack, it is a fine land. At the center of the Uchalion Plateau lies the beautiful and serene Lake Llyn Tywal, which holds many graceful Battanian legends and provides abundant fish for Battania. Agriculture on the Uchalion Plateau is underdeveloped, still in transition from slash-and-burn to settled farming, so its inhabitants are rather wild—there is even a Wolfskins tribe dedicated to eating raw flesh and drinking blood, shunning civilized life."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Uchalion Plateau is our homeland, where our great High King and his subjects live. We love this land deeply; it is our last sanctuary. Should anyone dare invade it, we will make sure they never return! Our Fian Champions are not to be trifled with! May High King Mon bless us!!"
+    }
+  ],
+  "TextMappings": []
+}

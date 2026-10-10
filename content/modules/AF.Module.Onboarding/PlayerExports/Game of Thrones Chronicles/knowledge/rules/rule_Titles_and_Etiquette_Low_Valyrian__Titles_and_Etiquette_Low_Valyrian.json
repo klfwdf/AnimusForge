@@ -1,0 +1,132 @@
+{
+  "Id": "rule_Titles_and_Etiquette_Low_Valyrian",
+  "Keywords": [
+    "Low Valyrian"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Entry Low Valyrian evolved from the spoken language in the Old Empire and has different variations in the Free Cities, Slaver's Bay and the ports. Merchants, slaves, soldiers and mercenaries used it to deal with real life. If scholars only focus on high language, they will not hear what is really happening in the streets"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "ghiscari"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Low Valyrian"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "ghiscari"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Low Valyrian"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Low Valyrian"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Low Valyrian Low Valyrian evolved from the spoken language in the Old Empire and has different variations in the Free Cities, Slaver's Bay and the ports. Merchants, slaves, soldiers and mercenaries used it to deal with real life. If scholars only focus on high language, they will not hear what is really happening in the streets. Whether it is valid depends on who can grant the rights, collect the consideration, and actually make the judgment come to fruition in the event of default."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Low Valyrian Low Valyrian evolved from the spoken language in the Old Empire and has different variations in the Free Cities, Slaver's Bay and the ports. Merchants, slaves, soldiers and mercenaries used it to deal with real life. If scholars only focus on high language, they will not hear what is really happening in the streets. If a rule is practiced over and over again, it will find its way into rituals, crafts, and prayers; if it is sustained only by fear, cracks will show at the onset of a crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Low Valyrian Low Valyrian evolved from the spoken language in the Old Empire and has different variations in the Free Cities, Slaver's Bay and the ports. Merchants, slaves, soldiers and mercenaries used it to deal with real life. If scholars only focus on high language, they will not hear what is really happening in the streets. They remember taxes, grain, labor, relief and who can speak for them; these grand names will eventually fall on the family's rice pot."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Low Valyrian: Low Valyrian evolved from the spoken language in the Old Empire and has different variations in the Free Cities, Slaver's Bay and the ports. Merchants, slaves, soldiers and mercenaries used it to deal with real life. If scholars only focus on high language, they will not hear what is really happening in the streets."
+  ]
+}

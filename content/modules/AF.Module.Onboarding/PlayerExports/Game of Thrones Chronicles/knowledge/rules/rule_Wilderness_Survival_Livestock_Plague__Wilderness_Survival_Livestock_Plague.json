@@ -1,0 +1,147 @@
+{
+  "Id": "rule_Wilderness_Survival_Livestock_Plague",
+  "Keywords": [
+    "Livestock Plague"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Livestock diseases spread rapidly in crowded stalls, long distances, and famine, manifesting as high fever, drooling, lameness, or mass death. Quarantining sick animals, burning filth, and halting trade can slow the spread; concealing an epidemic often destroys an entire territory's source of cattle and meat."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Livestock Plague Livestock diseases spread rapidly in crowded stalls, long distances, and famine, manifesting as high fever, drooling, lameness, or mass death. Quarantining sick animals, burning filth, and halting trade can slow the spread; concealing an epidemic often destroys an entire territory's source of cattle and meat. Wilderness does not mitigate the consequences of being cold, hungry, or lost because of your status."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Livestock Plague Livestock diseases spread rapidly in crowded stalls, long distances, and famine, manifesting as high fever, drooling, lameness, or mass death. Quarantining sick animals, burning filth, and halting trade can slow the spread; concealing an epidemic often destroys an entire territory's source of cattle and meat. Without preparation, weather and terrain can kill more men than enemy troops."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Livestock Plague Livestock diseases spread rapidly in crowded stalls, long distances, and famine, manifesting as high fever, drooling, lameness, or mass death. Quarantining sick animals, burning filth, and halting trade can slow the spread; concealing an epidemic often destroys an entire territory's source of cattle and meat. Reliable experience must be able to be verified repeatedly, not just rely on tall tales in the pub."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Livestock Plague Livestock diseases spread rapidly in crowded stalls, long distances, and famine, manifesting as high fever, drooling, lameness, or mass death. Quarantining sick animals, burning filth, and halting trade can slow the spread; concealing an epidemic often destroys an entire territory's source of cattle and meat. If a disaster cuts off transportation, the consequences will be felt in distant cities."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Livestock Plague Livestock diseases spread rapidly in crowded stalls, long distances, and famine, manifesting as high fever, drooling, lameness, or mass death. Quarantining sick animals, burning filth, and halting trade can slow the spread; concealing an epidemic often destroys an entire territory's source of cattle and meat. The most expensive equipment in the wilderness cannot replace the correct timing of stopping."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Livestock Plague Livestock diseases spread rapidly in crowded stalls, long distances, and famine, manifesting as high fever, drooling, lameness, or mass death. Quarantining sick animals, burning filth, and halting trade can slow the spread; concealing an epidemic often destroys an entire territory's source of cattle and meat. Someone explains why the disaster happened, and someone is responsible for letting the victims survive the night."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Livestock Plague Livestock diseases spread rapidly in crowded stalls, long distances, and famine, manifesting as high fever, drooling, lameness, or mass death. Quarantining sick animals, burning filth, and halting trade can slow the spread; concealing an epidemic often destroys an entire territory's source of cattle and meat. They looked at how much grain was left in the fields, whether the livestock could survive the winter, and whether the lord was willing to assume responsibility for its protection."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Livestock Plague: Livestock diseases spread rapidly in crowded stalls, long distances, and famine, manifesting as high fever, drooling, lameness, or mass death. Quarantining sick animals, burning filth, and halting trade can slow the spread; concealing an epidemic often destroys an entire territory's source of cattle and meat."
+  ]
+}

@@ -1,0 +1,149 @@
+{
+  "Id": "rule_Statecraft_and_Diplomacy_Hunting_Diplomacy",
+  "Keywords": [
+    "Hunting Diplomacy",
+    "Diplomacy"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Shared hunting provided a less formal setting for nobles to talk. Horseback, woods, and risks could bring people closer and reveal their temperaments. Some people make allies at hunting feasts, others find them unreliable; the whereabouts of a deer are sometimes more meaningful than the wine glasses in the hall."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Hunting Diplomacy"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Hunting Diplomacy"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "wanderer",
+          "priest",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Hunting Diplomacy"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Hunting Diplomacy Shared hunting provided a less formal setting for nobles to talk. Horseback, woods, and risks could bring people closer and reveal their temperaments. Some people make allies at hunting feasts, others find them unreliable; the whereabouts of a deer are sometimes more meaningful than the wine glasses in the hall. Whether it is valid depends on who can grant the rights, collect the consideration, and actually make the judgment come to fruition in the event of default."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Hunting Diplomacy Shared hunting provided a less formal setting for nobles to talk. Horseback, woods, and risks could bring people closer and reveal their temperaments. Some people make allies at hunting feasts, others find them unreliable; the whereabouts of a deer are sometimes more meaningful than the wine glasses in the hall. The distant system is not empty talk only if it can be implemented in campfires, city gates and inns."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Hunting Diplomacy Shared hunting provided a less formal setting for nobles to talk. Horseback, woods, and risks could bring people closer and reveal their temperaments. Some people make allies at hunting feasts, others find them unreliable; the whereabouts of a deer are sometimes more meaningful than the wine glasses in the hall. If a rule is practiced over and over again, it will find its way into rituals, crafts, and prayers; if it is sustained only by fear, cracks will show at the onset of a crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Hunting Diplomacy Shared hunting provided a less formal setting for nobles to talk. Horseback, woods, and risks could bring people closer and reveal their temperaments. Some people make allies at hunting feasts, others find them unreliable; the whereabouts of a deer are sometimes more meaningful than the wine glasses in the hall. They remember taxes, grain, labor, relief and who can speak for them; these grand names will eventually fall on the family's rice pot."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Hunting Diplomacy: Shared hunting provided a less formal setting for nobles to talk. Horseback, woods, and risks could bring people closer and reveal their temperaments. Some people make allies at hunting feasts, others find them unreliable; the whereabouts of a deer are sometimes more meaningful than the wine glasses in the hall."
+  ]
+}

@@ -1,0 +1,205 @@
+{
+  "Id": "rule_broken_neck_tribe",
+  "Keywords": [
+    "Broken Neck Tribe_NS",
+    "Mogrum_NS",
+    "Neckbreaker_NS",
+    "NeckSnappers_NS"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Neckbreakers are famous among the tribes of the Badlands for their extremely brutal close-quarters killing techniques - their signature killing method is to use both palms to choke the enemy's neck and jaw at the same time and tear them apart in the opposite direction. The leader, Morgrum Neckbreaker, was so named after he broke the neck of his predecessor in a tribal duel with his bare hands while the former chieftain was still wearing full dwarven mail. Instead of using large ranged weapons on the battlefield, Brokennecks prefer to wreak havoc with their hatchets in melee and then deliver the finishing blow with their bare hands - an approach considered the ultimate personal honor in Greenskin culture."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "We broke our necks! The ax is nothing, the knife is nothing - they are all for the ignorant boy! We started directly, grabbed the base of the neck and twisted it. A click was better than a hundred cuts! Boss Mogrum said that you should take the shortest way to kill the enemy - the hand is shorter than the knife, and the heart is shorter than the hand! When chaos broke out on the battlefield, we crouched and crawled over. Seizing the opportunity, we grabbed the edge of the human boy's helmet and pulled it down. Click - next! You need to practice this job until you can crush a stone with your fingers before you get started. The first thing in our tribe every morning is to strangle each other's necks - not to kill us, but to practice our strength!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Broken Neck is tactically positioned on the battlefield as a high-value target hunter in chaotic conditions. They sneaked into the melee area after the ordinary orc infantry disrupted the front line with frontal attacks, and specifically targeted targets with obvious command signals - flag officers, trumpeters, sergeants - and paralyzed the chain of command with rapid close-quarters kills. The key to fighting the Broken Neck Hordes is formation discipline: keeping the infantry lines tightly packed so they don't have enough gaps to sneak in, and pre-positioning reserve platoons specifically to clear out any lock-killers that have infiltrated. However, in the event that melee is unavoidable, all command positions must be equipped with personal shield guards - two shield-bearing soldiers equipped with short swords and tower shields can stop most lock-down attempts."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "The twisting technique of the neck-breaking tribe is a typical efficient biomechanical strike in combat human mechanics research - they do not rely on the arm strength itself, but use the whole body's center of gravity shift and the contact surface squeezing with the opponent to generate fatal cervical torsion torque. The Imperial Military Medical Archives have specifically classified the types of neck trauma caused by neck-breaking tribes: the most common type of injury is rotational dislocation of the fourth to sixth cervical vertebrae combined with spinal cord transection. This type of injury usually only occurs on the imperial battlefield in impact injuries caused by heavy cavalry charging head-on with lances during high-speed charges, while neck-breaking tribes can cause the same damage with their hands at a stationary close distance - this shows that their techniques contain a mechanical principle that is not yet understood in the current imperial military training system. What is even more noteworthy is that the bone density of the hands of the neck-breaking orcs and the degree of skin keratinization in the tiger's mouth are significantly higher than that of the ordinary orcs - this is the morphological change accumulated in the bones and soft tissues from years of chokehold training."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Brokennecks are the most personally fearful of all the Greenskin adversaries to me - not because they take the greatest number of casualties, but because the death they inflict seems so quiet. On the battlefield, artillery fire and charges make sounds, and you have time to react to the sounds. The goal of the Brokenneck Orcs is to sneak past your defenses, enter your command area and finish the job with two hands before any alarm is raised. The only effective countermeasure that the infantry officers in my territory have developed over the past five years is a two-person back-to-back command system: each flag officer has a shield adjutant with his back, and the two are in constant visual contact, with the flag officer looking in front of him and the shield adjutant looking behind him. This system increases staffing costs, but it allowed me to lose only one Flag Officer in last fall's Neckbreaker raid instead of four."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Morgrum of the Brokenneck Tribe was the only greenskin leader in my grandfather's time who was listed as a 'non-negotiable target' by our family. My family has a practical principle when dealing with greenskin tribes: if the opposing leader can be bribed, deceived, or at least predictable, it is safer to keep him alive than to replace him with a completely unknown new leader - because a familiar threat is a programmable threat. Morgrum was the only Greenskin leader my grandfather recorded in the past fifty years who refused all avenues of bribery, ignored all false messengers, and survived at least three possible inter-horde fights without a scratch. His incorruptibility means in my family's strategic logic: there are no diplomatic options against the Brokenneck tribe, only military options. Records of the use of the military option over the past thirty years show that a frontal attack on the Blackneck tribe's cave camps resulted in an average of four times more losses to the Empire's regular troops than a defensive defense of the Blackneck tribe."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "In a deserted outpost on the northern border of the Badlands, an old mercenary taught me how to identify a Brokenneck Orc - not by the face, not by the equipment, but by the hands. He said that the fingers of the Brokenneck Orc were one knuckle longer than those of ordinary Orcs, and the distance between the thumb and index finger was unusually wide, as if the entire palm was designed for a ring grip. He showed me his own neck - there were five old parallel scars on the left side, which he said were made when he struggled away from the fingers of a neckbreaker orc. The scar had faded and turned white, but his hand was still shaking when he touched it. 'He was coming up from behind me, and what I heard wasn't footsteps - it was the cracking of knuckles tightening in the air' - and he said this was the only time he ever hallucinated on the battlefield, and in every battle after that he could distinguish that knuckle sound over the real noise."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The tactical deterrent effect of Broken Neck Tribe manifests itself as a dismal price signal in the Badlands border trade insurance market. Underwriters covering trade in the Northern Badlands will list a 'neckbreaker risk surcharge' separately in their quotes - this surcharge is not based on the actual frequency of neckbreaker attacks (as their frequency of raids is actually lower than other greenskin tribes), but on the fatality rate of neckbreaker attacks. The probability of being killed in a Breakneck Tribe attack is much higher than the probability of being attacked by other greenskin tribes - other greenskins will keep prisoners for blackmail or enslavement, while the Breakneck Tribe leaves almost no survivors alive. This high fatality rate meant that the total insurance payout for each neck-breaking raid was usually a one-time full payout, while tribal raids that took captives allowed for installment payouts and ransom recovery. In the insurance company's actuarial mortality tables, the neck-breaking population is a single, spike-like anomaly data point."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "The Broken Neck Tribe - an orc warband in the Badlands known for their unarmed fighting skills.",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Neckbreaker Orc Morgrum the Neckbreaker twists and kills"
+  ]
+}

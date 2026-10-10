@@ -1,0 +1,131 @@
+{
+  "Id": "rule_House_Foundations_Hornwood",
+  "Keywords": [
+    "House Hornwood",
+    "Hornwood Forest",
+    "Bull Moose"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "House Hornwood is a northern vassal sworn to House Stark, rooted in Hornwood and its surrounding forests, valleys, and farmlands, with a brown bull moose on an orange field as its sigil. With its lands wedged between stronger neighbors such as Manderly and Bolton, the family's importance comes not from grand royal legends, but from land, succession, and its position along the roads. Northern nobles know that once succession grows uncertain in what seems an ordinary middling house, marriage pacts, wardships, and neighboring ambitions will immediately turn a private matter into regional politics."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "When the lords of the North look upon the Hornwood lands, what they see first is often not the bull moose sigil, but its position wedged between several powerful neighbors. Forests, stream valleys, and farmlands are enough to sustain a respectable house, and also enough to invite scheming over marriages, wardships, and inheritance. Whether House Hornwood can keep its own name often depends on whether kinship ties prove stronger than its neighbors' appetites."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The farmers of the Hornwood lands know the trouble of moose trampling fences, and they know that when great folk argue over succession, smallfolk worry first about who will collect next season's rent. To them, whether the sigil changes masters matters far less than who holds timber rights, the mill, and the winter grain; yet so long as the Hornwood banner flies, old custom still has a name that can be spoken clearly."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Hornwood Entry Hornwood Clan Bull Moose Its meaning centers on the balance between land, inheritance and powerful neighbors. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Hornwood Entry Hornwood Clan Bull Moose Its meaning centers on the balance between land, inheritance and powerful neighbors. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Hornwood Entry Hornwood Clan Bull Moose Its meaning centers on the balance between land, inheritance and powerful neighbors. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Hornwood Entry Hornwood Clan Bull Moose Its meaning centers on the balance between land, inheritance and powerful neighbors. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "House Hornwood: Entry Hornwood Clan Bull Moose Its significance centers on land, succession, and the balance among powerful neighbors;"
+  ]
+}

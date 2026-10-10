@@ -1,0 +1,210 @@
+{
+  "Id": "rule_Ascend_the_Demon",
+  "Keywords": [
+    "Ascending Demon",
+    "Demon Prince",
+    "Blessing from the evil god",
+    "mutated gift",
+    "Chaos Egg",
+    "Mark of choice",
+    "Chaos Grace",
+    "four stages",
+    "Immortal Transformation"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Demonic ascension is the ultimate destiny for followers of Chaos - when a mortal has accumulated enough grace and glory in the eyes of the evil god, he can be transformed into a Daemon Prince, abandoning his mortal body and gaining eternal immaterial form and supernatural power. But this road is a sharp edge on both sides: every gift from the evil god will bring about physical mutations, from horny skin to the ability to breathe fire, to irreversible mental transformation. In the end, you may gain eternal power, but you may also become a chaotic egg that has lost its mind."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "chaos_culture"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Ascension to the devil is the ultimate dream of every northern warrior. When you have cut off enough skulls in countless battles, when your name is sung in the longhouses in the wasteland, when your body has been covered with layers of gifts from the gods - then, the evil god will look directly at you. The Demon Prince does not lose his humanity, but transcends it - who wants to be just a mortal? Who wants to grow old, become weak, and eventually die like a dog? I would rather burn up in the demonic fire than linger in a hospital bed. Those losers who become Chaos Spawns do not deserve our sympathy - they are simply not strong enough, not determined enough, and do not deserve the full glory of the gods."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "From a military and strategic perspective, magic upgrades and mutation gifts are the core mechanisms for expanding the combat effectiveness of the Chaos army. A mortal Chaos Champion is already dangerous, but an ascended Daemon Prince possesses extraordinary durability, magical abilities, and an aura of fear that demoralizes mortal troops. For defenders, it is important to understand the speed of this process: a successful Chaos Champion may quickly accumulate enough Divine Favor to trigger Ascension during a successful mass invasion. This makes the \"delay tactic\" particularly detrimental to Chaos - every Chaos champion you let go may return in the next invasion even more terrifying."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 100
+        },
+        "IdentityIds": null
+      },
+      "Content": "The path to demonic ascension follows a complex theological logic. The first stage is the accumulation of divine favor: mortals accumulate Chaos Favor points through fighting, making sacrifices, completing tasks assigned by evil gods, or by pleasing specific evil gods. The second stage is the gift of mutation: when the divine grace reaches a certain threshold, the evil god begins to give \"gifts\" - these mutations may be beneficial (increased strength, acquisition of natural weapons, acquisition of magical abilities) or disadvantage (mental confusion, weird appearance, inability to lead others). The third stage is the mark of divine choice: a certain evil god gives the believer an exclusive mark, making him the spokesperson of the evil god in the world. The fourth stage is ascension: in extreme cases—usually after a great conquest or sacrifice—the evil god directly elevates the soul of a believer into a demon prince, granting it an immaterial form and a demonic realm. But there is a dark danger zone in this process: if the believer accumulates too many mutations without receiving the protection of the Evil God's Mark, he may collapse into a Chaos Spawn - a mutated mass of flesh that has lost all intelligence and self-awareness. This is the evil god's punishment for the greedy and an eternal warning to all those who seek power."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The unique challenge faced by women on the path to demonic ascension lies in the nature of the tension between body and soul—the evil god's gift will always distort the recipient's outer form to reflect the ultimate in his or her inner pursuit. For a female champion seeking strength, Khorne's gift will swell her muscles to a degree beyond that of any human male, turn her skin to a hard bronze color, and turn her voice into the roar of metal. She will gain fighting power that no one can challenge, but at the cost of erasing all the characteristics of her original external identity. I have seen a former Norscan shieldmaiden ascend to become the Daemon Prince of Khorne - her form transformed into a tall tower of brass dripping blood forever, and every time she uttered a war cry, the skulls of dozens of champions she had slain with her own hands resonated and wailed on the tower walls. Is she still 'she'? The gods never cared."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "As the leader of the clan, my attitude towards demonic advancement is one of pragmatic fear rather than blind desire. Every young man from the clan who goes north into the depths of the wasteland in pursuit of demon promotion knows that the probability of not coming back is far greater than the probability of coming back. There have been two daemon princes in the history of my clan, one belonging to Khorne and the other to Xinrej. Clan tradition requires that before each young champion sets out to pursue demonic ascension, the clan's oldest shaman draws a 'line of regression' on his forehead with ashes - this is not a spell, but a contract: if he succeeds in becoming a demon, he must answer the clan's call at least once as the Demon Prince. Neither of the two successful ancestors broke this contract. But those who become Chaos Eggs - they no longer have names, they no longer have stories, and all the marks about them will be chiseled away from the rafters of the clan's longhouse."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "At one point during my journey through the edges of the Chaos Wastes we encountered a Chaos Spawn. It was once a human - we could only identify the race from the remaining half of its face - and its current form is a large rolling ball of flesh, its surface covered with dozens of mouths, each mouth muttering something different incoherently. The most frightening thing is that among the chaotic nonsense, a complete sentence will occasionally drift out, a sentence spoken by a once human being in a fully awake state, and then swallowed up by meaningless screams. Without hesitation our guide, an old Norsca hunter, doused it with a can of whale oil and set it on fire. 'It's mercy,' he said, 'it's the only thing you can give them. 'The sound made by the flesh ball in the flames sounded like something was being liberated, but also like something falling in the endless abyss."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "From an actuary's point of view - I know this sounds ridiculous - the magic upgrade is a risk event with 'unlimited returns but unquantifiable probability'. Some underground organizations in the empire (I dare not say which ones) secretly provide an illegal 'champion insurance' for those mercenary groups fighting against the forces of Chaos: if a Chaos Champion marked as 'high risk' is killed on the battlefield, the insurance company will pay high compensation to the killer. However, if the champion succeeds in becoming a demon on the battlefield, the underwriter will not only not pay compensation, but will also use the deposit to hire a killer to assassinate the demon prince who has just become a demon - because the existence of the demon prince is an infinite variable that cannot be absorbed by the risk management model. This ridiculous business is illegal, of course - but it exists in the shadow of Marienburg and is extremely profitable."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Daemon Prince - a mortal who ascends to the form of an immortal demon, the ultimate goal of the followers of Chaos.",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Ascension Demon Prince Evil God Blessing"
+  ]
+}

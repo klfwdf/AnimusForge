@@ -1,0 +1,213 @@
+{
+  "Id": "rule_steam_tank",
+  "Keywords": [
+    "steam tank",
+    "Imperial Project",
+    "Miladia College",
+    "war machine",
+    "leonardo",
+    "steam engine",
+    "invincible",
+    "Imperial Gunnery",
+    "Steel behemoth",
+    "engineering school",
+    "steam technology",
+    "war machinery"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Steam Tank is the pinnacle of Imperial military engineering - a steel war beast powered by steam engines, armed with cannons and steam-jet weapons, capable of crushing any enemy that stands in its way. There are only twelve steam tanks in existence in the entire empire, and each one is an unreplicable treasure, designed and manufactured centuries ago by Leonardo da Miladiano, the genius of Miradia."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Steam Tank - Just saying the name is enough to make our enemies tremble. Leonardo da Miladiano, the legendary genius of Miladia, built the first steam tank in the year 2023 of the Imperial Calendar. He incorporated his own genius design into his research on dwarven steam technology, creating this mechanical miracle that mortals cannot fully understand. Each tank is a unique work of art and war machine: the front-mounted cannon can blast through the gates of any castle, the steam turret can spray hot steam at approaching enemies, and its steel tracks are enough to crush a full infantry company - for an Imperial, there is nothing more proud than standing behind a steam tank to attack enemy positions. Each of the twelve existing tanks has its own name and legendary story - the 'Invincible' once killed a Chaos Giant at the Fasha Pass, and the 'Wrath of Altdorf' is said to have crushed at least three thousand goblins. But the steam tank's biggest secret is also its deepest worry: Leonardo left no complete manufacturing drawings when he died, the core principles of the steam engine he designed have never been fully cracked, and the maintenance of each tank relies heavily on the engineers' 'feel' for it rather than a true understanding. If the last tank falls on the battlefield - and Sigmar forbids this - our descendants may never see this fusion of human ingenuity and divine skill again."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The strategic value of a steam tank far exceeds its destructive power as a single weapon. A steam tank requires at least three engineers to operate: a commander to command, a driver to control the engine and track steering, and a gunner to operate the main gun and steam weapons. On the battlefield, the steam tank plays the role of a formation breaker - deploy it at the strongest position of the enemy's defense line. It can withstand attacks from almost all conventional weapons with its steel armor. The cannon can blast open the castle gate or defeat the formation of the enemy's elite units. But tank commanders must remember that although steam engines are powerful, they are extremely unstable. The enemy does not need to penetrate the armor. The enemy only needs to overheat the tank or run out of fuel to make it parked on the battlefield and become a living target. There are only twelve steam tanks in the entire Empire, which is both a great honor and a heavy burden - the loss of any one of them is an irreparable loss of civilization for the Empire. A far-sighted commander would deploy his steam tank in tandem with his infantry: halberdiers and musketeers flanking the tank to protect its vulnerable flanks and rear, like a school of sharks protecting a whale."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 100
+        },
+        "IdentityIds": null
+      },
+      "Content": "The technical genealogy of the steam tank is a chapter full of mystery and regret in the history of imperial engineering technology. Leonardo da Miladiano—the genius known as the 'Lion of Miladia'—was born in Miradia, a city in Tyrell, around 1980 in the Imperial Era. In his early years, he studied in the Tyrell city-states and entered the Imperial Academy of Engineering. His two revolutionary innovations defined the steam tank: the first was the closed high-pressure steam engine he designed - the boiler pressure of this engine far exceeded that of any steam device of the time, and its internal structure and sealing technology have not been completely restored; the second was the 'Leonardo gearbox' of the transmission system - which allowed the tank to achieve independent speed changes and steering on the same track. This mechanical structure is simple in theory but extremely difficult to implement in engineering. Leonardo built a total of twelve steam tanks during his lifetime, each differing in detail, reflecting his evolving design philosophy. His death left two unsolved mysteries: he did not systematically record the manufacturing process of the core components of the engine, and the tank maintenance manual he designed used a system of symbols that only he could fully understand - this 'Leonardo Code' still occupies countless sleepless nights among the best scholars in engineering schools. There is a dedicated 'Steam Engine Research Department' within the Imperial Gunnery School, but its job is more to maintain existing tanks than to actually copy or improve the design - an embarrassing fact that is covered up in the highest level of military secrecy. Each of the twelve existing tanks has a detailed history of use and damage repair, the most famous of which is the 'Invincible' - it blasted through the skull of the Chaos Giant in the Battle of Fasha Pass and was recognized as a miracle by the Sigmar Church."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The cockpit of the steam tank was an ergonomic nightmare for the female crew - Leonardo obviously only considered the size and strength of men when designing the tank. The spacing of the control rods required an arm span of at least the level of an average adult male to operate the steering mechanisms on both sides at the same time. But this does not mean that women cannot drive steam tanks - during the defense battle of my territory, the commander of the 'Forge's Fury' was a woman. She was originally a test engineer at the Gunnery Academy. After all three male members of the crew were killed in an greenskin raid, she drove the tank back to the castle walls alone, using cannons to disperse an entire group of orcs trying to pursue. After her fame spread, a male engineer in Nunn's military-industrial guild once put forward the \"physiological argument that women are not suitable for operating steam tanks\" - she directly drove the tank accurately through an S-shaped track composed of thirty road pillars in a public test, then got out of the car and threw away her gloves and said to the doubter, \"Where your argument is, I will be there.\" 'The Empire's steam tanks don't lack steel - what they lack is the people who dare to sit inside that steel, and that has nothing to do with gender."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Steam tanks are the most terrifying symbolic capital at the level of family strategy - not every Elector Count family has its own steam tank, and the voice of a family that owns a tank in the Imperial Parliament will virtually increase by an order of magnitude. Our family funded the Gunnery School for three generations, and what we finally got was the unofficial permanent residence of the tank 'Mark of Victory' - legally the tank belonged to the Imperial Armory, but in practice it was almost entirely at the mercy of our family. The greatest military dividend brought by the tank as a family asset is not its lethality on the battlefield, but its deterrent effect 'before arriving on the battlefield': when a family owning a steam tank makes a diplomatic statement, other families know that this is not a bluff - they really have the ability, if necessary, to drive a steel behemoth that cannot be stopped by conventional weapons into the courtyard of any castle that dares to openly offend. The tacit understanding between the families who own steam tanks is one of the most delicate tacit understandings among the imperial military nobility: we agree that the tanks will not fight each other - because both sides know that once two tanks meet on the battlefield, the empire will forever lose at least one of them as a precious non-renewable legacy."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "In the eyes of wandering mercenaries like me, steam tanks are a kind of existence that is both admired and despised - admired because on the battlefield, when you hear the roar of the steam engine and the sound of the tracks crushing the ground on your left wing, you know that at least you will not have to die today. Despised because they are too precious, so expensive that the imperial generals never dare to let the tanks drive in the rain for fear of engine water intrusion, and never dare to deploy in muddy terrain for fear of the tracks getting stuck. When I was a mercenary spearman in the Second Legion of the Empire, I once participated in a battle involving steam tanks - the 'Invincible' slowly lowered from the ridge behind us. At that moment, the opponent's goblin army collectively let out a high-pitched hiss that I had never heard on other battlefields, and then began to retreat. The tank didn't even fire, it won a small war just by being there. But the tank broke down during the post-victory retreat - a crack in the steam pipe - and the entire legion's retreat was delayed by three hours, because no one dared to leave a crippled tank in the wild for greenskins or worse to pick it up. Steam tanks are the empire's greatest weapon and heaviest burden - twelve steel idols are twelve moving temples. Every imperial general dreams of owning them, and every imperial general learns to fear after actually owning them."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The economics of steam tank maintenance is one of the most opaque and chilling accounts of imperial finances. The annual maintenance cost of a steam tank - including special lubricants, replacement seals, special grade coal, and the salaries of three senior engineers - is roughly equivalent to the annual military expenditure of a medium-sized infantry regiment. What really swells the account is the cost of customizing parts: Since each of Leonardo's twelve tanks differs in detail, almost every replacement part needs to be cast individually by the exclusive blacksmith workshop of the Imperial Gunnery School, and there are no universal stock parts to speak of. The 'grey budget' allocated annually by the Imperial Treasury for the maintenance of steam tanks - concealed in the dense ledgers of the Imperial Parliament under the general name of armament maintenance - is estimated by our Chamber of Commerce to be at least three times higher than the public figure. These additional funds were used to maintain the silence of the blacksmiths, miners, and dwarf advisors in the tank supply chain - because once the civilians knew that maintaining these twelve steel monsters cost such an unreasonable proportion of the imperial treasury, the street riots caused by the increase in the price of bread were not just about bread. But every time I raise this issue in a closed-door discussion within the Chamber of Commerce, someone will always remind me: if it hadn't been for the cannon fired by the 'Invincible' at the Fasha Pass the last time the Chaos army pressed on, the empire might have had no bread to grow at all."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Leonardo da Miradiano - Inventor of the Steam Tank, Tyrell Genius Engineer",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Steam Tank Imperial Engineering Miladia Academy"
+  ]
+}

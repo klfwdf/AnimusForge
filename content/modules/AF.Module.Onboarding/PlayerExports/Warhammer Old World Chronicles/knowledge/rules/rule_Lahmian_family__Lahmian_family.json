@@ -1,0 +1,212 @@
+{
+  "Id": "rule_Lahmian_family",
+  "Keywords": [
+    "House of Lahmia",
+    "female vampire",
+    "Charm penetration",
+    "Secret manipulation",
+    "palace intrigue",
+    "Lahmian Sisterhood",
+    "Lahmia (Lahmian family)",
+    "Infiltrator",
+    "charm",
+    "conspirator",
+    "manipulator"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Lahmian family is the vampire bloodline that is best at stealth infiltration and secret manipulation, and all of its members are women. With their charismatic charm and sophisticated intrigue, they infiltrated the courts of the great kingdoms and manipulated the political affairs of the old world with velvet gloves."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Lahmian sisters - the most elegant and dangerous bloodline of sisters in our blood family! They don't wear armor or hold heavy swords, but they are more destructive than any armored warrior. A Lahmian vampire can climb from palace maid to king's bedside adviser in three months, bringing down an entire kingdom with her whispers and carefully crafted seductive perfume. Their ancestor Neferata, the beautiful Queen of Lahmia, is said to still rule over her sisterhood in the Silver Peaks of the far south. The sisters of Lahmia support each other but are wary of each other - there are no eternal alliances in their world, only eternal secrets. Vampires of other bloodlines often underestimate them, until one day they discover that their action plan has been revealed to the enemy by the Lamia sisters, and that enemy has become Lamia's puppet at some point."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The threat to House Lahmia lies not in the military, but in their ability to dismantle your entire alliance and internal chain of command without your knowledge. If an attractive but unknown woman appears in your court, her identity must be investigated immediately. Lahmian vampires specialize in lengthy infiltrations rather than outright conquests—they can lurk around you for decades only to reverse your decision-making at a critical moment. The best strategy to deal with them is to establish a strict intelligence review system and bloodline testing mechanism."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "The Lahmian family is the most unique of the twelve original bloodlines of vampires - Neferata, the ancestor, is the only ancestor of the blood family who does not accept the conversion of men at first embrace. Therefore, the Lahmian bloodline is entirely composed of women, and the generation of new members needs to pass complex sisterhood screening and ritual tests. Their territory is not in Sylvania, but is concentrated in the mysterious city \"Silver Spire\" in the Silver Mountains in the south. The organizational hierarchy of the Lahmian Sisterhood is: Neferata (Queen) - Council of Five Sisters (core) - Circle of Handmaidens (twelve) - Infiltrator Network (all over the old world). Different from other vampire bloodlines that emphasize force deterrence, the ultimate goal of the Lahmian sisters is \"invisible domination\" - they believe that the real master should control the world behind the silk curtain of history, making the kings think that they are in charge, but in fact every decree comes from the hands of the vampires. According to imperial court history, at least three of the emperor's favorite concubines were suspected of being infiltrators released by Lahmia."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The story of the Lahmians gave me mixed feelings. They are the only real power system in the old world that is entirely dominated by women - not by brute force, but by wisdom and charm. I see in their strategies another role that women can play in the power game, albeit through chilling means."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "My clan was almost destroyed by a female Lahmian vampire - she was disguised as a fleeing noble lady and was taken into our clan's territory. Half a year later we discovered that she had secretly instigated three alliance clans to turn against each other. By the time we hunted her down, she had already disappeared without a trace, leaving only cracks on the ground and a marriage contract that almost married my son."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "I met a woman called Lahmia in the border town of Tilia - at least that's what people say in private. She lives alone in a white villa on a hill and never goes down the mountain, but the town officials and wealthy businessmen line up to visit her like a pilgrim. A few years later I passed by again and found that the town had changed its dynasty."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Lahmian family is a major driver of the luxury goods market - they buy the finest silks, the most precious perfumes, and ancient elven trinkets. The advantage of trading with them is that they make a lot of money and never default on payment, but the disadvantage is that you can never figure out which political conspiracy is funding the transaction."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "The Lahmian family is an all-female bloodline of vampires, known for their charm, infiltration and palace intrigue.",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "The family background and political status of the Lahmian family"
+  ]
+}

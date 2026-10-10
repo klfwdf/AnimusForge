@@ -1,0 +1,93 @@
+{
+  "Id": "rule_Omanfad",
+  "Keywords": [
+    "Omanfad"
+  ],
+  "RagShortTexts": [
+    "Omanfad Village is located near Omanfad Fort, next to the pass at the foot of Omantle Mountain"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Omanfard is a village near the fort of Omanfard, situated at the foot of Mount Omantle, the pass leading to the lands of Battania. There is abundant rain here, and wheat and barley grow well on the slopes. But the villagers were ever alert to the sound of trumpets from the castle guarding the pass, signaling the arrival of Battania raiders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Omanfard is the border gateway to Vlandia. Just past the pass of Omantel Mountain is the territory of the Battania people. Wheat fields are spread at the foot of the mountain. Good crops are waiting to be harvested, but the terrible thing is that Battanian raiders may rush out of the forest at any time. As soon as the castle horn sounded, the men in the fields had to throw down their sickles and grab weapons. Farming there requires not only strength but also courage."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "townsfolk"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The wheat yield in Omanfad is not low, there is sufficient rainfall, and the soil on the hillside is also fertile. But it's so close to Battania that raiders are a common sight. Before the harvest every year, locals have to prepare for half of the wheat to be burned. Although the defenders of Fort Omanfader tried their best, the pass was too wide and they could not defend anywhere."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "I stayed one night in Omanfard. In the middle of the night, I heard the horn sounding on the castle, and the whole village got up and ran up the mountain. It turned out to be a false alarm—just a passing Vlandia patrol. But the villagers said that they have become accustomed to running away in their lives, and they would rather believe that they have something than something that doesn't exist. The Battania people actually came, more than once."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Omanfad",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "Omanfaderborg",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

@@ -1,0 +1,152 @@
+{
+  "Id": "rule_House_Foundations_House_Royce",
+  "Keywords": [
+    "House Royce",
+    "Bronze Kings",
+    "Runic Bronze Armor",
+    "We Remember"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Royce family, based in Runestone City, is one of the most powerful and oldest ancestor families in the valley. Their ancestors once ruled part of the valley in the name of the Bronze King, but were later defeated by the Andals. The family is famous for its bronze armor engraved with ancient runes. The family emblem also revolves around bronze, iron nails and runes, with the motto \"Remember my words.\" Royce believed in the Seven Gods, but retained the bloodline and ancient runes of his ancestors as the core of his identity. To Arryn, they are important vassals; to the other nobles of the Vale, they represent both a reliable military force and a reminder that the history of the Vale does not begin with the White Eagle of the Andals."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vale"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The nobles of the valley respected Royce, not only because of the power of Runestone City, but also because their bronze armor and runes brought their family memories back to before the arrival of the Andals. Arryn represents the current king of the valley, and Royce reminds everyone: before the white eagle flew to the top of the mountain, there was already a king here. Antiquity gives them weight and makes every statement particularly noticeable."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vale"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "artisan"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The valley soldiers recognized Royce's bronze armor, and the blacksmith knew that ancient runes could not block every arrow for metal. But an armor worn by an ancestor will make it more difficult for the holder to retreat, and also make the followers believe that they are standing in a long queue. Royce's power lies partly in the land and partly in this visible past."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vale"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "People around Runestone City are familiar with the legend of the Bronze King, but they are more concerned about whether the lord's court is fair and whether there are patrols on the mountain roads. If an ancient family is willing to remember the names of ordinary people, it will be said to have the old style; if it only remembers its ancestors, farmers will also say that no matter how bright the bronze is, the pot will still not be able to cook porridge."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Royce The ancient ancestors of Rune Stone City and the descendants of the Bronze King are famous for their bronze armor with runes and their motto \"Remember my words.\" They serve Arryn while preserving the memory of the Vale kingship before the Andal Conquest. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Royce The ancient ancestors of Rune Stone City and the descendants of the Bronze King are famous for their bronze armor with runes and their motto \"Remember my words.\" They serve Arryn while preserving the memory of the Vale kingship before the Andal Conquest. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Royce The ancient ancestors of Rune Stone City and the descendants of the Bronze King are famous for their bronze armor with runes and their motto \"Remember my words.\" They serve Arryn while preserving the memory of the Vale kingship before the Andal Conquest. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Royce The ancient ancestors of Rune Stone City and the descendants of the Bronze King are famous for their bronze armor with runes and their motto \"Remember my words.\" They serve Arryn while preserving the memory of the Vale kingship before the Andal Conquest. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "House Royce: The ancient ancestors of Rune Stone City and the descendants of the Bronze King are famous for their bronze armor with runes and their motto \"Remember my words.\" They serve Arryn while preserving the memory of the Vale kingship before the Andal Conquest."
+  ]
+}

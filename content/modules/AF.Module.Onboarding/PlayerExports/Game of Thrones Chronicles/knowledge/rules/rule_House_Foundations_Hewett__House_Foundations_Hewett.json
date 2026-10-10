@@ -1,0 +1,151 @@
+{
+  "Id": "rule_House_Foundations_Hewett",
+  "Keywords": [
+    "House Hewett",
+    "Oakenshield"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Hewett family is based on Oak Shield Island in the Shield Islands. The head of the family traditionally holds the status of \"Lord of the Shield Islands\". There is also the town of Earl Hewett named after the family on the island. The Shield Islands are located outside the mouth of the Mander River and have long served as the first line of coastal defense against Ironborn, pirates and foreign enemy ships. Islanders judge Hewitt not by the seats at the Highgarden banquet but by the prompt action of beacons, ships and shore defenses when enemy sail appears."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "reach"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The nobles of the Reach regard Hewett as an important link in the defense of the Shield Islands. Island titles and towns give weight to a home, but the real glory lies not in the title, but in being able to light, rally, and seal the waterway in time when the longship appears. It was easy for inland lords to talk about coastal defense, but Hewett had to pay for it every year."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "reach"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "sailor",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The sailors and defenders of the Shield Islands looked at Hewitt to see if the bottom of the ship had been mended, whether there was anyone in the arrow tower, and whether the horn could be transmitted to the next island. The lords here can't just ride to joust; the tides and ironborn don't come according to the court schedule. Only when the islanders can get back to their posts after the alarm is given, can they be worthy of the title of leader."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "sailor",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Ironborn sailors see the Shield Islands as a row of incisors before the mouth of the Mander River, and Hewett is one of them. The raiders will laugh at the Greenlanders for their reliance on the city walls, but will not ignore the beacons and ships on the island. The most dangerous enemy on the coast is not necessarily the bravest, but the one who sees the coming one first."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Hewett The Shield Island families of Oak Shield Island and Earl Hewett have long been responsible for the coastal defense of the Mander Estuary. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Hewett The Shield Island families of Oak Shield Island and Earl Hewett have long been responsible for the coastal defense of the Mander Estuary. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Hewett The Shield Island families of Oak Shield Island and Earl Hewett have long been responsible for the coastal defense of the Mander Estuary. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Hewett The Shield Island families of Oak Shield Island and Earl Hewett have long been responsible for the coastal defense of the Mander Estuary. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "House Hewett: The Shield Island families of Oak Shield Island and Earl Hewett have long been responsible for the coastal defense of the Mander Estuary."
+  ]
+}

@@ -1,0 +1,130 @@
+{
+  "Id": "rule_rageta",
+  "Keywords": [
+    "Laghita"
+  ],
+  "RagShortTexts": [
+    "Lageta is a military stronghold on the northern border of the Western Empire. It is stuck at the intersection of the three forces of the Empire, Battania and Vlandia, and has changed hands repeatedly in history."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Lageta is a military town on the western border of the Western Empire. It is adjacent to the forest of Battania to the north and the hills of Vlandia not far to the east. Precisely because it is stuck at the intersection of three forces, every time a war breaks out, this city is often the first to change hands - today the imperial eagle flag is flying on the top of the city, tomorrow it may be taken back by the people of Battania, and the day after tomorrow it may be occupied by the baron of Vlandia. This kind of life has been going on for countless generations. The city walls have been repaired and repaired, repaired and collapsed, and collapsed and repaired again. The residents of the city have long been accustomed to living under the tip of a gun. The land around Laguta has been completely Karadized. The imperial people have been operating here for hundreds of years. From the language to the laws, from the markets to the temples, they are all modeled after the empire. But the Battania in the forests to the north never acknowledged any of this."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_w"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Laqta is the northern gate of our Western Empire. Without the Lagta, the Battania people can go all the way south, and the Vlandia people can also copy it from the east. So the walls of this city have never stood still - today Emperor Galios sent troops to defend it, tomorrow the counts of Battania came with archers to attack, and the day after tomorrow the baron of Vlandia came with his knights of the banner. But no matter which flag is changed on top of the city, the people in the city still live an imperial life: speaking imperial language, using imperial laws, and going to imperial fairs. Hundreds of years ago our ancestors captured this city through dishonorable means, but a few hundred years later it belonged to the empire."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_w"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "There are three different kinds of stones on the walls of Laqta. The bottom stone was built by the Pala people back then, the middle layer was reinforced by the Imperial people, and the top ones were repaired after being breached and repaired in recent years. Every time the Battanians come over, we pile people on the north wall; every time the Vlandians come over from the east, we pile people on the east wall. To be honest, it's not easy to be a soldier here - you never know whose flag will be flying over the city tomorrow. But we're used to it. No matter who takes Lageta, the Battania people in the forest to the north will always be watching."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Laghita. This name is a warning when spoken on the lips of us Battania people. How did the merchants of the empire take that city? He murdered the Pala chief who had hired him, captured the city, then invited the Imperials in and dedicated the city to the emperor. The Imperial Senate declared this a shameful crime and happily took the city. This is the 'treaty and agreement' of the Imperials. Every time an imperial envoy came to talk to us about some sacrosanct treaty, we had only one word to say: Laghta. They just shut up. That city is now the northern fortress of the Western Empire, but the forest remembers whose it originally belonged to."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The land of Laghta has long since lost the smell of the Pala people, it is now full of the smell of the imperial people - their language, their laws, their bazaars. But the forest still remembers. Our ancestors watched the exiled imperial merchant kill the Pala chief and watched the imperial people turn the walled city into a colony. From then on, the imperial treaty was useless to us. Lagerta teaches us one thing: the Imperials' promises are written on the bones of their victims. Now we and the Western Empire are back and forth in the Laqta area. Every time we capture the city, we will stand on the city wall for a while and look at the forest to the north. Then the Imperials will fight back. But it doesn't matter, we can take it back again."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Laghta is the peg to the west of the Western Empire and our neighbor to the east of Vlandia. This city is stuck at the junction of three forces, and whoever takes it can threaten the other two. Our barons will occasionally try to get a hold of Laguta - not to occupy it, but to prevent the Empire from comfortably using it as a command post in the north. As for the people of Battania, they have an almost paranoid obsession with this city, and they will gnash their teeth and talk about the imperial people's conspiracy whenever Rageta is mentioned. It happened hundreds of years ago, and they still remember it. But to be honest, the Battania people’s ability to hold grudges is truly admirable."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "steward": 150
+        }
+      },
+      "Content": "Laghta was one of the most controversial cities on the northern frontier of the empire. It is located at the intersection of the three forces of the Western Empire, Battania and Vlandia. Its strategic location is extremely sensitive and has changed hands repeatedly in history. The area around Laqta was completely Karadized after the Imperial conquest, but the legality of its ownership has always been questioned by the Battanians. The city's historical burden is that it serves as a constant reminder to both allies and enemies of the empire of the despicable means it used during its expansion. Today Laqta is the western military fortress of the Western Empire. The different stone layers on the city wall record the long years when it was repeatedly contested. In times of peace it was a trading stop, and in times of war it was the first target to be besieged."
+    }
+  ],
+  "TextMappings": []
+}

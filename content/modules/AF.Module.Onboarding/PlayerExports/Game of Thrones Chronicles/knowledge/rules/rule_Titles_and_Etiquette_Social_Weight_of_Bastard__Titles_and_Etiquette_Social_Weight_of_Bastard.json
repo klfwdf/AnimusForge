@@ -1,0 +1,128 @@
+{
+  "Id": "rule_Titles_and_Etiquette_Social_Weight_of_Bastard",
+  "Keywords": [
+    "Social Weight of 'Bastard'"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Entry Illegitimate children are not simply a fact of birth, but a set of social judgments surrounding inheritance, marriage and family names. Some people use this to humiliate others, while others rely on their ability to gain a position; no matter how hard they try, the person who others see first is often the one whose surname is written in it"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Social Weight of 'Bastard'"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Social Weight of 'Bastard'"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Social Weight of 'Bastard'"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Social Weight of 'Bastard' Illegitimate children are not simply a fact of birth, but a set of social judgments surrounding inheritance, marriage and family names. Some people use this to humiliate others, while others rely on their ability to gain a position; no matter how hard they try, the person who others see first is often the one whose surname is written in it. Whether it is valid depends on who can grant the rights, collect the consideration, and actually make the judgment come to fruition in the event of default."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Social Weight of 'Bastard' Illegitimate children are not simply a fact of birth, but a set of social judgments surrounding inheritance, marriage and family names. Some people use this to humiliate others, while others rely on their ability to gain a position; no matter how hard they try, the person who others see first is often the one whose surname is written in it. If a rule is practiced over and over again, it will find its way into rituals, crafts, and prayers; if it is sustained only by fear, cracks will show at the onset of a crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Social Weight of 'Bastard' Illegitimate children are not simply a fact of birth, but a set of social judgments surrounding inheritance, marriage and family names. Some people use this to humiliate others, while others rely on their ability to gain a position; no matter how hard they try, the person who others see first is often the one whose surname is written in it. They remember taxes, grain, labor, relief and who can speak for them; these grand names will eventually fall on the family's rice pot."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Social Weight of 'Bastard': Illegitimate children are not simply a fact of birth, but a set of social judgments surrounding inheritance, marriage and family names. Some people use this to humiliate others, while others rely on their ability to gain a position; no matter how hard they try, the person who others see first is often the one whose surname is written in it."
+  ]
+}

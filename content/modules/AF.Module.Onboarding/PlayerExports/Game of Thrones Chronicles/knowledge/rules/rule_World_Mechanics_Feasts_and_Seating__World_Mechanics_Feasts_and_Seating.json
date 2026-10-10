@@ -1,0 +1,149 @@
+{
+  "Id": "rule_World_Mechanics_Feasts_and_Seating",
+  "Keywords": [
+    "Feasts",
+    "Seating",
+    "Toasts",
+    "Guest Etiquette"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "A noble feast is both for eating and drinking and a place for openly displaying order. Who sits closest to the high seat, which house has a place on the dais, and who must share a bench with knights or squires are all read as honor or slight; the number of courses, the vintage of the wine, and who receives the first toast likewise convey favor and wealth. Feasts serve well for sealing betrothals, sounding out allies, and spreading news, and carry a sacred air of protection through guest right. Kitchens, minstrels, servants, and guards keep the great hall running, and they often hear far more than the highborn at table suppose. A single slight in seating can become a new name for an old grievance."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "When nobles enter a great hall, they look first to the seating and only then to the food. Being placed a step farther from the high table may be a steward's blunder, or a chill the host meant for all the hall to see."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Merchants and craftsmen see a feast as orders and connections: wine, cloth, silver plate, and spices can all be turned into coin. An invitation to sit at table brings respectability, yet may also require repaying a favor the next day."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "slave",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Servants and the poor see how many families the leavings of a feast could feed, while septons remind the host of the laws of hospitality and alms. The more lavish the hall within, the harder it is to claim that the hunger outside the gates goes unknown."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Feasts Feasts and Seating: Seating, dishes, toasts, and who is invited openly array rank, closeness, and political intent; behind the merriment, eyes are watching everywhere. Whether it is valid depends on who can grant the rights, collect the consideration, and actually make the judgment come to fruition in the event of default."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Feasts Feasts and Seating: Seating, dishes, toasts, and who is invited openly array rank, closeness, and political intent; behind the merriment, eyes are watching everywhere. The distant system is not empty talk only if it can be implemented in campfires, city gates and inns."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Feasts Feasts and Seating: Seating, dishes, toasts, and who is invited openly array rank, closeness, and political intent; behind the merriment, eyes are watching everywhere. If a rule is practiced over and over again, it will find its way into rituals, crafts, and prayers; if it is sustained only by fear, cracks will show at the onset of a crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Feasts Feasts and Seating: Seating, dishes, toasts, and who is invited openly array rank, closeness, and political intent; behind the merriment, eyes are watching everywhere. They remember taxes, grain, labor, relief and who can speak for them; these grand names will eventually fall on the family's rice pot."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Feasts and Seating: Seating, dishes, toasts, and who is invited openly array rank, closeness, and political intent; behind the merriment, eyes are watching everywhere."
+  ]
+}

@@ -1,0 +1,47 @@
+{
+  "Id": "rule_darshi_people",
+  "Keywords": [
+    "Darshi People"
+  ],
+  "RagShortTexts": [
+    "What is the social organization tradition of the Darshi people?"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "steward": 60
+        }
+      },
+      "Content": "The Darshi are an ethnic group distributed across the southern and far eastern reaches of Calradia, their origins tracing back to tribal societies along the continental margins. Their social organization features a distinctive tradition: an individual may 'sell' himself to a collective, and in the course of doing so gradually become a co-owner of that very collective. This dual status of being at once servant and master is the most baffling—and yet most central—characteristic of Darshi clan structure to outsiders. The Ghilman are the product of this tradition: they 'sell' themselves to the brotherhood and jointly own the brotherhood.\n\nThe Darshi are renowned for their striking personal adornment. Their robes are richly colored, their horse trappings splendid, and both men and women tend their hair with great care, habitually decking themselves with perfumes and ornaments such as peacock feathers. Outsiders often underestimate their martial prowess on account of their appearance, yet Darshi mounted archery is second to none in Calradia, and their skill with the lance is surpassed only by the Vlandians and the Imperial cataphracts. Beneath the bright robes and proud steeds lies a cavalry tradition tempered across generations."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "ghilman"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "We Darshi are a people distributed across the southern and far eastern reaches of Calradia, our origins tracing back to tribal societies along the continental margins. Our social organization features a distinctive tradition: an individual may 'sell' himself to a collective, and in the course of doing so gradually become a co-owner of that very collective. This dual status of being at once servant and master is the most baffling—and yet most central—characteristic of our Darshi clan structure to outsiders. The Ghilman are the product of this tradition: we 'sell' ourselves to the brotherhood and jointly own the brotherhood.\nWe are renowned for our striking personal adornment. Our robes are richly colored, our horse trappings splendid, and both men and women tend their hair with great care, habitually decking themselves with perfumes and ornaments such as peacock feathers. Outsiders often underestimate our martial prowess on account of our appearance, yet our mounted archery is second to none in Calradia, and our skill with the lance is surpassed only by the Vlandians and the Imperial cataphracts. Beneath the bright robes and proud steeds lies a cavalry tradition tempered across generations."
+    }
+  ],
+  "TextMappings": []
+}

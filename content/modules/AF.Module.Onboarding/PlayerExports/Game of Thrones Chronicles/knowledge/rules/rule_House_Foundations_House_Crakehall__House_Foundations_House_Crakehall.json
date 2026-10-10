@@ -1,0 +1,131 @@
+{
+  "Id": "rule_House_Foundations_House_Crakehall",
+  "Keywords": [
+    "House Crakehall",
+    "Brindle Boar",
+    "None So Fierce"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "House Craher is based on Crake Hall. It is a strong and martial family in the Westerlands under Lannister. The family emblem is a wild boar with a brown background and black and white, and the motto is \"No one can be as fierce as me.\" Family members often appear in stories as burly figures and warriors, but heraldry and individual characters cannot prove that every Krech is equally reckless. The lands, knights and location close to the southern road make it an important vassal of Casterly Rock. Westerland soldiers will respect the impact of the boar banner, while local farmers prefer that its ferocity be used to drive away marauders rather than trample their fields."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "When the nobles of the Western Region talk about Kraihe, they often think of the wild boar in the Crake Hall, the strong physique, and the martial name of charging straight forward. \"No one can be as fierce as me\" reassures friends and frowns on caution: a wild boar can run through a line, or it can charge into a hunter's spear. A Lannister needs such a blade and must know how to hold it."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The soldiers of the Westerlands like to charge alongside the strong men of Kraih, as the Boar Banner is usually not the first to fall back. They also know that ferocity is no substitute for reconnaissance, food, and orders. The surviving veterans said that the real warrior is not the one who rushes the fastest, but the one who can bring his companions back after rushing through."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Crakehall The family emblem of the Western Border Wumen in Yangji Hall is a black and white wild boar on a brown background, and the motto is \"No one can be as fierce as me.\" The martial reputation should not be written as a unified character of the entire clan. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Crakehall The family emblem of the Western Border Wumen in Yangji Hall is a black and white wild boar on a brown background, and the motto is \"No one can be as fierce as me.\" The martial reputation should not be written as a unified character of the entire clan. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Crakehall The family emblem of the Western Border Wumen in Yangji Hall is a black and white wild boar on a brown background, and the motto is \"No one can be as fierce as me.\" The martial reputation should not be written as a unified character of the entire clan. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Crakehall The family emblem of the Western Border Wumen in Yangji Hall is a black and white wild boar on a brown background, and the motto is \"No one can be as fierce as me.\" The martial reputation should not be written as a unified character of the entire clan. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "House Crakehall: The family emblem of the Western Border Wumen in Yangji Hall is a black and white wild boar on a brown background, and the motto is \"No one can be as fierce as me.\" The martial reputation should not be written as a unified character of the entire clan."
+  ]
+}

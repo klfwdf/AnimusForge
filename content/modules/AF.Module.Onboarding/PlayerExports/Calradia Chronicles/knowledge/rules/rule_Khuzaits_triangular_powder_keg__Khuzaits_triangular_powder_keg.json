@@ -1,0 +1,78 @@
+{
+  "Id": "rule_Khuzaits_triangular_powder_keg",
+  "Keywords": [
+    "Urhunnet",
+    "Archit’s old master",
+    "triangular feud",
+    "Grassland inheritance",
+    "Battle over pasture",
+    "Infighting on the grassland"
+  ],
+  "RagShortTexts": [
+    "Khuzait is a triangular powder keg - the Ulkhun Khan family, the old Achit clan, and the remnants of the Khuzait clan have grievances against each other. The Khan's court's continuous victory is the only lid."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The interior of Khuzait is not a rift valley, but a triangle - the three forces each have their own hatred and overlap with each other. Achit was the earliest ruler of the tribes in his eastern homeland, and considered himself the \"eldest son of Khuzait\". Urhunnait rose up during the westward migration, integrated various tribes with consecutive victories, and assumed the position of co-leader. Archit refused. They once established themselves as khans and led their troops as far west as Valpovarno in Sturgia, establishing a short-lived khanate. After failing to counterattack the Sturgians, they retreated to the steppes and then took Otungard from the Kugits to re-establish their power. As a result, Achit had a grudge against both the Khan (who took away their co-lord position) and Kujit (who took the city from them). Kujit was completely tricked by the empire in Pandrak - Suilun led the cavalry archers to clear the way for the empire, but was attacked by the Vlandia people and was almost completely wiped out, and the commission was not paid. After returning home, Otungard has been taken away by Archit. They hate the Empire and they hate Hachette. And they didn't like the Khan's court either - the Khan's court did not stop Achit from taking action, nor did they give Kujit any compensation. Monchug Khan's only weapon that can suppress these three parties now is continuous external victories. As long as they kept winning and sharing the spoils, all parties would be satisfied, with Archit shutting up and Kugit enduring. Once there is a failure or uneven distribution, the triangle will explode simultaneously."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": [
+          "clan_khuzait_2"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "My name is Turaq Aqite. My ancestors were once the leaders of thousands of tribes on the eastern grasslands. The Urhunnait family only appeared on the way westward. They accumulated fame through fighting, and then united with some tribes to push us out of our position as co-leaders. I don’t accept it—my father doesn’t accept it, and neither does my grandfather. We fought and established a khanate on the land of the Sturgians, but failed. After returning, I took Otungard from Kujit to rebuild the tribe's strength. The Kugits hate me because the rules on the grassland are like this - if you are weak, your pastures and cities should be given away. As for Monchug – he can really hit. I don't deny his ability. But the throne should have been ours, and I will never forget this."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": [
+          "clan_khuzait_1"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "My husband Suilun died on the battlefield of Pandrak. He led the cavalry archers to clear the way in front, and was flanked by the Vlandian crossbowmen and cavalry. He shot all his arrows, drew his sword and rushed into the enemy's formation, never to return. The Imperial military pay was never paid in full. Then my people dragged their remains back to the grassland - and found that Otungard had been taken over by the Archite. Archit. The tribe that calls itself the eldest son of Khuzait took away our land when our men were almost dead. Monchug Khan did not help us get it back, nor did he give us any compensation. He said we should focus on the overall situation. My husband died for the empire in Pandrak, and my people's land was taken away by Archit - this is the reward the overall situation gave me."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Outsiders of Khuzait may not understand clearly - on the surface, Monchug Khan said the same thing, but in fact, the authority of the Khan's court was maintained entirely by dividing the spoils. Archit's family has always felt that the throne should be theirs. They contributed a lot in the war, and they always focus on the best part when dividing things. Kujit was crippled in Pandrak, and was stepped on by Archit when he came back, and he had a grudge against both sides. Monchug stabilizes the situation because he gets enough for everyone—but there’s never a constant flow of loot on the grasslands."
+    }
+  ],
+  "TextMappings": []
+}

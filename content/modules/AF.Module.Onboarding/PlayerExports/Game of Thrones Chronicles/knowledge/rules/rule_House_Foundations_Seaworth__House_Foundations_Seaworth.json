@@ -1,0 +1,151 @@
+{
+  "Id": "rule_House_Foundations_Seaworth",
+  "Keywords": [
+    "Seaworth",
+    "House Seaworth"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Seaworth family was founded by Davos Seaworth. Davos was originally a smuggler from Flea Bottom. When the siege of Storm's End was at its most desperate, he broke through the blockade in a small boat and delivered onions and salted fish, allowing the defenders to continue to hold on. Stannis cut off the first knuckle of his left hand for the crime of smuggling, and made him a knight and lord for saving the city; Davos left the black ship and onion on the new family crest, and also put the cut off phalanges into a small bag to remind himself that honor cannot erase the origin. This newly wealthy family has no thousand-year-old ancestral graves. Its foundation is sea routes, family, honest advice and a man who was once despised by the nobles and is still willing to make judgments based on his conscience."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "dragonstone"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "When the old aristocracy looked at Seaworth, they often oscillated between admiration and contempt. Davos has no illustrious ancestors, but he has many things that high-ranking families lack: experience of hunger, understanding of boats, and the courage to say no to the monarch. Some people call him the Lucky Onion Knight, and some people understand that being able to keep luck into loyalty and judgment is a rare skill in itself."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "dragonstone"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "sailor",
+          "merchant",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Sailors, traders, and commoners tended to regard Davos as one of the few lords who remembered life at the bottom. He knows that a bag of onions is more useful in a famine than a box of jewels, and he also knows that lawbreakers may not be without honor. Seaworth's family crest is not a joke to them, but someone who has not forgotten the smell of the sea even after walking into the council chamber from the dock."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "stormlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Storm's End Old soldiers will never forget the salted fish and onions brought by that boat. To them, Davos's knighthood was not a decoration bestowed by the tourney, but a man who did what was necessary when all the glorious knights could not pass the blockade. A true knight sometimes gets the rudder first and the sword later."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Seaworth Entry Seaworth The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Seaworth Entry Seaworth Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Seaworth Entry Seaworth The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Seaworth Entry Seaworth They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Seaworth: Entry Seaworth"
+  ]
+}

@@ -1,0 +1,132 @@
+{
+  "Id": "rule_House_Foundations_Smallwood",
+  "Keywords": [
+    "Smallwood",
+    "House Smallwood"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Smallwood family rules Acorn Hall, and its coat of arms is six brown acorns on a yellow background. The woodlands, pastures and farmsteads surrounding Acorn Hall constitute the family estate and the family has obligations to the Riverrun system. This is not only a noble residence, but also a center for storing grain, cutting crops, and protecting local people. An acorn is small, but it can grow into a big tree; Smallwood's fame also comes from generations of accumulation, rather than a dazzling victory."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "river"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Lords of the Riverlands considered Smallwood a reliable local home. Acorn Hall is located on land that is easily affected by the army. It is a rare skill to be able to preserve grain, restrain tribes and maintain forest roads."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "river"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Forest farmers, hunters and herders are familiar with the boundary stones and forest rights of Acorn Hall. They praise the lord who allows him to collect firewood and open a barn in bad years, but they also hate the man who encloses the entire forest as a hunting ground for the nobles."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Smallwood The Smallwood family uses the Acorn Hall as their seat, and the six brown acorns symbolize their riverland woodland estates and vassal responsibilities. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Smallwood The Smallwood family uses the Acorn Hall as their seat, and the six brown acorns symbolize their riverland woodland estates and vassal responsibilities. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Smallwood The Smallwood family uses the Acorn Hall as their seat, and the six brown acorns symbolize their riverland woodland estates and vassal responsibilities. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Smallwood The Smallwood family uses the Acorn Hall as their seat, and the six brown acorns symbolize their riverland woodland estates and vassal responsibilities. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Smallwood: The Smallwood family uses the Acorn Hall as their seat, and the six brown acorns symbolize their riverland woodland estates and vassal responsibilities."
+  ]
+}

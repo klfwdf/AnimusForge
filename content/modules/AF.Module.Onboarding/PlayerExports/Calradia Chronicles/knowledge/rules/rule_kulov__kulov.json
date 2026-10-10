@@ -1,0 +1,123 @@
+{
+  "Id": "rule_kulov",
+  "Keywords": [
+    "Kulov"
+  ],
+  "RagShortTexts": [
+    "The Kurovs were an ancient Boya lineage of Sturgia, disobedient to princely authority"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": [
+          "clan_sturgia_1"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Kurovs are a thorn in our backs. Not the sharpest, but it penetrates the deepest. Olek's father died in Pandrak. This could have been a common wound in Sturgia, but the Kulov family wanted to turn this wound into an accusation - they said that old Olek went to the front line in person and went for those who should go. Who should listen to this? We knew in our hearts that we just didn’t want to take it. Every time Grand Duke Langward saw Oleksandr in a royal meeting, he had to face that expression of insincerity. That face said nothing, but seemed to say everything."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": [
+          "clan_sturgia_2"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "We are Kulov. The forest remembers our name, and so does the river. On the morning when the trees grew and the rivers flowed by the will of the gods, our ancestors stood on this land, axes in hand. Grand Duke? That was the wartime leader elected by the Boyers when the empire was under pressure. We recognized the title, but never the land as well. Old Olek bled out at Pandrak and died under the arrowstone, as a warrior dies. But those sitting on the throne don’t even have the courage to go into battle in person, so why should we make us pay taxes?"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Kulov family is the oldest mirror in Sturgia, reflecting the dissatisfaction in every boy's heart. Their relationship with the Gondarov family is a living example: don't expect the prince to be fair for you, and don't expect time to dilute the blood feud. Most of us don't want to follow in Kulov's footsteps - they were so hard that they couldn't even warm the seats in the senate. But few people dare to openly stand against them. After all, Olek's words are still etched in the cold wind of Sturgia - wounds like caresses, taxes like arrows. Who doesn't feel this way?"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Kurovs? Those old school boys in the woods to the north. The old Olek of their family fought against Pandrak with the Grand Duke. He died on the battlefield. I heard that he died unwillingly. Now Olek is his son, he talks little and has a cold face. He made a famous remark to the Grand Duke in person, to the effect that the wounds you get from fighting for you are as light as your wife touching you, and the taxes you pay you are as painful as an arrow in the stomach. Do you dare to talk to the Grand Duke like this? It can be seen that the Kulov family did not take the Grand Duke seriously."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Kulov? The old family over there in Sturgia, according to the businessman, has lived in the woods to the north for countless generations, and no one can control it. The current head of his family is an old man named Olek. He has a stubborn temper and has always disobeyed the Grand Duke. He heard that his father died on the battlefield, and he himself had a quarrel with the Grand Duke in person, and he still didn't lose his head. They had a grudge against the Grand Duke's family. It seemed that one of their daughters was married to the grassland and later died."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Kulov family is one of the most powerful local powers in Sturgia. When analyzing the stability of Gondarov's regime, Kulov has always been a key variable that cannot be avoided. Their history can be traced back to before the founding of Sturgia, and they belong to the ancient lineage of \"Kulov first, then Sturgia\". This lineage gave them a special status among the boyars, and also caused them to never really recognize the supreme authority of the prince at the institutional level. The current patriarch, Olek, inherited his father's unyielding ferocity, but turned this hostility into something more cunning. He did not openly rebel, but continued to wear down the prince's patience with his heartless silence and uncooperative attitude."
+    }
+  ],
+  "TextMappings": []
+}

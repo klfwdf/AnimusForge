@@ -1,0 +1,125 @@
+{
+  "Id": "rule_Empire_customs",
+  "Keywords": [
+    "The customs and customs of the empire"
+  ],
+  "RagShortTexts": [
+    "The customs and customs of the empire: the blend of Kalad and Pala cultures, the center of urban life."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The customs and customs of the empire were deeply influenced by the cultural blend of the Karad and Pala people. Imperial citizens centered on urban life and built complete public baths, arenas and markets in towns. These places were both social centers and important symbols of imperial identity. The gladiatorial performances and chariot races in the arena were very popular among the people, and even the children of nobles often participated in them to practice their martial arts. Princess Ila of the empire was famous for fighting in the arena herself. The architectural style of the empire was dominated by stone. Towns were equipped with multi-layered wall defense systems. Arches and domes were widely used in public buildings, decorated with double-headed eagle emblems. In terms of clothing, imperial nobles and officials wore robes dyed with purple edges. Purple has always been regarded as a symbol of imperial power and the highest honor in imperial culture. In the food culture of the empire, olive oil, wine, grains and sea fish were the basis of daily diet. Bakery workshops and taverns were dotted all over the streets in the city. At the level of social customs, the empire retained the republican legacy of citizen assembly and senatorial deliberation. Although actual power had long been concentrated in the hands of the emperor and military nobles, the Senate continued as a political tradition until the empire was divided. The concept of marriage and family plays an important role in the culture of the empire. Marriage between nobles often serves political and military alliances. Emperor Arenicos married the princess of the Eastern Kingdom to consolidate trade routes. This is a typical example. The customs and customs in the empire's border areas showed obvious mixed characteristics: the border guards in the northern mountains adopted the costumes and customs of neighboring tribes, the pioneers in the south and east learned the riding and archery skills of the steppe peoples, and the Nord mercenaries from the north integrated their fighting traditions into the imperial military culture. In terms of religious belief, although the empire does not have a clear official religious setting, its culture is permeated with belief in the empire's eternity. Emperors are often given a sacred aura. Emperor Arenicos once adopted a tacit attitude towards religious groups that promoted his divinity. The people of the empire generally have a deep sense of loss for the loss of the eastern provinces and southern territories. Ballads and stories about the glory of the past empire are circulated among the people. This nostalgia is even stronger in the situation where the three emperors coexist. Generally speaking, the customs and customs of the empire are a highly developed civilization system that is facing internal and external pressures. Its achievements in urban life, architectural art, social systems and multicultural integration are still the objects of reference and yearning for other countries in the Calradia continent."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Vlandia nobles regarded the customs and customs of the empire as an ancient civilization that was highly developed but had lost its vitality. They marveled at the public baths, arenas, and multi-layered city walls of the imperial cities. They believed that these buildings reflected the empire's former organizational capabilities and wealth accumulation. However, they also interpreted this reliance on urban life as evidence of the decline of the martial spirit of the imperial citizens. Vlandia observers noticed that the imperial nobles wore purple-edged robes and still maintained old-fashioned republican etiquette when discussing matters in the Senate. On the one hand, they acknowledged that these traditions gave legitimacy to imperial politics, but on the other hand, they believed that this was the source of the empire's slow decision-making and difficulty in dealing with emerging forces. Regarding the anecdote about the imperial princess Ila fighting in the arena herself, the Vlandia nobles had a rather contradictory attitude - they appreciated the bravery shown by the imperial women, but they regarded this as an embarrassing example of having to fight in person after the decline of the imperial aristocratic class."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Khuzait Khan had a pragmatic evaluation unique to the steppe peoples about the customs and customs of the empire. They recognized the fortifications and public facilities of the imperial cities, but believed that this wall-adhering way of life made the citizens of the empire lose the ability to deal with mobile warfare. Khuzait observers were particularly concerned about the phenomenon of mixed cultures in the empire's border areas. They noted that pioneers in the south and east of the empire learned the art of riding and archery, but considered this imitation to be nothing more than a poor copy of the nomadic culture after the empire lost its steppe territory. Khuzait Khan interpreted the empire's pervasive nostalgia and obsession with its past glory as a collective hallucination of a declining civilization that was unable to face reality. The people's sense of loss over the loss of the eastern provinces, from the perspective of the steppe, just proved the aggressive nature of the empire's expansion."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The leaders of Battania have a complex understanding of the customs and customs of the empire, which was formed by long-term confrontation. They are in awe of the engineering capabilities represented by the stone buildings and multi-layered city walls of the imperial cities, and they also regard this way of life that sticks to the city as a symbol of the empire's isolation from nature and loss of land instinct. Battania observers have noticed the tradition of imperial nobles practicing combat in the arena, but believe that this is just evidence that the empire has alienated war into a performance, which is incomparable with the spirit of real fighting in the forests of Battania warriors. Regarding the practice of accepting Nord mercenaries and adopting the customs of neighboring countries in the border areas of the empire, the leaders of Battania interpreted this as a manifestation of the lack of foundation of the empire's culture and could only constantly borrow the vitality of foreign nations. In their view, the nostalgia of the people of the empire for their past glory was nothing more than the empty groan of a predatory civilization after losing its ability to plunder."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Aserai merchant nobles showed the unique acumen and pragmatism of commercial civilization towards the customs and customs of the empire. They admired the urban management capabilities embodied in the public baths, markets and bakeries of the imperial cities, and considered them to be the most complete commercial infrastructure on the continent. Aserai observers see in the purple-edged robes of the imperial nobility and the tradition of senatorial proceedings the predictability and order necessary for stable business transactions, but they also note the political gridlock and inefficiency of decision-making underlying this ritual. The Aserai merchant nobles gave positive comments on the empire's practice of accepting foreign cultures and integrating diverse skills in border areas, believing that this reflected the commercial and military inclusiveness of the empire's culture. However, they also keenly pointed out that the empire's cultural integration was often the result of passive response to territorial loss, rather than a proactive strategy to build a trade network. Overall, the Aserai view the empire's customs and customs as a set of civilizational legacies worth learning from but no longer replicating."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The lords of Sturgia have an ambivalent attitude toward the customs and customs of the empire that is characteristic of the northern warrior culture. On the one hand, they are shocked by the multi-layered walls, public baths, and stone buildings of the imperial cities, and privately admit that these achievements are far from comparable to the wooden fortresses of Sturgia. Sturgian observers noted the tradition of imperial nobles engaging in combat in the arena, which they interpreted as a futile attempt by the imperial nobles to compensate for their declining martial spirit with performative combat, in stark contrast to the true courage of the Sturgian warriors fighting in the sea of ​​ice."
+    }
+  ],
+  "TextMappings": []
+}

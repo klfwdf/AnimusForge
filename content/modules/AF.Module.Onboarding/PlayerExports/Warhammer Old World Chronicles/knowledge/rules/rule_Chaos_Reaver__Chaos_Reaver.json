@@ -1,0 +1,210 @@
+{
+  "Id": "rule_Chaos_Reaver",
+  "Keywords": [
+    "Chaos Raider",
+    "Lightly equipped pioneer",
+    "Fanatical fighting spirit",
+    "barbarian warrior",
+    "Bottom of Chaos",
+    "Norscan people",
+    "Kurgan",
+    "Chaos plunders the northern barbarians",
+    "Low level warrior"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Chaos Reavers are the lowest level of mortal soldiers in the armies of Chaos - tribal warriors from Norsca, the Kurgan, and the wild lands of the north. They wore messy leather armor and iron pieces picked up from the battlefield, armed with battle axes, bucklers and short spears, and relied on their extraordinary physique and fanatical fighting will to act as vanguards. The Reavers overwhelm the enemy lines with numbers and fury before the Chaos Warriors and Chosen can move forth."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "chaos_culture"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Reavers are the youngest and hungriest on the Path of Chaos - they are our apprentices, our vanguards, our living proof. Every Chosen One who eventually became a Chaos Champion was once just a marauder armed with a broken ax passed down from his grandfather. They run at the forefront on the battlefield not because of courage - but because they desire to use the skulls of their enemies to prove to the evil god that they are worthy of being watched. Predators have the highest mortality rate, but without the Predators there would be no Chaos Army - they are the first flame that filters out the strongest and eliminates the weak. Those who survive the Reaver phase will receive their first Mark of the Evil One one night - at which point they are no longer Reavers, but true Warriors of Chaos."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Chaos Raiders' greatest military value lies in their numbers and fearlessness of death. They have no need for advanced supplies - raiding armies feed on war, relying on raids on coastal villages and farms to sustain themselves. But they are also the least organized of the Chaos armies - Marauder warbands often fight each other before a battle begins, competing for the honor of being the first to charge into enemy lines. The correct tactic is to use the Marauders as the first wave of attrition - having them rush into the enemy lines to cause confusion and fatigue - and then follow up with a phalanx of Chaos Warriors from the same gap to form a decisive breakthrough. Don't try to perform any complex tactical maneuvers with Predators - they don't have that kind of discipline."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "Chaos Reavers represent the most basic troop source layer in the Chaos military system. In the social structure of Chaos, every adult male of the northern tribe is essentially on a long path of promotion from predator to Chaos warrior. The equipment of the Reavers is highly non-standardized - the weapons they use range from captured Imperial swords to crude battle axes forged by themselves, and the armor they use ranges from discarded breastplates to dragon bone amulets passed down from their ancestors. Marauder social organization is based on the tribal system of Norsca and Kurgan - each Marauder warband is usually from the same tribe or the same fjord, which allows them to have a basic level of combat coordination. But the Marauders are also the only unit in the Chaos army that still retains the human instinct of fear - unlike the higher-level Chaos Warriors, the Marauders may collapse from fear when facing the undead and daemons. This should be taken advantage of when fighting Chaos armies."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "As a female lord on the coast of Nordland, the longships of the Chaos Raiders are my most terrifying sight after the autumn harvest every year. They don't move in large, well-targeted invasions like the Chaos Warriors do - the raiders are sporadic and random, maybe only three longships coming at a time, sacking one or two of your fishing villages and then retreating. For a woman running a coastal territory, such unpredictable small-scale attacks were harder to prevent than any full-scale invasion - I couldn't man a garrison on every beach, and every successfully sacked village added a dozen more families to my rolls for death pensions."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The threat posed by the Chaos Raiders to my family was not military - it was demographic. Every time a Norsca raiding fleet raided a coastal village, not only a harvest was lost, but the young men and women in those villages who could work and give birth were robbed. Norsca raiders capture living humans to take back to the North as slaves or - in their use in Chaos Sacrifice - worse. The five fishing villages our family operates along the coast of Nordland have been raided by marauders no less than thirty times in the past two hundred years. After each attack, new families were needed to move from inland villages to the coast to fill the gap in population—and each move tested the family's financial reserves."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Having worked as a mercenary on the shores of the Sea of ​​Claws, I can tell you: Chaos Reavers are the last thing you want to encounter at sea. Their longships are faster, more agile, and better at landing in the shallows and disappearing than any Imperial warship. I served as an armed guard on a cargo ship carrying iron ore from Nordland to Marienburg, and one night we were pursued by three Norsca longships - we got rid of them by dropping a third of the cargo and praying for the bad sea winds to turn. But what really gives me nightmares isn’t the Marauders charging onto the deck with tomahawks – it’s the Warlocks among them. Some Marauder warbands carry a young Chaos Warlock with them, who channels the evil god's lower-level spells in the heat of battle. At sea that means your sails may be burning in no wind."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The impact of the Chaos Raiders on Nordland's coastal commerce can be accurately quantified in the annual accounts of the Imperial Chamber of Commerce. From the year 2490 of the Imperial Calendar to the present, the war insurance rates for merchant ships along the coast of Nordland have increased by approximately 230%. This rate increase is directly caused by the increase in the frequency of raids by marauder longships from approximately two per season to at least once per month. Many small and medium-sized fish ports along the coast have effectively ceased independent ocean trade - their fishing vessels can go to sea on days when they are escorted by Imperial Navy patrols, and the costs of these escorts are shared by coastal towns. Our Chamber of Commerce has submitted a petition to the Reichstag three times in the past two financial years asking for increased coastal defenses in the direction of Norsca – each time the response was that more time was needed to consider the budget."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Chaos Raiders - lightly-armed mortal warriors of the northern tribes, the lowest but most numerous source of troops in the Chaos army",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Chaos Reavers are the lowest level of mortal soldiers in the armies of Chaos - from Norsca, Kurgan"
+  ]
+}

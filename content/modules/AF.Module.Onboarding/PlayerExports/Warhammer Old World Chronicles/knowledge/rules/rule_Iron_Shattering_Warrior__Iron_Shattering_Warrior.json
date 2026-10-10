@@ -1,0 +1,209 @@
+{
+  "Id": "rule_Iron_Shattering_Warrior",
+  "Keywords": [
+    "Ironbreaker (Iron Shattering Warrior)",
+    "Meteor Iron Heavy Armor",
+    "Tunnel Keeper",
+    "solid as a rock",
+    "defensive infantry",
+    "Dwarf Iron Wall",
+    "Broken Iron Legion",
+    "tunnel battle"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Iron Shard Warriors are the guardians of the deepest tunnels in the Dwarf Kingdom - they are covered in super heavy armor forged from meteorite iron, and hold iron-blade giant axes or black powder blasting detonators. Each Iron Shard Warrior swears to defend the underground gate of Karak, even if they face the entire goblin army, they will not take a step back."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Iron-breaking warrior! Speaking of them, the depression in my chest feels better. That is the strongest barrier for our dwarves - how deep underground have you seen them? In the tunnel on the 72nd floor, where the air was so thin that torches could not be lit, the Iron Breaker Warrior still stood upright wearing a full set of meteorite heavy armor, not even a tremble in his beard. Do you know how heavy that meteorite is? Human knights can’t even move when wearing it, but our iron-smashing warriors can chase night goblins in tunnels wearing it. A huge iron-breaking ax was swung down, and the green-skinned helmet and head were shattered together. Not to mention the black powder detonators hanging on their waists - specially designed for tunnel warfare. When the explosion occurs, the shock wave will spread along the rock wall. A team of iron-smashing warriors can turn the entire tunnel into a green-skinned meat grinder. Their oath was one: that the gates of Kharak would not be breached until their breath ceased."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Ironbreaker is the most powerful heavy defensive infantry in the known world, and its price/performance ratio warrants careful evaluation by any commander. In terms of individual combat effectiveness, an Iron Breaker Warrior can defeat two Chosen Ones in a one-on-one confrontation - this is due to the material advantage of Meteor Iron Armor over Chaos Plate Armor. But their most fatal limitation is movement speed: a heavily armed Ironbreaker can only advance on flat terrain at about two-thirds the speed of a human heavy infantryman. In terms of battlefield deployment, I recommend nailing the Iron Breaker Warriors to the most critical terrain bottlenecks-city gates, bridgeheads, canyons-and never try to use them to chase flexible and lightly-armed enemies. Their detonator blasting tactics can be more than three times more lethal in tunnel battles because the enclosed space exponentially enhances the blast wave."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "The history of the Ironbreaker Warriors Legion can be traced back to the Golden Age of the Dwarves (approximately 3000 BC to 1500 BC). The original Ironbreaker Legion was formed by the Dwarf High King Kurgan Ironbeard during the founding period of Karak Eight Peaks Mountain, with the purpose of guarding the deepest rune veins. The meteorite smelting process - known as 'Gromril-Kazzak' in the Dwarven language - is believed to have been discovered by the founder of the rune blacksmith, Grengil Starhammer, around 2800 BC: He sealed the crater immediately after a meteorite fell, and spent four hundred years to crack the three-in-one process of purification, forging and rune inlaying of meteorite iron. The standard equipment of modern iron-smashing warriors includes: Gromriel's full armor (total weight is about one hundred and forty stones, not worn by humans), iron-smashing great ax (single or double-edged, the blade is plated with cracking runes), and black powder tunnel detonators (loaded with dwarven refined black powder and iron filings, with an effective killing radius of about twenty feet in a tunnel environment). The most famous deed of the Iron Breaker Warriors is the \"Defense of Eight Peaks Mountain\" (1523 BC). Three hundred Iron Breakers fought against an army of 100,000 greenskins in the sixth tunnel, holding on for sixty-six days until they self-destructed and collapsed - no one survived, and no greenskin broke through."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The dwarf's iron-smashing warriors gave me a deep understanding of the military concept of 'hold'. Human armies talk about honor, duty, and Sigmar—Ironbreakers talk about none of that. After they take their positions, they are like part of the mountain, and the mountain will not retreat. My envoy to Kharak Kaderin described the changing of the guard of the Ironbreaker Warriors: The whole process was as precise as carved in stone, and no one whispered."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The roster of Iron-Smashing Warriors is one of the most precious things among the dwarf clans - what is recorded on it is not only the name, but also which family is responsible for the guardianship oath of each tunnel and each depth. Three generations of men in my family served in the Ironbreakers. In the year of the Dark Fire Disaster, the third generation refused to retreat after the entire mine tunnel collapsed. In the end, the dwarves who got out alive brought back the giant iron-breaking ax with forty-two green-skinned teeth embedded in the ax blade."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Anyone who has ever hired a dwarven bodyguard knows how expensive the Ironbreakers are - they're expensive, but worth every penny. A retired veteran of Shattered Iron walked with me on a mine escort trip from Karak Shirba to Barak Vaal. The old dwarf wore half a suit of meteorite breastplate and walked in front holding a torch. The entire night goblin raiding party ran away the moment they saw him. He said that goblins can smell the smell of meteorite, know what it is, and know that hitting meteorite means hitting broken iron."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "People in the armor-making guild would sigh every time they talked about meteorite. That thing is not a mine that can be mined on the earth - the dwarves guard the source and smelting secrets of meteorite iron more closely than they guard gold. Imperial armorers have spent hundreds of years trying to imitate meteorite heavy armor. The best result, 'Imperial Iron Plate Armor', costs thirty times as much as a set of knight's plate armor, but its performance is only 30% of the original scraped iron armor. All counterfeiting schemes eventually failed."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Gromliel (meteoric iron): Star iron exclusive to dwarves, a mysterious metal extracted from meteorites, is the hardest and lightest armor material in the known world, and is also the only ideal carrier for runes to be attached.",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Holding an iron-bladed ax or a black powder blasting detonator"
+  ]
+}

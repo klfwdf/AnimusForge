@@ -1,0 +1,208 @@
+{
+  "Id": "rule_Go_to_the_Colossus",
+  "Keywords": [
+    "Make a hairy colossus",
+    "Brother",
+    "Brother Mao",
+    "greenskin god",
+    "Waaagh energy",
+    "twin gods",
+    "greenskin religion"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Gomao Colossus is the collective name for the only two gods of the green-skinned race - Goge and Maoge. Brother Go is cunning and cruel, and Brother Mao is cruel and cunning. The two twin gods represent the complete spectrum of the greenskin worldview: the ultimate goal of all actions is not to win in battle, but to enjoy the battle itself. The green-skinned shaman calls for the gaze of Brother Gomao by channeling Waaagh! energy. When the gaze comes, green psychic phenomena will appear in the sky - from giant energy beams to giant green phantom feet falling from the sky."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Brother Go and Brother Mao! They are the best gods! Better than the human old bone sitting on the golden chair and the soft moon goddess with pointed ears! Brother Go taught us how to fight with our brains - such as smashing rocks from a high place without having to climb up to hit them ourselves; Brother Mao taught us how to fight with strength - such as punching the enemy's head into the chest with one punch! The two of them are the two biggest orcs - they fight each other every day in the non-material world, and no one can beat the other, because Brother Go is more cunning but Brother Mao is stronger! When the shaman calls Brother Ga Mao's attention on the battlefield, the clouds in the sky will turn green, and then Brother Gao or Brother Mao will look down in person - their sight is a green light, smashing the enemy's line into pieces!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The most direct military impact of worshiping the Hairy Colossus lies in the green-skinned Waaagh! energy field. When a greenskin shaman calls to the attention of Brother Mao, this psychic phenomenon does not require any spellcasting training or magical talent - it depends entirely on the number and excitement of the surrounding greenskins. This means that you can never stop this supernatural attack by eliminating specific individuals among the Greenskins - as long as there are enough Greenskins on the battlefield and are excited enough, the gaze will occur. The only way to combat it is to prevent the Greenskins from gathering to sufficient density on the battlefield."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "The worship of the Mao Colossus is the purest embodiment of divine power in the religious system of the old world. Unlike other religions that are spread through doctrines, rituals, and texts, the Gomao faith is sustained and transmitted entirely through the Greenskins' collective psychic field—the Waaagh! energy. The existence of Gorge and Maoge in the non-material world is actually constructed and maintained by the collective desire of all greenskins to fight - they are both the source of Waaagh! energy and the product of Waaagh! energy. This cyclical relationship between divinity and believers is one of the least studied subjects in Old World religions, as any scholar who attempts to enter an active Waaagh! area for field observation would rarely survive."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "There are no special rules for women in the worship of the Hairy Colossus - an extremely rare thing among the gods of the Old World. The Empire's Sigmar Church has strict religious hierarchical restrictions on women, and Bretonnia's Lake Goddess restricts women to the only legal casters, but Brother Go and Brother Mao don't care at all whether you are a man or a woman - they only care about whether you can fight. This rugged egalitarianism is occasionally used by Imperial wizards to argue for a certain degree of purity in the Mao cult."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The actual effect of Waaagh! on my family's territory is cyclical - every time a new powerful shaman appears among the greenskin tribes in the Badlands, the Waaagh! Gaze phenomenon will increase significantly in the surrounding areas for the next few years. Our family has learned over the past two hundred years how to predict gaze events based on the frequency of greenskin shaman activity—it's not an exact science, but two hundred years of survival on the frontier teaches you how to make your best judgment in the absence of data."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "There is a saying among the mercenaries wandering around the badlands: if you see Brother Mao's gaze once, your hair will slowly turn green after that - not dyed, but contaminated by Waaagh!'s residual psychic energy. One of the three veterans I recognized who claimed to have seen Gaze did grow out vaguely green hair a decade later. The other two died on the battlefield before their hair changed color. Maybe it was a coincidence, but from then on I never accepted any contracts that put me face to face with Waaagh!."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The belief in the Gomao Colossus has a special economic impact on border trade: when many border merchants face the risk of encountering the green-skinned Waaagh!, they will buy a crude amulet from a passing goblin merchant that is said to be engraved with the face of Gomao or Maoge - it is said that the person holding this amulet can claim to be an admirer of Gomao Er Ge in exchange for his life when encountering an green skin. The authenticity of this item cannot be verified - but you can find goblin vendors selling such amulets at every caravan camp on the Badlands' borders."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Goge - one of the green-skinned twin gods, representing cunning violence and using his brains to defeat more powerful enemies.",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Fuck Mao Colossus Fuck Brother Mao"
+  ]
+}

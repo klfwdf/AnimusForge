@@ -1,0 +1,158 @@
+{
+  "Id": "rule_Monfort",
+  "Keywords": [
+    "Duchy of Montfort_MO",
+    "Montfort Territory_MO",
+    "Fort Montfort_MO",
+    "Duke de Montfort_MO",
+    "Montfort Hill Castle_MO"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Principality of Montfort is located in the most dangerous gorges of the Gray Mountains and is ruled by Duke Fourcade de Montfort. This is the most fortified duchy in Bretonnia - Montfort Castle is built on the mountain, and the city walls are integrated with the natural rock walls. Since the city was founded, it has never been breached by the enemy from the outside."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Montfort - the city on the hill that never falls! Duke Fourcade is Bretonnia's finest master of defensive warfare. His castle of Montfort has faced countless sieges from greenskin tribes, and its walls bear more battle scars than any medal from a jousting champion. We Monfort Knights are not good with words, but our shields can turn even the most ferocious orc frenzy into dust."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Duchy of Montfort is Bretonnia's iron gate to the east. There are a large number of greenskin tribes living in the Gray Mountains, and their only exit is the Monfort Canyon. Duke Fourcade's garrison has been guarding this pass all year round, blocking countless green tide attacks for the kingdom. The strategic value is unquestionable - with the fall of Montfort, eastern Bretonnia will be wide open."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        }
+      },
+      "Content": "The economy of the Duchy of Montfort is based on defense industry. The duchy has some of the finest quarries in Bretonnia - the hard, dark granite of the Gray Mountains, the finest stone for building castle towers. Montfort's iron mine produces a special type of iron ore with a high tungsten content. After being forged by dwarven smelting methods, the chain armor is 30% lighter and 20% stronger than ordinary iron armor. These military products are not only supplies for personal use, but also important commodities for export. Both the empire and the dwarves are willing to pay high prices to buy Monfort rock and steel."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Montfort's military life required female nobles to be proficient in defensive tactics. I was taught how to organize the evacuation of refugees, deploy supplies to defend the city, and direct the archers to shoot since I was a child. Male knights here respect those who are capable - regardless of gender. When the enemy is clamoring at the foot of the mountain, no one in the castle cares whether you are a man or a woman, only whether you can draw a bow and shoot an arrow."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null
+      },
+      "Content": "Our family has been stationed for generations in a small fort at the forefront of Monfort Canyon. Duke Fourcade calls us \"Mountain Keepers\" - an honor that smells like rust. Each generation of patriarch must personally repair the outer wall of the fortress once during their term of office, symbolizing that the family's defense mission will never end."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Montfort's castle is suffocating - flanked by towering gray rock walls, it's as if the entire world has been compressed into a narrow canyon. I saw Duke Fourcade inspecting the border guards in the tavern down the mountain. The deep scars on the old man's face were more like a medal than any decoration."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Monfort's arms trade was small but extremely profitable. Local granite and specialty iron materials are extremely popular inland, but transportation is difficult—the roads through the Gray Mountains are open only three to four months a year. Stocking up on goods and waiting for the best selling point is the basic skill of Monfort merchants."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "The Principality of Montfort is located in the canyon of the Gray Mountains and is known for its solid defensive fortresses and mountain warfare capabilities.",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Fortified Fortress in the Gray Mountains of the Principality of Montfort"
+  ]
+}

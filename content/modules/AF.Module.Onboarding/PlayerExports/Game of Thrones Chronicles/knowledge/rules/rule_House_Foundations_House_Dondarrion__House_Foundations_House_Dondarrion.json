@@ -1,0 +1,152 @@
+{
+  "Id": "rule_House_Foundations_House_Dondarrion",
+  "Keywords": [
+    "House Dondarrion",
+    "Forked Purple Lightning",
+    "Starry Black Field"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Dondarrion family is based in Blackport City and is the lord of Dorne in the Stormlands. The family emblem is centered on the purple forked lightning in the black starry sky; it is said that the ancestor of the family was the messenger of King Durandon and was awarded the title for bringing back the warning of Dorne attack in time. This origin legend just illustrates the value of a frontier family: knowing the roads, lighting the beacon fire in time, and letting the news arrive faster than the enemy. When border people measure Heigang City, they first look at whether it can keep the direction of the bone road."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "stormlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The nobles of the Stormlands recognize the purple forked lightning in Blackhaven, and are happy to tell how that lightning gave their family their name. Dondarrion's real weight still comes from the duties of a vassal on the frontier: guarding the roads, raising riders, and sending troops when the call to Storm's End comes. Legend makes a name brighter, and border responsibility determines how long it will shine."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "stormlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Darkporters are not romantic about lightning. Thunderstorms can split trees, frighten horses, and illuminate strangers on the mountain trail in an instant. The people judge Dondarrion based on whether the lightning flag came in time: whether there were riders when the bandits appeared, and whether the court still collected enough taxes after the crops were destroyed."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Dornish Marchers saw Dondarrion as the Storm Noble on the other side of the Crimson Mountains. There are trade routes between them, as well as memories of old raids and battles. The lightning in Blackhaven is a family legend in the Stormlands, and in the eyes of Dornish travelers, it is a flag to remind them to cross the border with caution."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Dondarrion The Dornish March lords of Blackport City, whose family sigil is a purple forked lightning among black stars. The legend of the enshrinement is related to the transmission of orders and warnings, and is based on the beacon fire, roads and border defenses in the direction of the bone road; the motto is unknown. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Dondarrion The Dornish March lords of Blackport City, whose family sigil is a purple forked lightning among black stars. The legend of the enshrinement is related to the transmission of orders and warnings, and is based on the beacon fire, roads and border defenses in the direction of the bone road; the motto is unknown. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Dondarrion The Dornish March lords of Blackport City, whose family sigil is a purple forked lightning among black stars. The legend of the enshrinement is related to the transmission of orders and warnings, and is based on the beacon fire, roads and border defenses in the direction of the bone road; the motto is unknown. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Dondarrion The Dornish March lords of Blackport City, whose family sigil is a purple forked lightning among black stars. The legend of the enshrinement is related to the transmission of orders and warnings, and is based on the beacon fire, roads and border defenses in the direction of the bone road; the motto is unknown. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "House Dondarrion: The Dornish March lords of Blackport City, whose family sigil is a purple forked lightning among black stars. The legend of the enshrinement is related to the transmission of orders and warnings, and is based on the beacon fire, roads and border defenses in the direction of the bone road; the motto is unknown."
+  ]
+}

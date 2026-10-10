@@ -1,0 +1,131 @@
+{
+  "Id": "rule_House_Foundations_Cerwyn",
+  "Keywords": [
+    "Cerwyn",
+    "House Cerwyn"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Severn family is based in Severn City and is a vassal of Stark in the North. Their emblem is a black battle ax on a silver background. The castle is located in an area south of Winterfell, close to the King's Road and the White Knife River, making this gate more exposed to the coming and going of armies, caravans and Winterfell summons than the lords of the Far North. The battle ax emblem is suitable for the northern martial arts, but it does not prescribe the same temperament for all tribesmen; Severn's actual reputation comes from guarding the road, sending troops, managing the surrounding fields and forests, and maintaining a close relationship with Winterfell. To the locals, whether the castle dealt with bandits and winter treasures in a timely manner was more important than how sharp the family crest looked."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The nobles of the north regard Severn as a reliable vassal near Winterfell. Distance brings honor, but also more frequent summons and scrutiny; the closer you are to the wolf master, the harder it is to explain being late with the long distance and deep snow. The value of the Tomahawk Flag lies in its quick presence on the highway when needed."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Those near Severn City were familiar with the horse hooves and the strange procession on the road. Business travelers bring news, and armies bring food and grass. The people hoped that Severn's battle ax would be used to cut down on bandits and enemies, rather than just be sharp when taxing people."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Cerwyn Entry Cerwyn The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Cerwyn Entry Cerwyn Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Cerwyn Entry Cerwyn The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Cerwyn Entry Cerwyn They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Cerwyn: Entry Cerwyn"
+  ]
+}

@@ -1,0 +1,159 @@
+{
+  "Id": "rule_Aquitaine",
+  "Keywords": [
+    "Principality of Aquitaine_AQ",
+    "Duchy of Aquitaine_AQ",
+    "Territory of Aquitaine_AQ",
+    "Coast of Aquitaine_AQ",
+    "Duke of Aquitaine_AQ",
+    "Aquitaine_AQ"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Duchy of Aquitaine is located on the southern coast of Bretonnia and is ruled by Duke Armand de Aquitaine. This place has a warm climate and pleasant scenery. It is famous for its beautiful seaside estates and gentle aristocratic culture. Aquitaine is one of the birthplaces of Bretonnian poetry and music, where the bardic tradition flourished most."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Aquitaine - the land of tenderness is also the proving ground for the knight's heart! The Duke Armand's study contains the richest collection of poetic manuscripts in Bretonnia. We Aquitaine believe that a true knight must not only have a sword, but also a song. The sea breeze from the south makes the grapes here sweeter, the olives more fragrant, and even the knight's spear charge seems a bit poetic."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Duchy of Aquitaine was not a powerful force in Bretonnia militarily, but it was important in the cultural and diplomatic fields. The court of Duke Armand was the social center of the southern aristocracy, and many important marriages and alliances were finalized at Aquitaine's poetry gatherings and banquets. Although the navy here is small, it is enough to protect coastal trade routes from pirate harassment."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        }
+      },
+      "Content": "The economic advantage of the Principality of Aquitaine lies in the combination of agriculture and cultural industries. The sunshine and soil conditions on the south coast are ideal for the cultivation of cash crops such as olives, citrus and grapes. Aquitaine olive oil is considered the finest cooking oil in Bretonnia and is five to eight times more expensive than regular rapeseed oil. The principality also produces an indigo dye called \"Aquitaine Blue\", which is extracted from unique seaside plants and is an important dyeing raw material for noble fabrics. The College of Bards recruits young poets from all over Bretonnia every year, and tuition fees and sponsorships constitute the principal's characteristic income."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Aquitaine is a paradise for female nobles. Here, the bards sing not only the bravery of knights, but also the wisdom and virtue of ladies. At the Duke Armand's court gatherings, the views of women were respected - a custom unique in Bretonnia. I have my own literary salon here, which is unimaginable in other principalities."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null
+      },
+      "Content": "Our family owns the oldest olive estate in Aquitaine. Duke Armand respects cultural heritage, so he treats an ancient family like ours with special courtesy. Each generation of patriarch sponsors several bards—not just a show of taste but also a political investment. Bardic songs can shape a family's reputation in Bretonnia for centuries."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The seaside town of Aquitaine exudes a laid-back vibe. White stone walls, blue wooden windows, and the silver-green leaves of the olive trees sparkle in the afternoon sun. I listened to an old bard singing \"The Twelve Comrades of Gilles\" in a seaside tavern in Aquitaine - a full three hours of playing and singing, which didn't end until the moon sank into the sea."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The market for Aquitaine is small but lucrative. Olive oil and indigo dye are two major commodities, especially indigo dye, which is in short supply among the imperial aristocracy. But be careful: Duke Armand’s protection of the cultural industry restricts foreign businessmen from entering the economic circle of the College of Bards. Cooperating with local manor owners is the safest business strategy."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "The Principality of Aquitaine is located on the southern coast of Bretonnia and is known for its warm climate, poetic tradition and laid-back culture.",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Bretonnia, Duchy of Aquitaine, home of poetry and song on the southern coast"
+  ]
+}

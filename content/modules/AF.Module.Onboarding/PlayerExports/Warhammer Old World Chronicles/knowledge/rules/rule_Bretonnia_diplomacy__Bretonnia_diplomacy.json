@@ -1,0 +1,210 @@
+{
+  "Id": "rule_Bretonnia_diplomacy",
+  "Keywords": [
+    "Bretonnia Diplomacy",
+    "Bretonnia external",
+    "Chivalry to the outside world",
+    "Bretonnia Chivalrous Expedition",
+    "Baator Covenant",
+    "Holy Grail Diplomacy",
+    "Alliance of Axbite Pass",
+    "Gray Mountain Oath",
+    "knight league"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Bretonnia's foreign policy is guided by chivalry - honor is policy. Bretonnia maintains a complex relationship with the empire that is sometimes cold and sometimes cooperative, maintains a crusader-style religious hostility towards the Arabi kingdoms to the south, has an ancient friendship with the dwarf kingdom due to a mutual respect for crafts and oaths, and its connection with the elves is hidden behind a mysterious veil."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The diplomacy of Bretonnia is not the whispers of diplomats in overstuffed chairs—it is the glorious poetry of knights written with lances in the jousting ring. We have mixed feelings about the Empire: an Imperial merchant can sell an unreasonably high price to the manors of Bretonnia, but the same Imperial soldier will fight against Chaos on the battlefield alongside the Knights of Bretonnia. We respected the Empire but never trusted it - those Elector Count politics seemed to us a corruption of the monarchy. The dwarves are completely different: their oaths are as heavy as ours. Historically, the dwarves fought side by side with the Bretonnian knights against the greenskin invasion. This debt of gratitude is written on the anvil stone and will not fade away. The Arabi kingdoms to the south are pagan, but the age of holy war is over and they now maintain a fragile and unhappy peace. And there is an unspeakable mysterious border between the Wood Elves - who live next to us in the forests of Aeshel Loren - and them."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "There is only one most important consideration in Bretonnia's diplomatic decision-making: where is the bottom line of chivalry? Allying with the Empire makes sense militarily - the combined force of Imperial muskets and Bretonnian knights can destroy almost any enemy, but politically you have to explain why you're fighting alongside an 'army of merchants who buy votes for their votes', otherwise your vassals will privately question your knightly character. Covenants with the dwarves are the most stable piece of Bretonnia's diplomacy: the dwarves guard their oaths as fiercely as they guard the secrets of their forges, and they never voluntarily break a covenant. The non-intervention pact between the forest elves and Bretonnia was a subtle diplomatic creation, with no written agreement ever formally signed by either side, but no one had crossed that invisible border for hundreds of years. Any Lord of Bretonnia when considering foreign policy should repeatedly ask himself: Will this decision bring shame to the goddess when spoken in the Cathedral of the Holy Grail? If you're not sure, don't do it."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 100
+        },
+        "IdentityIds": null
+      },
+      "Content": "Bretonnia's diplomatic practice was a complex of contradictions—a constant pull between the absolutism of chivalry and geopolitical realism. The history of Bretonnia-Imperial relations best illustrates this contradiction: a full-scale war never officially broke out between the two countries, but the events of the Gray Mountains' frictions can be compiled into a thick archive. The border dispute between the two countries mainly focuses on control of the passes in the Gray Mountains - passes are trade routes, and whoever controls the passes can collect taxes. Bretonnia's relationship with the dwarves is a model in the history of Old World diplomacy. During the invasion of the Vogt greenskins, the dwarves sent an engineer corps to help Bretonnia strengthen the castle defense. The king of Bretonnia gave back the mining rights to a silver mine in the entire Baldero Mountains. The relationship with the elves of Aethel Loren is the least written yet most mysterious part of Bretonnia's diplomacy. Scholars have noted similarities in certain theological details between the Lake Goddess and the Lake Goddess of Elven mythology—but this is a taboo subject for scholarship."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "In the diplomatic scene of Bretonnia, female nobles played a role that is completely ignored by official diplomatic history-marriage negotiations. While the Dukes were arguing in Parliament over the rates of passage over the passes of the Gray Mountains, their ladies had agreed on acceptable rates by exchanging family intelligence over the last quarter's afternoon tea. Bretonnia's female nobles could not sign treaties in their own name, but they could influence the duke's foreign policy decisions by 'accidentally mentioning them in front of their husbands'. During my own regency I had traveled to the border provinces of the Empire under the pretext of 'visiting distant relatives' - this visit was recorded as a private family affair in official Bretonnia records, but the tacit agreement I reached on that visit with Mrs. Elector Count of Imperial Osterland regarding the opening of border villages to each other in winter prevented at least three minor frictions that might have escalated into war over the next ten years. Bretonnia's diplomatic history is written by knights' oaths and lances - but the diplomacy of women, whispered on tapestry cushions and never found in any archive, is the hidden valve that keeps oaths from being ignited by a wrong provocation."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "House Diplomacy is a parallel system in which Bretonnian nobles operate outside of kingdom level diplomacy - the king has his chivalrous crusade, and we have our cross-border marriages. Our family has maintained private lines of communication from generation to generation with at least three noble families on the Imperial side over the past four hundred years, channels that have remained open even as official relations between the Empire and Bretonnia have cooled to freezing point. The most covert and most effective family tool in diplomacy is 'dual loyalty' relatives - we deliberately arrange for some branch members of the family to intermarry with civilian merchants in the empire. Their descendants do not have formal noble status in Bretonnia society, but when they operate as merchants within the empire, they have access to market intelligence that even the Elector Count of the empire may not necessarily know. When the King needed to know the true state of war readiness on the part of the Empire, he sent a messenger to us to request not troops, but information. Each of the ancient ducal families of Bretonnia maintains a private diplomatic file that has never appeared in any public records - it records not only treaties, but also the names of informants, secret channel communication codes, and the address books of members of transnational families who still maintain private mutual trust in each other's hostile camps."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Diplomacy in Bretonnia is a mysterious game of subtle rules to a mercenary like me - I've worked at outposts on both sides of the passes in the Gray Mountains and learned things that will never appear in the official narrative. The empire and Bretonnia hold an 'informal border meeting' at the Axbite Pass every spring, ostensibly to discuss the customs clearance tax for that year, but I peeked into an imperial messenger's envelope when I was helping him on his way - in addition to the memorandum of tariff negotiations, there was also a detailed arrangement for the two parties to join forces to conduct a joint anti-bandit operation in a forest north of the pass. The Empire and Bretonnia treat each other with a frosty courtesy in public, but in the shadows they unite each year to eliminate common enemies that threaten both sides - Chaos infiltrations, Beastmen migrations, and bandit alliances seeking to control the passes. True diplomacy is not the beautiful words written in the treaty, but the tacit understanding reflected in the patrol routes of the two countries' armies being deliberately arranged in winding curves that will not touch each other-I have stood guard on both sides of the pass, I know."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The most central issue in Bretonnia's foreign policy for us merchants is the tolls on passes - tolls on the passes of the Gray Mountains are the economic source of all trade friction between Bretonnia and the Empire. The tariff negotiations in the Duke's Parliament every spring directly affect the price of iron, mineral salt and cloth shipped from the Empire to Bretonnia throughout the next year. The strategy of our Chamber of Commerce is not to argue about the tax rate in Parliament, but to hedge against possible tax rate fluctuations by hoarding enough inventory on both sides of the pass three months before the negotiations. Bretonnia has given me the most favorable treatment I have ever seen in terms of trade with the dwarves - the tax paid by the dwarf caravans when passing through Bretonnia is only one-third of the imperial merchants. This is not because Bretonnia favors the dwarves, but because the dwarves exchanged hammers and oaths for this privilege a thousand years ago and no duke has dared to propose modifications, because breaking the covenant with the dwarves is regarded as the most unforgivable breach of trust in the Bretonnian knighthood."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "The Covenant of the Axbite Pass - a personal pact between King Raun and Karl Franz after they fought side by side under an orc siege",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Bretonnia's external relations and alliance system"
+  ]
+}

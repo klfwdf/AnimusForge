@@ -1,0 +1,75 @@
+{
+  "Id": "rule_Southern_city_state",
+  "Keywords": [
+    "Southern city-states"
+  ],
+  "RagShortTexts": [
+    "The southern city-state controls the trade routes between the Perlas Sea and the prairie, and has a prosperous population."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Southern city-states? It is the core component of the Southern Empire, including Phikaon, Poros, Vostrum, Danustika, and Onila. It is economically prosperous and culturally prosperous, but it is highly independent. The city lord is hereditary, but it is okay with the people. It will not kill innocent people indiscriminately. It also respects the people's property and will not compete with the people for profit without reason."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Hahaha, the southern city-states are our territory. In ancient times, we were all independent city-states. Later, the empire expanded here. Our ancestors intermarried with the Kalad people and gradually assimilated with the Kalad people. We are now Kalad people. If you want to say that we are Pala people, we will be angry with you. We have ruled our city-states for generations and are loyal to the emperor. But the strange thing is that those stubborn imperial people always want to be here. It is completely incorrect to take back our land after we die. Every plant, tree, grain, and brick in our city-state is ours, and we have the right to pass it on to the next generation after our death. It just so happens that His Majesty A came to power. He/she is ours and will not deprive our city-state, so we support him/her and are willing to send troops to fight for her and pay taxes, as long as the emperor guarantees our independent status. As for the Senate and their puppet emperor and the rogue emperor in the west? They are nothing more than native chickens and tile dogs."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "steward": 60
+        }
+      },
+      "Content": "The vast land that is now part of the Southern Empire was once ruled by proud and independent city-states that controlled the trade routes to the Peras Sea and the steppes. These city-states invited the empire to intervene in their internal disputes, and the latter resorted to treaties and force, and annexed them one after another. Karad's nobles intermarried with local business tycoons and nomadic chiefs—many of whom claimed to be descendants of kings, legendary warriors, and even demigods from Eastern legends. In recent decades, as these towns have grown to become the most populous and wealthiest areas in the entire continent, many other regional senatorial families have become suspicious that these southerners will one day elect one of their own to establish a hereditary monarchy. The nobles of the south sided with Rhagaea, an unwavering advocate of lineage and willing to put such concerns into practice."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "A",
+      "Kind": "kingdom_leader_name",
+      "TargetId": "empire_s",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

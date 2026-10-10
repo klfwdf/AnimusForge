@@ -1,0 +1,132 @@
+{
+  "Id": "rule_Folk_Customs_Ironborn_Marriage_and_Salt_Wives",
+  "Keywords": [
+    "Ironborn Marriage and Salt Wives"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The concept of marriage in the Iron Islands is deeply influenced by the sea, the tradition of plundering and the belief in the Drowned God. The salt concubine system is often described as crude in the stories of the islanders, but in the eyes of the captives and their families, it is a wound of loss of freedom; the same thing has completely different names on different shores."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Ironborn Marriage and Salt Wives"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Ironborn Marriage and Salt Wives"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Ironborn Marriage and Salt Wives"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Ironborn Marriage and Salt Wives The concept of marriage in the Iron Islands is deeply influenced by the sea, the tradition of plundering and the belief in the Drowned God. The salt concubine system is often described as crude in the stories of the islanders, but in the eyes of the captives and their families, it is a wound of loss of freedom; the same thing has completely different names on different shores. Whether it is valid depends on who can grant the rights, collect the consideration, and actually make the judgment come to fruition in the event of default."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Ironborn Marriage and Salt Wives The concept of marriage in the Iron Islands is deeply influenced by the sea, the tradition of plundering and the belief in the Drowned God. The salt concubine system is often described as crude in the stories of the islanders, but in the eyes of the captives and their families, it is a wound of loss of freedom; the same thing has completely different names on different shores. If a rule is practiced over and over again, it will find its way into rituals, crafts, and prayers; if it is sustained only by fear, cracks will show at the onset of a crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Ironborn Marriage and Salt Wives The concept of marriage in the Iron Islands is deeply influenced by the sea, the tradition of plundering and the belief in the Drowned God. The salt concubine system is often described as crude in the stories of the islanders, but in the eyes of the captives and their families, it is a wound of loss of freedom; the same thing has completely different names on different shores. They remember taxes, grain, labor, relief and who can speak for them; these grand names will eventually fall on the family's rice pot."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Ironborn Marriage and Salt Wives: The concept of marriage in the Iron Islands is deeply influenced by the sea, the tradition of plundering and the belief in the Drowned God. The salt concubine system is often described as crude in the stories of the islanders, but in the eyes of the captives and their families, it is a wound of loss of freedom; the same thing has completely different names on different shores."
+  ]
+}

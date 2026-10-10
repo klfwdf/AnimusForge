@@ -1,0 +1,94 @@
+{
+  "Id": "rule_alantas",
+  "Keywords": [
+    "Alantas"
+  ],
+  "RagShortTexts": [
+    "The village of Alantas is located on the Ibo Peninsula, with iron ore resources as its economic pillar."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Alantas is a village near Rovalt, situated in the center of the mountainous Ibo Peninsula. Though the soil is poor and the climate cold, rich iron ore resources sustain the local economy. Miners in the village dig iron ore in the mountains year-round to supply smithies across Vlandia."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The iron ore of Alantas is famously good throughout Vlandia. Out there in the middle of the Ibo Peninsula, it is so cold and barren that growing anything pays far worse than digging mines. All those smithies in Rovalt depend entirely on the pits of Alantas for their ore. If you ever meet a miner from Alantas, both his hands are sure to be covered in rust and calluses."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "townsfolk"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The iron ore trade in Alantas is rock-solid. Those mine pits on the Ibo Peninsula have been worked for many years, the veins are genuinely thick, and the quality is fine too. The blacksmith shops in Rovalt use nothing but ore from Alantas, forging swords and armor that are both hard and tough."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "blacksmith"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "In all my years as a blacksmith, ore from Alantas has been some of the best material to work with. High iron content, few impurities—put it in the furnace and out comes fine iron. Many of the blades forged over in Rovalt, whether axes in the Nord style or spears for Sturgia, are hammered out of ore dug from the pits of Alantas."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Alantas",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "Rovalt",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

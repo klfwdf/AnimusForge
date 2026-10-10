@@ -1,0 +1,23 @@
+{
+  "Id": "rule_Kingdom_of_France_and_Saint_Louis_IX",
+  "Keywords": [
+    "Kingdom of France",
+    "Louis IX",
+    "Saint Louis",
+    "Treaty of Paris",
+    "Capetian Dynasty",
+    "Parlement of Paris"
+  ],
+  "RagShortTexts": [
+    "Under King Louis IX, the Kingdom of France reached the zenith of Capetian prestige, legal arbitration, and Christian moral authority in Europe."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Kingdom of France under Louis IX (reigned 1226–1270) stood as the preeminent political and moral power in Western Christendom. Combining personal asceticism and Christian piety with rigorous administrative statecraft, Saint Louis centralized judicial authority through the Parlement of Paris and dispatched itinerant royal commissioners (enquêteurs) to rectify administrative abuses across the provinces.\n\nThe historic Treaty of Paris of 1259 marked the crowning triumph of Capetian diplomacy: Henry III of England surrendered ancestral Plantagenet claims to Normandy, Maine, Anjou, and Poitou, in exchange for retaining Gascony and Aquitaine under explicit feudal liege homage to the French Crown. Louis IX's reputation for impartial justice made the French royal court the supreme tribunal of arbitration for disputes across European Christendom."
+    }
+  ],
+  "TextMappings": []
+}

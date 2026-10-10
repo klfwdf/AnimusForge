@@ -1,0 +1,211 @@
+{
+  "Id": "rule_Chaos_Evil_God",
+  "Keywords": [
+    "The evil god of chaos",
+    "Khorne",
+    "Nurgle",
+    "Xin Liezhi",
+    "Slaanesh",
+    "Chaos Evil God Four Gods of Chaos",
+    "Blood God",
+    "Father of Plagues",
+    "Chaos God Weaver of Destiny",
+    "prince of darkness"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Four Gods of Chaos are the four dark gods who rule the realm of Chaos. Sitting on a throne of brass, Khorne feeds on blood and skulls and is the source of all war and fury. Nurgle, the Father of Plagues, is bloated and corrupt in appearance, but he inflicts disease and corruption on all living beings with twisted kindness. Xin Liezhi - the Weaver of Destiny - is an ever-changing bird who weaves the threads of fate for all mortals, rejoicing in cunning and change. Slaanesh - the Prince of Darkness - is the youngest and most dangerous evil god. He controls all extreme pleasure and pain, seducing souls to sink forever in the labyrinth of desire."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "chaos_culture"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Our God is real—not an imaginary belief, but a living force that manifests on the battlefield and blesses in mutation. Khorne doesn't care who your blood comes from, as long as you keep killing and sacrificing skulls, you can feel his hot approval coursing through your veins. Grandpa Nurgle is the most loving of all grandfathers - he takes in all those abandoned by the world, turns their pain into endurance, and turns their bodies into an impenetrable fortress of decay. Xin Lieji guides us every step of the way - his plans and counter-plans are beyond mortal comprehension, but when you learn to trust the winds of destiny, you will find perfect peace of mind amidst the chaos. What Slaanesh bestows upon us is not sin, but the awakening of the senses beyond mortal limits."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Four Gods of Chaos have a profound and concrete impact on military strategy. Although Khorne's followers are irascible and easily lured into ambushes, their fervor for battle in direct confrontation is almost unstoppable. Nurgle's legions are slow but nearly unstoppable, and their disease is a scourge no supply line can withstand - in a siege they can wait patiently for disease to open the gates for you. Although Xin Liezhi's followers appear to be chaotic, there are always multiple layers of conspiracies hidden behind them. Underestimating them will lead to fatal strategic misjudgments. Champions of Slaanesh strive for sensual perfection, with speed, grace, and refined brutality as their hallmarks—and they are often the most unpredictable of tactical opponents."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 100
+        },
+        "IdentityIds": null
+      },
+      "Content": "The Four Gods of Chaos represent the cosmic embodiment of four extreme emotions. Khorne's essence is war, rage, blood, and courage—but only \"brainless courage.\" He despises magic and trickery. Nurgle is the embodiment of despair, disease, life in decay, and twisted fatherly love - his gift is that his followers no longer fear death, because death itself has become their weapon. Tzeentch is in charge of change, destiny, knowledge, hope and trickery - he is the personification of magic itself, and the most difficult evil god to understand by mortals, because he is always weaving a web of countless possibilities. Slaanesh was born at the last moment of the fall of elven civilization. He controls desire, pleasure, pain, perfectionism and the pursuit of all sensual extremes - his followers will eventually become insensitive to any normal stimulation and can only pursue more and more extreme experiences to satisfy their souls that can never be satisfied. The network of relationships between the four gods is the most complex structure in cosmic politics: Khorne and Slaanesh, Nurgle and Xinliji are natural rivals, but any stable balance of two versus two may be broken by random events."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The four gods of Chaos have very different attitudes towards female believers. This is a theological issue that was deliberately ignored by the Puritans of the Empire. Khorne has no interest in gender - he is only interested in the number of skulls severed, and the Norsca Shieldmaiden is equal to any male champion in the eyes of the Blood God. Nurgle is - to be fair - the only god who, in a twisted way, truly 'cares' for his followers, regardless of age or sex, with his rotten embrace. Xin Liezhi favored sorceresses because certain qualities of women in terms of intuition, stealth, and multi-threaded thinking were more in line with his fate-weaving nature—at least three known Chaos Witches had become Xin Liezhi's chosen champions and nearly overturned a kingdom each. Slaanesh - followers of the Dark Prince are gender-neutral, but women face unique traps among them: because the mortal society of this world has given women unique weapons in beauty and temptation, many female Chaos Champions initially thought they could enslave the power of Slaanesh to complete their own revenge or ambition, but never realized that the Dark Prince's ultimate goal is always to turn the dominant into the dominated."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "As clan leader, I must finely manage the balance of worship of different evil gods within my clan—the most delicate art of Norscan politics. A clan cannot worship just one evil god - the patronage of a single god would make the clan powerful in some ways but extremely vulnerable in others - but worshiping all four means that the clan is not considered 'exclusive territory' by any one evil god and may be conveniently discarded whenever a sacrifice is needed. My family has chosen an ancient path of the Three Gods: Khorne as the god of war, Xinrej as the god of fate, and Nurgle as the god of survival, but deliberately avoids all rituals related to Slaanesh - not because of fear of the dark prince, but because worshipers of Slaanesh will naturally be regarded as 'weak' in front of the followers of the other three gods and will be ostracized in political alliances."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "On the fringes of the Chaos Wastes, in an abandoned Norsca longhouse, I found side by side small altars of metal—rust red, green, blue, purple—that had been hacked away with an ax by their owners in anger. This hints at the desperation of the owner: he tried all four evil gods, one after the other, but none responded. In Norscan culture, this is considered the most horrific fate - not being cursed by an evil god, but being 'ignored' by an evil god. The ignored are seen as beings of insufficient value, not even worthy of destruction. For a Norscan warrior, the greatest fear is not death, but being forgotten in an unknown corner."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "There is a complex but undisclosed monitoring system within the Empire regarding the economic impact of the worship of the Chaos God. The witch hunters of the Church of Sigmar don't just track heresy - they secretly track an economic indicator: the 'sacrifice price index' - the fluctuations in gray market prices for black sheep, certain spices and silver ritual vessels. When the price of these goods suddenly rises in a certain area, it usually means that there is an organized secret worship of the evil god in that area. The chamber of commerce where I work once accidentally discovered that the purchase of a specific type of purple silk in the imperial city of Nunn increased sevenfold in three months, and the buyers were all anonymous cash transactions. After receiving our cooperative report, the witch hunters uncovered a hidden Slaanesh ritual group in the city, which included three nobles and a lecturer from the Imperial Engineer Academy."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Khorne - the blood god, the dark god of war and courage who sits on the throne of brass.",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Theological attributes and belief system of the Chaos Evil God"
+  ]
+}

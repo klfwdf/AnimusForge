@@ -1,0 +1,132 @@
+{
+  "Id": "rule_House_Foundations_Leger",
+  "Keywords": [
+    "Leger",
+    "House Leger"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Legge family is based in Willow City and is a noble family in the Riverlands. Rivers, willows and wet lowlands shaped his estates, and made bridges, embankments and boat routes the lord's daily responsibilities. The Legg people have vassal and personal relationships with the Tully family, and individual members can become partners of the Riverrun heir; however, the family's continuation still depends on land management, kinship marriages, and choices in each summons."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "river"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The nobles of the Riverrun region regarded Lygg as a vassal familiar with the local waterways. Personal friendship can open doors, but it cannot replace the obligations of vassals; true trust must be proven repeatedly in floods, lawsuits, and expeditions."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "river"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "sailor",
+          "artisan"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "People around Willowwood City lived by water levels rather than the palace calendar. If Lege can build embankments, protect fields, and secure ferries, they say that the lord has fulfilled his responsibilities; if he only cares about banquets, the first spring flood will expose all dignity."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Leger The Legg family is a noble of the Riverlands. Their family property is connected to Willowwood City and the river wetlands. Their people often serve under the Tully family. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Leger The Legg family is a noble of the Riverlands. Their family property is connected to Willowwood City and the river wetlands. Their people often serve under the Tully family. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Leger The Legg family is a noble of the Riverlands. Their family property is connected to Willowwood City and the river wetlands. Their people often serve under the Tully family. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Leger The Legg family is a noble of the Riverlands. Their family property is connected to Willowwood City and the river wetlands. Their people often serve under the Tully family. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Leger: The Legg family is a noble of the Riverlands. Their family property is connected to Willowwood City and the river wetlands. Their people often serve under the Tully family."
+  ]
+}

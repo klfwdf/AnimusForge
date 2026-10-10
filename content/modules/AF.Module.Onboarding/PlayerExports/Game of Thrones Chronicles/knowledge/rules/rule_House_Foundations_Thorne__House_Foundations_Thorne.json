@@ -1,0 +1,152 @@
+{
+  "Id": "rule_House_Foundations_Thorne",
+  "Keywords": [
+    "Thorne"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Ser Alliser Thorne fought for the Targaryen dynasty and was defeated and forced to choose between death and black clothing; the humiliation made him remember the victory of the new dynasty, the pride of the noble children, and his own exile in his heart. He trains new recruits at Castle Black, being mean, harsh, and good at humiliating the weak, but not without courage or discipline. For him, Night's Watch is first and foremost an army that must obey orders, and tenderness is worthless if it weakens combat effectiveness."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nightswatch"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "peasant",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Many Night's Watch recruits hate Thrawn because he uses nicknames and humiliations to find weakness and sometimes just enjoys power. Those who have survived the training have to admit that the sword holding, formation and vigilance he taught can really save lives in the ice and snow."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nightswatch"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "It is easier for the noble-born black brothers to see Thorne's old wounds: he fought for the defeated king and was then sent to the end of the world by the victor. His resentment is not worthy of praise, but it is not without reason."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Northerners generally dislike his hostility to the Starks, but respect those who actually defended the Wall. Thorne was a stern officer if he could subordinate his personal grudges to duty; if he could not, his discipline would become vindictive."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Thorne Castle Black's coach, Alliser Thorne, is strict and vengeful, but he also has real combat experience and a sense of oath-keeping. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Thorne Castle Black's coach, Alliser Thorne, is strict and vengeful, but he also has real combat experience and a sense of oath-keeping. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Thorne Castle Black's coach, Alliser Thorne, is strict and vengeful, but he also has real combat experience and a sense of oath-keeping. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Thorne Castle Black's coach, Alliser Thorne, is strict and vengeful, but he also has real combat experience and a sense of oath-keeping. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Thorne: Castle Black's coach, Alliser Thorne, is strict and vengeful, but he also has real combat experience and a sense of oath-keeping."
+  ]
+}

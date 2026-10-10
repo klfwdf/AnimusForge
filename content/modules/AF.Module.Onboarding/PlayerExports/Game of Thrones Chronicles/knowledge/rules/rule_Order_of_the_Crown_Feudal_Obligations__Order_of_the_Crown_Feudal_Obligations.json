@@ -1,0 +1,148 @@
+{
+  "Id": "rule_Order_of_the_Crown_Feudal_Obligations",
+  "Keywords": [
+    "Feudal Obligations",
+    "Levy Muster",
+    "Oath of Fealty",
+    "Protection"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The rule of Westeros is connected by layers of oaths: under the king there are great lords, under the great lords there are counts, knights and property owners, and at the bottom are the people who cultivate the land, pay taxes and bear labor. Vassals were usually required to respond to levies, provide troops and supplies, attend meetings, and pay agreed tributes; lords were expected to protect their fiefdoms, administer justice, recognize inheritances, and maintain order in disasters. Marriage, parenting, guardianship, and hostage are often used to strengthen relationships. Obligations were rarely entirely clear: oaths to lords, in-laws, and crowns could conflict, and distance and strength determined how well orders were carried out."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Nobles spoke of feudal obligations as mutual, but argued about the number of soldiers, deadlines, and priority oaths at each call. The most dangerous problem is usually not that no one has sworn an oath, but that one person has sworn an oath to too many people."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "What the soldiers and farmers saw was the weight of the oath: leaving the fields to join the army, handing over grain and horses, and shedding blood for disputes they had never seen before. If the lord cannot protect his homeland, calls for loyalty will ring hollow."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "priest",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Merchants need steady paths, clerics emphasize the sanctity of oaths, and maesters record precedents of rights. All three know that the real operation of the system depends not on beautiful words, but on whether someone has the ability to pursue the breach of contract."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Feudal Obligations Lords exchanged land, justice, and protection for military service, taxes, and loyalty from their vassals, and layers of oaths both maintained the kingdom and created conflict. They start by asking who is obligated, who is protected, and who will seek justice after a breach of contract."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Feudal Obligations Lords exchanged land, justice, and protection for military service, taxes, and loyalty from their vassals, and layers of oaths both maintained the kingdom and created conflict. For them, what really matters is whether the orders can arrive, whether the roads are safe, and whether the food and pay can be received on time."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Feudal Obligations Lords exchanged land, justice, and protection for military service, taxes, and loyalty from their vassals, and layers of oaths both maintained the kingdom and created conflict Beautiful oaths that are not backed up by land, military strength, or sacred tradition can quickly be reinterpreted by the next crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Feudal Obligations Lords exchanged land, justice, and protection for military service, taxes, and loyalty from their vassals, and layers of oaths both maintained the kingdom and created conflict. What is remembered is not who spoke the loudest in the hall, but which rule saved the family from starvation, conscription, or endless fighting."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Feudal Obligations: Lords exchanged land, justice, and protection for military service, taxes, and loyalty from their vassals, and layers of oaths both maintained the kingdom and created conflict."
+  ]
+}

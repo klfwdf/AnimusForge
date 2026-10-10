@@ -1,0 +1,172 @@
+{
+  "Id": "rule_Banu_Saran",
+  "Keywords": [
+    "Bhanu Saran"
+  ],
+  "RagShortTexts": [
+    "Banu Salan was expelled into the desert for hundreds of years, and after returning, he occupied the eastern border of Hulayyan"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "House Saran is one of the components of the Aserai. At the Battle of Pandrak, Nimr of this family led Aserai warriors, including his own, into battle. According to eyewitness accounts from the family, they first defeated the Battania archers on the battlefield, and then were flanked by the Vlandia knights, but the imperial reinforcements did not arrive in time. Nimr returned home after the war and was regarded as a hero by his family. After that, he interacted with a woman from the Gilad tribe, and was captured and executed by the Gilad tribe. His body was displayed in the market of Hubia city. The Sallan family believes that the actions of the Empire and the Vlandia people can be forgiven, but their hatred of the Gilad tribe cannot be resolved. A settlement ruled by a family is a"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The settlement ruled by the family is a The Saran family is one of the clans of the Aserai. During the Battle of Pandrak, a warrior of the family named Nimr led a group of Aserai into the battle, including both members of the Salan family and members of the Gilad family. It is said that the Battania shooters were first repelled on the battlefield, and then they were attacked by Vlandia cavalry, but no reinforcements from the Empire arrived. After the war, Nimr returned home and was hailed as a hero. Later, in the city of Hubia where the Gilard family was located, he was captured and executed by the Gilard family because of his dealings with a woman from the Gilard family. His body was hung in an iron cage in the market. Since then, the two families have become enemies, and there are many rumors about this matter."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Banu Salan is one of the oldest and most controversial families in the Aserai Sultanate. They claim to be direct descendants of Asera, the legendary ancestor of the Aserai and whose name is revered by all Aserai tribes. Banu Saran's ancestor, Saran, was the grandson of Aserai, giving them undisputed noble blood in the Aserai lineage. But a hundred years ago, they were driven from their land and into the depths of the desert, where they have only recently been able to return. Their current territory is in the easternmost part of Aserai, close to the border of the Southern Empire - that land originally belonged to the Banu Hulayan family, but now the flag of Banu Saran is planted. Their patriarch, Adlam, is a cautious man who knows how to maintain peace, but the family's history of humiliation is like a taut string that cannot withstand too much fiddling."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "clan_aserai_2"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "We are the descendants of Salan, who is the grandson of Asela. Our blood is as old as any of the Aserai - no less ancient than House Gilad, and no less ancient than House Hulayan. But a hundred years ago, we were driven into the desert and stayed there for a whole century, while other tribes were enjoying themselves in the oases. Now we are back and have taken back the land that belongs to us - although that land used to belong to Banu Hulayan's family, who made it impossible for them to hold it? Chief Adlam is a smart man. He asked us to keep a low profile and not to conflict with other tribes. You can scold us once and we will tolerate it. You can scold us twice and we will tolerate it. But if you think you can keep scolding us, or even think you can take action against us, then you are wrong. We have endured it for a hundred years, not less than these few days. But we have pride and we have swords."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Banu Saran and his gang really don’t have to choose their bloodlines – Saran is Asela’s grandson, and this is clearly written on the genealogy. But they were driven into the desert for a hundred years, and when they came back they had changed. After hanging out with those savage tribes in the desert for too long, the customs are different from those of the serious oasis tribes. Their territory was in the far east, next to the imperial border. That place originally belonged to the Hulayan family—it was taken away by them for some reason. The patriarch Adram seems to be a good person, he talks about peace and unity, but the young people under him are not very peaceful. If you provoke them once, they will lower their heads; if you provoke them twice, they will still lower their heads; when you relax your vigilance, they may have to settle the score with you."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "clan_aserai_1"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The land where Banu Saran currently lives was inherited from our ancestors. When they came out of the desert, the Sultan gave them the border land in the east, either for resettlement or as a reward. Anyway, our land became theirs. Adram kept saying they respected us, but every time he brought it up in the Elders' Council, he started beating around the bush. We are not vengeful people, but our land is our land, it is written in the genealogy. Saran's bloodline may be very noble, but noble bloodline cannot be used as a contract."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Banu Saran is the easternmost Aserai family, directly bordering the Southern Empire. Their leader, Unqid, is a steady man and has had several dealings with our border commander, all about ceasefire and trade. From an empire's point of view, it is much better to be neighbors with such people than with tribes that are prone to raids. But this family is interesting - they were driven into the desert by other Aserai tribes a hundred years ago, and now they are back and occupy the land of the Hulayan family. A family that had been ostracized by its own people now stood on the most sensitive line between the Aserai and the Empire. Adlam is maintaining peace, but only they themselves know what a family that has been bullied for a hundred years really thinks."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "steward": 150
+        }
+      },
+      "Content": "Banu Saran is one of the most legendary families in the Aserai Sultanate. His ancestor Saran is said to be Aserai's biological grandson, and this genealogical status is extremely valuable in the Aserai tribal tradition. About a century ago, Banu Saran was expelled by a rival tribal alliance during a tribal conflict and forced to retreat deep into the desert. Unlike other tribes that gradually died out after being routed, the Banu Salan maintained their tribal structure and family genealogy intact in the desert, and re-emerged in recent decades, eventually returning to the political core of the Aserai. Their current territory is located in the easternmost part of the Aserai, bordering the Southern Empire. This land originally belonged to the Banu Hulayan family, and the exact reasons for the change of ownership are still disputed within the Aserai. The current patriarch, Adram, is known for his prudence and pragmatism. He maintains diplomatic stability on the border with the Southern Empire, and internally restrains the younger generation of the family's revenge for historical feuds. Banu Saran's situation is a typical \"returnee\" dilemma: they have regained land and status, but have not yet gained the respect commensurate with their lineage in the Aserai tribal power structure. How far Adlam can go on the peaceful path will determine whether this ancient family can truly revive or fall into the abyss again."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "a",
+      "Kind": "clan_all_settlements",
+      "TargetId": "clan_aserai_2",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "Adram",
+      "Kind": "clan_leader_name",
+      "TargetId": "clan_aserai_2",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

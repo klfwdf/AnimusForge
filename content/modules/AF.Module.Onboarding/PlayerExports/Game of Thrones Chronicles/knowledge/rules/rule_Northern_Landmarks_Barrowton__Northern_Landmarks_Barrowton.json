@@ -1,0 +1,153 @@
+{
+  "Id": "rule_Northern_Landmarks_Barrowton",
+  "Keywords": [
+    "Barrowton",
+    "Great Barrow",
+    "Western North"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Barrow Tomb is located in the western part of the North and is an important territorial center of the Dustin family. The surrounding area is dotted with barren tombs and tomb mounds left over from the ancestors’ era. The mounds are not only containers of legends, but also the people of the North’s intuitive memory of the bloodline, the connection between the deceased and the land. The area where Barrowton is located does not rely on a large harbor like White Harbor, nor is it located in the political center like Winterfell; it relies more on pastures, valleys, local roads and reserves for the long winter. The authority of the lord must rest upon the barn, the horses, the wood, and the man who could walk in the snow. Ancient tombs do not make choices for living people, but they make people here more likely to take family old debts seriously than people in the south."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Barrowton Local families also rely on firewood, hunting grounds, peat, salt fish, and granaries to survive the long winter; if any road, well, spring, or wharf fails, the price will fall on them first."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Barrowton Entry Barrowton"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Barrowton They also recognize the accents, laws, and credentials of the North; reputations can travel great distances from taverns, but true distances must still be measured by wheel, oar, or horse's hoof."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Barrowton Entry Barrowton"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Barrowton If you can supply supplies, avoid danger, and find a guide, it is worth marking in your itinerary; if you don't have these three things, no matter how loud your family name is, it won't be able to save the lost."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The craftsmen of Wild Tombs rely on workshops, markets, roof tiles, church bells, and the streets that have expanded through the ages to leave behind their craftsmanship, while the priests use old gods, weirwood trees, and the cemeteries left by their ancestors to explain life and death. A stronghold was therefore not just a lord's hall, but also a place where weddings and funerals, vows, labor and local memories recurred."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Barrowton They care about firewood, hunting grounds, peat, salt fish, and granaries that can survive the long winter. They also care about whether seeds are left after the grain collection and whether the city gates are open in times of disaster. When people from afar see coats of arms, they see whether there will be food to eat tomorrow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Barrowton: Barrow Tomb is located in the western part of the North and is an important territorial center of the Dustin family. The surrounding area is dotted with barren tombs and tomb mounds left over from the ancestors’ era. The mounds are not only containers of legends, but also the people of the North’s intuitive memory of the bloodline, the connection between the deceased and the land. The area where Barrowton is located does not rely on a large harbor like White Harbor, nor is it located in the political center like Winterfell; it relies more on pastures, valleys, local roads and reserves for the long winter. The authority of the lord must rest upon the barn, the horses, the wood, and the man who could walk in the snow. Ancient tombs do not make choices for living people, but they make people here more likely to take family old debts seriously than people in the south."
+  ]
+}

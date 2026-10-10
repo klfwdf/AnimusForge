@@ -1,0 +1,154 @@
+{
+  "Id": "rule_House_Foundations_Frozen_Shore",
+  "Keywords": [
+    "Frozen Shore Clans"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The tribes of the Frozen Coast live west of the Fangs of Frost and on the northern shore of the Ice Bay. The wind here is hard and the land is thin. People rely on fishing, hunting seals and collecting along the coast to survive. They often wear seal skins and use dogs to pull chariots; stories about riding snow bears are also spread in the north and south. Chiefs such as The Great Elephant and Davin the Seal Skinner each had relatives and followers. The politics of the coastal people are based on the reputation of the family, hunting team, and leader. The lack of resources makes sharing, revenge, and migration particularly straightforward."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "freefolk"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "sailor",
+          "peasant",
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "People on the frozen coast don’t think sealskin is crude. It is a thing to keep out the wind, change things and survive. They respect the leader who can read the ice floes and lead the hunting team back safely; those who cannot sail will have a hard time surviving here even if they are covered in gold."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "freefolk"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Other free folk viewed the Coast Tribes as powerful and eccentric distant relatives. The stories of wolf carts, seal oil and snow bears are curious, but when it comes to truly forming an alliance, what everyone cares about is how much food and warriors they can bring."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nightswatch",
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "sailor",
+          "soldier",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Night's Watch and the Northern Seafolk are both uninformed and wary of the frozen coast. A wise captain knows that local guides are extremely valuable in cold seas; treating all coastal people as savages who only want to loot will usually pay the price in the ice and fog."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Frozen Shore The Frozen Coast Tribe lives west of the Fangs of Frost and Snow, relying on seals, fishing, wolf-drawn chariots, and harsh coastal resources to survive. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Frozen Shore The Frozen Coast Tribe lives west of the Fangs of Frost and Snow, relying on seals, fishing, wolf-drawn chariots, and harsh coastal resources to survive. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Frozen Shore The Frozen Coast Tribe lives west of the Fangs of Frost and Snow, relying on seals, fishing, wolf-drawn chariots, and harsh coastal resources to survive. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Frozen Shore The Frozen Coast Tribe lives west of the Fangs of Frost and Snow, relying on seals, fishing, wolf-drawn chariots, and harsh coastal resources to survive. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Frozen Shore: The Frozen Coast Tribe lives west of the Fangs of Frost and Snow, relying on seals, fishing, wolf-drawn chariots, and harsh coastal resources to survive."
+  ]
+}

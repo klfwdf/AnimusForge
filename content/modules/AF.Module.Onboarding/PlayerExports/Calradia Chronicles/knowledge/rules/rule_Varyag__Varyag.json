@@ -1,0 +1,45 @@
+{
+  "Id": "rule_Varyag",
+  "Keywords": [
+    "Varyag"
+  ],
+  "RagShortTexts": [
+    "Varyag is the collective name for Sturgia warriors"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Varyag is the collective name for the warriors of Sturgia. They volunteered to go to the battlefield and were relatively well-equipped."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Sturgia people have never hidden their pride in Varyag - we are the \"Varyags\" of Calradia. Holding an ancestral long ax and wearing armor, the shield wall is as unshakable as a mountain. The Imperials mock us as northern barbarians? But it was our ancestors who split the defenses of Neretse with ax blades, and it was we who guarded the toughest infantry tradition on the continent. The bear pattern on each round shield, and the loud sound of every ax falling and armor cracking, prove that Varyag’s soul has never left the snowfields of Sturgia. The Varyags are our senior soldiers. Although they come from well-off families, they volunteered to join the army. We are proud of them."
+    }
+  ],
+  "TextMappings": []
+}

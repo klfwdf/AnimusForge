@@ -1,0 +1,23 @@
+{
+  "Id": "rule_Medieval_Treaties_and_Papal_Diplomacy",
+  "Keywords": [
+    "Medieval Diplomacy",
+    "Treaty of Paris 1259",
+    "Papal Legates",
+    "Chancery",
+    "Feudal Treaties",
+    "Arbitration"
+  ],
+  "RagShortTexts": [
+    "Medieval international diplomacy functioned through royal chanceries, papal legates, solemn oaths upon relics, and dynastic marriage treaties."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "In 1259, international diplomacy had evolved into a sophisticated legal practice centered on royal chanceries, Latin correspondence, and canon law. Dynastic treaties were negotiated by senior clerics, bishops, and chancellors, sealed with majestic wax Great Seals, and consecrated through public oaths sworn upon sacred relics and the holy Gospels.\n\nPapal legates (legati a latere) possessed supreme diplomatic authority, dispatched across Christendom to broker royal truces, enforce crusading tithes, and negotiate peace treaties such as the 1259 Treaty of Paris and the Treaty of Corbeil. Diplomatic pacts were invariably cemented through dynastic marriage alliances, dowries of border fiefs, and mutual mutual defense guarantees against common pagan or heretical threats."
+    }
+  ],
+  "TextMappings": []
+}

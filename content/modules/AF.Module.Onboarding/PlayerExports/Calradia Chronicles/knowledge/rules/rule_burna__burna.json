@@ -1,0 +1,93 @@
+{
+  "Id": "rule_burna",
+  "Keywords": [
+    "Burna"
+  ],
+  "RagShortTexts": [
+    "Characteristics of acorn-fed pork from Burna."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Burna is a village near Jaculan, situated in the Nar Valley right at the foot of Mount Biskan. Like residents in many parts of central Vlandia, the local villagers specialize in raising pigs on the abundant acorns that fall from the local oak trees."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The pigs of Burna are not quite like those elsewhere—the Nar Valley is thick with oaks, and in autumn acorns carpet the ground, so the pigs roam free in the woods and feed entirely on acorns. At banquets over in Jaculan, if roast pork is marked as coming from Burna, the price doubles."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "townsfolk"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Smoked meat from Burna always sells well at the Jaculan market. Pigs fed on acorns have firm flesh and thin fat. Pork exported from the Nar Valley tastes better than pork from anywhere else; anyone who knows their food can tell at first bite that it was raised in the oak woods."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "When I stayed the night in Burna, I ate the most fragrant stewed pork of my entire life. The locals said the secret is letting the pigs eat acorns in the woods, which naturally gives the meat a clean, sweet aroma. They even packed me a small pouch of smoked pork jerky, which I chewed on along the road for days."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Burna",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "Jie Qu Lang",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

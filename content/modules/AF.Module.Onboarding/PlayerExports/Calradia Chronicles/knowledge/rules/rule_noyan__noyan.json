@@ -1,0 +1,30 @@
+{
+  "Id": "rule_noyan",
+  "Keywords": [
+    "Noyan",
+    "Beg",
+    "Begi"
+  ],
+  "RagShortTexts": [
+    "Noyan is the title for chieftains of the Khuzait clans"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Noyan is the title given to the chieftains of the Khuzait clans; a male Noyan is addressed with the honorific Beg, and a female Noyan with the honorific Begi"
+    }
+  ],
+  "TextMappings": []
+}

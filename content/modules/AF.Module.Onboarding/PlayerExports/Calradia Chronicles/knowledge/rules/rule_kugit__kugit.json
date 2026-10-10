@@ -1,0 +1,239 @@
+{
+  "Id": "rule_kugit",
+  "Keywords": [
+    "Kugit"
+  ],
+  "RagShortTexts": [
+    "The Kujit were once a large tribe, but they were coveted by other tribes after the Battle of Pandrak."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Kugits were a very important tribe within the Khuzait Khanate. They did not originally belong to the Khuzait, but joined during the war of Ulhun Khan, but this does not prevent them from integrating perfectly into the grassland. This tribe has always been known for its bravery and fearlessness, but now, after losing a large number of adult men in the Battle of Pandrak, the leadership of the tribe has fallen into the hands of a tough woman and is facing unprecedented difficulties."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Kujit Ministry? They were once one of the largest tribes on the grassland, second only to the Monchug Khan's Uerhunnait. It's a pity that in the battle of Pandrac, they lost all their wealth for the empire's gold. Their leader now is Mo Suyi, the widow of Suilun Nayan. With a woman as the head of the family, other tribes were jealous of their pastures and livestock. If Monchug hadn't been sweating profusely, the Kugit tribe would have been torn to pieces by the surrounding jackals."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Ms. Mo Suyi is a person I respect. When she took over Kujit's mess, the men in the ministry were almost dying. But she did not give in. She defended the family's power like a she-wolf, and even dared to speak for the bullied small tribes at the meeting. She said that those small tribes shed blood and sweat for the Khanate, but did not get the rewards they deserve - this offended many large tribes, but also secretly admired many people."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "townsfolk"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Kugit Ministry is no better now than it was then. In the past, their horses could run from Otungard to Baltahan, but now? Their leader is a widow named Mo Suyi, who is always on guard against other tribes coming to snatch their livestock. But I heard that this woman is very powerful, shows no mercy to her enemies, and is fair in doing business."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": [
+          "clan_kujit"
+        ],
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Our leader is Mo Suyi, the widow of Suilun Nayan. The Battle of Pandrak claimed her husband, brothers, and countless relatives. We don't fight for glory, we fight for the gold of the empire! But the battle was over, the Vlandians were repulsed, but Emperor Neretses was beheaded, and no one paid us. To make matters worse, when the Achit heard that all our men were dead, they came to rob our cattle and kill our people. Monchug Khan was almost indifferent. This is the lesson we learn: the brave die, the traitors get rich."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": [
+          "clan_kujit"
+        ],
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Chief Mesuyi is right, we Kugits suffered a lot in this war. We have lost too many people. Just because a female leader leads us, other tribes think we are weak and covet our land. Were it not for the power Monchug Khan had, they would have taken action long ago. For a tribe like ours, a powerful khan is a blessing."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": [
+          "clan_kujit"
+        ],
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "warrior"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "I was in Pandrak at that time. We followed Suilun Nayan and rode our best horses towards the Vlandian positions. Unexpectedly, the Vlandians prepared so many crossbowmen, and arrows flew like locusts. But we still broke through their lines and routed them to a pulp. But did we win? Suilun Nayan died in the battle, and his brothers and sons also died. We won the battle, but lost our tribe's future."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Kugits were the empire’s most effective mercenaries in the Battle of Pandrak, and they were also the worst victims. Armed with imperial dinars, they charged like mad and overran the Vlandian positions. But what's the result? Emperor Neretses died, no one paid them the balance, and their tribe was taken advantage of by enemies. Our empire owes them a debt."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Kugits, the most ferocious opponents of our Vlandians at the Battle of Pandrak. When they came charging on fast horses, our crossbowmen could hardly stop them. We lost many elites in that battle, and their losses were even greater. I heard that their tribe’s territory was swallowed up because too many men died. It’s really ironic."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Kugits are the ghosts of Pandrak. They risked their lives for the empire's dirty money, but what they got in exchange was the destruction of their families. Now that their widow was in charge, there wasn't a tribe around that didn't want to bite them. This is different from our rules in the north. We will take good care of the families of our brothers who died in the war."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer",
+          "mercenary"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "What happened to the Kugit tribe is a lesson for all mercenaries. I took money from my employer, fought tooth and nail, and won, but my employer died and no one paid the balance. When you go back with injuries all over your body, you find that your old place has been taken over by your peers. Their leader Mo Suyi is still holding on, but who knows how long he can hold on? Don't put all your eggs in one basket."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "steward": 150
+        }
+      },
+      "Content": "The Khujit Ministry is a microcosm of the internal power structure of the Khuzait Khanate. As a tribe that they joined after being conquered, although they are deeply integrated into the nomadic system, they still need to constantly prove their worth in terms of political status. The Battle of Pandrak was a big gamble for them - an attempt to accumulate wealth and prestige by providing mercenaries to the empire in order to enhance their voice within the Khanate. However, the tragic victory on the battlefield and the empire's default made this gamble all in vain. Mosuyi's ascension to the throne was not only a way for the Khanate to appease the disadvantaged tribes, but also marked a major strategic change of Kujit from seeking expansion to preserving survival."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Kugit",
+      "Kind": "bound_clan_name",
+      "TargetId": "__bound_clan__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "Mo Suyi",
+      "Kind": "bound_hero_name",
+      "TargetId": "__bound_hero__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

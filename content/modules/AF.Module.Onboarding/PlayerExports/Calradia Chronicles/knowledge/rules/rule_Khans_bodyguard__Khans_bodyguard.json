@@ -1,0 +1,185 @@
+{
+  "Id": "rule_Khans_bodyguard",
+  "Keywords": [
+    "Khan's bodyguard"
+  ],
+  "RagShortTexts": [
+    "The Khan's bodyguards are the top elite mounted archers in the Khuzait Khanate. They serve as the Khan's bodyguard and are good at shooting accurately while running at full speed."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Khan's bodyguards are the top warriors of the Khuzait Khanate and the only elite cavalry in the entire Calradia that focuses on mounted archery. They are not ordinary grassland riders, but the guards of the Khan himself, warriors selected from thousands of tribes. Their bows can accurately hit the target while running at full speed, and their swords can cut off the enemy's heads in the blink of an eye. In Khuzait, every young warrior's dream is to become one of the Khan's bodyguards - but that requires more than ten years of skill on the bow and horse and more than once proving one's mettle on the battlefield. They are eagles on the grassland, coming and going like the wind, and their arrows are always in vain. The enemy often falls under the rain of arrows before they can see their faces clearly."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Khan's personal guard is the pride of our Khuzait and is the sharpest knife on the steppe. Each of them is a top archer selected from each tribe - they can shoot at a grass target three hundred paces away on horseback at full speed, they can turn around in stirrups to shoot arrows, and they can identify the direction in a snowstorm. Wherever the Khan went, they followed him, serving as guards, vanguards, and messengers. Their bows are the best on the grasslands, made of ox horn and horsehair, and it takes twice the arm strength of an ordinary warrior to draw a full bow. Their swords are curved and look like a silver moon when drawn out. Everyone on the grassland knows that when they see the flag of the Khan's bodyguard, they must either dismount and salute, or run for their lives."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Khan's bodyguards are not ordinary soldiers, they are chosen ones. My top horse archers trained for more than ten years before they were qualified to participate in the selection of the Khan's personal guards. During the selection, they had to shoot a whole pot of arrows on horseback, the arrows had to hit the target, and they had to defeat more than one opponent in a saber duel. Once chosen, they no longer belong to the tribe, only to the Khan. Their archers are three points faster and five points more accurate than our best mounted archers. When fighting on the grassland, our Yan men commanded from the front, and the Khan's personal guards were like the whips in the Khan's hands. They would fall wherever they were struck."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "My biggest dream in this life is to be selected into the Khan's bodyguard one day. Their bows are longer than ours, their arrows are lighter than ours, and their horses are faster than ours. At the same distance, if I shoot three arrows, they can shoot five arrows, and the arrows bite the flesh. But I also know that even if they practice for a lifetime, most people will still not be able to choose. Not only must they shoot accurately, but they must also be able to use swords in close combat on horseback - mounted archers are most afraid of being caught up and close to them, but the Khan's personal guards are not afraid. Their close combat skills with swords are more ruthless than some infantry."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "We have been fighting the Khuzait people on the Eastern Front for so many years, and what troubles us most is not their mounted archers, but the Khan's personal guards. For ordinary Khuzait mounted archers, you can still use shield walls and crossbowmen to force them back, but the Khan's personal guards won't give you this chance at all. Their arrows were so accurate that they could fire two rounds in the time it took for our crossbowmen to reload. And they don't just fly kites in circles like ordinary mounted archers. They dare to get close to a frightening distance, disrupt the formation with precise shooting, and then dissipate like the wind before the infantry rushes up. What's even more frightening is that they are not weak in close combat - we chased them once with cavalry, and while they were running, they suddenly turned around and drew their swords, slicing our cavalry clean."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Khan's personal guards are the enemies we least want to encounter on the grasslands. Our Banner Knights can crush any cavalry on flat ground, but only if they can catch up with them. The Khan's personal guards don't charge head-on with you at all. They disperse like smoke in front of you. They turn around and shoot arrows as they run. Our knights can't catch up, and the crossbowmen's firing speed is not as fast as theirs. But we found that their bows would be affected in rainy and humid weather, and their accuracy would be worse after the bow strings became loose. This is the only flaw we have found so far."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Khan's Bodyguard cannot be used in the forest. Their mounted archery requires open areas. Horses cannot run in the woods, and the range advantage of their bows is also blocked by trees. But we don't underestimate them - as soon as Battania's warriors step out of the forest, those steppe eagles will swoop down from the horizon. We have forest protection, what do they have? There is a whole prairie. On the grassland, they are gods."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The mounted archery skills of the Khan's personal guards have similar origins to the cavalry of some of our desert tribes. After all, grasslands and deserts sometimes share the same language on horseback. But their bows are longer than ours and have a longer range; their discipline is better than our tribal cavalry, after all, they are the people chosen by the Khan himself. We are not afraid of them in the Nahasa Desert - their horses do not run long in the sand, but on the grasslands they are the most dangerous opponents."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nord"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The arrows of the Khan's personal guards cannot penetrate our shield wall, but they can make holes in the shield wall - when a brother falls, the brother next to him has to take over, and the moment he takes over is a flaw. This is how they bite slowly and peel off layer by layer. We Nords prefer to rush in and speak with our axes, but they don't give you a chance to rush. When encountering the Khan's personal guards on the grassland, the only way to survive is not to encounter them on the grassland."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "steward": 150
+        }
+      },
+      "Content": "The Khan's Guard is the pinnacle of the military power of the Khuzait Khanate and the only top elite cavalry in Calradia specializing in mounted archery. Their selection system is highly elite, selecting the most skilled horse archers from each tribe, and then passing strict assessments - including moving target shooting, horseback sword skills and endurance tests - before they can become the Khan's direct bodyguard. At the tactical level, the Khan's personal guards represent the highest achievements of the nomadic military tradition of the steppes: precise shooting while running at full speed, coordinated harassment with infantry and light cavalry, \"hit and run\" attrition tactics that take advantage of speed and range, and the decisiveness to use scimitars for close harvesting when necessary. Their bows are made with extremely complicated craftsmanship and are made of a composite of ox horn, horsehair and wood. The arm strength required to draw the bow is twice that of an ordinary bow, and its range and penetration far exceed that of ordinary mounted archery bows. In Calradia's unit system, the position of Khan's personal guards is unique: they are both long-range output and mobile assault force, and they are a direct symbol of Khan's authority on the battlefield."
+    }
+  ],
+  "TextMappings": []
+}

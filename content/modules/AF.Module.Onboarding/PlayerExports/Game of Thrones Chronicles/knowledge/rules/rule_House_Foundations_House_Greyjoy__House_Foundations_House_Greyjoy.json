@@ -1,0 +1,152 @@
+{
+  "Id": "rule_House_Foundations_House_Greyjoy",
+  "Keywords": [
+    "House Greyjoy",
+    "Golden Kraken",
+    "We Do Not Sow"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "House Greyjoy, with its roots in Pyke and Seastone, is one of the most prominent old families in the Iron Islands. A gold kraken on a black background, the motto \"Strength is better than drudgery,\" and a reverence for the Drowned God and the Old Way tie the Ironborn's views on the sea, plunder, longships, and death under one banner. The land in the Iron Islands is barren and cannot support a harvest like the river bay. Therefore, the \"iron price\" was once regarded by many people as a more dignified way to obtain than the \"gold price\"; but there are not only plunderers on the islands, but also fishermen, shipbuilders, salt merchants, scholars and lords who know how to trade. Greyjoy's family name is complicated precisely because it must constantly choose between the pirate glory of its ancestors, the realistic order of the Seven Kingdoms, and the livelihood of the islanders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Houses of the Iron Islands acknowledge that Greyjoy sits on the Seastone, but do not accept the kneeling as naturally as the Greenland vassals. Each captain is accustomed to being king on his own deck, so Pike must maintain his authority through blood, spoils, marriage alliances and interpretations of the old ways. The golden sea monster can summon the islands, but always beware of its tentacles extending in different directions."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "sailor",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The ironborn on the longships respected those who dared to set foot on enemy shores themselves. They will cheer for the sea monsters of Greyjoy, and they will laugh at the lord who hides in the stone hall and only speaks the old ways. The price of iron is not a decoration. Whoever asks others to pay with blood had better be prepared to let his own blood fall on the deck."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Fishermen, miners, shipbuilders, and those who worked the thin soil knew that the Islands could not survive each winter solely by raiding. While Greyjoy talks about taking by force, they still have to mend nets, smelt iron, and grow barley. The old way can make people proud, but it cannot make empty warehouses grow food on their own."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Greyjoy The golden sea monster family of Pike and Seastone has the motto \"Strong is better than hard work\". It connects the Drowned God, the Old Way, the price of iron and the longship tradition, and also bears the contradiction between the barren reality of the Iron Islands and the livelihood of trade. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Greyjoy The golden sea monster family of Pike and Seastone has the motto \"Strong is better than hard work\". It connects the Drowned God, the Old Way, the price of iron and the longship tradition, and also bears the contradiction between the barren reality of the Iron Islands and the livelihood of trade. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Greyjoy The golden sea monster family of Pike and Seastone has the motto \"Strong is better than hard work\". It connects the Drowned God, the Old Way, the price of iron and the longship tradition, and also bears the contradiction between the barren reality of the Iron Islands and the livelihood of trade. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Greyjoy The golden sea monster family of Pike and Seastone has the motto \"Strong is better than hard work\". It connects the Drowned God, the Old Way, the price of iron and the longship tradition, and also bears the contradiction between the barren reality of the Iron Islands and the livelihood of trade. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "House Greyjoy: The golden sea monster family of Pike and Seastone has the motto \"Strong is better than hard work\". It connects the Drowned God, the Old Way, the price of iron and the longship tradition, and also bears the contradiction between the barren reality of the Iron Islands and the livelihood of trade."
+  ]
+}

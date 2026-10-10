@@ -1,0 +1,46 @@
+{
+  "Id": "rule_Ilika",
+  "Keywords": [
+    "Ilika",
+    "Haldar's mother"
+  ],
+  "RagShortTexts": [
+    "Ilika ensured her son Haldar's succession to the throne."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Isn't Ilika that cunning old Nord matriarch? I heard she died—good riddance! She stopped at nothing to pave the way for her son."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nord"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Ilika was the wife of Volbjorn the Hungry, the first king of Nordvyg. A guardian of a sacred forest grove versed in secret rites, she was every bit as ambitious as her husband. After Volbjorn's death, Ilika's machinations ensured that her son Haldar faced no serious rivals for the throne. Once his rule was secure, she passed away soon after—or so the royal house proclaimed. Yet some say she returned to the forest, and others even claim to have seen her wandering on moonless nights, making sure no one dares challenge the dynasty."
+    }
+  ],
+  "TextMappings": []
+}

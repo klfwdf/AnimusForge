@@ -1,0 +1,154 @@
+{
+  "Id": "rule_Order_of_the_Crown_Knights_and_Squires",
+  "Keywords": [
+    "Knights",
+    "Chivalry",
+    "Knights and Squires"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Entry The knight system originated from the culture of Andal and the Seven Gods. It ideally requires courage, loyalty, protection of the weak and observance of oaths; in reality, a knight is also a social identity with horses, armor, training and sponsorship resources. Boys often work as attendants first and learn to ride horses and weapons The Old Gods in the North, the Iron Islands and Beyond the Wall do not have to recognize the etiquette of chivalry, so \"knight\" has never been the only standard of honor in the entire world."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Knights and Squires"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Knights and Squires"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "wanderer",
+          "priest",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Knights and Squires"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Knights Knights and Squires: The knight system originated from the culture of Andal and the Seven Gods. It ideally requires courage, loyalty, protection of the weak and observance of oaths; in reality, a knight is also a social identity with horses, armor, training and sponsorship resources. Boys often work as attendants first and learn to ride horses and weapons. They start by asking who is obligated, who is protected, and who will seek justice after a breach of contract."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Knights Knights and Squires: The knight system originated from the culture of Andal and the Seven Gods. It ideally requires courage, loyalty, protection of the weak and observance of oaths; in reality, a knight is also a social identity with horses, armor, training and sponsorship resources. Boys often work as attendants first and learn to ride horses and weapons. For them, what really matters is whether the orders can arrive, whether the roads are safe, and whether the food and pay can be received on time."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Knights Knights and Squires: The knight system originated from the culture of Andal and the Seven Gods. It ideally requires courage, loyalty, protection of the weak and observance of oaths; in reality, a knight is also a social identity with horses, armor, training and sponsorship resources. Boys often work as attendants first and learn to ride horses and weapons Beautiful oaths that are not backed up by land, military strength, or sacred tradition can quickly be reinterpreted by the next crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Knights Knights and Squires: The knight system originated from the culture of Andal and the Seven Gods. It ideally requires courage, loyalty, protection of the weak and observance of oaths; in reality, a knight is also a social identity with horses, armor, training and sponsorship resources. Boys often work as attendants first and learn to ride horses and weapons. What is remembered is not who spoke the loudest in the hall, but which rule saved the family from starvation, conscription, or endless fighting."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Knights and Squires: The knight system originated from the culture of Andal and the Seven Gods. It ideally requires courage, loyalty, protection of the weak and observance of oaths; in reality, a knight is also a social identity with horses, armor, training and sponsorship resources. Boys often work as attendants first and learn to ride horses and weapons."
+  ]
+}

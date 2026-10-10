@@ -1,0 +1,149 @@
+{
+  "Id": "rule_Legacies_of_Power_Alchemists_Guild",
+  "Keywords": [
+    "Alchemists' Guild"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Entry The Alchemist Guild preserves wildfire and other secret crafts, and its status lies somewhere between practical technicians, scholars, and feared strangers. The royal family needs its power but is afraid to trust it completely; their underground warehouses remind King's Landing that there are always things in civilization that should not be ignited lightly"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "crownlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "scholar",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Alchemists' Guild"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "crownlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Alchemists' Guild"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Alchemists' Guild"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Alchemists' Guild The Alchemist Guild preserves wildfire and other secret crafts, and its status lies somewhere between practical technicians, scholars, and feared strangers. The royal family needs its power but is afraid to trust it completely; their underground warehouses remind King's Landing that there are always things in civilization that should not be ignited lightly. A past war or a dynastic change will determine today's tax rates, covenants, roads and who has the right to speak first in the hall."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Alchemists' Guild The Alchemist Guild preserves wildfire and other secret crafts, and its status lies somewhere between practical technicians, scholars, and feared strangers. The royal family needs its power but is afraid to trust it completely; their underground warehouses remind King's Landing that there are always things in civilization that should not be ignited lightly. They remember which flag fell, which bridge was burned, and who shared the last sip of water in the snow; for them, history is first and foremost the memory left by the body."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Alchemists' Guild The Alchemist Guild preserves wildfire and other secret crafts, and its status lies somewhere between practical technicians, scholars, and feared strangers. The royal family needs its power but is afraid to trust it completely; their underground warehouses remind King's Landing that there are always things in civilization that should not be ignited lightly. The winner will write it as a proof of order, the loser will keep it as a warning, and ordinary people will only remember how much the price of food and cemeteries increased that year."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Alchemists' Guild The Alchemist Guild preserves wildfire and other secret crafts, and its status lies somewhere between practical technicians, scholars, and feared strangers. The royal family needs its power but is afraid to trust it completely; their underground warehouses remind King's Landing that there are always things in civilization that should not be ignited lightly. They learn about the past through old houses, family trees, tombstones, and taboos spoken by old men; as long as an event affects taxes, conscription, or marriage, it is not truly over."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Alchemists' Guild: The Alchemist Guild preserves wildfire and other secret crafts, and its status lies somewhere between practical technicians, scholars, and feared strangers. The royal family needs its power but is afraid to trust it completely; their underground warehouses remind King's Landing that there are always things in civilization that should not be ignited lightly."
+  ]
+}

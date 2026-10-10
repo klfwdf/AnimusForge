@@ -1,0 +1,151 @@
+{
+  "Id": "rule_House_Foundations_House_Tarth",
+  "Keywords": [
+    "House Tarth",
+    "The Evenstar",
+    "Sun and Moon Arms"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Tarth family is based on the Hall of Dusk on Sapphire Island, and the head of the family is traditionally called the \"Evening Star\". The family crest is divided into four parts, rose and blue, with the sun and the crescent moon painted respectively, preserving the memory of the intersection of the ancient kings of the island, the Andal bloodline, and the vassals of the Stormlands. Sapphire Island is located outside Shipbreaker Bay. Its name often makes outsiders imagine the wealth of gems. In fact, the family’s strength relies more on harbors, fisheries, roads and island defense. Nobles will remember the ancient title of the Evening Star, and islanders will judge the flags of the Sun and Moon by whether the ship can safely reach the shore and whether the lord can protect the village."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "stormlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The nobles of the Stormlands regard the Tas family as the island lords of the Hall of Dusk, and the title of \"Evening Star\" and the sun and moon coat of arms carry an ancient and gentle brilliance. The reputation of Sapphire Island makes people think only of the scenery, but what really sustains the family is the harbor, ships, storms and the vassal responsibility to Storm's End."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "stormlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "sailor",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Boat owners in the Tas Strait know that there are also undercurrents and rocks beneath the beautiful waters. If the Tas family can maintain the lighthouse, harbor regulations and coastal patrols, the evening star will be a symbol of homecoming; if pirates are rampant, the name of the beautiful sapphire will be just a story sold to outsiders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "stormlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The islanders look at the sun during the day and the moon at night, and the two figures on their family coat of arms are not far away from them. Fishing, grazing and sheltering from storms all depend on the weather. People are willing to call Tarth the Evening Star, as long as that star is not hanging high, but can really give the harbor a little light in the darkest time."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Tarth The Stormland family in the Dusk Advent Hall on Sapphire Island. The head of the family is called Dusk Star, and their coat of arms is the four-color shield of the sun and the crescent moon. The memory of ancient kings, harbors, fisheries and island defenses constitute their identity; the motto is unknown. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Tarth The Stormland family in the Dusk Advent Hall on Sapphire Island. The head of the family is called Dusk Star, and their coat of arms is the four-color shield of the sun and the crescent moon. The memory of ancient kings, harbors, fisheries and island defenses constitute their identity; the motto is unknown. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Tarth The Stormland family in the Dusk Advent Hall on Sapphire Island. The head of the family is called Dusk Star, and their coat of arms is the four-color shield of the sun and the crescent moon. The memory of ancient kings, harbors, fisheries and island defenses constitute their identity; the motto is unknown. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Tarth The Stormland family in the Dusk Advent Hall on Sapphire Island. The head of the family is called Dusk Star, and their coat of arms is the four-color shield of the sun and the crescent moon. The memory of ancient kings, harbors, fisheries and island defenses constitute their identity; the motto is unknown. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "House Tarth: The Stormland family in the Dusk Advent Hall on Sapphire Island. The head of the family is called Dusk Star, and their coat of arms is the four-color shield of the sun and the crescent moon. The memory of ancient kings, harbors, fisheries and island defenses constitute their identity; the motto is unknown."
+  ]
+}

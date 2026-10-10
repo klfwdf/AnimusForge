@@ -1,0 +1,155 @@
+{
+  "Id": "rule_House_Foundations_Faith_Militant",
+  "Keywords": [
+    "Faith Militant"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Armed Order is the sword-wielding force of the Faith of the Seven Gods. It is mainly composed of the \"Sons of Warriors\" composed of noble knights and the \"Assembly of the Poor\" composed of civilian believers. Members are united by religious oaths rather than blood ties to a certain family, and their breastplates, robes, and seven-pointed stars represent their direct fight for their beliefs. After the conquest, the royal power had a long-term conflict with the armed forces of the Order. Maegor suppressed them with fire and massacre, and Jehovah Lys I finally made them lay down their weapons through reconciliation. As long as the world still believes that royal power blasphemes the gods and that secular courts cannot deliver justice, the soil that allows believers to pick up the sword again will not completely disappear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "crownlands",
+          "reach",
+          "vale"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "priest",
+          "artisan"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Pious commoners may regard the gathering of the poor as a shield to speak for the weak. If monks only bless the rich at their banquets, they will be more willing to believe in the sword-wielding believers who wear coarse cloth and suffer hunger with them."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "crownlands",
+          "reach",
+          "vale"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The noble knight is both familiar with and wary of the warrior's son. Sacrificing swords for the Seven Gods sounds noble, but once the armed cult declares that its faith is higher than the vassal oath, the lord will have difficulty in determining whose orders his knights listen to."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "crownlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "scholar",
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The maester has seen from history that the armed forces of the Order can mobilize a network of beliefs that is difficult for the royal army to quickly extinguish. Swords can kill members, but they cannot simply decide who is closer to the gods; therefore, kingship often requires both strength and compromise in the end."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Faith Militant The armed forces of the Order were composed of an assembly of sons of warriors and poor people. They were called by the seven-pointed star and faith. In history, they challenged the royal power and were disbanded. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Faith Militant The armed forces of the Order were composed of an assembly of sons of warriors and poor people. They were called by the seven-pointed star and faith. In history, they challenged the royal power and were disbanded. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Faith Militant The armed forces of the Order were composed of an assembly of sons of warriors and poor people. They were called by the seven-pointed star and faith. In history, they challenged the royal power and were disbanded. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Faith Militant The armed forces of the Order were composed of an assembly of sons of warriors and poor people. They were called by the seven-pointed star and faith. In history, they challenged the royal power and were disbanded. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Faith Militant: The armed forces of the Order were composed of an assembly of sons of warriors and poor people. They were called by the seven-pointed star and faith. In history, they challenged the royal power and were disbanded."
+  ]
+}

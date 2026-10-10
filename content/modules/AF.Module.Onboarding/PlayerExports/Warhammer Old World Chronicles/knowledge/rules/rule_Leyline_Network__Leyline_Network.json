@@ -1,0 +1,209 @@
+{
+  "Id": "rule_Leyline_Network",
+  "Keywords": [
+    "Leyline Network",
+    "underground highway",
+    "dwarf tunnel",
+    "Karak Contact",
+    "ancient engineering",
+    "residual channel",
+    "underground transportation network",
+    "Dwarf Empire Bloodline"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Leyline was one of the greatest achievements of the Dwarven Empire - a vast network of tunnels and roads that ran deep beneath the World's Edge Mountains, connecting all the dwarven cities of Se'karak. Caravans can travel from the southernmost mountains of Karak Eight Peaks to the northernmost mountains of Karak Qadrin in the safety of the dark."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Leyline Network - the most magnificent legacy left to us by our ancestors, is also the deepest wound of our time. Think about it, in the golden age, a dwarf set out from the Eternal Peak and walked under the stone hall of the Earth's Network. The road was brightly lit, and the tunnel was wide enough for three carts loaded with ore to pass side by side. There were outposts to rest on the way, rune lamps were always on, and the arches of the underground rivers were carved with the faces of ancestors from past generations. He could reach another Karak in less than a month. At that time the entire dwarven empire was like a fist - all the karaks were fingers clasped together. What now? Most of the tunnels have collapsed or been occupied by greenskins and Skaven. We can only regain the old glory inch by inch in the darkness. But there are still some passages that are safe and usable - especially the section connecting Eternal Peak to Barak Vaal, which is still guarded by Ironbreaker Warriors and is used to transport ore and quickly mobilize reinforcements in times of war."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "From the perspective of military geography, the ley network is the most strategically valuable but also the most dangerous terrain element in the old world. The complete webway allows the dwarf army to achieve strategic maneuvers between the northern and southern ends of the mountain range ten times faster than the surface marching speed, which gives the dwarven defensive warfare an unparalleled internal mobility advantage. But what remains of the Webway is also a huge vulnerability - at least a dozen abandoned tunnel sections are known to have been converted by Skaven into invasion passages, and Greenskins and Chaos Dwarves regularly attempt to break out from underground. Any military operation that needs to be carried out in the World's Edge Mountains region must consider the existence of the Webway: if you are allied with the dwarves and can gain access to the Webway, your logistics and reinforcement speed will crush the enemy's forces; if your enemies control the entrance and exit of the Webway, their attacks will come from any direction under your feet."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "The project of the Leyline Network is called the Karak-Ankor Transit System. It is the largest underground infrastructure project in the history of the known world, led by the Dwarven Engineers Guild during the Golden Age of the Dwarves (3000 BC to 1500 BC). According to the \"Tome of the Webway\" written by the dwarf scholar Paladin Scroll Keeper (compiled in about 1200 BC, and the existing fragments are stored in the Ancestral Library of Eternal Peak), the complete Webway system included about 42,000 miles of main tunnels and more than 100,000 miles of branch lanes, connecting all twelve major Karaks and about forty secondary strongholds at that time. The tunnel vault adopts the lost 'ancestral stress arch' technology - without any supports, the tunnel can evenly distribute the ground pressure above to the mountain rock foundation on both sides through the precise stone cutting of the vault. The theoretical geological life is about 100,000 years. The current state of the Webway is depressing: according to conservative estimates from the Eternal Peak Engineers Guild, about 75% of the Webway has collapsed or been occupied by hostile races, only 15% remains under the complete control of the dwarves, and 10% is in a state of contention. The main remaining sections include: the Eternal Peak-Barak Vaal main line (about 6,000 miles, currently in active use), the northern section of Karak Kaderin (partly guarded by the Ironbreaker Warriors), and the ruined section of Karak Eight Peaks (thought to have been converted by the Skaven into part of the underground hive city). Outsiders who have attempted to map the Webway in its entirety - including Imperial engineers, elven explorers and Bretonnian cartographers - have all been rejected by the dwarves on the grounds that 'the secrets of the tunnels are the last line of defense for the dwarf empire'."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "I have always had a scholarly curiosity about the Ley Lines - the tunnel engineering of the dwarves surpasses the civil engineering technology of any existing civilization. How do they dig thousands of feet underground to create corridors that will last thousands of years and won't collapse? My engineer told me it might be some kind of 'vault stress distribution' technique, but that doesn't explain those passages in the tunnels that don't need any supports but still stand despite earthquakes and volcanic activity. The secrets of dwarven engineering are as guarded as their meteorites."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Our family was once responsible for maintaining a section of the webway about sixty miles long from Karak Norn to Karak Shirba - that was our family's obligation and our honor. Once a year, every generation of men must walk along every inch of the sixty-mile tunnel, checking for cracks, water seepage, or signs of intrusion by other tribesmen. Thirty years ago that patrol had discovered the Skaven's newly dug tunnels, and the family had immediately sealed that section of tunnel - blasting it from both ends with black powder, burying the entire length of the webway. This is the love the dwarves have for the Webway: they would rather destroy a section with their own hands than let it fall into foul hands."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "When I was lost in the Gray Mountains, I accidentally discovered an entrance to the Webway - half-hidden behind the collapsed rocks. A huge dwarven rune was carved on the stone door, which was still glowing faintly, although the entrance had obviously been abandoned for hundreds of years. I threw a stone in, and it took a while before I heard the sound of it hitting the ground - it was bottomless. A fellow thief suggested going in to explore, saying that there might be treasures buried in the ancient dwarven paths - we collectively rejected it because there was a sound like wet cloth rubbing against stones from deep in the tunnel, and no one wanted to confirm what it was."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Everyone in the trade guild knows the commercial value of the Leyline Network - it is said that in the Golden Age, it only took twelve days for a dwarf caravan to transport ore from Barak Vaal to the Eternal Peak through the network channel, while it took three months to travel the same route on the surface. Now do you understand why the dwarves would rather pay double the price to ship goods through the webway? A logistics company in Marienburg once tried to rent the right to use a section of the network tunnel - the dwarf's answer was 'Only dwarf blood can sweat in the ancestral tunnel'."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Kharak-Ankol Transportation System: The official name of the Leyline Network, designed and built by the Engineers Guild of the Dwarven Golden Age, the largest underground infrastructure in the history of the world.",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Leyline Network Underground Highway Dwarf Tunnel"
+  ]
+}

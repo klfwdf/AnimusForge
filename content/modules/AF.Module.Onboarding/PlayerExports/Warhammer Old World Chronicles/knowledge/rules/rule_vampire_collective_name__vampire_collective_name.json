@@ -1,0 +1,206 @@
+{
+  "Id": "rule_vampire_collective_name",
+  "Keywords": [
+    "Official Realm Name of the Vampires",
+    "Domain of the Midnight Aristocracy",
+    "Von Carstein Domain",
+    "Undying Kingdom",
+    "Undead Sylvania"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The sphere of influence of the Vampire Counts is marked on maps of the Old World as 'Sylvania'—once a province of the Empire, now the core territory of the Dynasty of Night. From the black spires of Castle Drakenhof to the fog-shrouded streets of Waldenhof, this land no longer belongs to the world of the living, but is an undead domain ruled by the von Carstein family and their bloodline allies."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "On the maps of mortals, our land is called 'Sylvania'—a name that makes Imperials bolt their doors and shutters tighter in the dead of night whenever they hear it. Yet among the Midnight Aristocracy, we call it the 'Dynasty of Night'—a kingdom centered on Drakenhof, bounded by undead legions, and using eternal time as its currency. The Empire still claims sovereignty over Sylvania—yet how many Imperial armies dare spend a night in Sylvania? The only reason our peasants pay taxes to Altdorf is that we permit them to do so—because it gives them a comforting illusion of still being protected by the Empire, and that illusion makes them accept our harvesting all the more docilely."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Sylvania's status in international law is a gray zone deliberately kept ambiguous. The Empire has never formally recognized Sylvania's independence, yet has never been capable of exercising effective rule there either. The strategy of the von Carstein family toward the Empire is not declaration of war, but infiltration—they do not pursue open border changes, but rather use thrall networks and conversion infiltration to make every Imperial intervention in Sylvania increasingly difficult both politically and militarily."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "The name Sylvania can be traced in Imperial administrative history back to roughly -300 IC, when Imperial settlers established the earliest border outposts in the region. The name derives from the Old Imperial tongue for 'Land of Forests' (Syl-van-ia), as Sylvania at the time was covered by a dense, ancient forest. After Vlad von Carstein infiltrated and gradually took control of the region under the guise of a human noble around the 1100s IC, Sylvania began transforming from an Imperial province into a de facto undead domain. Under Imperial law, Sylvania remains an Imperial province whose 'Elector Count' is the von Carstein family—yet the Empire has never formally recognized a vampire as a legitimate Elector Count, and the vampires have never demanded formal recognition from the Empire. This legal ambiguity is the most bizarre form of coexistence in Old World politics."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "To a female ruler in Stirland, Sylvania is not an abstract patch on a map—it is a day-to-day reality of threat. Atop the highest tower of my castle, a sentry stands perpetually gazing eastward toward Sylvania, and every grave in my domain's cemeteries is inspected once a month during winter to ensure there is no freshly turned earth. What Sylvania teaches us is not to fear death—it is to fear existence after death."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "In my family's strategic calculations, Sylvania is an ineradicable constant. We cannot expect Imperial armies to storm Drakenhof—every such attempt in history has ended in failure—we can only ensure that on our family's lands there are no resources that can be exploited by necromancers: graveyards are consecrated, tombs are sealed, and all family members are immediately cremated upon death rather than buried. After living under the shadow of Sylvania for six generations, these precautions have become second nature to our house."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Of all the routes a mercenary can take in the Old World, crossing the border of Sylvania is the one that demands the sharpest intuition. There is no clear threshold—you will not suddenly see a sign along the road reading 'You Are Now Entering Sylvania.' Instead, you will notice the trees growing more twisted, the fog seeming never to disperse, and the villagers in the hamlets you pass shutting their doors before you can even ask for directions. When the sky shifts from gray to a deeper, heavier gray—you have entered Sylvania."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "On the commercial map of the Old World, Sylvania is a massive black hole—no trade route passing through or bordering Sylvania is insured by any Imperial insurance company. Yet in stark contrast to its apparent economic death, Sylvania's black market—especially the underground trade in undead spices, dark magical reagents, and specialized crystal vessels used for vampire blood-brewing—has created a lucrative dark undercurrent within the black-market networks of Marienburg and Altdorf."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Sylvania — an undead domain that remains a province under Imperial law but is in reality ruled by the Vampire Counts",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Formal designations and political status of the vampires"
+  ]
+}

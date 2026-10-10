@@ -1,0 +1,147 @@
+{
+  "Id": "rule_Wilderness_Survival_Direwolves",
+  "Keywords": [
+    "Direwolves"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Direwolves are larger than ordinary wolves and are mainly found in the North and north of the Great Wall. They have strong hunting abilities and territorial awareness. The Stark family wears it as their coat of arms; when encountering a direwolf in the wilderness, fire, numbers, and not scattering your mount are more important than showing off your strength."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Direwolves Direwolves are larger than ordinary wolves and are mainly found in the North and north of the Great Wall. They have strong hunting abilities and territorial awareness. The Stark family wears it as their coat of arms; when encountering a direwolf in the wilderness, fire, numbers, and not scattering your mount are more important than showing off your strength. Wilderness does not mitigate the consequences of being cold, hungry, or lost because of your status."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Direwolves Direwolves are larger than ordinary wolves and are mainly found in the North and north of the Great Wall. They have strong hunting abilities and territorial awareness. The Stark family wears it as their coat of arms; when encountering a direwolf in the wilderness, fire, numbers, and not scattering your mount are more important than showing off your strength. Without preparation, weather and terrain can kill more men than enemy troops."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Direwolves Direwolves are larger than ordinary wolves and are mainly found in the North and north of the Great Wall. They have strong hunting abilities and territorial awareness. The Stark family wears it as their coat of arms; when encountering a direwolf in the wilderness, fire, numbers, and not scattering your mount are more important than showing off your strength. Reliable experience must be able to be verified repeatedly, not just rely on tall tales in the pub."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Direwolves Direwolves are larger than ordinary wolves and are mainly found in the North and north of the Great Wall. They have strong hunting abilities and territorial awareness. The Stark family wears it as their coat of arms; when encountering a direwolf in the wilderness, fire, numbers, and not scattering your mount are more important than showing off your strength. If a disaster cuts off transportation, the consequences will be felt in distant cities."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Direwolves Direwolves are larger than ordinary wolves and are mainly found in the North and north of the Great Wall. They have strong hunting abilities and territorial awareness. The Stark family wears it as their coat of arms; when encountering a direwolf in the wilderness, fire, numbers, and not scattering your mount are more important than showing off your strength. The most expensive equipment in the wilderness cannot replace the correct timing of stopping."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Direwolves Direwolves are larger than ordinary wolves and are mainly found in the North and north of the Great Wall. They have strong hunting abilities and territorial awareness. The Stark family wears it as their coat of arms; when encountering a direwolf in the wilderness, fire, numbers, and not scattering your mount are more important than showing off your strength. Someone explains why the disaster happened, and someone is responsible for letting the victims survive the night."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Direwolves Direwolves are larger than ordinary wolves and are mainly found in the North and north of the Great Wall. They have strong hunting abilities and territorial awareness. The Stark family wears it as their coat of arms; when encountering a direwolf in the wilderness, fire, numbers, and not scattering your mount are more important than showing off your strength. They looked at how much grain was left in the fields, whether the livestock could survive the winter, and whether the lord was willing to assume responsibility for its protection."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Direwolves: Direwolves are larger than ordinary wolves and are mainly found in the North and north of the Great Wall. They have strong hunting abilities and territorial awareness. The Stark family wears it as their coat of arms; when encountering a direwolf in the wilderness, fire, numbers, and not scattering your mount are more important than showing off your strength."
+  ]
+}

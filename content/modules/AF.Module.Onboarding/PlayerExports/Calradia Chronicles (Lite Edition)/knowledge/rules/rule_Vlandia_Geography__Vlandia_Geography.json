@@ -1,0 +1,48 @@
+{
+  "Id": "rule_Vlandia_geography",
+  "Keywords": [
+    "Geography of Vlandia",
+    "Vlandia mountains and rivers situation",
+    "Vlandia terrain",
+    "West Coast Terrain"
+  ],
+  "RagShortTexts": [
+    "Vlandia geographical divisions: Loval Mountains, Svadia Hills, Rhodok Valley."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "scouting": 50
+        }
+      },
+      "Content": "Vlandia is bounded by the Western Ocean to the west, the Biscayne Sea to the south, the Western Empire to the southeast, Battania to the east, and the North Sea to the north. Its general geographical divisions are divided into the following three from north to south: 1: Loval Mountains, 2: Svadia Hills, and 3: Rhodok Valley."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Vlandia on the west coast of the continent"
+    }
+  ],
+  "TextMappings": []
+}

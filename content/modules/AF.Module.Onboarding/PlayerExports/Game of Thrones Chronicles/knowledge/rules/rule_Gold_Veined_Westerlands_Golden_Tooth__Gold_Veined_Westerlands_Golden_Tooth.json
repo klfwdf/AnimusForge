@@ -1,0 +1,151 @@
+{
+  "Id": "rule_Gold_Veined_Westerlands_Golden_Tooth",
+  "Keywords": [
+    "Golden Tooth"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Golden Teeth is the fortress of House Lefford, guarding the important mountain pass between the Westerlands and the Riverlands. Its \"teeth\" point to the dangerous terrain like mountains: if a large number of people, horses, trucks and messengers want to pass between the two places, they often have to pass through narrow roads that can be observed and intercepted by the castle. Therefore, Golden Tooth City is closer to a lock than ordinary manors; if the Western Region sends troops to the east, and the merchants of the Riverlands want to go west, they will be affected by it. But the castle does not automatically survive based on its location. The defenders need food and grass, the passes need to be repaired, and the nearby farmers must be able to continue farming."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Golden Tooth Local families also relied on mining tunnels, pastures, mountain roads, gold and silver circulation and the market sheltered by Casterly Rock; if any road, well or dock failed, the price would fall first on them."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Golden Tooth Entry Golden Tooth"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Golden Tooth They also recognize the accents, laws, and credentials of the West; reputations can travel great distances from taverns, but true distances must still be measured by wheel, oar, or horse's hooves."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Golden Tooth Entry Golden Tooth"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Golden Tooth If you can supply supplies, avoid danger, and find a guide, it is worth marking in your itinerary; if you don't have these three things, no matter how loud your family name is, it won't be able to save the lost."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "From workshops to sanctuaries, the Golden Tooth juxtaposes quarrying, logging, ironwork, goat hair, and mountain-hugging wall foundations with stone carvings left behind by the Seven Gods, family crypts, and lordly authority. A stronghold was therefore not just a lord's hall, but also a place where weddings and funerals, vows, labor and local memories recurred."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Golden Tooth They care about the mines, pastures, mountain roads, the circulation of gold and silver, and the market under the protection of Casterly Rock. They also look at whether seeds are left after the grain collection and whether the city gates are open in times of disaster. When people from afar see the coat of arms, what they see is whether there will be food to eat tomorrow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Golden Tooth: The Golden Teeth is the fortress of House Lefford, guarding the important mountain pass between the Westerlands and the Riverlands. Its \"teeth\" point to the dangerous terrain like mountains: if a large number of people, horses, trucks and messengers want to pass between the two places, they often have to pass through narrow roads that can be observed and intercepted by the castle. Therefore, Golden Tooth City is closer to a lock than ordinary manors; if the Western Region sends troops to the east, and the merchants of the Riverlands want to go west, they will be affected by it. But the castle does not automatically survive based on its location. The defenders need food and grass, the passes need to be repaired, and the nearby farmers must be able to continue farming."
+  ]
+}

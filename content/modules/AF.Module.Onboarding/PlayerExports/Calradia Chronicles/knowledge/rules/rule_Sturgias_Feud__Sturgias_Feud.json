@@ -1,0 +1,80 @@
+{
+  "Id": "rule_Sturgias_Feud",
+  "Keywords": [
+    "Orek series",
+    "Langval German series",
+    "Varla",
+    "Gordon Vajirov family",
+    "Sturgia blood feud",
+    "Sturgia succession dispute"
+  ],
+  "RagShortTexts": [
+    "Sturgia fell into a death struggle for succession between the Orek and Langvald lines after Pandrak. Coupled with Valra's blood debt, the rift between the two families was too deep to be repaired."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The civil war in Sturgia is written on every boy's face, but no one has drawn the sword first yet. After the death of Grand Duke Vadinslav at the head of Pandrak City, the succession opened a wound between the two families that was impossible to heal. Old Olek captured the fragments of the Imperial Dragon Flag from Pandrak's rebellion, broke it off and took it away. This should have been Sturgia's crowning glory. But Langward believed that the dragon flag should belong to him. Old Olek refused to hand it over. The dispute between Dragon and Flag is the fuse on the surface, but the real explosives are buried deeper. In order to ease the relationship with the Khuzait Aqit tribe, Langward pushed Olek's sister Varla to marry a Khuzait Nayan. Unable to adapt to life on the grassland, Valla secretly summoned her clan sister Xijia to escape from the city. Xijia not only killed her husband, but also burned the castle and all his family property. Archit was furious. In order to appease the other party's anger, Langward executed Valla and sent her head to Achter to apologize. In the eyes of Olek's descendants, their father died due to Langward's strategic calculations, and his sister died under Langward's knife. At the same time, the Gordon Vagerov family is in a subtle isolation among the families in the north because of their marriage to Khuzait for generations, and even the Khuzait Khan in their tablets. Sturgia in 1084 was unable to expand externally on a large scale because every move internally was constrained by these two rifts. [Unofficial History] There is a secret rumor among Sturgia's aristocratic circles that has never been publicly confirmed - Archduke Langward is powerless in bed. It is said that he was brave and fearless on the battlefield, but when he returned to his tent and faced women, he could not get hard. This flaw was covered up by his extreme violence and political skill - he tortured people because he could not conquer anyone sexually. Some people say that this is the sequelae of the injury he received on the battlefield of Pandrak, while others say that he was born this way. If this statement is true, then it would add another layer of explanation for his hatred of Old Olek - Old Olek was not only his political opponent, but also a man he could not match in terms of talent. Old Olek had sons, daughters, military exploits, dragon flags, and women—Langward had nothing."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Sturgia's greatest enemy was never to the south - in the tent next door. I have drank with the Oleks and fought with them, and I know what they have in mind. Old Olek died in Pandrak, and Langward's reinforcements were said to be half a step too late. Everyone knew the truth. Varla - Olek's biological sister - was married to someone from the grassland by Langward, and was finally beheaded by him and sent there to make amends. When people from the Olek family mentioned Langward, their tone was no different from that of people from the Empire. But Langward also had his own reasons - he said that old Olek was too stubborn, and that the failure of the dragon flag and Valla's incident were not his intention. Both sides feel that they are justified, and neither side is prepared to retreat. Those of us caught in the middle just hope they don't drag the whole of Sturgia down with them when they start fighting."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": [
+          "clan_sturgia_1"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "I am from Langward. I admit that old Orek shed his blood for Sturgia, and his death in battle brought about the collapse of the empire. But it was Archduke Langward who took Sturgia to its feet after the war. In the matter of the dragon flag, Old Olek's capture of the flag on the battlefield was his merit in the war, and he didn't want to hand it over. Everyone can understand this. But what Langward wants is not that flag, he wants the consensus that all victory belongs to Sturgia to be recognized by everyone. Old Olek refused to hand it over, so he openly defied the Grand Duke. What happened to Valla was an accident—Langward married her to stop the war, not to harm her. Her clan sister Xijia killed the prairie man and burned the city. Archit wanted to give an explanation. If Langward didn't give an explanation, he would start an all-out war. He gave. He gave Olek's sister a dead end. This is indeed a debt, but whoever is in that position will have to choose this way."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": [
+          "clan_sturgia_2"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "My name is Olek. My father died on the battlefield of Pandrak. He was left behind by Langward, and the troops given to him were not even sufficient. Then reinforcements arrived late. My father was dead, the Emperor's head was beheaded, the Dragon Banner was broken, and Langward became the most powerful man in Sturgia. Then there’s Varla. My sister. Langward married her off to one of Atchite's men, but she couldn't live there and escaped - and then Langward captured her, killed her, and sent her head to Atchite. He sent people to kill him. My sister. Langward's men beheaded my sister. How do you think I can calculate this account?"
+    }
+  ],
+  "TextMappings": []
+}

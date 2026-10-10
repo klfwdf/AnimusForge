@@ -1,0 +1,154 @@
+{
+  "Id": "rule_Atlas_of_the_Free_Cities_Tyrosh",
+  "Keywords": [
+    "Tyrosh",
+    "Archon of Tyrosh",
+    "Purple Dye Snails",
+    "Dyed Beards and Hair"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Entry Tyrosh is an important port city in the southern Narrow Sea, and its residents are known for their brightly dyed hair, purple conch shells, and reputation as shrewd merchants. Cities were held together by the politics of maharajas and wealthy merchants, where elections, bribery, debt and maritime profits often determined status more than ancient bloodlines. Entry Tyrosh The city's dyehouses, dockyards, taverns, and merchants reprice goods from Essos, the Summer Sea, and Westeros. People here can admire magnificence, but they are not naive; behind every color there are pigments, sea trade and risks."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "tyroshi"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Tyrosh"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "tyroshi"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Tyrosh"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "scholar",
+          "wanderer",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Tyrosh"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Tyrosh Tyrosh is an important port city in the southern Narrow Sea, and its residents are known for their brightly dyed hair, purple conch shells, and reputation as shrewd merchants. Cities were held together by the politics of maharajas and wealthy merchants, where elections, bribery, debt and maritime profits often determined status more than ancient bloodlines. Entry Tyrosh They care about water sources, roads, customs and garrison, and know that behind the place names there is often a food road that can keep the castle alive."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Tyrosh Tyrosh is an important port city in the southern Narrow Sea, and its residents are known for their brightly dyed hair, purple conch shells, and reputation as shrewd merchants. Cities were held together by the politics of maharajas and wealthy merchants, where elections, bribery, debt and maritime profits often determined status more than ancient bloodlines. Entry Tyrosh The reputation of a place is often determined by the number of people who died there."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Tyrosh Tyrosh is an important port city in the southern Narrow Sea, and its residents are known for their brightly dyed hair, purple conch shells, and reputation as shrewd merchants. Cities were held together by the politics of maharajas and wealthy merchants, where elections, bribery, debt and maritime profits often determined status more than ancient bloodlines. Entry Tyrosh Stones, trees, rivers or mountain passes can become places of livelihood, and may also be endowed with sanctity, taboos and ancestral memories, so they cannot be measured in terms of money alone."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Tyrosh Tyrosh is an important port city in the southern Narrow Sea, and its residents are known for their brightly dyed hair, purple conch shells, and reputation as shrewd merchants. Cities were held together by the politics of maharajas and wealthy merchants, where elections, bribery, debt and maritime profits often determined status more than ancient bloodlines. Entry Tyrosh They first checked whether the place could draw water, farm, graze, and avoid military disasters; a line of words on the map, and when it landed in the village, it turned out to be firewood, well rope, and winter food."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Tyrosh: Tyrosh is an important port city in the southern Narrow Sea, and its residents are known for their brightly dyed hair, purple conch shells, and reputation as shrewd merchants. Cities were held together by the politics of maharajas and wealthy merchants, where elections, bribery, debt and maritime profits often determined status more than ancient bloodlines. Entry Tyrosh"
+  ]
+}

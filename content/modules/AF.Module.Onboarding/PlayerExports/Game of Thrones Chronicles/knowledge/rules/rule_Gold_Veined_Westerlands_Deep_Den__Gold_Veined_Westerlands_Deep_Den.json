@@ -1,0 +1,151 @@
+{
+  "Id": "rule_Gold_Veined_Westerlands_Deep_Den",
+  "Keywords": [
+    "Deep Den"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Deep is a castle realm in the valleys of the Westerlands, closely tied to the traditions of the Lannister branch. The hills and mineral veins in the Western Territory often cut the territory into narrow valleys. The value of the deep cave city lies in controlling the limited roads that can be opened to traffic, ore, and grain. The rock provides defense, but also requires more time to build bridges, dig roads, and maintain water supplies; if the access is blocked, a wealthy castle will also be isolated. It was situated in the network between Casterly Rock and the eastern passes, potentially benefiting from the gold and silver trade, but also responsible for convoys and levies."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vale"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Looking out from the Deep Cave City, what is most close to life is not the coat of arms, but the mountain springs, pastoral slopes, forests, snow and the narrow roads that pack animals can walk. Local families also relied on mining tunnels, pastures, mountain roads, gold and silver circulation and the market sheltered by Casterly Rock; if any road, well or dock failed, the price would fall first on them."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vale"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "In addition to horns and flags, the defense of Deep Cave City relies on passes, high slopes, lookout points, and the provisions needed to climb over the mountains. Entry Deep Den"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "How long a traveler stays in Deep Cave City depends on the distance of the pack team, slope wear, mountain pass tax and winter road closures. They also recognize the accents, laws, and credentials of the West; reputations can travel great distances from taverns, but true distances must still be measured by wheel, oar, or horse's hooves."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Deep Den Entry Deep Den"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Soldiers who walked through the cave city remembered rockfalls, forked roads, lee bivouacs and the nearest mountain spring. If you can supply supplies, avoid danger, and find a guide, it is worth marking in your itinerary; if you don't have these three things, no matter how loud your family name is, it won't be able to save the lost."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The craftsmen of the Deep Cave City left behind their craftsmanship by quarrying stone, logging, ironwork, goat hair, and building wall foundations close to the mountains. The clergy used the stone carvings left by the Seven Gods, family tombs, and the authority of the lords to explain life and death. A stronghold was therefore not just a lord's hall, but also a place where weddings and funerals, vows, labor and local memories recurred."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Deep Den They care about the mines, pastures, mountain roads, the circulation of gold and silver, and the market under the protection of Casterly Rock. They also look at whether seeds are left after the grain collection and whether the city gates are open in times of disaster. When people from afar see the coat of arms, what they see is whether there will be food to eat tomorrow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Deep Den: The Deep is a castle realm in the valleys of the Westerlands, closely tied to the traditions of the Lannister branch. The hills and mineral veins in the Western Territory often cut the territory into narrow valleys. The value of the deep cave city lies in controlling the limited roads that can be opened to traffic, ore, and grain. The rock provides defense, but also requires more time to build bridges, dig roads, and maintain water supplies; if the access is blocked, a wealthy castle will also be isolated. It was situated in the network between Casterly Rock and the eastern passes, potentially benefiting from the gold and silver trade, but also responsible for convoys and levies."
+  ]
+}

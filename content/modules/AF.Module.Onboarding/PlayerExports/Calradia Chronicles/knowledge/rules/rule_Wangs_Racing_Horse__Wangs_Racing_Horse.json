@@ -1,0 +1,287 @@
+{
+  "Id": "rule_Wangs_Racing_Horse",
+  "Keywords": [
+    "Wang’s Athletic Horse",
+    "Vlandia horse",
+    "Wangjiama"
+  ],
+  "RagShortTexts": [
+    "Royal racing horses are exclusive to the King of Vlandia and the illustrious family"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The royal racing horse is the top war horse in Vlandia and the king among competitive horses. Ordinary competitive horses are already the pride of the Knights of the Square Banner, while royal competitive horses only belong to the king and the most prominent family heads. Each one is priceless and the ultimate symbol of power and status."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "That is our national treasure of Vlandia, a priceless treasure in King Deter's stable. Ordinary competitive horses are enough to make the knights of the square flag proud, but the royal competitive horses - that is something on another level. Only the royal bloodline and the most noble baron family patriarch are qualified to ride on this divine horse. They are the emperors of horses."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "I have seen King Detail riding his black royal horse in military parade. The horse was a whole hand taller than an ordinary competitive horse, and its hooves were like thunder on the stone road. To be honest, it would be very respectable for us barons to raise a few ordinary competitive horses at home, but the Wang family's competitive horses are beyond our imagination. It was a symbol of royal power, something that could not be bought with money."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "townsfolk",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Wang’s rodeo horse? That kind of horse has nothing to do with us civilians. Ordinary competitive horses are already things in the sky, and the Wang family's competitive horses are creatures in mythology. It is said that the value of a royal racing horse can equal the salary of an entire mercenary army. King Detel occasionally rewards a great nobleman with a horse who has performed extraordinary feats, which is one of the highest honors in Vlandia."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "I saw it once from a distance near the palace stables in Palawind. That guy was simply not a horse, but a monster in horse skin. The legs are as thick as my waist, the chest is wide enough for two people to sit side by side, and the eyes are blood red. The groom said that this kind of horse only knows one owner in its life. If the owner dies, it would rather starve to death than let anyone else ride it."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The people of Vlandia boasted of their royal rodeo horse, but we also admit that it was indeed one of the best war horses in the world. However, the number of such horses is too rare. It is said that there are only a dozen horses in the entire Vlandia. They can only be used to show off and cannot change the direction of the war. On the real battlefield, you still have to rely on the discipline and numbers of the empire."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "On the battlefield, if you see a giant beast that is taller than an ordinary war horse and is covered in gold-plated horse armor charging towards you, run away quickly. Sitting there was either Detel himself or the Grand Duke of Vlandia. The charge of that kind of horse cannot be stopped by human power. I once saw a royal racing horse crash through the entire shield wall, and the rider didn't even exert much force."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "According to the records of \"Calradia Fengwuzhi\", the breeding history of royal racing horses can be traced back to the beginning of the establishment of the Kingdom of Vlandia. It is said that the first king of Vlandia took a purebred war horse from the royal stables of the ancient empire and crossed it with a now extinct giant wild horse in the local forest to create this sacred horse. For hundreds of years since then, the breeding rights of royal competitive horses have been firmly controlled by the Vlandia royal family and have never been transferred out. Each of the Wang's competitive horses has a complete pedigree, which is recorded in the \"Wang's Horse Garden Horse Breeding Record\"."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Nahathavi horses in the desert are famous for their speed and endurance, but in terms of impact and physique, they are indeed not as good as the royal racing horses of Vlandia. Those are two completely different breeding ideas. But having said that, one Wang family competitive horse can eat enough to feed three desert horses in one day, which is impossible to feed in the desert where supplies are scarce. That kind of horse was a luxury item in a wealthy land."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "I heard that King Deter once wanted to exchange a royal racing horse for an ancestral sword of our Sultan. The Sultan refused. It's not that the horse isn't worth it, but the deal itself is a political gesture - King Vlandia wants to trade a horse for our royal family heirloom, which is testing our bottom line. However, this also illustrates the weight of the Wang family's competitive horses, which can be compared with the Sultan's sword."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "We northerners respect strength, and Wang’s rodeo horses do have strength. But no matter how good a horse is, it depends on the person who rides it. Detel cannot run in the snow in the north while riding his precious horse. The horse's hooves will get stuck in the snow and cannot be pulled out. On the ice fields of Sturgia our pony is more practical than any of the tall horses of the South."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "There is no need for that kind of giant beast in the forests of Battania. No matter how strong the Wang family's competitive horses are, they can't run in the dense forest and will only be scratched and injured by branches. Our warriors fight on foot, relying on their familiarity with the terrain and precise archery. The Vlandians could ride their precious horses on the plains, but they could never enter the forests."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Horses on the grassland pursue speed and endurance, not strength and size. The Wang's competitive horse is indeed like a moving castle, but it can't run long distances and can't catch up with our mounted archers. On the grassland, that kind of horse would not survive a winter. However, if it's a frontal charge... I admit, I don't want to stand in front of that kind of monster."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer",
+          "mercenary"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "I have traveled all over Calradia and seen many fine horses - the Imperial Parmati horses, Aserai's Askel horses, and Khuzait's Karaham horses. But the Royal Rodeo is something else. Once you see it, you will never forget it. The horse stood there like a living monument, with the word \"power\" written all over it. Of course, I will never be able to ride that kind of horse in my life. I am content with just taking a look at it from a distance."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "steward": 150
+        }
+      },
+      "Content": "The royal racing horse is not only a war horse, but also an important symbol in the Vlandia political system. The ordinary competitive horse, as the mount of the Banner Knight, is already a symbol of military privilege; the royal competitive horse takes this symbol to the extreme - it only belongs to the king and the highest-ranking nobles, forming a 'horse hierarchy' that accurately reflects the feudal hierarchy of Vlandia. By controlling the distribution of the royal family's competitive horses, King Detel was actually continuously strengthening his benevolence and power over the highest-ranking vassals: rewarding a royal family's competitive horses was both a supreme honor and a political binding. This use of rare war horses to maintain feudal loyalty is unique in all of Calradia."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Wang’s Athletic Horse",
+      "Kind": "bound_item_name",
+      "TargetId": "__bound_item__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

@@ -1,0 +1,132 @@
+{
+  "Id": "rule_House_Foundations_Sardorf",
+  "Keywords": [
+    "Sardorf",
+    "House Sardorf"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Saldorff family belonged to the city family of Myr. Its practical roots should be understood in terms of Myr crafts and sea trade: workshops needed raw materials and orders, merchant ships needed escorts, and wealthy families protected their businesses through marriages, loans, and political patronage. If the name of the house cannot make the partners believe in the contract, the exquisite mansion is just an expensive shell. Myr is renowned for its fine craftsmanship and trade, with lenses, lace, carpets, dyes and Myr-style crossbows all requiring skilled craftsmen and imported raw materials. Cities were dominated by wealthy merchants, governors, and industrial interests, with wealth supported by slave labor and the skills of free artisans."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "myrish"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Sardorf Exquisite goods are highly profitable, but a shortage of raw materials or a wrong move in diplomacy can shut down an entire workshop."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "myrish"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "slave",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Sardorf Nobles can sell lace thousands of miles away, but the person who really makes the needlework flawless is the person who hurts his eyes by the window."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Sardorf Saldorf is a Myr merchant family whose status is shaped by the products of the workshops, shipping on the Narrow Sea, and the politics of the city's governor. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Sardorf Saldorf is a Myr merchant family whose status is shaped by the products of the workshops, shipping on the Narrow Sea, and the politics of the city's governor. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Sardorf Saldorf is a Myr merchant family whose status is shaped by the products of the workshops, shipping on the Narrow Sea, and the politics of the city's governor. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Sardorf Saldorf is a Myr merchant family whose status is shaped by the products of the workshops, shipping on the Narrow Sea, and the politics of the city's governor. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Sardorf: Saldorf is a Myr merchant family whose status is shaped by the products of the workshops, shipping on the Narrow Sea, and the politics of the city's governor."
+  ]
+}

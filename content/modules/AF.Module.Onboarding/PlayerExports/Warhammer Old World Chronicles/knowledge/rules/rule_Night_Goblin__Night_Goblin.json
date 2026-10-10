@@ -1,0 +1,208 @@
+{
+  "Id": "rule_Night_Goblin",
+  "Keywords": [
+    "night goblins",
+    "Cave Goblin",
+    "Poisoned Weapon",
+    "black hood",
+    "photophobia",
+    "underground fungus",
+    "dark raider"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Night goblins are a subspecies of goblins that live deep in dark caves. They wear black hoods all their lives to block light and use poisoned weapons to carry out insidious sneak attacks. These evil little creatures are extremely photophobic, but on a dark moon night or in an underground tunnel, their poisonous blades and crazy ambush are enough to kill hundreds of soldiers."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Night goblins are the most cunning and bad-ass little creatures among us greenskins! Other greenskins like to fight in broad daylight, but these little black hooded goblins like to hide in wells, caves, and crevices between rocks! Their poison is the most vicious thing I've ever seen - it's squeezed out of a mushroom that glows green. If you rub it on a knife and scratch you, you'll start to spit bubbles and fall to the ground twitching. Then a group of them will rush up and chop you up! But they also have an advantage - these guys are very good at raising manic jumpers, and they also plant the mushrooms in the cave as neatly as a farmland. They are more professional than any human farmer. I don't really like being crowded underground with them, it's too dark and crowded, but the poison and ambush they set up really work!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Night goblins are tactically ambush assault light infantry. Their individual combat effectiveness is negligible, but the threat posed by their poison weapons—especially if the toxin contains paralysis components—to elite units must not be underestimated. These toxins greatly reduce the defensive power of any high-level armor. The standard operation manual for fighting night goblins is as follows: first, never fight them at night or in caves; second, give priority to using incendiary weapons—torches, oil cans, muskets—to clear out the dark areas where they hide; third, all warriors scratched by poison blades must immediately retreat to the rear to receive holy water disinfection and detoxification prayers. If you don't follow these three rules, you may not lose hundreds of soldiers, but the entire army will die underground."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "Night goblins' biology is perfectly adapted to the lightless environment deep within caves. After evolution—or magical mutation—their visual nerves have almost completely degenerated into tentacles that sense heat and vibration, and the surface of their black hoods is actually covered with a layer of symbiotic fungi. This fungus produces photosensitive toxins that cause severe pain when encountering sunlight. This is the physiological reason for the extreme photophobia of night goblins rather than superstition. The night goblins' poisoning process can be called the most advanced primitive biochemical technology in the old world - they have domesticated and cultivated more than twenty-four poisonous fungi, the most deadly of which is the 'Mad Hat Fungus', whose spores are dried and ground to produce a waxy toxin that is coated on the blade, which can cause neurological paralysis and visceral spasms in the victim. The most tragic night goblin attack in the history of the empire was the 'Gron Valley Mining Disaster' in 1812. An imperial mining team composed of more than 3,000 miners, engineers and guards penetrated into the Gray Mountains and opened an entrance to the night goblin fungus kingdom deep in the mine. The entire army was wiped out overnight. Only one person crawled back to the ground in a lunatic state, repeatedly chanting 'Mushrooms are watching us'."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "My scouts once brought up from an underground cave a black hood belonging to the night goblins - woven from the silk of a giant spider they bred themselves. It feels cold and greasy, and when you get closer you smell a mixture of mushrooms and rot. Strangely, a week after the hood was brought back into daylight, it began to disintegrate on its own, as if it could only exist in the dark. The scout later started complaining of hearing whispers in the cave walls, and we called in a Sigmar priest who said they were 'spiritual hallucinations caused by chronic inhalation of mycotoxins'. But I noticed that after he performed the exorcism on the scout, he quietly burned the hood."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The mine tunnel under our family's castle is blocked leading to a night goblin territory. The iron door was made of three feet thick stainless steel forged by dwarven craftsmen. The runes on the door were said to turn any goblin who passed through it into ashes. Grandfather melted the key into molten iron, saying that he did not want any descendant to have the opportunity to be curious enough to open the door. I never questioned his approach - there is a record in our family archives that shows that during a project to excavate an underground warehouse, an opening to the goblin cave was opened by mistake. Within three nights, all the animals in the basement of the castle disappeared, leaving only dense obscene patterns painted with black mushroom sap on the walls."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "In an abandoned dwarf fortress in the World's Edge Mountains, our mercenary team encountered a night goblin mushroom farm - hundreds of glowing mushrooms grew into a dark green dome on the top of the cave, and the night goblins below crawled densely among the mushrooms like ants. Our dwarf scouts said that this kind of mushroom is called 'Mad Hat Fungus'. The night goblins eat it and grow up. Its toxin is converted into highly toxic weapon paint by the goblin blood. We originally planned to go down and eliminate them, but the dwarf scouts counted at least two thousand night goblins below, so we quietly retreated, set a fire at the entrance of the cave, and ran for three days and three nights."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "My cousin sells herbs on the banks of the Talabek River. Once, a dwarf explorer sold him a sample of a jar of night goblin poison - a green, viscous slurry that gave off a foul odor. The cousin then sold it to the Toxicology Research Department of the Pharmacists' Guild in Altdorf, netting a year's worth of profit. But the buyer was found dead in his laboratory six months later, his skin turning green and his mouth full of mushrooms. The guild said it was a 'bacterial infection', but my cousin never sells any goblin-related materials anymore - he says there is always death at the end of the profit chain."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "A subspecies of photophobic goblins that evolved deep in caves",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Night Goblin Cave Goblin Poison Weapon"
+  ]
+}

@@ -1,0 +1,152 @@
+{
+  "Id": "rule_House_Foundations_Farman",
+  "Keywords": [
+    "House Farman",
+    "Fair Isle",
+    "Ships"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Farman family is based on the Fairy City of Fairy Island. It is an island family under the command of Lannister facing the sunset sea. The family emblem uses ships on the sea as the main image. The islanders rely on fishing, navigation, harbors, and limited agricultural land, and are also under constant threat of ironborn raids. One of the most well-known names in the Farman family history is the voyager Eliza Farman. Her voyages are personal legends and cannot prove that the entire family is engaged in exploration. The lords of the West value the coast and ships of Farman, while the people of Fairy Island are more concerned about storms, fish floods and black sails."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The inland nobles of the West often regard Fairy Island as the edge of the sea, but Farman knows that the Sunset Sea can turn the edge into a front line. The family is attached to Casterly Rock and must retain the judgment of the island lord: the summons on land, the seasons on sea and the sails of the ironborn will not always arrive on the same day."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "sailor",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The boat owners and fishermen of Fairy Island went to Farman to see the harbor, lights and escort first. Food and salt on the island must pass through ships, and news also comes from the sea. If the lord does not understand the tide, his orders will be swallowed up by the waves; if the merchant ships can dare to dock, a ship's flag can be closer to the daily life of the islanders than a golden lion."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "sailor",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "In the eyes of the Ironborn, Fairy Isle is a familiar target in the western seashore, and a neighbor who will fight back. Farmans have faced longships for generations, bringing old vigilance to every bay on the island. The raiders may despise the maritime nature of the people of the West, but they will not despise an island that grew up hearing warning bells."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Farman The West Island family in Fairy City, Fairy Island, has a family emblem mainly based on boats. Fisheries, harbors, the ironborn threat, and Alisa Farman's personal voyages shaped her reputation; maxims unknown. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Farman The West Island family in Fairy City, Fairy Island, has a family emblem mainly based on boats. Fisheries, harbors, the ironborn threat, and Alisa Farman's personal voyages shaped her reputation; maxims unknown. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Farman The West Island family in Fairy City, Fairy Island, has a family emblem mainly based on boats. Fisheries, harbors, the ironborn threat, and Alisa Farman's personal voyages shaped her reputation; maxims unknown. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Farman The West Island family in Fairy City, Fairy Island, has a family emblem mainly based on boats. Fisheries, harbors, the ironborn threat, and Alisa Farman's personal voyages shaped her reputation; maxims unknown. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "House Farman: The West Island family in Fairy City, Fairy Island, has a family emblem mainly based on boats. Fisheries, harbors, the ironborn threat, and Alisa Farman's personal voyages shaped her reputation; maxims unknown."
+  ]
+}

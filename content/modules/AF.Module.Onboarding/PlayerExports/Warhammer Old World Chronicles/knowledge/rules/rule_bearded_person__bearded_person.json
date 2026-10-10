@@ -1,0 +1,213 @@
+{
+  "Id": "rule_bearded_person",
+  "Keywords": [
+    "bearded man",
+    "veteran",
+    "beard wisdom",
+    "spiritual pillar",
+    "dwarf elder",
+    "battlefield calmness",
+    "Bearded veteran",
+    "Dwarf elite",
+    "Battle-hardened",
+    "dwarven core",
+    "Never retreat (bearded person)",
+    "Soldiers of the Ancestors"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Bearded Men are the core of the dwarf army—this group of old warriors with beards that sweep down the ground have survived countless tunnel battles, mountain top city defense battles, and wilderness marches. They have seen everything, so they don't panic. The young dwarves are angry, violent, and foolish - the bearded man only needs a grunt and an old ax to keep the line firmly planted on the ground."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Bearded ones! Keep your tongue respectful when you mention their names, humans - these veterans have the blood of at least twenty tunnel battles on every beard. Do you know how many years a dwarf has to live before he is called a Bearded One? Two hundred years old, human! Two hundred years in the dark mine tunnels, in the stench of green skins, and under the charge of landslides! The young cubs, whose beards barely reach their chins, feel that I am the biggest man in the world - the long-bearded ones stand in the back and watch them being stupid, and then when the cub is about to make himself stupid to death, they go up and stick an ax into the greenskin's head and pull him back - without saying a word. They know when to be firm and when to be ruthless, because they have seen too many: the tricks of the goblins, the cesspools of the ratmen, the black furnaces of the chaos dwarves - the long-bearded ones have a whole Karak war memory in their minds. When a full phalanx of bearded men stood still on the battlefield, the entire dwarf army felt at ease from top to bottom - they were the kind of anvil that you couldn't kill or hit."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Bearded Men form the absolute core of dwarven infantry tactics - not because they are the most lethal, but because they will never retreat under any circumstances. No human army in the known world can claim that its core infantry cannot fail when faced with more than fifty percent casualties—the Bearded Ones can. The basis of this ability is the dwarves' \"Elder Will\" - a psychological immunity honed through more than two hundred years of non-stop fighting. Tactically, the bearded men should be thrown into the most critical areas of the battle—city gates, bridge entrances, mountain gaps—and the rest of your battle plan should be designed around the assumption that the bearded men are stuck in that position and will never retreat. If your plan includes the phrase \"if the Bearded Front is breached\" - you have deployed them wrong."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "The sociological connotation of bearded men occupies a central position in the dwarf clan system. In the dwarven cultural structure, beard length is not only a sign of age but also a quantitative manifestation of power and discourse - the \"Bearded Council\" is the actual decision-making body of each Karak, composed of the eldest bearded men in the clan, and the weight of its decisions is proportional to the total length of the beard (a draft of the rules of procedure copied from Karak Kaderin by an imperial anthropologist shows that the voting power of each bearded man in the council is equal to one-third of the length of his beard, measured in inches). The most famous bearded man deed in military history is the six bearded captains who nailed three hundred Iron Breakers into the ground during the \"Defense of Eight Peaks Mountain\" in 1523 BC. These six men were not only present to fight, but more importantly, they used their \"battlefield composure\" aura to maintain the Iron Breakers' sanity from collapsing during the sixty-six consecutive days of exhaustion. Dwarf behaviorists call this phenomenon \"elder calm parallax\": young dwarves' fear perception thresholds spontaneously increase about three times when they see a bearded person holding on—an effect thought to be a non-verbal group calming signal released through whisker pheromones."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "One of the cruelest lessons I've ever learned as a commander is this: You cannot measure the dwarf bearded men by human standards of courage. I once had a captain of the Human Old Guard - someone who had fought for my family for forty years and hundreds of battles, and I considered him an unshakable rock. His hands shook until he faced an entire group of night goblins in a pass. People are afraid. The bearded dwarves are not afraid - this is not a compliment, but a deep sadness: they have lived too long and seen too much, so that the emotion of fear has been worn out in them."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "My grandfather was a bearded man. When he was one hundred and forty years old, he retired from Karak Kaderin's Bearded Legion and returned to his hometown to open a rune identification shop. He talks very little - if I talk to him for a long time, he will probably reply with a \"hmm\", but everyone in my family knows: if you ask your grandfather to walk around the battlefield before a battle, he will not give you any tactics, he will only tell you which ground is stable and which ground will collapse sooner or later. What he said was true in every subsequent battle."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "There is an unwritten rule in the mercenary trade: if your opponent is a dwarf and you see a burst of gray beards - I mean a row of dwarves using their belts as scarves and tucking the ends of their beards under their feet - then you should renegotiate the price before engaging in battle, because your soldiers will die twice as often today. An old mercenary partner of mine named Gruny has never run away from a bearded formation once - he lies in a wild grave in the north to this day."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Barak Val's Business Guild once tried to lure a few retired bearded men with high salaries to serve as armed escorts for the Chamber of Commerce - they wrote in the draft contract that \"annual casualties are expected to be no more than 5%.\" The dwarf negotiator picked up the contract and read only one line, then put it down and said, \"The casualty rate of the bearded men is never determined by the contract, but by how many idiots are on the opposite side\" - and then left. From then on, that contract template was classified as \"a sample that should not exist\" within the guild."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "For veterans who are over two hundred years old and have survived countless battles, the length of their beards is directly proportional to their combat experience.",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Bearded Veteran Beard Wisdom"
+  ]
+}

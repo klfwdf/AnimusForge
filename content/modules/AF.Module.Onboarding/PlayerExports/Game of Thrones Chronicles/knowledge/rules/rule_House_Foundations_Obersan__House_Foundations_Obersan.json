@@ -1,0 +1,132 @@
+{
+  "Id": "rule_House_Foundations_Obersan",
+  "Keywords": [
+    "Obersan",
+    "House Obersan"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Obersan family's roots in Myr are formed by urban assets and connections. Lenses, lace, carpets or crossbows, no matter which industry they deal with, require craftsmen, slaves, merchants and captains to work together. If Auberson wants to keep his family name, he must maintain the supply of raw materials, reputation of finished products, and credibility in court, rather than just rely on banquets to display wealth. Myr is renowned for its fine craftsmanship and trade, with lenses, lace, carpets, dyes and Myr-style crossbows all requiring skilled craftsmen and imported raw materials. Cities were dominated by wealthy merchants, governors, and industrial interests, with wealth supported by slave labor and the skills of free artisans."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "myrish"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Obersan Exquisite goods are highly profitable, but a shortage of raw materials or a wrong move in diplomacy can shut down an entire workshop."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "myrish"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "slave",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Obersan Nobles can sell lace thousands of miles away, but the person who really makes the needlework flawless is the person who hurts his eyes by the window."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Obersan Obersan is the city home of Myr, and its reputation relies on contracts, workshops, trade relations, and city credit that can be honored. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Obersan Obersan is the city home of Myr, and its reputation relies on contracts, workshops, trade relations, and city credit that can be honored. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Obersan Obersan is the city home of Myr, and its reputation relies on contracts, workshops, trade relations, and city credit that can be honored. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Obersan Obersan is the city home of Myr, and its reputation relies on contracts, workshops, trade relations, and city credit that can be honored. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Obersan: Obersan is the city home of Myr, and its reputation relies on contracts, workshops, trade relations, and city credit that can be honored."
+  ]
+}

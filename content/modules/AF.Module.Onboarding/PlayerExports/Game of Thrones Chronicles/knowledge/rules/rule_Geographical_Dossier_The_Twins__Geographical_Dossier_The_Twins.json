@@ -1,0 +1,129 @@
+{
+  "Id": "rule_Geographical_Dossier_The_Twins",
+  "Keywords": [
+    "The Twins",
+    "Frey",
+    "Green Fork",
+    "Stone Bridge"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Twins straddles the Green Fork River in the northern part of the Riverlands. It consists of two east and west castles, a long stone bridge and bridge center fortifications. It is the ancestral territory of the Frey family. It controls one of the most reliable large-scale passages on the lower Green Fork River. Northern troops, merchants, and baggage trains often have to negotiate with the bridge owner if they do not want to make a long detour. The Frey family's wealth and status come from hundreds of years of bridge tax, marriage and patient management, not the oldest king's blood; therefore the Twins are also the most straightforward geopolitics of the Riverlands - whoever holds the bridge can make people with higher status than themselves stop and ask for a price."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "river"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The lords of the Riverlands can despise Frey's lineage, but it is difficult to despise the bridge on the Green Fork. Marriage contracts, troops and grain trucks will all slow down at the bridge, leaving opportunities for bargaining for the people guarding the bridge. Ordinary river people understand this truth better than nobles: the bridge is not an honor, but it can determine whether a bag of wheat, a cow and a family can cross before the flood."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania",
+          "vlandia",
+          "vale"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Northerners regard the Twins as a gate that cannot be bypassed on the north-south road; Westerners regard it as the most calculated throat in the riverlands; and valley people know that a bridge on the plains can sometimes change the itinerary better than a city in the mountains. Everyone may hate tolls, but no one can deny that Frey turned a river into his surname."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry The Twins Entry Green Fork Stone Bridge Frey It is the transportation chokepoint of the Riverlands, demonstrating that practical geographical power can trump ancient clans. They care about water sources, roads, customs and garrison, and know that behind the place names there is often a food road that can keep the castle alive."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry The Twins Entry Green Fork Stone Bridge Frey It is the transportation chokepoint of the Riverlands, demonstrating that practical geographical power can trump ancient clans. The reputation of a place is often determined by the number of people who died there."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry The Twins Entry Green Fork Stone Bridge Frey It is the transportation chokepoint of the Riverlands, demonstrating that practical geographical power can trump ancient clans. Stones, trees, rivers or mountain passes can become places of livelihood, and may also be endowed with sanctity, taboos and ancestral memories, so they cannot be measured in terms of money alone."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry The Twins Entry Green Fork Stone Bridge Frey It is the transportation chokepoint of the Riverlands, demonstrating that practical geographical power can trump ancient clans. They first checked whether the place could draw water, farm, graze, and avoid military disasters; a line of words on the map, and when it landed in the village, it turned out to be firewood, well rope, and winter food."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "The Twins: The Twins straddles the Green Fork River in the northern part of the Riverlands. It consists of two east and west castles, a long stone bridge and bridge center fortifications. It is the ancestral territory of the Frey family. It controls one of the most reliable large-scale passages on the lower Green Fork River. Northern troops, merchants, and baggage trains often have to negotiate with the bridge owner if they do not want to make a long detour. The Frey family's wealth and status come from hundreds of years of bridge tax, marriage and patient management, not the oldest king's blood; therefore the Twins are also the most straightforward geopolitics of the Riverlands - whoever holds the bridge can make people with higher status than themselves stop and ask for a price."
+  ]
+}

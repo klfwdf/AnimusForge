@@ -1,0 +1,210 @@
+{
+  "Id": "rule_Cara_Tilde",
+  "Keywords": [
+    "Cara Tilde",
+    "Baroness"
+  ],
+  "RagShortTexts": [
+    "Cara Tilde is the only baroness of Vlandia whose succession has been challenged."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Caratilde is the head of the Dai Aromanke family and the only baroness in Vlandia. According to Vlandia's customary law, a woman originally had no inheritance rights, but her father had only one daughter. When the careerist Incatel claimed the right to inherit Jetriang, her people would rather let their own daughter be the head of the family than let an outside wolf enter. King Detel also supported her, which allowed her to secure her position as baron."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Cara Tilde is our only Baroness in Vlandia. Speaking of which, it was not easy for her to sit in this position. According to the rules, women cannot inherit, but her father only has one daughter. At that time, the wolf of Catal wanted to devour Jetriang and claimed that he also had the right to inherit. When the Dai Aromanke family heard this, they immediately united around Caratilde - no matter how their daughter was, she was better than letting an outsider take charge of the family. King Detel also stood by her side. After all, no one wanted to let Ingatel's power expand any further."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Cara Tilde is an interesting person. She is a woman, and being a baron in Vlandia is not justifiable, but her husband Enteri is a powerful figure in the Vlandia military and commanded the crossbowmen phalanx in the Battle of Pandrak. It stands to reason that the husband is a soldier and the wife should stay at home to defend the city, but their family is just the opposite - Cara Tilde particularly likes to lead the army on expeditions, but Enteri does not like to lead the army very much. Some people say that she needs to prove that she is worthy of the title of baron through military exploits."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "townsfolk"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Baroness Caratilde has a pretty good reputation. I heard she is fair and honest, but a bit stingy. But this is normal. For a woman to gain a foothold in an aristocratic circle filled with men, how can she do it without careful calculation? Her union with Count Enteri was said by some to be a political marriage - she needed the support of the military, and Enteri needed a decent identity. But no matter what, their daughter Sylvain is a powerful character and can fight better than her parents."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Vlandia, Baroness Cara Tilde, is an interesting character. Her husband Enteri was commanding the crossbowmen in the Battle of Pandrak and was run over by our armored cavalry. Although he saved his life, almost all of his crossbowmen were wiped out in that battle. What's interesting is that this Enteri has a lot of say in Vlandia's army, but he himself doesn't like to lead troops in war. On the contrary, his wife Cara Tilde, who rose to power through special means, especially likes to lead troops on expeditions."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "There is a baroness in Vlandia named Cara Tilde, who is the lord of Getriland. We northerners don't care much about things in the south, but the fact that a woman can become a baron in Vlandia is quite strange in itself. It is said that part of the reason why she came to power was because the wolf from Gatell wanted to take away her territory, which forced her tribe to unite to support her."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Caratilde is the only baroness of Vlandia and rules over Jetrand. She came to power because Gatell wanted to seize her family's inheritance rights, but instead made the Dai Aromanke family unite around her. Her husband Nteri is from the military, but the roles of the couple seem to be reversed - she likes to lead soldiers, and her husband does not."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Vlandia Baroness Caratilde is a person who rose to power by special chance. Her husband Nteri is a strong man in the military and has command experience in the Battle of Pandrak."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer",
+          "mercenary"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Baroness Caratilde, I heard her story when I was hanging out in Vlandia. Her father had no sons and she could not have inherited according to customary law. But the ambitious Ingatell claimed that he had the right to inherit Jedlon, and now the Dai Aromanke family panicked - instead of letting an outsider take charge of the family, it was better to support their own daughter. King Detel was also afraid that Gatell would be too powerful, so he supported her. In this way, Cara Tilde became the only baroness of Vlandia. She later married Enteri, a count who was influential in the military but was badly beaten in Pandrak. These two people are also quite interesting. Enteri doesn't like to lead troops, but she especially likes to lead the army on expeditions."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "steward": 150
+        }
+      },
+      "Content": "The succession of Carathilde is a case of great analytical value in the feudal system of Vlandia. According to Vlandia's customary law, a woman had no inheritance rights, but she had only one daughter from her father. What really contributed to her succession was the threat from the outside - Incatel's coveting of Jedran, which made the Dai Aromanc family choose the former between 'female inheritance' and 'outsiders seizing power'. The support of King Detail is also a key factor, because from the perspective of royal power, maintaining a weak baroness is far more beneficial than allowing the ambitious Ingatell to continue to expand."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Cara Tilde",
+      "Kind": "bound_hero_name",
+      "TargetId": "__bound_hero__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "Dai Aromanke",
+      "Kind": "bound_clan_name",
+      "TargetId": "__bound_clan__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "Jie Qu Lang",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

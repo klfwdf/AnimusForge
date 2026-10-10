@@ -1,0 +1,151 @@
+{
+  "Id": "rule_House_Foundations_Magnar_Styr_Branch",
+  "Keywords": [
+    "Magnar (Styr Branch)"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Styr is the leader of the Thenns, and 'Magnar' is the title the Thenns give their ruler, carrying an almost sacred authority. The valley of Thenn is relatively warm, and its people know how to smelt bronze and work small amounts of iron, maintaining stricter social hierarchy, discipline, and obedience than most free folk clans. Styr's strength comes from clan order, the awe of his warriors, and his grip over their shared survival; separated from those foundations, a ringing title alone cannot make men obey."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "freefolk"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "peasant",
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Thenn warriors regard the Magnar as leader, judge, and the center of clan order. Unlike other free folk, they do not mock obedience, because in a narrow mountain valley, shared labor, stored grain, and formed ranks allow more people to survive the winter."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "freefolk"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Other free folk both admire the metal armor and orderly ranks of the Thenns and mock them for being too fond of kneeling. To people who refuse to acknowledge any king, exalting a chieftain almost as a god looks very much like a bad habit from south of the Wall."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nightswatch"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "When the Night's Watch faces the Thenns, it dares not treat them as an undisciplined rabble. Discipline, shield walls, and metal weapons make this clan much closer to an army, and rangers who understand this watch their formations first rather than merely counting campfires."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Magnar (Styr Branch) The Magnar Styr branch forms around the Thenn leader Styr and his clan, as Thenn society possesses stricter hierarchy, discipline, and metalworking traditions than most of the free folk. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Magnar (Styr Branch) The Magnar Styr branch forms around the Thenn leader Styr and his clan, as Thenn society possesses stricter hierarchy, discipline, and metalworking traditions than most of the free folk. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Magnar (Styr Branch) The Magnar Styr branch forms around the Thenn leader Styr and his clan, as Thenn society possesses stricter hierarchy, discipline, and metalworking traditions than most of the free folk. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Magnar (Styr Branch) The Magnar Styr branch forms around the Thenn leader Styr and his clan, as Thenn society possesses stricter hierarchy, discipline, and metalworking traditions than most of the free folk. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Magnar (Styr Branch): The Magnar Styr branch forms around the Thenn leader Styr and his clan, as Thenn society possesses stricter hierarchy, discipline, and metalworking traditions than most of the free folk."
+  ]
+}

@@ -1,0 +1,266 @@
+{
+  "Id": "rule_baron",
+  "Keywords": [
+    "Baron",
+    "Baron Vlandia",
+    "Lord Vlandia"
+  ],
+  "RagShortTexts": [
+    "The title of baron in Vlandia is unified, regardless of the size of the nobles, and the strength varies greatly."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "In Vlandia, a baron is a hereditary lord who rules a party. Whether he is a great nobleman who owns several castles or a poor lord who only governs a small village, his title is Baron. This may seem crude to outsiders, but the Vlandians believe that the title is not important, only the sword and the land in the hand are important. Each baron is a direct vassal of the king and has absolute authority over his own territory."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "We in Vlandia have only two kinds of people: the king, and the king's barons. This was the rule set by the great Oslak Iron Arm back then - regardless of the size of the nobles, as long as they received the fiefdom directly from the king, they were all called barons. This rule is simple, but it works. A baron, no matter how much land he controls, is legally equal and must be loyal to the king."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "I am a baron, my father was a baron, and my grandfather was a baron. Our family has ruled this land for hundreds of years, and our titles have never changed. Vlandia does not need those fancy title levels, a baron is the master of a party. A baron with a larger territory will naturally speak more heavily, while a baron with a smaller territory will be more low-key, but legally no one is higher than the other."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "townsfolk"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Baron is the highest official here. The king is far away in Palawind, and the local baron is really in charge of us. He collected taxes, settled cases, conscripted troops, and was in charge of everything. Barons and barons are also different - some barons are extremely rich, and their castles are more magnificent than the king's; some barons are extremely poor, not much different from ordinary knights. But regardless of whether he is rich or poor, his title is always Baron."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The barony system in Vlandia is quite interesting. A lord with only one ruined castle is called a baron, and a great nobleman who rules an entire region and has thousands of soldiers is also called a baron. The title is the same, but the strength is very different. This leads to the fact that no one among the barons of Vlandia is more noble than the other, and everyone speaks based on their strength."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The title system of the Vlandians is simply ridiculous. No matter how prominent a family is, their title is actually 'Baron'. We Imperial people really cannot understand how they distinguish between big lords and small landowners. But the strange thing is that the Vlandians themselves never seem to care about this. They only value actual power and military strength."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Vlandia’s title of baron seems crude at first glance, but it makes sense if you think about it carefully. They had no complicated hierarchy of nobility, and all vassals were directly loyal to the king. In this way, the king's power is theoretically more concentrated, and there will be no decentralization of power among the middle nobles. Of course, this is just theory."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Vlandia's feudal system was a minimalist structure. At the beginning of the founding of the country, in order to strengthen the royal power and avoid overly complicated noble hierarchies that would lead to separatism, Oslak Ironarm deliberately established only the first-level vassal title of 'Baron'. All secular lords who directly receive fiefs from the king, regardless of the size of their territory, are called barons. This approach made all vassals legally equal, but in actual politics, the size of the territory and the strength of the army determined the right to speak of the barons."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Baron of Vlandia, sounds similar to our Boyer, both are local emperors. Their rules are also simple. Under the king is the baron, and there are not so many twists and turns. How many soldiers and lands a baron has depends entirely on his own ability."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The baron of Vlandia sounds very similar to our count, both are figures in charge of a party. But our earls are elected, and their barons are hereditary, passed from father to son. Although he only has one title, his power is considerable."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The ‘baron’ of the Vlandia people has power not much different from that of our emir. They were in charge of the land, the people, and the army, and were accountable only to the king. The title is simple, but the power is real, which is in line with the straightforward character of Vlandia people."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The baron of Vlandia is their big leader, similar to the one on our grassland. However, they only have one title. Whether they are in charge of one tribe or ten tribes, they are all called barons. This saves trouble. You don't have to remember so many names."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer",
+          "mercenary"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "When playing in Vlandia, you have to identify which baron is the most powerful. The titles are the same, but the strength is very different. If you are with a powerful baron, you will be rich and drink well; if you are with a poor baron, you will not have enough to eat. However, if you can get a fief from a poor baron, you can become a baron yourself."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "steward": 150
+        }
+      },
+      "Content": "The barony system in Vlandia is a flat feudal structure. It eliminated the middle ranks of nobility, making all vassals legally equal and loyal directly to the king. This system can greatly concentrate power in the hands of a strong king, but once the royal power declines, the barons will attack each other based on their respective strengths, because no baron has legal authority higher than others to maintain order."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Baron",
+      "Kind": "bound_hero_title",
+      "TargetId": "__bound_hero__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

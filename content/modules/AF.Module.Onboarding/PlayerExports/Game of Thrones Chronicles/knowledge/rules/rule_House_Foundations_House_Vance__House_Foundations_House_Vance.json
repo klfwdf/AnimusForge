@@ -1,0 +1,132 @@
+{
+  "Id": "rule_House_Foundations_House_Vance",
+  "Keywords": [
+    "House Vance",
+    "Atranta",
+    "Two Branches of House Vance"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Vanth is an ancient family name in the Riverlands, which is at least divided into two branches: Travelers' Rest and Atlanta. The two families share surnames and distant blood connections, but each has its own territories, members, coats of arms, marriage relatives, and old debts that must be borne alone. The river nobles will clearly write the name of the city when writing the covenant, because a dragon pattern, a marriage or a promise only belongs to the branch that made it. The common people distinguish more simply: which city hears a case, which flag collects taxes, which group of riders passes through the village at Tully's summons."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "river"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "When the river nobles say \"Vance\", they will first ask which branch it is. The relatives of the same surname in Travel's Rest and Atlanta each have their own coat of arms, territory, and marriage relatives. Blood ties can allow them to sit closer, but they cannot bear the debts of any one branch for the other. Confusing the two families is just disrespectful at the wine table, but may be a mistake in the covenant."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "river"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Ordinary people distinguish between the two Vans, not by complex genealogy, but by which flag collects taxes, which city is responsible for judging cases, and which knight takes away levies. Lords with the same surname are like a family to the ears of distant people, but they are like two adjacent roads to the locals: both are called Vans, and if you go wrong, you will still end up in front of a completely different door."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Vance The ancient family names of the Riverlands, Travel's Rest and Atlanta each have their own territories, coats of arms, members and responsibilities; the same surname does not mean the same political choice. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Vance The ancient family names of the Riverlands, Travel's Rest and Atlanta each have their own territories, coats of arms, members and responsibilities; the same surname does not mean the same political choice. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Vance The ancient family names of the Riverlands, Travel's Rest and Atlanta each have their own territories, coats of arms, members and responsibilities; the same surname does not mean the same political choice. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Vance The ancient family names of the Riverlands, Travel's Rest and Atlanta each have their own territories, coats of arms, members and responsibilities; the same surname does not mean the same political choice. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "House Vance: The ancient family names of the Riverlands, Travel's Rest and Atlanta each have their own territories, coats of arms, members and responsibilities; the same surname does not mean the same political choice."
+  ]
+}

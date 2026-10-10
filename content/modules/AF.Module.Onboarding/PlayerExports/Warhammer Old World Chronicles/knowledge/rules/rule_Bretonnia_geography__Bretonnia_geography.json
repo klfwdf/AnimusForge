@@ -1,0 +1,212 @@
+{
+  "Id": "rule_Bretonnia_geography",
+  "Keywords": [
+    "Bretonnia Geography",
+    "Bretonnia territory",
+    "Duchy of Bretonnia",
+    "gray mountains",
+    "sanne",
+    "Aquitaine",
+    "Mousilon",
+    "Baldello",
+    "Briona",
+    "Bretonnia forest",
+    "gironde coast"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Located to the west of the Gray Mountains, Bretonnia is a kingdom dominated by vast plains and ancient forests. The fourteen duchies each have their own characteristics - Curona is the king's demesne and the seat of the royal capital, Baldelo is famous for its mountain fortresses and mountain passes, Aquitaine is the home of southern wine and knightly lyricism, and Mousilon is a cursed ruin. The once most glorious duchy is now occupied by the undead."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Every land in Bretonnia is drenched in the light of the goddess, but every land is also drenched in the blood of knights. The Duchy of Curona is the heart of the kingdom. The royal capital, Curona Castle, is built on the Bay of the Sonne River. The stained glass windows of the cathedral can be seen dozens of miles away in the setting sun - that is our Jerusalem. The Duchy of Baldero guards the passes of the Gray Mountains - the knights there are the most hardy men in Bretonnia. When the snow melts in the spring, they patrol the mountain passes with their feet in knee-high ice water, and in the summer they have to deal with the greenskin marauders coming from the other side of the mountain. The Duchy of Aquitaine is the most beautiful land in Bretonnia. Vineyards and knightly lyrics are the twin treasures of Aquitaine. The knights born there have the highest goal in life of pursuing the favor of a stunning lady on the tourney instead of killing orcs. People all over the old world are willing to pay exorbitant prices for the wine of Aquitaine. The Duchy of Gironde was founded on fishing and shipbuilding, and their navy protected Bretonnia's western coast. The Duchy of Bretonnia is Bretonnia's southern gateway to Es Tarly and Tyrell, where the people speak with thick accents and are passionate and impulsive. As for Mousilon—that's a name you'd better not mention at the dukes' banquets. The former Duchy of Mousilon was the richest province in Bretonnia, but after the Red Duke's rebellion, that land was no longer the territory of the living. Only the undead and crows remained in the abandoned castle."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The geography of Bretonnia determines your strategic choices as a lord. The Duke of Baldero, who controls the passes of the Gray Mountains, controls the key channels for trade with the empire. In times of war, he can block these passes and allow the empire's caravans to bypass the sea. However, the empire is usually unwilling to go to war for this because the knights have a huge defensive advantage in the pass area. Curona's status as the royal capital was not unshakable - more than one king in history was forced to move his capital to a safer location due to a broken alliance with the Dukes of the North. The duchies of Aquitaine and Gironde to the south had long coastlines, and their ports were the lifeblood of Bretonnia's maritime trade and regular targets for Arabi corsairs and Norscan longships - any king who wished to gain naval support had to maintain ironclad relations with these two duchies. The problem of Musilon has not been solved yet - it is embedded in the heart of Bretonnia like a festering wound. Every few decades, a duke will propose to regain Musilon, but every time the knights really step into that ghost land, they will regret why they did not listen to the advice of the veterans."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 100
+        },
+        "IdentityIds": null
+      },
+      "Content": "Bretonnia's geographical divisions reflect its long history of political integration. The fourteen duchies can be divided into four major areas according to geographical characteristics: the central plain area-including the duchies of Curona, Leonis, Rushvax and other places in the Sanne River Basin, is Bretonnia The core area of politics and economy has the most fertile land and the most dense population; the northern highland area - represented by Baldelo and Gisoroux, with rugged terrain and sparse vegetation, produces the most hardworking soldiers in the entire kingdom; the southern coast area - Aquitaine, Gironde, and Briona extend along the Atlantic Ocean and are famous for trade, fishery and wine making; the eastern forest area - Palavon, Carcassonne and other duchies close to the Gray Mountains have high forest coverage and are dotted with many ancient villages that do not interact with the outside world. Musilon still existed legally as an independent fifteenth duchy, but in reality it was a cursed land occupied by the undead - a situation that lasted for centuries. On the one hand, the knights were unable to effectively clear out the undead in the swamp ruins. On the other hand, there were deeper political considerations: the Musilon issue provided the king with an external focus to divert the internal conflicts among the dukes. The Gray Mountains are more than just the borders of the Empire - their cliffs and passes have deep cultural significance to the Bretonnians, and the legend of Gilles once traveling alone across the Gray Mountains in search of the goddess is a bedtime story every Bretonnian child can tell around the campfire."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The mountains and lakes of Bretonnia have unique spiritual significance for women - the Lady of the Lakes is a woman, and her sacred lakes are spread throughout the kingdom, each a mortal extension of the goddess's essence. I maintain four sacred lakes in my duchy, and every time I kneel by them at dawn to pray I feel a spiritual closeness that men can never experience on the tourney—not a warrior's invocation to a patron saint, but a silent conversation between two women. The geography of Bretonnia is both a prison and a sharp edge for female nobles: the winter winds of the Gray Mountains can freeze people to death on the passes, but they also block the frontal invasion of the empire; the floods of the Sannei River can wash away half of the wheat fields in one season, but its silt brings the fertility of the entire central plain - learning to coexist with the land instead of conquering it is the essence of female governance in Bretonnia. This is not the logic of men's charge but the extension of women's housekeeping philosophy on a provincial scale."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The geographical boundaries of Bretonnia were as important as the blood boundaries between the ducal families. The western boundary of our family territory is the third fir forest east of the Baldero Ridgeline - in the eyes of insiders, this boundary is not only the boundary of the land, but also the balance of family power that was finally determined after two hundred years of fine-tuned marriage negotiations between four ancient families. The territorial division of Bretonnia was never a line drawn by the king in the palace, but the accumulated result of low-intensity military frictions in the name of 'demarcation disputes' and high-profile political deals in the name of 'marriage reconciliation' that had been carried out repeatedly by generations of ducal families on the border. The allocation of control over the Gray Mountain Pass is our family's most precious bargaining chip - we have ten months of use of the Palavon Pass and the two months of winter are under the jurisdiction of the Empire. This allocation was obtained by the Duke four generations ago in exchange for the marriage of a daughter during the border negotiations between the Empire and Bretonnia. Every border castle in Bretonnia is the stone fossilization of a family's diplomatic history - you only need to look at the age of the castle, the age of the expansion, and the direction of defense to deduce whether the enemy it was built against was a foreign nation or another ducal family."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Understanding the geography of Bretonnia from a wanderer's perspective doesn't require the Duke's map - you just need the warning stories heard at every quay, mountain pass and forest edge. The country roads of Aquitaine are the safest places in the Old World during the grape harvest season - the barons will set up makeshift 'harvest guards' at the intersections because grape taxes are their lifeblood. But the same road will be the deadliest trap in the old world after the snow in January - the Mousilon Swamp releases a gray-white cold fog in winter. This fog is sentient. If you walk in the fog after sunset, you will feel that someone is following your footsteps on your left rear. I once crossed an unnamed fork in the Baldello Pass in the Gray Mountains - this is not an official road, but smugglers have used it for three hundred years - and on the roadside I could see imperial copper coins and Bretonnian silver francs scattered among the rocks, which were scattered from the pockets of smugglers of all generations when they were caught in the blizzards in the mountain crevices. The most beautiful place in Bretonnia is the spring wetland on the lower reaches of the Sannei River - on the first two warm days of each year, the river reflects a dozen different shades of green light on the flooded low grass plains, and serf girls pick up fish, shrimp and snails with their bare feet in the shallow water. For a moment Bretonnia looks like a fairy tale not yet tainted by war and history - and then you see the deathly gray light coming from the direction of Mussillon over the far embankment of the marsh, and the fairy tale is shattered."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The geographical trade layout of Bretonnia is an excellent case study of commercial activities under feudalism. The core economic function of Curona as a royal capital is not for taxation but for consumption - the annual celebrations of the royal palace and the Holy Grail Cathedral attract pilgrims and jousting spectators, providing the most concentrated luxury consumer market in the old world for traders gathered from the ten surrounding duchies. The port docks of Gironde are Bretonnia's only truly industrial area - its oak hulls and linen canvas industries link a vast network of laborers from the forest loggers of Briona to the weavers of Aquitaine. The trade control of the Gray Mountain Pass supports nearly half of the fiscal revenue of the Duchy of Baldero - every imperial merchant car that passes through the pass needs to pay a toll tax to the Duke of Baldero. This money is directly reflected in the thicker stone walls and more towers of Baldero Castle than all the surrounding duchy castles. The most unique wonder of Bretonnia's economic geography is the Pilgrimage Route to the Holy Grail - a pilgrimage from Palavon to Curona that developed an entire service economy: pilgrim waystations, the sale of relic souvenirs, and seasonal income from serfs renting out their spare farmhouses to pilgrims. The merchants of Bretonnia used these Holy Grail pilgrimage routes to establish an unwritten fast messenger network covering the entire territory - claiming to be to deliver church documents. In fact, the contract quotations and futures news among the merchants traveled faster than any official imperial post route through the mouths of the Holy Grail pilgrimage messengers."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "The Curse of Mousilon - the eternal desolation of the once richest duchy after it was overrun by the undead.",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Bretonnia’s topography, climate and location characteristics"
+  ]
+}

@@ -1,0 +1,93 @@
+{
+  "Id": "rule_Karakugit",
+  "Keywords": [
+    "Karakulgit",
+    "Black Kugit"
+  ],
+  "RagShortTexts": [
+    "The Khuzait are the only non-settled nomadic tribe of the Khuzait."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Karakujit are a group of nomadic barbarians, the only unsettled tribe among the Khuzait tribes. They remain unsettled, despite the Khuzait people's efforts to invite them."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Karakujit are a group of nomadic barbarians, the only unsettled tribe among the Khuzait tribes. They remain unsettled, despite the Khuzait's efforts to invite them. They are excellent mercenaries, and now their looks are A"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "khuzait"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Karakujit are a group of our compatriots. They prefer to live a nomadic life rather than settle down. We cannot understand it at all. Our successive Khans have tried hard to get them to settle down, and even promised them land, livestock, and slaves, but they are still unwilling to settle down, and are even willing to be hostile to us in exchange for their poor freedom."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "khuzait"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The NayanA of Karakulgit is really stubborn. We promised so many things, but not only do they not appreciate it, they also come to rob us regularly and work as mercenaries for other countries to fight against us. It is really incomprehensible. They refuse to settle down, while other tribes have settled down. They are the only ones who are special. They are not willing to live a comfortable life of settlement. Instead, they are willing to bask in the wind and sun on the grasslands and deserts, pursuing their freedom. It is simply unreasonable."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "A",
+      "Kind": "clan_leader_name",
+      "TargetId": "karakhuzaits",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

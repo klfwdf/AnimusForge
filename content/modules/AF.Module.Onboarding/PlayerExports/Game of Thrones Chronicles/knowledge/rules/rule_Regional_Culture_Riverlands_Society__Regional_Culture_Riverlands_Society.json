@@ -1,0 +1,135 @@
+{
+  "Id": "rule_Regional_Culture_Riverlands_Society",
+  "Keywords": [
+    "Riverlands Culture",
+    "Riverlands Society",
+    "The Trident",
+    "Corridor of War"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The land between the rivers is fertile and open, but it lacks a natural barrier sufficient to isolate the army. Rivers brought fish, mills, ferries, and trade. They also made bridges, fords, and villages frequent places where armies passed. The residents of the Riverlands attach great importance to the rights of guests, marriage alliances, and local territorial rule Lord He can promise to protect farmland, but he also learned to recognize flags, hide food and escape earlier than many areas. The people here do not lack courage, but they lack the terrain to sustain peace."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "river"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Riverlands Society"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "river"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Riverlands Society"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Riverlands Society"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Riverlands Culture Riverlands Society: The land between the rivers is fertile and open, but it lacks a natural barrier sufficient to isolate the army. Rivers brought fish, mills, ferries, and trade. They also made bridges, fords, and villages frequent places where armies passed. The residents of the Riverlands attach great importance to the rights of guests, marriage alliances, and local territorial rule. They care about water sources, roads, customs and garrison, and know that behind the place names there is often a food road that can keep the castle alive."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Riverlands Culture Riverlands Society: The land between the rivers is fertile and open, but it lacks a natural barrier sufficient to isolate the army. Rivers brought fish, mills, ferries, and trade. They also made bridges, fords, and villages frequent places where armies passed. The residents of the Riverlands attach great importance to the rights of guests, marriage alliances, and local territorial rule. Stones, trees, rivers or mountain passes can become places of livelihood, and may also be endowed with sanctity, taboos and ancestral memories, so they cannot be measured in terms of money alone."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Riverlands Culture Riverlands Society: The land between the rivers is fertile and open, but it lacks a natural barrier sufficient to isolate the army. Rivers brought fish, mills, ferries, and trade. They also made bridges, fords, and villages frequent places where armies passed. The residents of the Riverlands attach great importance to the rights of guests, marriage alliances, and local territorial rule. They first checked whether the place could draw water, farm, graze, and avoid military disasters; a line of words on the map, and when it landed in the village, it turned out to be firewood, well rope, and winter food."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Riverlands Society: The land between the rivers is fertile and open, but it lacks a natural barrier sufficient to isolate the army. Rivers brought fish, mills, ferries, and trade. They also made bridges, fords, and villages frequent places where armies passed. The residents of the Riverlands attach great importance to the rights of guests, marriage alliances, and local territorial rule."
+  ]
+}

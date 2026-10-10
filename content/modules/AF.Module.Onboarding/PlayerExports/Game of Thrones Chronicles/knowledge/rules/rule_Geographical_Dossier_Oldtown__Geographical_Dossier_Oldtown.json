@@ -1,0 +1,152 @@
+{
+  "Id": "rule_Geographical_Dossier_Oldtown",
+  "Keywords": [
+    "Oldtown",
+    "Honeywine",
+    "The Citadel",
+    "Starry Sept",
+    "Hightower",
+    "The Hightower"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Oldtown is located in the southwest of the Reach, where the Mead River enters the Whispering Bay. It is one of the oldest, largest, and richest cities in Westeros. The Hightower family overlooks the harbor and river from the towering tower on the Battle Island. The Citadel trains maesters in the city. The Starry Temple retains the highest authority of the Seven Gods' faith in the past; docks, docks, markets, workshops and roads to the hinterland of the river allow knowledge and faith to be placed above actual wealth. Oldtown belongs to the Reach under the jurisdiction of Highgarden, but due to the ancient lineage of the Hightower family, ocean trade and the Citadel network, it has an independent weight that far exceeds that of ordinary vassal territories."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "scholar",
+          "priest",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Bachelors and ecclesiastics will debate whether Oldtown belongs to knowledge or faith. The Citadel believes that the chain represents verification and restraint, and the Citadel believes that the human soul cannot be measured by parchment alone. Both sides are inseparable from the prosperity of the same city, and both know that Oldtown's antiquity adds weight to their voices. To many Southerners, letters from Oldtown were more \"truth\" than letters from the battlefield."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "sailor",
+          "artisan"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Sailors saw Oldtown as a lighthouse, an estuary, a warehouse, and a sheltered berth. Paper merchants, brewers, booksellers, chainmakers, and shipowners knew that a city's reputation itself was its goods: the Citadel needed books, pilgrims needed shelter, and ocean-going ships needed repairs. Oldtown people don’t always have to raise their voices when speaking, because they are used to letting contracts, trends and the credibility accumulated from generation to generation speak for themselves."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania",
+          "sturgia",
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Guests from the north will feel that Oldtown is almost unrealistically warm; the Ironborn will first assess its port and wealth; the Dornish people are familiar with its trade routes, but may not trust its southern church. To outsiders, the scariest thing about Oldtown is not the tower, but the fact that it always seems to remember too much: whose family’s bloodline, which Old Testament, which page of the book has written about similar troubles."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Oldtown Entry Honeywine Entry Hightower The Hightower The Citadel Starry Sept They care about water sources, roads, customs and garrison, and know that behind the place names there is often a food road that can keep the castle alive."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Oldtown Entry Honeywine Entry Hightower The Hightower The Citadel Starry Sept The reputation of a place is often determined by the number of people who died there."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Oldtown Entry Honeywine Entry Hightower The Hightower The Citadel Starry Sept Stones, trees, rivers or mountain passes can become places of livelihood, and may also be endowed with sanctity, taboos and ancestral memories, so they cannot be measured in terms of money alone."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Oldtown Entry Honeywine Entry Hightower The Hightower The Citadel Starry Sept They first checked whether the place could draw water, farm, graze, and avoid military disasters; a line of words on the map, and when it landed in the village, it turned out to be firewood, well rope, and winter food."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Oldtown: Oldtown is located in the southwest of the Reach, where the Mead River enters the Whispering Bay. It is one of the oldest, largest, and richest cities in Westeros. The Hightower family overlooks the harbor and river from the towering tower on the Battle Island. The Citadel trains maesters in the city. The Starry Temple retains the highest authority of the Seven Gods' faith in the past; docks, docks, markets, workshops and roads to the hinterland of the river allow knowledge and faith to be placed above actual wealth. Oldtown belongs to the Reach under the jurisdiction of Highgarden, but due to the ancient lineage of the Hightower family, ocean trade and the Citadel network, it has an independent weight that far exceeds that of ordinary vassal territories."
+  ]
+}

@@ -1,0 +1,148 @@
+{
+  "Id": "rule_Geographical_Dossier_Winterfell",
+  "Keywords": [
+    "Winterfell",
+    "Stark Castle",
+    "Winter Town",
+    "Winterfell Godswood",
+    "Crypts of Winterfell"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Winterfell is located in the hinterland of the North and the northern section of the King's Road. It is the ancestral fortress of the Stark family that has lasted for thousands of years and is also the political center recognized by the vassals of the North. The castle is built on a natural hot spring, and hot water flows through the walls and houses, making it habitable in the cold; the double walls, bell tower, fortress, godswood, glass garden and Stark cellar together constitute its space. Winterfell outside the castle will gather people who come to take shelter during the cold season. Therefore, Winterfell is not only the residence of a lord, but also a place where grain is stored, cut, recruited, and shelter in disaster years can be fulfilled in the north."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Northerners rarely speak of Winterfell as gorgeous. What they remember are hot water, stored grain, city gates, godswoods, and names sleeping in cellars. When winter comes, whether the castle can distribute firewood and bread is much more important than how well the singers in the hall sing; but because of this, Stark's seat is not just a stone seat, but a responsibility that must be fulfilled in the coldest time."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "When vassals come to Winterfell, they come to submit their oaths, seek judgment, and confirm how much order is left in the north; when merchants come here, they know that they have entered a land where distance and cold are expensive. The southern nobles think it is rough, but those who have actually experienced the northern road will understand: being able to maintain a large castle and a group of dependents in the harsh winter is an inconspicuous strength in itself."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai",
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "When outsiders see Winterfell for the first time, they often wonder why it is not as gorgeous as the southern castle. But after they see the snow mist on the city wall, hear the legend in the cellar, and walk through the empty godswood, they will know that the majesty of this city does not rely on gold foil. It reminds southerners of the long winter, reminds the Ironborn of the hard-to-plunder interior, and makes every traveler understand that the North has its own dimensions."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Winterfell Entry Winterfell Godswood Winter Town Northerners regard it as the center of responsibility for winter storage, judgment and protection. They care about water sources, roads, customs and garrison, and know that behind the place names there is often a food road that can keep the castle alive."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Winterfell Entry Winterfell Godswood Winter Town Northerners regard it as the center of responsibility for winter storage, judgment and protection. The reputation of a place is often determined by the number of people who died there."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Winterfell Entry Winterfell Godswood Winter Town Northerners regard it as the center of responsibility for winter storage, judgment and protection. Stones, trees, rivers or mountain passes can become places of livelihood, and may also be endowed with sanctity, taboos and ancestral memories, so they cannot be measured in terms of money alone."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Winterfell Entry Winterfell Godswood Winter Town Northerners regard it as the center of responsibility for winter storage, judgment and protection. They first checked whether the place could draw water, farm, graze, and avoid military disasters; a line of words on the map, and when it landed in the village, it turned out to be firewood, well rope, and winter food."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Winterfell: Winterfell is located in the hinterland of the North and the northern section of the King's Road. It is the ancestral fortress of the Stark family that has lasted for thousands of years and is also the political center recognized by the vassals of the North. The castle is built on a natural hot spring, and hot water flows through the walls and houses, making it habitable in the cold; the double walls, bell tower, fortress, godswood, glass garden and Stark cellar together constitute its space. Winterfell outside the castle will gather people who come to take shelter during the cold season. Therefore, Winterfell is not only the residence of a lord, but also a place where grain is stored, cut, recruited, and shelter in disaster years can be fulfilled in the north."
+  ]
+}

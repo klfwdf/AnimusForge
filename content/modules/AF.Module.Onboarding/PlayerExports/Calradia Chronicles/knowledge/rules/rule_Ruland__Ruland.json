@@ -1,0 +1,93 @@
+{
+  "Id": "rule_Ruland",
+  "Keywords": [
+    "Ruland"
+  ],
+  "RagShortTexts": [
+    "The village of Ruland, located in the Trangling Valley, near Palawind, feeds its pigs acorns."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Ruland is a village near Palawind, located in the forest valley of central Telang. Villagers feed the acorns from the oak woodlands to raise pigs, and pork and bacon are supplied to the market in Palawind."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Ruland’s pigs are raised in oak forests, and the pork grown on acorns has a special aroma. There was a banquet held in the palace in Palawind, and a lot of roasted suckling pigs were transported from Ruland."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "townsfolk"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Ruland's bacon is popular in the markets of Palawind. The oak trees in the forest valley drop acorns all over the ground in autumn, and the pigs eat to make them fat and strong, and the meat is tight and fragrant. The price is a little more expensive than elsewhere, but worth it."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "I rested in Ruland. It was in a forest valley, very quiet, and full of oak trees. In autumn, the forest floor is covered with acorns, and pigs huddle over them, eating more comfortably than humans."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Ruland",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "Palawind",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

@@ -1,0 +1,147 @@
+{
+  "Id": "rule_Wilderness_Survival_Crop_Failure",
+  "Keywords": [
+    "Crop Failure"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Harvest failures come from frost, pests, floods, war, or just plain bad luck, and begin with fewer grains and higher prices. The lord can say it is providence, the mother must divide the pot of porridge thinner; famine never starts suddenly, it always has many neglected precursors."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Farmers first notice a bad harvest from the condition of ears of grain, fruits and livestock. They would reduce food rations, save seeds, postpone marriages, and hope that the lord would conquer less; famine is not a number on a bachelor's paper, but a family that scoops one less spoonful of porridge every day."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Faced with a poor harvest, the lord had to take inventory of granaries, mills, roads, and the number of troops capable of escorting grain carts. If taxes are still collected according to good years, the hungry people will flee or resist; if the warehouse is opened too late, gold and silver will not be able to buy back the dead cattle and labor."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Merchants saw harvest failures in grain prices, freight rates, and empty market stalls, while bachelors recorded frosts, pests, floods, and epidemics. Some people can make a profit by transporting grain, but once the road is cut off by war, no matter how high the price is, wheat cannot enter the city on its own."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Nobles would regard poor harvests as a litmus test of their ability to rule: whoever had grain stores could raise troops, relieve the people, and win loyalty. The banquet is still going on and the village is without food, which will damage the family name faster than a lost battle."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Soldiers and travelers faced with a bad harvest will find every inn more expensive and every village more vigilant. The sheep and wheat taken away by the army will not come back out of thin air. The so-called on-site supply often means one less person alive in winter for families along the way."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Monks, nuns, healers, and craftsmen tended the sick and infirm gathered by harvest failures, repaired grain carts and wells, and presided over increasingly frequent funerals. Prayer can give people patience, but it cannot replace clean water, edible food and fair rations."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "For the common people, a bad harvest is never a sudden day, but a series of smaller and smaller pieces of rice, thinner and thinner livestock, and increasingly empty cottages. Whether they can stay to grow food, guard water wells and look after each other determines whether there will be anyone to farm the land in the coming year."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Crop Failure: Harvest failures come from frost, pests, floods, war, or just plain bad luck, and begin with fewer grains and higher prices. The lord can say it is providence, the mother must divide the pot of porridge thinner; famine never starts suddenly, it always has many neglected precursors."
+  ]
+}

@@ -1,0 +1,213 @@
+{
+  "Id": "rule_kunos",
+  "Keywords": [
+    "Kunos",
+    "god of hunting",
+    "wild nature",
+    "predatory instinct",
+    "wild hunting incarnation",
+    "Elf gods",
+    "king of wild hunting",
+    "God of Horned Crown",
+    "Hunting the Sacred Cape",
+    "Lord of the Wilderness",
+    "wild hunt",
+    "Elven Pantheon"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Kurnos is the god of hunting and wild nature of the wood elves, symbolizing predatory instinct and wild power. The \"Wild Hunt\" he leads in the lower realm is the oldest and most sacred tradition of Athel Loren, sweeping the entire forest every hunting season."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Kurnos is not the kind of god who sits on his throne and is worshiped by his knees - he runs through the forest, his horned crown gleaming in the moonlight, and his spear never fails. Our children learned from an early age to pray to Kunos, not for protection, but to become better hunters. When the horn of the \"Wild Hunt\" sounds, all wood elves, no matter nobles or commoners, will drop everything and join this sacred chase. In the hunt, we feel the breath of Kunos - the pure relationship between predator and prey. He is the embodiment of the most primitive wildness within us, the part that civilization cannot tame."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Blessing of Kunos is the most powerful offensive buff in your army. After performing the \"Wild Hunt\" ritual, all your troops will receive a critical hit rate bonus and increased movement speed for a period of time. Timing is critical - activate this blessing just before you prepare to deliver the killing blow. But beware, Wild Hunt weakens defenses: your troops will become wild and difficult to control. Best used interchangeably with Isha's Blessing - Kunos for offense, Isha for defence."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "The worship of Kunos originated in the ancient times before the elves arrived in the old world. The earliest record of it can be found in the stone tablet \"Hunting God Chronicles\". In Athel Loren, the temple of Kunos is located in the deepest part of the \"Tusk Forest\" and is known as the \"Eternal Hunting Ground\" - an open temple with no walls and no roof, surrounded by a circle of huge mammoth tusks. The specific rules of wild hunting are recorded in the \"Hunting Sacred Book\": Hunting begins on the third full moon night of each season and lasts for three days and three nights; participants in the hunt must give up all armor and carry only one weapon; all blood and skins of the hunted prey must be used for the nourishment of the forest or the survival of the elves, and no part of it must be wasted; if the hunter dies during the hunt, the companions must not stop the treatment, but continue to pursue - this is considered to be Kunos summoning the hunter. The punishment for violating the hunting rules is \"eternal banishment\". The souls of those who are expelled will wander in the forest forever and will not be able to enter the land of their ancestors."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "As a woman, I have different beliefs about kunos than men. He's not just a god of the hunt - he's also the embodiment of the wild in the cycle of life. I offer the first drop of blood to Kurnos, not the whole head."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The clan leader must personally light the \"Hunting Fire\" to start the wild hunting season. This is a responsibility you cannot delegate to others. If someone in your clan captures the \"first hunted beast\" of the year, this honor will enhance the prestige of the entire clan. Remember, the best part must be offered to Kunos at the end of the hunt."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "You are in the woods and suddenly you hear the sound of a trumpet - old and low, as if the earth itself is roaring. Then the sound of countless running hooves came from all directions. The wild hunt has begun and you'd better stay out of the way."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Kurnoth holds a unique place in the elven pantheon—he is not as majestic as Asuyan, nor as compassionate as Isha. He is the embodiment of pure, primitive, untamable nature. Wood elves believe that when you die a heroic death, Kurnoth himself will escort your soul to the eternal hunting grounds."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Kurnos - the wood elf god of hunting, symbolizing predatory instincts and untamable wildness.",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "kunos god of hunting nature wild nature"
+  ]
+}

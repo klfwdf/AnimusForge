@@ -1,0 +1,151 @@
+{
+  "Id": "rule_Order_of_War_Signaling_and_War_Banners",
+  "Keywords": [
+    "Signaling and War Banners",
+    "Signaling",
+    "Warhorns",
+    "Battlefield Command"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Orders and Battle Standards: The armies of Westeros possess no magical eyes or ears that can span a battlefield. Dust, sheets of rain, tree lines, and hillsides all swallow commands, leaving battle standards, horns, drums, riders, and house sigils as the only language a commander can rely upon. From high ground, what nobles see is whether formations wheel on command; what foot soldiers see is often simply whether their own house banner still stands. A fallen banner does not necessarily mean the commander is dead, yet it is enough to make an entire wing of an army suspect it has been abandoned. Prudent commanders prepare secondary banners, dispatch riders who know the ground, and use repeatable signals; clever enemies use smoke, false banners, slain couriers, and battlefield rumors to make an undefeated army lose touch with itself first."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Signaling and War Banners"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Signaling and War Banners"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "wanderer",
+          "priest",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Signaling and War Banners"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Signaling and War Banners Orders and Battle Standards: The armies of Westeros possess no magical eyes or ears that can span a battlefield. Dust, sheets of rain, tree lines, and hillsides all swallow commands, leaving battle standards, horns, drums, riders, and house sigils as the only language a commander can rely upon. From high ground, what nobles see Victory or defeat on the battlefield is important, but who can keep the army with horse supplies and silver coins in the second month often determines the length of the war."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Signaling and War Banners Orders and Battle Standards: The armies of Westeros possess no magical eyes or ears that can span a battlefield. Dust, sheets of rain, tree lines, and hillsides all swallow commands, leaving battle standards, horns, drums, riders, and house sigils as the only language a commander can rely upon. From high ground, what nobles see They look at whether the flag is at the front, whether the order is clear, and whether the wounded are recovered; a beautiful strategy is not worth singing if it does not allow people to return to the camp alive."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Signaling and War Banners Orders and Battle Standards: The armies of Westeros possess no magical eyes or ears that can span a battlefield. Dust, sheets of rain, tree lines, and hillsides all swallow commands, leaving battle standards, horns, drums, riders, and house sigils as the only language a commander can rely upon. From high ground, what nobles see Blacksmiths re-heat broken swords red, priests keep vigil for the dead; the war continues long after it has left the battlefield, on anvils, in graveyards, and on empty seats."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Signaling and War Banners Orders and Battle Standards: The armies of Westeros possess no magical eyes or ears that can span a battlefield. Dust, sheets of rain, tree lines, and hillsides all swallow commands, leaving battle standards, horns, drums, riders, and house sigils as the only language a commander can rely upon. From high ground, what nobles see The expedition took away horses, grain, and sons. The flags were changed several times, but they still had to repair houses, bury people, and wait for the next winter; they judged victory or defeat only by whether the village was still there."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Signaling and War Banners: Orders and Battle Standards: The armies of Westeros possess no magical eyes or ears that can span a battlefield. Dust, sheets of rain, tree lines, and hillsides all swallow commands, leaving battle standards, horns, drums, riders, and house sigils as the only language a commander can rely upon. From high ground, what nobles see"
+  ]
+}

@@ -1,0 +1,211 @@
+{
+  "Id": "rule_General_History_of_the_Old_World",
+  "Keywords": [
+    "General History of the Old World",
+    "General History Warhammer Timeline",
+    "General History of the Arrival of the Ancient Saints",
+    "General History Sigmar Epoch",
+    "Examination of the First Year of the Imperial Calendar in General History",
+    "General History The Beginning and End of the Battle of Nagasu",
+    "General History Chronology of the Undead War",
+    "General History Chaos Invasion Chronicles",
+    "General History of Major Events of the Old World",
+    "The End of the Three Emperors Era in General History"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The general history of the Old World is a long scroll soaked in blood and magic - from the time when the Old Ones descended from the stars to shape mountains, rivers and races with unknowable power, to when Chaos poured into the mortal world from the cracks in the polar star gates, to when humans gathered into an empire under the hammer of Sigmar, until today Emperor Karl Franz stares warily at the north from his throne in Altdorf. This period of history spans more than 15,000 years, and every page is written with wars, betrayals, and the fire of civilization lingering in the darkness."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The history of the Empire is a monument made up of the skulls of emperors, elector counts and war heroes. We were a confederation of Horde trembling in the forests, until Sigmar raised Gal Maraz and crushed the greenskin hordes at Blackfire Pass. From that moment on, the Imperial Calendar began - the first year of the Imperial Calendar was no longer an empty number, it was the epochal line where humans transformed from prey to hunter. The subsequent history is a record of struggles that are constantly being pulled back to the edge of the abyss: when the War of the Longbeard tore apart the alliance between the dwarves and the elves, we were still living in mud huts and drinking blood; when Nagash's death magic took shape in the great desert, our ancestors learned to forge iron on the banks of the Reik River; when Vlad von Carstein launched the First Undead War, the Empire's Elector Counts learned fear under the claws of vampires - and learned how to betray each other to protect themselves. Then comes chaos. The great Chaos invasion nearly ended us, and it was Magnus who got us back on our feet. Every generation of Imperials should recite this history, not to show off their knowledge at banquets, but because if you don't know your past, you won't survive the next winter."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The history of the Old World was not a pastime for rulers—it was a map of decision-making. The arrival of the Old Ones and the collapse of the Polar Stargate are the original clues to understanding the winds of magic: Magic is essentially the remnant of chaotic energy seeping into the mortal world through the rifts in the Stargate. This is why the races that have mastered magic - elves, Slann, and necromancers - can gain an asymmetric advantage in the military, and why the Empire has been at a technological disadvantage for a long time. The lesson of the Longbeard War was diplomatic: two of the most powerful Order races fought a five-hundred-year war over an insult rather than an invasion, and both were weakened, allowing the Greenskins and Skaven to take advantage. The rise of Nagash is a warning: an individual who is smart enough, crazy enough, and has no moral bottom line can single-handedly overturn the balance of power on an entire continent. Chaos invasion is the most fundamental law: all internal disputes become meaningless in the face of Chaos, and whenever the empire falls into civil war and division, Chaos will appear on the horizon. These are not fables - they are historical patterns that have been repeated enough times that any ruler who ignores them can be defined as a suicide."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "The timeline of Old World history can be divided into seven grand eras to facilitate scholarly research. The First Age \"Age of the Old Ones\" (approximately -15000 to -5600 IC): The Old Ones arrived on this immature planet from the stars, built portals at the north and south poles, reshaped the geological structure and climate, and created intelligent races such as elves, dwarves, humans, halflings, ogres, and lizardmen with their own design blueprints. Second Age \"Cataclysm\" (approximately -5600 IC): The polar star gate collapsed due to unknown reasons, chaotic energy poured into the material world from subspace, the ancient saint disappeared, and the world fell into the dominance of chaos for thousands of years. The Third Age \"The Golden Age of Elves and Dwarves\" (approximately -4500 to -1600 IC): The elves established a high civilization in Ulthuan, and the dwarves built a network of fortresses in the World's Edge Mountains. The two races had a prosperous but fragile trade relationship - this prosperity was burned in the War of Longbeard. The Fourth Age \"The Rise of Humanity and the Curse of the Undead\" (approximately -2000 to 0 IC): Nehekhara's human civilization was transformed into the Kingdom of the Undead at the hands of Nagash, while the human tribes in the north began to migrate westward into the core area of ​​the old world. The Fifth Era \"Establishment and Early Expansion of the Empire\" (0 to 1359 IC): Sigmar unified the tribes, founded the empire, and formulated the code. In the past 1,400 years, his successors expanded the empire from a loose alliance in the Reik River Basin to the largest human civilization in the Old World. Sixth Age \"Age of Three Emperors\" (1359 to 2304 IC): The Empire was split into two and sometimes three rival thrones due to electoral disputes, and internal divisions led to a severe weakening of defenses - a period that almost allowed Chaos to permanently end the Empire in the so-called Great Invasion. Seventh Age \"Modern Renaissance\" (2304 IC to present): Magnus is elected Emperor, reunites the Empire, establishes the Academy of Magic, and initiates an ongoing process of military and institutional modernization, which Emperor Karl Franz continues in the current era. The key to studying the history of the Old World is that it cannot be measured by a single human scale - the golden age of the dwarves began when humans did not know how to fire, while the memory of the elves covers several times the entire history of mankind."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The biggest flaw of the official history of the old world is not what events are recorded but that it never records who participated in history - behind the names of every battle and the names of every emperor is the entire group of imperial women whose faces have been concealed. When the ancient saints created the race, did they create men first or men and women at the same time? All official texts default to the former—as if women were a subsequent revision. The chronicles of the Longbeard War record the names of every dwarf prince who fell in battle, but there is no mention of who maintained the ore mining and food reserves in Kharak during the hundreds of years of men's wars. In the history of Nagash, Neferata is listed as the \"first vampire\", but she is simplified in the historical narrative as a failure of Nagash, rather than an independent female monarch who actively chose immortality. Sigmar's mother - the woman who gave birth to the God-Emperor - is not named in canon. I don’t want to tamper with history, but I need every generation of female rulers to know: the gaps in history books are not because women didn’t exist, but because the men who wrote history didn’t think women’s existence was worth recording."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "To the patriarchs of the ancient families who rule the Empire, the history of the Old World is not a poem but a long-term strategic risk assessment archive - the seven hundred years of continuous records held in our family archives have more predictive value than any official history compiled by the imperial court historians. Why? Because family archives never delete records of failure—those are precisely the ones that are most valuable. The one time our great-grandfathers chose to support the wrong emperor during the Three Emperors era resulted in the family domain losing one-third of its tax rights, which was not recovered until the era of Magnus. During the Undead War, our ancestors predicted Vlad's invasion direction due to abnormal price fluctuations in the Nehekhara artifact trade six years in advance - this intelligence allowed our family to garrison the Sylvania border a full ten months ahead of the official mobilization order from the Empire. I often say something: the official history of the empire tells you the stories you want to hear, and the family archives tell you the facts you must know."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "After wandering on the streets of the old world for thirty years, I came to a conclusion: the more people know about history, the less likely they are to say \"this is a civilized land.\" I once picked up a dwarf rune gold coin on the bed of a tributary of the Stir River - it had been buried under the mud for about four thousand years, which means that before humans learned to smelt, there were already dwarf caravans holding handcarts across this ford to go to the elven city-state. I found an altar made entirely of human bones in an abandoned village in Ostermark - it was a relic of the Third Undead War. The villagers were collectively sacrificed to necromancy, and the soil still exudes a faint blue fluorescence on full moon nights. I saw a group of young aristocratic students at the Imperial University in Altdorf arguing about historical details in the library hall - they didn't know that in the four basements below them were official archives from the last Chaos invasion, which were permanently sealed because they \"could cause public panic\". History is a composite rock formation of bones, gold coins, and lies, and every inch of ground you walk on contains the remains of those who came before you—knowing this won't make the night any safer, but it will at least make you understand at dawn why you're still alive."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "As a merchant who has traded across the Reik River Basin for thirty years, I can tell you this for sure: every structural change in the Old World economy can be traced back to a war or a disaster. The Battle of Longbeard destroyed the dwarven underground trade routes that ran through the World's Edge Mountains, causing transportation costs on the north-south trade routes to permanently increase by more than three times—a turning point that anyone who studies the changes in the empire's trade routes will recognize. The rise of Nagash led to the complete disappearance of grain and stone exports from the southern regions of Nehekhara in less than a generation, which pushed up food prices throughout the Southern Old World and indirectly contributed to the collapse of a series of human kingdoms. The most significant economic event was undoubtedly the Chaos Invasion - the fall of Plagg and the ravages of Kislev cut off the fur, amber and iron trade in the northern part of the empire for fifteen years, directly causing the weapons workshops in Altdorf and Middenheim to experience the worst shortage of raw materials in the history of the empire. Every pulse of history leaves traces in the price fluctuations of the market - and for businessmen who can read these traces, the history of the old world is not a story but the underlying logic of the supply and demand curve."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "The arrival of the Old Ones - about -15000 IC, interstellar travelers arrived on the planet and began to systematically transform it",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "General History Old World Chronicle General History Warhammer Timeline General History The Arrival of the Ancient Ones"
+  ]
+}

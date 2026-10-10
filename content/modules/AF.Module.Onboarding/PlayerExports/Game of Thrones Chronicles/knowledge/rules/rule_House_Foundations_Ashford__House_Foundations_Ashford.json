@@ -1,0 +1,132 @@
+{
+  "Id": "rule_House_Foundations_Ashford",
+  "Keywords": [
+    "Ashford",
+    "House Ashford"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "House Cumford, with Ashford as its seat, is an ancient noble of the Reach. The sun is the most recognizable symbol in its coat of arms. Ashford is located at the intersection of roads and farmland. The lord's power relies on grain, horses, markets and knights to support it. This place is also known for the grand tourneys of the past, where glory, marriage alliances and personal resentments often sprouted at the same time at the moment when the spear was broken."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "reach"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "When the Reach nobles talked about Cenford, they often thought of neat farms, knights' queues and tournament fields. If an ancient family wants to maintain its dignity, it must not only display its coat of arms in the stands, but also protect its harvests and roads."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "reach"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "merchant",
+          "artisan"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Farmers and traders in Censhutan welcomed the traffic brought by the contest, but also feared the price increases, drunken fights and horse hooves that would come with it. The nobles remember who won the wreath, and the common people remember who paid for the wine and who trampled the wheat fields."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Ashford House Cenfold, an ancient family in the Reach known for its sun crest, field roads and knightly traditions, occupies Ashford. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Ashford House Cenfold, an ancient family in the Reach known for its sun crest, field roads and knightly traditions, occupies Ashford. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Ashford House Cenfold, an ancient family in the Reach known for its sun crest, field roads and knightly traditions, occupies Ashford. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Ashford House Cenfold, an ancient family in the Reach known for its sun crest, field roads and knightly traditions, occupies Ashford. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Ashford: House Cenfold, an ancient family in the Reach known for its sun crest, field roads and knightly traditions, occupies Ashford."
+  ]
+}

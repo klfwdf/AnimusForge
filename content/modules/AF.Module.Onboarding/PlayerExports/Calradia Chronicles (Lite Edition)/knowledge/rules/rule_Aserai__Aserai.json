@@ -1,0 +1,133 @@
+{
+  "Id": "rule_aserai",
+  "Keywords": [
+    "Aserai",
+    "Sultanate"
+  ],
+  "RagShortTexts": [
+    "The Aserai Sultanate is a loose tribal confederation in which the Sultan serves as a charismatic arbiter."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Aserai? The Sultan is a good man. He does not meddle much with us, and we do not meddle much with him. I live on the edge of an oasis, growing dates, raising sheep, and selling water in the market when camel caravans pass by. Who sits as Sultan has nothing to do with me, so long as taxes are not raised. And he has never raised taxes—at least not on my head. I hear that when he presides over justice he always follows the old customs without favoring anyone, though some say he cannot rein in the great clans—they pay bribes, exploit loopholes, and bully the smaller tribes, and even when the Sultan sees it he has to pretend he did not. I do not think he should be blamed for that. Since when have the great clans of the desert ever listened to anyone else? Back when the Imperial envoys were still around, they would bribe one tribe to fight another; now that the envoys no longer come, the tribes fight amongst themselves, and for the Sultan to keep them from fighting even temporarily is no small feat.\n\nThough truth be told, it really is only temporary. Who knows—one day there might not be a Sultan at all."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Sultan is a decent, respectable man, but he carries decency too far. The bribes of the great houses drag trails through the sand; he is not blind—he simply does not want to offend anyone.\n\nWhile Unqid is around, clans like ours merely kick each other's legs under the table. Once he is gone, those legs will be up on top of the table."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "char:aserai_mameluke_axeman",
+          "char:aserai_mameluke_cavalry",
+          "char:aserai_mameluke_guard",
+          "char:aserai_mameluke_heavy_cavalry",
+          "char:aserai_mameluke_regular",
+          "char:aserai_mameluke_soldier",
+          "char:mamluke_palace_guard"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "I am my master's property. Whoever my master is, I kill on his behalf. How the Aserai fare is of little concern to us. We serve only our master. If our master bids us march east, we will never turn west."
+    },
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Aserai? Those people down in the southern desert. I live in the north and have never seen a camel with my own eyes—only the dates brought back by traveling merchants. They seem to have a Sultan named Unqid over there who is a good man and does not start wars lightly. Yet not all Aserai are good folk; traveling merchants say the tribes that control the oases collect a bit of protection money and let you pass, while the tribes living out in the deep desert rob you blind, and then there are slave-soldiers called Mamlukes, bought in childhood and trained until they know nothing in the world except killing. What I fear is not the Sultan, but whether those tribes keep their word or plunder the goods. Back when the Empire was strong it seemed able to keep some order, but now the Empire is fighting its own civil war and has no time to mind them."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Aserai Sultanate is a loose tribal confederation held together by customary law and the personal prestige of the Sultan, with a very low degree of institutionalization. The Sultan is a charismatic arbiter, yet because he chooses to govern by accommodating customary law rather than strengthening royal authority, the Aserai remain a sheet of loose sand—merely refraining, for the moment, from blowing in different directions. Powerful clans suppress lesser tribes through bribery and legal loopholes, and the Sultan is either unable or unwilling to intervene. In peacetime this flaw manifests as judicial corruption; in wartime it could at any moment widen into a fatal rift within the confederation.\n\nMilitarily, Aserai fighting strength is dispersed among the armed retinues of the various tribes. The Mamlukes are the most elite units, yet they belong to their respective masters and do not constitute a standing army directly under the Sultan's command. The danger in the Aserai lies not in the Sultan's ambition—Unqid has none—but in the certainty that upon the Sultan's death or the collapse of his prestige, this desert will immediately revert to the state of 'mutual consumption by proxies' that the Empire once so carefully maintained, only this time without an external power to keep it within bounds. The Banu Qild are preparing for war, the Banu Sarran are nursing their grievances, the Jawwal cling fiercely to tradition, and however deep the coffers of the Banu Hulyan may be, they cannot buy an eternal peace for the desert."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Aserai? Their Mamlukes really know how to fight—strict discipline, fast blades, charging as if their lives meant nothing. The trouble is that their heavy armor and formations do not hold up; once our phalanx stops them on level ground, they run out of steam. Yet if they swing around your flank, or if their light cavalry latches onto you, you are in for a world of trouble. Their Sultan rarely leads troops in person—he seems to be a portly merchant of a man, leaving the fighting mostly to the Emirs of clans like the Banu Qild and Banu Hulyan. At first we figured they were all equally loose in discipline, until our officers told us that the Jawwal and the Banu Sarran are another matter entirely, following different rules altogether and fighting purely however they please."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": [
+          "jawwal"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "We are the true Aserai. Living in black wool tents, going wherever we please. Those folk who dwell in stone houses in the oases mock us for boasting, yet whenever the great festivals and sacrifices come around, who is it that has forgotten the rites? Who is it that has forgotten the poems of our ancestors? Unqid is a just man, and we recognize him as Sultan, yet he does not represent the Aserai. The soul of the Aserai dwells in the black tents, upon the sand dunes, and in the ringing of camel bells beside the trade roads. While he sits upon soft cushions in the oasis courts arbitrating disputes, we guard the traditions for him out in the desert. Without us herding our flocks in the wilds, the Aserai would be nothing more than a ring of mud-walled oases left behind by the Empire.\n\nPoets sing of our deeds, passing them down from generation to generation. We do not rely on bribery, we do not rely on legal loopholes, and we do not rely on the Sultan's favor. What we rely on is the sword, the camel, and a freedom that no one has been able to tame for hundreds of years. One day those stone houses will crumble, while our black tents will still stand upon the dunes—and when the wind blows past, not a trace will be left behind. The Jawwal do not need anyone else to remember them; it is enough that the Jawwal remember themselves."
+    }
+  ],
+  "TextMappings": []
+}

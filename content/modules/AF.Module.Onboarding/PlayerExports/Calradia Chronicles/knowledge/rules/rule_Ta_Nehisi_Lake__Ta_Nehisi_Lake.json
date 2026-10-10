@@ -1,0 +1,154 @@
+{
+  "Id": "rule_Ta_Nehisi_Lake",
+  "Keywords": [
+    "Lake Tanesis"
+  ],
+  "RagShortTexts": [
+    "Lake Tanasis, also known as the Danaz Sea, is surrounded by the three towns of Makeb, Silonia and Chaikan",
+    "The east bank of Lake Tanasis is occupied by the Khuzait Khanate, while the west bank still belongs to the empire"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Lake Tanasis, the grassland people call it the Danaz Sea, and the imperial people call it Lake Tanasis. This vast freshwater lake is surrounded by three towns - Makeb on the northeast end, Silonia on the southwest shore, and Chaikan on the east. The lake is teeming with bass and bream, and if you're lucky, you can spot giant barracuda swimming right by the boat. This lake was once an inner lake exclusive to the empire, and its east coast was covered by the protective territory of the eastern province of the empire. Now that the Khuzait people have come, the lake has been split in half - the west bank still flies the imperial eagle flag, while the east bank has become the pasture of the Steppe Khanate. Same lake, two empires."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Lake Tanesis was once the inner lake of the empire. The merchants of the empire set out from Silonia, passed through the reed marshes on the south coast, walked north along the lake shore to Chaikan and Maccaib on the east coast, and then passed through the territory of the Darcy people in the east to connect with the trade route to the Far East. At that time, the entire lake belonged to the empire, the customs duties belonged to the empire, the merchant ships belonged to the empire, and the pastures by the lake also belonged to the empire. Then the Khuzait came. The sweaty cavalry rushed over from the grassland and swallowed up the entire east bank. Chaikan was lost, Maccaib was lost, and Silonia became the empire's last port on this lake. Looking across the lake from the city wall of Silonia, the water is still the same, but the opposite side is no longer the Empire."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Danaz Sea is the place where our ancestors grazed their cattle. The nomadic people on the grassland have lived on the east bank of the lake for generations, drinking the water from the lake and herding horses on the pastures beside the lake. A century ago, the Imperials came with their legions and encircled this place into their \"Eastern Province\", using the insidious trick of divide and conquer to make the tribes kill each other. The Uerhunnaite tribe led us to drive away these imperial people. Now the east and north shores of the lake are back in our hands—Makaib in the north is under the personal control of the Khan, and Chaikan on the east shore is the fiefdom of our Uerhunnaite. The Imperials were still in Silonia in the southwest corner, huddled across the lake. Khan stood on the tower of Chaikan, looking across the lake to the southwest. The horses on the grassland will one day cross that lake shore."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": [
+          "town_k3"
+        ],
+        "Roles": [
+          "townsfolk"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Makebu is in the north, guarding the waterfall formed when the Karakazi River flows into the lake. The turbulence is so strong that merchant ships have to be towed by trackers since ancient times. Before the imperial people came, this place was under the control of small Khans and small Shahs in turns - the Khan was the head of the steppe tribe, and the Shah was the official sent by the Dasi people. Later the Imperials came and drove them all away. Later, Wuerhun Khan came in person - our last ruler refused to pay tribute to the Khan, so Wuerhun Khan had his head chopped off with his own hands. Since then, Maqeb has been in the hands of the Khuzait ruling family."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": [
+          "town_k5"
+        ],
+        "Roles": [
+          "townsfolk"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Chaikan is located next to the reed swamp on the east coast. There are more water birds than people. In the years before the empire swallowed up this lake, the lake was filled with small boats carrying animal skins, wool and salt. They started from the east coast and walked south along the lake shore to Silonia in exchange for silk and silver from the empire. Then the Khuzait came, fought, and the trade routes were cut off. But Chaikan did not die - the Ulhun Khan regarded this place as a trade transit station and military base, and as a fiefdom for his family's Ulhun Naite tribe. Khan would sometimes stand on the tower of the palace, looking toward the southwest across the lake, and would not speak for a long time. We all know what he's thinking."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": [
+          "town_es7"
+        ],
+        "Roles": [
+          "townsfolk"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Cylonia was once one of the most extravagant cities in the empire. Our silk workshops worked day and night, goods shipped from across the lake were collected and distributed here, and merchant ships one after another headed north along the lake shore, exchanging the silk and silver of the empire for the spices and gems of the East. When the Khuzait people came over, the pampered senators and nobles dug out the armor that had not been touched for hundreds of years from the storehouse, wiped off the dust on the gilding, sharpened the long swords inlaid with gems, and took their followers outside the city to face the warriors of Ulhun. They didn't play shamefully. But now Shilonia is an isolated city - looking to the northeast, the Khuzait flag flies at Chaikan and Makeb on the eastern shore of the lake. Our merchant ships can no longer sail freely along the lake shore."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Lake Tanesis is on the east side of the empire, some distance away from our Aserai. But merchants who set out from Sanara occasionally went there. The lake is now divided between the Empire and the Khuzait - the Empire is huddled in Silonia in the southwest corner, and the Khuzait occupy the east shore. I heard that in the past, the merchant ships of the empire could go all the way north from Silonia along the lakeshore to Chaikan and Makeb, or go east through Darcy to the East. Now that trade route is cut off, and the Darcy people have been driven away long ago."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "steward": 150
+        }
+      },
+      "Content": "Lake Tanasis - known to the steppe peoples as the Danaz Sea - is the largest freshwater lake in eastern Calradia and the natural dividing line between the empire and the Khuzait Khanate. There are three major towns on the lake: Makeb at the northern end guards the waterfall where the Karakaz River flows into the lake, Chaikan on the east bank is the transit hub for trade on the lake, and Silonia in the southwest corner was once the silk production center of the empire and the starting point of the foreign trade route. During the empire's heyday, merchant ships departed from Silonia and sailed north along the lake shore via Chaikan and Maccaib, or eastward through Darcy to the Far East. After the rise of the Khuzait Khanate, Ulhun Khan led his army to seize the east and north shores of the lake. The last ruler of Makeb was executed by Ulhun Khan himself for refusing to pay tribute, and Chaikan became a fiefdom of the Ulhunaite tribe. Today Lake Taneses is divided into two: the southwestern corner of Silonia still belongs to the Southern Empire, while Makeb and Chaikan belong to the Khuzait. This lake has witnessed the alternation of the three forces of Darsi Shah, Imperial Legion and Khuzait Khan in less than two hundred years, and is the epitome of the most concentrated change of power in eastern Calradia."
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,148 @@
+{
+  "Id": "rule_Military_Affairs_Trebuchets",
+  "Keywords": [
+    "Trebuchets"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The trebuchet threw stones, pots of fire and even other frightening objects over the city wall, which was a long-range intimidation in the siege. The generals value its destructive power, and the people in the city are most afraid of it hitting the seemingly safe roof; it reminds everyone that a wall does not mean protection."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Trebuchets"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Trebuchets"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "wanderer",
+          "priest",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Trebuchets"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Trebuchets The trebuchet threw stones, pots of fire and even other frightening objects over the city wall, which was a long-range intimidation in the siege. The generals value its destructive power, and the people in the city are most afraid of it hitting the seemingly safe roof; it reminds everyone that a wall does not mean protection. Victory or defeat on the battlefield is important, but who can keep the army with horse supplies and silver coins in the second month often determines the length of the war."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Trebuchets The trebuchet threw stones, pots of fire and even other frightening objects over the city wall, which was a long-range intimidation in the siege. The generals value its destructive power, and the people in the city are most afraid of it hitting the seemingly safe roof; it reminds everyone that a wall does not mean protection. They look at whether the flag is at the front, whether the order is clear, and whether the wounded are recovered; a beautiful strategy is not worth singing if it does not allow people to return to the camp alive."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Trebuchets The trebuchet threw stones, pots of fire and even other frightening objects over the city wall, which was a long-range intimidation in the siege. The generals value its destructive power, and the people in the city are most afraid of it hitting the seemingly safe roof; it reminds everyone that a wall does not mean protection. Blacksmiths re-heat broken swords red, priests keep vigil for the dead; the war continues long after it has left the battlefield, on anvils, in graveyards, and on empty seats."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Trebuchets The trebuchet threw stones, pots of fire and even other frightening objects over the city wall, which was a long-range intimidation in the siege. The generals value its destructive power, and the people in the city are most afraid of it hitting the seemingly safe roof; it reminds everyone that a wall does not mean protection. The expedition took away horses, grain, and sons. The flags were changed several times, but they still had to repair houses, bury people, and wait for the next winter; they judged victory or defeat only by whether the village was still there."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Trebuchets: The trebuchet threw stones, pots of fire and even other frightening objects over the city wall, which was a long-range intimidation in the siege. The generals value its destructive power, and the people in the city are most afraid of it hitting the seemingly safe roof; it reminds everyone that a wall does not mean protection."
+  ]
+}

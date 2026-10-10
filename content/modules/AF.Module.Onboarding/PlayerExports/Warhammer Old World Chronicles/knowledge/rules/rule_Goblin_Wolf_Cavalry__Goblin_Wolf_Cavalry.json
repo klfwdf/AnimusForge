@@ -1,0 +1,212 @@
+{
+  "Id": "rule_Goblin_Wolf_Cavalry",
+  "Keywords": [
+    "Goblin Wolf Rider",
+    "Warg Knight",
+    "Traveling on Qingqi",
+    "Shooting arrows to harass",
+    "Cunning Cavalry",
+    "Jackal mount",
+    "Wolf Cavalry",
+    "Goblin Qingqi",
+    "guerrilla tactics",
+    "Swift Assault",
+    "Badlands Scout"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The goblin wolf cavalry is the most formidable light cavalry unit among the greenskin tribes. The goblins ride on the backs of huge black-furred wargs, weaving around the flanks of the battlefield with outrageous agility, raining arrows on the enemy while running wildly. Wargs themselves are ferocious predators, and even if their rider is shot down, the giant wolf will still tear everything around it to pieces with its claws."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Wolf Riding boys are having so much fun! Even though I'm a big orc and not very good at riding things - my wild boar always wants to get rid of me - but it's a joy to watch those little goblins running around the battlefield on their big, furry black wolves. Do you think goblins are afraid of wolves that are bigger than them? Scared to death! But the wolf-riding goblins don't use tame wolves - they grow up with wolf pups! The wolf cub has been sleeping in a pile of rotten hay and drinking from the same bowl of smelly water since he first opened his eyes, so the wolf regards the goblins as his own den rather than food. What is the Wolf Cavalry best at doing on the battlefield? It's not about killing people - it's about scaring people! A pack of howling wolves rush towards you from the flank, fire a wave of arrows, and then immediately turn around and run away. When you chase after them, they run away. When you turn back, they come roaring at you from the other side - they can annoy the tin cans on the opposite side to the point of going crazy! The most amazing thing is in the evening: when the sun is going down, the eyes of the goblins start to light up, and so do the eyes of the wolves. At this time, they rush up, and you can only see a row of glowing eyeballs roaring towards you in the dark night!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Goblin Wolf Cavalry is a tactical variable that commanders must take seriously. Its core military value lies not in its lethality but in its ability to shape the battlefield. A well-equipped squadron of Wolf Cavalry - usually thirty to sixty mounted - can continuously create a psychological oppressive effect three times its actual military strength on the periphery of the battlefield. Its standard tactical modes include: flank penetration harassment (shooting arrows across the battle line at high speed at the marching column and then evacuating immediately), harassment of food and water sources (cutting the enemy's supply lines and contaminating water sources), and the most deadly fake retreat to lure the enemy - charging first and then pretending to flee, luring the enemy cavalry to leave the line and enter the ambush circle. The core principle of fighting against wolf cavalry is discipline rather than firepower: countering light cavalry cannot rely on chasing, but relies on the cooperation of heavy ballistae and cavalry reserves - forcing the wolf cavalry into a blind spot in the terrain with no room for maneuverability, and then crushing it with heavy cavalry at once."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "The symbiotic relationship between warg and rider in the Goblin Wolf Riders is one of the most bizarre cross-species alliances in the natural history of the Old World. Wargs - classified as 'Canis lupus giganteus badlandis' in the Imperial Fauna, the Badland Giant Gray Wolf - are taken from wolf dens by goblin trainers at birth, and the pups and goblin pups are suckled by the same female wolf in the same den, thus establishing a deep psychological bond that behaviorists call a 'denmark'. An adult warg stands about four feet five inches tall at the shoulder, weighs up to 450 pounds, and can sprint at about forty-five miles per hour—faster than any human cavalry mount. The typical bow used by the Wolf Riders is the goblin shortbow - which has a range that is forty percent shorter than that of a human bow - but its tactics are different: goblin arrows are usually soaked in an inflammatory slime derived from rotten mushrooms, and a scratch can cause the wound to quickly fester. The files of the Imperial Ordnance Bureau record that during the battle against the Waaagh of \"Gerharg the Skinner\" in 2352 of the Imperial Era, the number of people who died due to infection from Wolf Cavalry arrow wounds was approximately three times that of those who were shot on the spot - the real lethality of these light cavalry was not in the arrows but in the wounds infected by black magic and fungi."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "In my territory, the casualty figures caused by wolf cavalry are sometimes higher than those of orc hunks. It wasn't because they killed many people - it was because they targeted stables during night raids and killed all the horses. A well-trained warhorse is worth thirty gold crowns, but a warg does not require a penny investment. In this asymmetrical war of attrition, our cavalry resources are slowly being emptied, and the cost of the green skins is almost zero."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Our family has preserved the complete skeleton of a goblin wolfrider - the wolf bones were intertwined with the goblin bones and were found during an ambush in the north. There were three arrow wounds on the front of the warg's spine, but the arrows on its ribs still showed that the beast had been hit by at least twelve arrows before it died and had bitten the throats of three soldiers. My grandfather had this skeleton framed in the family armory as a warning to our family sentinels never to underestimate the fighting spirit of a lightly armored brute."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Once when we were escorting a caravan in the territory of the Border Prince, we were chased by a group of about forty wolf cavalry for three whole days. They never came up to fight head-on - they just kept running from behind our team, shouting and firing arrows. The mules and horses of the entire caravan were so frightened that they kept commotion day and night. When we arrived at the outpost on the fourth day, everyone—including the mercenaries—were slumped on the ground, unable to move a finger. The wolf cavalry was sitting on the hilltop outside the city, making some goblin gestures at us with his fingers that I didn't know what they meant."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "It is a daydream of many slave traders to capture live goblin wolf cavalry and sell them to the gladiatorial arena. They thought that a little goblin plus a dog-like beast was easy to catch. The result? Every time, there are corpses everywhere: either those of humans or those of their own mercenaries. Wargs can do more damage in a cage than a full-grown grizzly bear, and goblin riders bite off their own tongues and laugh themselves to death under stress. The slave business has the lowest survival rate in the industry."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "The symbiotic cavalry of goblins and giant wargs, establishing a lifelong riding bond through the mark of the same nest.",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Weaving around the flanks of the battlefield with astonishing agility"
+  ]
+}

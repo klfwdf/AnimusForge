@@ -1,0 +1,213 @@
+{
+  "Id": "rule_Adventure_Pledge",
+  "Keywords": [
+    "Adventure Pledge",
+    "give up territory",
+    "Searching for the Holy Grail",
+    "sacred promise",
+    "wandering road",
+    "Knight's Trial",
+    "Path to the Holy Grail",
+    "Asceticism",
+    "pilgrimage",
+    "oath",
+    "Pursuit of the Holy Grail",
+    "give up everything"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Oath of Adventure is the most noble personal commitment of a Bretonnia knight - to give up fiefdom and title and embark on a lonely wandering journey in search of the Holy Grail. Knights who complete this oath will be recognized as Exploration Knights, embarking on the sacred path of Grail Knight."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Adventure Oath - the oath every Bretonnia boy dreams of taking from the day he learned to hold a sword! The knight who takes the oath of adventure will spend his last night in the Holy Grail Chapel, and then ride away alone at dawn, followed by the tearful eyes of his family and the incomprehensible whispers of the entire manor. From then on, he will sleep in the open air, travel through wolf-infested forests and greenskin-infested wilderness, fighting dragons, giants, champions of chaos and all evil in the world, just to prove that his soul is worthy of seeing the Holy Grail. Many people died on the way, some went crazy, some gave up their vows and became mercenaries or bandits - only a handful of people actually reached the final destination. But those who succeed will become living legends, and their names will forever be sung in the carols of the Holy Grail Cathedral."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "When a kingdom knight announces the oath of adventure, as a lord you have to make a choice: bless him to leave and lose an outstanding combat force, or try to retain him. From a purely military perspective this meant the loss of a proven commander. But from a political perspective, if this knight does succeed, your duchy will have a Grail Knight - that's incredible political capital. Most of the Dukes chose to let it go, as forcibly blocking the oath of exploration was considered a huge blasphemy in Bretonnia."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "The dual theological and legal framework of the Oath of Adventure formed the most exquisite part of Bretonnian chivalry. Legally, a knight who takes the oath of adventure must formally renounce all worldly property rights and inheritance rights in front of a notary, and appoint a temporary administrator of his fief. Theologically, the Oath of Adventure is regarded as \"the test of the soul\" - knights must face the world with only personal martial arts and faith in a state of complete loss of social identity protection. An adventure knight is obligated not to be bound to the same place for more than a month during his travels, to possess no more property than a mount can carry, and to answer the call for help from any seeker he encounters. Historically, the proportion of completion of the Adventure Pledge converting into Grail Knight is less than 3 in 1,000. Common endings for those who fail the Adventure Oath include becoming a serf, joining an adventurer group, being corrupted by Chaos, or committing suicide out of despair."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The adventure vow is the most cruel test for a wife. When your husband gives up everything, mounts his horse and leaves without looking back, all you can do is pray for him. Some people never returned, and even their bodies could not be recovered. As a Lordess, I feel both admiration and anger for these men - admiration for their piety and anger for the broken families they leave behind."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "My brother took a vow of exploration when he was thirty years old. On the day he left, the whole clan gathered at the entrance of the village. The mother cried so hard that she couldn't stand still, but the father held his head high and said, \"This is my son.\" For twelve years, we don’t know if he is alive or dead. But every year on his birthday, we still put out a set of tableware for him."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Adventure riders and wanderers are actually very similar - both are on the road and looking for something. The difference is that the adventure knight is looking for the Holy Grail, and I am looking for the next meal. However, I respect those knights who took the oath of adventure. They gave up a safe and comfortable life to pursue the illusory sanctity. This courage itself is worthy of praise."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "When exploring towns, exploring knights would often sell their possessions to buy supplies for their journey—heirloom swords, heirloom jewelry, even heraldic shields. The origins of these items are clean, and knights often don't care too much about price when they are in a hurry to spend money. Buying something from the adventure knight is a good opportunity to pick up the missing items, but it’s a bit hard on my conscience."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "The oath of adventure is for a knight to give up his fiefdom and title and embark on a sacred journey to find the Holy Grail.",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Adventure vows to give up territory and search for the Holy Grail"
+  ]
+}

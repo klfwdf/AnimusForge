@@ -1,0 +1,66 @@
+{
+  "Id": "rule_Flaming_Ballista",
+  "Keywords": [
+    "Flame Ballista"
+  ],
+  "RagShortTexts": [
+    "Flame Ballista Low-cost modification for creating fire scares."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Flame Ballista? They are the kind of flaming arrows shot from the top of the city. They are as thick as a human arm. When they fly over, they drag black smoke, like a fire dragon. A man who guarded the city in our village said that the thing looked scary and hit people just like an ordinary ballista, hitting people as many times as they wanted, but with the added smell of burning. He had seen an unlucky guy nailed to the wall of the village. The tarpaulin attached to the arrow was still burning on his body for a long time and could not be extinguished. The smoke from the arrow made it difficult for those around him to open their eyes. But he also said that that thing was of little use against the siege carts - the arrows were inserted when they were shot up, and the fire burned for a while, and then a bucket of water from the opposite side was poured on it and it was extinguished. Should the siege engine be pushed forward or forward? On one occasion, the fire ballista accidentally hit the opponent's fire oil tank hidden under the tower, blowing up a piece and burning half of the tower. But that kind of thing only happened once. As the old saying goes, the fire ballista is the one named by the King of Hell. Anyone who is named will accept his fate, and those who cannot be hit will still rush forward."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The flame ballista is a low-cost fire attack modification of the ballista. I have seen its equipment list from the munitions book: standard crossbow arrows, a few rolls of oil-soaked linen, and fire sickle tinder. The cost increase is negligible. During the siege, half of the equipment was divided into flaming crossbows on the crossbow position, which could suppress the city defenders and create a fire scare at the same time. The defenders saw giant flaming arrows falling, and the morale hit was harder to quantify than the actual kills. But I also know its battlefield limitations. The Firebolt's efficiency in killing people is extremely limited, only a few will die, and the accompanying burns are more of a deterrent value. The damage to the structure of the equipment is better than nothing - no matter how strong the fire is, it will still be on the surface of the wood. If the opponent is prepared, pour water and cover it with sand, and it will not be burned at all. If you want to destroy rams or siege towers, you still have to rely on catapults to throw fire cans, or trebuchets to directly smash the crenelations. The Flame Ballista is a cheap, last-minute modification. It works, but don't expect it to turn the tide of the battle. The final outcome of a siege is always the moment when the infantry climbs onto the city, and the moment when the fire ballistae can no longer control it."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "engineering": 150
+        }
+      },
+      "Content": "The Flame Ballista has almost no additional technical threshold. A standard crossbow arrow shaft is equipped with an oil-impregnated linen collar at the front end. The oil ratio is 30:70 to kerosene to rosin. The combustion temperature is high enough to ignite dry wood but not high enough to fuse iron reinforcements. The ballistic characteristics are exactly the same as those of ordinary ballistae - the mass of the crossbow increases very little, the muzzle velocity and attenuation curve remain unchanged, and the kinetic energy still drops off a cliff after one hundred and fifty meters, and stops after penetrating three to four people. There is a risk that the fire tarpaulin will self-extinguish during flight. The wind pressure at the moment the crossbow leaves the string will extinguish part of the flames. Therefore, it must be fired immediately after ignition and cannot be aimed for too long. The ignition effect depends on the dryness of the target and subsequent disposal. If the opponent prepares wet sand and buckets, the fire will be difficult to sustain. Taken together, the flame ballista is a modification plan that adds unstable damage effects to the ballista without increasing production costs - the tactical supplementary significance is greater than the value of technological innovation. The main force of the fire attack in the siege was still the fire cans of catapults and the incendiary bombs of trebuchets. The ballistae could not bear this burden."
+    }
+  ],
+  "TextMappings": []
+}

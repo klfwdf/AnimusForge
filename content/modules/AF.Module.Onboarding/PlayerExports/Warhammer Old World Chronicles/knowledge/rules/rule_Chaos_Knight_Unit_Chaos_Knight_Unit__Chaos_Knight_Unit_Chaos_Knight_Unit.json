@@ -1,0 +1,209 @@
+{
+  "Id": "rule_Chaos_Knight_Unit_Chaos_Knight_Unit",
+  "Keywords": [
+    "Chaos Knight Chaos Knight",
+    "Chaos Heavy Cavalry",
+    "Mutated war horse",
+    "steel torrent",
+    "Destroying Charge",
+    "dark knight",
+    "Chaos Knights",
+    "Iron Heel of Disaster"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Chaos Knights are a hellish sight - knights wearing full Chaos Plate armor ride mutated war horses with bulging muscles and spitting sulfur mist. When they charge, the earth trembles like thunder, and even the most elite phalanx of heavy armored spears in the empire will be crushed at the moment of contact."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "chaos_culture"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "See that moving steel reflection on the horizon? That's our Knights! Chaos Knights are not the poor riders of those southern peasants - our steeds are born on the Chaos Wastes, gnawing on black grass soaked in the warp, their muscles twined with the power of mutation, and their hooves crush rock like dry soil. There is no need for reins between rider and steed, their souls become one under the gaze of the Dark Gods. When they charge, they form a wedge formation, and the tips of their spears flash with the fire of eternal damnation. Have you ever heard the sound of thousands of Chaos Knights charging at the same time? That is the prelude to the end of the world, and it is the most gorgeous steel hymn we offer to the gods!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The use of Chaos Knights at the campaign level requires precise calculations - their charge power is unmatched, but their turning radius is large, and they lose their impact once they are caught in a fight. The optimal deployment is to be placed behind the heavy infantry and wait for the infantry to engage in a decisive diagonal breakthrough from the flank. Beware of Imperial Steam Tanks and Dwarf Organ Cannons: Chaos Plate remains vulnerable to armor-piercing fire. In addition, although the horses of the Chaos Knights are terrifying, they are not invulnerable - at the border of Ostermark, a group of Kislev wing cavalry used the tactic of luring the enemy deep into the swamp and led an entire team of Chaos Knights into the swamp. After the horses got stuck in the mud, the knights became living targets in iron coffins."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "The institutional evolution of the Chaos Knights can be traced back to the Age of Chaos (about 560 BC to AD 200). The earliest Chaos Cavalry only fought on ordinary war horses for the northern barbarians. The real Chaos heavy cavalry appeared during the conquest of the Kurgan tribe in about 800 AD - the Chaos dwarves provided the first batch of mutated warhorse saddles and steel armor to the northern warbands. The most famous Chaos Knights recorded in history include the 'Red Slayers' (all loyal to Khorne, who bloodbathed the entire Osterland in 1333 AD), and the 'Pestriders' (all loyal to Nurgle, famous for spreading deadly plagues on their horses, in Sylvania in 2011 AD) Caused large-scale epidemic death) and the 'Crystal Hunter' (loyal to Xin Liezhi, famous for his charge path that can travel through time afterimages, only appeared once in an Imperial Magic Academy report in 2420 AD). According to research, the curse runes on the horse armor come from the demonic contract documents of the Kashgar-Akaribis period. Each piece was tempered by hellfire in the Zal-Nagland furnace of the Chaos Dwarves."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "As a female lord who governs the northern provinces, Chaos Cavalry has always been a lingering nightmare for me. Do you know what is the scariest thing? Not their charge, but their discipline. They are not a ragtag group like the orcs - the Chaos Knights line up in silence, charge in silence, and even the neighing of the horses is transformed into a low roar. I once sent scouts to follow a patrol of Chaos Knights, and reported that they marched in an intact wedge formation for two days and two nights in the snowstorm, and no one was left behind."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Imperial people in the southern part of the old world thought that cavalry was just cavalry, and they did not understand the nature of Chaos Knights at all. An ancestor of our clan once served as a blood rider in the Norsca warband - the horses of the Chaos Knights are not horses, but contract beasts. Each war horse was once transformed by the evil god after a mortal made an oath. The value of a mutant warhorse is equal to the entire life of an ordinary Chaos Warrior. So when you kill a Chaos Knight, you don't kill an enemy - you break a blood pact that lasts for generations."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "When I was running business in Talabek Wasteland, I saw a Chaos Knight charging an entire team of green-skinned pig boys on horseback alone - ten orcs riding pigs were skewered by his gun, and then he turned his horse's head and charged again. The horse's pupils were vertical, its lips were split to the base of its ears, and its breath was green in the air. I was lying behind a rock in the distance, holding a dagger in my hand, thinking that I would never come to the north again in my life."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The craftsmanship of the Chaos Knight's horse armor has always made Nunn's armor master jealous - it is said that the piece of black iron is mixed with some kind of extraterrestrial mineral, which is as light as silver but harder than steel. The Imperial Academy of Engineering offered a bounty for the complete horse armor of the Chaos Cavalry. The price was astronomical, but no bounty hunter brought the thing back alive. One chamber of commerce had the idea: Since we can’t get the original, we might as well make a copy. But they did not consider that the size of the mutated war horse was completely incomparable to that of ordinary war horses. The same armor on an imperial war horse would directly break the spine."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Mutated War Horse: A heavy war horse born on the Chaos Wastes and mutated by subspace energy. Its muscle density is far higher than that of ordinary horses. It spits sulfur mist from its mouth and has hooves that can break stones.",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Even the empire's most elite heavily armored spear phalanx will be crushed at the moment of contact."
+  ]
+}

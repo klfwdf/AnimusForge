@@ -1,0 +1,57 @@
+{
+  "Id": "rule_Garontor_Strait",
+  "Keywords": [
+    "Garontor Strait"
+  ],
+  "RagShortTexts": [
+    "The Garontor Strait is the border between Calradia and the Nahasa."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Where is the Garontor Strait? No idea. Seems to be the border between Calradia and the Nahasa?"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": [
+          "town_a1",
+          "town_ew4"
+        ],
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Garontor Bay is right near us, marking the border between A and the Aserai. It's a bustling place, with Aserai caravans travelling back and forth in an endless stream."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "A",
+      "Kind": "settlement_owner_clan_name",
+      "TargetId": "town_EW4",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

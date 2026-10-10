@@ -1,0 +1,156 @@
+{
+  "Id": "rule_House_Foundations_Quagz",
+  "Keywords": [
+    "Quagz",
+    "House Quagz",
+    "Ghiscari"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Kwagz is a family with Ghiscari roots. The tradition of the ancient city of Gith valued pyramid mansions, complex hierarchies, business contracts, and scribe management, and also made slavery deeply embedded in the source of wealth; after leaving Slaver's Bay, such families will still carry their language, accounts, kinship, and old connections, but they may not be able to rely on their original land and status. Kwagz's practical power comes from being able to translate these skills into envoys, translators, military quartermasters, finances, and cross-sea trade services. It may work for different leaders, but the foundation of the family does not equal any temporary surrender, let alone future victory or defeat."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "ghiscari"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "When Ghiscari superiors look at Kwagzi, they will distinguish its accent, etiquette, and kinship origins, and will also assess how many real relationships it has left after leaving the old city. Exiles love to talk about the past, while smart people only ask what can be achieved today."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "ghiscari"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "slave",
+          "artisan",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Formerly enslaved people do not automatically sympathize with Kwagz just because they lost their old home. They are more concerned about whether the family still regards people as property in the accounting books, or whether they learn to obtain labor through wages and contracts."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "valyrian",
+          "crownlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The exiled army and the restorers valued Kwagzi's familiarity with eastern ports and military supplies, but they were also wary of whether its loyalty was tied to career, reward, or self-preservation. For the Wugen family, ability is both a passport and a reason to be forever scrutinized."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Quagz Houses with Ghiscari city roots sustain themselves through trade, clerical and intercultural service, and are not defined by temporary alignments. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Quagz Houses with Ghiscari city roots sustain themselves through trade, clerical and intercultural service, and are not defined by temporary alignments. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Quagz Houses with Ghiscari city roots sustain themselves through trade, clerical and intercultural service, and are not defined by temporary alignments. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Quagz Houses with Ghiscari city roots sustain themselves through trade, clerical and intercultural service, and are not defined by temporary alignments. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Quagz: Houses with Ghiscari city roots sustain themselves through trade, clerical and intercultural service, and are not defined by temporary alignments."
+  ]
+}

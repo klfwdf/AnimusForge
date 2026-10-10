@@ -1,0 +1,149 @@
+{
+  "Id": "rule_World_Mechanics_Raven_Network",
+  "Keywords": [
+    "Ravens",
+    "Messenger Ravens",
+    "Rookery"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Castles across Westeros commonly keep a rookery where a maester breeds, pairs, and trains ravens to fly back to specific seats. Messenger ravens cross mountains and rivers far faster than horsemen, making it possible to call the banners, report battles, and announce weddings and deaths, yet they are no magical couriers to be sent to anyone at whim: most birds know only a single home roost, and the right cage must be chosen before release. Storms, birds of prey, exhaustion, and enemy arrows can all make a message vanish; a wax seal shows whether a scroll was broken, yet cannot guarantee its words were not copied. Prudent lords use ciphers, send duplicate birds, or dispatch riders to confirm vital commands."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "scholar",
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Maesters treat a rookery as a network maintained through years of patience, while lords often blame a single bird when urgent tidings fail to arrive. Truly reliable communication comes from backups, clear wording, and an understanding of what a flight can bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "sailor",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Men at the front know that orders brought by a raven may have been penned days ago. It outflies a horseman, yet may still leave an army facing a situation that has already changed; obedience sometimes requires judging whether tidings have gone stale."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "peasant",
+          "artisan"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Merchants pay gladly for news a day early, while common folk often guess at calamity from the number of ravens loosed from a castle. Black wings rising do not tell what is written in the scroll, yet they are enough to set grain prices moving first."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Ravens Raven Network: A directed message network bred and trained by maesters, far swifter than riders yet bounded by weather, homing training, seals, and the risk of interception. Whether it is valid depends on who can grant the rights, collect the consideration, and actually make the judgment come to fruition in the event of default."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Ravens Raven Network: A directed message network bred and trained by maesters, far swifter than riders yet bounded by weather, homing training, seals, and the risk of interception. The distant system is not empty talk only if it can be implemented in campfires, city gates and inns."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Ravens Raven Network: A directed message network bred and trained by maesters, far swifter than riders yet bounded by weather, homing training, seals, and the risk of interception. If a rule is practiced over and over again, it will find its way into rituals, crafts, and prayers; if it is sustained only by fear, cracks will show at the onset of a crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Ravens Raven Network: A directed message network bred and trained by maesters, far swifter than riders yet bounded by weather, homing training, seals, and the risk of interception. They remember taxes, grain, labor, relief and who can speak for them; these grand names will eventually fall on the family's rice pot."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Raven Network: A directed message network bred and trained by maesters, far swifter than riders yet bounded by weather, homing training, seals, and the risk of interception."
+  ]
+}

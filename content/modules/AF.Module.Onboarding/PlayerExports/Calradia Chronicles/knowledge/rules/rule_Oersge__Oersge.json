@@ -1,0 +1,94 @@
+{
+  "Id": "rule_Oersge",
+  "Keywords": [
+    "Olsger",
+    "Orsa"
+  ],
+  "RagShortTexts": [
+    "The legend of the Ors hot horse and the warrior Orsa."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Orsges is a village near the port of Osti. Legend has it that the warrior Orsa landed here and planted his spear on the beach. Today it is famous for its horses, which graze on the rocky coastal slopes dotted with primroses and daffodils."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Olsger’s horses are spiritual. Legend has it that when the warrior Orsa landed here, he thrust his spear on the beach and it turned into a horse. That's nonsense, of course, but the horses here are really good - the grass growing on the rocky coast has a salty taste, and the horses are strong and have good endurance."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "townsfolk"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Orsire produces good horses. Although they are not as expensive as competitive horses, they are stronger and more durable. They grow up on the slopes of the sea, have hard hooves and are not picky about feed. Maritime traders from the Port of Osti would occasionally come to buy a few horses and ship them to the north for sale."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "When I passed Aorsge, it was spring and the rocky coast slopes were covered with primroses and daffodils. The horses grazing among the flowers look as beautiful as a painting. The locals also pointed to a stone on the beach and said that was the place where Orsa planted his spear. Who knows if it is true or false."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Olsger",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "Ostican",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

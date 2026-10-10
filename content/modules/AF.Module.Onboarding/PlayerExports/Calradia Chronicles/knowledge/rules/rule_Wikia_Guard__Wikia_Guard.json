@@ -1,0 +1,318 @@
+{
+  "Id": "rule_Wikia_Guard",
+  "Keywords": [
+    "Vekia Guards",
+    "Vaegian Guard",
+    "Varangian Guards",
+    "Emperor's bodyguard",
+    "Guards of Arenicos",
+    "Palace Guards"
+  ],
+  "RagShortTexts": [
+    "The foreign Vecian Guards are only loyal to the emperor."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Vikian Guards are the personal bodyguards of Emperor Arenicos, but unlike ordinary legions, this force is mainly composed of foreign mercenaries - Nords, Sturgias, and various warriors from the northern ice fields. They took the emperor's dinars and defended the palace with their lives. The emperor trusted these foreigners because they had no roots within the empire and had nothing to rely on but loyalty. Of course, that was when the emperor was alive. Once the emperor died, everything changed."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Vecian Guard is the most special force in the Empire. It's ironic - the emperor's most trusted guards are all foreign barbarians recruited from the north. But this is exactly where their value lies: the generals of the empire have their own factions, and the senators have their own agendas. Only these foreigners who work for money and sell their lives do not recognize anyone except the emperor himself. The late Emperor Arenicus knew this well and took them with him wherever he went. But on the day the late emperor was assassinated, this delicate arrangement turned into a disaster."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The destruction of the Vecian Guard is an inevitable result of imperial politics. They are too dependent on the emperor - when the emperor is alive, they are the most elite swords of the empire; when the emperor is dead, they become masterless swords. What's worse is that they are all foreigners. The citizens of Lycaron originally did not trust these barbarians from the north. As soon as the late emperor died, everyone immediately pointed the finger at them. They could have formed a formation to break out, and with their fighting power, no one could stop them. But some of them chose to vent their anger - burning, killing and looting in the city, which completely confirmed their reputation as 'regicide barbarians'."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "In my youth I saw the changing of the guard in Vecia at Lycaron. Those big northern men were all as tall as iron towers, with their beards braided and holding long axes in their hands. To be honest, standing next to them, we Imperial soldiers are like children who have not grown up. But you can't be dissatisfied - their steps are neat, their armor is shiny, and they are more energetic than any imperial legion. It makes sense for the late emperor to trust them. It's a pity...you also heard about what happened next."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "townsfolk"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Vekia Guards? Those northern barbarians! When the late emperor was here, they walked around the city of Lycaron, and no one dared to mess with them. As soon as the late emperor died, they started burning, killing and looting in the city. My aunt's shop was burned down by them. They said they didn't kill the late emperor? Maybe. But what they did in the city was no better than regicide."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Vekian Guard followed a tradition of the ancient empire - recruiting the most elite warriors from barbarians outside the frontier to serve as the emperor's personal bodyguards. The logic of this approach is that foreigners have no family roots or political involvement in the empire. Their loyalty belongs only to the emperor and they will not be involved in the factional struggles of the Senate or the Legion. The late Emperor Arenicos took this system to its extreme, and his Vecian Guard was mainly composed of Nords and Sturgia, all of whom were carefully selected warriors from the northern tribes. But the fatal flaw of this model is also obvious: when the emperor himself disappears, these foreign guards lose both their allegiance and the legitimacy of their existence, and quickly become the target of public criticism."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Vecian Guard contains many of our Sturgia warriors. In the eyes of the imperial people in the south, they are mercenaries who work for money; but in the north, it is an honor to stand beside the emperor with an axe. Many young men went south to serve in Lycaron, save enough dinars and then come back to buy land and marry wives. But after the death of the late emperor, everything changed. Some people died in the riots, some people came back, and some people... their whereabouts are still unknown."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Did you know? The founding monarch of the Kingdom of Nord - Volbjorn the Hungry - served in the Vecian Guard when he was young. He stayed in Lycaron for ten full years and accumulated a huge fortune. After returning to the north, he used dinars and swords to tame the rebellious chiefs and established his own kingdom. The Vecian Guard is such a force: it allows a foreigner to gain access to the power and wealth at the highest level of the empire, and then bring these things back to his hometown to change the structure of the entire north."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nord"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Our late king—Volbjorn the Hungry—began in the Vecian Guard. He held an ax beside the emperor of the southern empire for ten years, saw what real power looked like, and saved countless dinars. When he returned to Nordvig, he was no longer the poor boy he had been. He used the methods he learned from the empire and the gold he earned from the emperor to unify the fragmented northern tribes under his own banner. The Vekian Guard is a proud piece of history for us Nords."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nord"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The traditions of the Vecian Guard still echo among us Nords. Although the army disappeared after the death of the emperor, the veterans who had served in Lycaron brought the military discipline and tactics of the empire back to the north. King Volbjorn was the most successful. Others were not so lucky and became wandering mercenaries, or joined mercenary groups such as the \"Shield Brotherhood\"."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Vekia Guards? The story of how the imperial people used northern barbarians as their personal guards, but were eventually defeated. To be honest, we Vlandians don’t quite understand this approach. Of course, the king's bodyguards should be selected from the most loyal vassal families. How can they be handed over to a group of foreigners who are paid to do things? The death of the late emperor was, to some extent, self-resultant."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The story of the Wikiya Guards tells us one thing: entrusting your life to outsiders is ultimately unreliable. The Counts of Battania may quarrel from time to time, but we will never allow foreigners to guard our High King."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Aserai have a similar tradition - the Mamluks, slaves who were bought as children and trained as warriors. But the Mamluks grew up in Aserai and were already part of Aserai. The Empire's Vecian Guards are all adult foreign warriors, and they have never truly integrated into the Empire. While the emperor was alive, this was no problem; once the emperor died, they became a ship without an anchor."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Using foreign mercenaries as personal guards is something we Khuzait people will not do. Khan's escort is his Nak'er - the brother he grew up with and his companion in life and death on the battlefield. That's not something money can buy."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "leadership": 150
+        }
+      },
+      "Content": "The Vecian Guard is a classic case study of the imperial military system. On the surface, forming the emperor's bodyguard with baseless foreign elites is an excellent strategy to avoid the infiltration of internal factions. The founding monarch of the Nordic Kingdom rose from this force, which also proved that the Vecian Guard indeed provided a passage to power for foreign talents. But this system requires an absolute prerequisite-the emperor himself must be alive. After the assassination of Arenicos, the core of the command disappeared. This foreign-dominated force not only lost its allegiance, but was also completely ostracized by the imperial society. The atrocities committed by some members completely discredited the entire Guard. But if we look at it objectively: the Vecian Guard was indeed one of the most elite infantry units in Calradia during its existence. Its tragedy is more a tragedy of the system than a failure of the warriors themselves."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Vekia Guards",
+      "Kind": "bound_troop_name",
+      "TargetId": "__bound_troop__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "Arenicos",
+      "Kind": "bound_hero_name",
+      "TargetId": "__bound_hero__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "Lycaon",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "Walbjorn",
+      "Kind": "bound_hero_name",
+      "TargetId": "__bound_hero__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

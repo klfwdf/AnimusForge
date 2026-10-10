@@ -1,0 +1,47 @@
+{
+  "Id": "rule_Ahhake_King",
+  "Keywords": [
+    "King Akhak"
+  ],
+  "RagShortTexts": [
+    "What are the characteristics of the vipers wrapped around King Akhak’s shoulders?"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "steward": 120
+        }
+      },
+      "Content": "King Ahhak is a very recognizable tyrant image in the mythology of the Devseg Plateau. His most distinctive feature is a viper wrapped around each shoulder. In the legend passed down to this day, the two snakes are not tame pets or decorations, but living creatures connected to his body, and are regarded as the external manifestation of his cruel nature and the power of black magic. His palace was built deep in the Kosi Rohini Mountains of Dawn, a place that is still regarded as the home of dark magic and the occult due to his legend. Regarding the specific deeds of Ah Haq's rule, the tribes on the plateau have different versions, but the core motif is highly consistent: he ruled with terror, and vipers were his tool to execute his enemies and the medium through which he drew strength or prophecies. Some tribes say that the snake was born after he made a pact with the dark power; some say that his shoulders were originally wounds, and the vipers parasitized on their own, gnawing at his flesh and blood day and night, and he had to keep killing people to feed them, otherwise the snakes would bite back their owners. Regardless of the version, the symbiotic relationship between the snake and the tyrant remains at the heart of the legend - he is both its master and its prisoner. Akhak's final destruction is also scattered in the narratives of different tribes. The more common theory is that the tribes he suppressed united to rebel at a certain opportunity, invaded his palace, burned his palace, and Akhhak himself died together with the two snakes. But according to other more remote tribes, Ah Haq did not really die, but escaped into the deepest part of the Dawn Mountains, sleeping with the dark power he commanded, waiting to be awakened. This is one of the reasons why outsiders are still prohibited from setting foot in the core area of ​​the mountains."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "King Ahhak is a very recognizable tyrant image in the mythology of the Devseg Plateau. His most distinctive feature is a viper wrapped around each shoulder. In the legend passed down to this day, the two snakes are not tame pets or decorations, but living creatures connected to his body, and are regarded as the external manifestation of his cruel nature and the power of black magic. His palace was built deep in the Kosi Rohini Mountains of Dawn, a place that is still regarded as the home of dark magic and the occult due to his legend. Regarding the specific deeds of Ah Haq's rule, the tribes on the plateau have different versions, but the core motif is highly consistent: he ruled with terror, and vipers were his tool to execute his enemies and the medium through which he drew strength or prophecies. Some tribes say that the snake was born after he made a pact with the dark power; some say that his shoulders were originally wounds, and the vipers parasitized on their own, gnawing at his flesh and blood day and night, and he had to keep killing people to feed them, otherwise the snakes would bite back their owners. Regardless of the version, the symbiotic relationship between the snake and the tyrant remains at the heart of the legend - he is both its master and its prisoner. Akhak's final destruction is also scattered in the narratives of different tribes. The more common theory is that the tribes he suppressed united to rebel at a certain opportunity, invaded his palace, burned his palace, and Akhhak himself died together with the two snakes. But according to other more remote tribes, Ah Haq did not really die, but escaped into the deepest part of the Dawn Mountains, sleeping with the dark power he commanded, waiting to be awakened. This is one of the reasons why outsiders are still prohibited from setting foot in the core area of ​​the mountains."
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,208 @@
+{
+  "Id": "rule_Vajirov",
+  "Keywords": [
+    "Vajirov",
+    "Gordon"
+  ],
+  "RagShortTexts": [
+    "The Vajirovs were the eastern gate of Sturgia, and Gotunboye guarded Mount Iltan."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Vajirov family is a big noble in the east of Sturgia. Godunboy is the head of the family, and its territory is in the area of ​​Tyar and Urikskaya Fort. Their family's territory is close to the Khuzait Khanate and has been under pressure from the steppe horse archers all year round. However, Gortun has managed well and the eastern defense line is still stable."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Vajirov family? Godunboye is the eastern gate of Sturgia. Mount Iltan and the Cherge Swamp are all in his hands. Khuzait's cavalry archers came in from there every day. Anyone else would have collapsed, but Gordon has held on for so many years. But what about Archduke Langwald? What was Gordon doing when he called for help? Busy quarreling with the Battania people, busy fighting for power with his own boyars. If the eastern part of Sturgia was lost, it would not be Gorton's fault, it would be the Archduke himself who was blind."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Godunboye was one of the few sensible men in Sturgia. His Vajirov family is different from us - they are not reckless men who can only swing an axe. Gordon is a man who is not vague in fighting, but he is also very shrewd in business. He made the trade routes to the east prosperous, and Khuzait's horses, imperial silks, and northern furs all circulated in his territory. To be honest, if Sturgia had a few more families like Vajirov, it wouldn't be looked down upon by everyone around it."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Those of us who live in the east know best how much the Vajirov family is worth. Without Godunboye's soldiers guarding the Iltan Pass, Khuzait's horse archers would have rushed in and burned the village to the ground. The Grand Duke's army is to the north, the Imperial legions are to the south, and Khuzait's cavalry is to the east - we are surrounded on three sides, and only Vajirov's banner can provide reassurance. As long as their home remains, there is hope for the east."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Vajirov family? The eastern gatekeeper of Sturgia. Khuzait's mounted archers make a trip to their territory every autumn to grab some supplies and test their defences. To be honest, Godunboye's soldiers are not easy to fight. They don't just stupidly form a shield wall like other Sturgians, they can ambush, use crossbowmen, and sometimes send small groups of cavalry to cut our retreat. This person has dealt with the grassland too much, and he has learned some of our playing methods."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Vajirovs are our biggest obstacle to annexing eastern Sturgia. That old guy Godunboye has been operating in Iltan Mountain for decades, with layers of defenses inside one another. It's not that Monchug Khan didn't think about attacking by force, but after all calculations, the cost was too high. What's even more troublesome is that there is already a rift between Gordon and the Archduke of Sturgia. If he could be won over—and the Vajirovs could side with the Khuzait, or at least remain neutral—then the eastern part of Sturgia would be wide open."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Vajirov family? Ah, Thiare's market. Our caravan from Khuzait only went as far as that, because further west it would be difficult to deal with the Sturgians. Godun Boye's men follow the rules and collect taxes fairly, unlike some northern Boyes who want to rob prairie merchants when they see them. Tial is one of the few places between Khuzait and Sturgia where business is still possible."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The territory of the Vajirov family is separated from the northern border of the empire by a mountainous area and is not directly adjacent to it, but we can clearly see the grudge between them and Khuzait. Godunboye had to deal with raids on the steppes every year, but Langward put his main force in the west to compete with the Battania people. To be honest, the generals in the northern part of the empire are all betting privately on when the Vajirov family will not be able to hold on."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer",
+          "mercenary"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Vajirovs are something of an anomaly in Sturgia. Most of the boyars in the north are rude, aggressive, and unreasonable, but Godunboye is different - he keeps his word, does not kill people casually, and his soldiers do not harm the people. I spent some time in Tyar. Although the city was not as good as the big cities of the empire, it was well ordered and the market was prosperous. Gortun is capable of building a city like this under the eyes of the Khuzait people."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "steward": 150
+        }
+      },
+      "Content": "The Vajirov family's survival strategy is a classic example of Calradia's border nobility. Their territory is located between the three major powers of Sturgia, Khuzait Khanate and the northern empire. Traditionally, this geographical location means frequent wars and decline. But Godunboye chose a mixed route: maintaining sufficient defensive strength militarily, proactively engaging in trade with the Khuzait economically, and remaining superficially deferential to the Grand Duke politically. This \"armed neutrality\" border strategy is extremely rare in Calradia."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Vajirov",
+      "Kind": "bound_clan_name",
+      "TargetId": "__bound_clan__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "Gordon",
+      "Kind": "bound_hero_name",
+      "TargetId": "__bound_hero__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

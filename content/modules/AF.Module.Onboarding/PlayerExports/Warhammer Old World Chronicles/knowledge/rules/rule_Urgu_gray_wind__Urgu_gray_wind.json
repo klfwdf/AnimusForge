@@ -1,0 +1,211 @@
+{
+  "Id": "rule_Urgu_gray_wind",
+  "Keywords": [
+    "Urgu Gray Wind",
+    "Shadow Wind",
+    "gray academy",
+    "illusion magic",
+    "LoreOfShadows",
+    "Mist",
+    "deception magic",
+    "gray guardian",
+    "Shadow Sneak",
+    "wind of illusion"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Urgu - the gray wind - is the wind of shadow, confusion and deception. Unlike other winds that reveal themselves in visible color or temperature, gray wind appears as an impenetrable gray fog in which the sense of direction, distance, and time all begin to collapse. Urgu is the most difficult of all winds to objectively locate—just when you think you have mastered the Gray Wind, you probably are. The mages of the Gray Academy - known as the Gray Guardians - are the Empire's spies, assassins, infiltrators and executors of all secret missions that cannot be discussed publicly. They don't need to leave the enemy dead - just make the enemy believe in something that exists only in an illusion but is psychologically seamlessly stitched into reality until the enemy collapses in shock."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Gray Wind's presence in the Imperial military is the least documented - as the Imperial Court Martial has expressly stipulated that any operation using Urgu's shadow magic to infiltrate enemy lines must not be archived in any written form until the end of the war. The battle mages of the Gray Academy are not counted in the regular army establishment. They are attached to the imperial staff of the imperial generals under the vague name of 'special communications officers', but in fact their responsibilities include but are not limited to: wrapping the empire's elite infantry squads in gray mist to make them completely invisible to long-distance enemy scouts during the march; creating an illusion of the enemy general that is indistinguishable from the real person in the enemy's command tent to issue false retreat orders to the enemy's messengers; and the highest level. Level of Urgu infiltration - sending a highly trained Gray Guardian into the enemy general's sleeping quarters by shadow walking, not for the purpose of assassination - because assassination will leave a body and trigger the accountability effect - but to plant an Ulgu nightmare spore on the enemy general's pillow with silent witchcraft, allowing the general to become distracted or hyper-alert enough to make a fatal mistake before the battle after being tormented by very specific visions of betrayal and failure for several nights in a row. Gray Wind doesn't kill anything - Gray Wind creates the conditions for his enemies to kill him. The Gray Academy is a mystery. One of the core secrets of the Gray Academy is that no one knows where exactly the Gray Academy is in Altdorf. Any courier who attempts to deliver a letter to Gray College must place the letter on the table in an empty room designated by the Imperial Ministry of Magic. Then the next second you turn around, the letter is no longer there - you don't know whether a wisp of gray mist in the crack of the door took it away, or someone who has been in the corner of the room during the second you turned around but never saw it because you were blinded by the mist."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Gray Guardians are people you may have seen in your life but you can never be sure you've actually seen them - which is the fundamental source of their power. The Empire's intelligence network appears to outsiders to be the domain of witch hunters and forensic agents, but at the deepest level of the matter, the Gray Guardians form the last, most undecipherable layer of protection in the Empire's counterintelligence and external intelligence systems. The Gray Houses do not report to the Emperor - they report to a non-existent body within the Imperial Ministry of Magic that is officially known as the 'Gray Wing Office', and the Gray Wing Office's only external flow of information is an unsigned letter, sealed in gray wax, delivered to the Emperor once a year, simply stating what enemies of the Empire the Gray Guardians have prevented in the past year from causing immeasurable damage - providing no evidence, only vague conclusions, which every Emperor is advised not to pursue. The Elector Count can request services from the Gray College but cannot purchase or command the Gray College - the Gray Guardians serve only one ultimate purpose: to keep the Empire alive. In order to achieve this goal, they were effective against the enemies of the Empire in some historical stages, and also effective against their own people in other historical stages - the former Grand Master of Gray College made a total of two public appearances in the history of the Empire, both times to announce that the mysterious death of a certain Imperial Elector Count was 'due to natural causes', and the investigation records of both times were 'missing' in the official archives of the Empire's Ministry of Magic."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "The psychic philosophy of the Urgu Gray Wind is the most disturbing of all the Eight Winds - for the Gray Wind is essentially a wind of non-existence. Other winds are something (fire, life, metal, lightning, light, death, beast), but Urgu's original semantics in the ancient Eight Winds language is 'vacancy' or 'absence' - which implies that the gray wind is not some kind of positive energy that the Chaos Star Gate is releasing into the material world, but a defensive, passive, reaction force in the form of a vacancy that is generated by the material world when the chaotic energy enters. Every time chaotic energy pours into the world through the star gate, the reality of the material world itself will shrink into a tiny gap in its microstructure in a way that cannot be perceived by humans - this gap is neither chaos nor reality, but a temporary, partial, passive absence of reality. What the Urgu mage does is to amplify, guide, and then throw this gap at the target - when an enemy soldier sees a giant beast that does not exist but is completely projected as an 'existence' in his brain by Gray Wind, rushing towards him, what he sees is not an illusion, but a content that is temporarily filled in the gap in reality - the filling material of this content is exactly the soldier's own fear. This is why the Gray Wind illusion is so difficult to overcome by willpower - because you are not fighting an alien illusion, you are fighting the reverberation of your own fears reflected back into your own eyes by the vacancy of the Gray Wind."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Gray Academy's attitude towards female students is the darkest of all the academies - the disappearance rate of female Gray mages is the highest among all the academies of all winds, and the disappearances do not occur on the battlefield, but during training. The official silence of the Gray Academy is that 'these apprentices failed to grasp the vacant nature of the Gray Wind and were ultimately consumed by their own uncontrolled hallucinations' - but this explanation avoids a more specific and darker possibility: that the Gray Wind reacts in female consciousness in a way that does not occur in male consciousness, and that this reaction may cause the structural collapse of women's sense of reality to begin at an earlier stage. Another theory that I don't want to believe but is circulating among the female intelligence circles of the imperial nobility is that the senior elders of Gray Academy - all men - systematically and purposefully induced the disappearance of female Gray Wind students - not because of gender bias, but because there is a person in the esoteric teachings of Gray Academy called 'The Void'. The core content of the ancient concept of \"Lack of a Bride\" involves transforming the soul of a female Gray Wind student into a permanent Urgu portal at a critical moment - a living passage that can pull Gray Wind directly from the Chaos Star Gate into the material world with a strength far beyond what any male mage can control. I sure hope this is just a rumor, but the Gray Academy doesn't have a single cemetery for female Gray Mages within the Empire - how do you explain this statistical anomaly?"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "One of the Gray Guardians—whose name I still do not know, and whose name the Gray Guardians will never tell me—made a separate verbal agreement with my grandfather thirty years ago, and the binding force of that agreement remains in my family to this day. The content of the agreement is: Gray Academy can place a gray guardian who needs to be hidden for a short period of time in any unoccupied building in our territory at any time, in any way, and without any prior notice to our clan. The guardian shall not have any form of interaction with any member of our clan during his stay. In return, the Gray Academy made a promise to my grandfather - a promise that was passed down to me - that in any Imperial political event where my family was at risk of being convicted by the Elector Count majority, the Gray Guardians would deliver at least enough swing votes to change sides to avoid my family's conviction, by delivering a different version of Urgu's Nightmare to the pillows of each Elector Count the night before the final trial. This protocol was never used – and never documented anywhere – but I slept deeper on the eve of every politically charged meeting cycle than any of my fellow Elector Counts who didn’t have it."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "If you walk enough of the foggiest estuaries of the Old World, you'll start to notice something odd: There are days when you've been walking all day and you can't recall exactly a single face you passed on that day—not because there were no people on the road, but because the gray of Urgu, at a certain concentration, begins to erode your short-term memory of specific human faces, as if all the strangers you've ever encountered were soaked in a pool of gray non-existence and their facial features washed away the moment they left your sight. This would sound like insanity - if it weren't for the fact that there is a wind of magic in the Old World that can manipulate your perceptions and memories. A Gray Guardian who was expelled from the Gray Academy makes a living as a fortune teller in the port area of ​​Marienburg - no, of course he is not a real fortune teller. His entire skill is to tell you something that does not exist at all, but after listening to it, you will completely believe that it has happened for a period of time. He performed this service for a fee, a real personal secret you couldn't refuse to answer, and I can attest that his visions caused one of my enemies to voluntarily resign from terminal management after three days because he was convinced that he had received a smuggled sum of money from his previous owner that never actually occurred."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Gray Wind's role in the Imperial political economy is the ultimate invisible lever - without the presence of the Gray Guardians, the Empire would lose its only structural advantage in the Great Game of the Old World over the Elves, Dwarves, and Chaos Cults in underground intelligence warfare. The elves have dream beacons, the dwarves have an absolute system of facts protected by oaths, Chaos has prophecies from evil gods that transcend human reason - and what does the empire have? The Empire only has Gray Guardians. The financial operations of the Gray Academy do not rely on any open financial flow - it is listed in the Imperial Ministry of Magic's annual budget under 'Grey Wing Office Supplies', and the amount itself is obscured by Urgu spells, because only magicians who write their names in Urgu spells can read the true figures in the budget reports. The actual funding of the Gray Academy comes from itself - the Gray Guardians are proficient in stealing, infiltration and counterfeiting, and they can obtain the gold coins needed for any operation from any institution in any account and in any way without leaving a trace, under any name. Gray College does not need to apply for funding - money that comes from the shadows stays in the shadows."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Urgu Gray Wind - one of the eight winds of shadow, confusion and deception, manifested in the form of thick gray fog",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "The magical properties and energy sources of Urgu Gray Wind"
+  ]
+}

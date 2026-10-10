@@ -1,0 +1,145 @@
+{
+  "Id": "rule_Faith_and_Myth_Warriors_Sons",
+  "Keywords": [
+    "Warrior's Sons"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The shackles of Warrior sons form themselves by discipline, martial arts, and religious oaths, believing that true faith should be guarded by the wielder of the sword. Nobles may admire their bravery, but they may also be wary of an armed force that is not completely obedient to the royal power; for members, white robes and star emblems are also status."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "priest",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Warrior's Sons"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Warrior's Sons"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Warrior's Sons"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Warrior's Sons Warrior sons form themselves by discipline, martial arts, and religious oaths, believing that true faith should be guarded by the wielder of the sword. Nobles may admire their bravery, but they may also be wary of an armed force that is not completely obedient to the royal power; for members, white robes and star emblems are also status Altars, relics, and prophecies can unite people and give a political claim the appearance of irrefutability."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Warrior's Sons Warrior sons form themselves by discipline, martial arts, and religious oaths, believing that true faith should be guarded by the wielder of the sword. Nobles may admire their bravery, but they may also be wary of an armed force that is not completely obedient to the royal power; for members, white robes and star emblems are also status Some people use it as a talisman, while others use it as the name of fear; the same prayer may make people draw their swords or put them down."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Warrior's Sons Warrior sons form themselves by discipline, martial arts, and religious oaths, believing that true faith should be guarded by the wielder of the sword. Nobles may admire their bravery, but they may also be wary of an armed force that is not completely obedient to the royal power; for members, white robes and star emblems are also status Whether the gods responded or not could not be proven by the account books, but how the rituals were held and who could interpret the omens actually determined the authority of the community."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Warrior's Sons Warrior sons form themselves by discipline, martial arts, and religious oaths, believing that true faith should be guarded by the wielder of the sword. Nobles may admire their bravery, but they may also be wary of an armed force that is not completely obedient to the royal power; for members, white robes and star emblems are also status They seek an explanation they can rely on when it comes to birth, marriage, sowing, illness, and death; the names of gods may not be the same, but their desire to keep their families safe is similar."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Warrior's Sons: Warrior sons form themselves by discipline, martial arts, and religious oaths, believing that true faith should be guarded by the wielder of the sword. Nobles may admire their bravery, but they may also be wary of an armed force that is not completely obedient to the royal power; for members, white robes and star emblems are also status"
+  ]
+}

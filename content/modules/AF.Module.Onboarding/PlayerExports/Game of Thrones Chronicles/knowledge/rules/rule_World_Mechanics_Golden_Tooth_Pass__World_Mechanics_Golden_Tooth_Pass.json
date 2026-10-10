@@ -1,0 +1,156 @@
+{
+  "Id": "rule_World_Mechanics_Golden_Tooth_Pass",
+  "Keywords": [
+    "Golden Tooth Pass",
+    "Gateway to the Westerlands",
+    "Passage to the Riverlands"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Golden Tooth Pass passes through the eastern mountains of the Western Territory and is an important road from the Riverlands to the hinterland of the Western Territory. Golden Teeth City controls its strategic location. Steep slopes and narrow roads restrict the deployment of troops. The defenders can rely on city walls, falling rocks, crossbows and pre-set obstacles to delay the enemy; attackers also have to send grain trucks and siege equipment up the mountain along the same road. In peacetime, minerals, livestock, salt and commercial goods also passed through, and customs duties and road protection constituted a stable income. The mountain pass is like a lock, but it can only be truly locked when the defenders, granaries, and rear roads are reliable. Although it is difficult to get around, it does not mean that there are no other ways in the world."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The people of the Western Region regard the Golden Tooth City as the east gate and believe that the loss of the mountain pass will allow the Hejian army to see the rich hinterland. Keeping gates is very honorable, but long-term food preparation and road construction are more important than honor."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "river"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Hejian soldiers knew that a frontal attack on the mountain pass would be costly and would look for guides, bluff, or cut off supplies. No matter how hard the teeth are, they still need flesh and blood to support them."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia",
+          "river"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "peasant",
+          "artisan"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Business travelers want mountain passes to be safe, but they hate the layers of tolls. When the war breaks out, the first thing to disappear is the ordinary fleet. Later, the markets on both sides realize that they will starve if the door is closed."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Golden Tooth Pass The narrow land gateway between the Westerlands and the Riverlands, the Golden Tooth City guards the mountain road, caravans and the direction of invasion. Whether it is valid depends on who can grant the rights, collect the consideration, and actually make the judgment come to fruition in the event of default."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Golden Tooth Pass The narrow land gateway between the Westerlands and the Riverlands, the Golden Tooth City guards the mountain road, caravans and the direction of invasion. The distant system is not empty talk only if it can be implemented in campfires, city gates and inns."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Golden Tooth Pass The narrow land gateway between the Westerlands and the Riverlands, the Golden Tooth City guards the mountain road, caravans and the direction of invasion. If a rule is practiced over and over again, it will find its way into rituals, crafts, and prayers; if it is sustained only by fear, cracks will show at the onset of a crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Golden Tooth Pass The narrow land gateway between the Westerlands and the Riverlands, the Golden Tooth City guards the mountain road, caravans and the direction of invasion. They remember taxes, grain, labor, relief and who can speak for them; these grand names will eventually fall on the family's rice pot."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Golden Tooth Pass: The narrow land gateway between the Westerlands and the Riverlands, the Golden Tooth City guards the mountain road, caravans and the direction of invasion."
+  ]
+}

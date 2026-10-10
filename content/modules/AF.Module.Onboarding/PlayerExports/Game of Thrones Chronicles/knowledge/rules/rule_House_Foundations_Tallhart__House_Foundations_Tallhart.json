@@ -1,0 +1,131 @@
+{
+  "Id": "rule_House_Foundations_Tallhart",
+  "Keywords": [
+    "Tallhart",
+    "House Tallhart"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "House Tallhart is one of the northern vassals of House Stark, with Torrhen's Square as its seat and a sigil bearing a fish motif on a blue-grey field in this armorial record. Torrhen's Square lies between the western roads and waterways of the North, serving as a vassal stronghold responsible for local judgment, levies, grain storage, and watching the routes. The name of Tallhart is not as famed across the Seven Kingdoms as Winterfell, the Dreadfort, or White Harbor, yet it holds a clear place among surrounding villages and the network of northern bannermen. To people far away it is only an unfamiliar surname, but to locals it is the concrete power that decides who tallies the winter grain, to whom disputes are appealed, and under which banner the summons arrives."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "What the lords of the North expect of House Tallhart is nothing legendary: hold Torrhen's Square, answer the Starks on time, and do not let local disputes drag on into blood feuds between neighboring clans. A middling vassal rarely decides the fate of the whole North, yet can decide whether a road stays secure or whether a mustered host lacks a crucial contingent of men."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The farmhands around Torrhen's Square do not need all Seven Kingdoms to know the name of Tallhart. They only need their lord to remember which bridge was washed out by the spring floods and which household has no one left to reap after the levy. Whether renown travels far is a matter for nobles; whether people can survive the winter is the measure used by locals."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Tallhart Entry Tallhart The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Tallhart Entry Tallhart Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Tallhart Entry Tallhart The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Tallhart Entry Tallhart They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Tallhart: Entry Tallhart"
+  ]
+}

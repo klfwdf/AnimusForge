@@ -1,0 +1,213 @@
+{
+  "Id": "rule_Nikla_family",
+  "Keywords": [
+    "nikla family",
+    "Scholar Vampire",
+    "Master of Undead Magic",
+    "dark lore",
+    "Casting Bloodline",
+    "Scrolls of Nagash of Nikolayam",
+    "Nikola",
+    "Necromancer (Nikla family)",
+    "magic blood",
+    "knowledge vampire",
+    "Nicola Necromancer",
+    "magic scholar"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Nikola family is the most obsessed with magical knowledge and necromancy research among the vampire bloodline. The appearance of their skeletal scholars is far from being as noble and charming as other vampires, but their mastery of undead magic is precise and profound, almost reaching the extreme of the theory left by Nagash himself."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Nikola family - the most unfathomable nerds in our vampire family, and also the most dangerous mages! They don't care about kingship, they don't love duels, they have no interest in worldly intrigues - the only obsession of the members of Nikola is to obtain more forbidden knowledge. Their ancestor Wosoran was once the apprentice of Nagash himself, and learned from Nagash a spell that was enough to distort the laws of the underworld. Imagine this: a vampire sits alone in a nine-story underground library, surrounded by ancient books bound in human skin and scrolls written in blood, studying new rules for resurrecting the dead for two hundred years. When von Carstein needs the magical sustenance of his undead legions, when Lahmia needs a recipe for some advanced charm spell, who do they turn to? Find Nicola. And Nikola will offer a price: not gold, not land--the lost fragments of the Nagash Book, the research notes of elven necromancers, or forbidden things."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "House Nikola rarely appears in direct military conflict - they prefer to send their undead servants to fight on their behalf. But the threats they create are systemic: the steady stream of undead reinforcements on your battlefield, the powerful curses and protective spells wielded by enemy vampires, often have Nikolai behind them. From a strategic perspective, dismantling Nikla's research base is more effective than killing more undead on the battlefield, but finding these bases is itself a difficult task that requires a lot of magical detection and intelligence - they are extremely good at hiding."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "Wosolan, the ancestor of the Nikola family, was one of the four direct apprentices selected by the great wizard Nagash during the Nehekhara era. He was one of the very few individuals who could maintain the inheritance of immortality alone after the first destruction of Nagash. The uniqueness of the Nikola family is that they put the \"value of knowledge\" above the \"value of blood\" - the promotion evaluation of Nikola vampires is not based on how much blood they have sucked or how many undead they control, but how many new death magics they have researched and how many papers they have written that can withstand the review of other Nikolas. The typical appearance characteristics of Nikola members include: extremely thin bodies (due to the long-term lack of blood to maintain their appearance), browned and cracked nails (a side effect of long-term exposure to high-risk magical materials), and tiny black vortices spinning in the eyes (a manifestation of death energy as a medium for sight transmission). Each of them owns a private library, and the quantity and quality of the collection are the most important status symbols in Nikla's social life."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Nicola family reminds me of the monks I met in the monastery when I was young - the same withered faces, the same eyes that have been swallowed up by knowledge and all worldly concerns. It's just that Nikola's pursuit is forbidden knowledge, and the price is the gradual dissipation of their own souls. A monster who lives for knowledge itself is more disturbing than a monster who lives for power."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "It is said that a distant ancestor of our family once used his collection of books in exchange for an aid from the Nikola family - he used the rare ancient books he had collected for three generations in exchange for the necromancers sent by Nikola to help defend the siege of the undead throughout the winter. I don’t know what was written in that book that was worth the price, but since then our clan has banned books without the consent of the elders from entering the territory."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Nikola's lairs are said to have a common feature: the well water will have slight black ripples when there is no wind. If you listen close to the ground late at night, you can hear the distant sound of chanting from deep underground. Near the mountain ruins of Sylvania, be sure to pay attention to the color of the well water - that's your only warning that you're getting too close to a Nikola scholar."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Nikolas are the ultimate buyers of dark tomes - a real Nehekhara wizard papyrus can be exchanged for a house in the city. The problem was identifying authenticity: fake scrolls flooded the market, and Nikola would send his undead minions to \"confront\" the sellers when he discovered he had been cheated. My strategy is not to touch it and let colleagues who are not afraid of death take the order."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "The Nikola family is a bloodline of scholar-type vampires obsessed with the study of necromancy.",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "The family background and political status of the Nikola family"
+  ]
+}

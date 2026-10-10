@@ -1,0 +1,132 @@
+{
+  "Id": "rule_House_Foundations_Cox",
+  "Keywords": [
+    "Cox",
+    "House Cox"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Cox family is a minor noble in the Riverlands. Their family property is located in the countryside where rivers, woodlands and roads intersect. Fishing, hunting, herding, and small plots of farmland supported local life, while families fulfilled their obligations to more powerful lords. Such a family rarely determines the general trend of the Seven Kingdoms, but it must bear the most specific consequences when the general trend is suppressed: recruiting troops, supplying food, receiving teams, and trying to keep the manor running between floods and wars."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "river"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Riverlands nobles viewed Cox as a small link in the chain of vassals. As long as they keep their promises, pay food, and control the roads, they have value; if powerful neighbors are fighting, the prudence of a small family can often preserve the bloodline better than bold words."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "river"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "sailor",
+          "artisan"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The people along the river did not expect Cox to change the world. They only hoped that they could drive away the horse thieves, repair the ferry, and save the village a few carts of food when the army crossed the border. The lesser lords are closer, so both good and evil are harder to hide."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Cox House Cox is a small family in the Riverlands, tied to their land and river livelihoods and surviving within a powerful network of vassals. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Cox House Cox is a small family in the Riverlands, tied to their land and river livelihoods and surviving within a powerful network of vassals. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Cox House Cox is a small family in the Riverlands, tied to their land and river livelihoods and surviving within a powerful network of vassals. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Cox House Cox is a small family in the Riverlands, tied to their land and river livelihoods and surviving within a powerful network of vassals. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Cox: House Cox is a small family in the Riverlands, tied to their land and river livelihoods and surviving within a powerful network of vassals."
+  ]
+}

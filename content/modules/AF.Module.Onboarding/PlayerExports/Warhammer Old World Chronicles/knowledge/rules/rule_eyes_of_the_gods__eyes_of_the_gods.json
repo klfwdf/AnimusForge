@@ -1,0 +1,209 @@
+{
+  "Id": "rule_eyes_of_the_gods",
+  "Keywords": [
+    "Eye of the Gods",
+    "The evil god favors",
+    "Decisive victory and blessing",
+    "chaos mechanism",
+    "Defeat to get",
+    "Random reinforcement",
+    "Dark Gods Watch",
+    "Trial of Champions"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Legend has it that the warriors of the Chaos Wastes believe that when you defeat an enemy warrior, the Eyes of the Dark Gods will briefly gaze upon you from the Warp - and if your kill is honorable enough, the evil god may grant you a supernatural power on the spot, the Eye of the Gods."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "chaos_culture"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Eyes of the Gods - This is the true path to glory for our Chaos Warriors! Killing mortals is a duty, but killing enemy warriors is a sacrifice. Have you ever felt it? When you are duel with an enemy general, and the sword blades collide and sparks fly, you suddenly feel a chill rising from the back of your head - that's not fear, that's the gods opening their eyes! From behind the curtain of the Warp they leaned and stared at the showdown. If you make your swordsmanship worthy of their gaze at that moment, you may receive an additional blessing—an extra arm grows, your skin turns to hardened dragon scales, or your roar takes on the voice of the Blood God. This is not luck, this is ironclad proof of your devotion to the dark gods!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Eye of the Gods is a core incentive in Chaos armies - it provides great uncertainty on a tactical level. You can't predict what blessing your Chaos Lord will receive after killing an enemy champion, but that's precisely the advantage of Chaos: your opponent can't predict it either. My advice is: always give your lord priority in seeking duels with enemy heroes, rather than spending time buried in ordinary troops. With each blessing, your commander becomes more unstoppable. But be wary - receiving multiple blessings in quick succession may cause deformed mutations. The historical lord named Magos the Many-Armed is an example: he killed seven enemy heroes in one day, received seven blessings, and finally turned into a deformed tumor that was unable to ride a horse."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "The Eye of the Gods phenomenon is known as 'Immediate Chaotic Intervention' (ICI) in academy literature, and its research began with the battlefield observation report of Magnus von Richthofen, the director of the Middenheim Combat Academy in 2007 AD. The core mechanism of ICI is summarized as three stages of 'gazing-evaluation-blessing': in the first stage, the evil god perceives a mortal warrior who is undergoing a heroic duel through the subspace rift; in the second stage, the evil god evaluates the 'spectacular value' of the duel in the subspace dimension - mainly the degree of violence, the amount of blood and the identity of the opponent; in the third stage, if the evaluation is passed, the evil god projects part of his divine power into the material world in the form of mutations, abilities or artifacts to the winner. According to statistics, Khorne is the easiest to respond (the incidence rate is about 67% of known cases), Nurgle is the slowest to respond but the blessing is the most lasting, Xinliji's blessing is the most unpredictable (a lord once received a blessing of 'predicting the time of his death'), and Slaanesh's blessing is the most aesthetically important (requiring the killing movement to be 'graceful as a dance'). Imperial Privy Council Top Secret Document No. 322 shows that the Empire tried to develop a magic circle that could 'block the gaze of evil gods' by analyzing the ICI mechanism. However, the last in-vivo experiment in 2421 went out of control and caused the entire magic tower to be sucked into subspace. The project has been terminated indefinitely."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Church of Sigmar considers the Eye of the Gods to be an evil god 'buying souls', but from a military perspective, it is an extremely efficient battlefield incentive mechanism. The Imperial army needs pay, land, and titles to maintain morale - the Chaos army needs nothing, and the rewards for soldiers and generals are immediate and direct gazes from the gods. This feedback chain is far more effective and dangerous than a heavy bounty."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Eye of the Gods is more than just a battlefield mechanic - it determines the leadership of a warband. My ancestor became the leader of the tribe because he received the blessing of the Blood God in a duel. Whoever can win or lose under the gaze of the gods wins everything. Every generation of men in the family will be sent to hunt down an enemy leader during their coming-of-age ceremony, and bring back his head as evidence of the 'Eye of the Gods Trial'."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "I heard a drunken retired Imperial captain say in a tavern in Middenheim: The captain of their company stabbed a Norsca raider leader with a sword - thinking it was over, but then the Norsca's body actually stood up on its own, glowing red all over, growing fangs, and killed half of the company. The captain said that it was the first time in his life that he had seen the 'Eye of the Gods' take effect. I don't know if it's true or not, but the old captain's eyes didn't look like he was bragging."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Altdorf's insurance guild actually has a clause for 'battlefield sudden loss' - specifically for those situations where an entire mercenary army is wiped out due to an unexpected blessing obtained by a Chaos Lord in a duel. The premiums are ridiculously high, but you have to admit it's business-forward. A Margarita merchant I know underestimated this risk and invested an entire team of mercenary spearmen with a border count to fight against the Norsca warband. As a result, the Chaos leader grew wings after killing two Imperial champions in a row - the entire army was wiped out, and the compensation made him bankrupt."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Immediate Chaos Intervention (ICI): The phenomenon in which evil gods intervene in the material world at the moment of a heroic duel and grant supernatural powers to the victor is the academic definition of the Eye of the Gods mechanism.",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Theological attributes and belief system of the Eye of the Gods"
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "Id": "rule_unit",
+  "Keywords": [
+    "Unit",
+    "Item unit",
+    "Shopping",
+    "Selling something"
+  ],
+  "RagShortTexts": [
+    "What are the units of measurement for grains, meat, butter, and fish?",
+    "Units of measurement for hardwood, ore, flax, and salt.",
+    "Unit of measurement for wine, oil, valuables, and tools."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The unit of measurement for grains is sacks (several sacks of grains), the unit of measurement for meat is fan (several fans of meat), the unit of measurement for butter, the unit of measurement for cheese is chunks (how many chunks of butter, how many chunks of cheese), the unit of measurement for fish is nets (how many nets of fish), the unit of measurement for olives, dates, grapes, whale oil, and beer. It is barrels (barrels of beer, barrels of olives, barrels of grapes, barrels of dates), the unit of measurement of hardwood is segments (several segments of hardwood), the unit of measurement of ore, metal ingots, clay is blocks (several blocks of ore), the unit of measurement of flax, raw silk, wool is bundles, the unit of measurement of salt is bags, wine, Oil is measured in cans, valuables, tools, pottery, walrus tusks are measured in feet, linen, velvet, and felt are measured in feet, furs are measured in sheets, hogs are measured in mouths, sheep and cattle are measured in heads, and horses are measured in horses, one hand. The unit of measurement for two-handed weapons is the handle (including single and two-handed axes), the unit of measurement for polearms, javelins, and throwing spears is the rod, the unit of measurement for crossbows is the string, the unit of measurement for throwing axes is also the handle, the unit of measurement for shields is the face, armor, the unit of measurement for bows is the set, and the unit of measurement for ordinary clothing is the set"
+    }
+  ],
+  "TextMappings": []
+}

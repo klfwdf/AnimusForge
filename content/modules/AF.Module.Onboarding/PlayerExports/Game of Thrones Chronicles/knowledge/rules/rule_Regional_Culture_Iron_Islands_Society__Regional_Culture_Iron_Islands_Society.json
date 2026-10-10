@@ -1,0 +1,136 @@
+{
+  "Id": "rule_Regional_Culture_Iron_Islands_Society",
+  "Keywords": [
+    "Iron Islands Culture",
+    "Ironborn",
+    "Iron Price",
+    "Salt Wives",
+    "Iron Islands Society"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Iron Islands have barren land and dangerous reefs. The islanders have long relied on fishing, hunting, salt, ships, trade and plunder to survive. The price of iron advocates wealth obtained by force, while the price of gold refers to the income gained from purchase; the two are not all part of the daily life of the islanders, such as repairing ships, drying fish, storing grain, etcRaising sheep and waiting for the weather also constitute real daily life. The ancient paths of the Ironborn give glory to warriors, and the belief in the Drowned God gives meaning to death. However, the salt concubine system and the tradition of plunder also leave scars of violence and the captives. Outsiders see the Ironborn as just pirates, while the islanders would say that they were people who were forced to survive by the sea first."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Iron Islands Society"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Iron Islands Society"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Iron Islands Society"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Iron Islands Culture Iron Islands Society: The Iron Islands have barren land and dangerous reefs. The islanders have long relied on fishing, hunting, salt, ships, trade and plunder to survive. The price of iron advocates wealth obtained by force, while the price of gold refers to the income gained from purchase; the two are not all part of the daily life of the islanders, such as repairing ships, drying fish, storing grain, etc. They care about water sources, roads, customs and garrison, and know that behind the place names there is often a food road that can keep the castle alive."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Iron Islands Culture Iron Islands Society: The Iron Islands have barren land and dangerous reefs. The islanders have long relied on fishing, hunting, salt, ships, trade and plunder to survive. The price of iron advocates wealth obtained by force, while the price of gold refers to the income gained from purchase; the two are not all part of the daily life of the islanders, such as repairing ships, drying fish, storing grain, etc. Stones, trees, rivers or mountain passes can become places of livelihood, and may also be endowed with sanctity, taboos and ancestral memories, so they cannot be measured in terms of money alone."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Iron Islands Culture Iron Islands Society: The Iron Islands have barren land and dangerous reefs. The islanders have long relied on fishing, hunting, salt, ships, trade and plunder to survive. The price of iron advocates wealth obtained by force, while the price of gold refers to the income gained from purchase; the two are not all part of the daily life of the islanders, such as repairing ships, drying fish, storing grain, etc. They first checked whether the place could draw water, farm, graze, and avoid military disasters; a line of words on the map, and when it landed in the village, it turned out to be firewood, well rope, and winter food."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Iron Islands Society: The Iron Islands have barren land and dangerous reefs. The islanders have long relied on fishing, hunting, salt, ships, trade and plunder to survive. The price of iron advocates wealth obtained by force, while the price of gold refers to the income gained from purchase; the two are not all part of the daily life of the islanders, such as repairing ships, drying fish, storing grain, etc."
+  ]
+}

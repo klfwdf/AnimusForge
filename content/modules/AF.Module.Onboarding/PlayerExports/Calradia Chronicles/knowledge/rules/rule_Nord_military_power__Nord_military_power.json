@@ -1,0 +1,107 @@
+{
+  "Id": "rule_Nord_military_power",
+  "Keywords": [
+    "Nord Military Power"
+  ],
+  "RagShortTexts": [
+    "The Nord army relies on shield wall tactics as its core, and the two-handed ax warriors have amazing explosive power in close combat."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nord"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Our army? That depends on how you calculate it. If all the warriors under Yael were added together, Nordvig could pull out as many infantrymen as anyone else. Hoplites are the bones of the shield wall. My personal soldiers are all in chainmail and have round shields, and they stand in the front row without taking a step back. The halberd soldiers stood in the second row, specializing in dealing with the cavalry and heavy infantry rushing over from the opposite side. The long-handled guy beckoned to the legs of humans and horses, and each hook was accurate. The ax thrower starts the fight by throwing a round at the opponent, breaking up their formation. The two-handed ax warrior is what I like to see the most - the big guy swings the ax round and slashes it in, shattering the shield and breaking the bones, it's a joy. The archer almost didn't think so. Nordlin didn't grow good wood for making bows, and the bows were weak and couldn't shoot far. As for the cavalry? No. We don’t have horses and we don’t want them. The horse was unsteady in the boat. Our battles are fought on beaches and fjords, not in formations charging on the great plains. The mercenaries of the Shield Brotherhood are not our main force. They work on contracts and fight for whomever pays. They are not tied to the kingdom. Our real capital is the ship. Longships can send an entire army behind the enemy, and by the time they know it, the beach is already full of men with axes. This is how the Nords play."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nord"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "I stood in the shield wall, holding the edge of the round shield with my left hand, holding the sword in my right hand, with my shoulder against the back of the brother in front, and the people behind me were also pushing me. The halberd poked out from above our heads, its long handle swaying, waiting for the person on the opposite side to bump into it. There was no sound when the throwing ax flew through the gap between us, but someone on the other side shouted and someone fell. Then they collided. The shield wall shook. I resisted and pushed forward. The halberdier struck down from our heads, and the sound of the long-handled thing hitting the armor was ear-piercing. I heard the two-handed ax warriors going around from our right. They never shouted when they charged, only their axes were breathing. The archers fired arrows from behind, not many, but each one passed over the head. It depends on luck. I don't know the name of this battle, and I don't remember why we fought it. All I remember is that the person next to me shouted \"Don't break up the shield wall\", and then I continued to push. If the shield wall falls apart, I will be a lone ghost with a short sword. As long as the shield wall remains, I will still be there."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The military power of the Nords, to be honest, has flaws as glaring as its advantages. There are five types of infantry. The shield wall with a halberd is quite solid in infantry combat. It is difficult to penetrate the front in one go. Their two-handed ax warriors are incredibly explosive in melee combat, but have almost no defense, relying purely on shield wall cover and one-time charges. The ax thrower can't throw as far as the bow and arrow, and is of limited use in open areas, but can really cause chaos in woodlands or landing battles. Archers are their weak point, and their range density is not as good as ours. The most important thing is that there is no cavalry. Without cavalry, there would be no pursuit capability and no confidence to meet our heavy cavalry in the open. They could barely withstand the first charge with their shield walls and halberds, but they could not withstand repeated charges. The Nords had no better way to deal with the continuous attacks of Vlandia's hussars or the crushing attacks of the Empire's armored cavalry than to take human lives. But to be honest, their strengths are not on land. The Nord's longships can silently transport an entire army to any coast. There is no other such strategic mobility on the continent. You control the plains with cavalry, and they use fleets to bypass your defenses. The hardest thing about fighting the Nords is not to defeat them, but to find them."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Nords? Yankee, from the boat. I have never fought with them, but there are people in the camp who have fought with them, and they tell the same story. They say they don't wave flags or beat drums, the bow of the boat rushes directly onto the beach, and people jump off and push you in your direction. The front row was full of large shields that couldn't be pushed, and axes were flying overhead from nowhere. Hidden behind the shield wall is someone with a long-handled halberd, who specializes in waving at people's legs and feet, making you unable to stand firmly. The most frightening ones are the shirtless ones wielding axes with both hands - if your formation is pushed out, they will rush in, chopping armor like firewood. But after all, they also have something to be afraid of. The Nords had no cavalry, not even a single horse. As long as you don't huddle with them on the beach and have a head-on confrontation, and keep your distance and surround them with mounted fire, they will just stand there and stare. Their bows and arrows are weak and their shots are sparse. If you go around a few more times, their formation will start to get messy. An army without horses is like this. If you move to fight, they can't catch up."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nord"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Soldier? My son left with Yael's boat this year. He left in the summer and has not come back yet. He was holding a two-handed axe, which was the most dangerous. He stood next to the first row and rushed in to chop, without even wearing his armor. I don't know anything about shield walls or halberds. I only know that his father left in the same way back then, and he never came back in the summer. Is Nordvig’s army powerful? We fishermen don’t understand, but I know that those who come to the village to recruit soldiers always pick the strongest ones. They say men in the North don't die in their beds. Where did he die? He died in the cracks of the shield wall, died on the beach, died in the mud with a broken halberd handle. Is this called awesome? I don't understand."
+    },
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Nord army? When business people mention it, they treat it as a joke and say: \"They don't even have horses.\" But when other people tell the joke, we don't laugh. I live in a village on the coast, and my grandfather’s generation experienced the Nord landings. The ship docked in the middle of the night and half the village was burned before dawn. What happened if there was no horse? There is no need for people to chase you on the shore, they can just get on the boat and leave after robbing you. My grandfather said that the way they fought was different from ordinary people. Those in the front row pushed their shields, while those in the back row slashed down with halberds. There were also those who did not wear armor and held large axes with both hands. When they roared, all the birds on the island flew away. Later, the government built watchtowers along the coast, and the Nords robbed them less often. But I'm still afraid. It's not that I'm afraid that they will win, I'm afraid that they will come suddenly. You never know from which fog they will emerge."
+    }
+  ],
+  "TextMappings": []
+}

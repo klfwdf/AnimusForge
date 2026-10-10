@@ -1,0 +1,31 @@
+{
+  "Id": "rule_Omor_Trot",
+  "Keywords": [
+    "Ormore Trotter"
+  ],
+  "RagShortTexts": [
+    "The Ormore trot is produced in the Ormore region of Sturgia. It has a strong body and outstanding endurance. It is adapted to the cold and rugged terrain of the North. It is a reliable partner for merchants on long journeys and lord messengers. It is also well received in the noble circle."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Ormore Trotter is produced in the Ormore region of Sturgia. It has a strong body shape and outstanding endurance. It is adapted to the cold climate and rugged terrain of the North. It is a reliable partner for Sturgian merchants on long journeys and for lord messengers to carry messages. It is also well received in noble circles."
+    }
+  ],
+  "TextMappings": []
+}

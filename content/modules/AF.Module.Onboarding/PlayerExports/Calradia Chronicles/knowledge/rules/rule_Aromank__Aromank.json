@@ -1,0 +1,94 @@
+{
+  "Id": "rule_Aromank",
+  "Keywords": [
+    "Aromanc",
+    "Nar Valley"
+  ],
+  "RagShortTexts": [
+    "Arromanque is known for its olive tree and vanilla fragrance."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Aromanque is a village near Jeturán, located in the Nar Valley that passes through the Biscayne and Epyr Mountains. The warm air of southern Vlandia is scented with sage, lavender and thyme, and its hillsides are lined with olive trees."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Aromanque is a place where you will know where you are just by smelling it. Sage, lavender, thyme, herbs all over the mountains and plains are mixed with the fragrance of olive trees. The best olive oil from Jedulang is labeled Aromanc on the bottle."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "townsfolk"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Aromank's olive oil is famous throughout southern Vlandia. The climate in the Nar Valley is good, the olive trees grow vigorously, and the oil extracted is fresh and fragrant. The nobles of Jedulang only use oil produced in Aromanke for cooking."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "When I walked through Aromanque, I almost didn’t want to leave. The valley is full of fragrance - lavender, sage, thyme, all over the mountains and plains. There are rows of olive trees, glowing silver-green in the afternoon sun. That place was as beautiful as a painting."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Aromanc",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "Jie Qu Lang",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

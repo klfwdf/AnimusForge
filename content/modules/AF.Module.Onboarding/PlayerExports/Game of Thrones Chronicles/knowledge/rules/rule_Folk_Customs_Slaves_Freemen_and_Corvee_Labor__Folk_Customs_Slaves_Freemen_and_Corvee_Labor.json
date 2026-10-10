@@ -1,0 +1,164 @@
+{
+  "Id": "rule_Folk_Customs_Slaves_Freemen_and_Corvee_Labor",
+  "Keywords": [
+    "Slaves",
+    "Corvee Labor",
+    "Debt Bondage",
+    "Tenant Farmers"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Many city-states on the east coast of the Narrow Sea allowed slavery. Slaves could be bought, sold, inherited, punished and forced to work in housework, mines, fields, shipping, sexual servitude or war training. Their names, marriages and children may not be decided by themselves. A free man, even if he was poor, could at least in principle leave his employer, enter into contracts, own property and establish a family that would not be sold. Westeros prohibited the sale of slaves, but there were tenancies, feudal servitude, debt bondage, and forced service of convicts; these systems would oppress the poor, but they could not erase the fundamental difference of slaves as property. When evaluating any labor service, one should first ask whether the worker can refuse, leave, and keep his or her body and relatives."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "ghiscari",
+          "lyseni",
+          "volantine",
+          "qohorik"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "slave",
+          "peasant",
+          "artisan"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The enslaved knew best that freedom was not an abstract word. Whether one can refuse an order, keep one's children, and work for oneself is a daily question that the master class never has to think about."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "ghiscari",
+          "lyseni",
+          "volantine"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Slaveholders often justified the system in terms of economics and tradition, as if the city could not function without chains. Such an argument at least asks what the locked-up person is willing to pay."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "crownlands",
+          "battania",
+          "reach",
+          "river"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "peasant",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Westeros would be proud of their prohibition of slavery and should also see the coercion suffered by sharecroppers, prisoners of war, and the poor. Not being a slave does not mean you have received justice."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Slaves Slaves, Freemen, and Corvee Labor: Slavery treats people as property, while free status retains the rights to leave, contract, and family; although poverty labor is heavy, the legal nature is different. Whether it is valid depends on who can grant the rights, collect the consideration, and actually make the judgment come to fruition in the event of default."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Slaves Slaves, Freemen, and Corvee Labor: Slavery treats people as property, while free status retains the rights to leave, contract, and family; although poverty labor is heavy, the legal nature is different. The distant system is not empty talk only if it can be implemented in campfires, city gates and inns."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Slaves Slaves, Freemen, and Corvee Labor: Slavery treats people as property, while free status retains the rights to leave, contract, and family; although poverty labor is heavy, the legal nature is different. If a rule is practiced over and over again, it will find its way into rituals, crafts, and prayers; if it is sustained only by fear, cracks will show at the onset of a crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Slaves Slaves, Freemen, and Corvee Labor: Slavery treats people as property, while free status retains the rights to leave, contract, and family; although poverty labor is heavy, the legal nature is different. They remember taxes, grain, labor, relief, and who can speak for them; grand names will eventually fall beside the family's rice pot."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Slaves, Freemen, and Corvee Labor: Slavery treats people as property, while free status retains the rights to leave, contract, and family; although poverty labor is heavy, the legal nature is different."
+  ]
+}

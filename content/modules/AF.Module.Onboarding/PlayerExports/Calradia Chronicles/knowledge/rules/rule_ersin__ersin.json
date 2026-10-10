@@ -1,0 +1,161 @@
+{
+  "Id": "rule_ersin",
+  "Keywords": [
+    "Ersing",
+    "God of hunting",
+    "Snow God"
+  ],
+  "RagShortTexts": [
+    "Nord hunters pray to Ursin for abundant prey and accurate arrows."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Ursin is the god of hunting believed by the Nords, as well as the god of winter and snow. In Nord legend, he is in charge of the snow and ice in winter, the game in the forest, and the archery of warriors. Nord hunters often pray to him before going hunting, asking him for bountiful prey and accurate arrows."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nord"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Ursin is one of the most respected gods among us Nords. The winter in the north is long and harsh. Without its protection, you can't even hunt a rabbit. He is the master of snow and the guardian of the forest. Whether every arrow he shoots can hit depends on whether Ersin appreciates it or not. Those who do not offer sacrifices to him before going hunting had better not expect to come back with their prey."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nord"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Ersin was not only the god of hunters but also of warriors. The cold winter is our ally and the snow is our battlefield. Ersin taught us how to survive and fight in the ice and snow of the north. Legend has it that his bow was made of yew wood, and his arrows were made of snowflakes flying in the sky. We Nords may not be as good at archery as the Battanians, but with Ursin's blessing, our hunting bows can still kill people."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nord"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "warrior"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Before the war, the elders would ask us to toast Ersin with a bowl of wine. Not every warrior hunted, but every warrior wanted his ax and arrows to be accurate. That's what Ersin was in charge of - accuracy. Legend has it that he leaves no footprints when walking on the snow, and that his arrows can hit a snowflake in a blizzard. The way we Nord hunters hold arrows was passed down from Ursin."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nord"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "townsfolk"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Ursin’s altars are found throughout Nord, usually built on the edge of forests or at the foot of mountains. Hunters dedicated the first piece of meat from their prey to him, asking him to bless them with a good harvest on their next hunting trip. When snowstorms close the mountains in winter, everyone will gather at the altar to offer sacrifices to him and beg him not to prolong the winter too long."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Ersin that the Nords believe in is somewhat similar to the god of wind and snow that we Sturgians believe in. People in the north know that winter kills people, and you have to respect it. It makes sense for the Nords to leave hunting and winter under the control of Ursin - the most ferocious prey is caught in the coldest season."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Ursin is the god of hunting and winter in the Nordic barbarian belief system. According to the oral legend of the Nords, he held a yew bow and used snowflakes as arrows to walk on the snow without leaving a trace. In Nord society, the hunter class are Urthin's primary admirers, but warriors also make sacrifices to him before going to war. From a comparative religious perspective, Ersin represents a typical example of the northern peoples of Calradia deifying the harsh natural environment."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "I once saw hunters offering sacrifices to Ursin in a Nord village. They carried the newly shot elk to a pile of rocks at the edge of the forest, cut off the first piece of meat, and placed it on the snow. Then everyone sang a song around the pile of stones. I don't understand what the lyrics mean, but the sound spread in the north wind, and even the birds in the forest were quiet."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Ersing",
+      "Kind": "bound_deity_name",
+      "TargetId": "__bound_deity__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

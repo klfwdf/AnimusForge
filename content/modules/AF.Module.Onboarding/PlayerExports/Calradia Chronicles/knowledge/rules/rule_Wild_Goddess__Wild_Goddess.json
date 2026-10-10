@@ -1,0 +1,189 @@
+{
+  "Id": "rule_Wild_Goddess",
+  "Keywords": [
+    "Wild Goddess",
+    "Ixlund",
+    "Sacred grove",
+    "Nord gods"
+  ],
+  "RagShortTexts": [
+    "The Wild Goddess is an ancient deity of the Ixlund Nords."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Wild Goddess is an ancient deity worshiped by the Nords in the northernmost part of the Ixlund region. The earliest settlers built villages around a sacred grove dedicated to her and held annual sacrifices to pray for her permission to hunt in the nearby forests. She has no temples or statues, but uses the forest itself as her sanctuary."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nord"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Wild Goddess is the true master of the Ixlund Forest. No Yankee dared to wander into that sacred forest—the trees were her hair, the moss on the ground was her skin, and the stream was her voice. You can place a piece of meat on the altar of Ursin and ask him to help your arrow find the right direction, but before entering the forest of Ixlund, you must first ask the goddess of the wilderness for permission. If she doesn't agree, you won't even be able to catch the rabbit on the edge of the forest."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nord"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Wild Goddess of Ixlund is one of the oldest deities, older than Ursin and before we Nords came here. She doesn't need to build altars with stones or carve statues of gods from wood - the entire sacred forest is her temple. The annual sacrifice is the most solemn day of Ixlund. Everyone has to go to the edge of the sacred forest to make sacrifices and beg her to allow us to continue hunting in this forest."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nord"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "townsfolk",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The people over at Ixlund have great respect for the goddess of the wilderness. Every year on the day of the sacrifice, the whole village has to go to the sacred forest to kowtow. If any family chops down trees they shouldn't chop down or catches prey they shouldn't hunt, the whole village will suffer. She is not as easy to talk to as Ersin. Ersin only wants a piece of your flesh, while the goddess of the wilderness wants your awe."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nord"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The old hunter from Ixlund told me that when the goddess of the wilderness is angry, the whole forest will become silent - the birds will not sing, the wind will not blow, and even the sound of the stream will not be heard. At this time you should put down your bow and arrows and exit the forest, because she doesn't want you to hunt on her territory today. Those hunters who did not believe in evil later became bones in the forest."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The wilderness goddess that the Nords believe in, some of our old tribes in the north of Sturgia also have similar beliefs. The forest itself has spirits, and you should say hello to her before you go in to hunt. The Nords perform sacrifices every year to ask for her permission, but we here whisper a few words to ourselves before entering the mountains, and the meaning is similar."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Nords’ wild goddess is very similar to our forest spirit. But they only go to the sacred forest once a year to worship, praying to be allowed to enter the forest to hunt. And we in Battania talk to the forest every day—asking forgiveness for every tree we cut down, thanking its soul for every deer we shoot. The Nords' respect for the forest is still a little worse than ours."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The form of worship of the Wild Goddess is extremely special among the Calradian belief systems. She represents the most primitive \"sacred nature\" belief - not using man-made temples or statues as media, but using purely natural natural objects (sacred groves, moss, streams) as the carrier of divinity. The Nord settlers in Ixlund built a village around the sacred grove and held annual sacrifices to ask for the goddess's permission. This ritual structure of \"people asking nature for permission\" is very rare in the entire Calradia."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Once I got lost in Ixlund and came to the edge of an ancient-looking forest. Just as he was about to walk in, he was grabbed by a local old man. He said that it was the sacred grove of the goddess of the wilderness. Outsiders were not allowed to enter, and once in, they could not get out. He pointed out to me bunches of withered grass and antlers tied to a tree at the edge of the forest, which were the marks left by annual sacrifices. He said that this forest had been standing for countless generations, older than the Kingdom of Nord itself."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Wild Goddess",
+      "Kind": "bound_deity_name",
+      "TargetId": "__bound_deity__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "Ixlund",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

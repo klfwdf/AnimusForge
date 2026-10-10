@@ -1,0 +1,150 @@
+{
+  "Id": "rule_World_Mechanics_Attire_and_Heraldry",
+  "Keywords": [
+    "Attire",
+    "Heraldry",
+    "House Sigil",
+    "Banners",
+    "Status"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "In Westeros, a person's station is often worn upon the body. Nobles use house colors, embroidery, jewels, furs, and costly dyes to declare blood and wealth; knights paint their arms on shields, surcoats, and barding; and soldiers rely on banners in the melee to tell where to rally. A maester's collar, a septon's rough robes, the black of the Night's Watch, and the cloaks of a city watch likewise turn calling and vows into visible marks. Heraldry has power only when recognized, and heralds and squires therefore study the devices of every house. It can win courteous treatment, and on a road held by foes it can turn a man into the most conspicuous captive of all."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Nobles regard heraldry as ancestors and rights, while warriors treat it as direction amidst dust and smoke. When a banner falls, panic may begin before the host is even beaten."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Tailors, dyers, armorers, and painters know that cutting a fine figure takes coin and craft. The more a young knight wishes to shine, the more likely he is to owe debts in the countinghouse as bright as his cloak."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "wanderer",
+          "slave"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Common folk read banners to tell whether to cheer, hide, or make ready to hand over grain. They may not read complex lineages, yet they remember which colors once led away their horses."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Attire Attire and Heraldry: Colors, fabrics, badges, and banners make house, rank, trade, and allegiance visible from afar, yet may also turn the wearer into a target. Whether it is valid depends on who can grant the rights, collect the consideration, and actually make the judgment come to fruition in the event of default."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Attire Attire and Heraldry: Colors, fabrics, badges, and banners make house, rank, trade, and allegiance visible from afar, yet may also turn the wearer into a target. The distant system is not empty talk only if it can be implemented in campfires, city gates and inns."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Attire Attire and Heraldry: Colors, fabrics, badges, and banners make house, rank, trade, and allegiance visible from afar, yet may also turn the wearer into a target. If a rule is practiced over and over again, it will find its way into rituals, crafts, and prayers; if it is sustained only by fear, cracks will show at the onset of a crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Attire Attire and Heraldry: Colors, fabrics, badges, and banners make house, rank, trade, and allegiance visible from afar, yet may also turn the wearer into a target. They remember taxes, grain, labor, relief and who can speak for them; these grand names will eventually fall on the family's rice pot."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Attire and Heraldry: Colors, fabrics, badges, and banners make house, rank, trade, and allegiance visible from afar, yet may also turn the wearer into a target."
+  ]
+}

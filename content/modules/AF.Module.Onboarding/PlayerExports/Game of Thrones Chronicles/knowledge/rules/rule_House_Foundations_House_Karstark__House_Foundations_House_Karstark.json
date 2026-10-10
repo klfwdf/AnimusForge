@@ -1,0 +1,133 @@
+{
+  "Id": "rule_House_Foundations_House_Karstark",
+  "Keywords": [
+    "House Karstark",
+    "Karhold",
+    "Karlon Stark",
+    "White Sunburst"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Caron Stark family is an ancient branch of the Stark family. The ancestor Caron Stark was awarded the title for quelling the rebellion. Caron Castle later evolved into Cahor City, and the descendants were also named Caron Stark from \"Caron's Stark\". The family emblem is a white sun on a black background. The territory is located in the northeast of the north, cold and vast. The blood relationship brings them close to Winterfell, but it does not erase the pride formed by hundreds of years of independent family names; when the northern lords look at Karstark, they will not only think of the same clan, but also think of a powerful vassal who can insist on their own opinions on issues of honor, blood debt and inheritance."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "When the northern lords talk about Ka Stark, they often first admit that they are of the same blood as Winterfell, and then remind them: the blood of the side branch is also wolf blood. Kahuo City is far in the northeast, and the land is severely cold. Being able to maintain halls, riders, and granaries there means weight in itself; but the closer the blood relationship is, the harder it is to separate honor and resentment."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "People around Caho City did not rely on genealogy to survive the winter. What they look at is whether the lord can collect the grain before the snow, whether the beacon is lit when the enemy comes, and how much firewood is left for the widow after taking away the young and strong. Stark's gray wolves are more famous in the south, but people in the Northeast recognize the rising sun on the black background of the day, and also recognize the sound of the Stark cavalry stepping across the frozen soil."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Karstark Entry Karlon Stark Karhold White Sunburst Its heritage combines Stark blood, northeastern frontier responsibility and the pride of an independent name. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Karstark Entry Karlon Stark Karhold White Sunburst Its heritage combines Stark blood, northeastern frontier responsibility and the pride of an independent name. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Karstark Entry Karlon Stark Karhold White Sunburst Its heritage combines Stark blood, northeastern frontier responsibility and the pride of an independent name. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Karstark Entry Karlon Stark Karhold White Sunburst Its heritage combines Stark blood, northeastern frontier responsibility and the pride of an independent name. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "House Karstark: Entry Karlon Stark Karhold White Sunburst Its tradition combines Stark blood, Northeastern frontier responsibility and pride of independent family name;"
+  ]
+}

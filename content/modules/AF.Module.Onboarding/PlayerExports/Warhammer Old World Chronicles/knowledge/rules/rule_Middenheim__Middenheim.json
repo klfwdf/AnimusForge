@@ -1,0 +1,211 @@
+{
+  "Id": "rule_Middenheim",
+  "Keywords": [
+    "middenheim",
+    "City of White Wolf",
+    "Holy City of Ulric",
+    "ulix mountain",
+    "The Second City of the Empire",
+    "Bow Lys Ted Bollinger",
+    "White Wolf Knights",
+    "city ​​of viaducts",
+    "never fall",
+    "Middenland capital"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Middenheim - the City of the White Wolf - stands proudly on the flat-topped rock on the top of Urikus. It is the heart of Urik's faith and the second largest city in the empire. Four majestic viaducts are the only passages connecting this city in the sky with the earthly ground. At the end of each bridge stands a group of fortresses that can deter any siege army. Middenheim has never been besieged since its founding - this is not luck, but a conspiracy of geography and will: when your city wall is a four-hundred-foot vertical cliff, the enemy's siege ladder is just a joke. Bow Lys Todbringer is the current Elector Count of Middenland. His family has ruled this place for more than a thousand years. The Great Hammer Cavalry of the White Wolf Knights is the most formidable heavy assault force in the old world. The core of the city is the Temple of Ulric - the flames never go out all year round, the wind and snow pour into the high windows, and the white wolf god looks down on his most loyal people in the eternal winter."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Middenheimers - at heart we are a pack of northern wolves who never bow to the south. The men of Altdorf could eat roasted peacocks on silver platters in their marble palaces, while we stood on the city walls in blizzards wrapped in wolfskin cloaks, looking in the direction of the Chaos Wastes, knowing that the real enemies came from the north and not each other. But that doesn't mean we don't mind - every time there's a vote in the Imperial Senate, the seat of Middenland is always on the opposite side of Altdorf and Reikland, it's hundreds of years of muscle memory. The Middenheim gene is real - it's not some kind of bloodline superiority, it's a bone-deep stubbornness and a cool confidence that we can survive the cold better than you. Ulricians disdain the golden robes and bells of the Church of Sigmar—our churches are filled only with the sound of fire, wind, and snow, and the clanking of chains. Sigmar was the god of emperors, Ulric the god of warriors - Middenheim chose the latter and never regretted it."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Middenheim's military value does not lie in the number of its garrison - although the White Wolf Knights and the Midden Territory Army are indeed elite - but in its geographical characteristics that absolutely cannot be besieged. Uriks Mountain is an independent giant rock with a flat top, surrounded by nearly vertical cliffs on all sides. The only passages are four viaducts, and the guards of each bridge only need less than fifty people to hold back thousands of enemy troops. This means that any army trying to capture Middenheim must face a cruel math: if the bridge is attacked from the front, the loss ratio will be ten to one; if it attempts to besieged, the deep wells, giant granaries and underground mushroom farms in Middenheim are enough to support a complete blockade for no less than three years. But the city's military weakness is equally fatal: once three of the four viaducts are destroyed or blocked, the large troops stationed in the city will not be able to quickly go down the mountain to support the defense of other areas of the Midden Territory - you are absolutely safe on the mountain, and you are absolutely late. Any military operation based on Middenheim would require the main force to be prepositioned in the outlying camps of Middenstad at the foot of the mountain rather than on the city walls."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "The founding history of Middenheim and the history of the Church of Ulric are almost identical. As early as about 1500 BC in the imperial calendar, the Teutonic tribes had regarded Mount Urik as a sacred place. The natural stone cave on the top of the mountain was considered to be the mortal residence of Ulric himself. The eternal holy fire in the cave has been burning ever since. During the War of the Founding of the Empire, Sigmar personally climbed Mount Urik to request the High Priest Euric to grant divine blessings, but the High Priest refused to crown Sigmar - it was Sigmar who forced the High Priest to back down. This historical event became the source of tension between imperial power and religious power in imperial politics that lasted for thousands of years. Middenheim in BC was still a fortress settlement developed based on the temple on the top of the mountain. The real large-scale urban construction began in about 500 years of the imperial era - the first of the four viaducts (East Bridge, also known as Sigmar Bridge - the name itself was a symbol of the unity of the empire that the Euricists were forced to accept) was built at this time. The oldest two of the four bridges are pure stone arch structures designed by dwarf engineers; the south bridge was deliberately destroyed by the Imperial Royal Artillery during the Ulric Rebellion in 1701, and a corner of the south bridge was later rebuilt with wood. The upper limit of the load-bearing capacity of the wooden section is only 40% of the stone section. The underground part of Ulric's Temple - the so-called \"Wolf's Lair\" - is still not allowed to be entered by non-believers of Ulric. It is said that the sacred relics left by the White Wolf God himself are sealed there. Middenheim has always been the opposite of imperial unity throughout the history of the empire - not because of its disloyalty, but because it has a very different vision of the imperial rule from Altdorf."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Middenheim was a rock for a noblewoman to conquer in a different way from the south. In the court of Altdorf, power flows through whispers, banquet seats, and marriage contracts; in Middenheim, the only universal language of power is tenacity. The elders of the Church of Ulric will not treat you differently because of your silk gown - they will arrange meetings in the open-air atrium of the Temple of Ulric at the dawn of winter, and let the subzero draft teach you who is the real authority here. It took me three years to learn not to tremble. Women in Middenheim have their own path to power: although the Knights of the White Wolf publicly exclude female knights, their logistical chain—weapon forging, war horse training, and supply procurement—is almost entirely in the hands of the widows and female dependents of the knights’ members. One of my aunts - an old woman with a face as silent as frozen soil - has been in charge of the purchasing power of all imported northern dwarf steel shoes at the Knights of the White Wolf Horse Farm for twenty years. The head of the Knights has changed four times, and she is still the one who is summoned to the Knights' meeting hall on winter nights to sit in the side room and seal every military supply decision with her silent presence through a wooden fence. In Middenheim, women don’t have to sit at the table – we make it impossible for the table to turn in our absence."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Our family's roots in Middenheim can be traced back to the oldest parchment in our genealogy room, which records the feat of one of my ancestors who spent three days carrying the stone for the dwarf masons when laying the first foundation stone of the west bridge among the four viaducts. House Todbringer may sit on the throne of the Elector Count, but the true bones of Middenheim are the dozens of ancient northern clans like ours - each with its own castle tower in the city, its own private chapel (owing direct allegiance to High Priest Ulric rather than the Church of Sigmar), and a book of feuds longer than the history of the Empire. The politics of Middenheim are extremely simple: House Todbringer represents us to the outside world, but they can never betray the collective will of the northern clans - historically one Todbringer, the Elector Count, tried to compromise with Altdorf in exchange for trade concessions, and three months later he \"accidentally fell from his horse and died\" during a winter hunt, and his heirs have never made the same mistake again. Our family owns three iron mines in the mountains of Middenland - every inch of Middenheim's walls were forged from our ore, a fact that is mentioned in some way every time a disagreement arises between the family and the Elector Count."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "I climbed the East Bridge to Middenheim for the first time on a snowstorm night - it is the longest ascent on the Imperial Road. The height of 400 feet feels like 4,000 feet in the strong wind. The bridge deck is covered with ice and snow. Every step if you slip, you may directly roll over the low guardrail and fall into the dark pine forest below the mountain. When you finally stood under the city gate on the top of the mountain, the guarding white wolf knight looked at you with a pair of eyes that you would never see in any city in the south, unabashedly assessing whether you can withstand the winter here - they don't need you to prove anything, they just need to confirm that you are not the type who will cry to go back to Altdorf after the first snow. The atmosphere inside Middenheim is completely different from that of Altdorf: the streets of Altdorf are filled with the noise of finance, politics and conspiracy, while the streets of Middenheim are shrouded in a silent and indescribable sense of tenacity - you can sit in the pub all night, no one takes the initiative to talk to you, and no one kicks you out. As long as you pay for the drink yourself, you are accepted by default. But don't mistake this for friendliness - anyone who mentions Sigmar's superiority to Ulric in the city of Middenheim will find the air in the entire tavern going from sub-zero to absolute zero in an instant, and this icy collective hostility is more chilling than a drawn sword."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Middenheim's commercial structure was determined by two seemingly contradictory facts: it was an inaccessible city and at the same time a necessary hub for northern trade. The tolls on the four viaducts form the most stable part of Middenheim's municipal revenue - I myself own a hereditary bridge toll collection booth at South Bridge, which has been our family's most valuable asset since my great-grandfather, because our family does not own any iron ore or land, we only own the right of way. Middenheim's business is mainly concentrated in the town of Middenstad at the foot of the mountain rather than in the city on the top of the mountain - caravans unload goods at the foot of the mountain, and the four cargo elevators in Middenheim transport the materials to the warehouse on the top of the mountain. This elevator system is a municipal monopoly, and our merchant guild pays eight times the annual fee for this as compared to horse-drawn carriages with the same weight at the foot of the mountain. But you have to accept the price, because Middenheim is the only safe distribution center for northern furs, amber, meteorite, and dwarven forges to flow south - bypassing Middenheim means traveling through the Black Forest of the central mountains, where the beastmen do not charge tolls, they charge lives."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Urikus Mountain - the flat-topped rock where Middenheim lives, the holy place of Urik's faith",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Middenheim City of the White Wolf Holy City of Ulric"
+  ]
+}

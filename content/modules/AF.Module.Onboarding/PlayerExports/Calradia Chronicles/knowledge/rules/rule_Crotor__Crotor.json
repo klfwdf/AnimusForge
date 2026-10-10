@@ -1,0 +1,87 @@
+{
+  "Id": "rule_Crotor",
+  "Keywords": [
+    "Crotor",
+    "Marshal Crotor",
+    "Commander Crotor"
+  ],
+  "RagShortTexts": [
+    "Marshal Crotor is invincible in battle and loyal to the Western Empire."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Who doesn't know Crotor? Everyone knows his family has guarded the Empire's western frontier for generations, a house of loyal martyrs. Moreover, he is unbeaten in battle, Garios's right-hand man, and loyal to the Western Empire. A"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "clan_empire_west_1"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Ah, Marshal Crotor is a pillar of our state! His family and ours are as close as lips and teeth—neither can do without the other. A, Comnos and Dionicos will always be one family."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_w"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Marshal Crotor is a cornerstone of our Empire! His house has guarded the western frontier for generations, a family of loyal heroes—he himself, his son, his wife, and even his daughter are all outstanding commanders. After the Empire split, Emperor Garios placed great trust in him, and he has never let Emperor Garios down. He is truly a superb general and a man who thinks purely of the realm. A"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "B",
+      "Kind": "clan_leader_name",
+      "TargetId": "clan_empire_west_3",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "A",
+      "Kind": "status|hero|is_dead",
+      "TargetId": "lord_1_11",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": "He has already passed away",
+      "FalseText": "He is still alive, a living legend."
+    }
+  ]
+}

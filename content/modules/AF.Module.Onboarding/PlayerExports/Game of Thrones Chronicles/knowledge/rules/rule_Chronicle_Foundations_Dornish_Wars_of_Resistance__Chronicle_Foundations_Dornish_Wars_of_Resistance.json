@@ -1,0 +1,151 @@
+{
+  "Id": "rule_Chronicle_Foundations_Dornish_Wars_of_Resistance",
+  "Keywords": [
+    "Dornish Wars of Resistance",
+    "Dorne",
+    "Guerrilla Campaigns"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Dorne did not bend the knee like other lands during the Age of Conquest. Deserts, mountain roads, scarce water sources, and riders familiar with the terrain made it difficult for dragons and heavy cavalry to win a decisive victory; the Dornish people avoided frontal battles and chose ambush, evacuation, hiding wells, and long-term attrition The war brought scorched earth, revenge and death that neither side wanted to forget, and also wrote the memory of \"unconquered\" into Dorne's identity. Dorne later entered the Seven Kingdoms through a marriage alliance, retaining the title of prince and unique legal customs. Regardless of the variability of contemporary political relations, this border memory will not disappear easily."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "scholar",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Dornish Wars of Resistance"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Dornish Wars of Resistance"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Dornish Wars of Resistance"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Dornish Wars of Resistance Dorne did not bend the knee like other lands during the Age of Conquest. Deserts, mountain roads, scarce water sources, and riders familiar with the terrain made it difficult for dragons and heavy cavalry to win a decisive victory; the Dornish people avoided frontal battles and chose ambush, evacuation, hiding wells, and long-term attrition A past war or a dynastic change will determine today's tax rates, covenants, roads and who has the right to speak first in the hall."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Dornish Wars of Resistance Dorne did not bend the knee like other lands during the Age of Conquest. Deserts, mountain roads, scarce water sources, and riders familiar with the terrain made it difficult for dragons and heavy cavalry to win a decisive victory; the Dornish people avoided frontal battles and chose ambush, evacuation, hiding wells, and long-term attrition They remember which flag fell, which bridge was burned, and who shared the last sip of water in the snow; for them, history is first and foremost the memory left by the body."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Dornish Wars of Resistance Dorne did not bend the knee like other lands during the Age of Conquest. Deserts, mountain roads, scarce water sources, and riders familiar with the terrain made it difficult for dragons and heavy cavalry to win a decisive victory; the Dornish people avoided frontal battles and chose ambush, evacuation, hiding wells, and long-term attrition The winner will write it as a proof of order, the loser will keep it as a warning, and ordinary people will only remember how much the price of food and cemeteries increased that year."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Dornish Wars of Resistance Dorne did not bend the knee like other lands during the Age of Conquest. Deserts, mountain roads, scarce water sources, and riders familiar with the terrain made it difficult for dragons and heavy cavalry to win a decisive victory; the Dornish people avoided frontal battles and chose ambush, evacuation, hiding wells, and long-term attrition They learn about the past through old houses, family trees, tombstones, and taboos spoken by old men; as long as an event affects taxes, conscription, or marriage, it is not truly over."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Dornish Wars of Resistance: Dorne did not bend the knee like other lands during the Age of Conquest. Deserts, mountain roads, scarce water sources, and riders familiar with the terrain made it difficult for dragons and heavy cavalry to win a decisive victory; the Dornish people avoided frontal battles and chose ambush, evacuation, hiding wells, and long-term attrition"
+  ]
+}

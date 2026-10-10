@@ -1,0 +1,150 @@
+{
+  "Id": "rule_Folk_Customs_Upbringing_of_a_Squire",
+  "Keywords": [
+    "Knightly Education",
+    "Serving a Knight",
+    "Highborn Youth",
+    "Knighting"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Noble boys often served as page boys first, and later became squires of knights or lords. Attendants should take care of horses, clean armor, carry shields and spears, help their masters wear armor, and also learn riding, swordsmanship, heraldry, etiquette, and management. During the war, they followed their masters into camps and even battlefields, facing mud, wounds and fear before the glorious story happened. Clientel relationships can build cross-family trust and are a gentle form of hostage, educational, and political ties. Those who perform well may be knighted, but birth, wealth, and patronage still profoundly affect opportunities; serving a bad master may also teach a boy cruelty rather than honor."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "A knight regards a good squire as a future comrade, or he may only regard him as a convenient servant. The real teaching does not come from lecturing, but from how the young man sees his master treating the weak every day."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Commoner children envy attendants' access to armor and war horses, but they may not see that this road requires family names and recommendations. Those of lower-class origin must prove their qualifications to stay earlier than the children of nobles."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "priest",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The priest hopes that the squire will learn the virtues of chivalry, while the bachelor pays more attention to reading, writing and judgment. Both understand that a boy who only knows how to wield a sword can easily grow into a man who only knows how to create new enemies."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Lords and merchants viewed retainers as an enforceable order. Upbringing of a Squire: The boy gets close to the status of a knight by taking care of horses and armor, learning etiquette and practicing with the army, and also sees the true face of the aristocratic world up close. Whether it is valid depends on who can grant the rights, collect the consideration, and actually make the judgment come to fruition in the event of default."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "When soldiers and travelers talk about retainers, they are concerned about how it affects roads, orders, and security. Upbringing of a Squire: The boy gets close to the status of a knight by taking care of horses and armor, learning etiquette and practicing with the army, and also sees the true face of the aristocratic world up close. The distant system is not empty talk only if it can be implemented in campfires, city gates and inns."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Craftsmen and clergy will understand attendants from habits and symbols. Upbringing of a Squire: The boy gets close to the status of a knight by taking care of horses and armor, learning etiquette and practicing with the army, and also sees the true face of the aristocratic world up close. If a rule is practiced over and over again, it will find its way into rituals, crafts, and prayers; if it is sustained only by fear, cracks will show at the onset of a crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Farmers and villagers feel the attendant in the smallest and most accurate way. Upbringing of a Squire: The boy gets close to the status of a knight by taking care of horses and armor, learning etiquette and practicing with the army, and also sees the true face of the aristocratic world up close. They remember taxes, grain, labor, relief and who can speak for them; these grand names will eventually fall on the family's rice pot."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Upbringing of a Squire: The boy gets close to the status of a knight by taking care of horses and armor, learning etiquette and practicing with the army, and also sees the true face of the aristocratic world up close."
+  ]
+}

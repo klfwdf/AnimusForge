@@ -1,0 +1,150 @@
+{
+  "Id": "rule_Sarnor_Grasslands_Locations_Vaes_Graddakh",
+  "Keywords": [
+    "Vaes Graddakh Ruin",
+    "Sarnor",
+    "River Channels",
+    "Vaes Graddakh"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Visgradka (Sarys) is located in the old land of Sarnor on the northern edge of the Dothraki Sea. Politically, it is within the area where Sarnor's remnants, steppe tribes and remaining towns intersect. It is a castle mainly responsible for local garrison, tax collection and sheltering the nearby population. Walls and roads tied the surrounding population, storage, and garrison here; even if the flags were changed, this stronghold would still affect how nearby people paid taxes, traded, and sought refuge."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Vaes Graddakh Local families also relied on pastures, ruined wells, horse teams, remaining fields and defense khalasas; if any road, well or dock failed, the price would fall first on them."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Vaes Graddakh Visgradka is located in the power and trade network of the old land of Sanor, and the rules inside and outside the city gate are determined by the local order; whether the defenders are well fed and whether reinforcements can arrive on time are more important than the rhetoric in the meeting hall in determining whether this stronghold is reliable."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Vaes Graddakh They will also recognize the accents, laws, and credentials of the old lands of Sarnor; reputations can travel great distances from taverns, and real distances must still be measured by wheels, oars, or horse hooves."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Vaes Graddakh Visgradka is located in the power and trade network of the old land of Sanor, and the rules inside and outside the city gates are determined by the local order; after the flag is changed, the roads, granaries, old debts and local trusts still have to be taken over by the new owners one by one."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Vaes Graddakh If you can supply supplies, avoid danger, and find a guide, it is worth marking in your itinerary; if you don't have these three things, no matter how loud your family name is, it won't be able to save the lost."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The craftsmen of Visgradka left behind their craftsmanship through workshops, markets, roof tiles, church bells, and the streets that expanded over the ages, while the priests explained life and death with the memory of the past high kings, the ruined city, and the gods swallowed up by the sea of ​​grass. A stronghold was therefore not just a lord's hall, but also a place where weddings and funerals, vows, labor and local memories recurred."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Vaes Graddakh They care about pastures, ruined wells, horse teams, remaining acres of land, and the defense of the khalasa. They also look at whether seeds are left after the grain collection, and whether the city gates are open in times of disaster. When people from afar see the coat of arms, what they see is whether there will be food to eat tomorrow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Vaes Graddakh: Visgradka (Sarys) is located in the old land of Sarnor on the northern edge of the Dothraki Sea. Politically, it is within the area where Sarnor's remnants, steppe tribes and remaining towns intersect. It is a castle mainly responsible for local garrison, tax collection and sheltering the nearby population. Walls and roads tied the surrounding population, storage, and garrison here; even if the flags were changed, this stronghold would still affect how nearby people paid taxes, traded, and sought refuge."
+  ]
+}

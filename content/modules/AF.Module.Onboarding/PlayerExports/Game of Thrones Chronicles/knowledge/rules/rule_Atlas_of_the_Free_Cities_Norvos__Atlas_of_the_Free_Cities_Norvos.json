@@ -1,0 +1,154 @@
+{
+  "Id": "rule_Atlas_of_the_Free_Cities_Norvos",
+  "Keywords": [
+    "Norvos",
+    "Bearded Priests",
+    "Sinner's Steps",
+    "Inland"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Entry Norvos is located in the highlands inland of Essos and does not rely on a seaport as its lifeline like the narrow sea city-states. It is famous for its sloping streets, bronze bells, bearded monks and strict religious traditions; the sinner's stairs and public punishments make outsiders feel cold, while locals regard it as cold Norvos controlled the mountain roads and caravan routes through which furs, metals, livestock, and goods from the east converged and flowed to coastal cities. The relationship between the priests, nobles and merchants in the city was complex, and faith could confer authority and become a political tool."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "norvos"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Norvos"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "norvos"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Norvos"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "scholar",
+          "wanderer",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Norvos"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Norvos Norvos is located in the highlands inland of Essos and does not rely on a seaport as its lifeline like the narrow sea city-states. It is famous for its sloping streets, bronze bells, bearded monks and strict religious traditions; the sinner's stairs and public punishments make outsiders feel cold, while locals regard it as cold. They care about water sources, roads, customs and garrison, and know that behind the place names there is often a food road that can keep the castle alive."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Norvos Norvos is located in the highlands inland of Essos and does not rely on a seaport as its lifeline like the narrow sea city-states. It is famous for its sloping streets, bronze bells, bearded monks and strict religious traditions; the sinner's stairs and public punishments make outsiders feel cold, while locals regard it as cold. The reputation of a place is often determined by the number of people who died there."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Norvos Norvos is located in the highlands inland of Essos and does not rely on a seaport as its lifeline like the narrow sea city-states. It is famous for its sloping streets, bronze bells, bearded monks and strict religious traditions; the sinner's stairs and public punishments make outsiders feel cold, while locals regard it as cold. Stones, trees, rivers or mountain passes can become places of livelihood, and may also be endowed with sanctity, taboos and ancestral memories, so they cannot be measured in terms of money alone."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Norvos Norvos is located in the highlands inland of Essos and does not rely on a seaport as its lifeline like the narrow sea city-states. It is famous for its sloping streets, bronze bells, bearded monks and strict religious traditions; the sinner's stairs and public punishments make outsiders feel cold, while locals regard it as cold. They first checked whether the place could draw water, farm, graze, and avoid military disasters; a line of words on the map, and when it landed in the village, it turned out to be firewood, well rope, and winter food."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Norvos: Norvos is located in the highlands inland of Essos and does not rely on a seaport as its lifeline like the narrow sea city-states. It is famous for its sloping streets, bronze bells, bearded monks and strict religious traditions; the sinner's stairs and public punishments make outsiders feel cold, while locals regard it as cold."
+  ]
+}

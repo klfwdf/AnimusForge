@@ -1,0 +1,77 @@
+{
+  "Id": "rule_The_north_and_south_of_Vlandia_are_subject_to",
+  "Keywords": [
+    "Double Group",
+    "Swadia Group",
+    "Rodock Group"
+  ],
+  "RagShortTexts": [
+    "Vlandia is stable on the surface, but in fact Detel, Ingatell and Aldric restrain each other - two rifts extend towards the king's power from the north and south at the same time."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The biggest irony of Vlandia is that it has a complete territory, many vassals, and an excellent army. It seems to be the closest thing to a \"stable power\" on the mainland - but this stability is entirely based on the premise that Detel can still suppress the two most dangerous vassals. Two rifts extend toward the throne from both the north and south sides. The southern route was Ingatell de Cortan. He was just a retainer when he was Pendrac. After the war, he assassinated his half-brother to gain the inheritance rights of the family and took charge of Sharas. He claimed heirship to Getrian (the territory of the Dai Aromanc family) - if successful, his power would swell to twice that of Deter. Detel refused his request, as recognition would have meant war against the Arromanks, and would have meant that Ingatel would become the most powerful vassal in Vlandia. Incatel has held a grudge ever since. His close relationship with the Golden Boars gives him a de facto private army outside the control of the Crown. On the northern line was Aldric Day Tiha. Descendant of the founding royal family and the actual leader of the Swadia Group. His ancestor Tihar was the youngest son of Osric the Iron Arm. When he was fiefdoming, he took Palawind, the old capital of the empire, which was more grand than Sargoth. In terms of bloodline, he is no worse than Detel, and in terms of actual power, his appeal in the north far exceeds that of the king. He doesn't need to openly rebel - he is the king of the north in the system. Deterre is caught between north and south. If we attack the south, Tiha in the north may move; if we attack the north, Ingatell in the south may take the opportunity to move north. All he could do was keep balancing, praying that the fires on both sides wouldn't start at the same time."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "I spent more than ten years in the court of King Detail. Vlandia seemed peaceful, but in fact the barons were not convinced by anyone. Detel relied on arbitration to maintain balance - he recognized Caratilde's inheritance to block Ingatell, and maintained superficial peace with Aldric to stabilize the north. But how long can Caratilde's card hold off Ingatell? A baroness, without Enteri's connections in the crossbow system to support her, she would have been overthrown long ago. As for Aldric - he doesn't need to rebel, he just needs to continue to give orders on the north bank, and the king pretends not to hear on the south bank, and his dignity is not ruined. But can dignity be used as food? What I worry about is that one day my dignity will be ruined and both sides will fall out at the same time."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": [
+          "clan_vlandia_4"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "My name is Ingatel. Detail thinks I'm trouble. He felt that I was too ambitious and was afraid that if I took Jie Qulang, he would not be able to suppress me. But has he ever thought about why I want Jetriang? Because that is my inheritance. Women could not inherit fiefdoms - this was customary law in Vlandia. Caratilde can only hold on to that position because of the gift of my dear King. He was afraid that I would be too strong, so he would rather use a baroness to disgust me. Salas is mine, and the territory of the Golden Boar Corps is right next to mine. How long does Detel think he can delay?"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": [
+          "clan_vlandia_3"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "We, the Arromanks, were able to defend Jetriang not because of the king’s gift—it was because of the wolf of Ingatell. He wanted our land, and King Detel didn't want him to be too powerful, so he recognized me as his master. This is the rule of Vlandia - it's not whether you should or shouldn't, it's whether the king needs you or not. The reason why I can secure my title is partly because of Enteri's connections in the crossbow system, and partly because I am more reassuring to the king than Ingatel. It wasn't much of an honor, but it was better than being swallowed up by the wolf of Sharas."
+    }
+  ],
+  "TextMappings": []
+}

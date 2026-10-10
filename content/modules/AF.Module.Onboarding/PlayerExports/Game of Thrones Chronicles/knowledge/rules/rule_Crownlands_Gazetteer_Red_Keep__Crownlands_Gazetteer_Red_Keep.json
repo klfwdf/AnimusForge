@@ -1,0 +1,131 @@
+{
+  "Id": "rule_Crownlands_Gazetteer_Red_Keep",
+  "Keywords": [
+    "Red Keep",
+    "Aegon's High Hill",
+    "Great Hall of the Red Keep",
+    "Maegor's Holdfast"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Standing on Aegon's High Hill in King's Landing, the Red Keep is the Iron Throne's most prominent stone casing. It is not a simple castle, but a labyrinth of power that screens visitors layer by layer: outer walls, towers, courtyards, throne rooms, royal council chambers, dungeons, Maegor's Tower and corridors that cover each other, extending the distance from the streets to the palace. The Kingsguard, squires, servants, maesters, messengers and nobles each guard their own threshold here. High walls can isolate riots, but they cannot isolate food prices, secret messages, marriage contracts, diseases and rumors; the Red Castle makes the royal power appear solid and constantly reminds the people who live there that the more power is concentrated, the more dangerous each door leading to power becomes."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Nobles spoke of the Red Keep in terms of rooms, seats, and who was allowed to wait where. Whether a person can cross the gate of the inner court is a better indicator of the honor at the moment than how many knights he has in the fief. Seasoned courtiers know that there are no truly ownerless corridors in a castle: squires remember footsteps, Kingsguards remember eyes, and servants know for whom a door was opened last night before most lords do."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "artisan",
+          "peasant",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "What the people below the city saw were high walls and flags. Some people believe that the people in the Red Castle can make the tax collector stop and let the fleet bring food back; others only think of it when someone is taken into the dungeon and someone comes out of the city gate to read out the order. For hawkers and craftsmen, the joys and sorrows of the court could turn into orders, debts, or suddenly intensified city gate inspections. The Red Keep is very high, but its shadow falls as far as Flea Bottom."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Red Keep The center of royal power on Aegon's High Hill consists of city walls, throne room, Maegor's Tower, dungeons and layers of courtyards. It uses thresholds and etiquette to filter those close to power, but it cannot isolate the hunger, rumors and street emotions of King's Landing. They care about water sources, roads, customs and garrison, and know that behind the place names there is often a food road that can keep the castle alive."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Red Keep The center of royal power on Aegon's High Hill consists of city walls, throne room, Maegor's Tower, dungeons and layers of courtyards. It uses thresholds and etiquette to filter those close to power, but it cannot isolate the hunger, rumors and street emotions of King's Landing. The reputation of a place is often determined by the number of people who died there."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Red Keep The center of royal power on Aegon's High Hill consists of city walls, throne room, Maegor's Tower, dungeons and layers of courtyards. It uses thresholds and etiquette to filter those close to power, but it cannot isolate the hunger, rumors and street emotions of King's Landing. Stones, trees, rivers or mountain passes can become places of livelihood, and may also be endowed with sanctity, taboos and ancestral memories, so they cannot be measured in terms of money alone."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Red Keep The center of royal power on Aegon's High Hill consists of city walls, throne room, Maegor's Tower, dungeons and layers of courtyards. It uses thresholds and etiquette to filter those close to power, but it cannot isolate the hunger, rumors and street emotions of King's Landing. They first checked whether the place could draw water, farm, graze, and avoid military disasters; a line of words on the map, and when it landed in the village, it turned out to be firewood, well rope, and winter food."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Red Keep: The center of royal power on Aegon's High Hill consists of city walls, throne room, Maegor's Tower, dungeons and layers of courtyards. It uses thresholds and etiquette to filter those close to power, but it cannot isolate the hunger, rumors and street emotions of King's Landing."
+  ]
+}

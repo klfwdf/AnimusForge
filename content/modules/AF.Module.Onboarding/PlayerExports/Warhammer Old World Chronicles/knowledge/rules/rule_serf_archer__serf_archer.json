@@ -1,0 +1,213 @@
+{
+  "Id": "rule_serf_archer",
+  "Keywords": [
+    "Serf Archer",
+    "Bottom remote",
+    "longbow peasant soldier",
+    "remote suppression",
+    "cheap shooter",
+    "Bretonnia firepower",
+    "Archer",
+    "serf shooter",
+    "Longbowman",
+    "ranged infantry",
+    "rain of arrows",
+    "civilian shooter"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Serf Archers are one of Bretonnia's few ranged troops, composed of levied serfs who are good archers and wield cheap but powerful longbows. They provide long-range cover for the charging knights and are the only legitimate civilian long-range force in the kingdom's army."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Serf Archers - the \"cheap arrows\" of our Bretonnia! The law stipulated that serfs were not allowed to use crossbows, because crossbows were weapons of the nobility, so these strong peasants could only use longbows. Their equipment was extremely shabby: a yew longbow, twenty crude arrows, and a thick leather vest that barely protected the chest. But don't underestimate them! In the annual autumn archery competition, the best serf archers could shoot through the skull of a wild boar at a distance of two hundred paces. On the battlefield, they stood in loose rows and rained arrows on the enemy under the command of the officer to \"draw the bow and release it.\" Although the iron tips of the arrows are often missing a few pounds, and although the bowstrings tend to loosen in wet weather, when thousands of arrows rise into the sky together and fall towards the enemy, covering the sky and the sun, even the most arrogant Chaos warriors have to raise their shields."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Serf Archers are the most cost-effective long-range suppression unit - their recruitment cost is extremely low, their ammunition can be made by themselves, and no compensation is required if they die in battle. In defensive battles, placing serf archers on fort walls or behind sergeant positions can continuously weaken the morale and numbers of the attacking enemy. Their weakness is that their melee capabilities are almost zero and they are easily routed. Reliable protective forces must be deployed in front of them. When facing heavily armored enemies, the lethality of serf archers is significantly reduced, and their main purpose should be to disrupt and hinder rather than kill."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "The legal status of Bretonnia's serf archers was clearly defined in the Military Service Ordinance. The law strictly prohibited serfs from possessing or using crossbows - crossbows were defined as \"noble weapons\", and offenders were punishable by having their hands chopped off. The standard longbow of a serf archer had a draw weight between eighty and one hundred and twenty pounds, an effective range of about two hundred and fifty yards, and a maximum range of up to four hundred yards. There are three types of arrows: ordinary arrows (for hunting and training), armor-piercing arrows (with thicker iron heads, used to deal with lightly armored units), and rockets (oil-soaked flax wadding, used to ignite buildings or scare cavalry horses). The recruitment ratio was usually one archer for every ten serf households. Excellent archers who served for a long time might obtain the status of \"free archers\" - exempt from half of the crop tax, but they were still not free men. The most famous serf archer in history is Guillaume in the \"Battle of a Thousand Arrows\". When the castle was besieged, he shot and killed three siege engineers of the besieging army alone, winning a crucial day for the arrival of reinforcements."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Most of the serf archers were young and strong men who were pulled directly from the fields to the school grounds. I've seen the blood blisters on their palms when they first drew the bow. As a Lordess, I ask the Quartermaster to equip them with gauntlets - a small investment that pays off with better performance and less dissatisfaction."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Our tribe’s territory is close to the forest, and hunting is our tradition. Therefore, our serf archers are more accurate than others - skills learned from shooting rabbits since childhood. During the last border skirmish, our fifty archers fought off two hundred orc brats, and the clan's reputation was greatly enhanced."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Serf archers were paid ridiculously low wages - a few coppers a month and a double serving of oatmeal. But they were worse off than I was: I could at least choose where to go, but they were tied to their lord's land until they died. Sometimes I pass by a village and see boys practicing shooting with tree branches as bows, and I know that the next batch of arrow ash is about to be born."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Serf archer equipment was the easiest government order to make money - mass production, low quality requirements, and fixed delivery times. The cost of a yew longbow was less than one-tenth of the cost of a sword for a knight of the kingdom. I can deliver 200 bows and 20,000 arrows to various garrison camps every month, and the profits are reassuringly stable."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Serf Archers are the only legal civilian ranged unit in Bretonnia, wielding longbows",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Serf Archer Bottom Long Range Longbow Peasant Soldier"
+  ]
+}

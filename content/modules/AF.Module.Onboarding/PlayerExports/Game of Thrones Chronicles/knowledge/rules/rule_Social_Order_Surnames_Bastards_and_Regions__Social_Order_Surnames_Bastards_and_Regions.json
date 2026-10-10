@@ -1,0 +1,157 @@
+{
+  "Id": "rule_Social_Order_Surnames_Bastards_and_Regions",
+  "Keywords": [
+    "Bastards",
+    "Sand",
+    "Rivers (Social Order Surnames Bastards and Regions)",
+    "Stone (Social Order Surnames Bastards and Regions)",
+    "Surnames",
+    "Surnames, Bastards, and Regions"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Entry The noble surname of Westeros signified both bloodline and recognized inheritance rights. Bastards of nobles who have not been legitimized usually use regional surnames: Snow in the North, Sand in Dorne, River in the Riverlands, Stony East in the Vale, Mountains in the West, and River in the West The regional surname is not a crime, but it will immediately let people know the circumstances of their birth. Some people regard it as a humiliation, while others regard it as an identity that does not need to be disguised; legalization of the royal family can change the legal status, but it cannot guarantee that it will change the memories of others."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Surnames, Bastards, and Regions"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Surnames, Bastards, and Regions"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "wanderer",
+          "priest",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Surnames, Bastards, and Regions"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Bastards Surnames, Bastards, and Regions: The noble surname of Westeros signified both bloodline and recognized inheritance rights. Bastards of nobles who have not been legitimized usually use regional surnames: Snow in the North, Sand in Dorne, River in the Riverlands, Stony East in the Vale, Mountains in the West, and River in the West. Whether it is valid depends on who can grant the rights, collect the consideration, and actually make the judgment come to fruition in the event of default."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Bastards Surnames, Bastards, and Regions: The noble surname of Westeros signified both bloodline and recognized inheritance rights. Bastards of nobles who have not been legitimized usually use regional surnames: Snow in the North, Sand in Dorne, River in the Riverlands, Stony East in the Vale, Mountains in the West, and River in the West. The distant system is not empty talk only if it can be implemented in campfires, city gates and inns."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Bastards Surnames, Bastards, and Regions: The noble surname of Westeros signified both bloodline and recognized inheritance rights. Bastards of nobles who have not been legitimized usually use regional surnames: Snow in the North, Sand in Dorne, River in the Riverlands, Stony East in the Vale, Mountains in the West, and River in the West. If a rule is practiced over and over again, it will find its way into rituals, crafts, and prayers; if it is sustained only by fear, cracks will show at the onset of a crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Bastards Surnames, Bastards, and Regions: The noble surname of Westeros signified both bloodline and recognized inheritance rights. Bastards of nobles who have not been legitimized usually use regional surnames: Snow in the North, Sand in Dorne, River in the Riverlands, Stony East in the Vale, Mountains in the West, and River in the West. They remember taxes, grain, labor, relief and who can speak for them; these grand names will eventually fall on the family's rice pot."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Surnames, Bastards, and Regions: The noble surname of Westeros signified both bloodline and recognized inheritance rights. Bastards of nobles who have not been legitimized usually use regional surnames: Snow in the North, Sand in Dorne, River in the Riverlands, Stony East in the Vale, Mountains in the West, and River in the West."
+  ]
+}

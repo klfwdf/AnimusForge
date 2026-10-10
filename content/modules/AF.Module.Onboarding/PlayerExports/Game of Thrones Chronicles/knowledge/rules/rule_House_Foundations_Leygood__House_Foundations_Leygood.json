@@ -1,0 +1,132 @@
+{
+  "Id": "rule_House_Foundations_Leygood",
+  "Keywords": [
+    "Leygood",
+    "House Leygood"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Leiden family rules the Deep Cave City and is an ancient noble in the West. After the arrival of the Andals, Joffrey Lydon married the daughter of the King of Casterly Rock, who had no male heir, and adopted the surname Lannister to inherit the throne; this history made Lydon a symbol of the suture between the old blood of the ancestors of the Westerlands and the new blood of the Andals. Deep Cave City is located where mountains and underground passages intersect. The family business relies on mining roads, passes and the responsibilities of vassals to maintain their business. A family name can be transferred, but blood and politics will continue in new forms."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "When the maesters and lords of the Westerlands talk about Lydon, they often mention Joffrey's marriage into the Lannister bloodline. That was not a simple surrender, but a way for the conqueror and the old king to unify. It also explained why Casterly Rock could accommodate both ancestry."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The miners and mule drivers around Deep Cave City had only heard a few words about the ancient king's marriage. They admired the lord who was familiar with the mountain roads and was willing to build supports and bridges, because when the cave collapsed, no matter how noble the blood was, it could not hold up the stone roof."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Leygood The Layton family, with Cave City as its seat, is an ancient family in the West; the Andal knight Joffrey Layton once became the King of Casterly Rock through marriage. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Leygood The Layton family, with Cave City as its seat, is an ancient family in the West; the Andal knight Joffrey Layton once became the King of Casterly Rock through marriage. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Leygood The Layton family, with Cave City as its seat, is an ancient family in the West; the Andal knight Joffrey Layton once became the King of Casterly Rock through marriage. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Leygood The Layton family, with Cave City as its seat, is an ancient family in the West; the Andal knight Joffrey Layton once became the King of Casterly Rock through marriage. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Leygood: The Layton family, with Cave City as its seat, is an ancient family in the West; the Andal knight Joffrey Layton once became the King of Casterly Rock through marriage."
+  ]
+}

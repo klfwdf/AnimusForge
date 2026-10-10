@@ -1,0 +1,151 @@
+{
+  "Id": "rule_House_Foundations_Woods",
+  "Keywords": [
+    "Woods",
+    "House Woods"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Forest Clan guards Irontree Castle and is loyal to the Glover family of Deepwood Castle. Their family saying is that \"iron is made of ice.\" They control the vast ironwood forests in the north, and their family fortunes are closely linked to this hard, long-lived precious wood. Gregor Forest is known for being fair, prudent and territorial, while the children in the family are each burdened with inheritances, marriage alliances and old grudges. The White Mountain family claims that Irontree Castle should belong to them, and the dispute between the two families has long been more than just a boundary issue; the relationship between Ash Forest and Gwen White Mountain has given rise to a dangerous road to reconciliation out of hatred."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Northern Lords value the Forest Clan's ability to protect Ironwood Forest. Ironwood can be used to make spears, shields and strong door latches. The safety of Irontree Fort is therefore not only related to the honor and disgrace of the family, but also to the armament and livelihood of the northern border during the long winter."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The woodcutter near Iron Tree Castle knows that it takes many years for an iron tree to grow, but a family feud can burn down an entire forest farm overnight. They respect the lords who are willing to abide by the rules, and they are most afraid that the old grudges of the nobles will fall on their roofs and granaries."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The soldiers of the Forest Clan regard Iron Tree Fort as a responsibility left by their ancestors. Baishan's challenge made them angry, but some people also understood that if the friendship between the young people of the two families could really stop the bleeding, burying a few fewer sons in the north would be more valuable than winning one more armed fight."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Woods The Forest Clan is based on Irontree Castle and Northern Ironwood, and its old grudges with the White Mountain family involve the territory, inheritance, and the fate of the young people of the two families. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Woods The Forest Clan is based on Irontree Castle and Northern Ironwood, and its old grudges with the White Mountain family involve the territory, inheritance, and the fate of the young people of the two families. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Woods The Forest Clan is based on Irontree Castle and Northern Ironwood, and its old grudges with the White Mountain family involve the territory, inheritance, and the fate of the young people of the two families. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Woods The Forest Clan is based on Irontree Castle and Northern Ironwood, and its old grudges with the White Mountain family involve the territory, inheritance, and the fate of the young people of the two families. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Woods: The Forest Clan is based on Irontree Castle and Northern Ironwood, and its old grudges with the White Mountain family involve the territory, inheritance, and the fate of the young people of the two families."
+  ]
+}

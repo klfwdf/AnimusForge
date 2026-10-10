@@ -1,0 +1,205 @@
+{
+  "Id": "rule_Sturgias_culture",
+  "Keywords": [
+    "Culture of Sturgia"
+  ],
+  "RagShortTexts": [
+    "Sturgia's buildings are dominated by thick logs and steep roofs, and their diet includes black bread, pickled fish, stew and spirits."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Sturgians are a resilient and pragmatic northern people whose culture revolves around ice, forests, and seas. Their buildings were built of thick logs with steep roofs to prevent them from collapsing under the weight of snow. They wore heavy furs and woolen fabrics, and their diet consisted mainly of black bread, pickled fish, stewed meat, and spirits. In terms of belief, they revere the spirits of nature and respect the various gods from the south. The Sturgians value their oaths and honor, but are also known for their cunning negotiating skills - they can befriend you over a drink while inadvertently taking advantage of you."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "To survive a whole winter of snowstorms. Our clothes are made of fur and wool, and a good fur coat can be passed down to three generations. We ate black bread, kippers, stewed meat, and drank strong wine—if we didn’t drink in winter, our blood would freeze. We speak straightforwardly, without beating around the bush, and we will definitely do what we promise. But if someone deceives us, it's best to hope they don't meet us again. We respect the strong and despise the cowards. We can take out the last bowl of wine for our friends, but we will only take out the ax for our enemies. Outsiders say we are rude, but we don’t care. Rude people can survive in the north, but delicate people will freeze to death in the snow."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "We Sturgians have different rules than the Imperials. Imperial people were pompous, wearing silks and talking loudly in stone-paved palaces. We wore fur coats and sat in the log hall, drinking from big bowls and talking with axes. The value of a boy does not lie in how well he can speak, but in whether he can lead troops, hold territory, and make others obey him in meetings. But this doesn’t mean we have no brains – if Sturgia’s Boyer couldn’t settle accounts or negotiate, he would have been eaten up by the people around him. We look thick, but inside we are fine."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable",
+          "townsfolk"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "We Sturgians value credit when doing business, but we also negotiate price. The imperial merchants say that we are difficult to deal with because they are used to the set of rules over there. It's different here - a verbal promise is a contract, a handshake is a signature. If you lie to people, no one in the city will do business with you next time. We drank kvass and spirits, sang and danced during the holidays, and told stories around the stove in the winter. Although life is hard, those who survive are those with strong bones."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The warriors of Sturgia grew up touching axes. Training in the snow in winter is the most brutal - standing on a shield wall in knee-deep snow, unable to let go even if your hands are frozen. Our war cry is not as uniform as that of the Imperials. We each roar our own, and what we roar is the name of our own family. On the battlefield, Boyer stood in the same shield wall as us. He would not hide behind it, because if he was afraid, we would disperse. We fight not for the glory of the empire, but for the villages, women and children behind us."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The women of Sturgia are not easy to mess with. While the men went off to fight, women kept the house, raised the children, took care of the accounts, and sometimes had to pick up an ax to defend the village. Women here can inherit property, run businesses, and speak at elders’ meetings. While the noble ladies of the Empire are wrapped in silk and hiding behind their ladies-in-waiting, we women of Sturgia are sharpening our swords."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The culture of the Sturgia people seems to us imperial people to be semi-civilized barbarians. They live in wooden houses, wear animal skins, drink strong liquor until they are drunk, speak in a loud voice, and eat with their hands. But they also have their own strengths - trustworthiness, bravery, and loyalty to friends. Their buildings were simple but functional. After a snowstorm, the stone house in the Empire was as cold as an ice cellar, but the log house in Sturgia was warm. Their women also have more status than the women in the empire, and can manage accounts and make decisions. Maybe that's why northerners can survive in that hellish place."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The culture of the Sturgians is somewhat similar to that of us Vlandians. But they are wilder, rougher, and have no idea what chivalry is. They did not engage in jousting or write lyric poetry. Their entertainment was drinking, wrestling and axe-throwing competitions. But there is one thing we admire about them - no matter how cold the winter is, they can endure it. Our knights were fighting in the northern snows, too cold to hold their spears, but the Sturgians looked as if nothing had happened."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Sturgians stole our lands to the west, but their culture was completely different from ours. They cut down trees to build houses, and we lived in the forest. They believe in their Grand Duke and Boyer, we believe in our clan and forest spirits. Their warriors wore heavy armor and shield walls, and our warriors shot arrows in the woods. They value obedience and discipline, we value freedom and flexibility. Although they occupy our land, they can never become the masters of the forest."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Sturgia people had the most dealings with us Khuzait people in Tiar in the east. Unlike the Imperials, who look down on steppe peoples, the Sturgians are at least willing to sit down with you for a drink and discuss business. Their winters are as cold as ours, so they're not as squeamish as southerners. Their axes are stronger than the swords of the Empire, and their wine is stronger than our kumiss. But their horses are not as good as ours, and their cavalry can never catch up with our mounted archers."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "steward": 150
+        }
+      },
+      "Content": "The culture of Sturgia is a typical northern forest-marine civilization. Its core features include: a settlement pattern dominated by log buildings, a clothing system dominated by fur and wool, a diet dominated by black bread and pickled products, and a social tradition represented by the consumption of spirits. In terms of political culture, Sturgia's tradition of viche meetings - gatherings of freedmen under the auspices of elders to openly discuss public affairs - still survives at the bottom of their society, allowing Sturgian commoners to form an informal check on the power of the Boyer. At the religious level, the Sturgia people have retained a strong tradition of nature worship while tolerating various beliefs introduced from the south. Aesthetically, the Sturgians prefer a simple, heavy, and practical style, which is reflected in their architecture, clothing, and weapon decoration."
+    }
+  ],
+  "TextMappings": []
+}

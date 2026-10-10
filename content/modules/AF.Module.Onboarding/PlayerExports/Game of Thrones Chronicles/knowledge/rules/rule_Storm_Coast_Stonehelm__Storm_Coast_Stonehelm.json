@@ -1,0 +1,151 @@
+{
+  "Id": "rule_Storm_Coast_Stonehelm",
+  "Keywords": [
+    "Stonehelm"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Stonehelm is located in the southeast of the Stormlands and is the traditional seat of House Sven. Its proximity to the Sea of ​​Dorne and the Marches gave it the character of a coastal stronghold and an overland pass: moist sea breezes blew into the halls, and strange news from the mountains and the south arrived along the roads. As a powerful vassal of the Stormlands, the Swann family's prestige comes from long-term maintenance of order in castles, manors, knights and surrounding small lords. The name Stonehelm emphasizes stone walls and defenses, but the real armor of a castle also includes granaries, wells, passable roads, and people willing to respond to orders. The master and army are changeable, while the sea and land border where Stonehelm City is located and its border responsibilities are fixed backgrounds."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "stormlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Stonehelm Local families also depend on rainforest timber, game, barren farmland, fisheries, and roofs to protect themselves from storms; any time a road, well, or dock fails, the price falls first on them."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "stormlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Stonehelm Entry Stonehelm"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Stonehelm They also recognize the accents, laws, and credentials of the Stormlands; reputations can travel great distances from taverns, but true distances must still be measured by wheel, oar, or horse's hoof."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Stonehelm Entry Stonehelm"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Stonehelm If you can supply supplies, avoid danger, and find a guide, it is worth marking in your itinerary; if you don't have these three things, no matter how loud your family name is, it won't be able to save the lost."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Stonehelm A stronghold was therefore not just a lord's hall, but also a place where weddings and funerals, vows, labor and local memories recurred."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Stonehelm They care about rainforest timber, prey, barren farmland, fish catches, and roofs to shelter from storms. They also look at whether seeds are left after harvesting grain, and whether the city gates are open in times of disaster. When people from afar see coats of arms, what they see is whether there will be food to eat tomorrow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Stonehelm: Stonehelm is located in the southeast of the Stormlands and is the traditional seat of House Sven. Its proximity to the Sea of ​​Dorne and the Marches gave it the character of a coastal stronghold and an overland pass: moist sea breezes blew into the halls, and strange news from the mountains and the south arrived along the roads. As a powerful vassal of the Stormlands, the Swann family's prestige comes from long-term maintenance of order in castles, manors, knights and surrounding small lords. The name Stonehelm emphasizes stone walls and defenses, but the real armor of a castle also includes granaries, wells, passable roads, and people willing to respond to orders. The master and army are changeable, while the sea and land border where Stonehelm City is located and its border responsibilities are fixed backgrounds."
+  ]
+}

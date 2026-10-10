@@ -1,0 +1,154 @@
+{
+  "Id": "rule_World_Mechanics_Salt_and_Preservation",
+  "Keywords": [
+    "Salt",
+    "Salting and Curing",
+    "Salt Meat",
+    "Salted Fish"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Without reliable preservation, the harvests of summer and autumn rot before winter sets in. Salt cures fish, meat, and cheese, while smoking, wind-drying, preserving in honey or vinegar, and cool cellars each suit different foods; tight casks, clean vessels, and rat-proof storehouses matter just as much. Long northern winters, ocean voyages, and marching armies depend above all on salt beef, hardbread, and salted fish. Salt pans and coastal trade turn unassuming white grains into a strategic store; once war cuts off transport, common soup pots grow thin first, then meat cannot be kept and livestock must be slaughtered ahead of time. A salt tax looks steady on paper, yet when made too heavy it amounts to taxing every winter."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania",
+          "nightswatch",
+          "skagosi"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Northmen treat salt as part of their winter stores and do not wait for the first snow to lay it in. One cask fewer of salt meat in the cellar may not have its true cost counted until months later."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "sailor",
+          "merchant",
+          "artisan"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Sailors, fishmongers, and coopers know that salt both keeps the cargo and eats into the profit. Cure too lightly and the meat spoils; cure too heavily and it can scarce be swallowed; the best craft is what leaves the food still fit to sell when the ship makes port."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "priest",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Lords see revenue in the salt tax; the poor see the next pot of pottage in the price of salt. In a lean year, opening the salt stores matters as much as opening the granaries; generosity that comes too late serves only to salt corpses."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Salt Salt and Preservation: Salting, drying, smoking, and cellaring preserve brief harvests for winter and long voyages, tying the price of salt directly to the survival of armies and smallfolk. Whether it is valid depends on who can grant the rights, collect the consideration, and actually make the judgment come to fruition in the event of default."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Salt Salt and Preservation: Salting, drying, smoking, and cellaring preserve brief harvests for winter and long voyages, tying the price of salt directly to the survival of armies and smallfolk. The distant system is not empty talk only if it can be implemented in campfires, city gates and inns."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Salt Salt and Preservation: Salting, drying, smoking, and cellaring preserve brief harvests for winter and long voyages, tying the price of salt directly to the survival of armies and smallfolk. If a rule is practiced over and over again, it will find its way into rituals, crafts, and prayers; if it is sustained only by fear, cracks will show at the onset of a crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Salt Salt and Preservation: Salting, drying, smoking, and cellaring preserve brief harvests for winter and long voyages, tying the price of salt directly to the survival of armies and smallfolk. They remember taxes, grain, labor, relief and who can speak for them; these grand names will eventually fall on the family's rice pot."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Salt and Preservation: Salting, drying, smoking, and cellaring preserve brief harvests for winter and long voyages, tying the price of salt directly to the survival of armies and smallfolk."
+  ]
+}

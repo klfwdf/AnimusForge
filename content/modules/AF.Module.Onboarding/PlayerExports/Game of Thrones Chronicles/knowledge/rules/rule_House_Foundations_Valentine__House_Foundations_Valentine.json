@@ -1,0 +1,133 @@
+{
+  "Id": "rule_House_Foundations_Valentine",
+  "Keywords": [
+    "Valentine",
+    "House Valentine"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Valentin family is one of the wealthy families in Braavos, whose fortunes are intertwined with shipping, urban real estate, workshops and political connections. Braavos has no Westeros-style hereditary great lords, and prominent surnames still have to juggle between the institution of the sea kings, municipal power, and financial credit. If Valentine profited from long-distance trade, he would have to bear the risks of shipwrecks, piracy, and war blockades; if he participated in politics, the anti-slavery tradition and the protection of the city's interests were unavoidable public standards."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Braavos merchants measure Valentine by profitability and trustworthiness, while politicians measure Valentine by how much support it can mobilize from shipowners and workshops. The wealthier the family, the harder it is to describe a choice as a purely personal matter."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "sailor",
+          "peasant",
+          "artisan"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Ordinary sailors believe that all wealthy people should pay their back wages first before talking about love. If Valentine can take care of the crew's families during the bad sailing season, he will gain more lasting respect than throwing money at the festival."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Valentine The Valentines were a wealthy family of Braavos whose reputation rested on merchant ships, city connections, and public credibility in the anti-slavery republic. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Valentine The Valentines were a wealthy family of Braavos whose reputation rested on merchant ships, city connections, and public credibility in the anti-slavery republic. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Valentine The Valentines were a wealthy family of Braavos whose reputation rested on merchant ships, city connections, and public credibility in the anti-slavery republic. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Valentine The Valentines were a wealthy family of Braavos whose reputation rested on merchant ships, city connections, and public credibility in the anti-slavery republic. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Valentine: The Valentines were a wealthy family of Braavos whose reputation rested on merchant ships, city connections, and public credibility in the anti-slavery republic."
+  ]
+}

@@ -1,0 +1,222 @@
+{
+  "Id": "rule_empire",
+  "Keywords": [
+    "Empire",
+    "Empire of Calradia",
+    "throne",
+    "Imperials"
+  ],
+  "RagShortTexts": [
+    "The empire of Calradia was divided by the death of Arenicos",
+    "The unclear succession system of the imperial throne was the main reason for its decline",
+    "The imperial civil war led to increased tariffs and damage to merchants"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Empire was once the undisputed overlord of Calradia. From the snowfields in the north to the deserts in the south, everyone surrendered under its eagle banner. But that was all in the past, and as soon as Emperor Arenicus died, the empire was divided into three parts: Lucon to the north, Rhagaea to the south, and Gallios to the west. They all claim to be orthodox and hope to be reunited one day. But after so many years of fighting, nothing has changed except making the empire weaker and weaker."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Empire is civilization itself, the embodiment of order and law. What do those barbarians know? They know nothing but burning, killing and looting. Although the Empire is now divided, we remain the most powerful force in Calradia. Whether it is the wisdom of Lord Lucon, the blood of Queen Rhagaea, or the sword of Emperor Galios, they all represent the supreme tradition of the empire. We will be united and the eagle flag will once again fly in every corner of Calradia."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Civil War was a shame for us Imperial people, but it was also a test. Three emperors, three concepts: the authority of the Senate, the blood of the royal family, and the support of the army. Which one can represent the future of the empire? This is not just a game of thrones, but a battle for the soul of the empire. If you stand on the right side, your family can occupy a high position in the future unified empire; if you stand on the wrong side, destruction awaits you."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Who are you fighting for? For the eagle flag. No matter whether he is Lucon, Rhagaea or Gallius, as long as he gives me military pay and a pension for my brothers who died in battle, I will work hard for him. But to be honest, the most uncomfortable thing is to meet the Imperial soldiers across from you on the battlefield. They speak with the same accent and wear similar armor. They may have been drinking together a few years ago, but now they have to fight to the death. When will this damn civil war end?"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "townsfolk"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The glory of empire? That's what the gentlemen care about. For us, the biggest advantage of the division of the empire is that tariffs will triple! Transporting a load of olive oil from Lycalon to Lys in Djalma required paying taxes to three of the emperor's men along the way. It is becoming increasingly difficult to do business. If this war continues, we businessmen may be the first to go bankrupt."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "steward": 150
+        }
+      },
+      "Content": "The decline of an empire is a long process. Many blamed Arenicos' death, but it was just the straw that broke the camel's back. The real cause is that the inheritance system of the empire has never been truly clear, and the three sources of legitimacy, the Senate, the army, and the royal bloodline, are always at odds. When the late Emperor Arenicos was alive, he was able to suppress all conflicts with his prestige, but as soon as he died, these three forces immediately tore the empire apart. The current Three Kingdoms are just a matter of each of these three legalities finding their own agents."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Empire? A giant who suffered from bloat disease and finally stretched himself to death. When they were good, they occupied the best land and the richest ports, but their emperor couldn't even manage his own barons. Our late king, Oslak \"Iron Arm\", had long seen through that the empire was just an empty frame, so he led the Vlandians to independence. Now they've divided themselves, which is perfect for us."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Imperial people always act condescending and call us ‘barbarians’, but they themselves are killing each other for the throne. Isn’t this the greatest barbarism? Although the barons of Vlandia have disputes from time to time, we have a king, laws, and a tradition of fighting against foreign enemies together. A divided empire is good for us in Vlandia, but we must be wary of any of them becoming strong again."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Empire to us Sturgians is that rich but weak neighbor to the south. They had warm harbors and fertile lands, but not the courage to hold them. Our boyars go south every winter to 'hunt', and their legions can do nothing but hide behind the walls. Now that they are fighting on their own, we have more chances. One day, Sturgia's banner will fly over Diatema's city walls."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Empire? A group of invaders! They cut down our sacred groves, built ugly cities out of stone, and wanted to replace the traditions of our ancestors with their own laws and gods. We, the Counts of Battania, have been fighting them for generations. Now they are fighting among themselves, which is the respite the forest spirit gives us. But don’t be fooled by their division. When any imperial emperor becomes stronger again, we will be the first to deal with it."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Imperials always brag about their civilization, but they don’t even know how many grains of sand there are in the desert. We, the Sultans and Emirs of the Aserai, know far better how to rule than their Senate. We did business with them and occasionally went to war with them, but never trusted them. Their emperor is like a mirage in the desert. He looks powerful, but when he gets closer, he realizes that he is nothing."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The empire is like a piece of fat, put in the mouth of the wolves. Their warriors may be able to fight, but their horses are not as fast as ours, and their bows are not as far as ours. The reason why we, the Khans of Khuzait, have not yet marched westward with full force is because we are waiting. Waiting for these so-called \"emperors\" to drain each other's blood, then the entire land to the west of the grassland will be the pasture of our Khuzait people."
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,211 @@
+{
+  "Id": "rule_Long_Beard_War",
+  "Keywords": [
+    "A complete historical study of the Battle of Nagasu",
+    "Long Beard's Revenge War Record",
+    "Bearded Dwarf Elf War",
+    "Long beard humiliation incident",
+    "The Battle for the Bearded Phoenix Crown",
+    "Death of Caledor II Longbeard",
+    "The Legend of Garak the Longbeard Starbreaker",
+    "The rupture of the long-bearded high elves",
+    "The long-bearded source of eternal hatred",
+    "Nagasu ancient total war"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The War of the Beard—called the War of Vengeance by the Dwarves and the Beard's Humiliation by the Elves—was the most devastating inter-racial conflict in the history of the Old World. This war, triggered by the false flag attack of the dark elves, the fatal insult of the dwarf messenger being shaved, and the arrogant response of the Phoenix King Caledor II, lasted for nearly five hundred years, turning the two closest allies of the dwarves and the high elves into eternal enemies. When the war finally ended with the Dwarf High King Garak Starshatter personally killing Caledor II and seizing the Phoenix Crown, both sides were exhausted - while the Dark Elves celebrated behind the scenes their unprecedented strategic victory by successfully exploiting the mutual harm between the two sides."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Battle of Longbeard - We Dawe don't need a dwarven title to describe this conflict, we just need to turn to the Book of Hatred. The truth has never been fully written by Imperial scholars: The Dark Elves attacked a dwarven caravan heading to Ulthuan, slaughtering all the dwarves and discarding the caravan's cargo - including weapons bearing the unique signatures of the dwarven craftsmen - at the scene of the attack. When the High King sent a messenger to the Elven Court to demand an explanation, Caledor II—the arrogant Elf who was blinded by power—did not conduct any investigation, but ordered the beard of the dwarf messenger High Chair Stonebeard to be shaved off! beard! A dwarf's beard is a skeletal extension of his family's history, ancestral glory and his own dignity - shaving the beard of a dwarf messenger is not a diplomatic blunder, it is a declaration of war that transcends all words. We fought for nearly five hundred years. Five hundred years of war, five hundred years of forging, and five hundred years of tombs. We won—Golak beheaded Caledor and placed the Phoenix Crown in the treasure chamber of Karazha-a-Kharag—but at what cost? The price was that we lost an entire generation of dwarves, the price was that our strongholds never regained their defenses, the price was that the greenskins and Skaven discovered our weakness and began to eat away at us. The debt owed to us by the Elves is still at the very beginning of the Book of Hate, and will never be written off - not because we are petty, but because every time one of us dies we add it back."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Battle of Nagasu remains an inescapable case of raw trauma for all subsequent Old World military diplomacy. Any human lord who wishes to ally with the dwarves must first understand one thing: the dwarves have a deep, unconscious hostility to anything that bears elven characteristics, and this hostility has been engraved in their cultural DNA for five thousand years. Likewise, high elves will instinctively keep a contemptuous distance from everything related to dwarves when interacting with humans - not because contemporary dwarves have done anything new, but because the crisp sound made when Caledor II's head was smashed still echoes in the Phoenix King's ears. The Battle of the Three Towers - the last and bloodiest battle in the Longbeard War - consumed the most elite core forces of both sides. The direct consequence was that all the elven colonies in the old world were abandoned or destroyed due to lack of protection from the mother country. Any commander who has studied the details of this war will come to the same terrible conclusion: the false flag attack launched by the Dark Elves may have been the highest return on investment military operation in the history of the Old World - they used a single attack to trigger five hundred years of bloodshed between the two main rivals, and they themselves participated in hardly any major battles."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "The complete chronology of the Nagasu War extends from approximately 2005 BC to 1600 BC, but its diplomatic antecedents and military consequences span an even greater time span. The triggering point of an event can be divided into three stages. Phase One - The Trigger (c-2005 IC): The Dark Elves - most likely orchestrated by Malekith himself - attack and massacre a dwarf caravan traveling from Karazha-a-Kraag to an elven colonial town in the northern forests of the Old World. The attackers deliberately left traces of weapons that were unique to the Dark Elves - but they deliberately disguised the markings on the weapons as high elves, when in fact the dark elves and high elves were so similar in weapon craftsmanship that non-elven races were almost indistinguishable visually. Phase Two - Diplomatic Collapse (c. -2005 to -2000 IC): The Dwarf High King sends Highchair Stonebeard, an elder known for his patience and diplomatic skills, to the Phoenix King's court in Ulthuan to demand explanation and compensation. Caledor II, a Phoenix King notorious for his arrogance and disdain for foreigners, refused to investigate and had the dwarven messenger's beard shaved off in public as a form of humiliation. The act of shaving is more serious than murder in dwarven culture - it destroys both a person's social identity and a family's ancestral glory. The third stage - total war (about -2000 to -1600 IC): The High King immediately declared war. The elves initially thought it was just a border friction, but when the dwarf army crossed the northern part of the old world and launched a siege around the elven colonies, the irreversibility of the war was completely locked. Key battles include: the siege of Korin Fortress (the first time the dwarves captured an important elven stronghold in the old world), the landing battle in northern Ulthuan (the dwarf fleet tried to attack the elves directly but failed, with more than 70% of the dead), and the final battle of the Three Towers - during the battle, High King Garak Starbreaker personally shattered the skull of Caledor II with a warhammer and captured the Phoenix Crown. After the war, the elves abandoned all their colonies in the old world - not because of defeat, but because Ulthuan itself was in danger under the attack of the dark elves. No formal peace treaty was ever signed between the two sides after the war - meaning that from a dwarven legal perspective, the War of the Longbeard technically remains an unsealed feud to this day."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "In the Battle of Longbeard, women suffered the heaviest but least mentioned price - not death, but survival. While men were swinging hammers and shooting arrows back and forth between Ulthuan and the Old World for five hundred years, the dwarf women of Karak kept mining, smelting, and every aspect of the city running—there were far fewer of them than men, but they had to complete two to three times the amount of work they did in peacetime each day. Elf women also suffered tragic consequences - when the vast majority of elven men were recalled to Ulthuan to participate in the war, those elven women abandoned in the old world colonies faced the cruelest choice: the death rate was as high as one-quarter during the voyage with the retreating fleet to Ulthuan, while staying in the colonies captured by the dwarves meant death or becoming prisoners. But the greatest damage caused by the Longbeard War to women was in later generations - after the war, the sex ratio in the dwarf population was seriously imbalanced, and every generation of dwarf women lived under the pressure of extremely strong fertility expectations. Both races - elves and dwarves - entered a long-term recession in which the population continued to shrink after this war, and the biological basis that determined whether the population could recover fell precisely on the shoulders of women."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The legacy of the Longbeard War manifests itself in the form of clan feuds and an ongoing subtle distrust between our family and the dwarven strongholds—not because of our ancestors' participation in that war, but because between our family's mining lands and the old dwarven lands of Karak Varn lie a sliver of gray mountain slope that has never been officially demarcated and that both sides claim mineral rights to. Any house seeking to forge a win-win agreement between the Imperial nobility and the dwarf Kharak should research the precise geological relationship between their territory and the historically lost territories of the dwarves. The dwarves will never forget any piece of land that once belonged to them - even if that land was an elven territory before the Longbeard War, was occupied by the Greenskins for three years after the Longbeard War, and was reclaimed by human settlers for two hundred years after the Greenskins were cleared."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "While hiking in the World's Edge Mountains in search of the remains of an ancient battlefield, I discovered the remains of the Battle of the Three Towers in a valley that had never been marked on any Imperial map. The trees in the valley have swallowed up most of the battlefield, but the dwarf warhammer and the rusty elf dagger under the stone can still be dug out from under the leaf litter. The most chilling thing is that these weapons sometimes touch each other - the blade of a dwarf hand ax is completely embedded in the central crack of an elven shield, as if they are still using the cold inertia of metal to continue a war that living people have long since withdrawn from four thousand years after the owner's death. I slept in that valley for a night, and I dare say I heard a sound - not the wail of a ghost, but more like the echo of a hammer hammering so slowly that it was almost inaudible from the deep mountains. It was some kind of ancient memory reverberator buried by the dwarves in the mountains. It may have been recording and transmitting the signal that the war is not over to the interior of the mountains since the end of the Longbeard War."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The economic legacy of the Nagasu War still affects the precious metals trading system of the Old World. Prior to the war, joint exploration and technological exchanges between dwarves and elves led to the simultaneous development of a large number of high-quality deposits - the Old World's metal output during this period had not been surpassed for a long time. After the War of Longbeard, the elves withdrew from all mining in the old world, and the dwarves were forced to abandon many outlying mining areas after the loss of population. These mining areas were subsequently occupied by greenskins, collapsed, or were flooded - but from our chamber of commerce's mine property research, we know that at least thirty-seven of the known mining areas have not been redeveloped to this day, and their preliminary geological survey reports have been buried in the archives of Karazha-a-Karag for more than four thousand years. Whoever can get the dwarves to reopen these archives and explore together will be able to control prices in the old world metal market for at least two generations."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "The War of the Long Beard - called the War of Revenge by the dwarves and the Humiliation of the Beard by the elves, a racial war that lasted for about five hundred years.",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "A complete history of the Longbeard War, Longbeard's Revenge War, Longbeard Dwarves and Elf Wars"
+  ]
+}

@@ -1,0 +1,151 @@
+{
+  "Id": "rule_Folk_Customs_Castle_Servants_and_Unsung_Labor",
+  "Keywords": [
+    "Castle Servants",
+    "Kitchen Hands",
+    "Grooms",
+    "Washerwomen",
+    "Unsung Labor"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "A castle was run by far more men than lords and knights. Kitchen servants light fires and prepare meals, grooms clean stables and feed horses, washerwomen deal with dirty clothes, water carriers carry water, servants make beds and send messages, warehouse managers record grain, and scavengers deal with garbage and excrement. Banquets, visitors and wars will increase labor, but not necessarily bring more rewards. Servants have different statuses. Personal servants and stewards may have great trust, while low-level helpers can be replaced at any time. They are the first to discover that the master is sick, the guests are quarreling, or the warehouse is at the bottom, and they are the most often treated by the powerful as if they do not exist. Castle secrets often spread because no one takes a serious look at the person serving the wine."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "slave"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Servants know their masters from their schedules, leftovers, and punishments. When a lord talks about honor in the hall, whether he distributes supplies to the kitchen and stables on time also shows his character."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Smart nobles respect reliable butlers, cooks, and grooms, because power cannot be achieved without daily labor. People who despise servants are often the last to know what is wrong with their own family."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "priest",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Outsiders who want to know the true condition of the castle will observe whether the servants are tired and whether the warehouses are in order. Gorgeous flags can be borrowed, but long-term order is difficult to disguise."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Castle Servants Castle Servants and Unsung Labor: Continuous work in the kitchen, stables, laundries, warehouses, and bedrooms enabled aristocratic power to manifest itself with ease and dignity. Whether it is valid depends on who can grant the rights, collect the consideration, and actually make the judgment come to fruition in the event of default."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Castle Servants Castle Servants and Unsung Labor: Continuous work in the kitchen, stables, laundries, warehouses, and bedrooms enabled aristocratic power to manifest itself with ease and dignity. The distant system is not empty talk only if it can be implemented in campfires, city gates and inns."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Castle Servants Castle Servants and Unsung Labor: Continuous work in the kitchen, stables, laundries, warehouses, and bedrooms enabled aristocratic power to manifest itself with ease and dignity. If a rule is practiced over and over again, it will find its way into rituals, crafts, and prayers; if it is sustained only by fear, cracks will show at the onset of a crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Castle Servants Castle Servants and Unsung Labor: Continuous work in the kitchen, stables, laundries, warehouses, and bedrooms enabled aristocratic power to manifest itself with ease and dignity. They remember taxes, grain, labor, relief and who can speak for them; these grand names will eventually fall on the family's rice pot."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Castle Servants and Unsung Labor: Continuous work in the kitchen, stables, laundries, warehouses, and bedrooms enabled aristocratic power to manifest itself with ease and dignity."
+  ]
+}

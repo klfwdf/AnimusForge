@@ -1,0 +1,47 @@
+{
+  "Id": "rule_mount_chertog",
+  "Keywords": [
+    "Mount Chertog"
+  ],
+  "RagShortTexts": [
+    "The villagers of Mount Chertog make their living by logging and raising pigs"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": [
+          "town_s4"
+        ],
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Mount Chertog rises within Sturgian territory, its precipitous slopes forming one of the most prominent landmarks in the northern reaches of the Calradian continent. Its summit is crowned with snow year-round, never melting even in summer; seen from afar, it stretches across the skyline like a vast white curtain. Locals call it 'White-Haired Mountain,' believing that a god of winter who refuses to depart dwells upon its peak.\n\nHalfway up the mountain, the terrain gentles somewhat and is cloaked in dense coniferous forest, where pine, fir, and hardy silver birch form a gray-green belt of woods. Several small villages lie scattered across clearings in the forest, cut off from the outside world. The villagers make their living by logging and raising pigs—the mountain timber is inexhaustible, and felled logs are slid down the slopes to the markets at the mountain's foot, while herds of swine roam freely through the woods, rooting for pinecones and tubers. Their meat is firm and dense, serving as the main source of winter meat for the locals. Winter on the mountainside is long and harsh, and the villagers keep time in their own way: reckoning the seasons by the day the pigs return to their pens, and judging the depth of winter by which old pine tree the snowline has crept down to.\n\nAbove the snowline lies a barren realm of rock and glacier, riddled with crevasses and swept by unpredictable storms, where even the most seasoned hunters refuse to set foot. Legend holds that an altar left by ancient tribes stands upon the summit; in earlier years some tried to climb to the top in search of treasure, only to vanish without a trace in the driving snow, until no one dared try again. When folk on the plains below look up at Mount Chertog, what comes to mind is not conquest, but the thought that winter never strays far from this mountain."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "scouting": 40
+        }
+      },
+      "Content": "Mount Chertog rises within Sturgian territory, its precipitous slopes forming one of the most prominent landmarks in the northern reaches of the Calradian continent. Its summit is crowned with snow year-round, never melting even in summer; seen from afar, it stretches across the skyline like a vast white curtain. Locals call it 'White-Haired Mountain,' believing that a god of winter who refuses to depart dwells upon its peak.\n\nHalfway up the mountain, the terrain gentles somewhat and is cloaked in dense coniferous forest, where pine, fir, and hardy silver birch form a gray-green belt of woods. Several small villages lie scattered across clearings in the forest, cut off from the outside world. The villagers make their living by logging and raising pigs—the mountain timber is inexhaustible, and felled logs are slid down the slopes to the markets at the mountain's foot, while herds of swine roam freely through the woods, rooting for pinecones and tubers. Their meat is firm and dense, serving as the main source of winter meat for the locals. Winter on the mountainside is long and harsh, and the villagers keep time in their own way: reckoning the seasons by the day the pigs return to their pens, and judging the depth of winter by which old pine tree the snowline has crept down to.\n\nAbove the snowline lies a barren realm of rock and glacier, riddled with crevasses and swept by unpredictable storms, where even the most seasoned hunters refuse to set foot. Legend holds that an altar left by ancient tribes stands upon the summit; in earlier years some tried to climb to the top in search of treasure, only to vanish without a trace in the driving snow, until no one dared try again. When folk on the plains below look up at Mount Chertog, what comes to mind is not conquest, but the thought that winter never strays far from this mountain."
+    }
+  ],
+  "TextMappings": []
+}

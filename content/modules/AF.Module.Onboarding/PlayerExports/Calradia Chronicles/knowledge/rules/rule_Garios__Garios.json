@@ -1,0 +1,116 @@
+{
+  "Id": "rule_Garios",
+  "Keywords": [
+    "Garios",
+    "Grand Marshal Garios",
+    "Emperor Garios",
+    "Garios the Emperor",
+    "Commander of the Western Empire",
+    "Emperor of the Western Empire"
+  ],
+  "RagShortTexts": [
+    "Garios is the Emperor of the Western Empire and supreme commander of the army."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "A, and at the same time supreme commander of the army—he loves his soldiers like his own sons, but treats the common folk like scrap paper."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_w"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "commoner",
+          "notable",
+          "townsfolk",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Garios is our emperor! Back when he proclaimed himself emperor, he sent men everywhere to force us to shout 'Long live Emperor Garios!' Anyone who hesitated for even a second had their head lopped off. He's an endless warmonger too—thankfully our Central Plains are rich, or life would be unbearable. Now the emperor is B, and life is harder than ever."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_w"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Long live Emperor Garios! He leads us to victory, shares the spoils with us, and shares our hardships and joys—we will support him forever!! Rhagaea and Lucon are two fools; how could they compare to our great Generalissimo? A"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Garios is a warmonger with nothing but a pack of kasar ruffians under his command. He openly defied Empress Rhagaea's edict to submit and draped himself in the purple robe as a self-proclaimed emperor—utterly foolish and overreaching. A"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "A",
+      "Kind": "status|hero|is_alive",
+      "TargetId": "lord_1_7",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": "Garios is the Emperor of the Western Empire.",
+      "FalseText": "Garios was the old Emperor of the Western Empire; he is already dead."
+    },
+    {
+      "SourceText": "B",
+      "Kind": "kingdom_leader_name",
+      "TargetId": "empire_w",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

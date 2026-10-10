@@ -1,0 +1,128 @@
+{
+  "Id": "rule_Folk_Customs_Manorial_Ledgers",
+  "Keywords": [
+    "Manorial Ledgers"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "A manor was sustained by granaries, tenants, mills, and patience, not just by swords hanging in the halls. The lord's wife, steward and bachelor can see whether the year's harvest is good in the account book, and the farmer can feel the master's temperament from the taxes and labor; an account book that remembers it too clearly, can also be more feared than a spear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Manorial Ledgers"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Manorial Ledgers"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Manorial Ledgers"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Manorial Ledgers A manor was sustained by granaries, tenants, mills, and patience, not just by swords hanging in the halls. The lord's wife, steward and bachelor can see whether the year's harvest is good in the account book, and the farmer can feel the master's temperament from the taxes and labor; an account book that remembers it too clearly Whether it is valid depends on who can grant the rights, collect the consideration, and actually make the judgment come to fruition in the event of default."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Manorial Ledgers A manor was sustained by granaries, tenants, mills, and patience, not just by swords hanging in the halls. The lord's wife, steward and bachelor can see whether the year's harvest is good in the account book, and the farmer can feel the master's temperament from the taxes and labor; an account book that remembers it too clearly If a rule is practiced over and over again, it will find its way into rituals, crafts, and prayers; if it is sustained only by fear, cracks will show at the onset of a crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Manorial Ledgers A manor was sustained by granaries, tenants, mills, and patience, not just by swords hanging in the halls. The lord's wife, steward and bachelor can see whether the year's harvest is good in the account book, and the farmer can feel the master's temperament from the taxes and labor; an account book that remembers it too clearly They remember taxes, grain, labor, relief and who can speak for them; these grand names will eventually fall on the family's rice pot."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Manorial Ledgers: A manor was sustained by granaries, tenants, mills, and patience, not just by swords hanging in the halls. The lord's wife, steward and bachelor can see whether the year's harvest is good in the account book, and the farmer can feel the master's temperament from the taxes and labor; an account book that remembers it too clearly"
+  ]
+}

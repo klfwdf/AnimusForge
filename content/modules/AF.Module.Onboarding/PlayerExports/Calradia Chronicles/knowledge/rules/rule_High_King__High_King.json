@@ -1,0 +1,308 @@
+{
+  "Id": "rule_High_King",
+  "Keywords": [
+    "High King",
+    "High King of Battania",
+    "King of Battania",
+    "Clan co-leader"
+  ],
+  "RagShortTexts": [
+    "The High King of Battania has absolute power in wartime and is restricted by the count in peacetime."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The High King is the supreme ruler of Battania and the co-lord of all Battania clans. He was jointly elected by the counts of each clan at a meeting of elders, and was not hereditary like the emperor of the empire. In times of war, the High King has absolute power to command the entire clan; but in peacetime, his power is restricted by the counts and he cannot interfere in the internal affairs of the clan at will."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The High King is our co-lord of Battania and the voice of the Forest Spirit on earth. He was not born a king, but was elected as the most respectable person by the earls of each clan. The current High King earned this honor in the war against the Empire. Of course, the Council of Elders can also depose him if he betrays the clan's trust."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "As Count of Battania, I respect the High King, but my lands belong first to my clan. During the war, I responded to his call and led troops to fight because we needed a unified commander to fight against foreign enemies. But in normal times, taxation, justice, and land distribution are our Earl's own affairs. This is an ancient tradition and the foundation of our freedom as Battania people."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "townsfolk",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "High King? We usually don't feel his presence. Taxes were paid to the local earl, and lawsuits were decided by the earl's arbiter, who followed the earl's banner in battles. Only when several clans jointly send troops will we see the banner of the High King. To be honest, he is too far away from us."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "I have seen the High King. He certainly looked like a king - tall, majestic, with eyes like an eagle. But I have also heard that several counts from big clans are not completely convinced by him. The High King of Battania was never an absolute ruler, he had to constantly prove himself, otherwise someone else might be sitting in that seat at the next Council of Elders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The ‘High King’ of the Battania people was nothing more than a tribal leader. Their throne is not hereditary, and every time there is a replacement, they have to hold an 'elder meeting', quarrel endlessly, and even fight with each other. How can such a ruler have any real authority? As soon as the emperor of our empire issues an order, the entire province must execute it."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Although we Imperial people look down on Battania’s tribal system, we have to admit that a supreme king who can unify the will of all clans is a huge threat in wartime. He was able to assemble an amazing number of infantry and archers in a short period of time, causing us a lot of trouble in the forest."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Battania’s ‘High King’ system was defined as ‘temporary absolute power under a military electoral system’ in imperial historian Lucius Corellius’s Political Examination of the Borderers. This is a transitional form between tribal alliances and feudal kingdoms. The High King's power was immense in times of war, but the lack of a standing army, unified taxation, and an independent bureaucracy prevented Battania from forming a truly unified kingdom."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The High King of Battania and our king sound similar, but are far different in actual power. Our king is hereditary, the throne is passed down from generation to generation, and all barons across the country must be loyal to him unconditionally. And their supreme king is elected, and the clans may withdraw their support at any time. This loose structure is why we can continue to encroach on their land."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Although we, the barons of Vlandia, have disputes from time to time, we have a common king and a clear oath of allegiance. What about the Battania people? Their high king is only a nominal co-owner, and the earls below are doing their own thing. Once the new king comes to power, they may have to fight internally before deciding whether to go out in unison."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The High King of Battania is somewhat similar to the Grand Duke of Sturgia, both being elected war leaders. But once the boyars of Sturgia elected a grand duke, they would strictly abide by their oath until he died in battle or voluntarily abdicated. The counts of Battania, however, may turn against them at any time, and their high king is not sitting so firmly."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The tribes in the desert also have a similar system, which we call the ‘Sheikh of Sheikhs’. The High King of Battania was the 'Grand Sheikh' of their clan. But our sultan has greater power, for the desert requires absolute authority to distribute water and oases. The forests of Battania are so rich that they don't need a powerful king."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Battania’s High King system determines that it is difficult for them to form a unified trade policy. We Aserai merchants who go to Battania to do business need to negotiate individually with each earl, rather than just having to come to an agreement with the royal family like in the Empire or Vlandia. This increases costs, but also means more opportunities."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The High King of Battania was completely different from the Khan of Khuzait. The Khan is the most powerful warrior and leader elected through the Naadam Assembly. Once elected, all tribes must obey unconditionally until the Khan dies or is defeated. The High King of Battania does not have this absolute authority, he is more like the host of a meeting."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer",
+          "mercenary"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The title of High King sounds very bluffing, but in Battania, the real power is the counts of the big clans. I have met many mercenary captains who prefer to negotiate business directly with the local earl instead of going to Marunas to find the High King. Because the earl can give you dinars and supplies immediately, the high king may have to hold a three-day meeting with a group of elders first."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "steward": 150
+        }
+      },
+      "Content": "Battania’s High King system is the core contradiction of its political culture. From a military perspective, it can quickly integrate the forces of various clans during foreign wars to form a strong combat effectiveness. This is the key to Battania's ability to survive in the cracks between the Empire and Vlandia to this day. But from the perspective of political integration, the High King lacked a standing army, unified taxation, and an independent bureaucracy, which prevented Battania from forming a truly unified kingdom. Any High King faces the same dilemma: the more he tries to centralize power, the more he arouses vigilance and resistance from other clans."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "High King",
+      "Kind": "bound_settlement_owner_leader_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

@@ -1,0 +1,170 @@
+{
+  "Id": "rule_Reikland",
+  "Keywords": [
+    "Reikland province_RK",
+    "Prince of Reikland_RK",
+    "Altdorf_RK",
+    "Rick River_RK",
+    "Reikland Guard_RK",
+    "Karl Franz_RK",
+    "Rickdorf_RK",
+    "Royal Zoo_RK",
+    "Imperial Council_RK"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Reikland is the heart and soul of the Empire, the direct domain of Emperor Karl Franz and home to Altdorf, the greatest city in the Old World. Altdorf is built on the edge of the Reik River. On the skyline lined with golden spiers stands the Imperial Parliament Building, the Great Temple of Sigmar, the Academy of Magic and the Royal Zoo. It is the core hub of the empire's political, military, religious and magical power. The Reik River originates from the World's Edge Mountains, flows through Iverland, traverses the entire Reikland, and then flows into the Marienburg Estuary. It is the most important trade and strategic waterway in the empire."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The people of Reikland - not that I'm trying to figure it out, but it's true - at least half of the other eleven provinces of the empire secretly hate Reikland, while the other half openly hate it. The people of Reikland walk with their chins raised higher than the altitude of Middenheim, because in the eyes of the people of Reikland, the empire is equal to Altdorf, and Altdorf is equal to the empire. The other provinces are just dependent territories that spend money to maintain border security. But to be fair, Reikland does deserve that arrogance: the demi-gryphons and imperial dragons in the Royal Zoo are the only domesticated flying behemoths in the entire old world, the eight colleges of the Magic Academy can simultaneously release magic storms that can destroy an entire legion, and the Reikland Guards are the most elite heavy infantry in the empire. Karl Franz himself is a once-in-a-century leader - a politician, warrior and diplomat at the same time, who can use Reikland's financial revenue to persuade the Elector Counts to allocate funds in the Imperial Council while riding a death claw in mid-air to tear the head of the Chaos Lord."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Reikland is the only province in the empire that does not need to protect itself - because the survival of the entire empire is tied to Reikland's fate. In his dual role as Emperor and Reikland Elector Count, Karl Franz's art of governing lies in balancing the Emperor's responsibilities to the entire empire with the Elector Count's obligations to the local nobility. The political ecology of Altdorf is the most complex in the entire empire - there are delegations of Elector Counts from twelve provinces in the Imperial Parliament (including the Marienburg Observer who calls himself the Free City), the cardinals of the Sigmar Church talk about theological orthodoxy in the court every day, and the archmages of the Magic Academy maintain a condescending indifference to the secular politics of the empire. The Reik Guard are the Emperor's personal force, but they swear allegiance to the position of the Emperor rather than Karl Franz himself - meaning that if the Elector Counts vote to create a new Emperor, the Reik Guard will switch loyalties overnight. Anyone who rules Reikland must always remember: you sit on the empire's richest tax sources and most powerful army, but you also live on the most dangerous power table in the entire Old World."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "Reikland's governance complexity far exceeds that of any other imperial province - because it simultaneously bears the superposition of three governance logics: the emperor's coordination responsibility for the entire empire, the Elector Count's jurisdictional obligations to local feudal lords, and Altdorf's unique municipal management pressure as a super city with a population of 450,000. The river transport tariff on the Reikland is the first pillar of Reikland's fiscal revenue, contributing more than 40% of the provincial tax revenue on average every year. But river transportation management involves eight different legal systems-the Imperial River Transportation Law, the Marienburg Free City Agreement, the Dwarf Trade Preference Treaty, and the \"customary tolls\" privately levied by the lords of each river crossing. The fiscal reforms introduced by Karl Franz attempted to standardize all these charges into a unified \"Imperial River Stamp Duty\", but this reform was jointly resisted by the Talabek Land and the Midden Land in the Imperial Diet, because standardization meant that the two provinces would lose the legal basis for levying additional tariffs on their respective river sections. The operating costs of the Royal Menagerie and the Academy of Magic are equally staggering—meat feed for the imperial dragons alone consumes three percent of the provincial budget each year—but these investments are an irreplaceable strategic advantage for Reikland, and any rational calculation would prove that they are worth every gold coin."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "As a female noble based in Altdorf, your most profound realization is that the city beneath your feet has the most opportunities and as many dangers in the entire empire. The court balls at Altdorf were the most gorgeous in the Old World—the duchesses of Bretonnia sailed specially for the annual gala at the Rieck—but there was a dagger behind every smile. The female nobles here have more channels for political participation than anywhere else in the empire: the Emerald Academy and Amber Academy in the magic academies have a considerable number of female archmages, the Sisters of Sigmar answer directly to the Archbishop rather than any secular men, and there are also female experts among the animal trainers of the Royal Zoo. But the price of power is cruel: Altdorf's aristocratic social circle is a sophisticated information market. Your every absence will be interpreted as some kind of political signal, your choice of dance partner will be recorded in a minister's memorandum, and the color of your clothes may even be interpreted as a heretical tendency by a cardinal of the Sigmar Church. In Altdorf, a woman's power comes not from the sword, but from which secrets she knows—and when and to whom she tells them."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Franz family has controlled Reikland for more than five generations, but their access to the imperial throne was only a matter of Karl's generation. Prior to this, Altdorf's Elector Count was only \"the richest among the twelve princes\", not \"the master of the twelve princes\". Karl Franz's grandfather - also named Karl - personally led the Reik Guards during the Norsca siege of Altdorf and died on the bridge of the Reik River. This blood sacrifice earned the Franz family political capital beyond all other imperial noble families. Running the power of your family in Reikland means you have to bet on four card tables simultaneously: political votes in the Imperial Senate, theological debates in the Church of Sigmar, economic games in the Altdorf Chamber of Commerce, and military fortifications on the Reik River. Success or failure in any single area is not enough to determine your family's fate - but the support of the Academy of Magic or the Royal Menagerie can. Key tip: don't try to please everyone, make yourself irreplaceable - if your family controls a specific supply of feed required by the Imperial dragons, or if your private library contains a certain rare manuscript of the Eight Winds of Magic, your family will never be excluded from the core of power in Altdorf."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Altdorf – Mercenaries who have spent time in this city will never be short of stories to tell. I have carried dwarven iron ingots at the Reik River dock, stood guard at the entrance of the Imperial Parliament Building (the job was not tiring but boring enough to make you question your life), and also helped in the Royal Zoo - when the Imperial Dragon stares at you from the cage, you will feel that all the big green guys you have dealt with before are like pets. The employment market in Altdorf is the most saturated in the empire. If you throw a stone in the tavern, you can hit three veterans who claim to be able to stand alone against an Orc army - at least two of them are bragging. It is easier for truly experienced mercenaries to find a job in Altdorf than to find a good job: wealthy nobles usually do not leave their safety to strangers, and they have their own family guards. But the Academy of Magic occasionally recruits for escort missions—such as escorting an archmage carrying dangerous magic items from Altdorf to Middenheim—and the rewards are high, as are the stakes, since what you're escorting may be more dangerous than the swords of your enemies."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Altdorf Chamber of Commerce is one of the most powerful merchant organizations in the empire. All trade in the Reik River from the World's Edge Mountains to the sea—the runeiron of the dwarves, the cattle of the Iverland, the artillery of the Wesenland, the lumber of the Talabekland—ultimately goes through Altdorf's market pricing. The rules of commerce here are as complex as Imperial law: you're dealing not with one currency, but with a market in which crown gold coins, dwarven silver ingots, Marienburg bills of exchange, and Breton gold francs circulate simultaneously. The core authority of the Altdorf Chamber of Commerce is the \"Rik River Transport Committee\" - an informal organization composed of eleven merchant representatives. By controlling the storage and transshipment hubs along the Rik River, they essentially determine the price fluctuations of the entire empire. Membership of the committee is not public - it is said that the only criterion for election is that you can dine with at least three of the Elector Count's economic advisers in a box at the White Hart Hotel opposite the Reichstag. The most important lessons I learned in my twenty years in business in Altdorf were: never hoard grain during the Reikland flood season, and never short Reikland arms futures on the day of the Emperor's parade."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Reikland - the heartland province of the empire, the emperor's direct domain, the seat of Altdorf, the political and magical center of the old world",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Reikland Imperial Province Altdorf Directly under the Emperor's jurisdiction"
+  ]
+}

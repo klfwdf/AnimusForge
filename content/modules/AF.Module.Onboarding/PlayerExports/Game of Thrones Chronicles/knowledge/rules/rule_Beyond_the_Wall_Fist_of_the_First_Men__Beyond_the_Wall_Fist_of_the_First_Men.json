@@ -1,0 +1,151 @@
+{
+  "Id": "rule_Beyond_the_Wall_Fist_of_the_First_Men",
+  "Keywords": [
+    "Fist of the First Men"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Entry The Fist of the First People is a high hill in the Ghost Forest outside the Great Wall. It is shaped like a giant's fist, hence its name. It is not a town, but it is a rare highland in the northern wilderness: standing on the peak can look across the sea of ​​trees into the distance, and the slope at the foot of the peak can also form a temporary camp The name of the First Men indicates that this is considered part of a very ancient land, and the surrounding forests, snow, beasts and silence are more real than any map boundary. Both Night's Watch and the free folk may use it as a waypoint, a rallying point, or a shelter, but its value comes from the terrain itself, not a single variable action. Fist Peak has always been just a stone in the wilderness that allows people to see farther and be seen more easily."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Fist of the First Men"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Fist of the First Men"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "scholar",
+          "wanderer",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Fist of the First Men"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Fist of the First Men The Fist of the First People is a high hill in the Ghost Forest outside the Great Wall. It is shaped like a giant's fist, hence its name. It is not a town, but it is a rare highland in the northern wilderness: standing on the peak can look across the sea of ​​trees into the distance, and the slope at the foot of the peak can also form a temporary camp. Whether it is valid depends on who can grant the rights, collect the consideration, and actually make the judgment come to fruition in the event of default."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Fist of the First Men The Fist of the First People is a high hill in the Ghost Forest outside the Great Wall. It is shaped like a giant's fist, hence its name. It is not a town, but it is a rare highland in the northern wilderness: standing on the peak can look across the sea of ​​trees into the distance, and the slope at the foot of the peak can also form a temporary camp. The distant system is not empty talk only if it can be implemented in campfires, city gates and inns."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Fist of the First Men The Fist of the First People is a high hill in the Ghost Forest outside the Great Wall. It is shaped like a giant's fist, hence its name. It is not a town, but it is a rare highland in the northern wilderness: standing on the peak can look across the sea of ​​trees into the distance, and the slope at the foot of the peak can also form a temporary camp. If a rule is practiced over and over again, it will find its way into rituals, crafts, and prayers; if it is sustained only by fear, cracks will show at the onset of a crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Fist of the First Men The Fist of the First People is a high hill in the Ghost Forest outside the Great Wall. It is shaped like a giant's fist, hence its name. It is not a town, but it is a rare highland in the northern wilderness: standing on the peak can look across the sea of ​​trees into the distance, and the slope at the foot of the peak can also form a temporary camp. They remember taxes, grain, labor, relief and who can speak for them; these grand names will eventually fall on the family's rice pot."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Fist of the First Men: The Fist of the First People is a high hill in the Ghost Forest outside the Great Wall. It is shaped like a giant's fist, hence its name. It is not a town, but it is a rare highland in the northern wilderness: standing on the peak can look across the sea of ​​trees into the distance, and the slope at the foot of the peak can also form a temporary camp."
+  ]
+}

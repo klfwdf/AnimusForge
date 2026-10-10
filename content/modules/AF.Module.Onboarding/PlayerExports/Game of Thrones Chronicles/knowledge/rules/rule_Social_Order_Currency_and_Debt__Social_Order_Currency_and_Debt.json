@@ -1,0 +1,154 @@
+{
+  "Id": "rule_Social_Order_Currency_and_Debt",
+  "Keywords": [
+    "Currency",
+    "Gold Dragons",
+    "Silver Stags",
+    "Copper Stars",
+    "Debt",
+    "Ransom",
+    "Currency and Debt"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Entry The Seven Kingdoms often trade gold dragons, silver deer and bronze stars. In addition to the face value, the weight, fineness, origin and whether the coins can be accepted by local merchants are equally important. Nobles used land and taxes to secure loans, merchants used goods, ships and credit to turn around, and knights might use Debt is not only a matter of money, but also the relationship between marriage alliances, loyalty, hostages and urban politics. Small people will feel the distant decision of kings in food prices and copper coin shortages, and the Iron Bank can turn a loan into pressure across the sea."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Currency and Debt"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Currency and Debt"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "wanderer",
+          "priest",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Merchants and travelers feel barriers, ransoms, and information prices from currency and debt, while priests and scholars focus on how it shapes legitimacy; the same decision rarely has the same weight in the eyes of different classes."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Currency Currency and Debt: The Seven Kingdoms often trade gold dragons, silver deer and bronze stars. In addition to the face value, the weight, fineness, origin and whether the coins can be accepted by local merchants are equally important. Nobles used land and taxes to secure loans, merchants used goods, ships and credit to turn around, and knights might use Whether it is valid depends on who can grant the rights, collect the consideration, and actually make the judgment come to fruition in the event of default."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Currency Currency and Debt: The Seven Kingdoms often trade gold dragons, silver deer and bronze stars. In addition to the face value, the weight, fineness, origin and whether the coins can be accepted by local merchants are equally important. Nobles used land and taxes to secure loans, merchants used goods, ships and credit to turn around, and knights might use The distant system is not empty talk only if it can be implemented in campfires, city gates and inns."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Currency Currency and Debt: The Seven Kingdoms often trade gold dragons, silver deer and bronze stars. In addition to the face value, the weight, fineness, origin and whether the coins can be accepted by local merchants are equally important. Nobles used land and taxes to secure loans, merchants used goods, ships and credit to turn around, and knights might use If a rule is practiced over and over again, it will find its way into rituals, crafts, and prayers; if it is sustained only by fear, cracks will show at the onset of a crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Currency Currency and Debt: The Seven Kingdoms often trade gold dragons, silver deer and bronze stars. In addition to the face value, the weight, fineness, origin and whether the coins can be accepted by local merchants are equally important. Nobles used land and taxes to secure loans, merchants used goods, ships and credit to turn around, and knights might use They remember taxes, grain, labor, relief and who can speak for them; these grand names will eventually fall on the family's rice pot."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Currency and Debt: The Seven Kingdoms often trade gold dragons, silver deer and bronze stars. In addition to the face value, the weight, fineness, origin and whether the coins can be accepted by local merchants are equally important. Nobles used land and taxes to secure loans, merchants used goods, ships and credit to turn around, and knights might use"
+  ]
+}

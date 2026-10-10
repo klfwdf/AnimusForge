@@ -1,0 +1,213 @@
+{
+  "Id": "rule_greatswords",
+  "Keywords": [
+    "Greatswords",
+    "Imperial Elite Infantry",
+    "Two-Handed Greatsword",
+    "Full Plate Armor",
+    "Elector Count's Guard",
+    "Never Retreat",
+    "Imperial Guard",
+    "Double-Edged Greatsword",
+    "Elite Bodyguard",
+    "Provincial Guard",
+    "Battlefield Bulwark",
+    "Imperial Swordsmanship"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Greatswords are the personal bodyguard regiments of the Empire's Elector Counts; armed with two-handed greatswords nearly as tall as a man and clad in heavy Dwarf-forged full plate armor, they are the most elite melee infantry in the Imperial order of battle. Their oath is etched upon the blade of every Zweihander—'Never Retreat': when the Empire's battleline wavers elsewhere, the Greatswords are the unbreakable iron pillar driven into the earth."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Greatswords are the ultimate embodiment of Imperial infantry honor—every boy in the Empire has dreamed of growing up to don that gleaming black plate armor, hoist a greatsword taller than himself upon his shoulder, and vanish behind the carved doors of a palace hall. Do you think Greatswords are merely bodyguards for the Elector Counts? Dead wrong. The Greatswords are the purest distillation of Imperial military tradition: selected from the finest soldiers of the State Troops through training so rigorous it borders on cruelty, including swinging a fifteen-pound two-handed greatsword in full plate armor for fifty consecutive cleaving strokes without slowing—any candidate who fails is sent straight back to the State Troops, never to be considered again. Their oath is the shortest and heaviest among all Imperial infantry vows—'Never Retreat'—only two words, yet anyone who has seen the Greatswords on the field of battle knows they are not speaking in metaphor. When the Greenskin tide in Ostermark shatters the handgunner line and the knights are surrounded by Orc Boar Boyz, who stands beneath the Elector Count's banner without yielding a single step? The men in black plate. The men who always stand at the very center of the battlefield—because that is where an unyielding axis is needed most. Our Greatswords are not protecting the life of any single Elector Count; they are protecting the spine of the entire Imperial army."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "On the tactical chessboard, the Greatswords represent an extraordinarily expensive yet irreplaceable strategic investment. The annual upkeep of a full-strength Greatsword company—typically around forty men—roughly equals that of two regular halberdier companies. Their proper role on the battlefield is not as the primary offensive spearhead—infantry wearing fifty pounds of full plate armor and swinging fifteen-pound greatswords suffer immense stamina drain during a frontal assault, able to sustain peak combat intensity for fifteen minutes at most. The true value of the Greatswords manifests at two critical junctures: first, when the center of the battleline faces the risk of a catastrophic breach, the Greatswords can act as a 'human dyke' by virtue of a formation density that ordinary infantry simply cannot budge; second, when elite enemy units—such as Chaos Warriors or Orc Big 'Uns—punch through the forward defenses, the Greatswords are among the very few infantry units in the Imperial army capable of matching such monsters blow for blow in individual combat. Yet any commander employing Greatswords must bear in mind one inviolable iron rule: Greatswords must be committed at the turning point of a battle, not its attrition point—because losing a single Greatsword means losing a master swordsman who took at least five years to train, and the Empire has no factory for mass-producing swordmasters on short notice."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "The origins of the Greatsword regimental system can be traced back to the 'Reikland Hundred Guard' around IC 300—the earliest institutionalized elite guard in the Empire, initially formed from one hundred soldiers who had displayed extraordinary valor in the wars against the Greenskins, whose sole duty was to safeguard the personal safety of the Elector Count of Reikland on the battlefield. By around IC 950, this institution had gradually expanded to the other provinces, with each Elector Count's guard establishment ranging from forty to one hundred men. The standardization of the Greatswords' weaponry was championed around IC 1300 by Elector Count Fritz IV of Middenland—who decreed that a standard greatsword must measure no less than five feet eight inches in length, with a blade width between three and three-and-a-half inches, a weapon still technically referred to today as the 'Fritz-pattern Zweihander.' Within the training regimen of the Greatswords lies a unique rite almost unrecorded in official texts—the 'Blade-Inscribing Ceremony': prior to formal induction, every candidate must personally carve his oath of fealty onto his training sword, which is then cast into the forge furnace and melted down to form a strip of core-steel inside the formal greatsword he will carry thereafter. This ritual originated from the ancient Unberogen tribal custom in which priests blessed warriors' weapons, though its practical execution has been considerably simplified across the Imperial provinces today—most provinces now directly use prefabricated blade-cores from Dwarf smithies, retaining the inscription step purely for ceremonial significance. Another tradition of the Greatswords—the 'Vigil of the Sword'—is still strictly enforced to this day: on his first night guarding the Elector Count's bedchamber, a newly inducted Greatsword must stand motionless holding his blade through the entire night, and should he waver in the slightest, his qualification is revoked on the spot and he is returned to his original unit. The longest vigil recorded in the archives of the Imperial Warchencellery belongs to a Carroburg and Reikguard Greatsword named Hans Lowenblatt, who in IC 2330 stood motionless for thirty-two straight hours keeping vigil for the soon-to-be-crowned Magnus the Pious—after the ceremony concluded, he was reportedly permitted to salute the Emperor while lying flat in bed."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Beneath the armor of the Greatswords, women are not accepted—at least not officially. The traditional selection criteria for Imperial Greatswords require candidates to stand at least six feet two inches tall with an arm span sufficient to wield a regulation Zweihander—physiological standards that virtually exclude women from selection altogether. Yet I have seen an exception: within my own provincial guard, a female swordsmanship instructor once defeated three Greatsword candidates in fair bouts with wooden blades during the sword-testing trials, thereby earning informal permission to walk the halls of the Elector Count's palace wearing a greatsword under the title of 'Master of Etiquette' rather than 'Greatsword.' Her presence in the castle sparked endless whispered rumors and no fewer than ten letters of protest from moral inquisitors of the Cult of Sigmar—yet no one dared question her swordsmanship to her face, just as no one questions the legitimacy of a hurricane. Far too many walls within the military traditions of the Empire are built of timber rather than iron—they look solid, but if you actually ram into them, you will always find that several are in fact doors."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The oath ceremony of our family's Greatsword guard differs from elsewhere—they do not swear fealty to the Elector Count, but to the bloodline and coat of arms of our house. This is a legal niche our family spent nearly a century carving out of Imperial edicts: traditionally, Greatswords owe allegiance solely to an Elector Count, yet through generations of intermarriage with the Elector Count's house of Reikland—and a secret pact that has never existed on paper but has been honored for six generations—our house maintains an informal family Greatsword guard. Every swordsman in this guard was born within our family castle, received his first training blade from our family smithy, and swore his oath to Sigmar in our family chapel. This guard never steps outside the bounds of our castle estates—which means the legality of their military commissions is never formally scrutinized by the Imperial Diet. In the dark undercurrents of Imperial noble politics, possessing one's own Greatsword guard is more than a military safeguard; it is a symbol—proclaiming that your house is no longer merely a vassal serving the Emperor, but a semi-autonomous dynasty capable of maintaining its own miniature empire."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "As a mercenary who spent his youth mixed in among the Talabecland State Troops, my feelings toward the Greatswords are a blend of awe and dark humor. On the parade ground, what you see are hulking men in gleaming black plate swinging their greatswords in absolute unison, the arc of every cleave looking as though it were measured with a ruler—so dashing it takes your breath away. But when you stand beside them in the front rank on a real battlefield, you realize what is truly terrifying about them is not their swordplay, but their inhuman endurance: a man whose breastplate has just been caved in by a Chaos Warrior's axe can bellow 'For Sigmar!' before he falls and drive the point of his blade backhand into his killer's throat. Greatswords are not gods—they die on the battlefield too, and often die the fastest, because their black plate armor makes them the most conspicuous targets on the field. I once heard a surviving Greatsword on the Ostermark border speak the honest truth after too much ale: 'No man comes out of his first real battle without fear—but what we fear has never been dying; it is dying in the instant of stepping backward. I will not let go of that sword even in death, not because of honor, but because the moment you take one step back, the entire battleline behind you starts stepping back because of you.' Then he slumped over the tavern table fast asleep, while I spent over half the night chewing on those words."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Within my trade network, the equipment supply chain for the Greatswords is a niche market with stable profits but an extraordinarily high barrier to entry. A standard suit of Greatsword full plate armor consists of at least thirty-six individual steel plates that must undergo six rounds of forging, three heat treatments, and two surface-hardening processes in the armory—a single suit takes four months to produce and costs between one thousand and one thousand three hundred Imperial Gold Crowns. Their greatswords are even greater jewels of metallurgy: the blade of a qualified Zweihander must achieve a continuous weight-gradient taper fromforte to tip so that the strain on the wrists during repeated swings does not exceed human limits—a balanced-forging technique mastered by fewer than twenty workshops across the Imperial Smiths' Guilds, roughly half of which are Dwarf smithies. This means that whenever war presses hard upon the Empire, the equipment supply line for the Greatswords depends heavily on Dwarf delivery schedules—and Dwarfs never rush a delivery, for their ancestral guild codes explicitly stipulate that hastening craftsmanship is tantamount to desecrating it. Over thirty years of dealing with Dwarf artisans, I learned to stop urging them—and instead stockpile a batch of greatswords in my warehouses ahead of time, waiting for the next war to send them where they belong."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Never Retreat—the oath of the Greatswords, the shortest and heaviest of all Imperial infantry oaths",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Greatswords are the personal bodyguards of the Elector Counts of the Empire"
+  ]
+}

@@ -1,0 +1,63 @@
+{
+  "Id": "rule_Golden_Boar_Corps",
+  "Keywords": [
+    "Golden Boar Corps"
+  ],
+  "RagShortTexts": [
+    "The Golden Boars are a mercenary group of Vlandia ex-soldiers."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Golden Boar Corps is a mercenary group composed mainly of Vlandians, and the vast majority of its members are retired soldiers. Unable to re-adapt to civilian life in peacetime, these people chose to remain in the war as mercenaries, seeking to survive in a long-term combat situation. The Legion has a reputation among Calradia's various mercenary groups for its lack of discipline and despicable behavior. When war breaks out and their employers allow them to move around freely, corps members often become a nuisance in the countryside around their garrison, causing serious intrusion into civilian property and daily life. However, similar to most mercenary organizations, the Golden Boar Corps knows that its reputation is directly related to future employment prices and contract opportunities. Therefore, during their employment, they usually strictly fulfill the terms of the contract and practice their combat skills diligently, with special emphasis on training in crossbow shooting, to ensure that the employer considers the commission to be worth the money."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Golden boar? Isn't that the descendant of our own Vlandia family? What's there to say about soldiers who can't farm when they come back and go out to sell their lives in exchange for money? They were making a bit of a fuss, but when the war ended, they didn't go back to town to drink and spend money? Tavern owners, blacksmiths, brothels, who doesn't make money from them? As for destroying crops and injuring a few people, that doesn't happen every day. Besides, they are using our banner outside. The more bad our reputation is, the more people from other countries will be afraid of us Vlandians. What's wrong with that?"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Those wild boars in Vlandia? A bunch of beasts in human skin. Being a soldier is a fool, and you can do nothing but murder and set fire. I heard that they couldn't even stay in their hometown and were driven out to become mercenaries. He would run around and if things didn't go his way, he would set up stalls and beat people up. Those masters also paid them to fight, and after the war, they just left it in the countryside and ignored it. The ones who suffered were not those of us who farmed. Let me tell you, with all this stuff in Vlandia, what kind of place could it be? It's better for them to kill each other and not harm others."
+    }
+  ],
+  "TextMappings": []
+}

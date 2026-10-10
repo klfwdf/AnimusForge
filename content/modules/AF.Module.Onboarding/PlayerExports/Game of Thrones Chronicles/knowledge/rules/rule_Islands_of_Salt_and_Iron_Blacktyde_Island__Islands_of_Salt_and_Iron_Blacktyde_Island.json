@@ -1,0 +1,152 @@
+{
+  "Id": "rule_Islands_of_Salt_and_Iron_Blacktyde_Island",
+  "Keywords": [
+    "Blacktyde Island",
+    "House Blacktyde (Islands of Salt and Iron Blacktyde Island)"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Kuroshio Island is an island in the Iron Islands, connected to the traditional territory of the Kuroshio family. The black tide can not only refer to the shadow of the reef shore, but also fits the reverence of the islanders for the sea: the tide gives them fish, salt and navigation, but it also takes away boats, roofs and relatives in one night. The Kuroshio family retains their beliefs and family memories in Ironborn society, but life on the island is still subject to the same restrictions - poor soil, limited wood, complex waterways, and long winter supplies. Kuroshio Island is not an abstract pirate den, but a community that needs to repair ships, store salt, guard wells, and wait for the weather to improve."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Blacktyde Island Local families also relied on salt fish, ore, barren fields, sheltered anchorages, and longships to return home; if any road, well, or dock failed, the price would fall first on them."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Blacktyde Island Entry Blacktyde Island"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Blacktyde Island They will also recognize the accents, laws and credentials of the Iron Islands; reputations may travel great distances from taverns, but true distances must still be measured by wheel, oar or horse's hoof."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Blacktyde Island Entry Blacktyde Island"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Blacktyde Island If you can supply supplies, avoid danger, and find a guide, it is worth marking in your itinerary; if you don't have these three things, no matter how loud your family name is, it won't be able to save the lost."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Blacktyde Island A stronghold was therefore not just a lord's hall, but also a place where weddings and funerals, vows, labor and local memories recurred."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Blacktyde Island They care about salt fish, ore, barren fields, sheltered anchorages, and the return of longships. They also look at whether seeds are left after collecting grain and whether the city gates are open in times of disaster. When people from afar see coats of arms, what they see is whether there will be food to eat tomorrow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Blacktyde Island: Kuroshio Island is an island in the Iron Islands, connected to the traditional territory of the Kuroshio family. The black tide can not only refer to the shadow of the reef shore, but also fits the reverence of the islanders for the sea: the tide gives them fish, salt and navigation, but it also takes away boats, roofs and relatives in one night. The Kuroshio family retains their beliefs and family memories in Ironborn society, but life on the island is still subject to the same restrictions - poor soil, limited wood, complex waterways, and long winter supplies. Kuroshio Island is not an abstract pirate den, but a community that needs to repair ships, store salt, guard wells, and wait for the weather to improve."
+  ]
+}

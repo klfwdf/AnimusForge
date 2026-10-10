@@ -1,0 +1,153 @@
+{
+  "Id": "rule_World_Mechanics_Dragon_Eggs",
+  "Keywords": [
+    "Dragon Eggs",
+    "Petrified Dragon Eggs",
+    "Hatching Dragons",
+    "Dragonstone Rock"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The shell of a dragon egg is as hard as stone and covered with scales of different colors. It may appear cold to the touch, or it may warm up due to proximity to a heat source. After the decline of the dragon clan, the unhatched egg became an extremely rare treasure: the rich kept it as a priceless collection, and the Targaryen once placed the dragon egg in the royal baby's cradle, so that the blood and the symbol of the dragon were connected from birth. There is no simple method of hatching that can be repeatedly verified by maesters; heat, blood, fire, dreams, and magic are intertwined in many legends. Any bearer can attempt to interpret a dragon egg, but there is no guarantee that the egg will contain life."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "valyrian",
+          "dragonstone"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "priest",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Targaryen tradition regards dragon eggs as a symbol of the continuation of the bloodline. Some people believe that it is waiting for the right owner, while others only see a sleeping stone; neither view dares to hand it over to outsiders easily."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "notable",
+          "artisan"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Merchants will value the dragon eggs and find that there is no normal market to measure them. Selling an egg may bring you a castle-like wealth, or it may put the possibility of rewriting a dynasty in the hands of the buyer."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Ordinary people are often curious and afraid of dragon eggs at the same time. If it never hatches, it is just a gem for noble people; if it cracks open one night, the people living nearby will know whether the legend is true or false earlier than all the scholars."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Dragon Eggs Dragon eggs that are as hard as stone and come in different colors are not only rare relics and symbols of dynasty, but also contain hatching possibilities that no one can guarantee with common sense. Whether it is valid depends on who can grant the rights, collect the consideration, and actually make the judgment come to fruition in the event of default."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Dragon Eggs Dragon eggs that are as hard as stone and come in different colors are not only rare relics and symbols of dynasty, but also contain hatching possibilities that no one can guarantee with common sense. The distant system is not empty talk only if it can be implemented in campfires, city gates and inns."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Dragon Eggs Dragon eggs that are as hard as stone and come in different colors are not only rare relics and symbols of dynasty, but also contain hatching possibilities that no one can guarantee with common sense. If a rule is practiced over and over again, it will find its way into rituals, crafts, and prayers; if it is sustained only by fear, cracks will show at the onset of a crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Dragon Eggs Dragon eggs that are as hard as stone and come in different colors are not only rare relics and symbols of dynasty, but also contain hatching possibilities that no one can guarantee with common sense. They remember taxes, grain, labor, relief and who can speak for them; these grand names will eventually fall on the family's rice pot."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Dragon Eggs: Dragon eggs that are as hard as stone and come in different colors are not only rare relics and symbols of dynasty, but also contain hatching possibilities that no one can guarantee with common sense."
+  ]
+}

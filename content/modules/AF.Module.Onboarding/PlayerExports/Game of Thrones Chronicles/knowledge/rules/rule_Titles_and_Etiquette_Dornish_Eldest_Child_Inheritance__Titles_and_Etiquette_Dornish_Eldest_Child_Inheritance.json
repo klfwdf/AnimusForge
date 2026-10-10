@@ -1,0 +1,132 @@
+{
+  "Id": "rule_Titles_and_Etiquette_Dornish_Eldest_Child_Inheritance",
+  "Keywords": [
+    "Dornish Eldest-Child Inheritance"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Dorne recognizes that the eldest daughter has the same inheritance qualifications as the eldest son, which makes its family structure significantly different from that of the other seven kingdoms. The Dornish people regard this as a natural legal system, and foreign nobles sometimes have difficulty adapting; differences in inherited customs can become a real force in marriage alliances and diplomacy."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Dornish Eldest-Child Inheritance"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Dornish Eldest-Child Inheritance"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Dornish Eldest-Child Inheritance"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Dornish Eldest-Child Inheritance Dorne recognizes that the eldest daughter has the same inheritance qualifications as the eldest son, which makes its family structure significantly different from that of the other seven kingdoms. The Dornish people regard this as a natural legal system, and foreign nobles sometimes have difficulty adapting; differences in inherited customs can become a real force in marriage alliances and diplomacy. Whether it is valid depends on who can grant the rights, collect the consideration, and actually make the judgment come to fruition in the event of default."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Dornish Eldest-Child Inheritance Dorne recognizes that the eldest daughter has the same inheritance qualifications as the eldest son, which makes its family structure significantly different from that of the other seven kingdoms. The Dornish people regard this as a natural legal system, and foreign nobles sometimes have difficulty adapting; differences in inherited customs can become a real force in marriage alliances and diplomacy. If a rule is practiced over and over again, it will find its way into rituals, crafts, and prayers; if it is sustained only by fear, cracks will show at the onset of a crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Dornish Eldest-Child Inheritance Dorne recognizes that the eldest daughter has the same inheritance qualifications as the eldest son, which makes its family structure significantly different from that of the other seven kingdoms. The Dornish people regard this as a natural legal system, and foreign nobles sometimes have difficulty adapting; differences in inherited customs can become a real force in marriage alliances and diplomacy. They remember taxes, grain, labor, relief and who can speak for them; these grand names will eventually fall on the family's rice pot."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Dornish Eldest-Child Inheritance: Dorne recognizes that the eldest daughter has the same inheritance qualifications as the eldest son, which makes its family structure significantly different from that of the other seven kingdoms. The Dornish people regard this as a natural legal system, and foreign nobles sometimes have difficulty adapting; differences in inherited customs can become a real force in marriage alliances and diplomacy."
+  ]
+}

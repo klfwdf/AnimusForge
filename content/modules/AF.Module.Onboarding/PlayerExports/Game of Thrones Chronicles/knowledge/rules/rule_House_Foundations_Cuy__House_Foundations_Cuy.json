@@ -1,0 +1,131 @@
+{
+  "Id": "rule_House_Foundations_Cuy",
+  "Keywords": [
+    "Cuy",
+    "House Cuy"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Kui family rules Yangwu City and is a noble family in the Reach. This place is close to the southern road. The warm sunshine, farm harvests and traveling caravans together constitute the family wealth. Kuy's status was not known for its large military power, but rather relied on the management of the manor, the fulfillment of vassal responsibilities, and the maintenance of useful and discreet relationships among powerful families. The name of Yangwu Castle is bright, but the life of the lord is still determined by account books, harvests and knightly obligations."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "reach"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Lords of the Reach regard Cuy as their local home on the southern roads. If Yangwu City can ensure the passage of the brigade, deliver food on time and respond to the call, it will be enough to maintain its position among the vassals of Highgarden."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "reach"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Local farmers are familiar with working under the scorching sun, and they also know that a drought is enough to make the beautiful coat of arms lose its luster. What they valued was whether the water canals, warehouses and lords could still claim according to the standards of the good years in the lean years."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Cuy The Kui family is based in Yangwu City and is a small noble in the southern part of the Reach. The family fortune is shaped by the fields, sunshine and border roads. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Cuy The Kui family is based in Yangwu City and is a small noble in the southern part of the Reach. The family fortune is shaped by the fields, sunshine and border roads. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Cuy The Kui family is based in Yangwu City and is a small noble in the southern part of the Reach. The family fortune is shaped by the fields, sunshine and border roads. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Cuy The Kui family is based in Yangwu City and is a small noble in the southern part of the Reach. The family fortune is shaped by the fields, sunshine and border roads. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Cuy: The Kui family is based in Yangwu City and is a small noble in the southern part of the Reach. The family fortune is shaped by the fields, sunshine and border roads."
+  ]
+}

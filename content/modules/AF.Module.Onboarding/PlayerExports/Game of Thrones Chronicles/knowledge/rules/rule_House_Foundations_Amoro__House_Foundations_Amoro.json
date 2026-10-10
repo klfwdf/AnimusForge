@@ -1,0 +1,133 @@
+{
+  "Id": "rule_House_Foundations_Amoro",
+  "Keywords": [
+    "Amoro",
+    "House Amoro"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Elmoro family belongs to the urban elite of Qarth, and their family business is supported by seaports, caravans, mansions and connections with powerful people. The business groups close to the family will change with their interests, and one momentary choice may not define every future transaction; anyone who wants to maintain dignity in Qarth must understand the etiquette of purebreds, the competition of business groups such as the Thirteen Giants, and the impact of the red wasteland road on prices. Qarth calls itself the center of the world with its triple walls, seaports, and trade across the Red Waste. Groups such as the Purebreds, the Thirteen Giants, the Tourmaline Brotherhood and the Ancient Spice Guild compete with each other. Under the gorgeous etiquette are the calm calculations of trade routes, slaves and debts."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "qartheen"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Qarth's dignitaries would look at Elmoro and ask which trading group it traveled with, how much cargo it had, and whether it could maintain respectability within the etiquette of purebreds. Here the smile and the bare-breasted silk gown may be part of the deal."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "qartheen"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "slave",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Qarth dockworkers, slaves, and traders came to the harbor to see Elmore from the price of water, grain, and caravans. The powerful call the city the center of the world, but the bottom knows better. A few days of disconnection in the wasteland is enough to make the center hungry and thirsty."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Amoro Elmore is a powerful family in Qarth, and is at the intersection of purebred etiquette, business group competition, seaport wealth, and wasteland trade routes. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Amoro Elmore is a powerful family in Qarth, and is at the intersection of purebred etiquette, business group competition, seaport wealth, and wasteland trade routes. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Amoro Elmore is a powerful family in Qarth, and is at the intersection of purebred etiquette, business group competition, seaport wealth, and wasteland trade routes. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Amoro Elmore is a powerful family in Qarth, and is at the intersection of purebred etiquette, business group competition, seaport wealth, and wasteland trade routes. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Amoro: Elmore is a powerful family in Qarth, and is at the intersection of purebred etiquette, business group competition, seaport wealth, and wasteland trade routes."
+  ]
+}

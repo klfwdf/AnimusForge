@@ -1,0 +1,129 @@
+{
+  "Id": "rule_sharas",
+  "Keywords": [
+    "Salas",
+    "Land of Longxing"
+  ],
+  "RagShortTexts": [
+    "Shalas is a port city in Vlandia controlled by the Dai Kortan family, known as the Land of Dragons"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": [
+          "clan_vlandia_4"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "hero:lord_4_16"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Sharas is mine. No one dares to refute this statement. The Day Cortans had held on to this port since the time of Osric, for one hundred and fifty years, holding on tighter than the Merlocks held on to the golden crown. The old nobles of the empire still call Sharas the \"Land of Longxing\" - Longxing is a fart, the dragon died long ago and the bones are rotten. Now the city's surname is Dai. The customs duties at the port, the commission from the fishing market, and the rent from the shabby villas by the bay all belong to me. This money supports my knights, feeds my ambition, and allows me to slam the table at the Royal Council and call Detel a coward without fear of him cutting off my fiefdom. He didn't dare. Without Sharath's gold, Vlandia's fleet would not even have enough supplies to sail out to sea. But I also have to admit that this city is so old that every brick is soaked with the ghost of the empire. Sometimes I stand on the city wall and look down. The old stone steps on the pier were still hewn during the Imperial era, and the dents on them were made by the feet of millions of Imperial people. I occasionally wonder whether, in another hundred and fifty years, the dents left by the people of Vlandia will be greater than those made by the people of the Empire. But this idea only stayed in my mind for a moment, and the next moment I started calculating how many points the tariffs could increase next season."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Salas is the purse strings of the Dai Kortan family and our money-spinner in Vlandia. The annual revenue of that port can equal the combined sum of several baronies in the interior. Ingatell dared to go sideways in the Royal Council because of the merchant ships and customs duties of Salas Port. But when we look at Salas, what we see is not Ingatel’s confidence, but business opportunities. Imperial merchants, Aserai camel caravans, and Khuzait fur traders crowded together in the bazaar of Shalas, and the goods were 20% cheaper than elsewhere. But we also have to admit that Incatel squeezed that city too hard. He was busy collecting taxes. The old stone steps on the pier were broken and no one repaired them. The breakwater on the bay that was left over from the Empire era was reinforced during the Osric era. Wealth comes too easily, and people don’t appreciate it."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Sharas has a lot of work, I admit that. There are people carrying goods at the wharf, and they can earn as much as three days inland in one day. But things there are also expensive. Buying a piece of bread is twice as expensive as here. The more you earn, the more you spend. In the end, it’s almost like farming at home. I heard that none of the people in that place remembered the empire and all recognized Vlandia’s rule. No matter what, I'm just going to stay here and listen."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "SHALLAS. The mention of this word in the Imperial Senate would elicit a moment of silence. Not out of fear, but out of shame. The empire began in that city. The ships of the first Kalad colonists docked in Sharas, the foundation of the Empire's first temple was laid in Sharas, and the Empire's first fleet set sail from Sharas. Later, the imperial capital was moved to Palavinos, and Salas took a back seat, but it was still the favorite seaside resort of the imperial nobility. Then the Vlandians came. Today Sharas is still called Sharas, but the flags on the city walls have changed colors, the tax collector at the port speaks with a Vlandian accent, and the villas left over from the imperial era are half-buried in the weeds on the coast and uncared for. The Dai Kortan family saw it as a money-making tool and had no idea what this city meant. Some history cannot be measured by tariffs, but telling the people of Vlandia this is an understatement."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Salas? That was Vlandia territory. My grandfather said that place was originally the oldest and oldest city in the empire, older than Baravinos, and that’s where the empire started. It's a pity that it belongs to the barbarians now. But to be honest, we ordinary people don't feel much about this kind of thing. The empire started hundreds of years ago. What does it have to do with us now? We also have to pay taxes on whoever controls the Sharas."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Sharath is a perfect historical specimen, encapsulating the change of civilization between the Empire and Vlandia. The first batch of Karad colonists landed here, and the foundation of the empire's first temple was laid here. Then the empire moved its capital north, and it became a resort for the nobles. Finally, it was taken over by the Vlandia barbarians and became the treasury for the Kortan family to challenge the king's power. Each change of ownership left layers of traces in the streets and alleys of the city. The most interesting comparison is the economic level: in the Empire era, Sharas was a consumption-oriented city, where nobles spent money instead of making money; in the Vlandia era, Sharas was an extractive city, and the Dai Kortan family taxed them to the point of being weak, but invested almost no money back into the maintenance of the city itself. In the long term, this extractive operation will drain the port of its vitality, but until then, Sharas remains one of Vlandia's most valuable assets."
+    },
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Salas has a lot of goods, and old imperial objects wholesaled by merchants from the market there occasionally come to us - old silverware, torn silk scraps, stone seals engraved with imperial letters, which were dug out of some noble villa. The vendors call these \"second-hand salads\", and the price is not high, so they are considered a rarity. As for the history of Sharas - the rise of dragons and so on, we have never heard of it, and we don't understand it very well. All I know is that it is now the large port of Vlandia, close to the sea, and the smell of fish is stronger than here."
+    }
+  ],
+  "TextMappings": []
+}

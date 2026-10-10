@@ -1,0 +1,156 @@
+{
+  "Id": "rule_World_Mechanics_Shivering_Sea",
+  "Keywords": [
+    "Shivering Sea",
+    "Eastwatch Sea Lanes",
+    "Pack Ice",
+    "Cold Sea"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Shivering Sea stretches between northern Westeros and the northern shores of Essos, affecting Eastwatch, Skagos, Ibben, and the Cold Sea routes beyond. The sea water is cold, foggy, gusty winds and ice floes can damage ship decks and masts, and the sailing window is especially short in winter. Fish, seals, cetaceans, furs, and timber attracted ships to adventure, while hypothermia, bad water, and the inability to reach shore were more common killers than pirates. Northern sailors would strengthen their bows, store grease and thick clothing, and also rely on local piloting knowledge to judge ice lines. The Shivering Sea connects the settlements on the edge of the map, but requires paying a price for the cold first for every exchange."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nightswatch",
+          "battania",
+          "skagosi"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "sailor",
+          "soldier",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "When people on the east coast look at the Shivering Sea, they first look at the ice and fog. When a southern captain asks how many days the voyage will take, the locals will ask how thick the hull is and whether they have enough oil and spare oars."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "ibbenese"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "sailor",
+          "merchant",
+          "artisan"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Iban whalers regarded the Cold Sea as their home, and would never call it docile. Behind every barrel of whale oil is the shadow of a ship that has been waiting for a long time and may not return."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Foreign rulers see routes from charts, scholars see climate from reports, and travelers see endless grayness from decks. Only the last perspective will truly make sense of distance."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Shivering Sea In the cold sea between the Wall and the northern shore of Essos, fog, ice floes, and short sailing seasons shaped whaling, fishing, and northern trade. Whether it is valid depends on who can grant the rights, collect the consideration, and actually make the judgment come to fruition in the event of default."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Shivering Sea In the cold sea between the Wall and the northern shore of Essos, fog, ice floes, and short sailing seasons shaped whaling, fishing, and northern trade. The distant system is not empty talk only if it can be implemented in campfires, city gates and inns."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Shivering Sea In the cold sea between the Wall and the northern shore of Essos, fog, ice floes, and short sailing seasons shaped whaling, fishing, and northern trade. If a rule is practiced over and over again, it will find its way into rituals, crafts, and prayers; if it is sustained only by fear, cracks will show at the onset of a crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Shivering Sea In the cold sea between the Wall and the northern shore of Essos, fog, ice floes, and short sailing seasons shaped whaling, fishing, and northern trade. They remember taxes, grain, labor, relief and who can speak for them; these grand names will eventually fall on the family's rice pot."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Shivering Sea: In the cold sea between the Wall and the northern shore of Essos, fog, ice floes, and short sailing seasons shaped whaling, fishing, and northern trade."
+  ]
+}

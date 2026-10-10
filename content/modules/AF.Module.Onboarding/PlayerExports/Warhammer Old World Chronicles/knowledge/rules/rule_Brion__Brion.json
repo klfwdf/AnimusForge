@@ -1,0 +1,158 @@
+{
+  "Id": "rule_Brion",
+  "Keywords": [
+    "Duchy of Brion_BR",
+    "Brion Territory_BR",
+    "Brion River Bridge_BR",
+    "Duke of Brion_BR",
+    "Brion Province_BR"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Duchy of Brion is located on the river Brion in central Bretonnia and is ruled by Duke Theodoric de Brion. The great river is Bretonnia's most important inland waterway, and the Duke of Brion controls some of its most critical stone bridges. Bridges and ferries gave the place a political and economic status far beyond its size."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Brion - the key to the river! Duke Theodoric was Bretonnia's best diplomatic mediator. The stone bridge over the Burien River connects the northern and southern principalities. Whoever controls the bridge controls the traffic in the kingdom. Whenever there was a dispute between the central principalities, the Duke's banquet hall became a mediation court."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The strategic significance of the Principality of Brion lies in its status as a transportation hub. The Breen River traverses central Bretonnia, and the movement of troops and caravans on both sides of the north and south banks all rely on the bridges here. Controlling Brion means being able to cut off enemy supply lines in time of war, and collecting the most generous bridge toll tax in Bretonnia in peacetime."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        }
+      },
+      "Content": "The economy of the Duchy of Brion is centered on transportation taxation and river trade. There are a total of seven stone bridges on the Burien River. Each bridge carries hundreds of caravans every day. The bridge tax is the largest financial source of the principality. In terms of river transportation, Brion has the largest timber transshipment terminal in Bretonnia - timber from the Gray Mountains is floated to the principalities via the Brion River. The principality is also home to the largest market in central Bretonnia due to its convenient transportation. The Brion Market in spring and autumn attracts merchants from all over the country. Duke Theodoric spent part of the bridge tax on bridge maintenance and river dredging, ensuring that trade routes remained open year-round."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "At Brion's court, information was valued over force. Duke Theodoric received envoys and merchants from all over the country every day, and as a noblewoman, I had the opportunity to hear many private messages at banquets and tea parties that men would not say in public. The women of Brion are among the most well-informed sources on modern Bretonnia."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null
+      },
+      "Content": "Our family estate occupies the most fertile stretch of land on the south bank of the Burien River. Duke Theodoric has great confidence in our family - because we are responsible for the maintenance and toll collection of one of the most important stone bridges. This privilege was granted by the Duke himself since his great-grandfather and is the most precious intangible asset of the family."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Stone Bridge of Brion is the busiest place in Bretonnia. Mule traders, traveling knights, and pilgrims traveling to the Holy Land all converged on these bridges. I worked as a waiter at an inn in Qiaotou for a season and listened to hundreds of different stories told by travelers from all over the country. The sound of the flowing river is Brion's eternal background music."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Business opportunities in Brion come from transportation. Nothing is produced here but everything is sold - because all the goods from the country flow here. In the Brion market you can buy olive oil from Carcassonne, dragon scale jewelry from Bastogne, and wine from Artois. Smart businessmen do not stay in Brion permanently, but use the market period to do short-term high-profit flipping transactions."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "The Duchy of Brion is located on the Brion River in central Bretonnia and is famous for its role as a key river bridge and transportation hub.",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Bretonnia central river bridge transportation hub"
+  ]
+}

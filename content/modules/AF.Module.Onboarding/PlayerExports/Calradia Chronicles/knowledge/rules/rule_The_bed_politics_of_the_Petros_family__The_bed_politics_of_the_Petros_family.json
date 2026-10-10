@@ -1,0 +1,85 @@
+{
+  "Id": "rule_The_bed_politics_of_the_Petros_family",
+  "Keywords": [
+    "House of Petros",
+    "Petros family bed sheet",
+    "Rhagaea Bedroom",
+    "Ila’s marriage",
+    "Patil changed his surname",
+    "Eutropius",
+    "Bloodline of Petros",
+    "Southern Empire Succession Crisis",
+    "Lycaron Harem"
+  ],
+  "RagShortTexts": [
+    "Half of the politics of the Petros family took place in Lycaron's palace - Rhagaea's bedclothes, Ila's marriage, and Patil's surname, together formed the three pillars of the family's power picture."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The rule of the Petros family in the Southern Empire was built on three pillars: Rhagaea's political skills, Ila's imperial blood, and Patil's administration. But the meeting point of these three pillars was not in the Senate or the Council Chamber—but in the privacy of the Lycaron Palace. The chamber of Rhagaea was one of the true political centers of the Southern Empire. The Queen receives vassals between the sheets, placates unruly lords, and bribes emissaries of swaying forces - for her, the body is not a weakness but an extension of power. Being summoned to the palace by the Queen late at night means entering her core decision-making circle. This approach caused criticism among the imperial aristocracy, but Rhagaea didn't care - the rules came from her native Darcy, where the harem was half the court. At the same time, Princess Ila's marital status is the most anxious issue within the Southern Empire. She is the only descendant of Emperor Arenicos, and the continuation of the Petros family's bloodline in the empire is entirely tied to her alone. However, Ila was more attracted to the heroes in the arena - the champions of the tourneys and the rising stars of the gladiatorial arena - rather than the noble son chosen by her mother for her. Every time news of her pregnancy and miscarriage came out, the atmosphere in Lucalon would be tense for several days. At the bottom of this family structure, Patil's position is the most subtle. He is Rhagaea's younger brother. He married his sister into the empire from Darcy and changed his surname to Petros. He managed the trade lines of Lycaron and Oenira in an orderly manner, but his son Eutropius - a young man who was raised as the next generation successor of the Petlos family - had no blood relationship with the former emperor Arenicos. As long as Ila does not give birth to a legitimate heir with the blood of Petros, this problem will not disappear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "south_empire"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "For those of us, the nobles of the Southern Empire who have supported the Petlos family for generations, the Queen’s private chamber is more important than the parliament hall. If you're summoned by the Queen late at night, you know what that means - not just a bedtime visit, but a political conversation, just on the pillow. Queen Rhagaea comes from Darcy - a place where people see nothing wrong with discussing politics in bed. Those of us who competed to be called into her bedroom were not competing for favor, but for a chance to speak in the council hall the next day. Princess Ila is another story. Her swordsmanship and riding skills make us proud, and her marriage makes us anxious. She is the only blood heir of the Petlos family - Queen Rhagaea's power comes from her being the widow of the late emperor, but the future of the Petlos family can only come from Ila's belly. She didn't like the sons from aristocratic families that her mother had chosen for her. She was obsessed with the champions in the arena. Every time news of her pregnancy and miscarriage came, we became more worried. It's not that she is not allowed to enjoy it - but the throne needs a child with the blood of Arenicos to inherit. Patiel is the younger brother of Rhagaea, the nephew of Drosius, the cousin of Penton, and the second in line of succession to the Southern Empire. He managed the trade route from Lycaron to Onila without leakage, and half of the prosperity of the Southern Empire was maintained by him. But his son Eutropius was raised as the successor of the house of Petlos - we all know that he had this idea in mind. The problem is that Eutropius's surname was Petrus, but he was not related by blood to the late emperor. No one dared mention it in front of the Queen, but we talked about it privately many times."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "In the Petros family of the Southern Empire, the woman who plays the most powerful tricks is that woman. It is said that Rhagaea has a bad reputation in the north and west because of her ability to win people over in bed - but people here know better that she relies not on beauty, but on judgment. She knows who needs what care at what time. Anyone who has stayed in the Southern Empire's court for a long time knows that the Queen's palace is the real court. As for Princess Ila - she is indeed a good player in the arena, but the bloodline of the Petlos family depends on her alone. She likes to sleep with gladiator champions and rising stars in the arena. This is nothing, the princess must have some entertainment. The problem was that she had never carried a child. Patil—Drosius's nephew and Rhagaea's younger brother—was loyal and managed the economy of the Southern Empire in a decent way. But the fact that his son was raised as his successor was wrong no matter how he thought about it - Eutropius did not have the blood of Emperor Arenicos in his body. Let me put it here: If Ila never gives birth to a legitimate heir, this problem within the Petlos family will explode sooner or later."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "north_empire"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Speaking of Rhagaea, that house of Petros—we in the Northern Empire have nothing good to say about it. The court of Rhagaea is a joke in our eyes: a foreign woman uses her body to maintain the alliance, a princess who does not want to give birth to an heir sits precariously on the future throne, her biological brother Patil (Drosius's nephew, Peng Tong's cousin) manages the money bag for their family, and his son does not even have the blood of Arenicos - this team can survive to this day only because of Lycaron's money. When the money runs out, what will the Petlos family do to convince the public? By Ira's sword? Or is it based on Patil's son's surname, which has no real meaning? Tsk, we'll wait and see."
+    }
+  ],
+  "TextMappings": []
+}

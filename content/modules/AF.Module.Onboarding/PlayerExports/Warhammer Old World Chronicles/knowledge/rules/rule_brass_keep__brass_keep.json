@@ -1,0 +1,205 @@
+{
+  "Id": "rule_brass_keep",
+  "Keywords": [
+    "Brass Keep_BRK",
+    "Chaos Champion of Nurgle_BRK",
+    "BrassKeep_BRK",
+    "Blighted of the Brass Keep_BRK"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Blighted of the Brass Keep are a Chaos warband entrenched within a ruined fortress in the northern Empire, led by a Chaos Champion devoted to Nurgle—whose body has been so thoroughly consumed by the decaying blessings of the Plaguefather that his original race is almost unrecognizable. The Brass Keep itself is an old, abandoned Imperial border citadel in a remote region of the northern Empire—across centuries of wind and rain, its walls and copper-sheathed roofs have oxidized into a sickly verdigris green, while the interior of the keep has been transformed by Nurgle's followers into a plague-greenhouse perpetually oozing viscous green ichor. The Blighted legion is renowned for its slow yet unstoppable resilience—Nurgle blesses their warriors with a pain-numbing resistance to rot that allows them to keep fighting even after sustaining mortal wounds."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "chaos_culture"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Brass Keep is a living cathedral we have dedicated to Grandfather Nurgle. Every drop of green ichor seeping from the walls is a kiss from Grandfather, and every spore drifting through the air is a blessing blown from his Garden. Our Champion can no longer remember when he last breathed air free of the stench of pus—nor does he need to remember, for Nurgle's embrace has transformed his lungs into a pair of organs that continuously secrete healing rot. Outside, those weaklings who refuse to let go of even the wholeness of their skin mock our appearance—let them mock! When our guts are hacked out, they crawl right back inside on their own, whereas when their guts are hacked out, they bleed to death slowly amidst their own shrieks. Grandfather loves every single one of us, and his love is the only thing that never decays with time."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Along the northern border of the Empire, the Brass Keep poses a uniquely chronic strategic threat—their advance is glacially slow, yet every inch of land they pass over is rendered uninhabitable for generations after being tainted by Nurgle's plagues. Conventional defensive delaying tactics cannot be used against the Blighted of the Brass Keep, because delay is tantamount to allowing more land to rot beneath their aura of pestilence. The most effective countermeasure is to wait until they march out from the Brass Keep on an expedition and subject them to concentrated annihilation in open country using massed flame-projectors—fire is the only effective means of purifying Nurgle's corruption. Even so, this must be carried out far from friendly settlements, because the smoke produced by burning those infected by Nurgle is itself contagious."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "In the study of the Chosen of Chaos, the Nurgle Champion of the Brass Keep belongs to the classic 'Endurance-Bestowal Type' of favored mortal—for Nurgle's manner of bestowing gifts differs fundamentally from that of the other three Chaos Gods. Khorne grants strength directly in the heat of a battle, Tzeentch reveals truth at a pivotal crossroads of choice, and Slaanesh opens perception at the peak of an extreme sensory experience, whereas Nurgle's blessings are cumulative—each time a favored mortal accepts a 'gift' from Nurgle, their body gains another layer of rot, another festering wound, another new organ sprouting beneath old skin. This process is slow, irreversible, and brings the agony of tissue breakdown at every step—yet Nurgle simultaneously bestows total numbness to that pain. After decades of cumulative transformation, the original racial traits of the Champion of the Brass Keep have become completely unrecognizable—the last eyewitness account recorded in Imperial intelligence files notes that with every step he takes, he leaves behind a footprint on the ground that continuously exhales pale green vapor, and when he speaks, the voice issuing from his throat contains a harmony of at least three distinct vocal registers at once—anatomical evidence that Nurgle has remodeled his vocal cords and attached several parasitic organisms to them."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Brass Keep lies roughly forty leagues due north of my domain—a distance that counts as safe in military theory, yet dangerous in epidemiology. The spores of Nurgle—those microbial clusters gathering in astonishing density within the rotting exudate on the walls of the Brass Keep—can be borne southward by the north wind to the northernmost villages of my estate, settling and multiplying in wells and livestock pens. Every morning when the north wind blows, the Sisters of Shallya on my estate examine well-water samples under a microscope—a technique I learned from a retired professor of natural philosophy from the University of Middenheim. That microscope is the strangest yet most indispensable single piece of equipment in my estate's annual budget. On three separate occasions, it has detected Nurgle spores in the water a full week before villagers began showing plague symptoms—and every single time, it was during the season of the north wind."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "In our family's border archives, the Brass Keep is marked as a slowly shifting black landmark—not because its physical location is moving, but because the boundary of its blight is advancing. Fifty years ago, on the map of the Brass Keep's plague-affected zone drawn by my grandfather, the contaminated area around the fortress approximated a circle with a radius of about ten miles. Twenty years ago, when my father updated that map, the shape had become an irregular ellipse stretching roughly eighteen miles toward the southeast—because the frequency of north winds during autumn and winter had been abnormally high in those years. When I updated the map again last year, the ellipse had extended roughly twenty-two miles to the southeast, its furthest tip lying just three leagues from the northernmost village of my estate. The conclusion of our family's strategic analysis is unmistakable: if the frequency of north winds continues along its current trend line, the plague boundary of the Brass Keep will touch our family's core holdings within three generations. We lack the strength to eradicate the Brass Keep—any frontal assault would expose the attacking force itself to unacceptable levels of Nurgle spore infection—so we can only maintain production in the northern reaches of our domain for as long as possible before a forced evacuation becomes inevitable."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "At the edge of a pine forest ten leagues south of the Brass Keep in the northern Empire, the ground suddenly turns soft—not the softness of a marsh, but a spongy softness that does not spring back right away when stepped upon; where your boot presses down, it leaves a slowly recovering depression, as though the earth itself were a gigantic sponge steeped in thick fluid. From about three feet above the ground down to the roots, all the pine trees have turned a dead ash-grey, yet their death is not a dry withering—their bark is coated in a damp, verdigris-green layer of mold that feels neither cold nor hot to the touch, but rather a nauseating warmth matching the exact temperature of your own palm. At the edge of that pine wood, I crouched down, scraped a speck of green mold onto the tip of my knife, and held it less than three inches from my nose—for the next twelve hours straight, my nasal cavity felt a mild, persistent burning sensation, painless yet impossible to ignore, as if something were patiently rubbing against the surface of my mucous membranes. The plague of the Brass Keep is not an illness—it is a slow conversion of the land itself. You do not catch the plague; the earth itself is turning into plague."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Brass Keep exerts a peculiar price-depressing effect on the land market of the northern Empire. Within a radius of roughly thirty leagues centered on the Brass Keep, the assessed value per acre of Imperial farmland is automatically discounted to one-fifth of normal prices—not by legal mandate, but because no rational buyer would pay full price for real estate that might turn into a plague zone within three generations. This has created a specialized real-estate speculation market along the northern frontier of the Empire: a group of well-capitalized speculators willing to take risks buys up marginal land within the Brass Keep's sphere of influence at one-fifth the price, using it for short-cycle livestock grazing rather than long-cycle crop cultivation—and if luck holds and the land escapes the plague for thirty or forty years, they flip it at near-normal prices to 'refugee migrant' buyers arriving from further north. It is the coldest real-estate arbitrage game in the Old World, and every participant knows it is a footrace against the spores of Nurgle."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "The Blighted of the Brass Keep—a Chaos Champion devoted to Nurgle and his warband, entrenched within an abandoned fortress in the northern Empire",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Brass Keep Nurgle Chaos Champion Plague Blighted Northern Empire"
+  ]
+}

@@ -1,0 +1,308 @@
+{
+  "Id": "rule_the_political_system_of_the_empire",
+  "Keywords": [
+    "The political system of the empire"
+  ],
+  "RagShortTexts": [
+    "The imperial political system has gone through three eras: monarchy, republic and empire. The Citizens’ Assembly was first abolished by the Senate, and the Republic became a Senate oligarchy. In the imperial era, the Senate was neglected for more than a hundred years."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The political system of an empire was not built in a day. It has gone through three eras - the Age of Kings, the Age of Republic and the Age of Empire - and each transformation has been accompanied by blood and fire. In the earliest times, the empire had no emperor, only kings. Emperor Caldius was initially revered as king, and the power structure consisted of three parts: the king, the Council of Elders, and the Citizens' Assembly. The citizens' assembly, composed of all adult males who could carry a spear, voted on matters such as war and peace. That was the original foundation of the empire. However, the Citizens' Assembly was abolished by the Senate very early. As early as the late Republic, it lost its substantial power and eventually disappeared from the political life of the empire. The Republic thus became an oligarchy of the Senate, which had long been dominated by the old northern aristocrats and large landowners—these families had occupied the most fertile land and the largest number of Senate seats since the early days of the Republic. Although the Pala nobles in the south who later joined the empire also obtained seats in the Senate, they were always regarded by the established families in the north as upstarts and descendants of foreign races. Then came the imperial era. The first emperor came to power through legions and retained the form of the Senate, but the real power was in his own hands. Over the next hundred years or so, the traditions of the Senate were systematically ignored by successive emperors. After the assassination of Arenicos, the empire was divided. Lucon raised the banner of the Senate in the north, representing the interests of the old northern landowners. Rhagaea raised the banner of the late emperor's bloodline in the south, representing the interests of the small and medium-sized southern nobility, Pala descendants, wealthy citizens, and the merchant class. Gallius raised the flag of the legion in the west, representing the interests of the border military nobles and veterans. At the same time, he also absorbed a large number of civilian forces who were dissatisfied with the Senate and the hereditary nobles, with a strong populist tendency. Three flags, three classes, three interests. It is not clear who is right and who is wrong, but everyone has to speak out for their own interests."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The political history of the empire is the story of different classes taking turns in power. When the citizens' assembly could still speak, the common people had a little voice of their own. After the Citizens' Assembly was abolished by the Senate, the empire became the world of the senators. But the Senate is not monolithic - the old families in the north have been sitting in the front row since the early days of the Republic. They own the largest manor, the most slaves, and the widest patronage network. The nobles from the Para people in the south joined the empire during the expansion of the empire. Their ancestors were once kings and chiefs of city-states. They claimed to be descendants of gods and heroes, and they established a hereditary system on their own three-acre land for hundreds of years. It was the late Republic when they joined the Empire, and they won seats in the Senate, but they would always be outsiders in the eyes of the established northern nobles. But the South had an advantage that the North could not match: fertile land, a warm climate, and close proximity to the Aserai trade routes. The output of the manors in the south was much higher than that in the north, and the port cities in the south gathered the wealthiest citizens and merchants in the empire. Although these merchants did not hold military power and did not have seats in the Senate, their wealth was enough to influence politics - especially when the empire's finances were tight. Whoever controlled the southern trade taxes would hold the empire's purse strings. Emperor Arenicos knew this. He promoted southern nobles, supported southern merchants, and tilted the royal family's economic focus to the south. He was extremely popular in the south, not only because of his generosity to the nobles, but also because his policies made the citizens and businessmen of the south make money. After his assassination, these groups - the small and medium-sized southern nobility, the descendants of Pala, the wealthy citizens, the merchant class - all rallied under the banner of Rhagaea. Not because Rhagaea is a Darcy, but because she represents the legacy of the late emperor and represents the interests of the South."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "We are not vassals of Queen Rhagaea, we are allies of House Petros. There is an essential difference between the two. Our ancestors were already hereditary lords and kings before joining the Empire. We claim to be descendants of gods and heroes, and our bloodline is sacred and inviolable. It was the late Republic when we joined the Empire, and the Senate reserved seats for us. We sat in and learned to speak in the language of the Republic - elections, voting, terms of office. But deep down, we have never really given up on our hereditary traditions. From father to son, and from son to grandson, this is the order we believe in. Emperor Arenicos understands us. He designated Lycaron as the imperial capital and moved the political heart of the empire to the south. For the first time, we southerners feel that the empire is our own, not the empire of the old senatorial families in the north. He married Rhagaea and promoted us southerners into the army, into the bureaucracy, into the tax system. During his reign, the South's economy was the most prosperous of the three parts of the empire - our estates produced more than the North, our ports did business with the Aserai, and half of the merchant ships on the Perlas Sea flew the flag of the southern city-state. After his assassination, the Northern Senate immediately elected Lucon, wanting to return to the old ways of the Senate oligarchs. Why should we accept it? Queen Rhagaea is our flag - not because she is a Darcy, but because she is the late Emperor's widow and represents our southern interests. The hereditary system she proposed is in perfect harmony with our deep-seated traditions. This was not something she imposed on us, it was a choice we made together with her."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "townsfolk",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Queen Rhagaea is sitting in Lycaron, which is a good thing for those of us doing business. She stabilized the situation in the south, protected the trade routes to Aserai, and the silver mines continued to produce silver behind Lycaron. The economy of the south is the most dynamic in the entire empire - we have steady trade with the Aserai merchants of Sanara, and the shipping line on the Perlas Sea runs from Guyaz all the way to the river port of Lycalon. When the late Emperor Arenicos was alive, he valued our merchants very much. He lowered tariffs to a reasonable level, cracked down on pirates along the coast, and allowed merchant ships to dock safely. Queen Rhagaea continued these policies. Her introduction of a hereditary system is not a bad thing for us - hereditary means stability, and stability means easy business. There were meetings all day in Lucon to argue about who was the legitimate emperor, and war in Galios all day long. Only the market in the south was still open as usual. We support Rhagaea not because we like her pedigree, but because her reign allows us to continue making money."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The gentlemen in the south talk about \"hereditary\" all day long. They say that their ancestors are gods and heroes, so their bloodline cannot be broken. But the economy of the South is not only supported by the manors of the old men - the porters at the port, the workshop masters in the city, and the young sailors running ships are also part of the Southern Empire. Queen Rhagaea was at least better than the other two emperors at maintaining order. The market in the south is still running, and grain can still be transported from the Lycarian plains to the city. Although the tax collectors are still annoying, at least they will not be directly expropriated by the army like in the west. We civilians have no right to speak in the Senate, and we have no legions to back us up. We support Rhagaea not because patrimonialism makes us better off, but because the other two options are worse."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Senate is the oldest political institution in the empire and cannot be obliterated by the North-South dispute. The descendants of Pala in the south joined the Empire only in the late Republic, and their Senate seats were granted by the Empire out of tolerance. Now they are doing well. Instead, they want to overthrow the tradition of the Senate electing emperors and create a hereditary dynasty. They say they have hereditary traditions in their bones - yes, they were hereditary city lords and kings before the Empire conquered them. But after joining the Empire, they accepted the laws and systems of the Empire. Why should they use the rules of their ancestors to change the rules of the empire? Even more disturbing is the economic power of the South. They controlled the Perath Sea trade routes, and their trade with the Aserai people enriched their cities, and the silver mines of Lycaron were directly in the hands of Rhagaea. If this money is used to buy legions, arm citizens, and win over swaying consuls, it will pose a greater threat to the north than Gallius' legion. Galios at least spoke only with his sword, Rhagaea had money and a banner."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "townsfolk",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The gentlemen in the north say they want to defend the tradition of the Senate, but when has it been our turn to be in the Senate? The old northern families have controlled the Senate for hundreds of years. They looked down on the southerners, not because the southerners practiced hereditary rule, but because the southerners robbed them of their favor in front of the emperor and the economic center of the empire. Arenicos moved the royal capital to Lycaron while he was still alive. The ports and trade routes in the south became more and more prosperous, while the manor economy in the north became obsolete. The gentlemen feel unbalanced - in the past, the North had the final say in the empire, but now the South's purses are bigger than those of the North, and the gentlemen cannot swallow this sigh of relief."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_w"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Emperor Galios not only represented the legions, he also represented those forgotten in imperial politics. The Senate was controlled by the big landowners in the north, while the southern aristocrats formed their own faction based on blood and wealth. What about those who don’t belong to either faction? Those small nobles who have served as soldiers on the border for generations, those citizens who do not have Senate seats in the city, those tenant farmers who are exploited by big landowners in the manor, those veterans who are homeless after being demobilized - where can they go? They came to the Western Empire. Galios gave them an answer: Don't look at bloodline or wealth, but whether you can prove yourself on the battlefield. This is the populist tendency of the Western Empire - we don't want order, we don't want those who only take advantage of order. Every soldier who serves in the Western Empire's army, no matter how low his background is, can be assigned land, receive bounties, and be promoted in the legion as long as he performs meritorious service. This logic is simple and crude, but for those who can never get out of the old system, this is hope."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_w"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "I am a veteran. The legion was disbanded after Pandrak, and I returned to my hometown and farmed for two years. The land belongs to a senator in the north, and I pay the rent for most of the grain I grow. Later I heard that Galios was recruiting people in the west, so I threw down my hoe and went there. Garius didn't ask who my father was or how much land my family owned. He only asked me how many years I had fought in battles and how heavy a shield I could carry. In the army of the Western Empire, no one would let you stand in the back row because your accent was not Lycaron, and no one would cross you off the promotion list because your grandfather had never been a senator. This is the populism that Galios said - it's not that there are no rules, it's that everyone is the same before the rules. If you can fight, you are one of our own. You can't fight, even if your grandfather is the chairman of the Senate, no one in the Western Empire will give you a second glance."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_w"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "townsfolk",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Emperor Galios may not be the most orthodox emperor in the empire, but he is definitely the most down-to-earth emperor in the empire. He does not wear purple robes or sit in marble palaces. He spends most of his time in the military camp and eats the same meals as the soldiers. His policies were beneficial to those of us who relied on our strength to make a living - he cracked down on the hoarding of grain by large landowners, opened warehouses to release grain during times of famine, and allowed border farmers to reclaim wasteland and exempted them from taxes. These are things that the elders of the Senate would never do. What the gentlemen care about is the income of their estates and seats in the Senate. What Garius cares about is whether there are enough soldiers and food to defend the western line of defense. He needs civilians, so he is good to them. You can say it's utilitarian, but we don't care about motives, we only care about results."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Imperials are divided into three pieces, each representing a different person. The Senate in the north belonged to the big landowners, the hereditary faction in the south belonged to nobles and merchants, and the legions in the west belonged to veterans and poor people. These three groups of people were previously locked in a cage called the 'Empire', and they had to tolerate each other even though they couldn't stand each other. Arenicos died, the cage was broken, and the three groups each found their own heads. From the perspective of us Sturgians, this is not a war between three emperors, but a war between three estates. We just have to stir up discord."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The three opposing factions of the Imperials are not unfamiliar to us Vlandians. There are also conflicts between our barons, and there are checks and balances between the king and the barons. But the contradictions among the Imperial people are much deeper than ours - their three factions not only represent different classes, but also represent different economic models. The Senate families in the north relied on estates and land rents, the hereditary faction in the south relied on trade and silver mines, and the legionary faction in the west relied on spoils of war and military exploits. These three sets of economic models determine three sets of political systems, and no one is compatible with the other. Therefore, the division of the empire is not temporary, but fundamental."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The economic gap between the north and south of the Imperial people is the most direct feeling for us Aserai merchants. The Southern Empire's ports are open, trade policies are relaxed, and trade routes with the Aserai are open. The manorial economy of the Northern Empire is unattractive to us - their lords only care about their own fields and are not interested in maritime trade. The Western Empire is willing to do business, but they are at war all year round, and the caravan is too risky. Therefore, almost all our caravans take the route of the Southern Empire. Queen Rhagaea knows this, and she taxes our caravans appropriately and keeps our trade routes safe, in exchange for a steady flow of trade between Sanara and Lycaron. This was one of the reasons she was able to stand firm after the empire was divided - she had money, and the money came from trade."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The people of the Empire divided themselves into three parts, each with a different source of livelihood. The gentlemen in the north relied on land rent, the gentlemen in the south relied on trade, and the gentlemen in the west relied on spoils of war. People on the grasslands have only one source of livelihood: horses and sheep. So people on the steppes had only one political system: the Khan had the final say. The Imperial people are so complicated that even their own people can't figure out who should listen to whom."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nord"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The three factions of the Imperial people are divided into three factions. From the perspective of Nords, they are wars between three different tribes. But the Imperials are embarrassed to admit that they have a bunch of names for their wars - Senate Tradition, Hereditary Orthodoxy, Legionary Honor. In our Nord, a war between two chieftains does not require these names. We are all about land and wealth. The Imperial people also want land and wealth, but they need to make up a set of reasons to make themselves feel noble. This is the biggest difference between the Empire and us."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "steward": 150
+        }
+      },
+      "Content": "The political division of the empire was the concentrated outbreak of different classes, different economic models and different principles of legitimacy at the same moment. The Northern Empire, headed by Lucon, represented the large landowning class of the old northern Senate. Its economic basis was manor agriculture and land rent income, and its political appeal was to restore the oligarchic rule of the Senate. The Southern Empire, headed by Rhagaea, had the most diverse base of support: the southern Pala-Kalad fused nobility provided the ideological tradition of hereditaryism, the wealthy burgher class and the business class provided financial support, the silver mines of Lycaron and the trade lines of the Pelas Sea provided economic blood, while the personal prestige and interest alliances accumulated during the Arenicos era provided political cohesion. The Southern Empire had the most prosperous economy and the most complex social structure among the three empires, and therefore had the most solid foundation for rule. The Western Empire was headed by Galios, and its core supporters were border military aristocrats and old-style legion veterans. However, Galios also attracted a large number of groups that were marginalized in the old system-landless peasants, urban poor, and demobilized soldiers. His populist tendencies were not an ideological choice but a necessity of political survival: after landowners and businessmen each found their own political representatives, those who did not belong to any privileged class could only flock to the banner of the Legion. The opposition between the three parties is a holographic projection of the social structure of the empire. Each party has found its own anchor point of legitimacy in the thousand-year history of the empire, and each party cannot persuade the other two parties to give up their own interests. The division of the empire was not a failure of the system, but a breakdown of the class rifts covered up by the system when the throne became vacant."
+    }
+  ],
+  "TextMappings": []
+}

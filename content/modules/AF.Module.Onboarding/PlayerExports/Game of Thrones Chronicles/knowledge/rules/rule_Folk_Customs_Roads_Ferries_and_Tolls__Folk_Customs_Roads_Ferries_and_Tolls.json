@@ -1,0 +1,128 @@
+{
+  "Id": "rule_Folk_Customs_Roads_Ferries_and_Tolls",
+  "Keywords": [
+    "Roads, Ferries, and Tolls"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The King's Highway is not always smooth and safe; mud, bandits and damaged bridges can turn a day's journey into several. Ferry owners, local lords, and towns all wanted to collect money from passers-by; travelers thus learned that a seemingly public road often had many owners."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Roads, Ferries, and Tolls"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Roads, Ferries, and Tolls"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Roads, Ferries, and Tolls"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Roads, Ferries, and Tolls The King's Highway is not always smooth and safe; mud, bandits and damaged bridges can turn a day's journey into several. Ferry owners, local lords, and towns all wanted to collect money from passers-by; travelers thus learned that a seemingly public road often had many owners. Whether it is valid depends on who can grant the rights, collect the consideration, and actually make the judgment come to fruition in the event of default."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Roads, Ferries, and Tolls The King's Highway is not always smooth and safe; mud, bandits and damaged bridges can turn a day's journey into several. Ferry owners, local lords, and towns all wanted to collect money from passers-by; travelers thus learned that a seemingly public road often had many owners. If a rule is practiced over and over again, it will find its way into rituals, crafts, and prayers; if it is sustained only by fear, cracks will show at the onset of a crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Roads, Ferries, and Tolls The King's Highway is not always smooth and safe; mud, bandits and damaged bridges can turn a day's journey into several. Ferry owners, local lords, and towns all wanted to collect money from passers-by; travelers thus learned that a seemingly public road often had many owners. They remember taxes, grain, labor, relief and who can speak for them; these grand names will eventually fall on the family's rice pot."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Roads, Ferries, and Tolls: The King's Highway is not always smooth and safe; mud, bandits and damaged bridges can turn a day's journey into several. Ferry owners, local lords, and towns all wanted to collect money from passers-by; travelers thus learned that a seemingly public road often had many owners."
+  ]
+}

@@ -1,0 +1,128 @@
+{
+  "Id": "rule_Titles_and_Etiquette_Salt_and_Rock_of_the_Ironborn",
+  "Keywords": [
+    "Salt and Rock of the Ironborn"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The ironborn use \"salt and rock\" to distinguish between the plundering of the sea and the cultivation of green fields. It is both a language of pride and a language that masks the island’s dependence on trade, fishing and imported food; the stories a nation tells itself are often more powerful than its ledgers."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Salt and Rock of the Ironborn"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Salt and Rock of the Ironborn"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Salt and Rock of the Ironborn"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Salt and Rock of the Ironborn The ironborn use \"salt and rock\" to distinguish between the plundering of the sea and the cultivation of green fields. It is both a language of pride and a language that masks the island’s dependence on trade, fishing and imported food; the stories a nation tells itself are often more powerful than its ledgers. Whether it is valid depends on who can grant the rights, collect the consideration, and actually make the judgment come to fruition in the event of default."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Salt and Rock of the Ironborn The ironborn use \"salt and rock\" to distinguish between the plundering of the sea and the cultivation of green fields. It is both a language of pride and a language that masks the island’s dependence on trade, fishing and imported food; the stories a nation tells itself are often more powerful than its ledgers. If a rule is practiced over and over again, it will find its way into rituals, crafts, and prayers; if it is sustained only by fear, cracks will show at the onset of a crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Salt and Rock of the Ironborn The ironborn use \"salt and rock\" to distinguish between the plundering of the sea and the cultivation of green fields. It is both a language of pride and a language that masks the island’s dependence on trade, fishing and imported food; the stories a nation tells itself are often more powerful than its ledgers. They remember taxes, grain, labor, relief and who can speak for them; these grand names will eventually fall on the family's rice pot."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Salt and Rock of the Ironborn: The ironborn use \"salt and rock\" to distinguish between the plundering of the sea and the cultivation of green fields. It is both a language of pride and a language that masks the island’s dependence on trade, fishing and imported food; the stories a nation tells itself are often more powerful than its ledgers."
+  ]
+}

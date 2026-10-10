@@ -1,0 +1,24 @@
+{
+  "Id": "rule_Crusader_States_in_the_Levant",
+  "Keywords": [
+    "Crusader States",
+    "Outremer",
+    "Kingdom of Jerusalem",
+    "Principality of Antioch",
+    "Acre",
+    "Bohemond VI",
+    "War of Saint Sabas"
+  ],
+  "RagShortTexts": [
+    "In 1259, the Crusader States of Outremer were reduced to vulnerable coastal enclaves paralyzed by civil war and caught between Mongols and Mamluks."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "By 1259, the Crusader States of Outremer were enduring the twilight of their existence. The Kingdom of Jerusalem retained none of its inland territories, functioning merely as a confederation of fortified ports centered upon the capital of Acre, Tyre, and Jaffa. Royal authority was nonexistent, leaving governance to the squabbling High Court of barons and the powerful military orders.\n\nThe Latin enclaves were further paralyzed by internal fratricide during the War of Saint Sabas (1256–1258), where Venetian and Genoese factions dragged the Hospitallers and Templars into urban street warfare in Acre. Meanwhile, Prince Bohemond VI of Antioch and Tripoli submitted to Hulagu Khan, opening northern Outremer to Mongol cavalry. Squeezed between the Mongol horde and the retaliatory fury of the Mamluk Sultanate, the Franks faced annihilation."
+    }
+  ],
+  "TextMappings": []
+}

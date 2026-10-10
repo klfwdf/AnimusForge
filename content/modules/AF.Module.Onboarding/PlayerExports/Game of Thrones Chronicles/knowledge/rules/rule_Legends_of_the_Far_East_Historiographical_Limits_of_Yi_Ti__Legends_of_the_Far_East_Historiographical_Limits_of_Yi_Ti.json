@@ -1,0 +1,149 @@
+{
+  "Id": "rule_Legends_of_the_Far_East_Historiographical_Limits_of_Yi_Ti",
+  "Keywords": [
+    "Historiographical Limits of Yi Ti"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Entry Most Western knowledge of the Yi lands comes from long-distance records written by sailors, merchants, scholars, and the Jade Sea Chronicles. They preserve precious legends, but also mix names, dates and foreign rituals; careful narratives should distinguish between \"such legends of the Yidi people\""
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "yiti"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "scholar",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Historiographical Limits of Yi Ti"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "yiti"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Historiographical Limits of Yi Ti"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Historiographical Limits of Yi Ti"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Historiographical Limits of Yi Ti Most Western knowledge of the Yi lands comes from long-distance records written by sailors, merchants, scholars, and the Jade Sea Chronicles. They preserve precious legends, but also mix names, dates and foreign rituals; careful narratives should distinguish between \"such legends of the Yidi people\" Altars, relics, and prophecies can unite people and give a political claim the appearance of irrefutability."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Historiographical Limits of Yi Ti Most Western knowledge of the Yi lands comes from long-distance records written by sailors, merchants, scholars, and the Jade Sea Chronicles. They preserve precious legends, but also mix names, dates and foreign rituals; careful narratives should distinguish between \"such legends of the Yidi people\" Some people use it as a talisman, while others use it as the name of fear; the same prayer may make people draw their swords or put them down."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Historiographical Limits of Yi Ti Most Western knowledge of the Yi lands comes from long-distance records written by sailors, merchants, scholars, and the Jade Sea Chronicles. They preserve precious legends, but also mix names, dates and foreign rituals; careful narratives should distinguish between \"such legends of the Yidi people\" Whether the gods responded or not could not be proven by the account books, but how the rituals were held and who could interpret the omens actually determined the authority of the community."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Historiographical Limits of Yi Ti Most Western knowledge of the Yi lands comes from long-distance records written by sailors, merchants, scholars, and the Jade Sea Chronicles. They preserve precious legends, but also mix names, dates and foreign rituals; careful narratives should distinguish between \"such legends of the Yidi people\" They seek an explanation they can rely on when it comes to birth, marriage, sowing, illness, and death; the names of gods may not be the same, but their desire to keep their families safe is similar."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Historiographical Limits of Yi Ti: Most Western knowledge of the Yi lands comes from long-distance records written by sailors, merchants, scholars, and the Jade Sea Chronicles. They preserve precious legends, but also mix names, dates and foreign rituals; careful narratives should distinguish between \"such legends of the Yidi people\""
+  ]
+}

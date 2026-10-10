@@ -1,0 +1,154 @@
+{
+  "Id": "rule_House_Foundations_Valaro",
+  "Keywords": [
+    "Valaro",
+    "House Valaro",
+    "Bankers"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Vararo is a noble merchant family in Lys, with a family business spanning credit, shipping and trading in various commodities. The prosperity of Lys relies on foreign ships, imported grain, skilled workshops and slave labor. Book wealth is often far more complicated than land boundaries; a naval battle, a debt default or the interruption of a shipping route may cause yesterday's rich to rush to sell their homes today. Vararo's strength lies in diversifying relationships, judging risks, and making distant partners believe in contracts. The danger lies in treating people and loyalty as goods that can be discounted at any time. Political affiliation is variable, but the logic of businessman power will continue."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "lyseni"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Lys merchants envied Vararo's ability to move money between cargoes and fleets, but were wary of its use of debt to swallow up competitors. For the rich, the softer the lender's smile, the more often the contract needs to be read word for word."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "lyseni"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "sailor",
+          "artisan"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The crew and workshop craftsmen know that the risks of Vararo often fall on them in the end: if the ship sinks, they can rely on the wind, if the order is cut, they can rely on the war, and only the wages owed will not come back on their own."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "lyseni"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "slave",
+          "peasant",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "In the eyes of slaves, Vararo's exquisite account books turn a person's age, craftsmanship and body into numbers. The powerful call this wealth management, and those who are priced will only remember who the chains belong to."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Valaro Lys's business family has accumulated influence through credit, shipping and investment in various goods, and it is also exposed to the systemic risks of the island city's economy. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Valaro Lys's business family has accumulated influence through credit, shipping and investment in various goods, and it is also exposed to the systemic risks of the island city's economy. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Valaro Lys's business family has accumulated influence through credit, shipping and investment in various goods, and it is also exposed to the systemic risks of the island city's economy. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Valaro Lys's business family has accumulated influence through credit, shipping and investment in various goods, and it is also exposed to the systemic risks of the island city's economy. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Valaro: Lys's business family has accumulated influence through credit, shipping and investment in various goods, and it is also exposed to the systemic risks of the island city's economy."
+  ]
+}

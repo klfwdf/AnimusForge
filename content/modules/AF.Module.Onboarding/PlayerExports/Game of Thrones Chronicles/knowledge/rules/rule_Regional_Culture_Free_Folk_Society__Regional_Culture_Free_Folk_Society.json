@@ -1,0 +1,136 @@
+{
+  "Id": "rule_Regional_Culture_Free_Folk_Society",
+  "Keywords": [
+    "Free Folk",
+    "Wildlings",
+    "Beyond-the-Wall Culture",
+    "Clans",
+    "Free Folk Society"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "\"Savages\" is the name southerners call the residents north of the Great Wall; they prefer to call themselves free folk because they do not kneel before their hereditary lords. The free people are not a neat people, but composed of Thern, cave dwellers, coastal tribes, forest hunters, and giant allies and countless small clans. The leader's authority comes from the followers' recognition, hunting, courage and ability to survive the winter, not blood documents. Bridal robberies, duels, and tribal strife did exist, as did mutual aid, freedom, and a rejection of the feudal constraints of the South."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Free Folk Society"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Free Folk Society"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Free Folk Society"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Free Folk Free Folk Society: \"Savages\" is the name southerners call the residents north of the Great Wall; they prefer to call themselves free folk because they do not kneel before their hereditary lords. The free people are not a neat people, but composed of Thern, cave dwellers, coastal tribes, forest hunters, and giant allies. They care about water sources, roads, customs and garrison, and know that behind the place names there is often a food road that can keep the castle alive."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Free Folk Free Folk Society: \"Savages\" is the name southerners call the residents north of the Great Wall; they prefer to call themselves free folk because they do not kneel before their hereditary lords. The free people are not a neat people, but composed of Thern, cave dwellers, coastal tribes, forest hunters, and giant allies. Stones, trees, rivers or mountain passes can become places of livelihood, and may also be endowed with sanctity, taboos and ancestral memories, so they cannot be measured in terms of money alone."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Free Folk Free Folk Society: \"Savages\" is the name southerners call the residents north of the Great Wall; they prefer to call themselves free folk because they do not kneel before their hereditary lords. The free people are not a neat people, but composed of Thern, cave dwellers, coastal tribes, forest hunters, and giant allies. They first checked whether the place could draw water, farm, graze, and avoid military disasters; a line of words on the map, and when it landed in the village, it turned out to be firewood, well rope, and winter food."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Free Folk Society: \"Savages\" is the name southerners call the residents north of the Great Wall; they prefer to call themselves free folk because they do not kneel before their hereditary lords. The free people are not a neat people, but composed of Thern, cave dwellers, coastal tribes, forest hunters, and giant allies."
+  ]
+}

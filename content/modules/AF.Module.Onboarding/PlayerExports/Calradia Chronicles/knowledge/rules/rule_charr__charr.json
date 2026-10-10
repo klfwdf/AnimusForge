@@ -1,0 +1,33 @@
+{
+  "Id": "rule_charr",
+  "Keywords": [
+    "Shire"
+  ],
+  "RagShortTexts": [
+    "Charles is a bad-tempered and stingy ancestor who fled from the sea to the interior to avoid a blood feud. For sixty years, he quietly worked in the nearby salt mines and accumulated an astonishing wealth. After his death, his descendants found this huge inheritance in his simple farmhouse, which became an unexpected blessing."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": [
+          "castle_n2",
+          "castle_n3",
+          "castle_n5",
+          "town_n2"
+        ],
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Charr is the \"founder\" of the Nord village Charverde. Charr is a grumpy and stingy ancestor who fled from the sea to the interior to avoid a blood feud. For sixty years, he quietly worked in the nearby salt mines and accumulated an astonishing wealth. After his death, more than a dozen descendants found this huge inheritance in his simple farmhouse, which became an unexpected surprise. From then on, these people also settled here and became the prototype of Chalved."
+    }
+  ],
+  "TextMappings": []
+}

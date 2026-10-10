@@ -1,0 +1,92 @@
+{
+  "Id": "rule_Bernland",
+  "Keywords": [
+    "Bainland Island",
+    "Varvik",
+    "Northwest Ascetic Mountain~~~~"
+  ],
+  "RagShortTexts": [
+    "The origin of the name of Bainland Island is related to walrus tusks"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "scouting": 60
+        }
+      },
+      "Content": "Bainland is an island in the remote northern seas. The Nords call it \"Bainland\", which means \"the place of bones\". The origin of the island's name is disputed: one theory points to the walrus tusks that attracted early hunters across the sea, another points to the human bones buried in shallow graves on the barren gravel coast - many of the only traces of their lives here are the skeletons scattered on the rocky beach. The island is located in cold waters and has long been home to only temporary settlements of whalers' huts, with Waalvik being the chief one. In recent generations, milder winters and a growing population on the mainland have prompted colonists to cross the sea to seek their fortune in Bainland. The former settlement of whalers' huts, Waalvik has now developed into a prosperous port town on the island."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": [
+          "castle_village_n7_1",
+          "town_n1",
+          "village_n1_1"
+        ],
+        "Roles": [
+          "commoner",
+          "notable",
+          "townsfolk",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "What do our islanders think of Beinland? \"The Land of Bones\" is a name I've been accustomed to hearing since I was a kid. As for why it is called this, the elders themselves are not sure. Some people say it’s because there are walrus tusks on the beach, and you can sell them for money if you dig them out. Some people say that they are the bones of dead people - people who came to the island in the early years, found nothing when they came ashore, starved to death, and the bones were buried in the shallows. We feel pretty similar to both statements. Anyway, there are more shells than bones on the beach now, and walruses haven’t been seen in several years. The name is just like that, who is going to dig up the roots? Recent generations have been lucky enough that winters are not that cold. People on the mainland were so crowded that they came to us. Come on, they call our place \"seeking wealth.\" Sounds funny to us—wealth? Where? Anyway, they came, there were more fishing boats, more houses, and Varvik turned from a few shabby shacks into a decent town. Good thing. There are more people and it’s lively, so you don’t have to just stare at the sea breeze in winter. People from the mainland sometimes stand on the coast and express their emotions to the gravel beaches and shrubs, saying that \"this land has wild beauty.\" We squatted next to repair the fishing net, thinking that wildness is wild enough, where is the beauty? The trees don't grow tall, the soil is so thin that nothing can be planted, and fish are eaten all year round. They were tired of living on land and came to see everything new. We only know one thing: the island is here, the sea is around, and the fish are in the sea. Everything else is thought of by outsiders for us. Whether the bones or the wealth, they are all named by outsiders. We call this place \"home\" - although this home does freeze to death in the winter."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Bainland is an island in the far west and far north. The rest are unknown."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nord",
+          "sturgia",
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Bainland is an island in the remote northern seas. The Nords call it \"Bainland\", which means \"the place of bones\". The origin of the island's name is disputed: one theory points to the walrus tusks that attracted early hunters across the sea, another points to the human bones buried in shallow graves on the barren gravel coast - many of the only traces of their lives here are the skeletons scattered on the rocky beach. The island is located in cold waters and has long been home to only temporary settlements of whalers' huts, with Waalvik being the chief one. In recent generations, milder winters and a growing population on the mainland have prompted colonists to cross the sea to seek their fortune in Bainland. The former settlement of whalers' huts, Waalvik has now developed into a prosperous port town on the island."
+    }
+  ],
+  "TextMappings": []
+}

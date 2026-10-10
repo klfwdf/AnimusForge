@@ -1,0 +1,152 @@
+{
+  "Id": "rule_Vale_Gazetteer_Snakewood",
+  "Keywords": [
+    "Snakewood",
+    "Woodlands"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Snakewood lies between the woodlands and mountain roads of the Vale. The name Snakewood evokes dense forest, twisted roots, and roads that rarely run straight; the duty of the local castle is therefore not only to withstand sizeable enemy forces, but also to protect logging crews, merchants, herders, and riders carrying messages through narrow glens. While the southern plains of the Vale can nurture knights, its borderlands constantly remind people that clans unbowed to any lord still dwell in the mountains and that forests can serve as a screen for both ambush and flight. Snakewood is tied to the wider network of Vale bannermen without losing its own local character through that connection."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vale"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "For those who live off the land around Snakewood, daily life is decided by springs, field rents, mills, woodlands, and whether they can enter the keep in time of danger. Local families also rely on goats, thin fields, orchards, and pack teams crossing the Mingyue Mountains; if any road, well, or dock fails, the price falls first on them."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vale"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Snakewood Entry Snakewood"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Snakewood They also recognize the accents, laws, and credentials of the valley; reputations can travel great distances from taverns, but true distances must still be measured by wheel, oar, or horse's hoof."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Snakewood Entry Snakewood"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Snakewood If you can supply supplies, avoid danger, and find a guide, it is worth marking in your itinerary; if you don't have these three things, no matter how loud your family name is, it won't be able to save the lost."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The traces left by generations at Snakewood lie half hidden in stone walls, wooden beams, iron gates, crypts, and the seams left by generations of repairs, and half in chapels of the Seven, the threat of the mountain clans, and Andal knightly tradition. A stronghold was therefore not just a lord's hall, but also a place where weddings and funerals, vows, labor and local memories recurred."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Snakewood They care about goats, thin fields, orchards, and pack teams crossing the Mingyue Mountains. They also look at whether seeds are left after collecting grain, and whether the city gates are open in times of disaster. When people from afar see coats of arms, what they see is whether there will be food to eat tomorrow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Snakewood: Snakewood lies between the woodlands and mountain roads of the Vale. The name Snakewood evokes dense forest, twisted roots, and roads that rarely run straight; the duty of the local castle is therefore not only to withstand sizeable enemy forces, but also to protect logging crews, merchants, herders, and riders carrying messages through narrow glens. While the southern plains of the Vale can nurture knights, its borderlands constantly remind people that clans unbowed to any lord still dwell in the mountains and that forests can serve as a screen for both ambush and flight. Snakewood is tied to the wider network of Vale bannermen without losing its own local character through that connection."
+  ]
+}

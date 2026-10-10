@@ -1,0 +1,66 @@
+{
+  "Id": "rule_battery_ram",
+  "Keywords": [
+    "Battering Ram",
+    "rush car"
+  ],
+  "RagShortTexts": [
+    "The battering ram is the most reliable tool in siege warfare. It does not require accurate aiming when hitting the city gate."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Battering ram? During the siege, a dozen men hid in the wooden shed and pushed a large wooden stake against the city gate. It looks like a big centipede from a distance - it has a roof on top and legs underneath. The clang of the collision could be heard miles away, and the sound was like a mountain knocking on the door. The people in the city poured kerosene and threw stones, but the shed was covered with wet cowhide and was not easy to light, so the people below continued to hit it. As soon as the city gate fell, the outside rushed in. But that battering ram thing is also evil. Boiling water was poured down from the city and leaked through the cracks in the shed. The people inside were so hot that they screamed and had to be pushed. Once I saw a hammer pushed half way, and a barrel of kerosene poured over the city. A torch was pushed down, and soon the hammer and everyone in the shed were all on fire. The black smoke was like burning wet firewood, and even the city gate could not be touched. The old man said that those who push the gavel risk their lives in exchange for a door. They may not know if the door falls, because they are probably gone before the door falls."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The battering ram is the most practical thing in a siege. Really, it's not fancy, just a piece of hardwood covered with iron, a few pillars supporting a shed, pushed under the city gate and hit with all your heart. The ballista can hit people but not the wall. The catapult can hit the wall but it has to be aimed at the head. The siege tower is too high and attracts the wind. A battering ram doesn't need accuracy or luck, it just hits it and it's over. The city gate is a dead thing. No matter how thick the iron bars are and how thick the wood is, it will open sooner or later if it is hit enough times. During the siege, the ones sent to push the hammer were my spearmen, who were tenant farmers who had signed the deed of betrayal. The people pushing the hammers change quickly, but there are only so many hammers that can be hit. One day they took their lives and knocked down the city gate. I told them that the empire would remember the day they fought for the people. But I have an account in my mind: What is behind the city gate? Sometimes it's the second door. Sometimes it was piled with rubble, breaking the outer door panel, and there were sandbags inside. At this time, all the hammermen were exposed to the shooting range of the crossbowmen on their city wall, and they were unable to retreat. The battering ram bets on the lack of preparation behind the city gate. The bet was won, the gates fell, the cavalry rushed in, and the siege was over. The bet was lost, and all the mallet players got involved."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "engineering": 50
+        }
+      },
+      "Content": "The structural logic of the battering ram is very straightforward: the hammer head is made of solid hardwood covered with iron and suspended under the top beam of the frame, suspended by iron chains or hemp ropes. The operator pushes the hammer to hit the target under the cover of the ceiling. The center of gravity of the hammer forms a single impact kinetic energy during the swing, and the penetration force depends on the mass of the hammer head and the amplitude of the swing. The roof is key to the survivability of the battering ram. The standard wet cowhide-wood board-mud composite roof can withstand the impact of boiling water and falling stones, and also has a certain ability to block flames - provided that the shed surface is not damaged. Once the seams of the shed panels are cracked by stones and the kerosene drips down, the roof will immediately turn into a simple stove built with firewood, leaving no escape route for the people underneath. In addition, the physical exertion of the operator is extremely high - the hammer is pushed continuously at high intensity, and a group of people can stick to one stick of incense at most. They must rotate between impacts, and the hammer body remains stationary during rotation, which is the window for precise strikes at the top of the city. Next is the city gate structure. The battering ram has the highest impact efficiency against iron bolts and wooden doors. However, if the city gate corridor is filled with gravel sandbags, the hammer head will face the flexible buffer layer after breaking through the door panel. Most of the energy of a single impact will be removed by the overall deformation of the sandbag, and the impact effect will be extremely attenuated. In this case, there is no point in continuing the collision, and engineers must be used to clear it out - and engineers have no roof protection at all when working in the city gate corridor. My conclusion is: the battering ram is the most cost-effective siege instrument to break through the city gate - provided that the intelligence confirms that there is no filling behind the city gate, the ceiling is well maintained, and the operators rotate in an orderly manner. If one of the three premises is missing, the battering ram is just an iron coffin in front of the city gate."
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,94 @@
+{
+  "Id": "rule_larnak",
+  "Keywords": [
+    "Larnak",
+    "Rye"
+  ],
+  "RagShortTexts": [
+    "Larnak village is located in the lower reaches of Tran Valley"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Larnak is a village near Palawind, located on the gentle hills of the lower Trang Valley. The villagers grow rye, barley and wheat, and the food produced is mainly supplied to the residents of nearby towns in Palawind."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Larnak is the granary of Palawind. The gentle hills in the lower reaches of the Tlang River Valley have abundant soil and water, and the wheat they grow is ground into flour for making bread, which is white and fragrant. So many people in the capital have enough to eat, Larnak has done a great job."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "townsfolk"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Whether the price of bread in Palawind will increase will be known by looking at the harvest in Larnak. The soil in the Tlang Valley is good, and if the weather is good, you can harvest a lot of wheat in a season. If Larnak is hit by a disaster, food prices in the capital will immediately jump."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The wheat fields of Larnak are spread out on the hills of the Trang Valley. They are golden in summer, and the wind blows like waves. The farmers there are honest and work hard in the fields all year round, and most of the harvested food is taken to Palawind."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Larnak",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "Palawind",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

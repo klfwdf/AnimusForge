@@ -1,0 +1,133 @@
+{
+  "Id": "rule_House_Foundations_Dustin",
+  "Keywords": [
+    "House Dustin",
+    "Barrowlands",
+    "Barrow Kings",
+    "Crossed Longaxes Beneath a Black Crown"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Dustin family is based on Barrow Tunnel and the surrounding Barrow Land, claiming to inherit the bloodline of the ancient Barrow King. The family emblem is a yellow background with crossed long axes under a black crown; the barren tombs, legends of ancestors and the roads to the southwest and north give this family a local identity that is older than many vassals. The locals will respect Winterfell and remember that the Tombs once had their own kings and dead; for Dustin, loyalty to the Starks does not mean erasing the blood of old kings, the loss of marriages, or the relatives taken away by war."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "When the old tribes in the north talked about Dustin, they would associate the tombs in the Tombs with the ancient King of the Tombs. Such a bloodline may not be able to win today's disputes, but it can make the seats at a banquet sensitive. Barrowton controls the western roads and fertile lands, and Dustin's silence is never inconsequential."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The people in the Tombs graze and farm beside the ancient tombs, and are accustomed to hearing the warning not to disturb the dead at night. When they looked at Dustin, they not only looked at the black crown and the long axe, but also looked at whether the roads were safe and whether the barn could survive the long winter. The crowns of ancestors are buried under the earth, but the taxes and grains of living people have to be carried into the city in bags."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Dustin The ancient tribes of the northern border of Huangzhong Tun and Huangzhong Land claimed to be descendants of the King of Huangzhong, and their family emblem was a black crown with a yellow background and a long crossed axe. Old tomb mounds, ancestral kingship and local memory shape its identity; its motto is unknown. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Dustin The ancient tribes of the northern border of Huangzhong Tun and Huangzhong Land claimed to be descendants of the King of Huangzhong, and their family emblem was a black crown with a yellow background and a long crossed axe. Old tomb mounds, ancestral kingship and local memory shape its identity; its motto is unknown. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Dustin The ancient tribes of the northern border of Huangzhong Tun and Huangzhong Land claimed to be descendants of the King of Huangzhong, and their family emblem was a black crown with a yellow background and a long crossed axe. Old tomb mounds, ancestral kingship and local memory shape its identity; its motto is unknown. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Dustin The ancient tribes of the northern border of Huangzhong Tun and Huangzhong Land claimed to be descendants of the King of Huangzhong, and their family emblem was a black crown with a yellow background and a long crossed axe. Old tomb mounds, ancestral kingship and local memory shape its identity; its motto is unknown. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "House Dustin: The ancient tribes of the northern border of Huangzhong Tun and Huangzhong Land claimed to be descendants of the King of Huangzhong, and their family emblem was a black crown with a yellow background and a long crossed axe. Old tomb mounds, ancestral kingship and local memory shape its identity; its motto is unknown."
+  ]
+}

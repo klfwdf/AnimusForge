@@ -1,0 +1,28 @@
+{
+  "Id": "rule_Lake_Rats",
+  "Keywords": [
+    "Lake Rats"
+  ],
+  "RagShortTexts": [
+    "Lake Rats use fake lighthouses to lure ships aground in the swamps along the great northern lakes."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Lake Rats live in swamps along the great northern lakes in shacks built from scrap ship wood. They make a living by \"shipwrecking,\" using fake lighthouses and beacons to lure ships aground. Others in Calradia laugh at them - \"these criminals smell like swamp gas, mud and rotten fish\" - so they turn their noses up at outsiders as well. Although mostly Sturgians, the ranks of the Lake Rats have grown to include runaways, debtors, and anyone else who would rather abide by the laws of thieves than the laws of the nobility."
+    }
+  ],
+  "TextMappings": []
+}

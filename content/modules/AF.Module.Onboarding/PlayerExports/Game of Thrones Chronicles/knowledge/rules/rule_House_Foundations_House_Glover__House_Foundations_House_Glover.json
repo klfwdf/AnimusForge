@@ -1,0 +1,131 @@
+{
+  "Id": "rule_House_Foundations_House_Glover",
+  "Keywords": [
+    "House Glover",
+    "Iron Fist"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Glover family is based on Deepwood Castle in Wolfwood, and their family emblem is a silver iron fist on a red background. The head of the family is traditionally known as \"Master of Deepwood Motte\" rather than the most prestigious southern title. The family's strength comes from woodlands, hunting grounds, timber, mountain roads and long experience of dealing with threats on the west coast. Glover is an ancient vassal of the Starks, but the realm is far from Winterfell. What truly maintains his rule is the ability to rally the woodlanders, protect the village, and respond quickly when the ironborn or mountain bandits attack."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The vassals of the north regard Glover as the gatekeeper of the western part of Wolfwood. Deepwood Motte is not known for its splendor, but the Iron Fist Crest fits the local temperament: the woodland lord must be able to catch woodmen, hunters, mountain passes and coastal warnings. Owning a large forest does not mean having stable wealth. The real skill is to bring scattered people together when the trumpet sounds."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Wolf Forest people know their way by the shapes of trees, the sound of streams and old knife marks, not by the boundary stones of southerners. If Glover can protect the lumberyard and winter grain, they are a reliable iron fist; if the recruitment takes too long and the ironmen come from the sea, the iron fist cannot fall where it should, and complaints will spread along the hunting trails faster than ravens."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Glover A Stark vassal of Wolfwood Deepwood, his family sigil is a silver iron fist on a red background. Timbers, forest roads, west coast defenses and protected woodland dwellers formed the family roots; motto unknown. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Glover A Stark vassal of Wolfwood Deepwood, his family sigil is a silver iron fist on a red background. Timbers, forest roads, west coast defenses and protected woodland dwellers formed the family roots; motto unknown. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Glover A Stark vassal of Wolfwood Deepwood, his family sigil is a silver iron fist on a red background. Timbers, forest roads, west coast defenses and protected woodland dwellers formed the family roots; motto unknown. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Glover A Stark vassal of Wolfwood Deepwood, his family sigil is a silver iron fist on a red background. Timbers, forest roads, west coast defenses and protected woodland dwellers formed the family roots; motto unknown. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "House Glover: A Stark vassal of Wolfwood Deepwood, his family sigil is a silver iron fist on a red background. Timbers, forest roads, west coast defenses and protected woodland dwellers formed the family roots; motto unknown."
+  ]
+}

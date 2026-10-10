@@ -1,0 +1,169 @@
+{
+  "Id": "rule_Ostermark",
+  "Keywords": [
+    "ostermark",
+    "Ostermark Province_OM",
+    "Ostermark Alliance_OM",
+    "Ostermark Marsh_OM",
+    "Ostermark Elector Count _OM",
+    "Wolfram Hertwig_OM",
+    "Beshafen_OM",
+    "Undead Frontier Eastern Front_OM"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Ostermark is a province on the northeastern frontier of the empire, bordering Kislev and across the border from the Land of the Dead in Sylvania. The land is characterized by dark swamps, vast pine forests and scattered small agricultural settlements. Ostermark's official status within the empire was that of a \"confederacy\" rather than a \"province\" - it was composed of a number of loosely united noble fiefdoms. Elector Count Wolfram Hertwig's authority came more from diplomatic coordination than forceful rule. The capital, Belshafen, is a low-key town built on the edge of a swamp, its defenses relying primarily on the natural barriers of the swamp itself rather than on imposing stone walls."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Ostermark - a place that the Imperial people would not think of at ordinary times, nor would it be the first place they think of during a war. This province is sandwiched between Kislev and Sylvania, with the cold winds of the Chaos Wastes blowing to the north and the corrupt smell of the Undead Cemetery to the south. How many people in the Empire can pinpoint the location of Belshafen on a map, how many Elector Counts in the Empire can agree to the same diplomatic proposal - the answer is zero. The army of Ostermark cannot be called an army, it is more accurate to call it an \"armed militia alliance\" - each noble territory maintains its own small army, which is coordinated and commanded by Elector Count Hertwig during wartime. However, coordination is more difficult in the swamps of Ostermark than in the Imperial Parliament, because the swamp fog makes you unable to even see the flagpole of your own camp. However, the Ostermarks have a cruel sense of humor about their situation: they mock themselves as \"the safest province in the empire\" because \"even the Chaos invasion army has to pass through Kislev first, and when they are tired, they don't want to go south to the swamps.\""
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Ostermark's strategic position is clearly marked on the imperial military map - but anyone who looks at this map usually frowns. It serves as a buffer zone between the Empire and Kislev, and a potential conduit for Sylvania's undead forces to spread northeastward. But Ostermark was unable to fulfill either defensive line function - it was too poor, too spread out, and militarily relied on Kislev to hold out the first waves of Chaos in front of it. Wolfram Hertwig's greatest diplomatic achievement was keeping links with Kislev open, making Ostermark the only stable diplomatic link between the Empire and the Ice Kingdom. Any Elector Count in power in Ostermark must prioritize three things: First, maintain friendly relations with Tsarina Kislev; second, build as many watchtowers as possible in the swamps to warn the undead from infiltrating from the south; third, ensure that key members of their noble alliance will not defect to the Midden or Stirland camp when the Imperial Council votes. The third thing is often more difficult than the first two combined."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "Ostermark was the most fragile link in the imperial provincial system - its \"alliance\" system was not essentially a mature governance model, but a survival alliance of multiple small aristocratic territories that were unable to become independent under external threats. The province does not have a unified tax system: each noble territory levies its own taxes. The administrative funds of the Elector Count come from the annual \"union fee\" paid by each territory - in theory, it is about 10% of the annual income of each territory, but in fact, half of the noble territories are in arrears all year round. Ostermark's swampy terrain makes large-scale agricultural development economically unfeasible, and its only specialty industry is the gathering of swamp herbs - specifically \"ghost moss\", a rare anti-undead material that is priceless on the Imperial Witch Hunter market. The province's greatest untapped strategic resource is its only stable trade route with Kislev: nearly all the furs, amber, and northern spices the Empire imports from Kislev are re-exported via Ostermark. If Hertwig could persuade the Reichstag to grant formal tariff concessions to this trade line, Ostermark's finances would be on course for a historic breakthrough—but persuading Altdorf's Reichstag to pay for the far northeastern swamps would be a difficult task requiring political genius."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Ostermark is the most suitable place among the imperial border provinces for women to show their governance skills - not because the men here are enlightened, but because there are too few men here. Decades of border conflict depleted Ostermark's adult male population, leaving many of the province's noble lands effectively run by widows or eldest daughters. At least 30% of the seats in Beshafen's Council of Nobles are occupied by female representatives or their agents - among the provinces of the empire, this proportion is second only to the Wesenland ruled by Countess Emmanuel. But the way women rule here is very different from the cold commercial rule of Nunn: the female nobles of Ostermark rely on mutual aid networks among neighbors and close personal relationships with Kislev female boyars. The respect for female warriors in Kislev culture (their ice witch tradition) radiated into Ostermark, making gender barriers far weaker here than in the western provinces of the Empire."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Ostermark family's rule of survival is the simplest in the empire: survive. There are no palace intrigues in Reikland, no cattle market games in Iverland, and no industrial monopolies in Nunn - there are only two core problems faced by every noble family in Ostermark: how to grow enough food in the swamp for the winter, and how to protect your village from being slaughtered when the undead infiltrate from the south. The Hertwig family is able to maintain its position as Elector Count in Ostermark not by military strength or wealth reserves - both of which they are far inferior to a branch of the Todbringer family in Middenland - but by the diplomatic network that has been operated for generations: the Hertwig family and the Kislev noble family have the longest tradition of intermarriage in the empire, and each generation of the Hertwig family has at least one son or daughter married to a Kislev noble. This transnational blood alliance provided Ostermark with strategic depth that no other province in the empire could replicate."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Ostermark is not a place you would want to go - it is a place where you learn to swim after being thrown into it by fate. The swamp area is shrouded in gray-green fog all year round, and the visibility is no more than fifty steps. The road under your feet is sometimes hard soil and sometimes thin mud. One wrong step can sink you to your knees. Remuneration, on average, is the lowest in the empire - the Ostermark nobles themselves are poor, and the gold coins they can pay their mercenaries are usually mixed with a lot of real goods: pickled fish, furs, herbs and the occasional bottle of strong liquor smuggled from Kislev (that liquor can ignite all the moisture in your throat). But here’s the advantage: there are almost no background checks. In Altdorf, you need a letter of recommendation and a guild license to accept escort missions. In Ostermark, as long as you have a sword and a pair of legs that can walk on the swamp road, the mayor of any border village will hire you - because they have no choice. The longest winter I stayed in Belshafen, I helped an old widow guard her herb warehouse. The reward was three meals a day and a straw bed, but that winter I learned more practical swamp survival skills than any bounty hunter tutorial."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Doing business in Ostermark requires a special kind of business talent - you have to learn to build roads where there are no roads and create markets in villages where there are no markets. The province has no written chamber of commerce charters and standardized trading contracts like Reikland's - commerce mainly flows between villages in the form of barter. Ostermark's greatest commercial opportunity was the re-export trade with Kislev: trading Imperial salt, iron, and weapons (second-hand muskets from the Wesenland were particularly popular in Kislev) for Kislev furs, whale oil, and amber. The key to opening this trade route is not how deep your capital is, but how deep your relationship is with the Hertwig family and the Kislev border boyars. The freeze period of the swamp every winter is the only safe transportation window (because the movement of the undead slows down in the extreme cold), which means that Ostermark merchants must complete the entire year's cargo transfer within a short three-month freeze period - one misjudgment may cause you to deal with frozen goods stranded halfway in the swamp all spring."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Ostermark - a swampy province on the northeastern frontier of the empire, a buffer zone between Kislev and Sylvania",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Ostermark Empire Province Swamp Kislev Frontier"
+  ]
+}

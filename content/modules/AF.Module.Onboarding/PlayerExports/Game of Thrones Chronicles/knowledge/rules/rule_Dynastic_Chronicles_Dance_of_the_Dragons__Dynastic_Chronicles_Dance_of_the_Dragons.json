@@ -1,0 +1,147 @@
+{
+  "Id": "rule_Dynastic_Chronicles_Dance_of_the_Dragons",
+  "Keywords": [
+    "Dance of the Dragons",
+    "The Dance of the Dragons",
+    "Targaryen Civil War"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Entry The Dance of the Dragons is a civil war that breaks out in the Targaryen dynasty over succession. The Black Party and the Green Party each have different claims to the throne. Dragons, castles, family marriage alliances and people are involved in the same tear. The war proved that dragons can decide the battlefield, but they cannot let inheritance disputes take over Later generations of nobles argued about who had more weight, the eldest son, the eldest daughter, the king's destiny or tradition, while ordinary people remembered the cost of the flames falling on the roof."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "scholar",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Dance of the Dragons"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Dance of the Dragons"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Dance of the Dragons"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Dance of the Dragons The Dance of the Dragons is a civil war that breaks out in the Targaryen dynasty over succession. The Black Party and the Green Party each have different claims to the throne. Dragons, castles, family marriage alliances and people are involved in the same tear. The war proved that dragons can decide the battlefield, but they cannot let inheritance disputes take over. A past war or a dynastic change will determine today's tax rates, covenants, roads and who has the right to speak first in the hall."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Dance of the Dragons The Dance of the Dragons is a civil war that breaks out in the Targaryen dynasty over succession. The Black Party and the Green Party each have different claims to the throne. Dragons, castles, family marriage alliances and people are involved in the same tear. The war proved that dragons can decide the battlefield, but they cannot let inheritance disputes take over. They remember which flag fell, which bridge was burned, and who shared the last sip of water in the snow; for them, history is first and foremost the memory left by the body."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Dance of the Dragons The Dance of the Dragons is a civil war that breaks out in the Targaryen dynasty over succession. The Black Party and the Green Party each have different claims to the throne. Dragons, castles, family marriage alliances and people are involved in the same tear. The war proved that dragons can decide the battlefield, but they cannot let inheritance disputes take over. The winner will write it as a proof of order, the loser will keep it as a warning, and ordinary people will only remember how much the price of food and cemeteries increased that year."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Dance of the Dragons The Dance of the Dragons is a civil war that breaks out in the Targaryen dynasty over succession. The Black Party and the Green Party each have different claims to the throne. Dragons, castles, family marriage alliances and people are involved in the same tear. The war proved that dragons can decide the battlefield, but they cannot let inheritance disputes take over. They learn about the past through old houses, family trees, tombstones, and taboos spoken by old men; as long as an event affects taxes, conscription, or marriage, it is not truly over."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Dance of the Dragons: The Dance of the Dragons is a civil war that breaks out in the Targaryen dynasty over succession. The Black Party and the Green Party each have different claims to the throne. Dragons, castles, family marriage alliances and people are involved in the same tear. The war proved that dragons can decide the battlefield, but they cannot let inheritance disputes take over."
+  ]
+}

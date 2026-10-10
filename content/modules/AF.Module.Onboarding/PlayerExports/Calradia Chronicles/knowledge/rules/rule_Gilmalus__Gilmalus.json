@@ -1,0 +1,188 @@
+{
+  "Id": "rule_Gilmalus",
+  "Keywords": [
+    "Gilmalus",
+    "Westbound in"
+  ],
+  "RagShortTexts": [
+    "Jarmalus is the granary of the Western Empire, the source of legions, and the hometown of Emperor Galios."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": [
+          "town_ew3"
+        ],
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Do you outsiders laugh at us for being pedantic? Are you laughing at us for being conservative? When we were farming here, your city had not yet grown out of the mud. The fields of Jarmalius were tilled by the Palas before the Era; our rules were established by the Republic at that time. Do we speak with an accent? That's the accent passed down from our ancestors. If you don't understand it, it's because you have a hard tongue. General Karsus drew his sword and asked the senator if he understood. This is the temper of us Jarmalians: I will not talk to you more, but I will explain the truth once. If you don't understand, you will be serious. Those on the coast live by reselling, those in the north live on furs, the barbarians in the mountains live on robbing, and we live on the food in the fields and the swords in our hands. Without the wheat from the Central Plains, the empire would have starved to death. Are we conservative? Of course we are conservative. If we are not conservative, no one in the empire will remember what it was like before."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_w"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Jalmarys is the epitome of the Midlands—and it is not just us who say so; the whole Empire admits it. We Midland commanders—Grand Marshal Garios, Crotor, and Carthos who drew his sword back in the day—all share the temperament of this land: no posturing, no beating around the bush. Jalmarys provides the finest recruits in the Empire. Folk here work the fields from childhood, broad-shouldered and iron-backed; pull them into a legion and drill them for half a year, and they make first-rate soldiers. They are not like those conscripts up north—northerners fight to survive the winter, whereas for us Midlanders fighting is a tradition; back in the days of the Republic, every household sent its sons to the army. Yet Jalmarys does have one fault: it is too stubborn. Those old-fashioned families in town still harp on about the old rules of the Republic, and when Garios holds his 'popular assemblies,' they think it beneath the dignity of the Senate. Sometimes I want to tell them that we are Midlanders ourselves, so stop looking down on others as provincial. Say that out loud in Jalmarys, though, and they will glare daggers at you."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "clan_empire_west_2"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null
+      },
+      "Content": "Jalmarys. Ah, all those wheat fields.\n\nI have been there a few times. There really is plenty of grain, and the people really are tiresome. When I talk business with them, they look at me as if I were a sea crab that crawled ashore from the western coast. They think coastal merchants who make money by buying and selling are dishonorable, while tilling the soil is the highest glory. Can glory be exchanged for gold coins? Still, after dealing with the grain merchants of Jalmarys for a long time, I have figured them out: these people have hard mouths and hard hearts, but once a contract is signed, they never renege. That old-fashioned stubbornness of theirs actually turns out to be an advantage in business. You do not have to worry about them pulling tricks—not because they do not want to, but because they do not know how. Besides, Garios is Emperor of the Western Empire and Jalmarys is his stronghold, so most military grain orders come out of here. I dislike the weather there—high winds, thick dust, soldiers filling every street, with none of the easy charm of the coastal city-states. But I am not about to quarrel with money.\n\nJalmarys is currently the territory of A"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": [
+          "town_ew2",
+          "town_ew5",
+          "town_ew6"
+        ],
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Jalmarys is right here in our Midlands; not much to say about it. Farm the land, serve in the army, eat, and sleep. Outsiders laugh at us for being rustic, say our accents are thick, call us old-fashioned. What is wrong with being old-fashioned? The rules here were handed down by our ancestors and have never changed. We lived this way during the Republic, and we still live this way now that emperors have come. Garios is one of our own locals; his becoming Emperor makes us proud, though daily life has not changed much. We still hand over military grain as usual, and we still serve in the ranks as usual. If there is anything we cannot stand, it is those newly risen merchants from the west. When we have no money, we farm the land; when we have money, we still farm the land. Midlanders do not rely on buying and selling; we rely on the soil. The soil does not deceive.\n\nRight now they should belong to A"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "clan_empire_north_1",
+          "clan_empire_north_2",
+          "clan_empire_north_3",
+          "clan_empire_north_4",
+          "clan_empire_north_5",
+          "clan_empire_north_6",
+          "clan_empire_north_7",
+          "clan_empire_north_8",
+          "clan_empire_north_9",
+          "clan_empire_south_1",
+          "clan_empire_south_2",
+          "clan_empire_south_3",
+          "clan_empire_south_4",
+          "clan_empire_south_5",
+          "clan_empire_south_6",
+          "clan_empire_south_7",
+          "clan_empire_south_8",
+          "clan_empire_south_9",
+          "clan_empire_west_2",
+          "clan_empire_west_3"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Jalmarys is the granary of the Empire, and also the laughingstock of the Empire. Without this granary, the Empire would starve; with this granary, we have to endure their endless self-praise. They think they are the only good people in the Empire and everyone from anywhere else is defective goods. They speak with that thick-tongued Carthos-style accent and put more garlic in their food than anything else. What is most infuriating is that they also hold military power. Garios is a Midlander, Crotor is a Midlander, and every voice barking orders in the Imperial legions has a Midland twang. This Midland clique monopolizes military power in the Western Empire, while we in the north and south still have to deal with them—to buy grain we must go to them, and to move troops we must beg them. Some in the Senate say behind closed doors that the Midlands are the local bullies of the Empire. Nobody dares say that to their faces. People over in Jalmarys cannot bear to hear such things."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Jalmarys? That place full of wheat and soldiers. We have relatives over there; when they came back to visit, even their accents had changed, and they reeked of garlic to high heaven. I hear they have endless rules there—even worshiping the gods has to follow the old rites, and if you miss a single step the elders rap you with their walking sticks. Still, that place really is rich, with plenty of grain and a real future in the army. Garios came out of there. People say Garios treats veterans well, giving them land and money. Over here, when we serve in the army and come home after the fighting, our fields have gone to weeds. Sometimes I think life might be easier if I had been born in a place like Jalmarys. Then again, I hear folk there look down on outsiders—never mind."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "There is a place in the Empire called Jalmarys. What a long name, hard even to pronounce. Traveling merchants say the soil there is so rich it practically drips oil; scatter seeds at random and crops spring right up. The people there are said to be fierce and overbearing, barking whenever they talk. One of their generals back in the day even drew his sword and asked the senators whether they could understand his speech—tsk, a soldier drawing steel on men in robes? Where we come from, he would have had his head chopped off for that. Still, as huge as the Empire is, its grain depends entirely on that land, so however belligerent they are, people have to let them be. Anyway, it is far away and has nothing to do with us."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Jalmarys is the base from which Garios rose to power, as well as the vital lifeline of grain and manpower for the Western Empire. According to our intelligence, the Midlands were the earliest agricultural heartland developed by the Empire; the people of Jalmarys have preserved the military traditions of the Republican era, and the quality of their recruits ranks among the finest in all Calradia. It is no accident that so many Imperial warlords hail from the Midlands. Yet this city is also the most conservative place in the Empire, fiercely xenophobic, with populist tendencies stretching unbroken from the days of Carthos down to Garios. Garios rose to power on the strength of this territory, yet he is also constrained by it—the old established families of the Midlands take a dim view of the barracks-style assemblies Garios holds. For now, this internal tension does not hinder the Western Empire's military output, but should the civil war drag on, whether the Midlands remain Garios's ironclad base will require continued observation. From an outside perspective, Jalmarys is the strategic center of gravity of the Western Empire. Whoever controls this city's granaries and barracks holds the lifeblood of the Western Empire. Its current controller is Garios, though no one can say for sure what the future holds.\n\nIts current controller is A"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "A",
+      "Kind": "settlement_owner_leader_name",
+      "TargetId": "town_EW3",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

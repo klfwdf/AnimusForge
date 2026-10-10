@@ -1,0 +1,159 @@
+{
+  "Id": "rule_Musilon",
+  "Keywords": [
+    "Principality of Musilon_MU",
+    "Duchy of Musilon_MU",
+    "Musilon Territory_MU",
+    "Curse of Musilon_MU",
+    "Duke of Mousillon_MU",
+    "Musilon Province_MU"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Duchy of Mousillon is located in the swamps of western Bretonnia and is ruled by Duke Malobold. This is the most despised duchy of Bretonnia - infamous for the Red Duke's rebellion and vampire infiltration. Other principalities tend to lower their voices when mentioning Musilon, as if the name itself carries a curse."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "mousillon"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Mousilon - We are the descendants of the damned, but also Bretonnia's toughest survivors. While other principalities jousted and feasted in the sun, we fought the undead and the undead in the swamps. Duke Malobold bears the sins of his ancestors, but he still holds on to his lance. The knights of Mousilon may have a dim reputation, but their martial prowess is as good as any of the favorites of Curona."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Duchy of Mousilon is the most complex piece on Bretonnia's political map. On the surface, the land is barren and disgraced, but its swampy depths hold undiscovered resources—weapons from ancient battlefields, forgotten elven relics, and rich peat bounty. The knights of Mousilon have accumulated unique experience in night combat due to long-term battles with vampires and undead."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        }
+      },
+      "Content": "The economy of the Principality of Musilon seems to be in decline, but it contains opportunities. Bog peat was one of the finest fuels in the Old World, with a long burning time and stable heat, and was in high demand in the north of the Empire. There are several forgotten ancient battlefield sites scattered throughout the principality, and the broken weapons excavated can be repaired and sold to the collectors' market. A rare fungus called \"Luminous Mushroom\" grows in the swamp, which is a precious raw material for making alchemical potions. However, Musilon's foreign trade was implicitly blocked by the surrounding principalities - Baston and Brion rarely allowed Musilon caravans to pass freely through their territories, forcing Musilon merchants to take the water route around the coast."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Being a noblewoman in Mousilon is a lonely calling. The ladies of the other principalities shunned me like a plague, as if the hem of my skirt bore the curse of the swamp. But I inherited a secret map from my mother that marked every safe passage in the Musillon Swamp. In the glittering court of Bretonnia, no one cares about the secrets of the swamp; but we know that true power often lies in forgotten corners."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null
+      },
+      "Content": "Our family did not choose to leave Musilon. When the place was cursed and abandoned after the Red Duke's rebellion, we stayed. Duke Malobold needs every noble family that is still willing to be loyal to him. The other principalities may look down upon us, but at night when the vampires crawl out of the swamps, only the swords of Mousilon stand between them and Bretonnia."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The swamps of Musilon smell of decay and death. A crooked abandoned tower could be seen vaguely in the mist, and tree roots were entangled with rusted armor fragments. The most incredible thing I've ever seen here was a whole procession of translucent knights walking out of the swamp on a moonless night, walking expressionlessly across a clearing before disappearing into the mist on the other side. No one believed my experience."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Business in Musillon is a game for the brave. Other principalities blocked Musilon's land trade routes, but water smuggling had been carried out secretly. Peat is the most stable source of income - no matter how bad Mousillon's reputation is in the northern empire, they need fuel. The market for glow-in-the-dark mushrooms is extremely small but the profits are extremely high. A bag of good-quality glow-in-the-dark mushrooms can be sold for more than one hundred gold crowns."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "The Duchy of Mousilon is located in the swamps of western Bretonnia. It is a dark corner of Bretonnia, infamous for the Red Duke's rebellion and vampire infiltration.",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "The Principality of Musilon, the Cursed Swamp, the Dark Territory, is infamous."
+  ]
+}

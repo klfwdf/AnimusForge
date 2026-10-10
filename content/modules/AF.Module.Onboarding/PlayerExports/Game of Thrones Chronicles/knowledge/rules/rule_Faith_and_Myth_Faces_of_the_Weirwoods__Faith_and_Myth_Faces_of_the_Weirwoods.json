@@ -1,0 +1,145 @@
+{
+  "Id": "rule_Faith_and_Myth_Faces_of_the_Weirwoods",
+  "Keywords": [
+    "Faces of the Weirwoods"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The weirwood's red leaves and faces carved into its trunk make it the strongest symbol of Old God worship. The vows made in front of the tree carry the weight of ancestors and land. Cutting down a heart tree not only destroys the tree, but also cuts a hole in the hearts of many people that cannot be easily healed opening."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "priest",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Faces of the Weirwoods"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Faces of the Weirwoods"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Faces of the Weirwoods"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Faces of the Weirwoods The weirwood's red leaves and faces carved into its trunk make it the strongest symbol of Old God worship. The vows made in front of the tree carry the weight of ancestors and land. Cutting down a heart tree not only destroys the tree, but also cuts a hole in the hearts of many people that cannot be easily healed. Altars, relics, and prophecies can unite people and give a political claim the appearance of irrefutability."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Faces of the Weirwoods The weirwood's red leaves and faces carved into its trunk make it the strongest symbol of Old God worship. The vows made in front of the tree carry the weight of ancestors and land. Cutting down a heart tree not only destroys the tree, but also cuts a hole in the hearts of many people that cannot be easily healed. Some people use it as a talisman, while others use it as the name of fear; the same prayer may make people draw their swords or put them down."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Faces of the Weirwoods The weirwood's red leaves and faces carved into its trunk make it the strongest symbol of Old God worship. The vows made in front of the tree carry the weight of ancestors and land. Cutting down a heart tree not only destroys the tree, but also cuts a hole in the hearts of many people that cannot be easily healed. Whether the gods responded or not could not be proven by the account books, but how the rituals were held and who could interpret the omens actually determined the authority of the community."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Faces of the Weirwoods The weirwood's red leaves and faces carved into its trunk make it the strongest symbol of Old God worship. The vows made in front of the tree carry the weight of ancestors and land. Cutting down a heart tree not only destroys the tree, but also cuts a hole in the hearts of many people that cannot be easily healed. They seek an explanation they can rely on when it comes to birth, marriage, sowing, illness, and death; the names of gods may not be the same, but their desire to keep their families safe is similar."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Faces of the Weirwoods: The weirwood's red leaves and faces carved into its trunk make it the strongest symbol of Old God worship. The vows made in front of the tree carry the weight of ancestors and land. Cutting down a heart tree not only destroys the tree, but also cuts a hole in the hearts of many people that cannot be easily healed."
+  ]
+}

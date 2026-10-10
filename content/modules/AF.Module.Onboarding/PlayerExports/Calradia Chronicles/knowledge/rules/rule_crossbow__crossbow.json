@@ -1,0 +1,245 @@
+{
+  "Id": "rule_crossbow",
+  "Keywords": [
+    "Crossbow"
+  ],
+  "RagShortTexts": [
+    "What is a crossbow?"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "darshi",
+          "vakken"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "What is a crossbow? Don't know"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Crossbow? That is the most real thing about our Vlandia. My grandfather's generation fought against the Empire, and the knights would win or lose in each other's battles, but as soon as our crossbowmen array was set up on the hillside, the other side would have to weigh it. The empire's masters have thick armor, and all living beings are equal under the sharp crossbow. The best thing about a crossbow isn’t its power – it’s peace of mind. The young man I brought from the fief was still drying wheat last month, but this month he can pull the trigger on the battlefield. There is no need to teach them how to draw a bow, no need to train their arm strength, just put the crossbow in their hands, tell them how to aim and load it, and that's it. In other countries, archers need to be trained from an early age, but we can train crossbowmen in just a few weeks. That's why Vlandia has more crossbowmen than anyone else - we don't rely on martial arts, we rely on craftsmanship."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Crossbow? I have one at home, a light crossbow, hanging on the wall next to the stove. I take it out to clean it when it rains. The village handed it down, saying it was for wartime recruitment. I have never fought in a war, but I know how to use that thing - the village elder taught me how to use it. I practiced for two days during the off-farm period and aimed at the grass target standing on the ridge of the field. I'm not very accurate, but I heard that you don't need to be too accurate on the battlefield. If a row of people shoot towards the opposite side at the same time, there will always be an unlucky person who gets hit. It’s much easier than practicing bow and arrow. My cousin wanted to learn the longbow, but after two years of practice he was still not satisfied with the draw. Then he switched to a crossbow and shot through the target on the first day. He said that this thing doesn't depend on talent, it just depends on how well you can press your fingers. I felt relieved after hearing this. If a fight breaks out one day, a peasant like me can hit someone on the head with a crossbow without having to fight with a knife."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "I was a soldier in Vlandia. Every time we lined up, the crossbowmen would squat behind us and aim forward over our shoulders. Crossbowmen are usually new soldiers and farmers who think that they can just go to the battlefield and fire a few arrows. But when we lined up and waited for the cavalry from the opposite side to rush over, the crossbow was the only reassuring sound. The sound was not \"whoosh\" but \"thump\". When the crossbow string was played out, it was muffled and solid. Because I know someone must have fallen on the other side. No matter how thick the knight's armor in the front row is, it can't withstand the crossbow arrows. The disadvantage is that the crossbowman cannot fire continuously - after shooting, he has to reload for a long time, and we have to hold it while reloading. But this kind of one-shot deal suits Vlandia's style of play: the first round of volleys stops the charge, and then we press forward to grind the meat. The crossbowmen were looking for opportunities to shoot arrows into the gaps between the people. Each shot counted. The Imperial people call crossbows inferior weapons, and people who are killed by inferior weapons on the battlefield will not feel that they have died an ignominy death."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The crossbow is Vlandia’s specialty weapon. With the strong recommendation of Emperor Arenicos, our empire introduced it, but not all of it was learned. The Senate discussed whether to completely replace the crossbows - Emperor Arenicos decided not to. The reason is not technology, but system. The empire relied on its legion to fight its wars. The core of the legion was the heavy infantry, and the crossbowmen were only auxiliary. If you move the auxiliary weapons to the main position, the entire tactical system will have to be overthrown, and we don't have the time. And there's one unpopular thing about the crossbow: it makes ordinary people stronger too easily. A slave can shoot a nobleman to death with a crossbow. This kind of thing has precedent in the empire, and the elders in the Senate don't like it. So we use crossbows, but we use them in a hidden way - for the auxiliary troops and for the reserve corps. We don't dare to use crossbows for all the people like Vlandia. But the frontline commanders all agreed privately: the Imperial Crossbow was easy to use. The armor is thick, the crossbows are hard, and the formation is stable. Our crossbowmen are not afraid of the cavalry coming from the opposite side. Unfortunately, there weren't enough of them, so when it came to a real fight, crossbows rained down from Valan's side."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Crossbow? I've seen it, it's not very common in the Imperial Army, there are many people in Vlandia. Last year, there was a blacksmith walking around the streets, who was from Valan. He said that being a soldier there did not issue swords, but a crossbow, just like a hoe. I asked him if it was easy to learn, and he smiled and said who couldn’t pull the trigger. I wonder if this thing is really that simple, why doesn’t our empire publish it? Later, I heard someone said that the superiors didn't like it, saying that everyone could shoot people with a crossbow, so how could the rules be established? Don't quite understand these. After all, fighting is a soldier's job."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "I serve as a soldier in the Imperial Army. Our crossbowmen's status in the legion is not low - their armor is thicker than that of Varan's crossbowmen, they can stand upright, and their firepower is on par with their counterparts on the opposite side. The disadvantage is that there are few people. Vlandia's human crossbowmen piled up on the position like wheat. There were few crossbowmen on our side, and there was no sound when the formation spread out. I envy their crossbowmen, there are so many. Their soldiers said that Vlandia people all have crossbows at home, just like we have hoes at home. But our crossbowmen have one advantage: they can take a beating. Varan's crossbowmen wear cotton and leather armor, but our empire's crossbowmen wear chain mail, and the arrows can still be fired after they bounce back."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": [
+          "company_of_the_boar"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Crossbows are good things. Our Wild Boar Corps has been using it for many years. After we finish shooting the crossbow, we finish shooting the crossbow and put on the sword. Crossbows are not picky—you can use them if you know how to pull the trigger. If you don't have a crossbow in your hand, you can only stand in the front row and let everyone care about you during the battle; if you have a crossbow, it's none of your business. If you stand in the middle row and in the back row, you'll be safe. Anyway, a crossbow doesn’t require arm strength. My hands were shaking after a night of drinking, so I definitely couldn’t pull the bow. Crossbow? Photo buckle. We teach newcomers not to mess around: light crossbows must be pulled firmly with their feet, and heavy crossbows must use a rocker. The trigger spring should always be oiled, and don't put it too close to the fire. When the spring of the crossbow became rusty, it got stuck when firing, and the other side rushed over."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Crossbow? Yes, brought by the Vlandia caravan. They set up stalls in the market, our people gathered around to look at them, weighed them and left. It's too heavy. The bowstring is made of iron, the trigger is made of iron, and the handle is covered with iron. If you put it in the desert for an hour, your hands will get hot. How can you fight if you can't put your hands on it? We asked the Vlandia businessman how to string this thing, and they took out a rocker and figured it out for a long time. We laughed - by the time you finished shaking the lever, Aserai's archers had fired three arrows. What you need to fight in the desert is lightness and speed, and crossbows don't touch either. But we didn’t say anything to death. It's a fact that the Vlandians shot Imperial knights off their horses with this thing. So we occasionally collected a few and placed them at the oasis post. If a heavily armored enemy really came to attack us, we would squat behind the crenels and take aim slowly. But our warriors still recognize the bow but not the crossbow - drawing a bow on horseback is an ancestral skill of the Aserai people, and crossbows are useless on horseback. The Vlandians themselves don't use crossbows on horses. They have the ability to dismount and stand up to fight, but we don't dismount. Crossbows are sold well in Aserai, and occasionally young people will buy one and nail it to the wall as decoration, and then continue to practice bows."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nord"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Things used by Vlandia people. We haven't seen a few, but we heard a Sturgia businessman say that it doesn't require practice, and a person can shoot an arrow just by picking it up, and his strength is quite high. We didn't quite believe it. No need to practice? Isn't that similar to throwing stones? Although the bows of the Nords are soft, it still requires arm strength to pull the bow. How can the Vlandians shoot arrows with just an iron knot without training their arms? Later, a Valan merchant ship docked with a crossbow on board. Our people took it over and tried it, and found that it did not require any effort - but this was not a crossbow, but a more complicated operation method, like a winch used to drive a ship. We Nords don't do this when fighting. We danced on the shore, dangling here and there, and our crossbows were worse than our fists. Moreover, the arrows of the crossbow are too short and cannot shoot as far as our bows. They cannot come back after being shot. One arrow is more expensive than our three harpoons. Nord's old saying: A good thing is not a good thing if it doesn't work hard. The crossbow doesn't let you use force, so the crossbow is not a good thing. We don't use crossbows, but we do collect them - the captured crossbows can be sold back to the Vlandians at a good price if they are leathered at the market."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Crossbows are a rare item in Sturgia. Someone in our Boye has a crossbow - a Vlandia merchant brought it in and put it on the wall of the hall as a decoration. The visitor looked at it and asked what it was, and the owner said that it was a Vlandia crossbow that could shoot through iron armor with one click, but no one actually clicked it. The Sturgians used bows. Our bow is made of elm wood and has a weak draw force, but there are many elm trees in the forests in the north. If it breaks, we can cut it off at any time. The crossbow is different. If the crossbow string is cracked by freezing or the crossbow spring is stuck in the snow, you can't repair it in the woods. It's cold in the north, and when it's cold, iron sticks to your hands, and anyone who touches the crossbow trigger will lose their skin. But we also admit that crossbows are useful when attacking a city - there are several stone strongholds in the north of Sturgia. When attacking the stronghold in winter, the militiamen can squat behind the snowdrifts and aim at the wall with crossbows, which is more useful than archers. The archer's arms are frozen and he can't draw the bow, but the crossbowman doesn't need to pull, as long as his fingers can still move. But we only use it occasionally and it is not an organized system. When doing business with the Vlandia people, crossbows were not something we bought in bulk—we bought iron, we bought salt, we bought wine. Crossbows are too expensive. The price of one crossbow can buy five good axes. The boyars would rather have a few more axes than a crossbow."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Crossbows belong to the Vlandians and we don’t touch them. We seized them on the border and brought them back to the village to show to the elders. The elder picked it up and turned it over. He said that this thing has no soul. The bow has a bow spirit, but the crossbow does not. The crossbow is hung on the string with iron knots, so it is effortless to shoot the arrow. Not working hard means being dishonest. If you shoot arrows without sincerity, the mountain gods will not accept them, and killing enemies will not be counted as military merit. Moreover, the arrows of the crossbow are too thin, and there is no clan pattern engraved on the arrow shaft. The enemy will die without knowing who shot it. Battania warriors kill enemies by asking them to remember their faces and clan crests. Crossbows can't do that, crossbows are a weapon for cowards. We have also heard that crossbows can shoot through chain mail. But since the crossbow is an ominous object, then its ability to shoot through chain mail is witchcraft. After we seize the crossbow, we will place the crossbow on the ground, the elder will recite a mantra, and then smash the crossbow machine with stones. The sound of smashing is very crisp, like breaking bones, which is refreshing. After smashing the wooden pallet, use it as firewood. The iron items were buried outside the village, and whoever buried them washed their hands three times. Warriors never walk past a crossbow, they take a detour."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Crossbow? We know that thing, Easterners have used it, and we can make it ourselves, but we don’t use it. We have seen the crossbows of the Eastern people. They have copper receivers, laminated bamboo bows, and long arrow shafts. Their shape is exactly the same as the iron crossbows of the Vlandians. We have never seen the actual Vlandia crossbow, we have only heard it mentioned by the caravans from the west - it is said to be a wooden iron machine, the string is pulled so tightly that you have to step on it with your feet to hang it, and the arrows fired can penetrate chain mail on flat ground. We asked if anyone had used it on horseback, and the businessman laughed and said that the Vlandians themselves did not use crossbows on horseback. When loading, they had to stand on the ground, step on the crossbow head and pull the string with both hands, and it was impossible to exert force while riding on horseback. When we heard it, we understood: the crossbow is not something from the grassland. The Khuzait fought on horseback. The bow is alive, the horse is alive, and so are the people. The compound recurve bow can be drawn and released freely while running, and the horse can move away after shooting a pot of arrows. Crossbows are a good thing on the ground, we admit - crossbows are occasionally used on the grassland, placed in the baggage camp to guard the camp gate, or given to dismounted sentries with two, and they can shoot fixed targets very accurately. But Khuzait warriors do not carry crossbows. The crossbow reloads too slowly and cannot be pulled on the horse. In the time it takes you to shoot one arrow, the horse archer opposite has already shot three arrows. And the crossbow has no temper. When the archer draws the bow, he can feel the temperament of the bow. The tightness of the bow string is different in cold weather and hot weather. The archer has to communicate with the bow. The crossbow doesn't communicate, it's made of iron, it just clicks and goes away, just like a scythe. Khuzait people like things with tempers - horses have tempers, bows have tempers, knives have tempers, and people also have tempers. We don’t hang on to things that have no temper."
+    }
+  ],
+  "TextMappings": []
+}

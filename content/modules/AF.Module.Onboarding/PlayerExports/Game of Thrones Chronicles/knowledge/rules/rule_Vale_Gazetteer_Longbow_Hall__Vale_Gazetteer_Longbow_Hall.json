@@ -1,0 +1,154 @@
+{
+  "Id": "rule_Vale_Gazetteer_Longbow_Hall",
+  "Keywords": [
+    "Longbow Hall",
+    "Hunter Family",
+    "The Vale",
+    "Mountain Clans"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Longbow Hall is the seat of House Hunter in the Vale. Its name comes from hunting and archery, hinting too that the Vale is not made of heavy-armored knights alone: mountain woods, ravines, and marginal roads have even greater need of bowmen and hunters who know the ground. The lands of House Hunter lie where the mountains of the Vale meet the plowed fields; residents face winter mountain winds, clan raids, and road hazards, while also profiting from timber, game, and passing merchants. In the great hall of Longbow Hall men may speak of knightly honor, yet outside the walls what truly sustains the lordship are foresters, farmers, smiths, and those who know every footpath. Shifting fortunes of war should not erase this enduring local structure."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vale"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Longbow Hall Local families also rely on goats, thin fields, orchards, and pack teams crossing the Mingyue Mountains; if any road, well, or dock fails, the price falls first on them."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vale"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Longbow Hall Entry Longbow Hall"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Longbow Hall Entry The Vale"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Longbow Hall Entry Longbow Hall"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Longbow Hall If you can supply supplies, avoid danger, and find a guide, it is worth marking in your itinerary; if you don't have these three things, no matter how loud your family name is, it won't be able to save the lost."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Longbow Hall A stronghold was therefore not just a lord's hall, but also a place where weddings and funerals, vows, labor and local memories recurred."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Longbow Hall They care about goats, thin fields, orchards, and pack teams crossing the Mingyue Mountains. They also look at whether seeds are left after collecting grain, and whether the city gates are open in times of disaster. When people from afar see coats of arms, what they see is whether there will be food to eat tomorrow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Longbow Hall: Longbow Hall is the seat of House Hunter in the Vale. Its name comes from hunting and archery, hinting too that the Vale is not made of heavy-armored knights alone: mountain woods, ravines, and marginal roads have even greater need of bowmen and hunters who know the ground. The lands of House Hunter lie where the mountains of the Vale meet the plowed fields; residents face winter mountain winds, clan raids, and road hazards, while also profiting from timber, game, and passing merchants. In the great hall of Longbow Hall men may speak of knightly honor, yet outside the walls what truly sustains the lordship are foresters, farmers, smiths, and those who know every footpath. Shifting fortunes of war should not erase this enduring local structure."
+  ]
+}

@@ -1,0 +1,210 @@
+{
+  "Id": "rule_Expedition_Knight",
+  "Keywords": [
+    "expedition knight",
+    "chivalrous exploration",
+    "Expeditionary Knight Two-Handed Greatsword",
+    "Expedition Knight Holy Grail Trial",
+    "wandering knight",
+    "Put down the lance",
+    "Holy Grail Crusade",
+    "quest knight",
+    "Lone Ranger"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Expeditionary Knights are the most awe-inspiring and saddest existences in Bretonnia chivalry - they are knights of the kingdom who at some unspeakable moment decided that they were no longer worthy of the title of knight, so they put down their lances and shields, picked up a two-handed sword, abandoned their fiefdoms and titles, and wandered alone to embark on the Holy Grail expedition. The expedition knights do not pursue any earthly rewards. Their only goal is to find the manifestation of the Holy Grail at the end of this long road that may even lead to death."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Knight of the Expedition - this title evokes emotions in the hearts of us Bretonians of a complexity that outsiders will never understand. In our culture, the Far Knight is a living myth: he gives up everything that other knights regard as the ultimate value - glory, territory, family, even his own name - because he realizes that if it is just to obtain the Holy Grail, it has become a burden rather than an honor. The ritual of the expedition was called the \"Night of Rest\": the knight knelt in the chapel of the castle all night, announced in front of his dukes and comrades that he would embark on the Holy Grail Crusade, and then walked out of the castle gate before dawn never to look back - from then on he owned nothing in the world of the living. He hung his lance on the castle gatepost as an oath of renunciation - from then on he fought only with a two-handed giant sword, which meant that he gave up the impact advantage of cavalry and chose to fight the enemy in a fairer and more difficult way. The expeditionary knight has no fixed destination on his journey - he follows the vague signs left by the Lady of the Lake in his dreams, walking from village to village, from battlefield to battlefield, slaying wild beasts, helping serfs, and participating in any tourney he deems noble enough. An expedition knight's journey may last several years, or it may last a lifetime - the youngest Grail Knight in history received the Holy Grail apparition seven years after the expedition, while the oldest expedition knight died in a roadside inn at the age of eighty, without seeing the goddess until his death. The people of Bretonnia consider meeting an expeditionary knight a good omen: for it means that the Lady of the Lake is testing the purity of the land through this knight."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The value of the Expeditionary Knight at the military command level is unpredictable. You cannot use the Expeditionary Knights as a military unit that you can count in strategic deployments - some of them will pass through your territory and actively participate in your wars, but no one can order them to fight; others may consider your wars unchivalrous and refuse to intervene, even though your enemy is an evil Orc Warlord. But if you happen to get active assistance from an expedition knight at a critical moment, what you get is not a soldier but a strategic weapon: the expedition knight has accumulated the richest one-on-one combat experience against almost all types of abnormal creatures in several years of lone combat - he knows that the big orc will reveal the flaw in his left rib after launching the third sweeping attack; he knows that the vampire will have a three-second magical stun period before transforming; he knows that the legs of the troll are faster to kill than the head. From the standpoint of a lord, you should unreservedly welcome and honor every expedition knight who passes through your territory - because even if he does not help you fight, his presence itself will raise the moral level of all the knights in your territory."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "As the only legal bridge from secular knights to Grail Knights in the Bretonnian chivalric system, the legal and ritual history of the expeditionary knights is the most theocratic research topic in the history of Bretonnian institutions. There is only one legal prerequisite for the Voeu de la Quete: the knight applying for the expedition must be a sworn knight of the kingdom and have no unfulfilled legal service obligations - this means that you cannot legally start an expedition if you owe your lord a term of military service that is still within the contract period. The expedition ceremony itself contains three indispensable links: the applicant kneels in the castle chapel all night long (called \"purification night\"), the highest-ranking Holy Grail nun in the territory presides over the oath of renunciation at dawn, and hangs your lance on the castle gatepost - this lance becomes the physical evidence of the law, proving that you have permanently given up your fief rights on this day. The two-handed greatsword became the standard weapon of the expeditionary knights for its specific tactical roots: firstly, the lance loses its effect after one charge, while the two-handed greatsword can continue to be effective against a variety of enemy types; secondly, the swordsmanship of the two-handed greatsword requires longer and more time than the lance. Intense training, it is regarded as the ultimate test of the knight's personal martial arts; thirdly, the \"Book of the Holy Grail\" circulated within the church records that the Lady of the Lake prefers swords rather than guns - when Gilles was present, the holy object given to him by the Lady of the Lake was a sword rather than a gun. According to the conservative estimates of statisticians, in any five-year cycle, about twenty to forty knights across Bretonnia embark on the Crusade - the number of them who eventually reach the Holy Grail is always in the single digits, while most of the rest either die on the way, eventually give up on the expedition, or die of old age without ever obtaining the Holy Grail."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The knights of the expedition play a role full of tragic beauty in the lives of Bretonnian noble women. Many expeditionary knights began their expeditions after losing their beloved women - he knelt in the chapel that night, perhaps not only for the Holy Grail, but also to forget the woman he could not marry. As women we watch them recede from the castle windows, knowing that this man may never appear at anyone's family dinner table - his entire existence has become a slender figure disappearing into the gray dawn."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "When a member of a family becomes a Knight of the Crusade, the family gains both honor and loss. The honor lies in your bloodline being proven noble enough to be summoned by the goddess - this increases the family's knightly reputation more than any marriage or military exploits. The loss is that he gave up the family's inheritance rights - if he is the eldest son, then the family's main line inheritance will have to be transferred to the second son, which is legally a kind of prior abandonment. Historically, many of the family breakdowns among the great nobles of Bretonnia stemmed from the succession vacuum after the departure of the expeditionary knights."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "If you want to find a Bretonnian to drink with on a Bretonnia post road, you'll be lucky, but if fate brings you across a stranger in a post road inn with a huge sword slung over his shoulders and a look that can see through your drunkenness - quickly give him the corner of the table. The Expeditionary Knights are the most enviable and unlucky group of our mercenaries - we sell our lives in exchange for gold crowns, and their lives have been sold to the goddess, but they themselves have not become corrupted as a result, which is the most terrifying thing."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The economic impact of the Crusade Knights is slight but constant - their infrastructure needs are next to nothing: a cloak, a two-handed sword and enough dried meat cubes to last several weeks. But they often stayed in villages and helped local serfs perform hard labor in exchange for beds and food. This exchange of labor for accommodation created a strange sense of fairness for the small local economy - the serfs would begin to feel that all knights were self-sufficient like the expeditionary knights, and when they discovered that was not the case, resentment began to build."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Expedition Oath - a legal declaration by the Kingdom's knights to give up their fiefdoms, titles and lances, and is the only entrance to the Holy Grail expedition.",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "A lonely warrior who abandoned his fiefdom and title and wandered alone to embark on the Holy Grail Crusade."
+  ]
+}

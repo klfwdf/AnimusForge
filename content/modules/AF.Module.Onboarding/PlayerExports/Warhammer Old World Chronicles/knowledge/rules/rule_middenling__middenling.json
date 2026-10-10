@@ -1,0 +1,171 @@
+{
+  "Id": "rule_middenling",
+  "Keywords": [
+    "Midden collar",
+    "Midden Province_MD",
+    "Elector Count _MD",
+    "Ulric's Flame_MD",
+    "White Wolf Knights_MD",
+    "Bow Lys Todbringer_MD",
+    "Middenheim_MD",
+    "Ulric's Holy Fire_MD",
+    "Winter Wolf_MD",
+    "Wolf Lord_MD"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Middenland is the most powerful province in the north of the empire. Its ruling center, Middenheim, is a fortress city built on a steep rocky mountain. It frightens the north with the eternal white flame of Ulric's holy fire and the majestic reputation of the White Wolf Knights. The Middenlanders believe in the wolf god and winter god Ulrik, rather than the southern Sigmar, which allows them to maintain an unruly independence in the religious and political landscape of the empire. Elector Count Lys Todbringer is both one of the Empire's fiercest warriors and the staunchest check on imperial power in the Imperial Council - and he rules over a province where opinions are more often expressed with battle axes than votes."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Midden leaders put it nicely - they called themselves the \"Night's Watch of the Empire\" - but they called themselves the Empire's eternal rebels. The White Wolf Elector Count of Middenheim has treated the Emperor of Altdorf as a usurper for at least half of the Empire's two-thousand-year history. This is no secret: Ulric is the ancient main god of the empire, and Sigmar has only been a god for two thousand years. In the eyes of the Wolf God believers in the north, the group of bald priests in the south are just theological upstarts who rose to power through political manipulation. But if you think that the Midden leader is disloyal because of this, you are totally wrong. Bow Lys Todbringer is the most reliable bulwark between the Empire and the Chaos Front, and the legend of the Charge of the White Wolf Knights among the Norsca Raiders has turned into a horror story - mothers in Chaos tribes are said to scare their children with \"White Wolves will come to eat disobedient children.\" The Middens distrust Altdorf, but they have never been absent from any of the Empire's battles against northern invasions. They simply refuse to kneel to anyone—including God."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The strategic value of Middenland lies in the fact that it faces two fronts simultaneously: the Chaos Wastes in the north and the Drakwald Forest in the center - the latter being the largest breeding ground for beastmen in the Old World. The pressure on Bow Lys Todbringer is heavier than that of any Southern Elector Count: he must defend against Chaos invasion while suppressing the endless stream of Beastman battle groups in the Drakwald Forest. These two tasks consume 80% of Middenland's military budget. But Middenland also has an advantage that cannot be found elsewhere - the Church of Ulric provides the province with a fanatical armed force that does not require secular financial support: the White Wolf Knights and the Wolf Monks. Religious fervor here takes the place of gold coins. Anyone seeking an alliance with Middenheim must understand: you cannot buy Lys with money, but you can fight beside him before the Holy Fire of Ulric - a covenant of mutual bloodshed is more binding in Middenheim than any treaty notarized by the Imperial Council. For the Imperial Power, Lys Todbringer was both potentially the greatest risk - he had the strength to claim the Imperial throne - and the most indispensable ally in the defense against the threat from the north."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "The governance system of Middenland is the most special case of the integration of politics and religion among the provinces of the empire. The Al-Urik (high priest) of the Church of Ulric had powers in provincial politics that were nearly parallel to that of the secular Elector Count - and in some historical periods even exceeded that of the Elector Count. Middenheim's urban governance revolves around the \"Order of the Holy Fire\": the core of the city is not the city hall but the Great Temple of Ulric. The law in the city is based on the commandments of Ulric as the highest standard. The first instance of adjudication of citizen disputes is in the hands of the wolf priests rather than secular judges. This model of governance continued to create friction when interacting with the southern Sigmar Diocese - the Sigmar Church's legal system was based on the Sigmar Codex, and the Ulric Church's law centered on oral commandments and trials by duel. Lys Todbringer's ruling talent lies in his success in maintaining a delicate balance between the two systems: he himself is both the Elector Count and the secular apologist of the Church of Ulric, constantly proving his loyalty to the Wolf God through continuous military operations in the Drakwald Forest, in exchange for the Church's absolute support for him in the provincial tax policy. However, this model has extremely harsh requirements for a mortal ruler - once Todbringer fails on the battlefield or has a rift in his faith, the Church of Ulric may withdraw its blessing from him at any time."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Middenland is the least friendly province to women in the empire - this is not an exaggeration, it is a direct result of Ulric's teachings. The wolf god Ulric advocates strength, survival and ruthless elimination of the weak. In his teachings, women are regarded as a group that needs to be protected rather than listened to. In the noble halls of Middenheim, women are not allowed to enter the core altar area of ​​the Great Temple of Ulric, are not allowed to carry the ceremonial white wolf skin (that is the exclusive honor of male warriors), and even female nobles are assigned to a separate seat by default at the Elector Count banquet - unless you can prove that you have killed a Chaos warrior on the battlefield. But because of this, Midenland has also created some of the toughest women in the empire. If you want to gain a voice in this province, you have only one way - sword and courage. Lys Todbringer's wife died in the Chaos invasion, but she personally led a team of huntresses to attack the beastman's lair in the Drakwald Forest, and her name is still recited by the White Wolf Knights in ceremonies before the expedition."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Todbringer family has ruled Middenland for more than five hundred years - maintained not by law or treaty, but by the continuous bloodshed on the northern border. The Todbringer family has an unwritten rule: every male heir of the family must accompany the army to participate in at least three actual battles against the Chaos tribes or beastmen before reaching adulthood. They are not allowed to hide behind the defense lines as \"observers\" or \"commanders\" - they must kill with their own hands and be wounded on the battlefield. That's why Bow Lys, whose one-armed uncle still commands a squadron of cavalry on the Drakwald front, has a scar across his right eye. When running a family in Middenland, you must engrave this rule into your family tree. The legitimacy of ruling Middenland does not come from the appointment letter of the Imperial Council, but from the silent recognition that the White Wolf Knights and Brother Ulric have when they see your family members on the front line on the battlefield. If you want to establish a new family in Middenland, the first thing you should do is not build a castle - it is to go to Drakwald Forest and bring back the heads of at least three beastmen, and then hang them on the walls of the Wolf Gate in Middenheim."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "If you are a wanderer who wants to go to Midden to earn a living, first clear your mind of southern thinking. Middenheim is not a city where you can slip into the aristocratic circles by flattering and handing business cards - people here don't even look down on the emperor, and the letter of recommendation you get in Altdorf is less important here than winning a duel with your bare hands in a tavern. The employment market in Middenland is dominated by forest clearing tasks: the beastman war groups in Drakwald Forest need to be cleared regularly, and the bounty ranges from five gold coins (common horned beasts) to fifty gold coins (big horned beast leader). The White Wolf Hotel in Middenheim is the only place in the empire where mercenaries and Brother Ulric sit at the same table and drink - provided you don't slander the Wolf God in front of them, otherwise you will find yourself being lifted over your head and thrown out of the window by at least three monks wearing white wolf skins. The pay in Middenheim is steady, but the winters are hopelessly long - the first time I wintered in Middenheim I didn't see the sun for four whole months, and the kind of darkness could make even the toughest veteran talk to himself."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The business opportunity in Middenland is not in gold—it’s in iron. The mountainous area in the northern part of the Midden Territory contains the second largest iron ore vein in the empire (second only to the Wesen Territory), but the mining conditions are extremely harsh: the eight-month winter means that the mining area can only be operated for four months each year, and the beasts and winter wolves in the mountains frequently attack the miner camps. But because of this, Middenland's profit margin for iron ingots is far higher than that of its southern counterparts - you can transport the iron ore alive out of the mountains, process it in the iron smelting workshop in Middenheim and sell it to the port in Nordland, and the net profit per truckload can be up to four times the cost. The business rules here are also different from Altdorf: the Church of Ulric has the original right to collect all mountain mineral deposits in the province - this is a divine charter passed down from 1,200 years ago - any mine owner must hand over one-fifth of the output to the Great Temple of Ulric as the \"Tax of the Wolf God\". But this tax has huge room for maneuver in practice: Wolf monks value your loyalty to the church on the battlefield more than the numbers you declare on the books. A caravan that is willing to provide logistical supplies to the church patrol in the Drakwald Forest is often more favored by the church than a caravan that pays taxes on time every month."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Middenland - the most powerful province in the northern part of the empire, the center of Ulric's faith, the fortress of the White Wolf Knights",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Middenland Empire Province Middenheim Ulric the White Wolf"
+  ]
+}

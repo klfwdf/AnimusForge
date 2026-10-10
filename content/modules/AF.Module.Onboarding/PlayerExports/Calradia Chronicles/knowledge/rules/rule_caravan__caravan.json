@@ -1,0 +1,35 @@
+{
+  "Id": "rule_caravan",
+  "Keywords": [
+    "Caravan"
+  ],
+  "RagShortTexts": [
+    "Caravans are a means of transporting traded goods over long distances between towns."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Caravans were a means of transporting trade goods over long distances from one town to another. They are usually owned by merchants, and a caravan will usually employ enough guards to withstand a single bandit band, but may be overwhelmed by multiple gangs or the armies of enemy lords. The important people in the towns would run their own caravans. The cost of setting up a caravan is relatively high, as the initial investment must include the cost of the pack animals, equipment, entourage, guards, as well as the purchase of goods and operating expenses for the first few months. The caravan also needs to designate a person as captain. Once established, the caravans would set out on their own, buying and selling goods based on whether they thought they could make a profit. Caravans would keep a reserve fund for their expenses and no money would be given to their owners until their funds reached a certain threshold. Any money above this threshold will be considered profit and sent to the owner. On the other hand, if the reserve falls below a certain value for any reason, the master will have to send additional funds to make up for the shortfall, in which case the caravan's contribution to the master's budget will be shown as a net expense."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Caravans were a means of transporting trade goods over long distances from one town to another. They are usually owned by merchants, and a caravan will usually employ enough guards to withstand a single bandit band, but may be overwhelmed by multiple gangs or the armies of enemy lords. The important people in the towns would run their own caravans. The cost of setting up a caravan is relatively high, as the initial investment must include the cost of the pack animals, equipment, entourage, guards, as well as the purchase of goods and operating expenses for the first few months. The caravan also needs to designate a person as captain. Once established, the caravans would set out on their own, buying and selling goods based on whether they thought they could make a profit. Caravans would keep a reserve fund for their expenses and no money would be given to their owners until their funds reached a certain threshold. Any money above this threshold will be considered profit and sent to the owner. On the other hand, if the reserve falls below a certain value for any reason, the master will have to send additional funds to make up for the shortfall, in which case the caravan's contribution to the master's budget will be shown as a net expense. As dignitaries, we run caravans, which bring us profits, and we rely on caravans to earn funds to expand our influence and reproduction capabilities."
+    }
+  ],
+  "TextMappings": []
+}

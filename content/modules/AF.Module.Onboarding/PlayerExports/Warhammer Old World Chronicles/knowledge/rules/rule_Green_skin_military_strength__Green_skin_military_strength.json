@@ -1,0 +1,216 @@
+{
+  "Id": "rule_Green_skin_military_strength",
+  "Keywords": [
+    "Greenskin military strength",
+    "orc boy",
+    "Green-skinned military goblins",
+    "war pig",
+    "greenskin shaman",
+    "Greenskin Military Waaagh",
+    "Green-skinned military black orcs",
+    "Green-skinned military man",
+    "Troll",
+    "green giant",
+    "Hog Rider",
+    "Goblin Archer",
+    "Get the power of Brother Mao",
+    "Greenskin military spore reproduction",
+    "green wave tactics"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Greenskin army is not a trained force - it is a walking disaster. Typical greenskin troops include: orc brats - huge muscles charging into battle with crude machetes and stone axes; orc big men - the oldest and most ferocious orc elite, each of whom has killed a giant or troll alone; goblins - a large number of small men who harass with short bows and spears, and dare to step forward to stab when it is advantageous; and giant beasts controlled by goblins - war pig riders, trolls, and even huge giants. The green-skinned shaman summoned the power of Gorge Mao in frenzied dancing and roaring."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Look how beautiful our army is! The orc boys rushed at the front, smashing into the human shield walls and scattering them like brittle wood. Our war pig cavalry is much faster than those bulky Imperial knights, and pigs can bite! Although goblins are fast, they know how to build siege engines and trebuchets - those things can smash any city wall. The best thing is that we never have to worry about losses - it doesn't matter if a few boys die, new boys will grow out after a while as soon as the spores fall to the ground. The green-skinned shaman is much more effective than the nerdy human mages. They use Waaagh! Energy casting, the more lively the spell becomes, the stronger it becomes!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Facing the greenskin army requires a completely different tactical thinking. Their attack is wild but undisciplined - they can use decoy tactics to spread their formation. Orc Boy's frontal impact is extremely strong, so it should not be directly attacked by infantry. Instead, cavalry and long-range firepower should be deployed on the flanks. Goblins are their logistical and technical unit - if the goblins can be eliminated first, the remaining orcs, although more ferocious, will also lose their siege capabilities and long-range support. The key to defeating Greenskin armies is beheading: their discipline relies entirely on the charisma and force of their warlord. If the general is killed, the entire Waaagh! It will turn into a chaos of fighting each other in an instant."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 100
+        },
+        "IdentityIds": null
+      },
+      "Content": "The greenskin military power system is entirely based on the natural stratification of physical strength and combat experience. At the bottom are Goblins - including ordinary goblins, Night Goblins (a subspecies that lives in caves and uses poisonous mushrooms), and Forest Goblins (a subspecies that domesticates giant spiders). On the middle level are Orc Boyz - standard orc warriors, divided into \"Machete Boys\" who use dual-wielding weapons and \"Strong Boys\" who use spears/axes. At the top are the Orc Big 'Uns - the oldest and most experienced orc elites. At the top are the Black Orcs - the purest and most disciplined subspecies of Orcs, said to have been created by the Chaos Dwarves through slave breeding, and have now become the most elite warriors among the Greenskins. Special units include: Boar Boys (orc cavalry riding war pigs), Trolls (large monsters with weak minds but strong regeneration capabilities), Giants (giant humanoids from the bloodline of the Sky Titan), and various tamed or driven monsters. Green Shaman's magic is based on Waaagh! Energy - Unlike other races that need to learn the wind of magic, green-skinned shamans directly draw power from the collective fighting emotions of the surrounding greenskins, and the more they are on the battlefield, the more powerful they become."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The noble ladies of the Empire and other civilized countries always hide their faces when talking about greenskins - but what they don't know is that greenskins have no gender at all. They reproduce through spores, have no female orcs, no female goblins, and no family unit. This means that the greenskin army will never retreat because of \"protecting women and children\", and will never leave the front line because of \"going home to harvest\". As a female lord who manages border territories, I must understand: Greenskins will not show mercy to women and will not fight for the limited purpose of plunder. They come, they fight, and the spores they leave behind will grow into a new wave of greenskins three years later—and the daughter born in your castle will face the same green tide as her mother when she comes of age."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The greenskin army is not a military issue for the family's rule - it is a land legacy issue. A annihilated greenskin Waaagh! It won't really disappear from your fiefdom. Their spores seep into the soil, river water, and the dark corners of your castle's cellars. Eight or ten years from now—the year your eldest son inherits the title—a new tribe of greenskins will emerge from beneath your hunting grounds. This means that the fight against the Greenskins is not a battle, but a permanent expenditure on the family's defense. I allocate 15% of the family budget every year as \"spore burning gold\", and clearly stipulate in the terms of my inheritance law: If any descendant who inherits the title cannot maintain this defense fund, other children have the right to impeach him at a family meeting - because allowing green skins to reproduce is essentially a crime against the future of the family."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "If you want to make greenskin money as a mercenary in the old world - give up. The greenskins don't pay. The only currency they accept is the fights themselves, and you happen to be at the top of their list of things they most want to fight. But the greenskin army did create a unique industry: there are a large number of smashed weapons and armor fragments left on the battlefield after the Green Tide, mixed with the rough gold jewelry carried by the greenskins themselves and the rune gems snatched from the corpses of the dwarves. Scavengers - my old colleagues - call this business \"green gold mining\". The risk is that you have to complete the search during the window when the greenskin army has completely left and their stragglers are still wandering around, which is usually less than a day."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "As the president of the Chamber of Commerce at a border trading post in Nordland, I evaluate the Greenskin Army in a completely different way than the Imperial Military Academy. I don't care about a Waaagh! The tactical details - what I care about is this Waaagh! How many trade routes will be cut off, how many villages will be destroyed, and how many bags of cement and barrels of nails will be needed for post-war reconstruction. The economic damage caused by the greenskins was divided into three stages: direct plunder, disruption of trade routes, and post-war land contamination. Land contamination - the spore problem - is on the books as a fixed asset impairment with a depreciation period of twenty years. No rational businessman is willing to invest in real estate in an area where a green wave has occurred, which means that each green wave will draw a permanent economic dead zone on the map."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Waaagh! Energy - the green-skin collective psychic field. The larger the scale of the battle, the stronger the effect. It is the energy source for the green-skin shaman to cast spells.",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "The greenskin army is not a trained force - it is a walking disaster"
+  ]
+}

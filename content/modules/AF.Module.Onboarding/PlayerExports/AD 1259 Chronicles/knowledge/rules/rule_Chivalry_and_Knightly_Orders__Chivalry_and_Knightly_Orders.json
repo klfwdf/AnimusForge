@@ -1,0 +1,23 @@
+{
+  "Id": "rule_Chivalry_and_Knightly_Orders",
+  "Keywords": [
+    "Chivalry",
+    "Knighthood",
+    "Knightly Orders",
+    "Templars",
+    "Hospitallers",
+    "Teutonic Knights"
+  ],
+  "RagShortTexts": [
+    "Chivalry fused martial warrior prowess with Christian piety and courtly ethics, epitomized by international military monastic orders."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Chivalry (chevalerie) in 1259 represented both an elite martial profession and a sophisticated Christian ethical code. Evolving from brutal eleventh-century heavy cavalrymen into a distinct hereditary noble caste, knights were bound by the chivalric virtues of prowess (prouesse), loyalty (loyauté), largesse, and the defense of holy Church, widows, and orphans through the ceremony of the accolade (dubbing).\n\nThe institutional zenith of this ethos was embodied in the international military monastic orders: the Knights Templar, the Hospitallers of Saint John, and the Teutonic Order. Combining monastic vows of poverty, chastity, and obedience with elite heavy cavalry training, these orders garrisoned monumental stone citadels (Krak des Chevaliers, Margat, Montfort) and managed continental banking networks."
+    }
+  ],
+  "TextMappings": []
+}

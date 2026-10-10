@@ -1,0 +1,154 @@
+{
+  "Id": "rule_Folk_Customs_Weight_of_Winter_Stores",
+  "Keywords": [
+    "Granaries",
+    "Firewood",
+    "Salted Meat",
+    "Long Winter"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Winters can last for years, making stockpiling an especially serious responsibility in the north. Grain must be dried to prevent rats, meat and fish must be salted or smoked, firewood must be cut and dried in advance, and beeswax, lamp oil, herbs, animal hides and next year's seeds must not be eaten all in the early stages of starvation. The castle will calculate the population and warehouse capacity, and the village relies on each household’s small warehouse and neighborly assistance; if it is stored for too long, it will become corrupt, and if it is stored too little, there will be no way to remedy it. How much a lord collects in good years and how many granaries he opens in winter directly determines whether the people regard him as a protector or a hoarder. The rich can buy food from distant places, but gold will lose its teeth after a snowstorm closes the road."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania",
+          "nightswatch",
+          "skagosi"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "peasant",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Northerners do not regard winter storage as timid. Every barrel of salt and meat, every pile of dry firewood is an answer to the unknown length of the future, and wasting it in the summer will be regarded as a betrayal of the family."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "sailor",
+          "artisan"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Merchants saw prices from the cold wave, and coopers and shipowners saw demand. Hoarding can bring profits, but it can also bring anger to hungry people when they know that warehouses are still full."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "priest",
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Priests encourage sharing, soldiers guard warehouses, and travelers request a bowl of hot soup. Winter makes generosity expensive and therefore makes true generosity easier to remember."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Lords and merchants regarded winter storage as an enforceable order. Weight of Winter Stores: Grain, salt meat, firewood, oil, herbs and seeds determine whether one can survive the long cold season, and reserves are also the most direct test of the lord's governance. Whether it is valid depends on who can grant the rights, collect the consideration, and actually make the judgment come to fruition in the event of default."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "When soldiers and travelers talked about winter storage, they were concerned about how it affected roads, orders, and safety. Weight of Winter Stores: Grain, salt meat, firewood, oil, herbs and seeds determine whether one can survive the long cold season, and reserves are also the most direct test of the lord's governance. The distant system is not empty talk only if it can be implemented in campfires, city gates and inns."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Craftsmen and clergy will understand winter storage from customs and symbols. Weight of Winter Stores: Grain, salt meat, firewood, oil, herbs and seeds determine whether one can survive the long cold season, and reserves are also the most direct test of the lord's governance. If a rule is practiced over and over again, it will find its way into rituals, crafts, and prayers; if it is sustained only by fear, cracks will show at the onset of a crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The smallest and most accurate way for farmers and villagers to feel winter storage. Weight of Winter Stores: Grain, salt meat, firewood, oil, herbs and seeds determine whether one can survive the long cold season, and reserves are also the most direct test of the lord's governance. They remember taxes, grain, labor, relief and who can speak for them; these grand names will eventually fall on the family's rice pot."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Weight of Winter Stores: Grain, salt meat, firewood, oil, herbs and seeds determine whether one can survive the long cold season, and reserves are also the most direct test of the lord's governance."
+  ]
+}

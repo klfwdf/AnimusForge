@@ -1,0 +1,209 @@
+{
+  "Id": "rule_Green_Knight",
+  "Keywords": [
+    "green knight",
+    "Bretonnia guardian spirit",
+    "Gilles Avatar",
+    "Immortal Guardian",
+    "Forest fog",
+    "ghost rider",
+    "green shadow",
+    "Eternal Guard (Green Knight)"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Green Knight is the most eternal supernatural guardian of Bretonnia - a quiet knight wearing emerald green full-body armor and riding an equally all-green ghost horse. He rides out from the deepest ancient forests of Bretonnia and always appears in the kingdom's most critical moments. No one knows where he came from or where he belongs, but every Bretonnian will tell you: when the Green Knight appears, either victory is already in our hands, or we have seen the deepest crisis in Bretonnia's history."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Green Knight - Just saying this name makes us subconsciously touch our foreheads to confess to the goddess. He is one of Bretonnia's two deepest secrets: one is the true name of the Lady of the Lake - which no one knows - and the other is the true identity of the Green Knight - which no one dares to ask. But every one of us knows, believe it or not: he is Gilles le Breton himself - our founding king - who did not die, did not sink in the holy lake, but was transformed by the goddess into the eternal guardian of Bretonnia. The Green Knight will only drive out of the green mist of the ancient forest when Bretonnia faces a crisis of national subjugation: when he appears, patches of old oak trees will disperse into green mist to make way for him, and the soil stepped by the horse's hooves will grow emerald green moss behind him. The blade of the Green Shadow Sword in his hand never reflects the sunlight but instead swallows the surrounding light, making the sword body look like it has cut an opaque hole in the space from the white light. He never speaks—no one ever hears the Green Knight make a sound—and he never fights alongside any Bretonnian. He rushes alone toward the thickest center of the enemy force and disappears from sight, leaving a crack in the enemy line cut by green mist where he disappears. Most heartbreaking of all is that the Green Knight will challenge any Bretonnian knight he deems to be arrogant in battle - if he is defeated by the Green Knight, he is not killed but is forced to accept a complete humiliation: he must walk to the nearest holy lake, kneel before the water and admit that he is unworthy of the title of Knight."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Green Knight's battlefield presence was both the ultimate gift and the ultimate test for the Bretonnian military commander. The gift is this: no one - no tactics or equipment - can stand up to the Green Knight. He was said to be unkillable by millions of Green Knights - not metaphorically, but all knights who tried to kill him had their heads removed, while his body continued to fight unimpeded after being penetrated multiple times by lances and greatswords. The Green Knight's single appearance on the battle line can psychologically disrupt an entire enemy army - any enemy with beliefs other than the Goddess will lose their formation at the mere sight of the ghost. But the test is: the Green Knight is not under anyone's command. He comes to the battlefield not to implement your battle plan, but to implement the goddess's judgment on you. If the Green Knight decides that the war is morally insignificant and that you are unworthy of his help, he will march through your camp, find the most arrogant of your knights, defeat them one by one, and then disappear - not only will you receive no reinforcements, but you will also have lost several of your most important knights before the battle."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "The Green Knight phenomenon occupies a special place in comparative religion and folklore for the study of Old World superhuman entities. Academic circles have at least three competing theories on the nature of the Green Knight: One, and the most orthodox church theory - the Green Knight is the transcended form of Gilles le Breton after drinking the Holy Grail, and his soul was not taken away by death but intertwined with Bretonnia The land itself is permanently bound, which is called the Land Guardian phenomenon in theology; secondly, the remaining theory of theophany popular among imperial scholars - the Green Knight is not Gilles himself, but an independent sacred structure created by the magic of the Lake Goddess, and is given Part of Gilles' memories and personality traits are used to serve the will of the goddess, which explains why the Green Knight never speaks - he is not a complete soul; third, the least popular but persistent in academia is the elf origin hypothesis - suggesting that the Green Knight is the elf Ethel Loren in A guardian spirit placed before the founding of Bretonnia, the cult of the Lady of the Lake subsequently absorbed the spirit and fused it with the legend of Gilles. Records of the Green Knight's apparitions are very sparse - in the approximately fifteen centuries since the Chronicle of Bretonnia, there have been less than forty apparitions of the Green Knight confirmed by church records. The most famous of them are the showdown between Bretonnia and the invading Orc Khan of Ahagoth in 979 AD, the general mobilization of Bretonnian knights before the Great Chaos War in 2299 AD, and the apparition in the final battle against the Red Duke in 2420 AD. Each time the Green Knight appears at the location recorded in the legend, he will leave a long-term green moss ring with a diameter of about sixteen to twenty-four feet in place. This moss is botanically classified as green moss. Its chemical composition contains unique fluorescein, which will glow green faintly in the dark night."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Green Knight often plays a strangely comforting role in the late-night stories of us Bretonnian aristocratic women. He's not a husband or a lover - that would be ridiculous, he's a ghost - but he is the embodiment of an idea of ​​protection: meaning that even in a world where all men have died or been proven to be cowards, there is one man who never fails to watch over us in the forests of Bretonnia. Elderly grandmothers would light a lamp at night as a silent petition in the direction where the Green Knight might appear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Green Knight's significance in the Bretonnian genealogy transcends all traces of blood - for if the Green Knight is really Gilles, then in some transcendent sense, all the Bretonnian knights are equally related to him: descendants of his followers, but not his direct descendants. This makes the existence of the Green Knight an unanswerable question in aristocratic genealogy: no family can claim to be the direct heir of the Green Knight."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Green Knight was the most untrustworthy legend I had ever heard—until I saw one in person. That was when we were fighting against the undead of Musilon on the edge of the Xixi Jungle. The fog at night was so thick that we couldn't see the tents on the opposite side. Then the fog was replaced by green. Then less than ten breaths later, a green shadow on horseback rushed straight towards the enemy's defense line from the fog. The enemy's defense line I mentioned was gone at this moment. I'm not from Bretonnia so I don't kneel, but I did have trouble holding my sword for the whole day afterwards - not out of fear, but out of some deeper unease."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The commercial impact of the Green Knight is extremely low but the symbolic impact is extremely high - no one will be hawking Green Knight statuettes or Green Knight medals at any Bretonnia fair, as this is considered sacrilegious. But the Green Knight legend itself underpinned a small pilgrimage economy in rural Bretonnia: villages that claimed the Green Knight had appeared in a particular patch of forest would attract serfs on long pilgrimages, who would buy food and shelter locally on their way."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "The Incarnation of Gilles - The most commonly accepted orthodox theory is that the Green Knight is the transcendent form of the founding king Gilles.",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Drive out from the deepest ancient forests of Bretonnia"
+  ]
+}

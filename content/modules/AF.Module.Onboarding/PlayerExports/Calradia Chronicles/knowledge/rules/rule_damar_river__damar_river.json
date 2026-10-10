@@ -1,0 +1,28 @@
+{
+  "Id": "rule_damar_river",
+  "Keywords": [
+    "Damar River"
+  ],
+  "RagShortTexts": [
+    "Damar River Aserai"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Damar River is the mother river of the Aserai"
+    }
+  ],
+  "TextMappings": []
+}

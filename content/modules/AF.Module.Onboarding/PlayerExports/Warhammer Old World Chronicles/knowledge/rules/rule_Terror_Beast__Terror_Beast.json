@@ -1,0 +1,208 @@
+{
+  "Id": "rule_Terror_Beast",
+  "Keywords": [
+    "Terrorbeast",
+    "undead bat",
+    "giant flying beast",
+    "Horror scream",
+    "Sky beast",
+    "vampire mount",
+    "Necron Wings"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Horror is a giant bat monster resurrected and transformed by necromancy magic. Its wings can cover the sky and the sun, and it can emit a terrifying scream that can tear apart the soul. These fearsome flying behemoths are often used as mounts by the most powerful vampire lords, hunting all living creatures in the dark night sky."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Terrorbeast is our king of the night in Sylvania, a masterpiece of the perfect fusion of night magic and beastial bones. As we ride the Horrors across the battlefield, our screams alone can crush armies of the living, sending vulnerable mortals into cardiac arrest in sheer terror. Cultivating a Horror requires collecting the complete skeleton of an ancient giant bat, supplemented by infusion of dragon blood and necromantic energy - this is a process beyond the imagination of ordinary people. In the night sky, the vampire lord riding the Terror Beast is the absolute master. No Pegasus knight or griffon can compete with our behemoth."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "If intelligence showed that there were Terrors in the enemy ranks, I would have to re-plan the entire campaign. These flying monsters can bypass the defense line and directly attack the headquarters and artillery positions in the rear. Their screaming attacks can destroy the morale of the troops far more than the actual damage. Any army without strong anti-aircraft capabilities will be at a huge disadvantage against the Horrors. Countermeasures include: deploying musketeers and crossbowmen on flanking heights to form crossfire, reserving at least one team of cavalry as a mobile anti-aircraft reserve, and be sure to protect the accompanying mages - only magic can steadily pose a threat to these undead behemoths. Imperial documents record that a Terrorbeast single-handedly wiped out an entire artillery battery outside the city of Middenheim, causing the defenders to fall due to lack of fire support."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "The Terrorbeast is not a natural creature. Its prototype is the giant cave-dwelling bat that survived the Sylvanian Plateau at the end of the Ice Age in the Old World - its scientific name is 'Chiroptitanus Mortis' - a predatory chiropteran with a wingspan of up to forty cubits. The oldest record of a Terrorbeast is found in the Ash Scrolls of the Lahmian Blood Library, which records the first attempt by an Undead Shaper under Queen Neferata to infuse necromancy energy into an ancient bat fossil. It was the Lords of Neklak Association during the heyday of the von Carstein dynasty who truly perfected this technology. They discovered that they had to fuse the blood of human virgins with bat DNA in the Dark Night Ritual in order to create an adult with the ability to stably scream. This scream is not a physical sound wave, but a resonance of necromantic energy, with a frequency that is just right to destroy the myelin structure of the nervous system of living creatures - which means that the scream of the Terrorbeast is physically undefendable."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "It is said that the feeling of riding a Horror is the closest experience to flying in the world, but the screaming sound - even deep in the castle, when the Horror hovers outside the tower, the sound will penetrate into the bone marrow. My brother is my father's designated heir. He has been riding a Terrorbeast to fight for thirty years, but every time he returns, his eyes are a little hollower than before. I began to suspect that the cost of harnessing this creature from the abyss was far greater than we were willing to admit. Are those whispers in the wind really just the sound of wind?"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "A well-trained Terror Beast is the most prominent symbol of a vampire family's aerial combat power. Our family's fear beast is called the Night Tearer, and it has been patrolling this territory for more than two hundred years, starting from the time of our great-grandfather. Every winter solstice, we must sacrifice the blood of thirty live cattle to it to maintain its vitality. This expense is enough to bankrupt any baron. But the rewards are huge - when I ride it to patrol the border, bandits and adventurers within a hundred miles will flee. Owning a Horror gives your family a voice in the Vampire Council."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "In the mercenary camps in the Gray Mountains, there is a legend about the Terror Beasts: a Rhinelander mercenary group was once employed by a certain vampire territory, and their mission was to wipe out the goblin tribes on the border. On the night of the third day of the march, a blood moon rose in the sky, and then they heard the scream - one hundred and twenty of the three hundred people in the team fell to the ground and died on the spot without any external injuries. Survivors said a huge dark shadow passed across the night sky and was never seen again, as if it was killing just for the sake of killing. I have never seen a Horror myself, but every time I hear the cry of a bat while spending a night in the wilderness, I automatically tighten my grip on the hilt of my sword."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "One of my father's regular customers was a cattle dealer in Talabek territory. He was once forced to supply live cattle to an army of vampires - those cattle were not used for food, but to feed the Terror Beasts. He said that he saw with his own eyes a Horror sucking ten strong cattle dry in half an hour, and its huge wings were spread to a width of thirty cubits. Since then, he has installed twenty ever-burning lamps in his pasture, which are kept on all night long, because he firmly believes that these giant beasts do not like places that are too bright. I don't know if there is any basis for this statement, but it is true that his ranch has never been attacked by vampires."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "A giant bat-like flying monster resurrected and transformed by necromancy magic",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Terror Beast Undead Bat Giant Flying Beast"
+  ]
+}

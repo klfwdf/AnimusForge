@@ -1,0 +1,127 @@
+{
+  "Id": "rule_Geographical_Dossier_Storms_End",
+  "Keywords": [
+    "Storm's End",
+    "Storm King"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Storm's End stands beside Shipwreck Bay on the east coast of the Stormlands. It is the ancestral castle left by the kings of Durandon and inherited by the Baratheon family. It is also the center of the vassal system of the Stormlands. Legend has it that the city builder Duran repeatedly built castles to resist the wrath of the Sea God and the Wind Goddess, and finally left a city wall that could withstand storms; in reality, Storm's End is famous for its huge, smooth and thick ring walls and solid towers, and it is difficult for sea winds and heavy rains to find gaps. It controls political orders along the coast of Shipbreaker Bay and in the hinterland of the Stormlands. Whether it can hold the city during a siege depends on the granaries, sea routes, garrison discipline, and whether the vassals are still willing to respond."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "stormlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "When Stormlanders talk about Storm's End, they usually don't talk about whether it's beautiful or not. They talked about how thick the walls were, how high the waves were, and how heavy the oath Durandon had left with Baratheon was. The vassals here are accustomed to riding horses in storms and guarding passes on the border. They are also accustomed to weighing the courage of their lord against the stubbornness of this castle."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "merchant",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Soldiers look at the city walls and supply roads first, sailors look at the bad weather in Ship Cove first, and merchants know that storms along the coast will turn arriving on time into a luxury. For the besiegers, Storm's End is not a place where a flag can be easily exchanged; for the defenders, no matter how strong the wall is, someone still needs to distribute the last bag of food in the rain."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Storm's End The Durandon and Baratheon foundations on the coast of Shipbreaker Bay are famous for their extremely thick walls and year-round storms. It brings together the Stormlands' vassal identities, legacy of old dynasties, coastal weather and siege logistics in one place. They care about water sources, roads, customs and garrison, and know that behind the place names there is often a food road that can keep the castle alive."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Storm's End The Durandon and Baratheon foundations on the coast of Shipbreaker Bay are famous for their extremely thick walls and year-round storms. It brings together the Stormlands' vassal identities, legacy of old dynasties, coastal weather and siege logistics in one place. The reputation of a place is often determined by the number of people who died there."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Storm's End The Durandon and Baratheon foundations on the coast of Shipbreaker Bay are famous for their extremely thick walls and year-round storms. It brings together the Stormlands' vassal identities, legacy of old dynasties, coastal weather and siege logistics in one place. Stones, trees, rivers or mountain passes can become places of livelihood, and may also be endowed with sanctity, taboos and ancestral memories, so they cannot be measured in terms of money alone."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Storm's End The Durandon and Baratheon foundations on the coast of Shipbreaker Bay are famous for their extremely thick walls and year-round storms. It brings together the Stormlands' vassal identities, legacy of old dynasties, coastal weather and siege logistics in one place. They first checked whether the place could draw water, farm, graze, and avoid military disasters; a line of words on the map, and when it landed in the village, it turned out to be firewood, well rope, and winter food."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Storm's End: Storm's End stands beside Shipwreck Bay on the east coast of the Stormlands. It is the ancestral castle left by the kings of Durandon and inherited by the Baratheon family. It is also the center of the vassal system of the Stormlands. Legend has it that the city builder Duran repeatedly built castles to resist the wrath of the Sea God and the Wind Goddess, and finally left a city wall that could withstand storms; in reality, Storm's End is famous for its huge, smooth and thick ring walls and solid towers, and it is difficult for sea winds and heavy rains to find gaps. It controls political orders along the coast of Shipbreaker Bay and in the hinterland of the Stormlands. Whether it can hold the city during a siege depends on the granaries, sea routes, garrison discipline, and whether the vassals are still willing to respond."
+  ]
+}

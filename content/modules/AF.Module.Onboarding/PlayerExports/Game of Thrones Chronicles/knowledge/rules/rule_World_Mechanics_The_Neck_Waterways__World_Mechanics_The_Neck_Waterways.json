@@ -1,0 +1,158 @@
+{
+  "Id": "rule_World_Mechanics_The_Neck_Waterways",
+  "Keywords": [
+    "The Neck",
+    "Crannogmen",
+    "Swamp Waterways",
+    "Floating Islands"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Neck is a vast wetland with mires, reeds, shallow lakes, forest islands and changing waterways that make fixed maps quickly outdated. The north-south road was compressed near the causeway. Heavy cavalry, convoys and strangers who left the road were easily trapped in mud, poisonous insects and disease. The Rider family and the people of the marsh used boats, spears, bows and arrows, nets and local knowledge to live their lives. It is said that Greywater Watch will move with floating islands and waterways, making it difficult for outsiders to find it. The power of Neck lies not in the open battle, but in concealment, misdirection, consumption and choosing when to show up. Those who try to rule here can only occupy a few dry lands without local cooperation."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "sailor",
+          "peasant",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The people of the swamp know the way by the sound of frogs, water plants and the color of mud. Outsiders laugh at them for being short and hidden, while they watch the tall knight sink into a land they don't understand step by step."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The northern lords regard the Neck as a natural moat and must respect the independent habits of the Li De family. If the order is not suitable for the wetland, the people of the wetland will silence it and make it disappear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "river",
+          "vlandia",
+          "crownlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "merchant",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Those who come from the south are most afraid of invisible enemies and endless muddy water. Armor, money, and maps are not as useful as a trusted guide in the Neck."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry The Neck The Neck Waterways: Swamps, reeds, floating islands and dark water form the southern barrier of the Northern Territory, and the people of the Swamp rely on hidden waterways to live and fight. Whether it is valid depends on who can grant the rights, collect the consideration, and actually make the judgment come to fruition in the event of default."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry The Neck The Neck Waterways: Swamps, reeds, floating islands and dark water form the southern barrier of the Northern Territory, and the people of the Swamp rely on hidden waterways to live and fight. The distant system is not empty talk only if it can be implemented in campfires, city gates and inns."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry The Neck The Neck Waterways: Swamps, reeds, floating islands and dark water form the southern barrier of the Northern Territory, and the people of the Swamp rely on hidden waterways to live and fight. If a rule is practiced over and over again, it will find its way into rituals, crafts, and prayers; if it is sustained only by fear, cracks will show at the onset of a crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry The Neck The Neck Waterways: Swamps, reeds, floating islands and dark water form the southern barrier of the Northern Territory, and the people of the Swamp rely on hidden waterways to live and fight. They remember taxes, grain, labor, relief and who can speak for them; these grand names will eventually fall on the family's rice pot."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "The Neck Waterways: Swamps, reeds, floating islands and dark water form the southern barrier of the Northern Territory, and the people of the Swamp rely on hidden waterways to live and fight."
+  ]
+}

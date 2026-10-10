@@ -1,0 +1,152 @@
+{
+  "Id": "rule_Vale_Gazetteer_Wickenden",
+  "Keywords": [
+    "Wickenden",
+    "Wickenden Town"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Wickenden lies on the southeastern shore of the Vale along the Narrow Sea, a town sustained by a small harbor, coastal roads, and inland manors. Though it lacks the foremost port renown of Gulltown, it sends the produce of the Vale out onto the Narrow Sea and brings salt, cloth, news, and strangers back into the mountain valleys. Coastal residents know fog, tides, hidden reefs, and night sailing; in such a place, a candle flame is not only light inside a house, but a beacon for ships finding their way and a sign of family waiting ashore. Wickenden is linked with Gulltown, the Three Sisters, and the sea lanes to the Crownlands, nourished by trade while bearing the risks of storms and sea raiders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vale"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Wickenden Local families also rely on goats, thin fields, orchards, and pack teams crossing the Mingyue Mountains; if any road, well, or dock fails, the price falls first on them."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vale"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Wickenden Entry Wickenden"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Wickenden They also recognize the accents, laws, and credentials of the valley; reputations can travel great distances from taverns, but true distances must still be measured by wheel, oar, or horse's hoof."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Wickenden Entry Wickenden"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Wickenden If you can supply supplies, avoid danger, and find a guide, it is worth marking in your itinerary; if you don't have these three things, no matter how loud your family name is, it won't be able to save the lost."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "From workshops to sanctuaries, Wickenden sets ship-repair timber, sailcloth, salt, catches of fish, and stone that withstands the sea wind side by side with chapels of the Seven, the threat of the mountain clans, and Andal knightly tradition. A stronghold was therefore not just a lord's hall, but also a place where weddings and funerals, vows, labor and local memories recurred."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Wickenden They care about goats, thin fields, orchards, and pack teams crossing the Mingyue Mountains. They also look at whether seeds are left after collecting grain, and whether the city gates are open in times of disaster. When people from afar see coats of arms, what they see is whether there will be food to eat tomorrow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Wickenden: Wickenden lies on the southeastern shore of the Vale along the Narrow Sea, a town sustained by a small harbor, coastal roads, and inland manors. Though it lacks the foremost port renown of Gulltown, it sends the produce of the Vale out onto the Narrow Sea and brings salt, cloth, news, and strangers back into the mountain valleys. Coastal residents know fog, tides, hidden reefs, and night sailing; in such a place, a candle flame is not only light inside a house, but a beacon for ships finding their way and a sign of family waiting ashore. Wickenden is linked with Gulltown, the Three Sisters, and the sea lanes to the Crownlands, nourished by trade while bearing the risks of storms and sea raiders."
+  ]
+}

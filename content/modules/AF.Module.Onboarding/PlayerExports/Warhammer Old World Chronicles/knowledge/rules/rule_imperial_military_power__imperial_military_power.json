@@ -1,0 +1,209 @@
+{
+  "Id": "rule_imperial_military_power",
+  "Keywords": [
+    "Imperial military power",
+    "imperial army",
+    "Imperial Arms",
+    "Imperial Military",
+    "Imperial Infantry",
+    "imperial artillery",
+    "Imperial Cavalry",
+    "imperial war machine"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Imperial Army is the most balanced military force in the Old World, with a core of well-trained infantry phalanxes supplemented by heavy cavalry, artillery, and battle mages. The empire's military tradition is built on the trinity of steel, gunpowder and faith - from the state infantry holding halberds to the inner ring knights of the Reik Guard wearing full plate armor, from the meteor showers of Hellstorm rocket launchers to the crushing charge of steam tanks, the empire's war machines are famous for their diversity and discipline."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Our military is the bulwark of the civilized world, and every child of the empire will sing that song - 'Steel, Gunpowder and Faith'. Halberdiers are the backbone of the state legions. Their halberds can pierce the plate armor of Chaos Knights, hook the hamstrings of trolls, and split the skulls of orcs. Greatswordsmen are elite infantrymen from various knight orders. Their two-meter-long two-handed giant swords can sweep away an entire enemy army in a melee. They are all young sons of noble families, or civilian warriors who have made great achievements in battle. Crossbowmen and Musketeers give us long-range firepower against any enemy. Musket projectiles can penetrate the Chaos Warrior's Chaos Armor, which is an iron shell forged in the Daemon Forge. The Reik Guards are the emperor's direct knights. Their charge is like an avalanche; mortars and cannons pour the wrath of the Nuln Iron Works on the enemy; and the steam tank is a mortal miracle built by the genius engineers of Miladia. Ten of these steel behemoths are enough to crush an entire army of goblins. Don't forget the battle mages, who harness the destructive winds of magic on the battlefield. Golden magic makes the battle flag burn with aglow, and fire magic turns the enemy into ashes."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The empire's military system was essentially a mixture of feudal levies and standing armies. Each Elector Count was entitled to maintain his own cantonal regiment, the size and quality of which depended on the financial resources of the province. The legions of Reikland and Nuln are the most well-equipped, while the border legions of Osterland and Ostermark are the most battle-hardened and experienced. In terms of command, the Imperial Marshal is appointed by the Emperor, but in practice, the provincial generals often give priority to the orders of their own Elector Count. Wise commanders will make full use of the empire's synergy of arms: use halberdiers and spearmen to build a frontal defense line, use musketeers and crossbowmen to shoot in the gaps between the arrays, deploy knights on the wings to wait for outflanking, and artillery to provide continuous fire suppression in the rear. Battle mages are a double-edged sword - their magic can turn the tide of battle, but the consequences of losing control of their magic can be just as deadly."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 100
+        },
+        "IdentityIds": null
+      },
+      "Content": "The underlying logic of the empire's military system was rooted in its unique political structure. The Imperial Knights—including the Rick Guards, the White Wolf Knights, the Black Panther Knights, the Burning Sun Knights, the Mor Knights, etc.—are elite organizations independent of the state and provincial legions, each with its own internal promotion system and allegiance. The development of firearms technology has fundamentally changed the military outlook of the Empire: Since its establishment in 1999 in the Imperial Calendar, the Imperial Gunnery Academy in Nunn has developed the original crude hand cannons into standardized muskets and rifled cannons, making the Empire the only country in the old world that can equip firearms on a large scale. The steam tank was developed by legendary Miradian engineer Leonardo da Miradiano, who used dwarven steam technology and experimental steam engines to create this fearsome war machine - each of the twelve tanks in existence has its own unique name and history. Each of the eight schools of battle mages corresponds to a magical wind: light, metal, life, heaven, shadow, death, fire and beast. Each mage undergoes rigorous training and mental tests in the academy. Only the most determined ones can control these destructive forces on the battlefield without being swallowed up by them."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "As a woman who managed territorial affairs in the chaotic era of the old world, my understanding of imperial military power is fundamentally different from that of male lords who only consider issues on the battlefield. The cost of war is ultimately borne by villages, farmlands and families – and these are the areas I manage. This perspective makes me focus more on the long-term impact of imperial military power than on short-term military exploits."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "As the head of the family, to me, the imperial military strength is not only a military or political issue, but also an issue of bloodline continuation. Every decision we make on an issue related to Imperial military power will be recorded in our family tree and tested for generations to come. The survival of the family takes precedence over personal glory - this is the position I have always maintained in the Elder Council."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "During my wandering life, my knowledge of the Imperial might came not from books or military academies, but from actual experiences heard by survivors around campfires in border villages. These experiences are rougher but also more honest than any official record - they are not filtered and embellished to protect the face of those in power."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "From a commercial and craft perspective, imperial military power meant a stable market for guild members like me - whether for armaments supplies, infrastructure construction or post-war reconstruction contracts. But imperial military strength also brings risks: if the relevant areas fall into war, our most profitable trade routes will be cut off, inventory will be overstocked, and insurance costs will soar."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Imperial Military Power - Warhammer Old World Core Concepts Entry",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "The Imperial Army is the most balanced military force in the Old World"
+  ]
+}

@@ -1,0 +1,131 @@
+{
+  "Id": "rule_House_Foundations_Paege",
+  "Keywords": [
+    "Paege",
+    "House Paege"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Page family is a family of landed knights in the Riverlands and assumes vassal obligations to Riverrun. They did not have as vast a territory as the great princes, and their family property mainly consisted of manors, relatives, tenants, and horsemen who could go on expeditions as ordered. For this kind of family, a marriage, a ransom or a few bad harvests can make the difference between prosperity and decline; the key to maintaining reputation is to defend the land among powerful neighbors and make promises still believed."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "river"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "When the lords of the Riverlands looked at landed knights like Peggy, they first looked at whether they could answer the call on time and whether they could manage the manor well. The small family may not necessarily enter the ballad, but it is the level where the army, taxation, and local rulings really come to fruition."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "river"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Peggy's peasants lived much closer to their lords than to the Duke of Riverrun. Who is responsible for building embankments, who is responsible for the disputes over lost cattle and boundary stones, and who is responsible for closing the village gate when the rebels come, determines whether people remember protection or exploitation."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Paege The Page family is a family of landed knights loyal to Riverrun in the Riverlands. Their power is rooted in manors, relatives and local military service. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Paege The Page family is a family of landed knights loyal to Riverrun in the Riverlands. Their power is rooted in manors, relatives and local military service. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Paege The Page family is a family of landed knights loyal to Riverrun in the Riverlands. Their power is rooted in manors, relatives and local military service. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Paege The Page family is a family of landed knights loyal to Riverrun in the Riverlands. Their power is rooted in manors, relatives and local military service. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Paege: The Page family is a family of landed knights loyal to Riverrun in the Riverlands. Their power is rooted in manors, relatives and local military service."
+  ]
+}

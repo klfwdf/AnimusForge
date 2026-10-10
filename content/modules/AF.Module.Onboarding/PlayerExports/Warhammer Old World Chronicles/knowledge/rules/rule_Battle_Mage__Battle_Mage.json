@@ -1,0 +1,211 @@
+{
+  "Id": "rule_Battle_Mage",
+  "Keywords": [
+    "Imperial Magic",
+    "Battle Mage Academy of Magic",
+    "eight winds",
+    "Licensed Master",
+    "Guangming Academy",
+    "Battle Mage Heaven Academy",
+    "Tiger Lys",
+    "Magic backlash",
+    "Battle Mage Winds of Magic",
+    "Imperial Battle Mage"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Battlemages are the Empire's highly trained and licensed military spellcasters, who learn to harness the winds of magic in a single of Altdorf's eight schools of magic, then provide magical support to Imperial forces on the battlefield. Each Battle Mage must carry the paperwork of his license with him and be subject to inspection by the Church of Sigmar and the Witch Hunters at all times."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Battle mages are the unique weapons of our empire - elves have their spells, chaos has their sorcery, and undead have their dark spells, but only we have established a complete set of systematic magic military academies. Master Tyk Lys helped the Empire establish the Eight Winds Academy system a hundred years ago: the Academy of Light, the Academy of Fire, the Academy of Metal, the Academy of Life, the Academy of Heaven, the Academy of Death, the Academy of Shadows, and the Academy of Beasts. After each apprentice is confirmed to be able to resonate with a single magical wind, he will receive five to ten years of training in the corresponding academy, learning the discipline to guide magic without resorting to the power of chaos. They are one of our most effective weapons against unreasonable things - undead, demons, mutated monsters - but we never dare to completely trust them, because behind the eyes of every mage there is the reflection of chaos."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Battle mages are a double-edged sword in tactical deployment. A Heaven Mage can use chain lightning to disintegrate the enemy's densest phalanx before attacking, a Metal Mage can heat the enemy's heavy armor into an oven, and a Fire Mage can provide direct destructive firepower. But at the same time, excessive use of magic on the battlefield will cause magic backlash - the mildest is that the mage himself is burned by his own magic, and the most serious is that a temporary rift to the non-material world is inadvertently opened, causing demons to flow into the battlefield. Therefore, every commander must reach a clear agreement with the accompanying mage before the battle on the intensity and timing of magic use. Battle Mages are not turrets, they are controlled weapons - if not controlled properly, their damage to friendly forces will be no less than to the enemy's."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "The establishment of the Imperial Academy of Magic system was a watershed event in the history of magic in the old world. Before the reformation of Tyk Lys, human spellcasters either fumbled for magic on their own in the wilderness - which meant they would sooner or later be consumed by Chaos - or were captured and executed by witch hunters. Tyk Lys (one of the greatest wizards of the high elves) was authorized by the Emperor in 2304 of the Imperial Calendar to establish eight isolated magic schools in Altdorf, each of which only taught one wind of magic. He designed a complete system of detection, recruitment, training, licensing and monitoring: children with magical talents were identified and taken away from their families and sent to the academy. Apprentices received strict disciplinary training and magical education in the academy. After graduation, they obtained a licensing document to become a registered battle mage, and were supervised by the church and the Imperial Academy of Magic throughout their lives. This system does not completely eliminate the risk of Chaos erosion - there are still mages being infiltrated by Chaos every year due to excessive spellcasting or mental weakness, and the speed and method of processing this within the Magic Academy are kept secret - but it has reduced the magic mortality rate in human society from extremely high to an acceptable level. Currently, the total number of battle mages in service in the empire does not exceed a few hundred, and each major battle can only be assigned a single-digit number of mages at most. This makes each battle mage an irreplaceable and scarce strategic asset."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Imperial Academy of Magic's acceptance of female spellcasters is one of the few places in the Old World that has truly transcended gender bias - ironically, not out of progressive thinking, but because gender is an irrelevant variable in the face of the winds of magic. A disproportionately high proportion of women are found in Essie's magical wind - those who are compatible with the wind of life, Ga'an - while the metallic wind, Charn, is almost exclusively compatible with men. This phenomenon has not yet been explained to everyone's satisfaction by the academy. As a noble woman who has worked with female battle mages in the Empire, I can tell you that these women are ostracized in the military system more deeply than any male mages - male mages are at least defined as 'unreliable tools', while female mages are often regarded as 'dangerous weaponized madwomen'. I once recruited a Hellstorm female battle mage into my army who was dismissed by her original legion on the grounds of 'mental instability', and I soon discovered that she was not mentally unstable - she was just forcibly transferred from the combat post on the grounds of 'hysteria' after pointing out serious errors in the original legion's tactical deployment. She later defeated the Chaos Knight formation with a precise chain lightning in my army. After the battle, the legion commander who accused her of hysteria politely expressed to me through a messenger that he 'hoped to transfer this outstanding mage back to his original organization' - I politely refused on the grounds that 'the mental state still needs further observation'."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The gift of magic is a cursed blessing in our family - about one child in each generation displays an affinity for magic, and the family's response to this has evolved into an elaborate process of disposition. We never hide magically gifted children - that would only lead to witch hunters targeting the entire family - but proactively send them to the Magic Academy in Altdorf under 'family sponsorship', ensuring that a family representative is present throughout to supervise their training. A graduate of the Golden Academy may no longer have formal legal ties to the family in the family tree, but his private loyalty to the family - and the security it provides through magical means - is an asymmetrical weapon that no castle defender can replace. We have an undisclosed annual endowment at the Academy of Magic to support magically gifted children from poorer families in the family lands - this is charity in the eyes of the Academy, and a long-term investment in talent for us. Some of those battle mages who will stand by our side on the battlefields twenty years from now will remember who paid for a peasant girl's first year of magic at Altdorf when no one else was willing to send her."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Battle mages are a subject of mixed fear and need in mercenary circles. I have seen a fire mage burn an entire formation of beastmen to ashes on the battlefield - the color of the flame is not the orange-red color of nature, but an almost white boiling golden light. But I also saw the same mage being held down by four of her own soldiers outside her tent in the middle of the night after the battle because she almost accidentally summoned a firestorm in her dream - the chaplain attributed the accident to 'potential Chaos infiltration', but in fact it was just because she had fought for twelve consecutive days without getting any sleep. Battle mages are both the greatest elite and the greatest pariah in the Imperial Army: they are taken away from their families, stripped of their normal human identities, packed into academies to train in isolation for ten years, and then sent to the battlefield to risk their lives to unleash magic under dual supervision - enemy and friendly. I heard a saying in the Imperial Army from a retired guard: 'Under the boots of a battle mage are three graves - the enemy's, his own, and the nearest comrade's. 'Imperial forces thanked them but never approached them, and in the world of the Drifter, former battle mages were often the loneliest of all defectors - they could not return to civilian society, as mages who had killed anyone were required to serve life sentences under Imperial law."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The magic academy is a huge consumer market that has been completely ignored in the empire's economy - the magic materials, experimental equipment and daily necessities purchased by each academy every year are a considerable commercial order. The amount of high-quality parchment and silver powder consumed by the Academy of Light is enough to support half of Wesenland's paper workshops, and the rare ores purchased by the Academy of Metal contribute a stable foreign trade income to the Dwarf Kingdom every year. The most secret commercial value of the Magic Academy lies in its protective spells and alchemical products - although the Magic Academy expressly prohibits the sale of unauthorized magic items, every empire merchant knows that as long as through the right middlemen and appropriate donation channels, you can get an 'informal but effective' protective blessing for your cargo ship, allowing your chamber of commerce to store fresh meat during the dog days without having to buy expensive ice to transport it from the north. The empire's magic system is a highly institutionalized industry - Tyke Lys may have thought of elven-style advanced magic when he established the Eight Winds Academy, but what he created was essentially a magic industrial system with a complete economic cycle, and the commercial interests flowing in this system far exceeded the number that any emperor dared to publicly admit."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Eight Winds Academy - Altdorf Eight isolated magic academies, each teaching a style of magic",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Battle Mages are highly trained and licensed military spellcasters of the Empire"
+  ]
+}

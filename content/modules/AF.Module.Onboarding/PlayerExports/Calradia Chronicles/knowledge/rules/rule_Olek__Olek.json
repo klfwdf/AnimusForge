@@ -1,0 +1,221 @@
+{
+  "Id": "rule_Olek",
+  "Keywords": [
+    "Old Olek",
+    "“Older” Olek"
+  ],
+  "RagShortTexts": [
+    "Old Orek made great military exploits for Sturgia and served as Boyer"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": [
+          "clan_sturgia_1"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "hero:lord_2_1"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Old Olek is the most accomplished person under my rule, and he is also the most difficult dead person to deal with in my life. When he was alive, his military exploits covered every inch of Sturgia's borders, and his prestige was so great that every time he opened his mouth at a royal meeting, all the Boyes would look at him first and then at me. I asked him for the dragon flag, not because I wanted his broken flag, but because I wanted him to bow to the royal authority in public. Instead of bowing his head, he folded the dragon flag into three pieces and threw them at my feet. Cutting off the flag three times, in front of all the generals, meant that my prince’s face was also broken and trampled in the snow. I had to let him die at that moment. Pandrak's end was a military order and a sentence. I am a prince, and I cannot allow anyone, not even the patron saint, to trample Sturgia's authority to the ground."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": [
+          "clan_sturgia_2"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "hero:lord_2_3"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "My father is the patron saint of Sturgia and the proudest man I have ever met in my life. He was so proud that he refused to hand over a broken flag to Langward, preferring to break it into three pieces and throw it at the feet of the prince, then turned and walked into the desperate situation. That flag was purple, stained with the blood of the Imperial people, and he handed it over with his own hands. Langward asked him to pay tribute, but to him that was not paying tribute, but bowing. The patron saint would not bow down, so he died. I fought my way out and brought his coffin back to Ormore from the wilderness of Pandrak, bringing back a stomach full of hatred that I could never swallow. I hate Langward, but I hate myself even more - if I could have stopped him, if I could have argued for him and thrown the flag back for him, maybe he wouldn't have had to break the back. But no one can stop his temper. He probably had already thought about it when he folded the flag. He would die if he broke the flag, and he would die if he didn't bend the knee. He chose to die standing. Every time I pass by his tombstone in the middle of Omore City, I think, Father, I have not yet finished your revenge."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "hero:lord_2_4"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "My father is my role model in this life and also the heaviest debt in my life. He taught me that the strong protect everything, and I believed it. I have sneaked into the grassland people's castle, slit Na Yan's throat, and lived alone on the ice field for so many years, all because his words are engraved in my bones. But the other side he taught me was pride. He was so proud that he folded the dragon flag into three pieces and threw it at the prince's feet, then turned around with too few men to block Peng Tong's armored cavalry. I understand his pride, but I hate his pride. Why couldn't he give the broken flag to Langward first, come back alive, and settle the score later? When he died, the whole burden of the Kulov family fell on Oleks and me. He died a glorious death, but also a heavy death. He probably thought that his sacrifice would make the family more respected, and Langward would find his conscience. No, father. Langward killed Varra after your death and continues to hunt me. When the patron saint falls, the devil will not fall with him, but will only laugh louder. Olek and I are still avenging you, and we haven't finished it yet."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": [
+          "clan_sturgia_2"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The old patriarch is the God of War of the Kulov family, and it is also a name that will be sung by the fire for generations in our clan. When he was alive, the people of Battania did not dare to cross the Miron River, the people of the Empire did not dare to go north easily, and half of Sturgia's border was carried on his shoulders alone. But he died so unjustly. The clan members still dare not talk about the incident of Pandrak's death in public at gatherings because it would cause quarrels - some people said that the old clan leader was too strong-willed and should not have fallen out with the prince over a flag; some said that it was this strong-willedness that made him the patron saint. Gods can die in battle but cannot live on their knees. But no matter how noisy they were, everyone in the clan recognized one thing: the old clan leader guarded the honor of the Kulov family with his life, and Langward ruined that honor with his conspiracy. Now we follow Patriarch Olek and continue not to pay taxes and continue to bear the pressure of the royal family, not because we want to rebel, but because the dragon flag that the old patriarch broke into three pieces and threw on the ground is still in our hearts."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": [
+          "clan_sturgia_1"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Old Olek was the rift between our family and the Kulovs that could never be bridged. His achievements are so great that we do not deny this even among ourselves; he broke the dragon flag in public and threw it at the feet of Grand Duke Langward, which was a public humiliation of Gondarov's royal power. We have no objection to the Archduke asking him to stay behind Pandrak. No matter how great a boy's military exploits are, they cannot be greater than the prince's face. But after his death, things became more difficult: his children inherited the hatred intact, Olek stopped paying taxes, Siga became an assassin outside, and the Kulov family changed from the most loyal vassals of Sturgia to the most silent traitors. Some of us have also privately reflected on whether things would have been different if the Grand Duke had not fallen out with Old Oleks because of the flag, and if he had not provoked the Kulov family during the marriage but had chosen the daughter of Gordon or Yorig. But the Grand Duke had the same temper as his father, refusing to admit when he was wrong. The moment Old Olek folded the flag, the feud between the two families was already nailed. Now old Olek is lying under Omol's monument, and his children are still collecting debts for him, while our Gondarov family can only continue to look at the increasingly disobedient ice sheet in the north, helpless."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Old Olek is the legend and lesson of our generation. The legend is that he can really fight, Battania people, Imperial people, Khuzait people, whoever is the enemy of Sturgia, he will fight whoever he fights, and whoever he fights will win. His military exploits were piled higher than the city walls of Varnovapol. As long as those of us heard that we were fighting alongside old Oleksand, we felt at ease. The lesson is that his death was not worth it. We have all heard about the dragon flag incident - Archduke Langward asked him for the dragon flag captured by the empire, but he refused to give it to him. The archduke scolded him, and he broke the flag into three pieces and threw it at the archduke's feet. When we heard this, half of us thought it was fucking cool, and half of us thought it was fucked up. There will be no good end for offending the prince. With Pandrak's final command, we knew he would not be able to come back. He is the patron saint of Sturgia, and Langward is the prince of Sturgia. The god and the prince collided, and the god was broken. Now we see his son Olek continuing to fight against the prince, and seeing his daughter Sika wandering around as an assassin, we can't tell what it feels like. Heroes should not end up like this, and children of heroes should not end up like this."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Old Olek? Patronus! He is the only patron saint among us northerners. Later, when Langward became the Grand Duke, the patron saint died. He died in Pandrak. It is said that he died after covering the retreat of the main force. But people of my grandfather's generation didn't believe it. They said that old Olek never used a pile of dead people in battles. The reason for the break was because he offended the Grand Duke, and the Grand Duke deliberately let him die. The story of the dragon flag is also passed down: the prince came to him to ask for the dragon flag that he had handed over from the imperial people, but he refused to give it, and broke it into three pieces in public and threw it at the feet of the prince. Fold the flag! What a man! But after his death, the Kulov family's taxes stopped, and his daughter seemed to be wandering outside and never came back. We civilians are not worthy of the patron saint. He spent his whole life guarding Sturgia, and was eventually tricked to death by his own people."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Olek Sr. was the toughest military commander of the previous generation in Sturgia. We suffered a lot from him, so when we heard that he died in Pandrak, some people on the grassland breathed a sigh of relief. But later we learned the details of his death - he was left to die by his own prince, his troops were insufficient, and he faced Penton Neretse's armored cavalry - we felt a little uncomfortable. The most respected people on the grassland are warriors. It is not shameful for a warrior to die on the battlefield, but it is too shameful to die at the hands of one's own people. We have also heard about the fact that he and Langward fought for the dragon flag and broke it. This is definitely a legend on the grassland - a Boyer dared to break the face of the Grand Duke in public. This bloody behavior is worthy of respect. But after his death, the relationship between Sturgia and us only got worse - Langvald arranged a marriage, killed the Kulov family, created a mess in which Wenduler was killed and Varla was executed, and now we Sturgiayan are still holding a grudge. Old Olek was a rival when he was alive, but in death he became Sturgia's last barrier of decency. After him, the princes of Sturgia could no longer maintain their dignity."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Old Olek? Sturgia was the best old man in the past. Later he died, saying that he was killed by his own prince. Their prince asked him for a captured imperial dragon flag, but he refused to give it. He folded the flag into three pieces and threw it at the prince's feet, and the prince asked him to die. People on the grassland gave thumbs up when they heard this story - this old man has a really tough temper. You have to give whatever the Khan here wants. How dare you break the flag? I'll cut off your head. But after his death, Sturgia fell into chaos. His son did not pay taxes, his daughter became an assassin, and their prince made peace and killed another daughter of his family. If the old man was still alive, Sturgia probably wouldn't be so messed up. We prairie people also say that heroes cherish heroes. Although he was an enemy when he was alive and died so useless, we sighed for him when we heard about it."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "\"Old\" Olek was the most representative local powerful leader at the end of the Grand Duchy of Sturgia, and the tragic protagonist of the structural contradiction between the central royal power and the border military aristocracy. His military achievements need no elaboration - throughout his life he fortified the northern borders of Sturgia and served as commander-in-chief in many campaigns against the Empire. But when the royal power relies on the support of local force but cannot restrict its loyalty through the system, personal allegiance must depend on personal dignity. Old Oleks refused to hand over the dragon flag, not because he was stingy, but because he regarded the dragon flag as a symbol of personal honor and refused to bow to the royal power. Langward forced him to hand over the dragon flag in order to force him to admit that royal power was higher than personal honor. The conflict between the two is principled and irreconcilable. Old Olek's act of breaking the dragon flag in public is not only a swan song of personal dignity, but also the epitome of the breakdown of the relationship between Sturgia's feudal aristocracy and the royal power. After his death, the rift between the Kulovs and Gondarovs continued to widen and remains the most unstable political variable within Sturgia to this day."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Old Olek? Sturgia's former veteran has been dead for many years."
+    }
+  ],
+  "TextMappings": []
+}

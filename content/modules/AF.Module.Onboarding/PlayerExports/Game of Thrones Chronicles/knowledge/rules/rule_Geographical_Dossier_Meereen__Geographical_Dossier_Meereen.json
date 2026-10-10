@@ -1,0 +1,152 @@
+{
+  "Id": "rule_Geographical_Dossier_Meereen",
+  "Keywords": [
+    "Meereen",
+    "Slaver's Bay",
+    "Ghis",
+    "Great Pyramid",
+    "The Harpy",
+    "Brick Walls"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Meereen is located on the northern coast of Slaver's Bay, near the mouth of the Skahazadan River. It is the largest and most extensive of the cities in Slaver's Bay. Colorful brick walls, step pyramids, great pyramids, ports and harpy patterns preserve the hierarchical tradition of the Ghiscari city-state. Irrigation estates and cross-sea trade support the city's dignitaries, citizens, craftsmen and large labor population. After Daenerys became the Lord of Slaver's Bay, Meereen also became the center where the old slave order, the demands of the freed, commercial interests, and new ruling responsibilities collided; no matter who sat on top, the city had to face food, water conservancy, disease, security, and how all classes lived together."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Meereen’s old family used to regard pyramids, ancient surnames and harpies as a matter of course; merchants knew that if order could not allow ports to open, workshops to operate, and food to enter the city, no matter how tall the pyramid was, it was just expensive stone. Every dispute about tradition in the city is not only about etiquette, but also about who has the right to order people to work, buy and sell, and bow their heads."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "slave",
+          "peasant",
+          "artisan",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The brick walls of Meereen were never monuments to those who had been sold, whipped or forced into service. They remember their masters, their ledgers, their chains, and the cries of the arena. If freedom is just a command, it will also bring another kind of difficulty: people need work, shelter, relatives and nights where they don’t have to look back. In the streets of Meereen, hope for change and fear of change often live behind the same door."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait",
+          "volantine"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Westeros will see Meereen as a distant, hot foreign city; the Dothraki will see a stone lair that can be looted and traded; the Volantis traders will see a market that will change the accounts of the Gulf. Outsiders always think that they can quickly judge what is right and wrong here, but those who really live in the shadow of the pyramid know that the things left behind by the old order are much harder to remove than flags."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Meereen Entry Slaver's Bay Ghis Entry Brick Walls The Harpy They care about water sources, roads, customs and garrison, and know that behind the place names there is often a food road that can keep the castle alive."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Meereen Entry Slaver's Bay Ghis Entry Brick Walls The Harpy The reputation of a place is often determined by the number of people who died there."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Meereen Entry Slaver's Bay Ghis Entry Brick Walls The Harpy Stones, trees, rivers or mountain passes can become places of livelihood, and may also be endowed with sanctity, taboos and ancestral memories, so they cannot be measured in terms of money alone."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Meereen Entry Slaver's Bay Ghis Entry Brick Walls The Harpy They first checked whether the place could draw water, farm, graze, and avoid military disasters; a line of words on the map, and when it landed in the village, it turned out to be firewood, well rope, and winter food."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Meereen: Meereen is located on the northern coast of Slaver's Bay, near the mouth of the Skahazadan River. It is the largest and most extensive of the cities in Slaver's Bay. Colorful brick walls, step pyramids, great pyramids, ports and harpy patterns preserve the hierarchical tradition of the Ghiscari city-state. Irrigation estates and cross-sea trade support the city's dignitaries, citizens, craftsmen and large labor population. After Daenerys became the Lord of Slaver's Bay, Meereen also became the center where the old slave order, the demands of the freed, commercial interests, and new ruling responsibilities collided; no matter who sat on top, the city had to face food, water conservancy, disease, security, and how all classes lived together."
+  ]
+}

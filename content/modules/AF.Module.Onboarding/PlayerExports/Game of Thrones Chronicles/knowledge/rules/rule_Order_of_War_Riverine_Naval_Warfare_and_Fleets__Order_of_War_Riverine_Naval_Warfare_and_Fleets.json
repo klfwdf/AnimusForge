@@ -1,0 +1,156 @@
+{
+  "Id": "rule_Order_of_War_Riverine_Naval_Warfare_and_Fleets",
+  "Keywords": [
+    "Fleets",
+    "Naval Warfare",
+    "Riverine Warfare",
+    "Fireships",
+    "Riverine, Naval Warfare, and Fleets"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Rivers and bays turn war into a contest of ships, tides, winds, quays, and supply. River warfare fights over fords, bridges, and grain barges; naval warfare relies on fleets, harbors, sailors who know hidden reefs, and hinterlands able to supply timber and sailcloth continually. Ironborn longships are suited to shallows and swift raids, whereas royal and Reach fleets depend more on harbors, tax revenues, and great shipyards, while wildfire, fireships, and blockades can shift the balance of strength. Sailors care about weather and cordage, lords care about sea lanes and customs dues, and common folk care whether fishing boats can still put to sea."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "reach"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Riverine, Naval Warfare, and Fleets"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "reach"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Riverine, Naval Warfare, and Fleets"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "wanderer",
+          "priest",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Riverine, Naval Warfare, and Fleets"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Fleets Riverine, Naval Warfare, and Fleets: Rivers and bays turn war into a contest of ships, tides, winds, quays, and supply. River warfare fights over fords, bridges, and grain barges; naval warfare relies on fleets, harbors, sailors who know hidden reefs, and hinterlands able to supply timber and sailcloth continually. Ironborn longships are suited to Victory or defeat on the battlefield is important, but who can keep the army with horse supplies and silver coins in the second month often determines the length of the war."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Fleets Riverine, Naval Warfare, and Fleets: Rivers and bays turn war into a contest of ships, tides, winds, quays, and supply. River warfare fights over fords, bridges, and grain barges; naval warfare relies on fleets, harbors, sailors who know hidden reefs, and hinterlands able to supply timber and sailcloth continually. Ironborn longships are suited to They look at whether the flag is at the front, whether the order is clear, and whether the wounded are recovered; a beautiful strategy is not worth singing if it does not allow people to return to the camp alive."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Fleets Riverine, Naval Warfare, and Fleets: Rivers and bays turn war into a contest of ships, tides, winds, quays, and supply. River warfare fights over fords, bridges, and grain barges; naval warfare relies on fleets, harbors, sailors who know hidden reefs, and hinterlands able to supply timber and sailcloth continually. Ironborn longships are suited to Blacksmiths re-heat broken swords red, priests keep vigil for the dead; the war continues long after it has left the battlefield, on anvils, in graveyards, and on empty seats."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Fleets Riverine, Naval Warfare, and Fleets: Rivers and bays turn war into a contest of ships, tides, winds, quays, and supply. River warfare fights over fords, bridges, and grain barges; naval warfare relies on fleets, harbors, sailors who know hidden reefs, and hinterlands able to supply timber and sailcloth continually. Ironborn longships are suited to The expedition took away horses, grain, and sons. The flags were changed several times, but they still had to repair houses, bury people, and wait for the next winter; they judged victory or defeat only by whether the village was still there."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Riverine, Naval Warfare, and Fleets: Rivers and bays turn war into a contest of ships, tides, winds, quays, and supply. River warfare fights over fords, bridges, and grain barges; naval warfare relies on fleets, harbors, sailors who know hidden reefs, and hinterlands able to supply timber and sailcloth continually. Ironborn longships are suited to"
+  ]
+}

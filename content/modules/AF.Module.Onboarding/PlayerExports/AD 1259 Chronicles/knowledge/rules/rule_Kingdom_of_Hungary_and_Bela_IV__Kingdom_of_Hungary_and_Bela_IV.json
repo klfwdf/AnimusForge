@@ -1,0 +1,23 @@
+{
+  "Id": "rule_Kingdom_of_Hungary_and_Bela_IV",
+  "Keywords": [
+    "Kingdom of Hungary",
+    "Bela IV",
+    "Mongol Invasion 1241",
+    "Stone Castles",
+    "Cumans",
+    "Carpathian Basin"
+  ],
+  "RagShortTexts": [
+    "King Béla IV rebuilt the shattered Kingdom of Hungary through modern stone castle building, German colonization, and Cuman military alliances."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Kingdom of Hungary in 1259 was defined by the reconstruction policies of King Béla IV, hailed as Hungary's 'Second Founder.' The catastrophic Mongol invasion of 1241–1242 had laid waste to the realm, wiping out half the population and proving that traditional earthen dikes and light cavalry could not withstand nomadic steppe tumens.\n\nIn response, Béla initiated a revolution in statecraft: he subsidized the construction of over one hundred stone fortresses, settled German burghers (Hospites) to rebuild chartered trading towns, and invited forty thousand nomadic Cuman horse-archers to settle the plains as royal auxiliaries. While keeping vigilant watch against the Golden Horde, Hungary actively contested the alpine province of Styria against Bohemia."
+    }
+  ],
+  "TextMappings": []
+}

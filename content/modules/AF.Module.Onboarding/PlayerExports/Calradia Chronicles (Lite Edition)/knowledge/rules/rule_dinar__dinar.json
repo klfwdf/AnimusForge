@@ -1,0 +1,54 @@
+{
+  "Id": "rule_dinar",
+  "Keywords": [
+    "dinar",
+    "gold coins",
+    "money"
+  ],
+  "RagShortTexts": [
+    "The dinar is the only currency in circulation on the continent of Calradia."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "You only know that dinars are a currency used to measure wealth and poverty. Common people will never earn 1,000 dinars in their lifetime. Businessmen usually earn tens of thousands, and lords earn hundreds of thousands to millions."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "trade": 100
+        }
+      },
+      "Content": "Dinar is a currency minted by the Empire and is the only currency in circulation on the entire Calradia continent. All forces only use dinar for transactions."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "steward": 120
+        }
+      },
+      "Content": "The Imperial Silver Dinar is the common currency of Calradia. Even the most remote tribes recognized what a dinar looked like and could easily tell if it was laced with cheap metal. Because gold is too valuable, it is only used for transactions between kingdoms or big lords. You need dinars to meet almost all basic needs in the game, such as equipment, food, recruiting and raising troops, etc. Dinars are also very useful when solving political problems and solving tasks. There are also some things that money can't buy, let alone get for free. For example, soldiers fight bloody battles out of love for their home, commander, status, or adventure. Only the most cynical mercenaries only care about money, but even the most loyal soldiers expect some form of reward for their sacrifices. During a rebellion, few lords would rebel over a silly bribe like a bag of gold. But if they do think you are wiser than the current monarch, a bag of gold will make them more willing to take risks on your behalf"
+    }
+  ],
+  "TextMappings": []
+}

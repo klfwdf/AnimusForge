@@ -1,0 +1,255 @@
+{
+  "Id": "rule_Tu_La_Ge",
+  "Keywords": [
+    "Turaq",
+    "Otungard"
+  ],
+  "RagShortTexts": [
+    "Turag is shrewd and cautious, waiting for the opportunity to take revenge on Xijia."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Turage is the current head of the Aqite family and rules Otungard. Their family was once the eldest son of the Khuzait tribe and experienced ups and downs after moving westward. He should not have succeeded - his brother Wendule was betrothed to a Sturgia woman, and the woman's sister Siga sneaked into the castle at night, killed the groom, and burned the entire city. His father Kuyuge also died in the fire. So he became the patriarch. He was cautious, stingy, and calculating, but everyone knew that the fire in his heart never went out."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Turage is an unpredictable person. For all the years he has been on the throne, he has never sent troops rashly out of hatred. He was too cautious, so cautious that it made people think that he had forgotten the blood debt of his father and brother. But you'd be wrong if you really thought that - he was just waiting for a sure-fire opportunity. Moreover, he was very stingy, and his soldiers had to talk for a long time if they wanted to get more military pay. But those who followed him knew that every dinar and bundle of arrows he saved were prepared for that day."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Turage and I had a transaction, and it was a really headache-inducing experience. He was extremely shrewd and counted every dinar clearly and would never give out a penny more. He was too cautious and never acted without absolute certainty. He accepted the head Langward sent, but it was not enough. What he wanted was not a scapegoat, but the witch who killed his brother with her own hands. He was waiting for an opportunity for Xijia to reveal his flaws."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "warrior"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The leader of the Turage tribe is indeed a bit picky about his soldiers. He never pays too much and distributes the spoils of war carefully. But no one left him because of this. Because we all know that every penny he saved turned into better bows, more arrows, and stronger horses. It's not that he's reluctant to spend money, he spends it wisely. When he decides to take action, we will be the most elite cavalry."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "townsfolk"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "You have to be alert when doing business with the leader of the Turage tribe, he is too smart. The price needs to be negotiated over and over again, and the contract needs to be read three times. He can find any small loopholes. But precisely because he is so prudent in budgeting, the market in Otungard is much better than when the Kugits were in charge."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Otungard is a gloomy and abrupt guy. Unlike other Khuzait chiefs who were always willing to raid, he was too cautious and never fought an uncertain battle. But this only makes our boyars in the east even more uneasy - you know he will definitely take action, you just don't know when. I heard that he was so stingy that he would even think about sending an extra bag of arrows to his men for a long time. This kind of stingy and vengeful person is the most difficult to deal with."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Tu La Ge is the most troublesome person in the east. He is not as easily angered as other Khuzait nayans, nor is he easily bribed. He was too cautious, almost sinister. The head sent by Grand Duke Langward failed to satisfy him, but he did not draw his sword immediately, but chose to wait slowly. The soldiers and horses under his command are surprisingly well-equipped. I heard that they were all picked with a grain of salt over the years."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "townsfolk"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The leader of the Aqite clan in the east is said to be very stingy. Businessmen who have done business with him all say that he takes every account to heart and never treats or rewards. But some people say that he is not really stingy, but is saving all his money and waiting for the day to avenge his father and brother."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Turaq is the most distinctive type of leader in the Khuzait Khanate. He is not reckless, does not like to take great pleasure in success, and is even a bit stingy. After taking his fiefdom from the Kugits, he managed it in an orderly manner, knowing every income and expenditure by heart. But his caution was not for the sake of peace, but to ensure that when he finally rode towards the east of Sturgia, nothing unexpected would derail his revenge."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Turge's character is a typical \"hibernating avenger\". His caution makes him less likely to be provoked and his intentions revealed; his stinginess reflects his extreme appreciation of resources, and every dinar is regarded as a tool for revenge. This character is extremely rare in steppe politics - most Khuzait chiefs favor generosity and impulsiveness, while Turags replace hot-bloodedness with cool calculation."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer",
+          "mercenary"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Turage is the smartest employer I have ever seen. He won't give you a high price, and he will have to bargain with you for a long time for every bounty. But there's a good thing - he keeps his word and never underpays. If you want to make quick money, don't go to him; if you don't mind waiting, those arrows and knives he saved will bring you a big battle sooner or later."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "steward": 150
+        }
+      },
+      "Content": "Turage is a rare \"strategic leader\" in grassland politics. His prudence prevented him from launching a war of revenge immediately after his father and brother were killed, but instead chose to accumulate strength and wait for the opportunity; his stinginess resulted from his strict control of family resources to ensure that every allocation served the ultimate goal. This character may stem from the history of the decline of the Archit family - from the eldest son's tribe to the loss of Varnovapol, to taking advantage of the situation to capture Otungard. The ups and downs of the family taught him the value of forbearance and calculation."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Turaq",
+      "Kind": "bound_hero_name",
+      "TargetId": "__bound_hero__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "Archit",
+      "Kind": "bound_clan_name",
+      "TargetId": "__bound_clan__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "Otungard",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

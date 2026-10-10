@@ -1,0 +1,205 @@
+{
+  "Id": "rule_Iron_Tribe",
+  "Keywords": [
+    "Iron Tribe_IT",
+    "Iron Jaw Steel Web_IT",
+    "Ironclad Orc_IT",
+    "IronTribe_IT"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Iron Horde are known for their extremely thick patchwork iron armor in the middle of the Badlands. They peeled off pieces of armor from the conquered enemies and used rough forging techniques to splice them into layers of heavy iron shells that covered their bodies. A full-grown Iron Tribe orc looks like a moving pile of scrap metal—but beneath that pile is a green body endowed with unusual endurance by Brother Gomao. Their leader, Ironjaw and Steelbelly, was named after a famous tribal fight: he was hit in the abdomen with a war hammer by his opponent, but his abdominal muscles were layered with iron plates and bounced the hammer blow back to an extent that no one could explain."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "We from the Iron Tribe! The other greenskins took off their clothes and rushed up. We were covered in iron sheets from head to toe - it was a little hot, but the bows and arrows couldn't even make a dent in our bodies! The boss of Iron Jaw is even more powerful, he has the thickest iron skin on his body, and he moves like a small iron mountain when he walks! Last time, a group of human spearmen surrounded us and wanted to poke holes - we pressed forward directly, and their spear shafts cracked on our iron shells, which made me laugh to death! The more iron you have, the stronger you are, this is what Brother Go taught us!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Iron Horde are the most frustrating Greenskin opponents in defensive combat. Ordinary orcs would be injured, slowed down, or even knocked down when subjected to intensive bow or crossbow fire, but the thick iron shell of the Iron Horde orcs makes conventional long-range weapons almost ineffective - only heavy crossbows or muskets can penetrate their armor layer. This makes the traditional 'long-range attrition-infantry harvest' tactics completely ineffective against them. Fighting against the Iron Horde requires the use of siege weapons - heavy trebuchets, artillery or flamethrowers. Another effective tactic is to place trip wires and traps in tight terrain: their bulky armor makes it difficult for them to get up if they fall in difficult terrain."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "The Iron Horde's patchwork armor technology represents a unique adaptive engineering phenomenon in Greenskin material culture. Unlike the sophisticated metallurgical processes in dwarven forges or imperial smithies, the Iron Tribe's armor production follows a pure lamination principle: they join metal fragments from different sources, with different alloy compositions and different thicknesses through a primitive but effective molten iron casting method - pouring molten scrap iron into the joints of the iron fragments, and after cooling, they form irregular but structurally strong metal welds. This process is known as 'green skin welding' in Imperial Engineering, and its principles have been studied and documented by a few avant-garde scholars at the Imperial Military Engineering Academy. Iron Tribe armor was excellent at defending against arrows, slashing swords, and thrusts from spears, but its Achilles' heel was fire—the interior of Iron Tribe patchwork armor was often stuffed with organic padding torn from old clothing and leather armor for cushioning and insulation, and once ignited by flames, these paddings trapped the wearer in a slow-burning iron cage."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Iron Tribe taught me something counterintuitive about battlefield intuition - the more heavily armored an opponent is, the less likely it is to use heavy weapons. The crossbowman's training manual on my property has an appendix specifically about the Iron Horde: 'Aim three finger widths behind the knees - that's where the weak spots of all the patchwork iron armor are stitched together'. This addendum was added by my own hand, based on the words of a veteran who survived an Iron Horde charge: After he fell to the ground, he saw an Iron Horde orc step over him and noticed a two-finger-wide gap behind his knees - the iron there came from two different sources and failed to be successfully welded. After that battle, I ordered the crossbowmen in the territory to specialize in shooting at moving joints, and the following year, I saved a shepherd village from the iron tribe's plunder. Knowledge of the details of war is not worth mentioning in an aristocratic banquet hall, but on the frontier it is worth dozens of lives."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Iron Horde memory of my grandfather is a story of sound. He said that the most terrifying sign before the Iron Horde attacked was not the shaking of the ground or the war cry - it was the continuous metal friction sound brought by the wind blowing from the direction of the bad place, like countless rusty hinges slowly opening and closing at the same time. My grandfather had been a border lord for forty years. The label on the thickest file folder in his study did not say 'Main Battle' or 'Tax Book', but 'Tin Can March Forecast'. In that folder, he used forty years of observation to summarize a set of rules of thumb for predicting the annual movement direction of the Iron Tribe: they would chase water plants and plunder northward along the Blood River after spring, and return to the cave camp in the middle of the badland to spend the winter in late autumn. His rule of thumb remained in effect until the year of his death—but in that year the Iron Horde broke their forty-year migration pattern and instead invaded westward into a valley my family had never expected to be targeted. He received the battle report on his death bed, and his last words were: 'Tell them - make the iron red before you fight'."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "One of the worst encounters in the middle of the Badlands: You see shining metal from a distance in a low shrubby wasteland, thinking it is the lance of a human caravan—only to get closer and realize that it is the reflection of the back armor of an entire group of Iron Horde orcs in the sun. They didn't charge, because they didn't even notice me - the sound of the metal plates hitting each other as they walked was enough to drown out any warning of approaching footsteps. I lay down behind a stone and waited for them to finish - there were about a hundred orcs in the team, and it took a full twenty minutes to walk past me, seventeen minutes of noise, and the last three minutes of silence. But the most terrifying thing was not the seventeen minutes of noise, but the dead silence of the bad land afterwards - all natural creatures would be silent for at least an hour after the Iron Tribe passed by."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Iron Horde caused decades of resource disruption to the scrap metal recycling market in the Badlands. During their raids, they not only plundered finished weapons and armor, but also brought all the iron products from the border villages—including plowshares, iron pots, door hinges, and bull shoes—back to the tribal camps for use in piecing together armor. This meant that villages attacked by the Iron Horde not only had to face casualties when rebuilding after the war, but also had to repurchase a complete set of iron production tools from Nuln - a cost that was often more than three times the value of the direct loot. To make things more complicated, these iron products recycled by the Iron Tribe may re-enter the market in the form of scraps through goblin trade channels a few years later - a batch of cheap scrap iron of unknown origin is occasionally found in the iron ore market in Nunn."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Iron Horde - an orc warband in the middle of the Badlands covered in thick patchwork iron armor.",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Iron tribe orcs piece together iron armor, iron jaws, and steel belly"
+  ]
+}

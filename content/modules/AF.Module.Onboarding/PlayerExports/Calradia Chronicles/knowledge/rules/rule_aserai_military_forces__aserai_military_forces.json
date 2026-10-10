@@ -1,0 +1,82 @@
+{
+  "Id": "rule_aserai_military_forces",
+  "Keywords": [
+    "Aserai Military Forces"
+  ],
+  "RagShortTexts": [
+    "Aserai military forces consist of noble troops, commoner troops, and slave soldiers"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Our soldiers? The Faris are noble lords, riding tall steeds and wearing bronze armor, never deigning to look down at common folk when they ride through the market. Those javelins of theirs can punch right through iron armor, though that has nothing to do with us—it is a skill the nobles train in within their own houses. The Mamlukes are bought soldiers, raised from childhood solely to kill; they look frightening enough, though when there is no war to fight they just squat idle in camp. The ones truly like us are the footmen and archers; they come from common stock, yet they are still not to be underestimated."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The army of the Aserai Sultanate rests upon three pillars—noble troops, commoner troops, and slave soldiers—with cavalry forming the core of its combat system.\n\nThe Faris are noble cavalry who wear heavy bronze armor, ride Askar horses, and wield Mamluke lances forged of imported steel alongside tribal longswords. Their signature weapon is the Aserai javelin—the longest and heaviest throwing weapon in all Calradia, barbed and devastating against armor, almost impossible to pull free once it strikes home. Their weakness lies in their small almond-shaped shields, which are thin and narrow and offer poor protection against ranged arrows.\n\nThe Mamlukes are slave cavalry purchased in childhood, clad head to foot in bronze armor and skilled with both bow and horse; once their quivers are spent, they draw saber and round shield to close for melee. Divided between heavy shock riders wielding two-handed maces or axes and horse archers who skirmish back and forth, they are slightly less lavishly equipped than the Faris, yet strictly disciplined, never routing or retreating, obeying only their masters' commands.\n\nCommoner troops form the infantry backbone, including heavy footmen armed with large shields and spears and archers carrying desert hardwood bows; they are convenient to levy locally, though their fighting power falls short of Imperial heavy infantry or Vlandian crossbowmen.\n\nOverall tactics center on double-envelopment by cavalry: javelins fly first, lances follow hard behind, while infantry pins the enemy in front. Their weaknesses are a lack of frontal heavy-cavalry shock power, brittle infantry lines, and the loose discipline of the noble cavalry, who are not always willing to risk themselves supporting slave soldiers."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Aserai soldiers? Traveling merchants say their cavalry comes in two kinds: one is the noble lords, riding fine horses and wearing bronze armor, hurling javelins like throwing spears that sink into flesh and cannot even be pulled out; the other is bought slave-soldiers, raised from childhood solely for war, deadly at mounted archery and quick to draw blades and hack away once their arrows run out, fearless of death. Their infantry is nothing special—two-legged shield-bearers much like the levies around here, decent enough for stopping arrows, but quick to scatter the moment cavalry charges home. What really makes men shudder are those slave-soldiers—not because they fight so well, but because they are cheap; when one dies, his master simply buys another, just like buying a horse. Around here, when a man dies his family weeps for half a year; over there, when a slave-soldier dies, his master grieves for his coin, not the life."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The army of the Aserai Sultanate rests upon three pillars—noble troops, commoner troops, and slave soldiers—with cavalry forming the core of its combat system.\n\nThe Faris are noble cavalry who wear heavy bronze armor, ride Askar horses, and wield Mamluke lances forged of imported steel alongside tribal longswords. Their signature weapon is the Aserai javelin—the longest and heaviest throwing weapon in all Calradia, barbed and devastating against armor, almost impossible to pull free once it strikes home. Their weakness lies in their small almond-shaped shields, which are thin and narrow and offer poor protection against ranged arrows.\n\nThe Mamlukes are slave cavalry purchased in childhood, clad head to foot in bronze armor and skilled with both bow and horse; once their quivers are spent, they draw saber and round shield to close for melee. Divided between heavy shock riders wielding two-handed maces or axes and horse archers who skirmish back and forth, they are slightly less lavishly equipped than the Faris, yet strictly disciplined, never routing or retreating, obeying only their masters' commands.\n\nCommoner troops form the infantry backbone, including heavy footmen armed with large shields and spears and archers carrying desert hardwood bows; they are convenient to levy locally, though their fighting power falls short of Imperial heavy infantry or Vlandian crossbowmen.\n\nOverall tactics center on double-envelopment by cavalry: javelins fly first, lances follow hard behind, while infantry pins the enemy in front. Their weaknesses are a lack of frontal heavy-cavalry shock power, brittle infantry lines, and the loose discipline of the noble cavalry, who are not always willing to risk themselves supporting slave soldiers."
+    }
+  ],
+  "TextMappings": []
+}

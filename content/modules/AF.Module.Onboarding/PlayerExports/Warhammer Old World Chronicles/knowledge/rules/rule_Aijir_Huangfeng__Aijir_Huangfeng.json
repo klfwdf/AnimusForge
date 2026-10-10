@@ -1,0 +1,211 @@
+{
+  "Id": "rule_Aijir_Huangfeng",
+  "Keywords": [
+    "Agil Huangfeng",
+    "beast wind",
+    "Amber Academy",
+    "wild magic",
+    "LoreOfBeasts",
+    "Beast Transformation",
+    "beast call",
+    "raw power",
+    "breath of the wild",
+    "beast soul"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Aegir - the yellow wind - is the wind of beasts, wildness and instinct. It is the magical echo of that part of the human soul that remains at the lowest level - the original impulse before it was tamed by language, words and social laws. Agil is strongest in deep forests, barren mountains and all wilderness areas where humans have not established permanent settlements. The mages of the Amber Academy (known as Beast Spirit Shaman) are the only ones among the eight that do not have a academy within the city of Altdorf - they live in caves in the Amber Mountains and refuse to approach any town with a population of more than three thousand people, because the Aegir Wind is so thin that it is almost non-existent in the city. The magic of the beast spirit shaman revolves around the summoning and control of beasts, the stimulation and amplification of the beast instincts in the warrior's body, and the ultimate Aegir secret technique - temporarily transforming oneself into a real beast."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Aegir Yellow Wind is the Imperial Army's most underrated magical asset in wilderness warfare. The beast spirit shamans of the Amber Academy almost never exist in the official Imperial legions - they refuse to wear uniforms, refuse to line up as ordered, and refuse to sleep under any roof - but the Imperial generals still go out every time they go deep into the badlands and into Sylvania. In the forest or in the battle deep into the northern wasteland, at least one Amber Shaman can be hired privately at a high cost, because there is no second wind in the wild that can do three things: first, summon and control a giant brown bear, a nest of giant eagles or a whole pack of forest wolves as additional combat units that do not occupy the establishment, using their claws and fangs to tear apart the enemy's mobile outposts - their deaths will not be reported as imperial combat losses; second, greatly enhance the sensory capabilities of the imperial forward scouts through lycanthropy - by Aggie The scouts protected by Er can use their sense of smell to track the position of the enemy array in the dark night, use their wolf's hearing to count the number of enemy campfires three hundred yards away, and use their eagle's vision to identify the color of the enemy's flag on a ridge ten miles away at the first ray of sunrise the next day. ; Third, the Amber Shaman himself can use his beast soul to transform into an adult cave bear in the most desperate pass defense battle - there is no weapon in any imperial standard weapon spectrum that can easily kill a cave bear without sacrificing dozens of lives. The Amber Shaman did not participate in military parades, write reports, or sign military merit books. After the war, they walked silently into the nearest woods and disappeared into a distant wolf howl."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Amber Shaman is the ultimate 'untameable but indispensable' existence for any ruler - you cannot order them, you cannot bribe them, you cannot bind them with any legal system, but you also cannot replace them with equivalent services provided by any other magic school in a border war. Amber shamans bow to only one authority: their own inner bestial impulse—which they call the 'Call of the Yellow Wind'—and most of the time this impulse manifests itself in personal loyalty to a specific individual rather than obedience to any position or institution. If you wish to retain the long-term protection of an Amber Shaman on your territory—not through employment, but through the unspoken agreement that he sleeps with your hounds in the hunter's hut—you need to understand something that won't be found in any imperial textbook on officialdom: you cannot pay gold to an Amber Shaman. Gold coins have no smell in the amber cave, and things without smell are equivalent to non-existence in the world of Aegir Wind. You must pay in the form of beasts: an undocumented wild boar that he can hunt newly from your forest, a jar of winter honey that he can access without having to thank you in any words, a license for him to take shelter in your abandoned tower during wildfire season for no reason at all. You cannot be friendly to the Amber Shaman - he does not understand friendship - you can only let him know in a silent manner without expectation that he can stay, and that you will not be implicated in any Imperial court for his presence."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "Aegir Yellow Wind's psychic anthropology reveals one of the most fundamental binary oppositions in Old World magic: the winds of civilization versus the winds of wilderness. Most of the Eight Winds are easier to sense and manipulate on a psychic level in human settlements—Hershey accumulates in the white walls and church spiers of cities, Phenmen precipitates in forges and mints, Urgu condenses in sewers and dark alleys—but Aegir is nearly unavailable in cities, because Aegir's essence is in a state of entropy in a civilized environment of stone, steel, and pen. The tension between Amber Shaman and society is not ideological - it is psychic: every time a human village expands into a stone wall, the energy of Aegir for dozens of miles around will be pushed out of this range subtly but ultimately cumulatively. The most powerful Aegir nodes of the Old World are located deep in the wilderness most inaccessible to mortal humans - the oldest heart of the Altdorf Forest, some pathless canyons in the World's Edge Mountains that have never been dug by dwarven mines, and the edge of the Chaos Wastes where the remaining beasts have not been completely corrupted by the evil god. This fact of psychic geography explains why the Amber Academy refuses to exist within the city of Altdorf - not because they hate the city, but because the city kills their wind. The Amber Caves are still the only non-Imperial territory that is officially accepted by the Imperial Magical System but is completely exempt from daily inspections by the Imperial Ministry of Magic - Imperial law stops at the entrance to the Amber Caves."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Amber Academy has the most unexpected attitude towards its female members that I have encountered among the eight academies - the Amber Shaman's concept of gender is built on a completely different basis than that of Imperial society. There is a word in the language of the ghost shaman - 'Tooth of Kor' - which has no direct translation in the common language of the Empire - which roughly refers to 'the degree to which the beast within a soul is not gendered'. In other words, in Agil's understanding, there is no difference in 'wolfness' between a female wolf and a male wolf that can be distinguished by Agil - wolf nature transcends gender. This resulted in the demarcation of academic status between women and men within the Amber Shaman community based solely on Aegir affinity - measured through the Beast Soul Test - an objective assessment that was never openly discussed on a social level that used Imperial gender stereotypes. According to my limited information source - I have no direct relationship with the Amber Cave, and there is no Amber Shaman in my territory - but another female noble once had an Amber Shaman living in her territory for a long time. She told me that the proportion of female members in this shaman is much higher than that of the Flame Academy and the Gold Academy."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "There are seven abandoned amber altars in my family’s hunting ground. They are very simple structures built with stones and animal bones by amber shamans from different eras when they passed through my family’s territory. They were never invited or driven away. The family’s ancient practice is to ask hunters not to move any stone when they find the altar, not to mention the location of the altar to any outsider in any language, and to leave a fresh catch next to the altar. This approach is not out of fear, but out of a calculation that is older than fear: every amber altar is an Aegir energy node that is not marked on the official map - the Amber Shaman unconsciously anchored a trace amount of Aegir energy in this location when building the altar, which is a pair of The ecological balance in the territory has a stabilizing effect that cannot be explained by science - the population of prey near the altar will be maintained at a level that is just enough for hunters to continue hunting but not too small to cause extinction, as if the beast spirit of Aegir is secretly adjusting the food chain in some way."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "What the Winds of Aegir provide in the actual life of the wanderer is not magical aid - but a periodic reminder that even when you have left the deepest wilderness of the most remote provinces of the Empire there are still beings wilder than you watching out for you along the way. I was awakened by a certain feeling many times at night in the deep forest in the southern section of the Ash Mountain - not fear, but a very clear feeling of being watched, coming from the absolute darkness outside the circle of the campfire, but you could not find the specific position of the holder in this gaze with any eyes or ears. The next morning you'll find the tracks of a big cat - a leopard or a small cave lion, not large enough to be classified in official records - in the wet mud outside your campsite. The tracks trace a complete circle around your campfire and then disappear, with no record of the attack ever recorded. It is said among Amber Shamans that these 'fire-watching beasts' have been pre-programmed by the weak winds of Aegir to actively monitor humans who are lost in the wilderness and guide them in a very indirect way to the nearest water source when necessary. I can't attest to the truth of this statement, but I have never encountered a lack of water while following any of the Firewatch tracks."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Aegir Yellow Wind's channel of contribution to the Empire's economy is the least visible of all winds - it is the only magical explanation for the steady flow of wildlife from the wilderness into the Empire's territories. There is a statistically significant pattern in the annual hunting data recorded by the Imperial Hunting Service but cannot be explained by any ecological theory: in hunting grounds with amber altars, the reproduction rate of top predators (cave bears, large gray wolves, giant eagles) is always slightly higher than the predicted value of pure ecological models over a long period of time - the difference is not big, about a few percentage points, but the cumulative effect over many generations is enough to ensure that the empire's top animal skins and beast material trade will not collapse within decades due to over-hunting. The Amber Shamans are not doing this on purpose - they are in no way running a livestock farm - but the Aegir Winds are secretly exerting some kind of weak population stabilizing effect on the wilderness ecology through the unconscious energy anchoring point of the Amber Altar through a mechanism that we cannot accurately describe in words. The very existence of the Amber Academy is an invisible non-invasive protection treaty between the Empire and the Wilderness."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Aegir Yellow Wind - one of the eight winds of beast, wildness and instinct, strongest in the deepest wilderness",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Agil Huangfeng’s magical attributes and energy source"
+  ]
+}

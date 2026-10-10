@@ -1,0 +1,208 @@
+{
+  "Id": "rule_Wild_Cavalry",
+  "Keywords": [
+    "wild horseman",
+    "Orion Guard",
+    "forest sacred deer",
+    "nature's rage",
+    "deer rider",
+    "hunting squire",
+    "kunos rider"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Wild Riders are the most fanatical bodyguards of the wood elf hunting god Orion. These elf riders control the majestic forest deer and launch destructive charges with uncontrollable natural fury. They represent the rawest wild power of Athel Loren, a sheer violence that the human knights can never tame or match."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Wild Riders are the glorious mortal legion of Orion, son of Kunos, and the ultimate incarnation of wild hunting! Our wild cavalry do not ride tame war horses - they have a soul bond with the forest deer, and each deer chooses its rider independently, rather than being conquered. When Orion blew the hunting horn, the Wild Riders were the first to respond - even the earth shook with the thunder of deer hooves as they broke out of the tree line. The horse-taming skills that human knights are proud of are just a sad game of imprisonment in their eyes. The Wild Riders need no saddles, no spurs, and no need for mail - they are the perfect symbiosis between the forest and the elves, the iron fist of Athel Loren's immortal wrath."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Wild Cavalry is tactically positioned as a shock cavalry to break through the enemy's flank, but it must not be confused with human heavy cavalry. Their charge speed is far faster than any mounted unit, because the strength, agility and aggressiveness of the forest deer - not ordinary reindeer - can crush ordinary war horses. Especially when Orion personally leads the army, the Wild Cavalry will enter a violent state, and its charge can crush all undefended flanks in an instant. The only effective way to fight against them is to set up antler barriers and pits, and deploy spearmen to form a turtle shell array in the center of the defense line. But keep in mind that as soon as the Wild Riders see a trap, they will take advantage of the Elf's intelligence and look for softer openings."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "The forest sacred deer ridden by the Wild Cavalry - called 'Galk-Faroun' in the Elvish language, meaning 'Hoof of Kunos' - is a magical deer creature unique to the old world. They are unlike any known species of deer: adult sacred deer can reach a shoulder height of eight to nine cubits, their antlers naturally grow into weaponized branching structures, their bone density is about three times that of ordinary antlers, and their tips are as hard as imperial steel. Each sacred deer was infused with natural magic by the elf priestess at birth, shortening its growth cycle from five years for ordinary deer to two years, and extending its lifespan to more than two hundred years. The most fascinating thing is the 'soul-hunting contract' between the sacred deer and the rider - according to the fragments of the \"Inscriptions of the Shrine of Athel Loren\", it can be inferred that the contract ceremony requires the rider to drink the blood of the deer when the sacred deer's first horns are shed, and the sacred deer also inhales the rider's sweat and tears to complete the two-way soul binding. From then on, the two share emotions and pain, which is why after the Wild Rider dies in battle, his sacred deer often emaciates and dies quickly without any care."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "I have seen the scene of a large herd of forest deer running on the moonlit meadows during diplomatic ceremonies - a beauty that surpasses all the costumed equestrians in the arena of human knights. But the elves say that the bond between each sacred deer and its rider is lifelong: if the rider dies in battle, his deer will leap into the nearest root portal of the world and disappear deep into Athel Loren, never to be seen again on the battlefield. This reminds me of the war horses of the Imperial Knights that were sold to the next buyer after the owner died. The difference between the two is the epitome of the entire Wood Elf civilization - their attitude towards their companions makes us look like barbaric slave traders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Our family was almost wiped out by the Wild Riders once - in my grandfather's time, the family army pursued an orc tribe that was marauding the border into the edge of Loren. We have no intention of offending elven territory, but the Wild Riders won't listen to any explanation. That night, the sound of deer hooves sounded from all sides of the jungle, and we lost more than half of our troops, including my grandfather's two brothers. Thirty years later, my grandfather learned from an elf messenger: The orc tribe we were chasing was the culprits in massacring a sacred deer sanctuary, and the wild cavalry charged for revenge - but we appeared under the wrong deer's hooves at the wrong time."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "In a hunter's hut on the eastern edge of the Loren Forest, there lived an old hunter who had had an encounter with the Wild Riders. He said that it was during a storm, and he saw a group of huge deer shadows with green light shining on their antlers at the tree line galloping past in the lightning. Each deer was riding a silent elf, holding a spear and looking dead. The old hunter said that he did not run away, but knelt down and lowered his head - not out of fear, but out of some inexplicable piety. After the storm, the deer's hoof prints were still in the mud, each eight inches deep."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "In the leather market on the banks of the Talabek River, you can occasionally receive a pair of 'sacred antlers' - the rarest trophy left behind by the wild cavalry after they die in battle. It is said that each of these antlers can be sold for four thousand to six thousand gold crowns, because the remaining natural magic power on it can be used to make the bow arms of top-level elf longbows or high-level magic talismans. But I know an alchemist who bought antlers. After the transaction, all his alchemical experiments failed. Animals did not dare to come near his laboratory, and even cats did not want to stay in his house. He said the antlers still hated him - a dead deer still hating all non-elves from the other side of death."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Hunting God Orion's Wild Bodyguard Deer Cavalry",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "The Wild Cavalry is the most fanatical bodyguard of the wood elf hunting god Orion."
+  ]
+}

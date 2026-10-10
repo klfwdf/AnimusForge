@@ -1,0 +1,175 @@
+{
+  "Id": "rule_Ghilman",
+  "Keywords": [
+    "Ghilman"
+  ],
+  "RagShortTexts": [
+    "Ghilman comes from an ancient kingdom called Dasi. After Khuzait invaded the west, Dasi was defeated and the country was annexed. The scattered warriors formed the Ghilman mercenary organization.",
+    "Ghilman adopts the contract form of \"self-sale, joint ownership\" and maintains the tradition of the Darcy people - wearing bright clothes and angry horses, carefully groomed, and wearing peacock feathers.",
+    "The only mercenary unit in Calradia that is proficient in both mounted archery and lance charging, the Ghilman fight for gold, but remember deep down that they are from Darcy."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Ghilman are a mercenary force from the south. Their hometown is Darcy, a once powerful country. Before the rise of the Khuzait, Darcy bordered the southern part of the empire and was an ancient kingdom with a long history and a powerful army. But the westward invasion of the Khuzait people changed everything: they took away a large area of ​​territory from Darcy, and took away the Far Eastern provinces from the empire, establishing today's Khuzait Khanate. Darcy was defeated in that war and was driven eastward, no longer bordering the Empire. The southern region of Khuzait today was once the land of Darcy - that area was sandwiched between the Empire and Aserai, with the Empire's border to the northwest and Aserai's trade routes to the southeast, but now the Khuzait flag flies. As for those Darcy warriors who lost their homes, some chose to stay and became Ghilman - both slaves they sold to the organization and joint masters of the organization. They still maintain the pride of Darcy people: bright clothes and angry horses, hair carefully styled, perfume smelling on their bodies, and peacock feathers on their hats. But don't let these costumes fool you, their mounted archery skills are world-famous, and their ability to charge with lances is second only to the Banner Knights of Vlandia and the Imperial Armored Cavalry. They fight for gold, but deep in their bones they remember where they came from."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Ghilman is a top-quality mercenary. The price is not low, but it is worth every penny. Their hometown, Dasi, was once a great country, but later it was mostly swallowed up by the Khuzait people, and the rest was driven to the east. These Ghilman are warriors who have lost their homes and gather together to continue working hard to survive. Their riding and archery skills rival those of the Khuzait, and they can also perform well with lances. The scent of perfume on their bodies could be smelled from afar, and they had peacock feathers on their hats, which could not be hidden in the woods, but they didn't care - anyway, they were not here to ambush, but to charge head-on."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Darcy, Ghilman’s hometown, was once our neighbor. Before the rise of the Khuzait people, the Pardisha of Dasi ruled a powerful kingdom bordering the southern part of the empire. Their cavalry caused a lot of trouble to the imperial border guards. But the Khuzait came and snatched away the lands of Dasi piece by piece, and now those places became the southern province of the Khuzait Khanate, sandwiched between us and the Aserai. Those Darcy warriors who were unwilling to surrender to Khuzait wandered around and formed the Ghilman, making a living as mercenaries. Their cavalry and archery inherited the tradition of the grasslands, and their cavalry formation rules learned a lot from our imperial people. Ironically, the former enemy has now become the most reliable mercenary on the battlefield."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Darcy’s history is sparsely documented in the Imperial archives. Prior to the Khuzait's westward advance, Dasi was an ancient kingdom bordering the empire to the south, and its rulers were called 'Pathishas' rather than 'Khans' or 'Chiefs' of the steppe tribes. Imperial border defense records show that Darcy's cavalry clashed with the imperial border guards many times, with both sides winning and losing. But the rise of Khuzait changed the situation in the south: Monchug's grandfather, Ulhun Khan, seized the territory bordering the empire from Darcy during the Western Expedition, and also seized the Far Eastern provinces from the empire, piecing these fragments together into the Khuzait Khanate. After Darcy's defeat, he retreated eastward, no longer bordering the Empire. Ghilman is the group of warriors who dispersed after Darcy's defeat. Their organizational form - selling themselves to the organization to become co-owners - may be the unique survival model that Darcy spawned in the crisis of national subjugation."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Ghilman's lances concern us more than their bows. These mercenaries from the south were not as good at riding and shooting as the Khuzait, but their lance charges - strange to say - were quite similar to those of our Knights of the Banner. I heard that their ancestors once ruled a large country called Darcy, fought with the empire for several generations, and stole the lance charge from the imperial cavalry. Later, Darcy was crippled by the Khuzait people and most of the country was swallowed up. These warriors became mercenaries. Their horses are not as tall as our competitive horses, and they do not have the devastating momentum when charging, but they are very disciplined. They charge when they should charge and stop when they should stop. They are much better than the stupid green knights of some baron families."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Ghilman doesn't get much work in the north. Their equipment was designed for the warm lands of the south - light armor, fast horses, fancy dress. When they arrived in the snow in the north, their horses couldn't stand it and they themselves huddled up with the cold. But the fact that they have been working as mercenaries in Calradia for so many years and still haven't broken up shows that they are capable. They heard that their country had been robbed by the Khuzait people, and they did not want to be slaves to the Khuzait people, so they came out to sell their lives. We Sturgians can understand this - we would rather live on the edge of a knife than bow our heads under the roof of others."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Darcy, Ghilman's native town, is most familiar to our caravans. Before the Khuzait came, Darcy was the Aserai's largest trading partner to the east. Their patisha controlled the trade routes to the Far East, and our spices and silks all passed through their gates. Later the Khuzait defeated Darcy and the land now belonged to the Khuzait, and our caravan had to deal with the new owners of the steppe. Some of those Darcy warriors who did not want to be ruled by Khuzait fled to Aserai and listed themselves on the mercenary market in Sanara. They brought Darcy's riding skills and lance skills with them and did a good job in the desert."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Ghilman’s mounted shooting was trained by us—or rather, shot by us. Their hometown, Darsi, was just south of our Khuzait. When Wuerhun Khan marched westward, he snatched a large area of ​​grassland from Darcy and took the Far East Province from the empire. The Darcy were driven east, but their warriors stayed—some stayed behind to become Ghilman. Their riding and archery skills are comparable to ours. Although not as authentic as ours, they are much better than the Imperials. They can also ride lances, which they learned from the Empire and Vlandia people, we Khuzait people don't use those things. Now they carry bows and guns and fight when they are paid, without picking on their employers or holding grudges. Even Monchug Khan sometimes says that these people are more reliable than Nayan from some tribes."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "steward": 150
+        }
+      },
+      "Content": "The Ghilman are the force with the most historical depth in Calradia's southern mercenary system. Their mother country, Dasi, was a regional power bordering the southern part of the empire before the rise of the Khuzait Khanate. Its ruler, 'Pathisha', had a much higher status than the tribal chiefs and was a kingdom with a complete bureaucracy and military tradition. The western expedition of Ulhun Khan was a turning point in Darcy's fate: the Khuzait people captured the territory bordering the empire from Darcy, and at the same time captured the Far Eastern Province from the empire, integrating the two into the southern territory of the Khuzait Khanate. Now sandwiched between the Empire and the Aserai, this area is a strategic hub for the continent of Calradia, but its master has changed from the Patishah of Darcy to the Khan of Khuzait. Ghilman was a mercenary organization formed by the dispersed military elites after Darcy's country was overthrown. Its contract model of \"self-enslavement for common ownership\" was probably a unique system formed during the crisis of country's subjugation. It not only ensured the cohesion of the organization, but also avoided the unsustainability of traditional feudal dependence relationships in the state of exile. At the military level, Ghilman is the only mercenary unit in Calradia that is proficient in both mounted archery and lance charging. Its composite cavalry tactics reflect the unique geographical location of the Darcy civilization that once faced both grassland and agricultural civilizations."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "ghilman"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "We are from Darcy. Before the wolves in the steppe grew, Darcy was one of the strongest kingdoms in this land, and our Pardisha ruled the vast land from the borders of the empire to the mountains in the east. Then the Khuzait came. They come like locusts, harvesting our pastures and towns one after another. Our Pardisha resisted, but was eventually driven to the east. Some surrendered and became Khuzait's vassals. We don't. We sold ourselves to Ghilman and became our own masters and our own slaves. We still dressed up in the Darcy way—hair neatly braided, clothes fragrantly smoked, peacock feathers in our hats. Not to look good, but to remember who we are. Our bows are Darcy's bows, and our lances are learned from the Imperials. We fight for gold, but gold is not an end, only a means. As long as we were on horseback, Darcy was not dead."
+    }
+  ],
+  "TextMappings": []
+}

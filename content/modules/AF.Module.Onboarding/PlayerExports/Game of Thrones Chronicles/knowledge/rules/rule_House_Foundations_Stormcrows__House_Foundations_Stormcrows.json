@@ -1,0 +1,111 @@
+{
+  "Id": "rule_House_Foundations_Stormcrows",
+  "Keywords": [
+    "Stormcrows"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Stormcrows are a mercenary group operating in Essos. They are small but famous for their maneuverability and daring. The regiment has been led by many captains. The Tyrosh native Dario Naha Lys is the most eye-catching with his gorgeous clothes, dyed beard and dangerous charm; mercenary politics cannot tolerate long-term hesitation, and leadership is often held by those who dare to make bets and can bring victory and military pay. The contract of the Stormcrows can be changed, but the warriors will not follow anyone unconditionally; the leader must constantly prove that his choices can keep the tribe alive, profitable, and famous."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "When employers look at the Stormcrows, they are attracted by their speed and courage, but they are also worried that the leader treats the battlefield as a personal gamble. Money can buy a period of time, but only by fulfilling your promises on time can someone still answer the next clarion call."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Mercenaries appreciate Dario's ostentation, because eye-catching clothes tell the world that this man has survived many enemies who wanted to kill him. But veterans care more about sentries, horse supplies and retreat routes. Brightly colored beards cannot deflect arrows for anyone."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "ghiscari"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "slave",
+          "artisan",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The people of Slaver's Bay do not have a unified view of the Stormcrows. Old masters, freedmen, and market traders will all have completely different opinions depending on who they guard the door for; a mercenary's reputation always changes depending on which side of the knife he stands on."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Stormcrows The Stormcrows are a mercenary group known for their maneuverability, gorgeous leaders, and quick judgment of victory or defeat. Their loyalty relies on military pay, trophies, and the prestige of the leader. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Stormcrows The Stormcrows are a mercenary group known for their maneuverability, gorgeous leaders, and quick judgment of victory or defeat. Their loyalty relies on military pay, trophies, and the prestige of the leader. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Stormcrows: The Stormcrows are a mercenary group known for their maneuverability, gorgeous leaders, and quick judgment of victory or defeat. Their loyalty relies on military pay, trophies, and the prestige of the leader."
+  ]
+}

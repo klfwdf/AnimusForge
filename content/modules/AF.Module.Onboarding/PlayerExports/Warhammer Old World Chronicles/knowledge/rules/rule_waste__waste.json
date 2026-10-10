@@ -1,0 +1,169 @@
+{
+  "Id": "rule_waste",
+  "Keywords": [
+    "Marienburg_WL",
+    "Free Municipality of Marienburg_WL",
+    "Mayor of Marienburg_WL",
+    "Luitpold van Remerswijk_WL",
+    "Wasteland Province_WL",
+    "Rick River Estuary_WL",
+    "Marienburg Money Order_WL",
+    "Mana Strait_WL"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Marienburg - a prosperous city-state marked as the \"Waste Province\" on the official map of the empire, and called the \"Free City\" by the Marienburgers themselves - is located at the mouth of the Reik River into the Mana Sea, and is the most prosperous trade hub in the old world. The city is centered on a giant stone arch bridge connecting both sides of the bank, and is surrounded by towering warehouses, banks and merchants' mansions. Marienburg is still formally considered part of the Empire, but it has a large merchant fleet that operates completely independently, and actual power lies in the hands of the city council and the hereditary mayor - the current mayor Luitbold van Riemerswijk is a business veteran with a reputation for shrewdness and ruthlessness."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Marienburg - The emotional spectrum of Imperial people towards this place ranges from contempt to jealousy to anger, with the temperature at neither end being warm neutral. Marienburg used a well-planned economic coercion three hundred years ago - what they themselves called \"a fair consideration for the independence agreement\" - to obtain a nearly completely autonomous status. Since then, there has been an additional observer seat without voting in the Imperial Parliament, and the shipping on the Reik River has added numerous toll gates. Every province in the northern part of the empire hated Marienburg because all customs duties on the sea trade from the Reik River went into Marienburg's treasury instead of Altdorf's treasury. But the greatest irony is - the empire cannot live without Marienburg. Without Marienburg's fleet, Nordland's fleet is isolated and helpless; without Marienburg's bank, the Imperial Parliament cannot issue war bonds; without Marienburg's warehousing and logistics, all provinces in the upper reaches of the Reik River cannot transport goods out of the inland river. The people of Marienburg know this all too well – their official stance is always one of politeness, smiles and no commitment to any substantive concessions."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Marienburg was a permanent wound in the theoretical concept of the territorial integrity of the Empire—a province in name only, but a foreign country in reality. Anyone trying to unite the empire would sooner or later face the Marienburg problem. Conquest by force was not an option: Marienburg had the most advanced city defense system in the Old World—not stone walls or cannons, but banking. The merchant family of Marienburg holds more than half of the empire's war bonds. If Altdorf sends a fleet to block the entrance of the Reik River, Marienburg can trigger the financial collapse of the empire by selling these bonds in just three days. Economic penetration is also extremely difficult: Marienburg's business families have formed a \"pan-business family network\" through generational marriages that cannot be penetrated by outsiders. Foreign capital can only be tenants in Marienburg, never landlords. Luitpold van Riemerswijk knew his leverage - he did not pursue true independence for Marienburg (which would diplomatically isolate the port city), but only the status quo: a legally ambiguous gray state that maximized Marienburg's commercial interests. Anyone who wants to break through this impasse needs patience - more than three hundred years of it."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "Marienburg's governance system is a unique \"mercantile oligarchy\" in the old world - it legally retains its feudal subordination to the empire (the mayor nominally accepts the emperor's canonization, and the province has observer seats in the imperial parliament), but in essence it has evolved into a city-state republic controlled by six major merchant families in turn. These six families - Van Remerswijk, Van de Macht, Van Brink, Van Hofstadt, Van Stern and Van Egen - monopolized the city's most important administrative positions through a hereditary system known as the \"six-seat city council\": harbor master, customs chief, admiral of the navy, bank supervisor, chief of the court and mayor. The Van Riemerswijk family has served as mayor six times over the past eighty years, and their rule is characterized by fiscal conservatism and a \"cautious wait-and-see\" policy on imperial affairs. Marienburg's real tool of governance is not law or military (it has no standing army, and its navy only has a lightly armed merchant escort fleet), but a network of money orders: the total amount of Marienburg bills circulating between all important cities in the Old World is estimated to be more than four million crown gold coins. Any attempt to destroy Marienburg will simultaneously destroy the commercial credit system of the entire Old World - a financial nuclear bomb that even Chaos cannot achieve."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Marienburg is the only city in the Old World where women can gain a political voice through money rather than blood - but once you do, you have to be more vigilant than any of your male counterparts. The inheritance system of the six major families does not have a statutory primogeniture system - the family's business name is decided among multiple candidates by a vote of the family elders. In theory, women have equal inheritance rights, but in practice, the most successful female businessmen of Marienburg often do not \"inherit\" power, but \"create\" power with an independent merchant ship, a well-timed foreign exchange investment, or a reselling of accurate information about the political crisis of the Imperial Parliament. Being a woman in Marienburg didn't require proof by sword as in Middenland - you had to prove yourself by a ledger. Every woman in the Marienburg business family knows: Your seat at the family meeting is not natural, you bought it with the pure profits you created for the family business last year."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "There are fundamental differences between running a family in Marienburg and running a family in any province of the empire: you are not running a noble family, but a multinational enterprise. There is no \"Elector Count\" or \"Count\" in the Van Remerswijk family's official title - the official title of the family leader is \"Chief Partner of the Firm\", and the accompanying qualifications as a member of the city council are just an administrative extension of this business title. Family rivalry in Marienburg was not based on wars or marriages - on bank rates. Before the peak shipping season on the Reik River, the six major families adjust their credit policies through the Marienburg City Bank. Whichever family can secure the most short-term financing contracts for Bretonnia wine exporters or dwarf iron ingot importers during this cycle will get a larger share in the allocation of city council seats next year. A cold word of advice to those who want to start a new family in Marienburg: Don’t use the first fortune you accumulate in this city to buy a house or a boat—use it to bribe a retired accountant who has worked for the Van Brink family bank for more than twenty years and knows more about all the trade secrets on both sides of the Mannar Strait than you can collect in ten years of social interaction."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Marienburg – for wanderers is a city where heaven and hell share the same revolving door. The docks are always looking for porters, the shipyards are always short of manpower, and the banks are always in need of armed escorts. You can see at least six different faces of people in Marienburg a day - imperial people, dwarves, Bretonnia people, border princes, Cattai people and even an occasional dark elf merchant from the sea (don't wonder what they sell, your best choice is to leave after buying it). But the employment market in Marienburg also has its pitfalls: wages are paid according to Marienburg money orders - which sounds respectable, but if you want to cash it into jingling gold coins, you have to pay an astonishing exchange fee at the exchange booth on the dock (Marienburgers call this \"reasonable processing costs\", I call it \"legal robbery\"). Marienburg's underground violence is less frank than Middenheim's - here you won't get punched in the face, and you'll find yourself docked a \"non-tariff surcharge for imported labor\" after signing an employment contract without reading the fine print - a business innovation that doesn't exist in any other city in the empire."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Marienburg's business rules were the most codified, sophisticated, and expensive in the Old World. If you open a trading company in Altdorf, you will need a business license from the Imperial Council and a guarantor. In Marienburg, you need: a main business location lease certified by the city council (renewed every year, the rent fluctuates with the flood season of the Reik River), a credit endorsement issued by one of the six major families (this usually requires you to have business dealings with at least one family member for more than three years), a Marienburg City Bank The bank's capital reserve certificate (the account balance must not be less than three thousand crown gold coins), and a \"Signature of the Non-Competition Agreement\" (promise that your business activities will not directly compete with any existing Maison - and the definition of \"direct competition\" is redefined at any time by the Arbitration Committee of the Municipal Council controlled by the Maison). As a businessman, your only correct strategy in this city is not to try to challenge the six major families - you have to find the gaps, edges or downstream links in their supply network, become an irreplaceable cog in their business machine, and then quietly and long-term earn the profits that your class in their economic ecology deserves."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Marienburg - a free trade city-state at the mouth of the Reik River. It is nominally part of the Imperial Wasteland Province, but is actually an independent commercial republic.",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Trade at the mouth of the Reik River in the Free City of Marienburg Wasteland Province"
+  ]
+}

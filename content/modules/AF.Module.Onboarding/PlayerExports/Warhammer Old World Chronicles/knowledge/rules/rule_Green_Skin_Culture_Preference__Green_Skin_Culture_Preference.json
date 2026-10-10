@@ -1,0 +1,213 @@
+{
+  "Id": "rule_Green_Skin_Culture_Preference",
+  "Keywords": [
+    "greenskin culture",
+    "Green skin preferences",
+    "Waaagh mania",
+    "Big is good",
+    "tooth wealth",
+    "shiny trophy",
+    "bully the weak",
+    "pure fighting",
+    "Green-skinned cultural orcs",
+    "Green-skinned cultural goblin",
+    "Fuck the second brother Mao",
+    "Greenskin Cultural Badlands"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The entire core of greenskin culture can be summed up in one word: fight. Orcs and goblins don't have any aesthetics or pursuits that have nothing to do with combat - they don't want to build cities, write poetry, or accumulate wealth, they just want to find the next target to beat. Greenskins love a hearty Waaagh! - When the entire tribe is united by the war cry of the war general and the greenskin boys charge with machetes, that kind of pure joy is incomprehensible to any civilized race. They are obsessed with huge bodies - big guys, big boars, big idols, the bigger the better. Seeing creatures smaller than them fear and tremble is their most enjoyable moment."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Waaagh! Did you hear it? This is what it feels like! When the boss roars, all the boys rush together, and the sound of the machete hitting the shield is better than any music! We don't fight for gold coins like humans do - gold coins can't be eaten and can't knock people. What we want are teeth. Teeth are the real good things. Whoever has the largest chain of tooth necklaces will be the most powerful! We don't do anything fancy like the pointed ears - we nail the shiny iron pieces picked up on the battlefield to the armor. It's so impressive that the little shrimps will be scared away after just one look! The most enjoyable part is bullying the dwarfs - it's so funny how those dwarfs are so angry and unable to beat us. They have been holding grudges for thousands of years and they still can't do anything to us. We don’t need to farm or build houses. We are born to hunt. After we die, we will grow out of the mushroom field and continue to hunt. This is the most correct way to live!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Greenskins' military preferences are highly predictable - a strategic weakness as well as an opportunity. They only pursue hearty battles, which means that it is almost impossible for a greenskin army to refuse any opportunity for head-on combat. You can use this to design an enemy trap: deploy a dense array of artillery and musketeers on the preset battlefield, and then send light cavalry as bait to provoke the greenskins forward - the greenskins will inevitably charge towards your preset slaughter zone. But be careful: if the decoy force retreats too early, the greenskins will not pursue it but will instead attack any nearest hitable target, including your own flanking camps. The rhythm of fighting the greenskins must be controlled down to the minute."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "An Ork's value system can be fully modeled through five core preferences. First, the principle of supremacy of combat - the only criterion for green skins to measure everything is 'can it be fought?' A peaceful village is worthless in their eyes, but a town with walls and garrison is a huge temptation, because what they desire is not the resources but the process of fighting itself. Second, size worship - In greenskin society, size is strictly positively correlated with strength. The largest orc naturally becomes the leader, the largest wild boar naturally becomes the mount of a warrior, and the largest furry colossus naturally becomes the spiritual anchor of the tribe; this preference leads the greenskins to give priority to feeding the most powerful individuals in resource allocation to maintain their size advantage. Third, the tooth economy - Greenskins have teeth that are constantly regenerating. These teeth fall off after being worn in their mouths, and new ones will grow back. Therefore, teeth have become the only currency in Greenskin society that will not depreciate in value. Teeth can be exchanged for weapons made by goblins, protection from big guys, or mushroom beer; the more capable orcs are, the easier it is to pull teeth from their opponents, so the length of the tooth necklace is directly linked to combat effectiveness. Fourth, shiny collection - Greenskins have an irresistible urge to collect shiny metal pieces. The evolutionary significance of this behavior may be to identify friendly forces and highlight their own presence through flashes on a chaotic battlefield, but it also causes the greenskin army to be particularly noisy and chaotic visually. Fifth, bullying preference - Greenskins especially enjoy bullying races smaller than themselves, especially dwarves and humans. The deep structure of this preference is an instinctive aversion to civilized order - dwarves and humans represent everything that greenskins are not: cities, laws, contracts, history. It is the combination of these five preferences that makes the Greenskin the ultimate antithesis of any civilized society."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Greenskin ignorance of gender creates a unique asymmetry in the military. They don't understand the political bargaining chips that capturing women may bring - in the green skin's thinking framework, there are only two types of prisoners: those who can be beaten (keep them for a while and then beat them) and those who cannot be beaten (just crush them). But because of this, any strategy that attempts to use female identity to influence green skin negotiations is doomed to failure - your mother's status, your marriage alliance, your family inheritance, these are meaningless in front of green skins. The only language that can communicate with greenskins is machete and teeth - and in this regard, there is no difference between men and women."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Greenskin clan's experience of dealing with Greenskins can be traced back to the generation of their great-great-grandfather - his diary recorded an observation known as Greenskin's Law: the active cycle of an Greenskin tribe in an area is about seven years. In the first year, the war generals rose up and unified the scattered tribes. In the second to fourth years, large-scale plundering occurred. In the fifth to sixth years, internal strife began to weaken the tribes. In the seventh year, the war generals either died in duels or in encirclement and suppression by human coalition forces. Then the spores fell silent for three years, and the cycle restarted. Our clan's territorial defense line and tax collection rhythm are based on this seven-year cycle."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "As I discovered while wandering the fringes of the Badlands, the key to understanding the preferences of greenskins is to unlearn everything you've ever learned about civilization. The greenskins wouldn't come back in a month for revenge—they couldn't even remember who won the fight yesterday—but they would charge the village this afternoon because they smelled the smoke. The greenskins' love of shiny iron can be a life-saving measure: if you throw all your metal gear on the road and run away, there's a 90 percent chance they'll stop and pick it up instead of chasing you. The other ten percent is that they find it more interesting to chase you."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Greenskins' tooth economy - grossly underestimated by mainstream Old World economists - is actually the cornerstone of the informal trade system surrounding the Badlands. Teeth, as the currency within the greenskins, have self-regulating currency supply characteristics: a large number of teeth were lost when the orcs fought, and these were collected by the goblins and put back into circulation. During the Waaagh! period, the surge in currency supply caused the teeth to depreciate (the price of a boar leg would increase from three teeth to fifteen), while the total supply of circulating teeth decreased after the tribe's infighting and attrition, leading to an appreciation. Human merchants do not accept teeth directly, but smugglers on the edge of the Badlands use artificial beads that mimic the look and feel of teeth to engage in low-level trade with goblins, which creates an extremely unstable arbitrage relationship."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Waaagh! - Greenskin collective psionic rage state, a self-reinforcing battle frenzy that breaks out after the tribe is united by a war general.",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Green-skinned social customs and cultural traditions"
+  ]
+}

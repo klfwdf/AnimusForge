@@ -1,0 +1,147 @@
+{
+  "Id": "rule_Seafaring_and_Voyages_Letters_of_Marque",
+  "Keywords": [
+    "Letters of Marque"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Privateering licenses were granted by the monarch or a powerful lord, allowing private ships to attack the merchant ships of designated enemies and share the spoils. It puts piracy in the legal context of war, but it cannot eliminate the problems of misidentification, attacks on neutral ships and refusal to stop after the war."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Letters of Marque Privateering licenses were granted by the monarch or a powerful lord, allowing private ships to attack the merchant ships of designated enemies and share the spoils. It puts piracy in the legal context of war, but it cannot eliminate the problems of misidentification, attacks on neutral ships and refusal to stop after the war. The rules of the sea ultimately have to withstand wet ropes, bad water and sudden turns of weather."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Letters of Marque Privateering licenses were granted by the monarch or a powerful lord, allowing private ships to attack the merchant ships of designated enemies and share the spoils. It puts piracy in the legal context of war, but it cannot eliminate the problems of misidentification, attacks on neutral ships and refusal to stop after the war. If any maritime plan ignores the crew's physical strength and return conditions, victory may turn into drifting."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Letters of Marque Privateering licenses were granted by the monarch or a powerful lord, allowing private ships to attack the merchant ships of designated enemies and share the spoils. It puts piracy in the legal context of war, but it cannot eliminate the problems of misidentification, attacks on neutral ships and refusal to stop after the war. A single misjudgment can cost you goods, credit, and lives at the same time."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Letters of Marque Privateering licenses were granted by the monarch or a powerful lord, allowing private ships to attack the merchant ships of designated enemies and share the spoils. It puts piracy in the legal context of war, but it cannot eliminate the problems of misidentification, attacks on neutral ships and refusal to stop after the war."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Letters of Marque Privateering licenses were granted by the monarch or a powerful lord, allowing private ships to attack the merchant ships of designated enemies and share the spoils. It puts piracy in the legal context of war, but it cannot eliminate the problems of misidentification, attacks on neutral ships and refusal to stop after the war. There are no extra roads to go around on the ship, and mistakes can often only be shared by the entire ship."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Letters of Marque Privateering licenses were granted by the monarch or a powerful lord, allowing private ships to attack the merchant ships of designated enemies and share the spoils. It puts piracy in the legal context of war, but it cannot eliminate the problems of misidentification, attacks on neutral ships and refusal to stop after the war. Wood and knots maintain the hull, while faith helps people face the uncontrollable sea."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Letters of Marque Privateering licenses were granted by the monarch or a powerful lord, allowing private ships to attack the merchant ships of designated enemies and share the spoils. It puts piracy in the legal context of war, but it cannot eliminate the problems of misidentification, attacks on neutral ships and refusal to stop after the war. The changes on the distant sea often turn into empty stalls in the market the next day."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Letters of Marque: Privateering licenses were granted by the monarch or a powerful lord, allowing private ships to attack the merchant ships of designated enemies and share the spoils. It puts piracy in the legal context of war, but it cannot eliminate the problems of misidentification, attacks on neutral ships and refusal to stop after the war."
+  ]
+}

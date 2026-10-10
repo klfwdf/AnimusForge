@@ -1,0 +1,288 @@
+{
+  "Id": "rule_Nahasa_Desert",
+  "Keywords": [
+    "Nahasa Desert",
+    "Nahasa",
+    "Aserai Desert",
+    "Southern Desert",
+    "Big desert"
+  ],
+  "RagShortTexts": [
+    "The Nahasa Desert is a natural barrier for the Aserai people"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Nahasa Desert is a vast sea of sand south of Calradia and home to the Aserai people. There is no grass growing here and the sun is like fire. Only oases and both sides of the river can breed life. Every town and village of the Aserai people is built next to these precious water sources. People who don't understand the desert will end up with nothing left if they rush in hastily."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Nahasa is our mother and our proving ground. Outsiders only see its harshness—the scorching sun, the sand, the drought—but we Aserai know that the desert is fair. It teaches us how to survive in desperate situations, how to identify directions, and how to cherish every drop of water. Every oasis is a gift from the gods, and every river is the blood of life."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "As an emir who grew up in Nahasa, I can tell you that this desert is our strongest wall. The empire's legions came in, couldn't find the water source, were blinded by the wind and sand, and finally had no choice but to retreat in despair. The heavy cavalry of Vlandia could not run in the sand, and the Yankees of Sturgia were like melting snow in the hot sun. Nahasa has protected us for thousands of years and is more reliable than any fortress."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "townsfolk"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Although Nahasa is harsh, it is also a source of wealth. Trade routes across the desert connected east and west, and spices, silks, gold—all flowed across our sandy seas. We Aserai people are the guides and traders who know the desert best. Without us, those foreign caravans would not even dare to enter the edge of the desert."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "There are many secrets hidden in the depths of Nahasa. Some people say that in the center of the desert, there is an ancient city buried by wind and sand, which is older than Sanara. Some people also say that on moonless nights, the war songs of ancient tribes can be heard from deep in the dunes. I don’t know if it’s true or not, but every time I cross the desert, I will remain respectful of those nameless sand dunes."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Nahasa Desert is the natural barrier to the south of the empire and our eternal shame. For hundreds of years, the empire's legions have tried to conquer the sand sea countless times, but failed every time. The sun there is more deadly than any enemy's arrows, and the sand there is more impenetrable than any city wall. We Imperials are good at fighting in formation on the plains, but on Nahasa, all our tactics failed."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "I participated in a southern campaign to conquer Nahasa. We brought plenty of water, the best guides, and the best soldiers. But on the third day into the desert, we still got lost. The water bag was cut at some point, and the guide disappeared one morning. We wandered like headless flies in the sea of ​​sand for five days, and in the end less than half of us came out alive. From then on, I never wanted to set foot in that damn desert again."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Nahasa Desert was described as an 'endless sand' in Imperial geographer Lucius Corellius's \"Southern Terrain\". According to oral accounts from Aserai merchants, the desert may be more than three times the size of the empire itself, but much of it has never been surveyed in detail. The desert is dotted with dozens of oases of varying sizes, each an independent ecosystem. The existence of Nahasa has fundamentally shaped the culture and way of life of the Aserai people."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Nahasa Desert? That's a hell of a place. We knights of Vlandia, wearing full plate armor, would not be able to survive even half a day in that kind of place. Those Aserai people hide in the desert, like scorpions, they usually don't come out, but occasionally they spring out to bite you and then retreat back. We wanted to chase, but once we entered the desert, we lost our direction."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "We Vlandians once planned to conquer the Aserai, but the Nahasa Desert put an end to all our plans. You can't maintain supply lines in the desert, you can't use heavy siege machinery in the sand, you can't even guarantee that your troops won't die of thirst on the march. That desert was more formidable than any army of the Aserai."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The snowfields in the north and the deserts in the south are two extremes. We Sturgians are used to ice, snow and cold, but the heat of Nahasa is hell for us. I heard that in that desert, eggs can be cooked on stones. I'd better stay on the ice sheet in the north, where at least I won't be dried out in the sun."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Battania is so far away from Nahasa that we rarely see that desert. But I heard from traveling traders that there are more sand there than leaves in our forests, and that the solar energy there turns people into mummies. We Battania people trust the shade of the forest and the nourishment of the clear springs. For us, the desert is another world."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Grassland and desert may sound similar, but they are actually two different things. Our grassland has grass, rivers, and horses, but Nahasa only has sand and stones. Our horses can gallop thousands of miles on the grasslands, but when they enter the desert, their hooves will be burned by the sand and their physical strength will be quickly exhausted. However, camels in the desert are indeed better adapted to such ghost places than our horses."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer",
+          "mercenary"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "I traveled through Nahasa, which was the closest experience to death in my life. The sun will make your skin smoke during the day, and the cold will make your bones tremble at night. Every drop of water in the water bladder is as precious as gold. If you plan on crossing Nahasa, remember my advice: Find an Aserai guide, bring twice as much water as you think you'll need, and pray."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "steward": 150
+        }
+      },
+      "Content": "The Nahasa Desert is not only the home of the Aserai people, but also the cradle of their civilization. The harsh environment of the desert has selected the most adaptable survival strategies - oasis agriculture, nomadic trade, camel transportation, and strict water management systems. The Aserai have developed a complex system of customary law over the distribution of water that is central to their social order. From a strategic perspective, the Nahasa Desert is an impenetrable natural barrier to the south of Calradia, and any empire that attempts to conquer this sea of ​​sand will eventually be swallowed up by its harshness."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Nahasa Desert",
+      "Kind": "bound_region_name",
+      "TargetId": "__bound_region__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

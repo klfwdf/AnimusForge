@@ -1,0 +1,133 @@
+{
+  "Id": "rule_House_Foundations_Orkwood",
+  "Keywords": [
+    "Orkwood",
+    "House Orkwood"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Oakwood family rules Oak Island, and the head of the family has the title of Chieftain of Oak Island. The island’s timber, reefs, docks and barren fields jointly define a family’s power; in the Iron Islands, being able to build ships, steer ships and feed crews is more important than the gorgeous pomp of southern manors. Oakwood must choose between ancient roads, trade, and the livelihood of the islanders. Any external raids or voyages will eventually come back to the realities of repairing ships, distributing loot, and surviving storms."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "sailor",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Ironborn captains weigh Oakwood first to see how many seaworthy ships they can produce and whether the spoils are distributed fairly. If the leader of Oak Island is incompetent on deck, no matter how ancient a family name is, it will not suppress the contempt of the oarsmen."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The fishermen and shipbuilders of Oak Island knew that wood and nails were more valuable than boasting. When the lord sailed away, they repaired the ship and guarded the home. When the lord returned, they hoped to get salt, food and their due share, not more empty glory."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Orkwood The Oakwood family is based on Oak Island and is the island owner of the Iron Islands. Their livelihood revolves around ships, coasts and limited land. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Orkwood The Oakwood family is based on Oak Island and is the island owner of the Iron Islands. Their livelihood revolves around ships, coasts and limited land. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Orkwood The Oakwood family is based on Oak Island and is the island owner of the Iron Islands. Their livelihood revolves around ships, coasts and limited land. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Orkwood The Oakwood family is based on Oak Island and is the island owner of the Iron Islands. Their livelihood revolves around ships, coasts and limited land. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Orkwood: The Oakwood family is based on Oak Island and is the island owner of the Iron Islands. Their livelihood revolves around ships, coasts and limited land."
+  ]
+}

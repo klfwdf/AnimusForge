@@ -1,0 +1,213 @@
+{
+  "Id": "rule_Master_Rune",
+  "Keywords": [
+    "Master Rune",
+    "Rune Pinnacle",
+    "unique",
+    "Legendary Artifact",
+    "Supreme Forge",
+    "Not copyable",
+    "Rune Master",
+    "Dwarven Runes",
+    "god level",
+    "supreme rune",
+    "only",
+    "Rune power"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Master runes are the highest masterpiece of dwarven rune forging - once any weapon or armor is engraved with master runes, it means that this creation is unique and cannot be copied in the known world. Each Master Runecraft represents the pinnacle of the runesmith's skill and an undying dwarf feud or alliance."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Master Rune - Don't be fooled, little one, it's not just a matter of carving a glowing mark on the hammer in an ordinary rune blacksmith shop! That is the pinnacle of the rune industry. It may take hundreds of years for a Karak to produce a rune master, and a rune master may only create two master-level rune works in his entire career - that is, at the end of his life, he hammered his entire life's skills, hatred and thoughts into a piece of meteorite. This is why the Master Rune cannot be copied: if a different rune blacksmith carves the exact same symbols onto the exact same material, the result will be different - because the predecessor's heart is already dead inside. You have to know that this is not the kind of legend that you humans call \"legendary weapon\" - the master rune artifact of the dwarves will not forget its owner just because of the passage of generations - it knows who took it, and it also remembers who it was originally made to avenge. If I touch an ax with a master rune, the ax instantly knows that I am not on its side, and it becomes a piece of dead iron. You asked about copying - it's not that copying is not allowed, it's that copying is impossible. The last blacksmith who tried to copy the master's rune blew up half of the forge. The rune shattered and bounced back into his eyes, taking away his sight. He could only touch iron for the rest of his life."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "On a military level, Master Runes constitute a combat power multiplier whose value cannot be measured by conventional military power. The threat posed by an Orc Warlord wielding a simple machete can be quantified by standard means - but if any intelligence emerges that a master-level rune-craft is in enemy hands, the mathematical basis for all your defensive plans must be overturned. In one known case, a warhammer engraved with the master-level 'Demon Demon' rune killed three Chaos Warlocks and shattered seven magical creations in one day in the hands of its owner (a dwarf Dragon King) - this price-performance ratio is unusual in any known weapon database. Your best confrontation strategy is not to confront - confirm the location of the master rune holder and use artillery or long-range bombing to kill its health before engaging in close combat. Never try to challenge it with a hero of the same level."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "The forging process of master-level runes is called \"ultimate vibration seal\" in dwarven runesmithing. Different from conventional runes (which are carved on the surface of the weapon with a hammer and then activated by sonic resonance), the forging of master-level runes needs to meet three unrepeatable conditions: First, the meteorite base material must have fallen naturally between 400 and 600 years - at this time, the sulfide crystal structure inside the ore just reaches the required level. The peak platform of the rune master's capacity; secondly, the rune master must continuously recite the \"Echoing Spell\" during the entire forging process - a set of ancient dwarf rules that have never been copied in any text carrier and are only passed down from generation to generation through the mouth and ears. Each time it is recited, it will be related to the specific details of the forging. The object produces a unique resonance frequency, which cannot be reproduced when repeated by any subsequent blacksmith - because the dwarves believe that the person chanting the curse has changed, and the blood response in the stone will no longer be consistent; third, and the most critical point in humanities - the completion of the master-level rune requires a person with The dwarves whose endings are innately related to the target of the rune forging are regarded as \"final blood\": that is, the last step to complete the forging is not to use a cooling water tank to cool down, but to extinguish the blade with a drop of blood designated by the person - after this operation, the rune is melted into iron, and this person can no longer provide double final blood for any other runes. This means that each master-level artifact consumes not only a lifetime of skills from a rune master, but also a drop of the unrepeatable blood mark of a blood-killer. According to the last count by the Supreme Secretary of the Dwarves in the year 2512 of the Imperial Calendar, there are ninety-seven exactly registered master-level rune creations in the known world - and this number is only less than one-fifth of the more than 500 in the Golden Age of the Dwarves."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The most disturbing weapon I have ever seen is a dwarf masterclass runed dagger - displayed in the hall of Karak Kaderin's court. The dwarf introduced that the sword was called \"Bereaved\" and was forged by a rune master who had been mad for fifty years after losing his entire family. The content of the runes engraved on the sword was said to be \"no need to hate anymore because hate has turned into iron\" in the dwarf language. I reached out and approached it - I didn't touch it - but my fingertips felt a burst of extremely cold air flowing from the direction of the hilt, as if something was actively pushing against my body temperature."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The last dwarf rune ally in our family left me a master rune talisman before he died - a palm-sized copper disc with only two dwarf inscriptions engraved on it. He refused to tell me what it meant. He only said, \"I have already recorded the grudge of your family for you.\" I have worn that amulet for twenty years, and in those twenty years there has not been a single magical disease in my territory. A page boy stole it while I was in the shower two years ago trying to change it for money - the amulet was later found broken into three pieces on the appraisal table in a pawn shop. I'm still trying to find another Rune Master to fix it, but I may never find one."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "In Barak Vaal's mercenary bar, there is an old ax nailed to the wall - it is said that it was originally made by the dwarf rune master for a certain generation of human kings, and it contains master-level runes. You ask the bar owner if he can lend the ax to the mercenary for the mission - he laughs: first, you can't pull it out, and the nail driven into the wall is also a master rune; second, the last mercenary who tried to pull it out was burned off by the heat from the ax handle and the entire skin of his palm was burned off. He left a scorch mark around the empty wall as decoration."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Do you know how many countries in the old world have tried to buy a master-level rune creation from the dwarves with gold crowns? I found out because my appraiser firm was employed by a nobleman running for Elector Count who wanted one as a state artifact. We found seventeen responses to purchase requests in the archives—each one written by a dwarf with the same sentence: \"Rune is not a thing, rune is a promise.\" It is said that the candidate later gave up because the dwarf told him that buying the Master Rune artifact was not buying a thing - it was inheriting a debt that had to be repaid with blood within five hundred years."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "The top masterpiece of dwarf rune forging, each piece represents a rune master's lifelong skills and an unrepeatable final blood.",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Master runes, peak runes, unique"
+  ]
+}

@@ -1,0 +1,205 @@
+{
+  "Id": "rule_Blood_Spear_Tribe",
+  "Keywords": [
+    "Bloodspear Tribe_BSP",
+    "Ganashlak_BSP",
+    "Bloodspear Orc_BSP",
+    "BloodySpearz_BSP"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Bloodspear tribe is famous for its extremely violent spear-throwing charges in the middle of the Badlands - their signature tactic is to collectively throw crude heavy spears in a close-range charge. The spearheads of these spears are soaked in the crimson plant juice squeezed from the bloodvines of the Badlands, not to poison but to create a visual impact of blood splashing after hitting. The leader, Gnashrak, was an extremely aggressive black orc. It was said that he would wipe the tip of his spear in the blood of his enemy before every battle - if the blood from the previous battle had dried up, he would cut his palm to get fresh blood to complete the ritual."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "We are bloody spears! A swarm of bees rushed to a place twenty steps in front of them. With a shout, hundreds of spears flew out at once - the sky suddenly turned dark! Those shrimps hid behind shields and thought they were safe - our spears were very heavy, and the shields could block the sharp points but not the hits! After the shield was broken, their faces were covered with red water splashed from the spearhead dyed red with blood vine juice - it looked like bleeding, but in fact the juice dried quickly, and after drying, it looked like a layer of hard blood skin, which stuck to the face and could not be wiped off no matter how hard it was wiped! Boss Gnashlak said - let them think they are dead first, and then really let them die!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Bloodspear tribe's spear charge is one of the most troublesome greenskin tactics for infantry commanders - the visual and psychological impact it creates before engaging in battle can break down poorly trained militia lines. The standard response to Blood Spear charges in the Imperial Infantry Training Manual is 'shield wall plus crossbow retaliation' - suppressing the enemy with a volley of crossbows within the distance of the enemy's spear, while using a dense shield formation to absorb the physical impact of the spear. However, the penetrating power of Blood Spear throwing spears is unusually high - their spear shafts are made of ironwood, a specialty of the badlands, with a density close to one and a half times that of oak wood. The center of gravity is deliberately adjusted to the front end, making the throwing spears have extraordinary penetrating power and stability in flight."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "The spear-throwing technique of the Bloodspear tribe represents a rare tendency of \"specialized long-range strike\" in the greenskin weapon culture. In most greenskin tribes, ranged attacks are an adjunct in the form of loose shots from goblin archers rather than a core tactic. The Bloodspear tribe's promotion of spear throwing as a primary tactical weapon means that their warriors devote far more daily time to spear throwing training than the average orc - this kind of training investment is abnormal in greenskin culture, because greenskins usually spend their time in melee training. The manufacturing process of the blood spear throwing spear also has its own unique features: the front end of the spear shaft is deliberately cut with several longitudinal grooves. These grooves will cause the blood to flow out quickly after the spear head penetrates the target, thereby greatly reducing the friction of the spear head in the target's body in a very short time, making the spear easier to pull out. This phenomenon is called \"decompression bleeding groove\" in imperial military weaponry. It usually only appears in the standard military spears produced by the empire itself, rather than any green-skinned weapons."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The dark red raindrops flying all over the sky after the blood spear was thrown - I can still see that scene with my eyes closed. It was a cloudy day, and I stood on the watchtower and saw a thin dark red line on the distant horizon. At first I thought it was a sandstorm in the Badlands - until the line began to branch into hundreds of independent flight paths as it moved. The shield wall on my outpost held up under the hail of spears, but I lost three of my shield-guards that day—not because the spears penetrated the shield, but because the impact of the spears on the shield surface was so great that their wrists were broken backwards at the metacarpal bones. After the war, I found a layer of dry red powder on the soldiers' shields - that's what the blood vine juice looks like after it has dried. Just scrape it with your fingernails and it turns into fine red powder that floats in the air. Inhaling it will make your throat tight. No one knew if the powder was mildly hallucinogenic, but my soldier didn't sleep well for two nights after that day."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The name Gnashlak first appears in our family's intelligence files in my great-great-grandfather's generation - a time when my family was still using stable plows. According to the diary of his great-great-grandfather, Gnashrak once led his tribe to capture a human border fortress with dwarven ruins in the middle of the Badlands. After the war, he himself stood on the highest pile of stones in the ruins of the fortress and nailed three blood spears in a triangular formation into the stone crevices - this was a ritual for the greenskin tribe to declare their territorial ownership. The ruins of that fortress still exist today, and the three spear holes in the pile of stones are still clearly visible. One hundred and fifty years later, Gnashrak's name can still be passed down orally among the goblin tribes in that area - which means that the memory of his life in the central and eastern part of the Badlands has been elevated from a warrior to a living legend."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "In the middle of the badland, there is a solitary blood vine standing on the gravel field - it is coiled around a giant rib protruding from the ground. The vine is as red as skinned muscles, twisting gently in the dry and hot badland wind. As I approached, I noticed that it gave off a faint, fishy smell of rust—exactly the same smell as when a scab forms on a human wound. A goblin scout who passed by later told me that this blood vine was the Blood Spear tribe's 'spear planting ground' - their ironwood spear shafts were dug out from near the roots of the blood vine, because ironwood seeds can only grow the straightest poles in soil where the roots of the blood vine have been soaked in blood vine juice for a long time. The Blood Spears don't plant spears, they grow spears."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "What makes the Bloodspear tribe special in the Badland trade ecosystem is that they have inadvertently \"purified\" the commercial competition in the central Badlands. Because the Bloodspear tribe has little interest in conventional treasure but is extremely active in killing and killing, those competitors who dare to cross Bloodspear territory - usually the well-equipped large merchant guilds - can survive, while those small traders who venture out alone are almost certain to be wiped out. There is an unwritten saying on the trade routes in the central Badlands: merchants who can travel back and forth from the Bloodspear Territory three times a year alive will be regarded by the entire business community as possessing some self-evident quality certification. I know at least four presidents of major chambers of commerce who traveled alone through Bloodspear territory when they were young—not because they needed the trip to make money, but because the mere fact of coming back alive was their most powerful negotiating card in their future business careers."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "The Bloodspear Tribe—an orc warband in the middle of the Badlands famous for their collective spear charges and blood-vine juice-stained spears.",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Blood Spear Tribe Orc Gnashrak Throwing Spear Blood Vine Juice"
+  ]
+}

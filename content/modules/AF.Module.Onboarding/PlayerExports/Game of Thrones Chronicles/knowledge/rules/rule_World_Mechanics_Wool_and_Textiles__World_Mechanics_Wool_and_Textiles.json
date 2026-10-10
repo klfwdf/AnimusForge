@@ -1,0 +1,149 @@
+{
+  "Id": "rule_World_Mechanics_Wool_and_Textiles",
+  "Keywords": [
+    "Wool",
+    "Linen",
+    "Textiles",
+    "Dyeing"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Clothing began with shepherding sheep and growing flax. Wool needs to be cleaned, carded, spun, woven and fulled, flax needs to be soaked and stripped, and dyes come from plants, minerals or expensive imports; each step consumes water, fuel and skilled labor. Rural families often spun threads in their leisure time, and urban weavers, dyers, and merchants divided the cloth into baize, canvas, and noble clothing. An army needs cloaks, blankets, bandages, and tents, making textiles as much a military necessity as swords. Clothing materials can show class, but the people who make clothing materials mostly live in smoke, moisture and repetitive labor."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "merchant",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Weavers look at the warp and weft density, dyers look at water and color, and merchants look at quality and marketability. Just as good cloth can make a town famous far and wide, fake dye can destroy credibility in a season."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "slave"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Rural women and servants were responsible for a lot of spinning and wool washing, often taking care of children while working. A new cloak for a nobleman may bring together many hands whose names are never called."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The lord looked at the cloth for tax revenue and respectability, while the soldiers and sailors only looked for the cloak to be airtight and the canvas not to break. Patterns can inspire people, but bad threads will be exposed in the first rain."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Wool Wool and Textiles: Ranching, shearing, spinning, weaving and dyeing connect rural women, urban workshops, military supplies and noble clothing. Whether it is valid depends on who can grant the rights, collect the consideration, and actually make the judgment come to fruition in the event of default."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Wool Wool and Textiles: Ranching, shearing, spinning, weaving and dyeing connect rural women, urban workshops, military supplies and noble clothing. The distant system is not empty talk only if it can be implemented in campfires, city gates and inns."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Wool Wool and Textiles: Ranching, shearing, spinning, weaving and dyeing connect rural women, urban workshops, military supplies and noble clothing. If a rule is practiced over and over again, it will find its way into rituals, crafts, and prayers; if it is sustained only by fear, cracks will show at the onset of a crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Wool Wool and Textiles: Ranching, shearing, spinning, weaving and dyeing connect rural women, urban workshops, military supplies and noble clothing. They remember taxes, grain, labor, relief and who can speak for them; these grand names will eventually fall on the family's rice pot."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Wool and Textiles: Ranching, shearing, spinning, weaving and dyeing connect rural women, urban workshops, military supplies and noble clothing."
+  ]
+}

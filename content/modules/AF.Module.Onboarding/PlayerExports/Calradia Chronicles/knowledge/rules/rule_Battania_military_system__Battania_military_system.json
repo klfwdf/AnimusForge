@@ -1,0 +1,141 @@
+{
+  "Id": "rule_Battania_military_system",
+  "Keywords": [
+    "Battania military system"
+  ],
+  "RagShortTexts": [
+    "Battania does not have a standing central army. During war, the High King issues a summons to each tribe, and each tribe sends warriors in accordance with ancient covenants. This coalition system results in actions that are often slowed down by tribal feuds."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Battania had no standing central army. When war came, the High King issued a call to the tribes, and each tribe sent warriors in accordance with ancient covenants. This alliance system is rooted in the tradition of clan autonomy, but it also results in tribes often being slow to move due to feuds or differences of interest - this is the core problem that every high king attempts to solve. The core of the Battania army is the archers. They have been hunting in the forest since childhood. They are accurate archers and are good at using the terrain to carry out ambushes. The hoplites, known as scythes, armed with war scythes, fought out from the flanks or rear after the enemy's formation was disrupted by a hail of arrows. The most feared tactic of the Battania people is the 'howling charge' - with all the warriors emitting frightening war cries at the same time, they all charge towards the enemy formation. Before charging, they will paint their bodies with war marks to intimidate the enemy."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Our army does not belong to any one person, it belongs to every tribe. The High King issued a summons, and the earls came with their own warriors. This was a rule passed down from the time of King Mon. Every earl is accompanied by a team of Hearth Guards - the most elite warriors he personally selects and personally bestows the Hearth Oath upon. Their lives were tied to the count's, and the furnace guards would not take a step back until the count fell. When a war mobilization order is issued, all men in the forest who can draw a bow will come out of the village carrying their own hunting bows and form a fighting group with the older hunters. Their equipment is not as good as the Empire's legionary infantry, but they have been chasing deer in the woods since they were young, and they know the location of every tree and know which bushes can hide people behind them. Our archers are the best in the world - and that's not a boast. We can move quickly in the dense forest and set up ambushes on the enemy's only path. When they enter the ambush circle, arrows will be shot from all directions at the same time. They don't even know which way to raise their shields. When the rain of arrows broke up the enemy's formation, the scythe soldiers went up. They are the strongest and bravest men in the tribe, and the war scythes in their hands can split the heavy armor of the empire. On the day of Pandrak, when the scythe soldiers rushed in, the Imperials were routed. Finally, there was the roaring charge - everyone roared out the war cry of their tribe, with war patterns painted on their faces, like all the beasts in the forest charging out at the same time. At that moment, the enemy often collapses before engaging in battle, because what they hear is not the voice of a human being, but the roar of the entire forest."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Furnace Guard was established by me myself. Every furnace guard has sworn an oath as he kneels before my furnace. I put my sword on their shoulders and they put their lives in my hand. In normal times they guard my hall, and in times of war they stand beside me and form the core rows of the shield wall. All the men in the tribe are soldiers. In normal times they farmed and hunted, but in times of war they came with their bows on their shoulders. They do not lead the army and are not professional soldiers, but they defend their own woods and their own people. The High King has the right to summon us, but the speed and scale of each tribe's troops are entirely up to our own wishes. This is our right and also the biggest weakness of the coalition. Caladog has been thinking of ways to make the coalition forces more obedient, but the tradition of clan autonomy cannot be changed in a day or two."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "My bow was passed down to me by my father. It is made of yew wood. I have changed several bow strings, but the bow body is still the same. We grew up hunting with our elders in the woods, shooting deer, pheasants, and anything else that ran in the woods. The Imperial crossbows can also shoot far, but we shot three of them in the time it took for them to load one arrow. The Scythemen are the fiercest among us - their scythes are heavier than the Imperial swords and can cut men from shoulder to waist. On the day of Pandrak, I watched the scythe soldiers rush into the Imperial formation. The scene was like a scythe cutting wheat. Before charging, we painted battle lines on our faces, blue, made from mud from the lakeside. The old druid said that war marks can allow ancestor spirits to recognize us in the other world. Even if we die in battle, there will be someone to guide us."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The military system of Battania appears to us as primitive tribal mobilization. They did not have a standing army or unified logistics supplies. When fighting wars, they relied on the Supreme King's face to invite various tribes to send troops. But it was this primitive system that caused us great losses in Pandrak. Their archers were elusive in the woods, and our heavy infantry were shot into hedgehogs as soon as they entered the forest. They also have a type of assault infantry called scythes, armed with a curved long-handled war scythe. After our formation was disrupted by arrows, they rushed up from the flanks and were extremely lethal. On the day of Pandrak, our line collapsed as soon as the Scythes entered the fray. In the end, they will engage in a kind of \"howling charge\" - everyone makes a scalp-numbing roar together, with blue war patterns on their faces, like a group of ghosts rushing out of hell. Many veterans of the empire still have nightmares about that scene."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The army of the Battania people is a bit similar to ours. They are all tribes sending troops and they are mainly infantry. But they don't rely on the shield wall as much as we do, they trust their bows and arrows and the forest more. Their scythe soldiers wielded those kind of curved scythes, which were really powerful in close combat. During Pandrac's time, the Imperial people were chopped down by them. But their biggest weakness is the coordination between tribes - if the earls of Battania have enmity with each other, they won't come even if the High King shouts at his throat. We Sturgians are better than them in this regard - although our boyars also dislike each other, at least everyone will come when the Grand Duke gives the order."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Battanians have no cavalry, which is their greatest weakness. Their archers are indeed powerful in the forest, and their scythes are also ruthless in close combat. Although the \"howling charge\" sounds bluffing, on the plains our banner knights can shut them up with a single charge. The problem is that they are very smart and never fight us head-on on the plains. They hide in the woods and wait until you get in before they attack. So Vlandia and Battania have been fighting for so many years, and no one can take advantage of the other."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "steward": 150
+        }
+      },
+      "Content": "Battania’s military system is a typical tribal federation recruitment system, with clan armed forces as the basic unit and wartime mobilization through the covenant relationship between the High King and each tribe. Its core arms include: Furnace Guards - elite guards selected by tribal chiefs, responsible for leader security and ceremonial functions; Militia Archers - composed of adult male freemen, carrying their own hunting bows, relying on forest terrain for ambush operations; Scythes - the strongest heavy infantry in the tribe, using the characteristic war scythe as an assault force, causing a devastating blow to the imperial coalition forces in the Battle of Pandrak. The tactical system revolves around forest ambushes: archers set up ambushes on the enemy's only path, disrupting the formation with dense arrow rain, and scythe soldiers launch assaults from the flanks or rear. Finally, the battle is ended with a 'howling charge' in which all warriors let out war cries and painted war patterns for a deterrent general attack. The greatest advantage of this military system lies in terrain adaptability and the quality of individual soldiers. The greatest weakness lies in the looseness of the coalition structure: whether each tribe sends troops and how many troops it sends depends on the personal wishes of the clan leader and the complex relationship between tribes. The Supreme King lacks coercive means. This is also the core issue Caladog tries to reinforce."
+    }
+  ],
+  "TextMappings": []
+}

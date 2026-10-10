@@ -1,0 +1,147 @@
+{
+  "Id": "rule_Seafaring_and_Voyages_War_Galleys",
+  "Keywords": [
+    "War Galleys"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Galley warships use both sails and rows of oars, and are suitable for fighting in narrow seas, straits and harbors. It can maneuver in headwinds or calm conditions, but requires a large number of oarsmen, fresh water and rations; naval battles are usually determined by ramming, arrow fire and boarding fights."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry War Galleys Galley warships use both sails and rows of oars, and are suitable for fighting in narrow seas, straits and harbors. It can maneuver in headwinds or calm conditions, but requires a large number of oarsmen, fresh water and rations; naval battles are usually determined by ramming, arrow fire and boarding fights. The rules of the sea ultimately have to withstand wet ropes, bad water and sudden turns of weather."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry War Galleys Galley warships use both sails and rows of oars, and are suitable for fighting in narrow seas, straits and harbors. It can maneuver in headwinds or calm conditions, but requires a large number of oarsmen, fresh water and rations; naval battles are usually determined by ramming, arrow fire and boarding fights. If any maritime plan ignores the crew's physical strength and return conditions, victory may turn into drifting."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry War Galleys Galley warships use both sails and rows of oars, and are suitable for fighting in narrow seas, straits and harbors. It can maneuver in headwinds or calm conditions, but requires a large number of oarsmen, fresh water and rations; naval battles are usually determined by ramming, arrow fire and boarding fights. A single misjudgment can cost you goods, credit, and lives at the same time."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry War Galleys Galley warships use both sails and rows of oars, and are suitable for fighting in narrow seas, straits and harbors. It can maneuver in headwinds or calm conditions, but requires a large number of oarsmen, fresh water and rations; naval battles are usually determined by ramming, arrow fire and boarding fights."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry War Galleys Galley warships use both sails and rows of oars, and are suitable for fighting in narrow seas, straits and harbors. It can maneuver in headwinds or calm conditions, but requires a large number of oarsmen, fresh water and rations; naval battles are usually determined by ramming, arrow fire and boarding fights. There are no extra roads to go around on the ship, and mistakes can often only be shared by the entire ship."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry War Galleys Galley warships use both sails and rows of oars, and are suitable for fighting in narrow seas, straits and harbors. It can maneuver in headwinds or calm conditions, but requires a large number of oarsmen, fresh water and rations; naval battles are usually determined by ramming, arrow fire and boarding fights. Wood and knots maintain the hull, while faith helps people face the uncontrollable sea."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry War Galleys Galley warships use both sails and rows of oars, and are suitable for fighting in narrow seas, straits and harbors. It can maneuver in headwinds or calm conditions, but requires a large number of oarsmen, fresh water and rations; naval battles are usually determined by ramming, arrow fire and boarding fights. The changes on the distant sea often turn into empty stalls in the market the next day."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "War Galleys: Galley warships use both sails and rows of oars, and are suitable for fighting in narrow seas, straits and harbors. It can maneuver in headwinds or calm conditions, but requires a large number of oarsmen, fresh water and rations; naval battles are usually determined by ramming, arrow fire and boarding fights."
+  ]
+}

@@ -1,0 +1,132 @@
+{
+  "Id": "rule_House_Foundations_Fregar",
+  "Keywords": [
+    "Fregar",
+    "House Fregar"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Frega family belonged to the local elite of Braavos. As for its unique history, which is not widely spread, it is certain that the family lives in a republic composed of waterways, islands, merchant ships and workshops, rather than a kingdom relying on rural fiefdoms. Frega's wealth, whether derived from shipping, property, or trade, had to be protected through deeds, partnerships, and city courts. The status of a family will change with the ups and downs of politics and the market. Only prudent management and a trustworthy reputation can span several generations."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Braavos Houses of the same rank look at Frega, focusing on the marriage agreement, ship shares and whether it keeps its promises in disputes. No one will lend a large sum of money just because of a vague ancestral story. Realistic credit is the genealogy of the republic."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "sailor",
+          "artisan",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Boatmen and vendors along the waterways only spoke of Frega when they affected rents, wages, or dock rules. If a prominent family allows ordinary people to benefit from their prosperity, their reputation will not be confined to the aristocratic drawing rooms."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Fregar Frega is a local house of Braavos with identifiable roots in urban trade, kinship networks, and long-term credit in a waterway society. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Fregar Frega is a local house of Braavos with identifiable roots in urban trade, kinship networks, and long-term credit in a waterway society. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Fregar Frega is a local house of Braavos with identifiable roots in urban trade, kinship networks, and long-term credit in a waterway society. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Fregar Frega is a local house of Braavos with identifiable roots in urban trade, kinship networks, and long-term credit in a waterway society. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Fregar: Frega is a local house of Braavos with identifiable roots in urban trade, kinship networks, and long-term credit in a waterway society."
+  ]
+}

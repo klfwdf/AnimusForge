@@ -1,0 +1,105 @@
+{
+  "Id": "rule_Sarapios",
+  "Keywords": [
+    "Sarapius",
+    "Long-haired General"
+  ],
+  "RagShortTexts": [
+    "Sarapius was irritable and eccentric, and the Senate said he was somewhere between a genius and a madman."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Sarapius? The old long-haired general was as bad-tempered as a bull that had been stabbed in the butt. But he fought so beautifully. He captured Lotash, and the battle at the Miron River blocked the barbarians in the mountains on the other side of the river. From then on, the people of Battania never dared to look at the Miron River again. He was later fiefdomed and given the name Epiclothea, which means \"the land of Sarapius\". To be honest, this name is crazy enough, but he has the right to be crazy. The fact that the Argolos family still has people listening to what they say in the Senate is all due to the military exploits of this ancestor."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "steward": 100
+        }
+      },
+      "Content": "Sarapius is an unavoidable node in the military history of the middle empire. Judging from the existing march logs and fragments of the Senate Commendation Order, his military talent ranks among the top among generals of his generation, but Sarapios's image in history is more than just a general who is good at fighting. His character - irritable, eccentric and ignorant of the rules of officialdom - was repeatedly mentioned in the collection of Senate letters, and his colleagues' evaluations of him often oscillated between \"genius\" and \"madman\". After he was granted the land on the east bank of the Myron River, he named the land Epiclothea. This blatant act of naming a province after himself was extremely arrogant at the time, but in view of his military exploits, the Senate chose to acquiesce. The Argolos family was able to become one of the largest families in the Senate in the future. The foundation of its power can be traced back to the land and prestige obtained by Sarapios in exchange for military exploits."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "clan_empire_north_2"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Our ancestor Salapios was the cornerstone of the empire. This is not something we brag about ourselves, it is written in the Senate’s commendation order. He captured Lotash, and he defended the defense line of Miron River. Without him, the Battanians would have made their way into the heart of the Empire hundreds of years earlier. Our fiefdom of Epiclothea was named by him - \"the land of Sarapius\". The name was considered arrogant for a while, but now it has become a mark of honor. Outsiders always say that the Argolos family's ability to become senior senators relies on their political skills and marriage. But they forget that our first pot of gold was dug out with the sword of a grumpy, long-haired general. The first page of our genealogy is a portrait of him standing on the bank of the Miron River, holding a sword in his hand, his hair messy in the wind, and the river beach behind him is full of enemy corpses. We didn’t inherit that irritability, but the persistence for the land has always been there. No matter how high the Argolos family sits, they all remember one thing: our roots are not the chairs of the Senate, but the mud on the east bank of the Miron River."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": [
+          "town_en1"
+        ],
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "This is the land of Sarapius. The name of the old general is now engraved on the stone tablet in the center of the town. The words are a little blurred by the weather, but no one dares to make a new impression - the older generation said that the tablet was erected by Sarapius himself, and no one should touch it, and his hand would be broken off if he touched it. Outsiders asked us why this place is called Epiclothea, and we said it was because it was the land of Sarapios. When strangers asked who Sarapius was, we said he was the one who kept the Battanians at bay on the other side of the river."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Sarapius? An old general from the empire. I heard it happened a long time ago, but now the bones are all rotten. The story we tell about him here mainly includes two things: one is that he captured Luotai, which the imperial people now call Luotai because their tongues cannot pronounce the old name; the other is that he blocked the Battania people by some river. The people of Battania told us about this river, saying that the battle was particularly brutal, the riverbank was full of dead people, and the water was red for three days. They said that Sarapius was a madman who had stood on the shore for three days and three nights without sleeping, with hair as long as a lion's. The people of the Empire think he is a hero, and the people of Battania think he is a devil. We are far away anyway, it sounds like a legend. However, he named his fief \"the land of Salapius\", which we remember. There are many people who are good at fighting, but it is rare to find someone so thick-skinned."
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,211 @@
+{
+  "Id": "rule_dwarf",
+  "Keywords": [
+    "dwarf",
+    "David",
+    "Dwarf Karak",
+    "fortress",
+    "mountain people",
+    "Dwarfs",
+    "Book of Dwarf Hatred",
+    "guild of engineers",
+    "clan",
+    "Dwarf Bearded One"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The dwarves - who call themselves Dawi - are one of the oldest races in the Old World, living in underground citadels in the World's Edge Mountains and the Gray Mountains. They are the best miners, blacksmiths, and runesmiths in the world, and they are also the most stubborn and vindictive race - the dwarves will never forget an unpaid debt or an unavenged insult."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "We are David! The toughest race deep in the mountains! While elves still jumped in the treetops and humans still rolled in the mud, our ancestors had used forge hammers and runes to carve out the bones of the World's Edge Mountains and built Karak in the black rock. Humans say we are stubborn - yes, stubborn enough to allow our fortress to stand alone for five thousand years surrounded by greenskins and Skaven. Humans say we hold grudges - yes, we have a \"Book of Hatreds\" and every entry will be paid off, whether it takes a day or a thousand years. Don't get us wrong. We are not as cunning as elves, not as fickle as humans, but all our covenants are eternal, all our weapons will not be broken, and all our oaths will be kept."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The military value of dwarves lies in their immobility and terrifying firepower. Dwarf hoplites - Hammer Warriors and Ironbreakers - form the Old World's toughest shield walls, Dwarf Pistolmen and Organ Cannons are ideal weapons for defending passes and tunnels, and Thunder Airships provide scarce aerial reconnaissance and vertical strike. The dwarves' weakness was numbers - their population never recovered, and casualties from each campaign took decades to replenish. Therefore, dwarf tactics naturally tend to be defensive and war of attrition. Any commander who attempts to use dwarves as the main offensive force - using them to break through rather than defend - is wasting the most irreplaceable military resource in the old world."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 100
+        },
+        "IdentityIds": null
+      },
+      "Content": "Dwarven society is built on four core pillars: clan, guild, karak, and hatred. Clan is the highest organizational form of blood unit, and each dwarf's name contains paternal and clan information. Guilds—particularly the Engineers Guild and the Runesmiths Guild—control the dwarves' technological heritage and weaponry, with internal ranks within the guilds based on skill tests and seniority, with advancement rates measured in centuries. Karak means fortress. Each Karak is an independent political entity with its own king, its own clan combination and its own hatred list. The High King's authority in Karazha-a-Karak comes from the fact that he is the most powerful, oldest and the one who bears the most hatred among all Karak kings. Hatred - dawri - is the emotional currency of dwarven society, and the way it works is simple and deadly: a dwarf is insulted → he writes down the hatred → his family inherits the hatred → his entire clan eventually shares the hatred → if the hatred involves dwarves between different Karak, it may escalate into a dwarven civil war → if the hatred is directed against non-dwarves - such as elves, orcs, or ratmen - it will eventually be paid off in the form of war. A just system that cannot be understood by humans, but it is the skeleton of dwarven civilization."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "As a dwarf clan woman who has governed territory on the border of the Gray Mountains for thirty years, the dwarf race to me is not a political boundary on a map but a map of blood. Foreigners often think that dwarf women live deep inside the castle and do not participate in public affairs - they are wrong. In every kharak, women manage the clan's trade networks, family memories, and cross-kharak marriage ties. While the men held the shield wall on the battlefield, it was the women who kept the entire dwarven civilization from being broken down from within by the greenskins and Skaven. My three sons all serve in the Ironbreaker Legion, and each of them has a set of rune-reinforced plate armor crafted by me personally - this is not only maternal love, but also the economic mobilization ability of the clan."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Our family owns three blocked mine entrances in the World's Edge Mountains—secret supply routes we've maintained since the Longbeard War. As the thirteenth generation patriarch of my family, my first priority is not to expand territory or accumulate wealth - it is to ensure that there is a Waaagh! Or when the Skaven horde emerges from the ground, our clan members have a way out. Whoever controls the main passes of the mountains controls all trade from the Empire to the Badlands, and my family has been the diplomatic broker for control of the passes between the Empire and the High Kings of the Dwarves for the last ten generations. The reward for this job is not gold but trust—gold may be spent, but trust carved in stone lasts longer than words."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "After many years of wandering among the various dwarven strongholds in the World's Edge Mountains, I learned one thing: Don't judge dwarves by human rules. Humans say dwarves are 'stubborn' - but you would be 'stubborn' too if you were besieged by greenskins in the same Kalakree for four thousand seven hundred years and half your allies were lost. Dwarves say they 'never forget' - this is not a boast, I have personally seen a dwarf innkeeper refuse to let his descendants stay because the ancestor of an imperial merchant three hundred years ago paid a copper coin less. If you can gain their trust in a dwarven stronghold - which requires you to pay all past debts, praise their masonry skills, and never touch their beards - you will gain the Old World's staunchest ally."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "From a commercial perspective, dwarves are the most reliable and difficult trading partners in the Old World. Reliable because they never default - a dwarf promises that goods will arrive on the precise date agreed upon, and that the quality will be exactly as specified. Difficult to deal with because their pricing is never negotiable - the price the dwarves offer is the 'right price' and any attempt to lower the price may be recorded as a grudge and damage your credit. My chamber of commerce has maintained an exclusive iron ingot supply contract with Karak Kaderin's Runesmith Guild for more than two hundred years - the value of this contract does not lie in the profit margin, but in that it has become the most irrefutable certificate of credibility of my chamber in the entire empire. In the Empire, 'contract with the dwarves' itself is a more valuable circulating asset than gold crowns."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Dawi - the self-proclaimed name of the dwarves, meaning 'people of the mountains'",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Dwarf Dawi Dwarf Karak"
+  ]
+}

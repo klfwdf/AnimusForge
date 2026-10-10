@@ -1,0 +1,211 @@
+{
+  "Id": "rule_Moore",
+  "Keywords": [
+    "Moore",
+    "god of death",
+    "god of dreams",
+    "Nemesis of the Undead",
+    "Moorish Garden",
+    "black rose",
+    "raven god",
+    "Verena's Husband",
+    "father of maria",
+    "god of funerals"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Maul is the god of death but not of killing - he does not create death, he only accepts the dead. Every soul that passes away in the old world will eventually pass through the gate of Moore's Garden, where Moore will measure this life with his silent eyes. Armed with a giant scythe and a scale, he conveyed truths to mortals in his dreams that they could not face while awake. His black rose blooms within the walls of every Moorish garden and never fades."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Maul is the last god we see. Not Sigmar - Sigmar only cares about you while you are alive, and will be there when you kneel on the battlefield praying for victory with your last breath. But when you're lying in your bed, your children surrounding you, and you feel the unstoppable darkness tugging gently at your ankles—that's when it's not Sigmar who comes in, but Maul. We in the Empire don't like to talk about Maul because it's a bad idea - but every family knows Maul's reality. The Moorish Garden is the last piece of land protected by walls in every imperial city: it is surrounded by high walls, and the tops of the walls are planted with black roses. Those roses do not need rain, they bloom on the last vestiges of life exuded by the remains buried within. Moorish priests are the most silent group of people in the empire - they do not speak at festivals, do not petition the Elector Count, and do not discuss power - but when someone in your family dies, they will show up at the door on time, do not charge money, do not preach, just complete the ritual quietly, and then disappear into the night like a raven. Our only promise to Moore is that when we bury our dead we must bury them with their heads to the west and their feet to the east - so that when Moore blows his final trumpet on the last day, the dead can sit up straight and face the eastern dawn."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Moorish faith was a double-edged sword for rulers - it was a force that stabilized people's hearts and a shackle that limited royal power. The Moorish priests had unchallengeable legal jurisdiction over the remains of any deceased person - meaning even the corpse of an emperor had to undergo Moorish funerary rites before entering the ancestral tomb. The Moorish Church is the greatest natural enemy of necromancy - the Moorish priests on the borders of Sylvania are the empire's first line of defense against the legacy of Nagash. Their presence prevents vampires from easily establishing an undead army in the core provinces of the empire. As a ruler, you must respect two requirements of the Moorish Church at the same time: first, to provide a formal funeral for every fallen soldier - this is not only an expense, but also a basic condition for maintaining the morale of the army; second, to protect every Moorish garden from infringement - if a tomb robber comes from the Moorish garden If a body is stolen and used in necromancy, the church will require the lord to hand over the murderer's head, otherwise the Moorish priests will not hold funerals for any deceased in your territory - no funeral means that the deceased cannot ascend to the Moorish realm, which will cause riots in any village in the empire."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "Moore's place in the lineage of Old World theology is far older and more complex than meets the eye. The Earth Mother is the most primitive object of worship. She gave birth to Tal (representing tamed nature) and Ulric (representing untamed violence). The marriage of Verena (goddess of justice and wisdom) and Moore (god of death and dreams) constitutes the dual union of reason and end in the imperial pantheon - Verena is responsible for establishing rules and knowledge in the society of the living, while Moore is responsible for providing a passage for souls at the end of the society of the living. Their two daughters - Maria (goddess of war strategy and honor) and Shalayah (goddess of healing and mercy) - perfectly embody the two productive aspects of this union: Maria inherited her father's coldness in the face of death and her mother's rule-making intelligence, while Shalayah inherited her mother's concern for the suffering and her father's deep understanding of the inevitability of the end of life. The feud between Maul and the necromancer Nagash is the ultimate key to understanding Maul's teachings - Nagash seeks to abolish death itself through necromancy, leaving the soul permanently locked in a decaying body to serve an authoritarian will, while Maul's mission is to ensure the soul's true liberation and rest after death. This isn't a power struggle between the Grim Reaper and the Witch-King - it's a philosophical war over the nature of death."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "There are only a handful of female priests in the Moorish faith - the Moorish church does not ban women, but women seem to be naturally more willing to serve his wife Verena or their daughter Shalayah. This is a little-discussed but extremely stable statistical law in the distribution of priests in the old world. The reason has not yet been systematically studied, but private accounts circulating among female noble circles suggest that it may be due to: Verena and Shalayah provide meaningful interaction (teaching, healing) with the society of the living, while the life of a Moorish priest is essentially an infinite, silent communication with the dead and dying - this kind of communication on the soul level is said to be more difficult to bear on women in the long term than the rules and herbs of Verena and Shalayah. The meaning of the black rose in the Moorish Garden to me is different from the standard interpretation of the church - they say that the black rose represents the immortal soul of the dead, but to me the black rose is the deep and deep silence that cannot be conveyed in words to any living person when a woman covers the remains of her relatives with black roses in the family tomb year after year after year."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "A stone raven with closed eyes is carved above the entrance of our family's tomb - that is Moore's hieroglyphic symbol in our family's private religious language. In public we offer sacrifices to all the Imperial gods, but in private we pray the most to Maul and Verena - for Verena guards contracts and laws (without which there would be no family), and Maul guards the rest of our ancestors. In the private tradition of our family, each generation of patriarch must kneel alone in the tomb all night before dying - not to pray to Moore for a longer life (Moore never answered this prayer), but to present to him all the unfulfilled promises and debts of this generation of family. I believe Moore will pass this information on to Verena, who will turn some debts into good fortune for the next generation and withhold others to be settled in the afterlife. This is not official Moorish teaching—it is a family secret that my grandmother whispered to my grandfather, my grandfather to my father, and my father whispered to me on my eighteenth birthday."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "In my experience of walking through hundreds of cemeteries in the Old World, Moorish Gardens will always be the quietest but most honest piece of land within the city walls. The city of the living is always lying - the signs of merchants brag about their goods, the flags of nobles show off their blood, and the church bells exaggerate their piety - but every tombstone in the Moorish Garden is only engraved with a name and two dates, and the horizontal line in the middle represents all the lies, all the unfinished plans, and all the unsaid words of a person. I saw a Moorish priest in a remote Moorish garden in Tarabek Territory performing a funeral ceremony for a war horse at dusk - the horse belonged to an unknown knight who died in a battle with the greenskins. The priest said that Moorish people treat horses equally, because all things are empty before death. The wanderer's emotion toward Moore is closer to an odd kind of intimacy than to fear—because we pass a different cemetery every day, we understand earlier than the settlers that death is not an end but a moment when you abandon your map and finally begin to truly travel."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Moor Gardens has a rarely publicly discussed but extremely significant indirect role in the black market materials trade. The petals of the black roses grown within the walls of Moorish Gardens are far more valuable in Old World alchemy than any other flower - the dried powder of the black roses is considered an irreplaceable catalyst in certain advanced alchemical recipes, its potency purportedly coming from traces of the necromancy the petals absorb in the graveyard soil. The Moorish Church had an absolute monopoly on the harvesting of black roses, and the three agency houses affiliated with the church made an annual profit from selling dried black rose powder to the alchemy guilds in Marienburg and Tyrell, which was enough to maintain the maintenance costs of all Moorish gardens in the empire. The astute will note that the Moorish Church never publicly claimed that the Black Rose had any magical or alchemical properties—they only said that it was a relic, a sacred prop used in funerals. But the Church does not prevent anyone from buying dried flower petals from agents at high prices."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Moorish Gardens - Walled Cemetery, Resting Place of the Dead, Sanctuary of Eternal Blooming Black Roses",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Moorish God of Death, God of Dreams"
+  ]
+}

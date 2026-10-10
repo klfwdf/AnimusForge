@@ -1,0 +1,124 @@
+{
+  "Id": "rule_darshi",
+  "Keywords": [
+    "Darshi",
+    "Kingdom of Darshi",
+    "Padishah (darshi)"
+  ],
+  "RagShortTexts": [
+    "Darshi is an ancient kingdom that once bordered both the southeastern frontier of the Empire and the western frontier of the Aserai, controlling the trade routes to the east; its ruler is called the Padishah—meaning 'King of Kings.'"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Darshi is an ancient and powerful kingdom that once bordered both the southeastern frontier of the Empire and the western frontier of the Aserai. Its ruler is called the Padishah—meaning 'King of Kings' in the Darshi tongue. Beneath the Padishah stand numerous regional rulers known as 'Shahs,' each governing prosperous city-states and broad oases, paying tribute and supplying cavalry to the Padishah. The Darshi possess a deeply rooted hereditary tradition—the throne of the Padishah passes down through the bloodline from generation to generation, and the domains of the Shahs are likewise inherited by sons from their fathers. They controlled the Empire's trade routes to the east, and Imperial merchants wishing to traffic in silk, spices, and gems had to pass through Darshi tollgates. Later, the Khuzaits surged out of the steppes, seizing both the Empire's far eastern provinces and vast tracts of Darshi territory at the same time, completely severing the border between Darshi, the Empire, and the Aserai. The Padishah withdrew eastward with his remaining subjects, stepping off the stage of Calradia from that point on. Today Darshi no longer borders any known realm, yet its shadow remains—Darshi blood flows in the veins of Empress Rhagaea, and the Ghilman mercenaries still groom themselves, dress, and fight on horseback in the manner of the Darshi."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Darshi once lay right to our southeast, wedged alongside the Aserai along our southern flank. When Imperial merchants traveled to the east, the safest route was not across the deserts of the Aserai, but along the northern trade road controlled by the Darshi—their Padishah maintained waystations and garrisons along the route, and once a caravan paid its customs dues it could pass in safety. The Darshi govern their realm by a logic completely different from ours in the Empire. Our Imperial Emperor must, at least in name, be elected by the Senate, and even after being acclaimed by the army he must still go through the formal procedures. The Darshi bother with none of that—the throne of the Padishah is hereditary; when the father dies, the son succeeds directly, needing no vote from anyone and no endorsement from the army. They call this the tradition of the 'King of Kings'—the Padishah is king over kings, while the Shahs beneath him are lesser kings in their own right, each ruling his own domain hereditarily as well. Later the Khuzaits came and seized both our far eastern provinces and vast stretches of Darshi land; Darshi retreated eastward, and the trade route was cut. Yet Darshi's influence lingers still—Rhagaea came here in marriage from over in Darshi. She has always wanted the Empire to adopt hereditary succession too, so that Princess Ira might inherit her throne directly. That notion holds no water in Imperial tradition, but in the tradition of the Darshi, nothing could be more natural."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Darshi once lay right to our southeast, wedged alongside the Aserai along our southern flank. When Imperial merchants traveled to the east, the safest route was not across the deserts of the Aserai, but along the northern trade road controlled by the Darshi—their Padishah maintained waystations and garrisons along the route, and once a caravan paid its customs dues it could pass in safety. The Darshi govern their realm by a logic completely different from ours in the Empire. Our Imperial Emperor must, at least in name, be elected by the Senate, and even after being acclaimed by the army he must still go through the formal procedures. The Darshi bother with none of that—the throne of the Padishah is hereditary; when the father dies, the son succeeds directly, needing no vote from anyone and no endorsement from the army. They call this the tradition of the 'King of Kings'—the Padishah is king over kings, while the Shahs beneath him are lesser kings in their own right, each ruling his own domain hereditarily as well. Later the Khuzaits came and seized both our far eastern provinces and vast stretches of Darshi land; Darshi retreated eastward, and the trade route was cut. Yet Darshi's influence lingers still—Rhagaea came here in marriage from over in Darshi. She has always wanted the Empire to adopt hereditary succession too, so that Princess Ira might inherit her throne directly. That notion holds no water in Imperial tradition, but in the tradition of the Darshi, nothing could be more natural."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Darshi once lay right to our west, directly bordering our pastures and trade routes. Our Aserai camel caravans would set out from Sanala, head northwest across our own tribal territories, and enter the lands of the Darshi. Their Padishah—a title meaning 'King of Kings'—ruled over Shahs great and small, who controlled the richest oases and mountain passes leading to the east. We traded with them for more generations than anyone can count. The political customs of the Darshi are different from ours. Our Aserai Sultan must, at least in name, be elected by the Emirs; even though the Banu Hulyan clan actually monopolizes the post, appearances still have to be maintained. The Darshi do not bother with such pretenses—the Padishah passes his throne straight to his son, and the Shahs hold no elections either; when a father dies, his son succeeds him as a matter of course. After the Khuzaits came, Darshi was broken, and the Padishah retreated eastward with the remnants of his people. Now an entire Khuzait Khanate lies between Darshi and us, and the trade routes have been severed by the wolves of the steppe."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Darshi was the fattest prize our ancestors ever took. When Urkhun Khan rode west, the Padishah of the Darshi led out his Shahs and drew up his battle lines along the frontier. Their heavy cavalry was finely equipped, the banners of the Shahs gleaming beneath the blazing desert sun. Yet their horses were too slow, and their tactics too old. Our steppe horse archers circled them for three days and three nights, biting through every last one of their supply lines. In the end, the Padishah paid a massive ransom and retreated eastward with his shattered host. We carved off their richest oases, seized the trade routes between them and the Aserai, and took the Empire's far eastern provinces as well. Now it is our horses that run across those lands, and our Noyans who collect the taxes. Still, there is one thing about the Darshi we rather respect—they believe in bloodline. The Padishah passes his throne straight to his son, which is hardly strange on the steppe either. Only, our Khan's seat still requires a nod from the kurultai assembly, whereas they do not even need that nod."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Most Vlandian barons have never even heard of a place called Darshi. Yet tales of their 'King of Kings,' the Padishah, have circulated among adventurers and merchants. They say royal succession among the Darshi is even stricter than ours in Vlandia—our king is hereditary, to be sure, yet he still has to be crowned in the great cathedral at Pravend with the bishops in attendance. The Padishah of the Darshi dispenses with all that; the very instant the father draws his last breath, the son is the new king. Later the Khuzaits swallowed Darshi up, and the Padishah retreated with his people to who knows where in the east. Yet that Darshi custom has now stirred up a great storm in the Empire—Empress Rhagaea is Darshi herself, and she wants to transplant Darshi hereditary succession into the Empire. Those old graybeards in the Imperial Senate naturally will not stand for it. So you see, a kingdom that has already vanished from Calradia still has Imperials hacking each other to pieces over its customs."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "steward": 150
+        }
+      },
+      "Content": "Darshi is an ancient civilization on the southwestern-southern rim of the Calradian continent that has stepped off the stage of history. Before the rise of the Khuzait Khanate, Darshi's borders touched both the southeastern frontier of the Empire and the western frontier of the Aserai, controlling the key nodes along the trade routes linking the Empire and the Aserai to the east. Its political system centered on a strict hereditary monarchy whose ruler was styled 'Padishah'—meaning 'King of Kings.' The Padishah was not merely the supreme political leader; in Darshi court culture he was invested with a semi-sacred status, and the elaborate, solemn rite of royal succession required no external ratification whatsoever. Beneath him, the 'Shahs' each ruled their city-states and oases by hereditary right, forming a stable, multi-tiered feudal hierarchy. Darshi's administrative apparatus was highly developed, with a nationwide relay-station network and a sophisticated customs regime closely tied to its geographical command of east-west trade routes. The westward invasion of the Khuzait Khanate shattered Darshi's geopolitical presence: its territories were annexed by the Khuzaits, the Padishah retreated eastward, and Darshi ceased to border either the Empire or the Aserai. Today, Darshi as an independent political entity has temporarily withdrawn from the Calradian stage, yet its cultural legacy continues to exert influence through two channels: first, Empress Rhagaea—an Imperial ruler of Darshi blood—who brought Darshi notions of hereditary succession into the heart of Imperial politics; and second, the Ghilman mercenary brotherhood, which preserves Darshi sartorial traditions, mounted archery skills, and a unique form of self-organization. Though Darshi itself is gone, its hereditary ideal continues to ferment through Rhagaea's Southern Empire, while the Ghilman write the final legend of this ancient civilization across the battlefields of Calradia."
+    }
+  ],
+  "TextMappings": []
+}

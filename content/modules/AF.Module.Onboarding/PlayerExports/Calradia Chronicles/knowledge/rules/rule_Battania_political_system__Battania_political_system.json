@@ -1,0 +1,193 @@
+{
+  "Id": "rule_Battania_political_system",
+  "Keywords": [
+    "Battania political system"
+  ],
+  "RagShortTexts": [
+    "The political system of Battania has the High King as the nominal supreme ruler, who is elected by each tribe and crowned by the Druids on the Holy Mountain, but historically the power of the High King is more symbolic."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The political system of Battania is based on the High King as the nominal supreme ruler, who is crowned by each tribe in a coronation ceremony on the sacred mountain, witnessed by druids. But historically, the power of the High King was more symbolic - each tribe had long been independent, and the chiefs often responded to the High King's call according to their mood. Battania is composed of multiple tribes, each tribe has its own chief. The word 'fen' before the family name means 'clan'. In Battania society, there are two categories of people whose status goes beyond simple tribal affiliation: one is healers, who pass down medical skills and ancient knowledge from generation to generation and are invited to arbitrate disputes between tribes; the other is druids, who, as priests, judges and inheritors of knowledge, have pivotal arbitration rights and influence in political affairs. It was not until Caladog succeeded to the throne that he began to try to strengthen the king's power, trying to unite the Battania people's hatred for the Empire into loyalty to the High King - but the resistance from the traditional forces of each tribe has not subsided."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The rules of our Battania have been passed down from the time of the Mon kings: the High King is elected jointly by all the tribes, and he is crowned on the sacred mountain, witnessed by the Triple Goddess and the Druids. But having said that, how lenient the Supreme King can control depends entirely on how capable he is. In the past, when King Ariel was on the throne, the High King was a peacemaker—when there were conflicts between the tribes, he would be consulted. The Empire would call him and ask him to coordinate the dispatch of troops, but he could not order any chief to do anything. It was different after Caladog came up. He wanted to transform the High King from a peacemaker into a true king. Some people say this is a good thing - we can no longer go it alone, and the Empire will not show mercy just because we are undisciplined. Others said he was too hasty. The tribe's autonomy is passed down from its ancestors, and you can't change the rules overnight. But regardless of support or opposition, everyone is now staring at him to see whether he will become the second King Meng or fall worse than Ariel."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "I decide my tribe. The High King can call me to send troops, and I can respond, or I can delay, or I can send someone to say that the harvest is not good this time and will not come - this is my right, not his gift. The Furnace Guards were formed by me myself, and they swore an oath in my hall to only listen to me. Caladog wanted to unify command and said that the coalition forces could not fight each other - this was true, but what about after unified command? Uniform conscription? Uniform taxation? And what else is there for the tribe? Our ancestors have been free in the forest for hundreds of years, and now we are expected to bow before a supreme king? But having said that, I went to the battle of Pandrak, and I did see the benefits of unified command. But good is good, and tradition is tradition, and these two things have never made it easy in Battania."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "townsfolk",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "'Fen' is the symbol of our family. Every Battanian knows which Fen they belong to, and can count the same ancestors for dozens of generations. The chief is the head of our Fen, the druid is the messenger between our Fen and our ancestors, and the healer is the most knowledgeable person in our Fen. High King? The High King is far away on the other side of the Holy Mountain, and his orders can reach my ears, but the chief disagrees, and the orders are empty words. Caladog wanted to be the true king, and I heard he won a great victory at Pandrak, and I heard he had a quarrel with the Sturgians after the war. But to me, it doesn’t matter who sits on the sacred mountain. What matters is whether the chief sent my men to war and whether the healers came when my children had a fever."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The political system of Battania appears to us to be that of a semi-civilized tribal confederacy. Their High King sounds similar to our Emperor, but is actually less powerful than a provincial governor in the empire. The chiefs of each tribe have great autonomy, and whether the High King's orders can be carried out depends on the chief's mood that day. This system can barely function in peacetime, but its loose nature will be exposed once it faces sustained external pressure. But the emergence of Caladog changed this situation. He proved his military prowess at Pandrak and pushed for centralizing reforms after the war. If he succeeds, the northern border of the empire will no longer face a scattered tribal alliance, but a kingdom commanded by a unified will. We're keeping a close eye on the attitude of the Druid class and chieftains within Battania towards Caladog's reforms - something that will determine the strategic landscape of the empire's northern reaches for decades to come. Their 'Fin' naming rule helped us a lot - it was clear which clan each prisoner belonged to, so it was not easy to be fooled when negotiating the ransom."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The High King of Battania is somewhat similar to our princes, they are both elected. But once our boyars elect the Grand Duke, they must at least obey his orders during wartime - if you don't come, you are a traitor, and the other boys will beat you together. What about the chiefs of Battania? They come when they want, but not when they don't. The High King has nothing to do with them. Vadinslav talked to Ariel about the alliance when he was still alive. Ariel replied politely, saying that he was willing to cooperate, but he could not guarantee that all tribes could send troops - a high king could not even guarantee the troops of his own people, so why talk about an alliance? Caladog now wants to change that, and he did bring a unified army to Pandrak, but that doesn't mean those chiefs will listen to him in the future. We Sturgians have experienced the same thing - the tug-of-war has been going on for many generations between the Grand Dukes wanting centralization of power and the Boyes wanting autonomy. Their druids are much more involved in politics than our priests, which is a problem we don't have."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The political structure of Battania appears to us to be a disaster. A High King with more power than any baron in Vlandia; eight tribes, each as independent as a small kingdom. Their chiefs could only stand together when the forest was on fire. Although we, the barons of Vlandia, all have our own thoughts, when the king gives the order, everyone must go to war. This is written in the oath of allegiance. Is there such a thing in Battania? No. They relied on the personal prestige of the High King and the arbitration of the druids. Prestige is lost as soon as a person dies; arbitration is what you can do if people don't listen to you? Caladog wants to change this, he wants to be the true king. If he succeeded, our eastward advance on the Battania border would be thwarted. But if he failed - if a High King who had fought victoriously at Pandrak could not unite the chieftains - then Battania would always be a mess. A nation in disarray will be swallowed up sooner or later. We'd love to see them continue this loose stance."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The High King of Battania and our Sultan both sound like supreme rulers, but are not the same thing at all. The Sultan's authority in the desert is real - if he says to start a war, the emirs have to bring troops; if he says to collect taxes, the caravans have to pay tolls. What about the High King of Battania? He has to ask the chiefs to send troops. If they don't come, he can't cure their crimes. It’s too frustrating to be this kind of king. However, the autonomy of their chiefs is somewhat similar to that of our Aserai tribal elders - our large tribes also have their own rules, and the Sultan cannot interfere casually. The difference is that we at least nominally recognize the Sultan as the supreme leader, while those chiefs in Battania only obey in name only depending on their mood. Caladog wanted to be truly centralized like our Sultan, but what he faced was not the tribal alliance in our desert that was tied together by trade routes and oases, but eight independent chiefs who had been independent in the forest for hundreds of years. The difficulty is different. Their druid class is quite interesting - we also have elders who are responsible for arbitrating disputes, but the elders do not have as much religious authority as the druids. The druid of Battania can make the chief change his mind with just one word. This kind of mixing of divine power and royal power is not very common in the desert."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The High King of Battania, Nayan is at most a large tribe on our grasslands. Na Yan can control his own tribe, but he cannot control other people's tribes. The real khan wants all tribes to obey unconditionally, and if they don't obey, they will be beaten until they obey. Battania's rules for electing the Supreme King are somewhat similar to the Naadam Conference where we elect Khans - the leaders of various tribes gather together to elect a common leader. But the difference is that after we elect a Khan, he is God, and anyone who disobeys him is rebellious. After Battania elected the High King, the chiefs continued to do whatever they were supposed to do. They came and left when they wanted, and the High King had nothing to do with them. Caladog wanted to change this, and he proved his military prowess in Pandrak, just like the warriors of the steppes who fought to prove themselves worthy of the throne. But he still lacks one thing - he has not conquered all the disobedient chiefs. The rules on the grassland are simple: Kneel or die. Battania's set is too complicated, with druid arbitration and healers delivering messages. It's tiring to listen to. But then again, if they do integrate, a unified Battania wouldn't be good news for the grasslands. So we'd rather see those chiefs continue to compete with Caladog."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nord"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Battania’s political system seems to us Nords to have no system. High King? It sounds bluffing, but in fact it is not even as good as a Yael - our Yael can at least command all the longships and warriors in his territory, and the High King of Battania has to ask the chiefs for face. However, their chiefs are very similar to our Nord chiefs - they recruit their own soldiers, manage their own territory, and decide who to fight. The difference is that if our Nord chieftain is too weak, he will be challenged and replaced by a stronger chieftain. The chiefs of Battania don't seem to annex each other very much, preferring to guard their own forests. Their way of naming 'fen' is quite interesting, similar to how we use 'pine' to represent family. But the thing that puzzles us the most is their druids. Our Gozi will also arbitrate disputes, but Gozi will not overpower the chief. The druids of Battania seem to be a step above the chiefs - they have to nod when the king ascends the throne, they have to arbitrate tribal disputes, and the rules of their ancestors are all in their heads. This is not the way we are used to living. Caladog wants to be the real king, which I find difficult. It wasn't because the chiefs stopped him, it was because the druids wouldn't let him have the final say alone."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "steward": 150
+        }
+      },
+      "Content": "Battania's political system is the oldest and most complex living example of tribal federalism on the continent of Calradia. Its core structure includes three levels of power: the Supreme King, as the nominal leader of the entire clan, is crowned by druids on the Holy Mountain. The source of power has both the legitimacy of election and religious sanctity; the chiefs of each tribe, as substantive local rulers, have autonomy in conscription, tax collection, justice and diplomacy. Their families use the 'Fin' prefix to identify their clan affiliation, which constitutes Battania. The basic political unit of society; the Druids and healers, as non-secular powers, respectively hold the power of religious arbitration and knowledge inheritance, and play an authoritative role beyond the chief personally in tribal disputes and traditional maintenance. This three-tier structure has historically maintained Battania's independence for a long time, but it has also resulted in fatal weaknesses such as inefficient mobilization and inconsistent foreign policy. After Caladog succeeded to the throne and tried to promote centralization reforms, he faced not only the traditional autonomy demands of the chiefs, but also the existing arbitration rights of the Druids - the latter had deep roots in the political ecology of Battania. Compared with other political systems in Calradia, Battania's system is closest to Sturgia's Boye Autonomous System, but the degree of Druid's theocratic involvement is far greater than that of Sturgia's priesthood; compared with Aserai's tribal elder system, Battania's High King lacks the Sultan's actual control over trade routes and taxation; compared with Khuzait's khan selection system, Battania's High King lacks coercive means for disobedience; compared with Nord's chieftaincy system, Battania's druid class forms an additional layer of checks and balances on power. The success or failure of this reform will determine whether Battania will continue to maintain a loose tribal federation or transform into a new political community with royal power at its core. From the perspective of the continental structure, the internal power reorganization of Battania will not only affect its own survival, but will also have a profound impact on the strategic balance of the empire's northern border, Vlandia's eastward advance, and Sturgia's southward advance."
+    }
+  ],
+  "TextMappings": []
+}

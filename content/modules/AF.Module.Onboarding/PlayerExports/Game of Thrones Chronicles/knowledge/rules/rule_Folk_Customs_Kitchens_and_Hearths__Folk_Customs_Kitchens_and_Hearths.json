@@ -1,0 +1,128 @@
+{
+  "Id": "rule_Folk_Customs_Kitchens_and_Hearths",
+  "Keywords": [
+    "Kitchens and Hearths"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "A castle's kitchen is both the source of feasting and the shadow of power. A nobleman sees his master's pomp from the dishes, a cook sees waste and famine from the heat and leftovers, and a servant knows that the most dangerous gossip often occurs when the fire is the brightest and everyone thinks no one is paying attentionhour."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Kitchens and Hearths"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Kitchens and Hearths"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Kitchens and Hearths"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Kitchens and Hearths A castle's kitchen is both the source of feasting and the shadow of power. A nobleman sees his master's pomp from the dishes, a cook sees waste and famine from the heat and leftovers, and a servant knows that the most dangerous gossip often occurs when the fire is the brightest and everyone thinks no one is paying attention. Whether it is valid depends on who can grant the rights, collect the consideration, and actually make the judgment come to fruition in the event of default."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Kitchens and Hearths A castle's kitchen is both the source of feasting and the shadow of power. A nobleman sees his master's pomp from the dishes, a cook sees waste and famine from the heat and leftovers, and a servant knows that the most dangerous gossip often occurs when the fire is the brightest and everyone thinks no one is paying attention. If a rule is practiced over and over again, it will find its way into rituals, crafts, and prayers; if it is sustained only by fear, cracks will show at the onset of a crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Kitchens and Hearths A castle's kitchen is both the source of feasting and the shadow of power. A nobleman sees his master's pomp from the dishes, a cook sees waste and famine from the heat and leftovers, and a servant knows that the most dangerous gossip often occurs when the fire is the brightest and everyone thinks no one is paying attention. They remember taxes, grain, labor, relief and who can speak for them; these grand names will eventually fall on the family's rice pot."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Kitchens and Hearths: A castle's kitchen is both the source of feasting and the shadow of power. A nobleman sees his master's pomp from the dishes, a cook sees waste and famine from the heat and leftovers, and a servant knows that the most dangerous gossip often occurs when the fire is the brightest and everyone thinks no one is paying attention."
+  ]
+}

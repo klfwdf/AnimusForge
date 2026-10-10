@@ -1,0 +1,153 @@
+{
+  "Id": "rule_World_Mechanics_Dragons",
+  "Keywords": [
+    "Dragons",
+    "Great Dragons",
+    "Dragonfire",
+    "Dragonlords"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Dragons are ancient creatures with flesh and blood, capable of hunger, growth and injury. They are not siege engines driven by humans. They can fly, and dragon flames are enough to melt stone, wood, and flesh; age usually brings greater size, scales, and destructive power, but no matter how powerful a dragon is, it also needs habitat, food, and a rider with whom it can establish a relationship. The Dragon King of Valyria once used dragons to build the Free Fortress, and Targaryen used three dragons to conquer the six kingdoms, making \"dragon control\" the language of blood, power and fear at the same time. Once a dragon appears, its influence will not only belong to the person who owns it: the city walls, alliances, beliefs, and the escape direction of ordinary people will all change accordingly."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "valyrian",
+          "dragonstone"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "scholar",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Descendants of Valyria tend to regard dragons as proof of bloodline and destiny, but they also know that closeness does not mean safety. He who can ride a dragon must still learn its temperament, and genealogy cannot prevent the flames from coming back."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "soldier",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Ordinary people rarely think of dynastic symbols first. They will ask whether the roof can keep out the fire, where the livestock should be driven, and whether the city gate is still open when the dragon's shadow passes over; the epic is often an unquenchable disaster on the ground."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Rulers and merchants had to recalculate everything: whether the old city walls still had meaning, whether oaths would be rewritten out of fear, whether granaries and fleets should be dispersed. The dragon does not automatically win politics, but it makes those who refuse to count it pay."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Dragons An ancient creature that can fly and breathe dragon flames will grow, be injured, and choose its master. Its existence is enough to change wars, royal power, and people's imagination. Whether it is valid depends on who can grant the rights, collect the consideration, and actually make the judgment come to fruition in the event of default."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Dragons An ancient creature that can fly and breathe dragon flames will grow, be injured, and choose its master. Its existence is enough to change wars, royal power, and people's imagination. The distant system is not empty talk only if it can be implemented in campfires, city gates and inns."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Dragons An ancient creature that can fly and breathe dragon flames will grow, be injured, and choose its master. Its existence is enough to change wars, royal power, and people's imagination. If a rule is practiced over and over again, it will find its way into rituals, crafts, and prayers; if it is sustained only by fear, cracks will show at the onset of a crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Dragons An ancient creature that can fly and breathe dragon flames will grow, be injured, and choose its master. Its existence is enough to change wars, royal power, and people's imagination. They remember taxes, grain, labor, relief and who can speak for them; these grand names will eventually fall on the family's rice pot."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Dragons: An ancient creature that can fly and breathe dragon flames will grow, be injured, and choose its master. Its existence is enough to change wars, royal power, and people's imagination."
+  ]
+}

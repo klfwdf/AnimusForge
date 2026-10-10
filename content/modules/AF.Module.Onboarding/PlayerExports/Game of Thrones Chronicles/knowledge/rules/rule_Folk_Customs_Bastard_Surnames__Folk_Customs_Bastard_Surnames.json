@@ -1,0 +1,150 @@
+{
+  "Id": "rule_Folk_Customs_Bastard_Surnames",
+  "Keywords": [
+    "Bastard Surname",
+    "Waters",
+    "Storm",
+    "Flowers"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Illegitimate children of Westeros nobles often use regional surnames according to the area where they were born or raised: Snow in the North, Sand in Dorne, River in the Riverlands, Stone East in the Vale, Weishui in the Crown Lands, Storm in the Stormlands, Buddha Flower in the Reach, Pyke in the Iron Islands, and Hishan in the Westerlands. Not every commoner illegitimate child received these surnames, and its use usually meant that at least one parent was identifiable. Regional surnames give social status and are a constant reminder that one is not in the legal line of inheritance; the king has the right to legalize illegitimate children, but political recognition and family acceptance are not the same thing. A surname can indicate origin, but cannot predict character, loyalty, or destiny."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Nobles think about inheritance risks, marriage and recognition level from the regional surname. Some people regard the illegitimate child as a relative, while others only regard him as evidence of blood lineage that may be used by their opponents."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Ordinary people may not care about complex legal principles, but they will follow the prejudices created by aristocrats. Illegitimate children bear more suspicion for the same mistake, even though birth was never the child's choice."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Military service and long journeys sometimes turn regional surnames into easy-to-remember banners, and may also temporarily dilute old shame. People who really stay together for a long time will eventually evaluate a person by his actions, not just by whether his parents are married."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Bastard Surname Bastard Surnames: It is customary in various places to use regional surnames such as Snow, Shad, and River to mark the illegitimate children of persons with status. The surname provides the first name and publicly delineates the inheritance boundaries. Whether it is valid depends on who can grant the rights, collect the consideration, and actually make the judgment come to fruition in the event of default."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Bastard Surname Bastard Surnames: It is customary in various places to use regional surnames such as Snow, Shad, and River to mark the illegitimate children of persons with status. The surname provides the first name and publicly delineates the inheritance boundaries. The distant system is not empty talk only if it can be implemented in campfires, city gates and inns."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Bastard Surname Bastard Surnames: It is customary in various places to use regional surnames such as Snow, Shad, and River to mark the illegitimate children of persons with status. The surname provides the first name and publicly delineates the inheritance boundaries. If a rule is practiced over and over again, it will find its way into rituals, crafts, and prayers; if it is sustained only by fear, cracks will show at the onset of a crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Bastard Surname Bastard Surnames: It is customary in various places to use regional surnames such as Snow, Shad, and River to mark the illegitimate children of persons with status. The surname provides the first name and publicly delineates the inheritance boundaries. They remember taxes, grain, labor, relief and who can speak for them; these grand names will eventually fall on the family's rice pot."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Bastard Surnames: It is customary in various places to use regional surnames such as Snow, Shad, and River to mark the illegitimate children of persons with status. The surname provides the first name and publicly delineates the inheritance boundaries."
+  ]
+}

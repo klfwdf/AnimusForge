@@ -1,0 +1,152 @@
+{
+  "Id": "rule_House_Foundations_House_Arryn",
+  "Keywords": [
+    "House Arryn",
+    "Moon and Falcon",
+    "As High as Honor"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Arryn family is one of the oldest and purest self-proclaimed Andal nobles in Westeros. It is based on the Eyrie and the Gates of the Moon. It was once the king of the valley and became the guardian of the valley and the guardian of the east after the conquest. The white crescent moon on the sky blue background, the falcon, and the motto \"High as Honor\" connect the mountaintop castle, knightly ideals and bloodline confidence together. The Eyrie is difficult to capture, but must rely on the mountains in winter; similarly, Arryn's prestige hangs high in the valley, and must rely on the cooperation of powerful vassals such as Royce, Corbray, and Waynwood. The knights of the valley looked up to the white eagle, and the mountain clans saw it as a sign that the Andals had taken away their land."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vale"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The nobles of the Vale speak of Arryn's honor as white as the mountains, and know that the white eagle must fall at the Gates of the Moon, in the granary, and at the vassal's table. The Eyrie is nearly unassailable, but unable to plow fields or commandeer entire valleys on its own; Arryn's true authority is to have Royce, Corbray, Waynwood, and the port lords recognize that flag as worthy of mustering."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vale"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The people at the foot of the mountain raised their heads and couldn't see the windows of the Eyrie. They could only see the mule teams transporting grain and the gates of the Gates of the Moon. Merchants hope that the mountain roads will be opened, and farmers hope that knights will stop clan raids. For them, \"high as honor\" is just a beautiful word floating down from the clouds if it does not turn into safe roads and fair judgments."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Northerners respected the knights and dangers of the Vale, but found Arryn's style of honor too bright and too particular. The White City on the top of the mountain did not experience the long wind and snow like Winterfell, but Jon Arryn raised Ned Stark. This nurturing relationship made the white eagle in the memory of the North more than just the emblem of the southern nobles."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Arryn The Eyrie and the descendants of the Andal royal family of the Gates of the Moon. Their family emblem is a white crescent moon and a falcon on a sky blue background, and their motto is \"High as honor\". Its authority relied on the dangers of the mountains, the traditions of chivalry, and the cooperation of powerful vassals in the valley. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Arryn The Eyrie and the descendants of the Andal royal family of the Gates of the Moon. Their family emblem is a white crescent moon and a falcon on a sky blue background, and their motto is \"High as honor\". Its authority relied on the dangers of the mountains, the traditions of chivalry, and the cooperation of powerful vassals in the valley. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Arryn The Eyrie and the descendants of the Andal royal family of the Gates of the Moon. Their family emblem is a white crescent moon and a falcon on a sky blue background, and their motto is \"High as honor\". Its authority relied on the dangers of the mountains, the traditions of chivalry, and the cooperation of powerful vassals in the valley. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Arryn The Eyrie and the descendants of the Andal royal family of the Gates of the Moon. Their family emblem is a white crescent moon and a falcon on a sky blue background, and their motto is \"High as honor\". Its authority relied on the dangers of the mountains, the traditions of chivalry, and the cooperation of powerful vassals in the valley. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "House Arryn: The Eyrie and the descendants of the Andal royal family of the Gates of the Moon. Their family emblem is a white crescent moon and a falcon on a sky blue background, and their motto is \"High as honor\". Its authority relied on the dangers of the mountains, the traditions of chivalry, and the cooperation of powerful vassals in the valley."
+  ]
+}

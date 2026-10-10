@@ -1,0 +1,213 @@
+{
+  "Id": "rule_Ascetic",
+  "Keywords": [
+    "ascetic",
+    "doomsday believers",
+    "Fanatic self-flagellation",
+    "Sigmar trial",
+    "Desperate combat power",
+    "Doomsday prophecy",
+    "self-flagellating cult",
+    "Flagellant",
+    "doomsday scream",
+    "doomsayers",
+    "crazy belief",
+    "Sigmar fanatic"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Dervishes - also known as the Flagellants or Self-Flaggers - are the most extreme sect of the Sigmar faith in the western part of the Empire, believing that the end of the world is coming and that only through self-flagellation and physical suffering can humanity's sins be purged and the world survive the Armageddon. They wear no armor or shields on the battlefield, wielding flails and flames with a fervent belief like burning at the stake, chanting doomsday scriptures as they charge into the enemy ranks - even the most ferocious Chaos Warriors will be disturbed by this kind of fighting method that completely ignores their own casualties."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Dervishes – I feel somewhere between awe and horror when I think of them. To be honest, as a decent citizen growing up in Imperial society, I was warned by my mother as a child: 'If you don't read the Sigmar scriptures well, the flagellants will take you away as a sinner as they pass by on the street. 'They looked like a bunch of madmen crawling out of hell - barefoot, covered in old whip marks and new scabs of blood, looking at the world with a look you could never imitate, as if they were looking at a sky about to burn and you couldn't. But when you actually understand what they believe - I'm not saying you'll agree with them - but at least you'll understand them. They believe that they are living in the last period of the old world, and believe that when the twin-tailed comet comes again, it will be the beginning of the doomsday judgment, and the only thing they can do before that is to use their own physical pain to alleviate the sins of the entire world that will be liquidated. On the battlefield, they do not stand in formation or listen to orders - they only listen to the doomsday bell within themselves. That high-pitched chanting sound as they charge into the enemy line en masse - if you're on the enemy's side, that sound will give you goosebumps every time you wake up in the middle of the night. The generals of the empire will not write ascetics into their tactical manuals, but the generals of the empire will never refuse a human shield that voluntarily rushes to the front when they are desperate."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "From the perspective of a military commander, the Dervish is a flaming double-edged sword that cannot be fully tamed. Their only role on the battlefield—and their only purpose—is to deliver a devastating frontal assault. Ascetics do not need military pay, no tents, and their requirements for supplies are as low as almost zero - they walk on foot, eat food from beggars, and sleep on the open ground. For them, this is part of their faith practice. But the price is that you cannot command them by any conventional means: they do not accept formation instructions and will not retreat when the retreat signal is sounded - in fact they do not recognize the concept of 'retreat' at all, because for them dying on the battlefield is the most direct way to obtain doomsday salvation. Furthermore, the fervor of the Dervishes is extremely contagious - as they pass through your front lines, there will always be a few religiously sensitive members of your regular soldiers who will throw down their muskets and join in their mad charge. An experienced commander will only ask the Dervishes to do one thing: deploy them in the most brutal early stages of the battle, let them physically break the morale of the enemy's first line of defense, and then - if you are merciful - recite a Sigmar for them before they are completely wiped out. If you are not compassionate, you are already giving a command."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "The origins of the Dervish sect need to be traced back to the 'Doomsday Panic' around 1111 in the Empire's calendar - during this period, a large-scale Chaos invasion broke out in the northeastern part of the Empire. The twin-tailed comet was observed six times in one year. A fanatical monk named Vinstas, known as the 'Gray Prophet', appeared in the Sigmar Church. He was in Sigmar in an unprecedented way. A complete set of theological logic has been established between the doomsday prophecies and the unfinished chapters of the Old Testament: Human beings have original sin—original sin is not only tribal divisions and fratricide, but also selfishness and indifference in human nature—and the only way to cleanse these original sins is to accept judgment on behalf of all mankind through physical pain. The Gray Prophet had fewer than thirty followers at first, but in 1113 of the Imperial Calendar he burned himself to death in front of the Great Temple of Altdorf, leaving a long doomsday prophecy written in his own blood in his body. This event pushed his teachings from a niche monastic movement to the entire empire. The official response of the Sigmar Church went through three stages: the early stage was severe suppression - the first organized flagellants were burned at the stake for heresy by the Inquisition; the middle stage was acquiescence - the church found that when Chaos really invaded, these self-flagelators were an indispensable irregular fighting force; the later stage was the 'conditional tolerance' policy established around 1900 in the Imperial Era - ascetics were allowed to operate within the empire, but were not allowed to establish permanent monasteries within the Sigmar diocese. This semi-legalized marginal status has just contributed to the internal divisions of the ascetic sect - today's self-flagellation sect can be divided into at least six theological factions, among which the most extreme \"red whip\" insists that only continuous self-bleeding can delay the end of the world."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "There are women in the Dervish sect—although they are less acceptable to secular eyes than the male flagellants. There once appeared in my fiefdom a self-flagellating cult of only women, refugees from the Osterland who claimed to have received the oracle of Sigmar in the light of the twin-tailed comet during their escape. They settled in an abandoned monastery outside the town, and the sound of whipping and chanting spread throughout the valley every morning. The townspeople initially feared and expelled them, but in a sudden raid by beastmen, it was this group of women - dressed in burlap, holding straw forks and wood axes - who dispersed the herd on the crossroads in front of the town gate with a fanaticism that was not inferior to any men. The orcs were frightened away by their appearance - not killed, but frightened alive. After the war I, as Lordess, sent a message to each of them in the convent: I will not ask you to leave, but please keep the whipping to a minimum before Sunday morning prayers - and they agreed, and are still there today."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The relationship between our family and the Dervish sect is a silent political deal - we denounce their \"excessive religious fanaticism in official statements that violates the provisions of restraint and reason in the Sigmar Code\", while allocating an anonymous gray sum every year from the family's private treasury to fund the most moderate monastic group among them, because the old leader of this group is a descendant of our distant ancestor who fled the era of the Three Emperors. In the world of imperial aristocracy, you must publicly distance yourself from extremism, but you must never be ignorant of it—for when the end does come, the flagellants you condemn today will be the only defenders who will still stand under your walls tomorrow without asking for wages. Our family chapel still contains a bone relic from a distant ascetic ancestor three hundred years ago - it is stored in a humble wicker box, not a gold box, because one of the core teachings of the ascetic faith is that gold is the greatest insult to salvation."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "I met a group of ascetics on the swamp border of Nordland - or in a more accurate sense, they picked me up when I was about to freeze to death. At that time, I had just narrowly escaped a beastman attack. I had a long wound on my left leg and was lying in the mud waiting to either freeze to death or bleed to death. A group of people wearing sackcloth and holding flails came out of the mist. The leader looked to be at least seventy years old, and his arms were covered with whip marks from countless years. He knelt down and looked at me and said: 'You are not my brother, but you are a creature of Sigmar - so you can live.' 'They put a poultice on me that smelled like burnt rosin and cow dung - it was so disgusting that I almost thought it was their latest punishment, but miraculously the wound didn't fester after three days. When I left, the old whipper told me only one thing: 'One day the end will come, and then you will know the price of your survival today - that price is not for you, but for the world. 'I still don't know what the price was, but I have never heard the same prophetic voice from the wind in the north again."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The economic existence of ascetics is one of the most special market phenomena in the empire for a merchant - because they are almost completely not involved in any commodity transactions, but their existence profoundly affects the empire's regional economic ecology. The Dervish Order does not purchase weapons, purchase food, or rent campsites—they rely on believers’ alms and begging along the way to survive—but this means that every village they pass through will experience a temporary food shortage due to the sudden increase of dozens or even hundreds of mouths, and food prices will increase by about 10% to 30% the day before they arrive. On the other hand, the areas surrounding the places where the ascetic orders were stationed often enjoyed unexpected commercial dividends: believers and curious pilgrims would come from neighboring provinces, driving business in taverns, inns and sacred relic vendors along the way. In the imperial town economy, the arrival of the Dervishes was usually interpreted by merchants as two signals - if they were scattered Dervishes, it meant that the border was unstable and refugees began to flow inland, which was the time to start hoarding food; if it was an organized self-flagellation procession, it meant that a doctrinal schism had occurred in the Sigmar Church somewhere, which was a signal that investment in the region needed to be suspended. The market index of faith has always been invisible in the imperial chambers, but its existence is more real than anyone admits."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "The Gray Prophet Venstas, the founder of the Dervish sect, launched the religious movement with his self-immolation.",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Ascetic doomsday believers fanatically self-flagellate"
+  ]
+}

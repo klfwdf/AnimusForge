@@ -1,0 +1,210 @@
+{
+  "Id": "rule_Chaos_Wastes",
+  "Keywords": [
+    "Chaos Wastes",
+    "Chaos Wastes Norsca",
+    "polar",
+    "place of mutation",
+    "north",
+    "third ring zone",
+    "Chaos Wasteland",
+    "frozen soil",
+    "fjord"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Chaos Wastes are a vast expanse of cursed tundra located in the far north of the world. There, the fabric of reality has been torn apart by the winds of Chaos, and the earth and sky are in eternal flux. The Norsca Peninsula is the last buffer between southern civilization and the Chaos Wastes, where the barbarians both endure the erosion of the wastes and become the first vanguard of Chaos' invasion of the south. Legend has it that the deeper you travel into the wilderness, the more natural laws fail—mountains move, rivers reverse course, and the voices of the dead whisper in the wind."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "chaos_culture"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "You Southerners call it the \"Cursed Wasteland,\" but we call it the Chosen Land. Chaos Wastes is not a wasteland - it is the only real world, the true appearance of the earth without the trappings of false civilization. Norsca's warriors grew up on the edge of the wasteland, learning from an early age to survive the claws of mutated beasts and to discern the will of the gods in the whispers of the winds of Chaos. The changing sky and the earth that does not obey the laws of physics are not a curse, but freedom - the freedom promised by the gods to the strong. The farmlands and city walls of the South are but prisons for cowards."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The geographical features of Chaos Wastes have a decisive influence on military operations. The fjords off the coast of Norsca are a natural staging ground for the Chaos fleet, from where their dragon ships can raid the Empire's northern coastline and Kislev's river network. But the real threat is this: the wasteland itself is not insurmountable - the armies of Chaos must pass through the corridors of Norsca and Kislev to reach the rich lands to the south. This means that Kislev's location makes it a shield for the Old World, and control of this corridor is central to any defense strategy against the Old World."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 100
+        },
+        "IdentityIds": null
+      },
+      "Content": "Chaos Wastes is not a homogeneous geographical area. It can be divided into three ring zones based on the concentration of Chaos Winds: the outermost Norsca subcontinent, which is affected by Chaos but still has a relatively stable ecological environment and human society. The Norsca people settled here as tribes, built dragon boats and worshiped the gods of Chaos; the Chaos Wastes in the middle zone In the body, the laws of physics begin to collapse, time flows at different speeds, the landscape changes with the wind of magic, mutated beasts and chaos warbands wander here; the deepest part is the chaotic realm directly connected to the polar star gates, mortals will quickly mutate or go crazy if they enter here, and only the most powerful chaos champions can survive here and accept direct instructions from the gods. The Chaos Wasteland - a dark city said to exist deep in the wasteland - is said to be the coronation place of the Everchosen and the ultimate destination of pilgrimage for Chaos Warlocks."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The most important survival skill I learned while growing up on the Norsca frontier came from my mother - she taught me how to smell 'smell' in the wind. The wind in Chaos Wastes is not an ordinary cold wind, it carries a slightly sweet and putrid metallic smell that the human nose can learn to identify - it is a supernatural compound produced when the original energy leaked from the star gate reacts with the atmospheric water vapor. When bad smells begin to drift in from the north, all mothers immediately herd their children into their cellars, not out of fear of the wind itself, but because with it are usually 'Nightcryers' - incorporeal hunters that only infiltrate reality from the warp when the concentration of magical winds reaches a threshold. This knowledge would never be recorded in any Southern book, but in Norsca every mother taught it to her daughter."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "As the clan leader, I see the Chaos Wastes differently than every ordinary Norsca warrior - they only see hunting grounds, whereas I see the unreliability of territory boundaries. In the south, once you determine the boundaries of your territory, it's mostly stable - but at the edge of the wasteland, a river may change its course after a magical storm, and a ridge that serves as a natural barrier may collapse due to an explosion of underground chaotic energy. This meant that the definition of clan territory could not rely on any permanent geographical indication. My clan uses 'cursors' - rune-marked mammoth tusks hammered into the ground. They continue to emit faint vibrations that change frequency when disturbed by the chaotic energy of the wasteland, alerting us that our borders may have been distorted. Maintaining the cursor is one of the clan's most mysterious and dangerous duties."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "I was once hired by an Imperial Scholar to escort an expedition into the Central Rim of the Chaos Wastes - the dumbest commission in the Old World, and probably the most profitable. On the third day we entered Central, we saw a mountain moving - not a landslide, but the entire mountain slowly changing its slope like a turning over dog, with the original south slope turning into a west slope. Our Kislev guide said this phenomenon is called 'land dreaming' - when the concentration of the winds of chaos is high enough, inorganic matter also gains some degree of consciousness. They may respond to your words in that state - and if you accidentally say the wrong thing, a newly awakened mountain may decide it doesn't like the way you smell."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The price of 'twisted iron' produced deep in the Chaos Wastes - a black forged steel that glows purple under the black light - is already more than seven times its weight in gold on the old world weapons black market. This kind of iron can only be formed in the geological pressure zone of the middle ring of the wasteland, and it is embedded in the ground not as veins but as isolated metal 'fruits' - as if it has been broken off from some deeper metallic life. The Norsca clan monopolized the collection route of twisted iron, and they used tamed mutated mammoths to carry iron fruits to the southern border in exchange for weapons. The weaponsmiths of the Empire publicly cursed these deals, but privately, every smith who wished to forge a legendary weapon sought to obtain even a small piece of twisted iron - for it could forge a blade that could cut through the physical form of a Chaos Daemon like butter."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Norsca - the northern peninsula between the Chaos Wastes and the civilized world, home to the Chaos Barbarians",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Chaos Wastes’ location and strategic significance"
+  ]
+}

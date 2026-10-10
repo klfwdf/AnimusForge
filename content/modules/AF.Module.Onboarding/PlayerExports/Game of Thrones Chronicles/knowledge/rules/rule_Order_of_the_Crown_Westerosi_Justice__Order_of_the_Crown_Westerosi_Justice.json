@@ -1,0 +1,152 @@
+{
+  "Id": "rule_Order_of_the_Crown_Westerosi_Justice",
+  "Keywords": [
+    "Laws of Westeros",
+    "King's Justice and Court",
+    "Judiciary",
+    "Trial and Judgment",
+    "Westerosi Justice"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Entry Westeros justice is a composite of royal decrees, local customs, the traditions of the Church of the Seven, seigneurial jurisdiction, and ancient noble prerogatives. The king can judge major cases in the royal capital, the lord can judge theft, land and debt in his own territory, and the bachelor and steward are responsible for Law is not only a language that limits violence, but also a tool for those with power to demonstrate their power. Commoners are more concerned about whether the judgment is fair and whether compensation is paid, while nobles are more concerned about whether the trial recognizes identity and family honor."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Westerosi Justice"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Westerosi Justice"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "wanderer",
+          "priest",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Westerosi Justice"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Laws of Westeros Westerosi Justice: Westeros justice is a composite of royal decrees, local customs, the traditions of the Church of the Seven, seigneurial jurisdiction, and ancient noble prerogatives. The king can judge major cases in the royal capital, the lord can judge theft, land and debt in his own territory, and the bachelor and steward are responsible for They start by asking who is obligated, who is protected, and who will seek justice after a breach of contract."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Laws of Westeros Westerosi Justice: Westeros justice is a composite of royal decrees, local customs, the traditions of the Church of the Seven, seigneurial jurisdiction, and ancient noble prerogatives. The king can judge major cases in the royal capital, the lord can judge theft, land and debt in his own territory, and the bachelor and steward are responsible for For them, what really matters is whether the orders can arrive, whether the roads are safe, and whether the food and pay can be received on time."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Laws of Westeros Westerosi Justice: Westeros justice is a composite of royal decrees, local customs, the traditions of the Church of the Seven, seigneurial jurisdiction, and ancient noble prerogatives. The king can judge major cases in the royal capital, the lord can judge theft, land and debt in his own territory, and the bachelor and steward are responsible for Beautiful oaths that are not backed up by land, military strength, or sacred tradition can quickly be reinterpreted by the next crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Laws of Westeros Westerosi Justice: Westeros justice is a composite of royal decrees, local customs, the traditions of the Church of the Seven, seigneurial jurisdiction, and ancient noble prerogatives. The king can judge major cases in the royal capital, the lord can judge theft, land and debt in his own territory, and the bachelor and steward are responsible for What is remembered is not who spoke the loudest in the hall, but which rule saved the family from starvation, conscription, or endless fighting."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Westerosi Justice: Westeros justice is a composite of royal decrees, local customs, the traditions of the Church of the Seven, seigneurial jurisdiction, and ancient noble prerogatives. The king can judge major cases in the royal capital, the lord can judge theft, land and debt in his own territory, and the bachelor and steward are responsible for"
+  ]
+}

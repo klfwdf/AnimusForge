@@ -1,0 +1,151 @@
+{
+  "Id": "rule_House_Foundations_Penymion",
+  "Keywords": [
+    "Penymion",
+    "House Penymion"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "House Panymeon belongs to the Old Blood caste within the Black Wall of Volantis, able to participate in an elite politics accessible only to pure Valyrian descendants. Family figures are associated with the Xiang Party tradition that values ​​trade, stability and wealth. The Elephant Party is not moderate and charitable. It maintains trade routes, the slave economy and the order of property owners. Compared with the Tiger Party, it is just more willing to use account books, fleets and long-term profits to measure city-state policies. Panymeon's influence relies on blood as well as business relationships and electoral operations."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "volantine"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Volantis merchants generally welcome Panymian caution, and war interrupts river shipping, insurance, and long-distance contracts. As long as profits are stable, many people would rather watch an elephant walking slowly than watch a tiger pounce on an unknown battlefield."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "volantine"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "peasant",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Dockworkers and craftsmen understand that prosperity may not be fair, but they are still afraid that war will destroy their jobs first. They will support the Old Blood Family, which promises stability, but will also find that when prices rise, the Party's ledgers never write down the hunger of the poor very heavily."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "volantine"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "slave"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Slaves did not gain freedom just because the Elephants emphasized trade. If Pennymine maintains the old order, stability is just another way of saying that the chains will not snap or loosen suddenly."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Penymion Panimion is one of the Old Blood Houses of Volantis, more associated with the Elephant Party's lines of trade, prudence, and city-state wealth. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Penymion Panimion is one of the Old Blood Houses of Volantis, more associated with the Elephant Party's lines of trade, prudence, and city-state wealth. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Penymion Panimion is one of the Old Blood Houses of Volantis, more associated with the Elephant Party's lines of trade, prudence, and city-state wealth. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Penymion Panimion is one of the Old Blood Houses of Volantis, more associated with the Elephant Party's lines of trade, prudence, and city-state wealth. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Penymion: Panimion is one of the Old Blood Houses of Volantis, more associated with the Elephant Party's lines of trade, prudence, and city-state wealth."
+  ]
+}

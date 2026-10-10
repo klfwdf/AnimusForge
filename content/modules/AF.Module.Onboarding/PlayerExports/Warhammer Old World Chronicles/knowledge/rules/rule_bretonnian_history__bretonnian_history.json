@@ -1,0 +1,213 @@
+{
+  "Id": "rule_bretonnian_history",
+  "Keywords": [
+    "Bretonnian History",
+    "Origins of Chivalry",
+    "Bretonnian Grail Knights",
+    "Bretonnia Gilles",
+    "Rebellion of the Red Duke",
+    "Crusades Against Araby",
+    "Waaagh! Grom and Vorgaz Invasion",
+    "Bretonnian Chronicles",
+    "Manifestation of the Grail",
+    "Bretonnian Calendar",
+    "Ducal Rebellions",
+    "Age of Errantry"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The history of Bretonnia begins in Year 1 of the Bretonnian Calendar, when Gilles le Breton was granted the Grail during the first manifestation of the Lady of the Lake and subsequently united fourteen warring human tribes to found a kingdom built upon the bedrock of chivalry. Since the days of Gilles, Bretonnia has endured more than fifteen hundred years of wars, Errantry Crusades, civil strife, and renewal, with the spirit of chivalry passed down like an undying sacred flame through every dark age."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Our history began with the manifestation of the Lady beside a spring-fed lake. Gilles le Breton was no king's son—he was a dispossessed warrior who had watched his own tribe torn apart by Greenskin hordes, a desperate fighter riding alone at the end of his road. Beside the lake, he beheld her: the sacred radiance of the Lady of the Lake rising from the ripples brought Gilles to his knees; she offered him a golden Grail, he drained it in a single draught, and from that moment he was mortal no more. Over the next twelve years, Gilles and his twelve companions—the first Grail Knights—drove the Greenskin tribes from the mountains of Bordeleaux all the way to the southern borders toward Estalia. Thereafter Bretonnia weathered several great trials: the Rebellion of the Red Duke—a fallen Grail Knight who drank from the Blood Chalice and nearly reduced the Dukedom of Aquitaine to scorched earth; the First and Second Crusades against Araby—in which King Louis the Righteous and Repanse de Lyonesse respectively unleashed the holy wrath of chivalry upon the heathens; and the Great Greenskin Invasion—in which Warlord Vorgaz Ironjaw nearly annihilated the chivalry of the entire realm on the central plains of Bretonnia, had the Lady of the Lake not manifested once more to bestow her blessing at the most desperate hour. All of this history has taught us a single truth: chivalry is no mere ornament; it is a necessity for survival. Without the blessing of the Lady and the sacrifice of her knights, Bretonnia would long ago have been wiped from the map like Solland."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The history of Bretonnia offers rulers two blood-soaked lessons. First: never underestimate the Greenskins—every single dukedom in Bretonnia has been ravaged by Greenskins at least once; during the Vorgaz invasion, the number of knights across the entire realm was slashed by a third, and had Duke Martin de Gironde not miraculously held the defile at Bordeleaux Pass against overwhelming odds, Bretonnia might not exist today at all. The second lesson is crueler still: Grail Knights are the holiest of warriors, yet they are also the most uncontrollable. The rebellion of the Red Duke proved one thing—should a knight who has once supped from the Grail fall into darkness, his destructive power is ten times that of any foreign foe. He knows every tactic and weakness of the Code of Chivalry, and his profanation of the Lady of the Lake is far more venomous than the unbelief of any heathen. Ever since then, successive kings have maintained an unwritten tradition: accord the Grail Knights the highest reverence, while simultaneously keeping a prudent distance. In governing Bretonnia, you must recognize that our history is no peaceful pastoral idyll—it is an unbroken chronicle of war, in which peace is merely the recuperation period between one war and the next."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 100
+        },
+        "IdentityIds": null
+      },
+      "Content": "Bretonnian historiography, owing to its tradition of archival preservation, constitutes one of the most distinctive fields of historical study in the Old World. The 'Chronicles of Gilles' is the oldest historical text in Bretonnia, reputedly begun by the Grail Damsels during the lifetime of Gilles himself and continuously updated over fifteen hundred years. While scholars debate the exact periodization of Bretonnian history, the standard 'Five-Period Division' partitions it into: the Founding Era (roughly 30 years)—in which Gilles united the tribes and established the first generation of dukedoms; the Grail Consolidation Period (roughly 200 years)—in which the dukedoms of the twelve Grail Companions completed the institutionalization of the feudal system; the Turbulent Centuries (roughly 400 years)—during which Bretonnia suffered the twin blows of massive Greenskin invasions and internal ducal rebellions, culminating in the Rebellion of the Red Duke; the Age of Errantry and Crusades (roughly 300 years)—in which Bretonnia participated in the Crusades against Araby, whose military and diplomatic activities profoundly reshaped Bretonnia's international standing; and the Current Era (the last 300 years)—marked by the reign of King Louen. Notably, Bretonnian historical narrative is almost entirely dominated by knights—peasants, burghers, and merchants are virtually nonexistent in official history books, and their history can only be reconstructed indirectly through folk songs, epitaphs, and tax rolls, a historiographical void that is itself a faithful reflection of Bretonnia's social structure."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "There are almost no women named in Bretonnia's official history - save for the Lady of the Lake herself - but that doesn't mean women haven't left a deeper mark on our history than the marks of men's swords. Among the twelve first Grail Knights was a warrior named Landien de Gisolux, but it is recorded in the family secrets of the Duchy of Gisolux that Landion's sister Margaret took sole control of the Gisolux Valley during the years of his expedition, and her clever management of winter grain reserves allowed the entire expedition to survive when food ran out. Her name was erased from the official chronicles - the Sisters of the Grail felt that a woman's name appearing next to the Grail Knight's story would 'dilute the purity of the narrative' - but at the age of sixteen every noble daughter of House Gisolux was taken to the castle's secluded chapel and sworn before an effigy of an unnamed woman. The women of Bretonnia do not write official histories, but they guard a legacy of memory passed from mother to daughter that is older than any official history - the stories beyond the parchment, about what happened in the castle after the men left, about how the women guarded the gates with wardrobe boards and kitchen knives when the greenskin army besieged the city."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The history of Bretonnia is more than just the past for the great houses - it is a source of strength in the present. Our family's flag hall preserves a battle flag that was split into three pieces and was handed down by chance from the Red Duke's rebellion. Every new generation of dukes must touch this flag with their own hands during the canonization ceremony to feel the weight that supported their ancestors on the scorched earth three hundred years ago without retreating. Bretonnia's historical legacy is unequally distributed among the families - the older ducal families with longer pedigrees have a natural moral advantage on the council, while families who have recently risen or been promoted to dukes in some holy war will always have to pay more military exploits to make up for the blank pages in their family history. The most precious historical asset in the hands of our family is not the land and the castle, but an original copy of the fiefdom decree signed by Gilles himself - this parchment has faded to the point where it is almost impossible to read any writing, but whenever we discuss boundary disputes in the Duke's Council, it will be brought into the venue by the elders accompanied by two Grail Sisters and placed on a tray covered with purple velvet. No Duke dared to lie in front of this scripture, not because of fear of legal consequences, but because of fear that the goddess would see him lying in front of Gilles' signature."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The history of Bretonnia sounds to wandering ears like an oral epic that is sung over and over again - each village's version is slightly different but all point to the same core. The story I heard about the Red Duke in the Aquitaine vineyards said that he was once a Grail Knight who was betrayed by love. After drinking the Holy Grail, he discovered that the noble lady he was guarding had been married to an imperial merchant during his expedition. His fall was a story of lost love rather than greed. The version heard in the Baldero Mountains said that the Red Duke was corrupted during a battle with a demon in the dark forest - he went into darkness for the purpose of protecting the kingdom. The official chronicle will only tell you that the Red Duke betrayed the goddess and was eliminated, but in those remote farms far away from the Sisters of the Holy Grail, his story is sung in another way: a knight who loved too much finally confused his loyalty to the goddess and his obsession with his lover. His tragedy is not that he is evil, but that he cannot find a way to survive between the perfection of God and the brokenness of man. The official history of Bretonnia is an anthology repeatedly edited by the Sisters of the Holy Grail, but the real history of Bretonnia is found in the roadside campfire folk songs—where you can hear those parts of love, betrayal, hunger, and forgiveness that the Sisters deemed unfit to be recorded."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "In the eyes of merchants, the history of Bretonnia is first and foremost a history of trade development—behind every boundary adjustment of the Twelve Duchies is a change in control of trade routes. The military campaigns of the Knights of Bretonnia in the south during the Arabi War opened the door directly to the Arabi spice trade, and the ports of Gironde and Briona accumulated considerable wealth in the transit of goods from the East during the century after the Holy War. The destruction of Bretonnia's economy by the Red Duke's Rebellion was described in military and political terms by official histories, but was reflected in the Chamber of Commerce's accounts as the output of the Aquitaine vineyard dropped to almost zero during those twenty years - the price of Aquitaine wine increased fifteenfold on the imperial market, and the difference earned by imperial merchants during that rebellion was enough to buy half of the land of Strand. There is another economic fact in the history of Bretonnia that has never been officially written: every serious political confrontation within the ducal council will cause the actual collection rate of serf taxes to fluctuate - when the dukes quarrel in parliament, the serfs take the opportunity to pay less or hide more of the harvest, and this spontaneous reduction in the burden on the civil economy is Bretonnia's only social pressure relief valve."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "The Red Duke—the fallen Grail Knight who drank from the Blood Chalice, sparking the bloodiest rebellion in Bretonnian history",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "The history of Bretonnia begins in Year 1 of the Bretonnian Calendar"
+  ]
+}

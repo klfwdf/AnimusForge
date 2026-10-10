@@ -1,0 +1,147 @@
+{
+  "Id": "rule_Seafaring_and_Voyages_Helmsman",
+  "Keywords": [
+    "Helmsman"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The helmsman controls the rudder according to the captain's orders and maintains the course according to the force on the sail, the direction of the waves and the reaction of the hull. An excellent helmsman can feel the subtle changes in the ship's hull in the dark, dense fog or narrow waterways; a slow turn of the helm may cause a collision, mast breakage or a collision with the rocks."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Helmsman The helmsman controls the rudder according to the captain's orders and maintains the course according to the force on the sail, the direction of the waves and the reaction of the hull. An excellent helmsman can feel the subtle changes in the ship's hull in the dark, dense fog or narrow waterways; a slow turn of the helm may cause a collision, mast breakage or a collision with the rocks. The rules of the sea ultimately have to withstand wet ropes, bad water and sudden turns of weather."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Helmsman The helmsman controls the rudder according to the captain's orders and maintains the course according to the force on the sail, the direction of the waves and the reaction of the hull. An excellent helmsman can feel the subtle changes in the ship's hull in the dark, dense fog or narrow waterways; a slow turn of the helm may cause a collision, mast breakage or a collision with the rocks. If any maritime plan ignores the crew's physical strength and return conditions, victory may turn into drifting."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Helmsman The helmsman controls the rudder according to the captain's orders and maintains the course according to the force on the sail, the direction of the waves and the reaction of the hull. An excellent helmsman can feel the subtle changes in the ship's hull in the dark, dense fog or narrow waterways; a slow turn of the helm may cause a collision, mast breakage or a collision with the rocks. A single misjudgment can cost you goods, credit, and lives at the same time."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Helmsman The helmsman controls the rudder according to the captain's orders and maintains the course according to the force on the sail, the direction of the waves and the reaction of the hull. An excellent helmsman can feel the subtle changes in the ship's hull in the dark, dense fog or narrow waterways; a slow turn of the helm may cause a collision, mast breakage or a collision with the rocks."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Helmsman The helmsman controls the rudder according to the captain's orders and maintains the course according to the force on the sail, the direction of the waves and the reaction of the hull. An excellent helmsman can feel the subtle changes in the ship's hull in the dark, dense fog or narrow waterways; a slow turn of the helm may cause a collision, mast breakage or a collision with the rocks. There are no extra roads to go around on the ship, and mistakes can often only be shared by the entire ship."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Helmsman The helmsman controls the rudder according to the captain's orders and maintains the course according to the force on the sail, the direction of the waves and the reaction of the hull. An excellent helmsman can feel the subtle changes in the ship's hull in the dark, dense fog or narrow waterways; a slow turn of the helm may cause a collision, mast breakage or a collision with the rocks. Wood and knots maintain the hull, while faith helps people face the uncontrollable sea."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Helmsman The helmsman controls the rudder according to the captain's orders and maintains the course according to the force on the sail, the direction of the waves and the reaction of the hull. An excellent helmsman can feel the subtle changes in the ship's hull in the dark, dense fog or narrow waterways; a slow turn of the helm may cause a collision, mast breakage or a collision with the rocks. The changes on the distant sea often turn into empty stalls in the market the next day."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Helmsman: The helmsman controls the rudder according to the captain's orders and maintains the course according to the force on the sail, the direction of the waves and the reaction of the hull. An excellent helmsman can feel the subtle changes in the ship's hull in the dark, dense fog or narrow waterways; a slow turn of the helm may cause a collision, mast breakage or a collision with the rocks."
+  ]
+}

@@ -1,0 +1,224 @@
+{
+  "Id": "rule_Sturgias_military_system",
+  "Keywords": [
+    "Sturgia’s military system"
+  ],
+  "RagShortTexts": [
+    "The Sturgia military system combined the Boyer professional guard with freedmen mobilization, and the core tactic was the heavy infantry shield wall."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Sturgia's military system was based on a combination of boyar private armies and civilian mobilization. Each Boyer maintains his own bodyguards, who are off-the-job professional warriors, well-equipped and well-trained. During the war, the Grand Duke issued a call to action to the boyars, who responded with their own bodyguards and armed freemen. The core of the Sturgia army was a heavy infantry shield wall, supplemented by light cavalry raids and throwing ax throws. Their army does not have a strict regiment organization like the Empire, nor is it dominated by heavy cavalry like Vlandia. Instead, it is based on a solid infantry front, and has honed a unique combat method in the northern snowfields and forests."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Our Sturgian army is unlike any other. The empire relies on professional legions who receive military pay, Vlandia relies on noble knights riding large horses, and we rely on Boyer's soldiers and free people who can hold an axe. In normal times, Boyer's personal guards guard the territory, and the free people farm and hunt. Once the Grand Duke blew the trumpet, the boyars and their men gathered together, formed a shield wall, and pressed against the enemy. We don't need fancy tactics. In places like the north, only infantry who can withstand wind, snow and swords are reliable. Our Varengers—the elite infantry composed of noble children—stand in the front row of the shield wall, flying axes to clear the way, and using axes to harvest, simple and direct."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "As Boyer, my personal guard is my family. These young men are not farmers brought here temporarily, they are warriors who have grown up in my territory and have undergone rigorous training. The best among them can be promoted to senior vareng, and at that level they are qualified to ride horses - being able to fight on horseback is a symbol of status and strength in the north. When the Grand Duke gave the order during the war, I went to lead the battle with my bodyguard, followed by the free people in the territory. After the battle, they went back to farming, and the guards followed me back to the castle. Although this system is not like the empire that can support hundreds of thousands of legions, it is more economical, and every soldier fights for people he knows well, and morale cannot be bought with money."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "char:druzhinnik",
+          "char:druzhinnik_champion",
+          "char:varyag",
+          "char:varyag_veteran"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "I am Varyag, and I grew up with an axe. We are different from those civilian soldiers who were recruited temporarily - our equipment was purchased at home, including kite-shaped shields, one-handed axes, and throwing axes, all of which we paid for ourselves. We were in the front row of the shield wall. The Archduke or Boyer gave an order to throw throwing axes to disrupt the enemy's formation, and then pulled out the axes and crashed into them. The senior Varyags are more powerful than us. After they mount their horses, they become personal cavalry, with stronger maneuverability and impact. But whether we are infantry or cavalry, we all recognize the same truth: our lives are tied to the land, family, and boy behind us."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "When there is a war, when Boyer's horn sounds, I have to put down the plowshare and pick up the axe. I am not a professional soldier. After the war, I have to go back to farming. But all the men in Sturgia know how to use axes and shields. In the winter when the farm is slack, we practice formation and shield walling. The professional soldiers in the empire may be better equipped, but they are fighting for military pay, and we are fighting for our villages and families."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Sturgian army was too unwieldy. Their infantry shield wall is really hard, and our cavalry archers cannot shoot through the kite-shaped shield from the front. But their horses are not as good as ours, and their cavalry cannot catch up with us. If we fight on the grassland, they can't touch us at all. We can shoot arrows outside them to make them collapse. But we won't be stupid enough to fight them in their forests and snows - in that kind of place, their infantry can block our horse archers in the valley and slowly clear them up."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "steward": 150
+        }
+      },
+      "Content": "The military system of Sturgia is a typical decentralized feudal levy system, with the Boyer private army as the core and the mobilization of free people as the supplement. Its Varyag system is a unique military promotion path among the Calradia countries: starting from Varyag, passing through senior Varyag, and finally being promoted to guard cavalry, completing the leap from heavy infantry to cavalry. In the comparison of the military systems of Calradia countries, Sturgia has the same origin as Nord's infantry tradition, but Sturgia has developed stronger territorial defense capabilities, while Nord has retained a stronger maritime combat tradition. Compared with Vlandia's coordinated system of northern heavy cavalry and southern crossbow phalanx, Sturgia lacks the coordination of long-range firepower and cavalry impact, but performs well in defensive battles in the northern forests and snow. Compared with the Aserai's light cavalry javelin system, both sides have areas of advantage - Sturgia dominates in ice and snow, and Aserai is invincible in the desert. Compared with the aristocratic private military system after the reform of the imperial military system, the two are convergent in form, but Sturgia's Boyer private military system has lasted longer and has stronger traditional binding force."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The military system of the Sturgians may seem rudimentary to us, but to be honest, the Empire itself is now half-assed. After the Battle of Pandrak, the treasury was emptied and the standing army could no longer support it. Emperor Arenicus abolished the standing army and instead had the consuls and nobles finance their own private armies. On the surface, it saves expenses, but in fact, the knives are distributed to various families. Now the Empire's army is the same as Sturgia's, relying on noble private soldiers - the difference is that their boyars have fought this way since ancient times, while our Empire was forced to go down this path. What's even more ironic is that as soon as Arenicos died, the nobles who held private soldiers immediately became restless. Lucon relies on the Senate, Galios relies on veterans, and Rhagaea relies on bloodline-all three of them claim to be orthodox. In the final analysis, isn't it because everyone has soldiers? All the money saved from military reform was ultimately spent on the civil war."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Sturgian army is completely different from our Vlandia army. We relied on the cooperation between the heavy cavalry in the north and the phalanx of crossbowmen in the south - the knights with square banners crushed the enemy's formation, and the crossbowmen harvested with dense arrow rain in the back row. What about the Sturgians? Their boyars lead their own troops. Although the infantry shield wall is strong, it is a living target in front of our crossbowmen. However, in the forests and snow in the north, our cavalry charges were blocked and the crossbowmen's vision was obscured by the woodland. At that time, their infantry could take advantage. So we generally don’t take the initiative to go deep into the hinterland of Sturgia."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The military system of the Sturgians is exactly the same as their method of taking our lands - cumbersome, direct, and unskillful. Their shield wall cannot be deployed in the forest at all. Rows of large shields are bumping around in the trees. Our archers can shoot them from all directions. Their personal cavalry couldn't run either, and the northern pony horses were dumber than donkeys in the woods. But they have one thing we have to admit: on the open snowfield and ice, the kite-shaped shield wall is really difficult to shake head-on. Our tactic is to avoid the front and wear them down with ambushes and long-range arrows."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Sturgian army was nothing more than a pile of scrap metal in the desert. Their heavy armored infantry could not last for half an hour under the scorching sun, and their thick leather jackets and fur cloaks could boil a person in the scorching heat of Nahasa. Their pony ran out of breath after running a few steps in the sand. But on the northern ice fields, they are indeed the most adaptable army. We Aserai respect any warrior who can survive in a harsh environment, and their Varyag's practice of advancing from infantry to cavalry is somewhat similar to the traditions of some of our tribes - warriors are promoted based on merit, not birth."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nord"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The military system of the Sturgians has the same roots as our Nords, but the branches that grow out are different. We are also mainly heavy infantry, and we also like to use shield walls and axes, but our battlefield is the deck of the longship and the coastline, while their battlefield is the snow and forest. Their Varyags are a bit like our royal guards - they are elite heavy infantry, well-equipped and well-disciplined. The difference is that our royal guards are all sailors and can jump gangs to seize the ship on the bumpy longship; the Sturgians are clumsy on the ship. But their personal guard cavalry is a good thing, and we Nords should learn from it - it's a pity that we don't have so much pasture to raise horses."
+    }
+  ],
+  "TextMappings": []
+}

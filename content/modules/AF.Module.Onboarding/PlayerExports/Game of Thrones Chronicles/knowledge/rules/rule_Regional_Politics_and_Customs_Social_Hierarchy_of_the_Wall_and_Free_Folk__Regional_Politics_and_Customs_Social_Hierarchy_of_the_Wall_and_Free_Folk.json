@@ -1,0 +1,151 @@
+{
+  "Id": "rule_Regional_Politics_and_Customs_Social_Hierarchy_of_the_Wall_and_Free_Folk",
+  "Keywords": [
+    "Social Hierarchy of the Wall and Free Folk"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Entry The social hierarchy within and beyond the Great Wall is never just written on family trees. Night's Watch Where order is maintained by discipline and shared burdens, free folk build relationships through tribes, campfires, and personal choice; neither can despise winter; the same order may appear natural in the hall,"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Social Hierarchy of the Wall and Free Folk"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Social Hierarchy of the Wall and Free Folk"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "scholar",
+          "wanderer",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Social Hierarchy of the Wall and Free Folk"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Social Hierarchy of the Wall and Free Folk The social hierarchy within and beyond the Great Wall is never just written on family trees. Night's Watch maintains order by discipline and shared burdens, while free folk build relationships through tribes, campfires, and personal choice; neither can despise winter; the same order may seem natural in the hall. Whether it is valid depends on who can grant the rights, collect the consideration, and actually make the judgment come to fruition in the event of default."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Social Hierarchy of the Wall and Free Folk The social hierarchy within and beyond the Great Wall is never just written on family trees. Night's Watch maintains order by discipline and shared burdens, while free folk build relationships through tribes, campfires, and personal choice; neither can despise winter; the same order may seem natural in the hall. The distant system is not empty talk only if it can be implemented in campfires, city gates and inns."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Social Hierarchy of the Wall and Free Folk The social hierarchy within and beyond the Great Wall is never just written on family trees. Night's Watch maintains order by discipline and shared burdens, while free folk build relationships through tribes, campfires, and personal choice; neither can despise winter; the same order may seem natural in the hall. If a rule is practiced over and over again, it will find its way into rituals, crafts, and prayers; if it is sustained only by fear, cracks will show at the onset of a crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Social Hierarchy of the Wall and Free Folk The social hierarchy within and beyond the Great Wall is never just written on family trees. Night's Watch maintains order by discipline and shared burdens, while free folk build relationships through tribes, campfires, and personal choice; neither can despise winter; the same order may seem natural in the hall. They remember taxes, grain, labor, relief and who can speak for them; these grand names will eventually fall on the family's rice pot."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Social Hierarchy of the Wall and Free Folk: The social hierarchy within and beyond the Great Wall is never just written on family trees. Night's Watch Where order is maintained by discipline and shared burdens, free folk build relationships through tribes, campfires, and personal choice; neither can despise winter; the same order may appear natural in the hall,"
+  ]
+}

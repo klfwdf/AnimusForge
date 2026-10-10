@@ -1,0 +1,152 @@
+{
+  "Id": "rule_House_Foundations_House_Tully",
+  "Keywords": [
+    "House Tully",
+    "Leaping Trout",
+    "Family, Duty, Honor"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "House Tully, with roots in Riverrun, rose to prominence during the Age of Conquest when the Riverlands were freed from the rule of the Iron Islands. During Aegon's conquest, Tully sided with King Harren and was made High Lord of the Riverlands. The coat of arms of red, blue and silver leaping salmon and the motto of \"family, responsibility, honor\" are very suitable for a land cut by rivers but without natural barriers. Tully must mediate many ancient vassals such as Frey, Blackwood, and Bracken, and must also bear the risk of being trampled first when foreign enemies pass through the Riverlands. Riverrun's watergate can protect the family castle, but not every village; this makes Tully's responsibility both solemn and doomed to feel powerless."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "river"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The river princes accepted Tully as suzerain, but did not forget that many vassals had family names older than this suzerainty. Riverrun must rely on marriage, mediation, and common crises to maintain unity; if the order lacks favor and persuasion, the lords between the Green Fork, Red Fork, and Blue Fork will soon each remember their own old scores."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "river"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "When the people in the river hear \"family, responsibility, honor\", they will ask whether responsibility can cross the city wall. Riverrun is easy to defend, but villages are always attacked first along the roads and river crossings. The common people are willing to respect Leap Salmon, as long as the family mentioned by the nobles does not only include people with surnames at the banquet."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "river"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Boatmen and merchants like the roads brought by rivers, but also hate the checkpoints and wars brought by rivers. Tully If the ferry, market and referees can be kept in order, the leaping salmon will be like a good omen traveling along the current; if the princes are fighting endlessly, no matter how beautiful the whitebait is, they will just float away with the muddy water."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Tully Riverrun High Lord of the Riverlands, named for supporting Aegon the Conqueror against King Harren. The coat of arms of the leaping salmon corresponds to \"family, duty, honor\", the river, the mediation of vassals, and the undefeated responsibility of the riverlands. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Tully Riverrun High Lord of the Riverlands, named for supporting Aegon the Conqueror against King Harren. The coat of arms of the leaping salmon corresponds to \"family, duty, honor\", the river, the mediation of vassals, and the undefeated responsibility of the riverlands. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Tully Riverrun High Lord of the Riverlands, named for supporting Aegon the Conqueror against King Harren. The coat of arms of the leaping salmon corresponds to \"family, duty, honor\", the river, the mediation of vassals, and the undefeated responsibility of the riverlands. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Tully Riverrun High Lord of the Riverlands, named for supporting Aegon the Conqueror against King Harren. The coat of arms of the leaping salmon corresponds to \"family, duty, honor\", the river, the mediation of vassals, and the undefeated responsibility of the riverlands. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "House Tully: Riverrun High Lord of the Riverlands, named for supporting Aegon the Conqueror against King Harren. The coat of arms of the leaping salmon corresponds to \"family, duty, honor\", the river, the mediation of vassals, and the undefeated responsibility of the riverlands."
+  ]
+}

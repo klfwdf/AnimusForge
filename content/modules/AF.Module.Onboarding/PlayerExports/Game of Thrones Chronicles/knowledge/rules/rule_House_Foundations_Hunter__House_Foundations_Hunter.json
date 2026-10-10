@@ -1,0 +1,131 @@
+{
+  "Id": "rule_House_Foundations_Hunter",
+  "Keywords": [
+    "House Hunter",
+    "Silver Arrows"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Hunter family is based on Longbow Hall and is the valley vassal of the Arryn family. The family emblem uses silver arrows on a brown background as the main pattern. The hinterland of the valley where Longbow Hall is located makes the family more concerned about farmland, mountain roads, knights’ summons and marriage contracts with neighbors. Locals know the Hunters because they are responsible for cutting, collecting taxes, and protecting roads; outsiders usually only see them as one of the many ancient knight families under White Eagle."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vale"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The nobles in the valley know the Hunter family of Longbow Hall. The silver arrow coat of arms reminds people of hunting and archers in the mountains, but no one will compile a prominent royal lineage for them based on coats of arms alone. Hunter's actual weight comes from territory, kin, and whether he can respond to the valley's call; in a valley with many vassals, reliability is often more valuable than legend."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vale"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The hunters near the Longbow Hall looked to see if the arrow feathers were straight, and the soldiers looked to see if the bowstring could still be stretched in wet and cold weather. Their evaluation of the Hunter family is also so practical: whether the forest land dispute can be settled, whether the bandits are pursued, whether the levied archers are thrown away in vain on an inappropriate battlefield."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Hunter The Arryn vassal of Longbow Hall in the Vale has a silver arrow as the main emblem. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Hunter The Arryn vassal of Longbow Hall in the Vale has a silver arrow as the main emblem. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Hunter The Arryn vassal of Longbow Hall in the Vale has a silver arrow as the main emblem. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Hunter The Arryn vassal of Longbow Hall in the Vale has a silver arrow as the main emblem. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "House Hunter: The Arryn vassal of Longbow Hall in the Vale has a silver arrow as the main emblem."
+  ]
+}

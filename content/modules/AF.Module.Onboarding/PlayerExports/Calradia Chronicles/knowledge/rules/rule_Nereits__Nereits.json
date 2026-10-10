@@ -1,0 +1,116 @@
+{
+  "Id": "rule_Nereits",
+  "Keywords": [
+    "Nereits",
+    "Neretse family"
+  ],
+  "RagShortTexts": [
+    "Penton Nereits gave up the throne and used Saneopa as a foundation to deeply engage in Senate politics."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Neretse family? They are the most uncomfortable existence in the Northern Empire Senate, but they are also the most indispensable existence. We were uncomfortable because Penton Neretse was sitting in that chair, and every time he spoke, we were reminded of the time when his father Drosius buried the entire empire in Pandrak. That old guy’s stupidity is why our Northern Empire is still picking up the pieces. But we didn't dare to shut up Peng Tong, and we even had to listen to him carefully - because Xaneopa was in his hands. The walls of that city were so thick that even the battering rams of the Sturgians could not penetrate them, and trade routes radiated from Saniopa, and half of the northern empire's grain had to pass through their territory. Peng Tong is much more pragmatic than his father. He did not steal the position of emperor, he served Lucon respectfully and never exceeded the rules. But respect does not mean obedience."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Nereits? The family of the emperor who killed hundreds of thousands of people. My grandfather said that after the battle of Pandrak, mourners lined up from morning to night, and the whole village cried so hard that even the dogs did not dare to bark. Delosius dropped his head on the battlefield and died, and we the people paid for it. Now their family is still working as a high-ranking official in the north. I heard that they live in Saniopa. The city is huge and the city wall is longer than the boundary of our village. Our elders here spat when the name Neretses was mentioned, saying that their family should be extinct. But now I heard that Peng Tong in their family is quite capable, good at fighting, and not as stupid as his father. I wonder if he will dream about his father’s headless ghost when he sleeps at night."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Neretse family is a mirror of our Southern Empire. It shows how the imperial civil war was fought, and how power slipped from the throne to the floor. Queen Rhagaea never talked about Drosius publicly, but Arenicos was once asked about Pandrak at a royal meeting when he was in power. He said a very restrained sentence: \"Drosius is my emperor, and I obey him until his death.\" The meaning of this sentence is: I do not judge him, but his death was not caused by me. Now, we don't have any bad feelings towards Penton Nereitses in the north. He was soberer than his father, and had no intention of restoration. He was quite secure as a minister of Lucon, and his words in the Senate had weight. With Saneopa in their hands, the eastern edge of the Northern Empire will be secure, which is not a bad thing for us. With the Northern Empire stabilized, the Khuzait people won't be able to press from that side, and we can concentrate on dealing with Galios. But to be honest, every time we hear the name Nereitses, we still shudder in our hearts - this family once sat on the throne and then smashed the empire with their own hands. Who guarantees they won't do it again?"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_w"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Neretses. Emperor Galios would mention this name every time he drank too much. It's not nostalgia, it's scolding. Garius never concealed his hatred for Drosius: the old man deliberately suppressed information about the ambush at Pandrak, hoping to shoot him dead with the arrows of the Battanians. Our veterans of the Western Empire are still telling this story. Therefore, the Neretses family is a negative example for us, and whoever mentions it will be spit on. As for Peng Tong - we admit that he has the ability. On the battlefield of Pandrak, he killed old Olek, who was the toughest Boyer in Sturgia, and he had to hold on for a long time in Langward's encirclement. Anyone else would have been washed away. His father died, and his crown prince position was gone. He didn't go crazy or surrender. He collected the remaining soldiers and went back. Then he found Lucon as a backer in the north, and he lived steadily until now. We are wary of such flexible and flexible people, but we do not despise them. But that’s about it. The power of the Western Empire is based on barracks and military merit. We do not recognize the old aristocracy. No matter how powerful the Neretse family is, they are not following the same path as us."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Nereits family is a tragic classic case in the history of imperial politics. Drosius Nereitses ended the Great Interregnum with military merit and the support of the Senate, but a series of poor decisions in the Battle of Pandrak pushed the empire to fragmentation. From an external perspective, the fate of this family highly condenses the internal contradictions of the imperial system: the emperor supported by the Senate can quell civil strife, but he may also ruin the entire country due to personal selfishness. At present, the Neretse family has retreated to the Northern Empire under the leadership of Peng Tong, giving up the pursuit of the throne, and instead focusing on the politics of the Senate with Saneopa as its foundation. This transformation was pragmatic - Peng Tong was more sober than his father and knew how to exert influence within Lucon's system without touching the bottom line of imperial power. The strategic location of Saneopa and the personal ability of Peng Tong made the Neretse family still a force that cannot be ignored in the power structure of the Northern Empire. We tend to be cautiously optimistic when assessing the prospects of this family: as long as Peng Tong is still around, the Neretses family will not collapse; but after Peng Tong, whether the family can continue to maintain its current influence depends on whether his heirs have the same wisdom and restraint."
+    },
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Nereits? Is it the family of the dead imperial emperor? I heard from a businessman that the emperor was so stupid that he lined up his troops to die and was beheaded by barbarians. His son is still a high official in the north, in charge of a big city, and is living a good life. I'm surprised. My father has ruined the country like this, and his son can continue to be an official. Doesn't the empire confiscate the family and exterminate the clan? If someone here leads the tribe into an ambush and kills more than half of them, his tent will belong to someone else the next day. The Imperial people's rules are different from ours. However, the businessman also said that unlike his father, the son was capable and did not cause trouble, so everyone still recognized him. Maybe the people in the Empire think that a father is a father and a son is a son. That's okay, since they are far away from us anyway, so we just listen to their family's affairs as stories."
+    }
+  ],
+  "TextMappings": []
+}

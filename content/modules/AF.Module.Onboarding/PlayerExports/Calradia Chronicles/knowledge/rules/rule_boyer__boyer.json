@@ -1,0 +1,29 @@
+{
+  "Id": "rule_boyer",
+  "Keywords": [
+    "Boyer",
+    "Prince"
+  ],
+  "RagShortTexts": [
+    "Boyer is the honorific title of the chief of the Sturgia tribe."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Boyer is the honorific title of the tribal chief of Sturgia, which means prince."
+    }
+  ],
+  "TextMappings": []
+}

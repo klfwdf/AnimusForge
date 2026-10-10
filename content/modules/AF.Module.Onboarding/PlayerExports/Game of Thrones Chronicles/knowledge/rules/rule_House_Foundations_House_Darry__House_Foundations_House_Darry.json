@@ -1,0 +1,132 @@
+{
+  "Id": "rule_House_Foundations_House_Darry",
+  "Keywords": [
+    "House Darry",
+    "Black Plowman",
+    "Targaryen Loyalists"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Darry family is based in Darry City, and its territory is close to the Trident and the King's Road. The family emblem is a black farmer on a brown background. Darry was known for his staunch support of the three-headed dragon at the end of the Targaryen dynasty. After the dynasty changed, he was still regarded by many as a loyal minister of the old king; this memory can bring respect or suspicion. For local farmers, the old red dragon flag is far less important than spring planting, passing troops and whether Darui City can maintain roads."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "river"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The riverside nobles remember the Darry lands near the King's Road and their loyalty to the Dragon King's old dynasty. Such memories can become honors and burdens; after the flag is changed, neighbors will still judge who the family has in mind based on marriages, old friends, and the furnishings in the hall. Darry's farmer's coat of arms is simple, but his family's situation is never simple."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "river"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "People near Darui City regard the road as both a source of livelihood and a disaster. The caravan brought copper coins, salt and news, while the army took away grain, grass, horses and roofs. When ordinary people evaluate Darry, they don't just talk about the old dynasty; they also remember whether the lord can stop looting and whether the tax collector still counts the trampled fields as a good harvest."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Darry The Hejian family in Darry City near the King's Road, whose family emblem is a black farmer on a brown background, is famous for being a loyal minister of the old king of Targaryen. Fields, roads, and dynastic memories jointly shape its identity; proverbs unknown. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Darry The Hejian family in Darry City near the King's Road, whose family emblem is a black farmer on a brown background, is famous for being a loyal minister of the old king of Targaryen. Fields, roads, and dynastic memories jointly shape its identity; proverbs unknown. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Darry The Hejian family in Darry City near the King's Road, whose family emblem is a black farmer on a brown background, is famous for being a loyal minister of the old king of Targaryen. Fields, roads, and dynastic memories jointly shape its identity; proverbs unknown. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Darry The Hejian family in Darry City near the King's Road, whose family emblem is a black farmer on a brown background, is famous for being a loyal minister of the old king of Targaryen. Fields, roads, and dynastic memories jointly shape its identity; proverbs unknown. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "House Darry: The Hejian family in Darry City near the King's Road, whose family emblem is a black farmer on a brown background, is famous for being a loyal minister of the old king of Targaryen. Fields, roads, and dynastic memories jointly shape its identity; proverbs unknown."
+  ]
+}

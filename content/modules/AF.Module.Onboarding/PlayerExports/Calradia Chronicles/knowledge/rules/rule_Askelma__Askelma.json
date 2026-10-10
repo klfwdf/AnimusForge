@@ -1,0 +1,28 @@
+{
+  "Id": "rule_Askelma",
+  "Keywords": [
+    "Askelma"
+  ],
+  "RagShortTexts": [
+    "The background or origin of the Askel horse."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": ""
+    }
+  ],
+  "TextMappings": []
+}

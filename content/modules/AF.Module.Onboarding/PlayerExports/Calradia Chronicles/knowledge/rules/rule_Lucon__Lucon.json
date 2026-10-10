@@ -1,0 +1,109 @@
+{
+  "Id": "rule_Lucon",
+  "Keywords": [
+    "Lucon",
+    "Lu Song"
+  ],
+  "RagShortTexts": [
+    "Lucon was regarded as a role model for leadership by the elders of the Northern Empire."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "D, I heard that he is a public servant of the people, but some people say that he is a person with different appearances and is actually a dictatorship."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "C, he is an extremely good person, a public servant of the people and the Senate. He devotes himself to serving the Senate and the republican system. He is the best leader of our Northern Empire and a role model for our other senators. He should be the emperor. Rhagaea of ​​the Southern Empire and Galios of the Western Empire are just bad guys who steal great treasures just for fame and fame. Emperor Lucon believed that everything should be as it is without any changes, slaves should not be ransomed, women should not be in power, and foreigners should not appear in the court. He was such a good person."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s",
+          "empire_w"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "D, Lucon is a complete hypocrite! He supports the Senate just because he is the most powerful in the Senate and all the senators will vote for him to become emperor. What kind of bullshit republic is this? Just think about yourself! Sooner or later we will liquidate him!"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "B",
+      "Kind": "clan_all_towns",
+      "TargetId": "clan_empire_north_1",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "A",
+      "Kind": "kingdom_leader_name",
+      "TargetId": "empire",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "C",
+      "Kind": "status|hero|is_dead",
+      "TargetId": "lord_1_1",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": "Lucon is our late emperor, he has passed away.",
+      "FalseText": "His Majesty Lucon is the emperor of our Northern Empire"
+    },
+    {
+      "SourceText": "D",
+      "Kind": "status|hero|is_dead",
+      "TargetId": "lord_1_1",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": "Lucon is the old emperor of the Northern Empire. He has passed away.",
+      "FalseText": "Lucon was the emperor of the Northern Empire"
+    }
+  ]
+}

@@ -1,0 +1,210 @@
+{
+  "Id": "rule_Rick_Guard",
+  "Keywords": [
+    "Riker's Guard",
+    "Reik's Guard Imperial Knights",
+    "Emperor's Guard",
+    "Plate Knight",
+    "Altdorf Praetorian Guard",
+    "Elite heavy cavalry",
+    "Rick Knight",
+    "Praetorian Fortress",
+    "Marshal Rick"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Reik's Guard are the most prestigious order of knights in the Empire, serving as the elite personal bodyguard of the Emperor himself. Wearing full Gothic plate armor, they control the best purebred war horses in the empire, and use spears and heavy swords as weapons. They are stationed in the majestic Reik Fortress in Altdorf. These knights wrapped in steel are the embodiment of the military glory of the empire. Their oath is: in the name of the emperor, they will never retreat until they die."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Reik Guards - a knightly order that every noble boy in the empire dreams of joining from the moment he learns to hold a sword. They are more than just soldiers, they are the highest bearers of imperial chivalry. The origins of the Reikland Guards can be traced back to the 16th century in the Imperial Calendar. The first Reikland Emperor established this knightly order that was only loyal to the Crown and not to any Elector Count, thus ensuring that the Emperor would always have an iron fist that would not be moved by local interests. Reik's Fortress is the most inviolable military fortress in the entire Altdorf - it is said that its underground stables can accommodate eight hundred war horses, and its martial arts arena is large enough for ten teams of knights to charge at the same time. To become a Reikknight, you must first serve for at least five years in another Imperial Order - such as the Knights of the White Wolf or the Knights of the Sun - be recommended by at least three current Reikknights, and prove your swordsmanship, riding skills, and loyalty in a series of knightly trials. The real power of the Reik Guards lies not in personal prowess - although every Reik Knight is a top knight - but in the absolute discipline of their charge: eight hundred heavily armored knights in full plate armor charge simultaneously in a dense formation, knee to knee, and this impact is enough to crush anything on the battlefield. When you see a knight in white robes and Rick's red cape walking past in any town in the empire, no one dares to block his way - because standing behind him is the emperor himself."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The position of the Reik Guards in the imperial military system is both special and subtle. As far as the chain of command is concerned, they are subject only to the orders of the Emperor himself and Grand Admiral Riker - meaning that no Elector Count, Imperial General, or Battle Bishop has authority to command them. This privilege can not only constitute a huge tactical advantage on the battlefield - you have a reliable elite assault force that is not restricted by local warlords - but can also lead to a coordination nightmare: if the commander of the Reik Guards decides to act on his own judgment and does not cooperate with the overall tactical deployment, it will be difficult to restrain him with the conventional military order system. Experienced Imperial Commanders will consult individually with the Reik Guard commanders before battle rather than using formal orders - this is a delicate form of military politics. The traditional use of the Reik Guards on the battlefield is to serve as a battle reserve, launching a decisive charge when the enemy's army is at its most exhausted or when cracks appear in the defense line; but what makes them truly irreplaceable in strategy is their impeccable protection when the emperor is in danger - at least three times in history, the emperor was killed by his horse on the battlefield and fell to the ground, and the Reik Guards used their bodies to form a human buckler around the emperor, blocking the onslaught of hundreds of enemy troops until reinforcements arrived."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "The institutional history of the Reik Guards is the codified epitome of the Imperial knightly tradition. The First Knights of Reikland - the official name is the \"Supreme Knights of the Imperial Reikland Guard\" - according to the exact records of the \"Imperial Military Yearbook\", its establishment order was signed and promulgated by Emperor William III in the year 1567 of the Imperial Calendar. But the real golden age of the Knights began during the period of Emperor Magnus - after he won the Great Chaos War in 2302 of the Imperial History, he expanded the Reik Guards from a guard of several hundred people into a formal knighthood with a complete knighthood charter, military rank and logistics system. The current organizational structure includes: one Marshal Reik, personally appointed by the emperor, and has always been the most outstanding active general in the empire; several knight captains, each commanding their own company of cavalry soldiers; each company of cavalry soldiers has twelve official Reik knights and corresponding attendants, grooms and armorers. There is a little-known elite core within the Reik Guards - the \"Twelve Inner Rings\". They are the most senior knights in the Knights who have served for more than twenty years. They have the power to command the entire Knights when the emperor is not present, and perform special tasks known only to the Emperor and Marshal Reik. The most precious collection in the Order's armory is the \"Spear of Sigmar\" - a spear said to have been forged by dwarven runesmiths two thousand years ago. It is only taken out of the reliquary and used when the Emperor himself leads the charge of the Reik Guards."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Reik Guards are an existence full of contradictions in the world of imperial aristocratic women. On the one hand, we were full of pride when we sent our son to the Preparatory School for Knights - it meant that the family had a direct link to the imperial power - but on the other hand, we all knew that the death rate of the Reik Guards was far higher than that of any knight order, because they were deployed in the most dangerous positions on the battlefield. As mothers or wives, what we pray for late at night is not for Sigmar's victory, but for our children or husbands to come back intact from Reik's Fortress."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "For an Imperial noble family, having a son join the Reik's Guard is a political investment second only to marriage to the Elector Count's family. He has access to the highest military secrets of the Empire. His colleagues may become Imperial Marshals or military advisors to the Elector Count in the future, and his name will bear the coveted title of \"Rick Knight\" in the family tree. But the price is heavy - he is no longer loyal to the family, his loyalty belongs first and foremost to the emperor, which means you can't expect him to side with the family when other families conflict with the imperial power."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "In the mercenary circle within the empire, the Reik Guards are existences we can never reach. Even if a wandering swordsman has defeated a hundred enemies, as long as he mentions the name of Rick's Guard in the tavern when bragging, everyone will fall silent - because those people are real knights, not desperadoes like us who sacrifice their lives for gold crowns. I once saw a group of Rick Knights marching past on the outskirts of Nunn. They didn't even need to draw their swords. Just the sound of neat iron hooves made all the rogues and thieves on the roadside disappear like mice after seeing a cat."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Arms Guild of Altdorf regards the Reik Guard as our ultimate customer - each Reik Knight's plate armor is tailor-made, and a complete set of Reik Guard armor on the market costs more than a rich farmer's lifetime income. The armorsmiths of Nuln are proud to have their mark branded on the inside of the shoulder plates of the Reik Knights, while the horse dealers of Altdorf have a monopoly on the supply of purebred warhorses - an unfathomably privileged business relationship that outsiders can never get their hands on."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Reik's Fortress - the headquarters and barracks of the Reik's Guard in Altdorf, an impregnable fortress located east of the Imperial Palace",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "The Reik's Guard are the most prestigious order of knights in the Empire, serving as the elite personal bodyguard of the Emperor himself."
+  ]
+}

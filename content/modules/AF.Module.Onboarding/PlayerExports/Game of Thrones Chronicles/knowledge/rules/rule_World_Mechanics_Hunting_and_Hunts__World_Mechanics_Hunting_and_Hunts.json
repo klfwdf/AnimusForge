@@ -1,0 +1,151 @@
+{
+  "Id": "rule_World_Mechanics_Hunting_and_Hunts",
+  "Keywords": [
+    "Hunting",
+    "Hunting Feasts",
+    "Noble Hunting Grounds",
+    "Driven Hunts",
+    "Quarry"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "A noble hunt blends sport, martial training, and politics. Whom the host invites to ride beside him, to whom he yields the best stand, and who is given the honor of the final spear-thrust all show favor and rank, while the feast after the chase offers a setting for marriage pacts, petitions, and private words. Hounds, horses, hawks, guides, and foresters who beat the coverts make the sport possible. Lords commonly claim hunting rights over deer, boar, and woodland, so that common folk may be punished for poaching even in times of hunger. The very same stag is glory in a nobleman's eyes, a beast that tramples crops in a farmer's, or winter meat for a whole family."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Nobles judge horsemanship, nerve, and courtesy in the chase. A wise guest knows when to let his host cast the first spear, and knows that a breach of manners at the hunting feast may be more dangerous than riding home empty-handed."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "wanderer",
+          "artisan"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Foresters and farmers know the tracks of beasts, yet seldom have the right to touch the game. They see a lord's hunting preserve as familiar land suddenly fenced off by law."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "priest",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Merchants supply wine, meat, and hunting gear, septons counsel moderation, and maesters observe beasts and terrain. To different eyes, a hunting feast is trade, temptation, or a lesson taught without books."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Hunting Hunting and Hunts: Nobles use the hunt to display horsemanship, lordship, and favor, while forest folk see in the very same woods food, prohibitions, and the bounds of survival. Whether it is valid depends on who can grant the rights, collect the consideration, and actually make the judgment come to fruition in the event of default."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Hunting Hunting and Hunts: Nobles use the hunt to display horsemanship, lordship, and favor, while forest folk see in the very same woods food, prohibitions, and the bounds of survival. The distant system is not empty talk only if it can be implemented in campfires, city gates and inns."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Hunting Hunting and Hunts: Nobles use the hunt to display horsemanship, lordship, and favor, while forest folk see in the very same woods food, prohibitions, and the bounds of survival. If a rule is practiced over and over again, it will find its way into rituals, crafts, and prayers; if it is sustained only by fear, cracks will show at the onset of a crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Hunting Hunting and Hunts: Nobles use the hunt to display horsemanship, lordship, and favor, while forest folk see in the very same woods food, prohibitions, and the bounds of survival. They remember taxes, grain, labor, relief and who can speak for them; these grand names will eventually fall on the family's rice pot."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Hunting and Hunts: Nobles use the hunt to display horsemanship, lordship, and favor, while forest folk see in the very same woods food, prohibitions, and the bounds of survival."
+  ]
+}

@@ -1,0 +1,147 @@
+{
+  "Id": "rule_Seafaring_and_Voyages_Far_Travelers",
+  "Keywords": [
+    "Far-Travelers"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Travelers include merchants, sailors, pilgrims, messengers, mercenaries and escapees. They relied on roads, inns, ports, and the trust of strangers to travel across different jurisdictions; accents, clothing, and the letters they carried often determined whether they were treated as guests, spies, or prey."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Far-Travelers Travelers include merchants, sailors, pilgrims, messengers, mercenaries and escapees. They relied on roads, inns, ports, and the trust of strangers to travel across different jurisdictions; accents, clothing, and the letters they carried often determined whether they were treated as guests, spies, or prey. The rules of the sea ultimately have to withstand wet ropes, bad water and sudden turns of weather."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Far-Travelers Travelers include merchants, sailors, pilgrims, messengers, mercenaries and escapees. They relied on roads, inns, ports, and the trust of strangers to travel across different jurisdictions; accents, clothing, and the letters they carried often determined whether they were treated as guests, spies, or prey. If any maritime plan ignores the crew's physical strength and return conditions, victory may turn into drifting."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Far-Travelers Travelers include merchants, sailors, pilgrims, messengers, mercenaries and escapees. They relied on roads, inns, ports, and the trust of strangers to travel across different jurisdictions; accents, clothing, and the letters they carried often determined whether they were treated as guests, spies, or prey. A single misjudgment can cost you goods, credit, and lives at the same time."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Far-Travelers Travelers include merchants, sailors, pilgrims, messengers, mercenaries and escapees. They relied on roads, inns, ports, and the trust of strangers to travel across different jurisdictions; accents, clothing, and the letters they carried often determined whether they were treated as guests, spies, or prey."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Soldiers and travelers are more concerned about whether the travelers can make it to Hong Kong alive. Travelers include merchants, sailors, pilgrims, messengers, mercenaries and escapees. They relied on roads, inns, ports, and the trust of strangers to travel across different jurisdictions; accents, clothing, and the letters they carried often determined whether they were treated as guests, spies, or prey. There are no extra roads to go around on the ship, and mistakes can often only be shared by the entire ship."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Far-Travelers Travelers include merchants, sailors, pilgrims, messengers, mercenaries and escapees. They relied on roads, inns, ports, and the trust of strangers to travel across different jurisdictions; accents, clothing, and the letters they carried often determined whether they were treated as guests, spies, or prey. Wood and knots maintain the hull, while faith helps people face the uncontrollable sea."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Far-Travelers Travelers include merchants, sailors, pilgrims, messengers, mercenaries and escapees. They relied on roads, inns, ports, and the trust of strangers to travel across different jurisdictions; accents, clothing, and the letters they carried often determined whether they were treated as guests, spies, or prey. The changes on the distant sea often turn into empty stalls in the market the next day."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Far-Travelers: Travelers include merchants, sailors, pilgrims, messengers, mercenaries and escapees. They relied on roads, inns, ports, and the trust of strangers to travel across different jurisdictions; accents, clothing, and the letters they carried often determined whether they were treated as guests, spies, or prey."
+  ]
+}

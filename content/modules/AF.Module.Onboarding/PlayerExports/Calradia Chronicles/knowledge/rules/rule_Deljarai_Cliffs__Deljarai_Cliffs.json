@@ -1,0 +1,85 @@
+{
+  "Id": "rule_Deljarai_Cliffs",
+  "Keywords": [
+    "Djerjaray Cliffs"
+  ],
+  "RagShortTexts": [
+    "The Jerjarai Cliffs are a natural barrier to the north of Aserai, blocking the expansion of the empire"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Jemjarai Cliff is our northern wall. The Imperial people always wanted to reach out into the desert. They sent legions, envoys, merchants, and everything else they could send, but this wall blocked them all from the sand. Without Jemjarai, Aserai would have been a province of the empire. But it is also our cage. If a caravan wants to go north, it must go around a limited number of passes, and the toll at each pass is stuck in the hands of the local emir. The rift valley of the Karaz family on the Yaquis side is the easiest to walk through, followed by the upper reaches of the Damar Valley. Further east, there are no openings for people to walk through. Whoever controls the pass controls the Aserai's trade routes. But thinking about it from another perspective, this wall also saves us money on raising border guards. If the Sturgians want to defend the empire on the southern border, they need to build a great wall and garrison troops. We only need to set up checkpoints at a few passes, and the caravans will pay the money themselves. The imperial people call it the cliff, we call it the sieve - the sand can pass, the wind can pass, the camel caravan can pass, but the army cannot."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "That big stone wall? My grandpa said it was put there by God. In the past, when the Imperial people wanted to come over, but God wouldn't let them, they would lift up the ground to block them. I have lived under this wall since I was a child. Looking up at it, it blocks half of the sky. Every spring, water flows down from the top of the cliff. The snow accumulated in winter melts and flows down the cracks in the rocks. We picked it up in a can. The water was very cold and smelled of stone. Businessmen from the north had to get off their camels when they reached the bottom of the cliff, look up for a while, and then ask us how to get there. We say, go around. Some people go around for two days, and some people go around for three days, it all depends on which pass they take. There is a pass called Karaz's Rift Valley. It is best to go there, but you have to pay a toll. If you go over to carry a bag of dates, you have to draw half a bag. It’s too expensive, but there’s nothing you can do about it, that’s the only way to go. I feel like the Jemjarai Cliff is like a silent old man. It won’t praise you or hit you, but you must follow its rules. We are used to it."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "scouting": 50
+        }
+      },
+      "Content": "The Jemjaray Cliff is one of the most significant geomorphological faults in the Calradia continent. Its geological structure is a typical product of normal faulting activity—the plate compression movement since the Cenozoic has caused the northern block to relatively subside and the southern block to rise, forming a single-sided mountain that stretches for hundreds of kilometers and has a nearly vertical cliff face. The cliff face is mainly made of limestone and sandstone. After weathering, a large number of gravel slopes are formed. Some areas are ocher red because the rock formations are rich in iron oxide. The top of the cliff is the remnant of an ancient plateau with almost no vegetation due to long-term wind erosion. However, there are occasional accumulations of alluvial soil at the bottom of the rift valley, coupled with seasonal rainfall, forming a miniature oasis in the rift valley where Yakis is located. From a hydrological point of view, the Jemjaray Cliffs form the watershed between the Nahasa Desert and the northern steppes. Almost all precipitation south of the cliff flows into the Damar River system, while to the north it belongs to the inland watershed of southern Sturgia. The cliff itself does not store water, but groundwater seeps out occasionally from fault fissures in the rift valley, making it an important water source along the trade route. In terms of transportation geography, Jamjarai is the natural barrier to the northern boundary of Aserai. There are only a handful of passes that can pass camel caravans. The Karaz Rift Valley and the upper reaches of the Damar River Valley are the two most important ones. This cliff shaped Aserai's geographical isolation and made it one of the most defensible and difficult to attack areas on the continent."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Jemjarai Cliffs? It's the big stone wall north of Aserai. I heard from runners that the wall was so high that your hat would fall off if you stood underneath it. It was all stones, bare and nothing grew. Businessmen call it the \"Camel Team Grave\" - ​​every year, camel teams have accidents there. They move too far to the side and cause landslides. Even the people and the camels roll down and cannot be recovered. They said that the wind is very strong below the cliff. Sometimes the wind comes out of the cracks in the rocks and can blow the camels. Those passes are so narrow that only one camel can pass through them, and it takes a caravan half a day to cross them. Beyond the cliff is Aserai's territory, a sandy land that's extremely hot. I don't want to go."
+    }
+  ],
+  "TextMappings": []
+}

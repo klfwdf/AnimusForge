@@ -1,0 +1,152 @@
+{
+  "Id": "rule_House_Foundations_House_Connington",
+  "Keywords": [
+    "Connington House"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "House Conington rules the Eagle's Nest Castle near the coast of the Stormlands. The red and white gryphons are their family sigil. The family once held a higher title and wider land. After Jon Conington lost power in the Usurper's War and went into exile, the family was reduced to a title. The former reputation left a glory but also a heavy shadow. The main family of Eagle's Nest still needs to rely on manors, coastal roads, marriage alliances, and vassal obligations to survive; the choice of an exile can change the family's situation, but it cannot erase the relatives and people who stayed in their homeland."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "stormlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "When the Stormland nobles mentioned Conington, they remembered their former prominence and how the royal power punished failure. Eagle's Nest reminds every vassal that personal loyalty may be praised, but the price is often borne by the entire family and generations of heirs."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "stormlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "notable",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "People near Eagle's Nest Castle are more concerned about who will build roads, guard the shores and resolve disputes after the seal is reduced. The honor and shame of the exiles in distant places will enter the songs, but those who remain must continue to plow the fields, pay taxes, and face every change of flags."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "crownlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "People in the royal family often view Conington in terms of old rebellions and punishments from the royal family; some people think that reducing the title is natural, while others understand that excessive humiliation of an ancient family will only make the old loyalty become more acute in silence."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Connington House House Conington is based on Falcon's Nest, and the red and white double gryphon family emblem bears witness to its former prominence, loss of power, and still-undissipated Stormlands identity. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Connington House House Conington is based on Falcon's Nest, and the red and white double gryphon family emblem bears witness to its former prominence, loss of power, and still-undissipated Stormlands identity. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Connington House House Conington is based on Falcon's Nest, and the red and white double gryphon family emblem bears witness to its former prominence, loss of power, and still-undissipated Stormlands identity. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Connington House House Conington is based on Falcon's Nest, and the red and white double gryphon family emblem bears witness to its former prominence, loss of power, and still-undissipated Stormlands identity. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Connington House: House Conington is based on Falcon's Nest, and the red and white double gryphon family emblem bears witness to its former prominence, loss of power, and still-undissipated Stormlands identity."
+  ]
+}

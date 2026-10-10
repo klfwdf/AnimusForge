@@ -1,0 +1,132 @@
+{
+  "Id": "rule_House_Foundations_House_Toland",
+  "Keywords": [
+    "House Toland",
+    "Dragon Biting Its Tail",
+    "Dornish Resistance to Dragons"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Toland family is based on the Ghost Mountain and is a Dornish noble under the command of Martell. The current family emblem is a green ouroboros on a gold background. During the Conqueror's War, Lord Toland is said to have used his own jester as a dueling warrior to delay Aegon before evacuating; the family later commemorated \"dragons have no beginning and no end\" and teased the Conqueror with a dragon with its head and tail attached. This story gave Toland a reputation for wit in Dorne's dragon-fighting memory, but it did not exempt the Ghost Mountains from the mundane responsibilities of dry land, water, and local defense. Legend belongs to the ancestors, and each generation of Tolan must still win evaluation with its own choices."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Dornish nobles look at Tolan's Ouroboros and are reminded of an old story about doubles, deception, and the wrath of the conqueror. No matter how many times the story has been told, it is consistent with the Dornish people's understanding of resistance: survival does not necessarily depend on running into a dragon head-on, but it can also depend on letting a powerful enemy only capture an empty shell."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The people around Ghost Mountain are used to hearing the legends of Ouroboros and the old lords, but they still place Toland among the wells, pastures and roads. If wit can protect the people, it is worthy of being sung; if the lord is only allowed to appear wise in the story, the people on the sand will still have to face hunger and thirst on their own."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Toland The Dornish vassals of Ghost Mountain commemorated the old legend that teased the conquerors with the green Ouroboros; the wit of the ancestors coexisted with today's local responsibility. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Toland The Dornish vassals of Ghost Mountain commemorated the old legend that teased the conquerors with the green Ouroboros; the wit of the ancestors coexisted with today's local responsibility. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Toland The Dornish vassals of Ghost Mountain commemorated the old legend that teased the conquerors with the green Ouroboros; the wit of the ancestors coexisted with today's local responsibility. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Toland The Dornish vassals of Ghost Mountain commemorated the old legend that teased the conquerors with the green Ouroboros; the wit of the ancestors coexisted with today's local responsibility. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "House Toland: The Dornish vassals of Ghost Mountain commemorated the old legend that teased the conquerors with the green Ouroboros; the wit of the ancestors coexisted with today's local responsibility."
+  ]
+}

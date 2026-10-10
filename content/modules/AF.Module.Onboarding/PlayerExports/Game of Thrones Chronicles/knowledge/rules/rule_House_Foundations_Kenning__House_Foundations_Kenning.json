@@ -1,0 +1,153 @@
+{
+  "Id": "rule_House_Foundations_Kenning",
+  "Keywords": [
+    "Kenning",
+    "House Kenning"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Kenning family is based in the town of Keche and is a noble of the West, but it retains a piece of its Iron Islands origins. Horok Kenning once used the horn as a signal to have people open the side gate of Kaiche Town from the inside, seize this place for King Kaiyan, and thus establish the Western Branch. This background gave Kenning the agility of a sea raider and the order of a western vassal. Now the family business relies on towns, roads, taxes and obligations to Casterly Rock, and is no longer just a legendary raid."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The lords of the West recognized Kenning's achievements and would also use that surprise attack to remind each other that the strength of a city wall sometimes depends on the hearts of the people within the city. If Ken Ning wants to be regarded as a true Western family, it must continue to keep its promises and not just rely on the ingenuity of its ancestors."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "artisan",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The merchants and craftsmen of Keqie Town relished the story of the ancient horn, but they were more concerned about how much tax the city gate collected today. As long as the roads are safe and the measurement is fair, it doesn't matter whether your ancestors come from an island or a mountain."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "sailor",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The ironborn often say that they exchanged stone houses, money, and land masters for the kennings of Keche. Some ridiculed them for forgetting the ancient ways, while others acknowledged that Hrok's courage to seize the city was an ability respected by the Ironborn."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Kenning The Kenning family rules the town of Keche, which originates from the history of the Ironborn Hrok Kenning who captured the city and surrendered to the Lannister. It is a branch of the Ironborn in the West. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Kenning The Kenning family rules the town of Keche, which originates from the history of the Ironborn Hrok Kenning who captured the city and surrendered to the Lannister. It is a branch of the Ironborn in the West. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Kenning The Kenning family rules the town of Keche, which originates from the history of the Ironborn Hrok Kenning who captured the city and surrendered to the Lannister. It is a branch of the Ironborn in the West. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Kenning The Kenning family rules the town of Keche, which originates from the history of the Ironborn Hrok Kenning who captured the city and surrendered to the Lannister. It is a branch of the Ironborn in the West. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Kenning: The Kenning family rules the town of Keche, which originates from the history of the Ironborn Hrok Kenning who captured the city and surrendered to the Lannister. It is a branch of the Ironborn in the West."
+  ]
+}

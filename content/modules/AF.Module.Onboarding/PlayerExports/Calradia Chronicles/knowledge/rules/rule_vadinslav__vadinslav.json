@@ -1,0 +1,207 @@
+{
+  "Id": "rule_vadinslav",
+  "Keywords": [
+    "Vadinslav"
+  ],
+  "RagShortTexts": [
+    "Vadinslav was the former Grand Duke of Sturgia, and no one dared to say anything about it during his lifetime."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Vadinslav was the former Archduke of Sturgia, who led the Northern Legion to siege the Empire at the Battle of Pandrak, and was ultimately killed in action. He was the father of the Archduke Langward, and while he was alive no one in Sturgia dared to say a word about him."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Grand Duke Vadinslav...that is a real northern man. While he was alive, no one in Sturgia dared say a word. During the battle with Pandlak, he led our northern men to the front and tore a hole from the hands of the Imperial Guards. The old wolf died and was replaced by a howling pup - which is why Sturgia is now looked down upon by everyone around him."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Vadinslav is indeed a man, and I respect him. But what was his purpose in getting Sturgia into that bad war with Pandrac? To help the Battanians fight against the Empire? We northerners haven’t warmed up our own land yet. He died in battle and came back with a young and vigorous son. Langward has been thinking about surpassing his father's reputation all day long, but look at what he is doing now - offending Battania, annoying his subordinate Boyer, and dreaming about unifying the north all day long."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "townsfolk"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "We northerners have heard about the deeds of Grand Duke Vadinslav since we were young. On the day of the Battle of Pandrak, he stood at the front of the shield wall and ran into the Empire's cavalry. Some say that when he fell he was clutching fragments of the dragon flag torn from Nereitses. I'm not sure if this legend is true or not, but we Sturgians would rather believe it. Because he died on the battlefield like a true Northerner."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Vadinslav? That barbarian leader from the north. On the day of Pandrak, it was he who led the group of northerners clad in animal skins into our right-wing defense line. The Imperial soldier's sword struck his chain mail, and without even a frown he split our standard-bearer in half with a single blow of his axe. To be honest, if it weren't for the traitors in Vlandia stabbing him in the back, Emperor Neretse could have wiped out these northerners."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "I saw Vadinslav fall with my own eyes. It was dusk, and the battlefield was filled with smoke and blood. The imperial cavalry broke up their shield wall, and Vadinslav was surrounded by a group of armored cavalry. Ordinary people would have knelt down long ago. What about him? He killed several of them without hesitation, and was stabbed from behind in the end. This man was an enemy in life, but in death, he deserves hats off from anyone on either side."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Vadinslav is our ally. When Battania and Sturgia joined forces to fight against the Empire, the Vadinslavs did not have the same two-way strategy as the Vlandians. He promised to send troops, and he actually came with his people, and he was at the forefront. Although the two sides were unhappy about the distribution of spoils after the war, Vadinslav himself, a Battanian, would not say a bad word. He died like a warrior, and we respect warriors."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Vadinslav? That old guy from the north. We were allies during Pandrac's time - at least on paper. But the barons of Vlandia didn't really want to go to war with the Empire, and we were forced to rebel by Nereitses' humiliating letter. Vadinslav really fought. He was one of the few coalition leaders who tried his best in Pandrak. After his death, relations between Sturgia and Vlandia cooled."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer",
+          "mercenary"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Grand Duke Vadinslav, I have heard of him. In the north he was almost a legend. Someone made up a ballad to sing about him - saying that in the Battle of Pandrak, he cut down more than a dozen Imperial Guards by himself, and was finally stabbed to death in the back. As for authenticity? To be honest, I’ve heard no fewer than five versions of it in pubs. But one thing is true: the current Archduke of Sturgia has lived in his father's shadow his entire life."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "steward": 150
+        }
+      },
+      "Content": "Vadinslav was a key figure in Sturgia's transition from tribal confederation to centralization. He kneaded the scattered northern clans into a grand duchy and changed the title of \"grand duke\" from a temporary position during war to a hereditary throne. The Battle of Pandrak was the end of his political career and the culmination of his ambition - by participating in this continental war, he hoped to have the Empire and all of Calradia recognize Sturgia as an equal political entity. However, his rule relied on personal prestige and failed to establish a stable inheritance system, so after his death, Langward inherited a chair made of battle axes."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Vadinslav",
+      "Kind": "bound_hero_name",
+      "TargetId": "__bound_hero__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "Pandrak",
+      "Kind": "bound_event_name",
+      "TargetId": "__bound_event__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

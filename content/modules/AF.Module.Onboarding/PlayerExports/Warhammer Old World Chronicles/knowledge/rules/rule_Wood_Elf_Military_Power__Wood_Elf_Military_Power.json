@@ -1,0 +1,206 @@
+{
+  "Id": "rule_Wood_Elf_Military_Power",
+  "Keywords": [
+    "Wood Elf Military",
+    "woodland scout",
+    "eternal guard",
+    "Wood Elf Army Treant",
+    "Wood Elf Army Wild Hunt"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The armies of the Wood Elves are at one with the forests of Athel Loren—their woodland scouts move silently among the branches, firing arrows coated with deadly forest poison; and the Eternal Guard form a line of spears as impenetrable as tree roots. But the most terrifying thing is not the elven warriors themselves, but the ancient forest incarnations called treants, and the wild hunt that sweeps across the edge of the forest when the hunting horn sounds - an indiscriminate storm of destruction."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Asrai's way of war is unlike any mortal army. We don't need siege weapons - our arrows can penetrate gaps in armor from a thousand paces away. We don't need thick walls - Athel Loren will use its branches to shield us from the worst impacts. Woodland Scouts are our eyes, ears and stingers. They are like fish in the forest and can wipe out entire patrols without the enemy sentries noticing. The Eternal Guard—the silent guardians armed with elven spears and clad in leafy armor—form the defenses of our forests, their fighting chemistry honed over hundreds of years. The treants are our ancient allies, and when they awaken from their millennia of slumber, the earth trembles. And the wild hunting - when Orion blows the hunting horn at the hottest noon in midsummer, every Asrai will feel his blood boiling, and the forest itself will enter a state of fury. At that time, any creature unfortunate enough to step into our borders will be turned into fertilizer."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Fighting wood elves in a forest setting is suicidal. The first rule of every military commander is this: never let the battle enter Athel Loren or any jungle terrain. The Wood Elves will not fight you head-on in formation - they will fight and retreat, divide your formation, and defeat each one in the dense forest. Their woodland scouts are the Old World's finest skirmishers, able to move at high speeds with deadly accuracy. Treants are the most destructive assault units, their bodies are as large as battering rams and their fury is enough to tear apart any infantry line. The most vulnerable areas of the Wood Elf army are in open areas and siege warfare - they are not good at siege warfare and are relatively afraid of cavalry charges, but this weakness can only be exploited when far away from the forest."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 100
+        },
+        "IdentityIds": null
+      },
+      "Content": "The Wood Elf military system is divided into three main dimensions: mortal elf warriors, woodland spirit allies, and seasonal wild hunts. Elf warriors use an extremely advanced 'high-speed shooting and maneuvering' tactical system - the woodland scouts have already fired arrows and disappeared from their original positions when the target is discovered. The Eternal Guard Spear Formation displays an astonishing level of discipline - they are able to synchronize their formations without the use of any commands, believed to be coordinated through some kind of spiritual resonance. Treants are essentially spiritual entities that are integrated with the trees of the material world. Their combat effectiveness is directly related to their age and size; the oldest tree people are comparable in combat power to an entire infantry company. The Wild Hunt is the most unpredictable dimension of Wood Elf martial prowess—a state of collective war fever that the forest enters at Orion's call, in which all participants—whether elves, dryads, or animals—go into an almost berserker killing rage that can last anywhere from days to months."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "As a woman who managed territorial affairs in the chaotic era of the old world, my understanding of wood elf military power is fundamentally different from that of male lords who only consider issues on the battlefield. The cost of war is ultimately borne by villages, farmlands and families – and these are the areas I manage. This perspective makes me focus more on the long-term impact of Wood Elf military prowess rather than the short-term exploits."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "As the head of the family, the strength of the Wood Elf military is not only a military or political issue for me, but also an issue of bloodline continuation. Every decision we make on an issue related to Wood Elf military power will be recorded in the family tree and tested for generations to come. The survival of the family takes precedence over personal glory - this is the position I have always maintained in the Elder Council."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "During my wanderings, my knowledge of the Wood Elf military prowess came not from books or military academies, but from actual experiences heard by survivors around campfires in border villages. These experiences are rougher but also more honest than any official record - they are not filtered and embellished to protect the face of those in power."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "From a commercial and handicraft perspective, the Wood Elf military power means a stable market for guild members like me - whether it is arms supply, infrastructure construction or post-war reconstruction contracts. But the Wood Elf military strength also brings risks: once the relevant areas fall into war, our most profitable trade routes will be cut off, inventory will be backlogged, and insurance costs will soar."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Wood Elf Military - Warhammer Old World Core Concept Entry",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "The armies of the wood elves are integrated into the forests of Athel Loren - their woodland scouts can"
+  ]
+}

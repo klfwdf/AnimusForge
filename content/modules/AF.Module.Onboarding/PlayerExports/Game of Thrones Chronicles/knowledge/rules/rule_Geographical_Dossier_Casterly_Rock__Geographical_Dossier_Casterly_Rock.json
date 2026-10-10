@@ -1,0 +1,133 @@
+{
+  "Id": "rule_Geographical_Dossier_Casterly_Rock",
+  "Keywords": [
+    "Casterly Rock",
+    "Lannister",
+    "Lannisport",
+    "King of the Rock"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Casterly Rock stands on the coast of the Sunset Sea in the West, near Lannisport. It is a fortress carved from the interior of a huge rock mountain, and it is also the ancestral foundation of the Lannister family. Halls, mines, shafts, arsenals and residences are distributed within the rock, overlooking the port city and the western coast; its gold mines and ancient savings make Lannister's wealth not just a rumor, but can be converted into armies, marriage alliances and credit. Casterly Rock is the legal center of the Western Territory in the Seven Kingdoms. It is supported by the difficult-to-attack mountain rocks, the trade nearby Lannisport, and the fear of the Lion House by various vassals."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "When the nobles of the Westerlands look at Casterly Rock, they first think of the debt promised by Lannister and the gold they can provide; the merchants look at the docks, ore and reliable buyers of Lannisport. Both understand that the real scary thing about Casterly Rock is not necessarily just the gold, but that people have been conditioned to believe it contains gold. Once credit becomes a tradition, it can extend further than a vein of mine."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania",
+          "sturgia",
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Northerners think Casterly Rock is too rich to be true, Ironborn will see it as the most attractive property on the West Coast, and Dornishmen will more easily remember how its wealth found its way into the capital and the marriage alliance. To all outsiders, the Golden Lion's lair is a reminder that some castles' influence comes from beyond the walls, from debts owed by people from far away, rewards desired, and revenge they dare not provoke easily."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Casterly Rock Entry Lannister Lannisport It is the core symbol of wealth, lion pattern, credit and family intimidation in the West. They care about water sources, roads, customs and garrison, and know that behind the place names there is often a food road that can keep the castle alive."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Casterly Rock Entry Lannister Lannisport It is the core symbol of wealth, lion pattern, credit and family intimidation in the West. The reputation of a place is often determined by the number of people who died there."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Casterly Rock Entry Lannister Lannisport It is the core symbol of wealth, lion pattern, credit and family intimidation in the West. Stones, trees, rivers or mountain passes can become places of livelihood, and may also be endowed with sanctity, taboos and ancestral memories, so they cannot be measured in terms of money alone."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Casterly Rock Entry Lannister Lannisport It is the core symbol of wealth, lion pattern, credit and family intimidation in the West. They first checked whether the place could draw water, farm, graze, and avoid military disasters; a line of words on the map, and when it landed in the village, it turned out to be firewood, well rope, and winter food."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Casterly Rock: Casterly Rock stands on the coast of the Sunset Sea in the West, near Lannisport. It is a fortress carved from the interior of a huge rock mountain, and it is also the ancestral foundation of the Lannister family. Halls, mines, shafts, arsenals and residences are distributed within the rock, overlooking the port city and the western coast; its gold mines and ancient savings make Lannister's wealth not just a rumor, but can be converted into armies, marriage alliances and credit. Casterly Rock is the legal center of the Western Territory in the Seven Kingdoms. It is supported by the difficult-to-attack mountain rocks, the trade nearby Lannisport, and the fear of the Lion House by various vassals."
+  ]
+}

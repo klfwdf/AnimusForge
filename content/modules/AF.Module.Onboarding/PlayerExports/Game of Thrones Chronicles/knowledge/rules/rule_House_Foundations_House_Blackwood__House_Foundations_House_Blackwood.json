@@ -1,0 +1,151 @@
+{
+  "Id": "rule_House_Foundations_House_Blackwood",
+  "Keywords": [
+    "House Blackwood",
+    "Dead Weirwood",
+    "Feud with House Bracken"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Blackwood family is based in Raventree City and claims to be descended from the kings of the First Men. They are one of the few prominent families in the Riverlands who still openly believe in the old gods. The huge weirwood trees in the city have long since died, but there are still crows inhabiting them. The family emblem also uses white dead trees and black crows to express this memory. The battle between Blackwood and Bracken has lasted for thousands of years, and has long been entangled with land, blood debts, marriages and conflicting origin legends; any claim that one party started it all is often the family version. Northerners will feel close to them because of their belief in the old gods, but the people in the river are more concerned about who burned the fields when the two families were at war."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "river"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The river nobles view the Blackwoods as an ancient, proud, and unshakable lineage. The dead weirwood trees in Crowtree City, the beliefs of the old gods, and the autobiographies of the descendants of the ancestors and kings make them stand out in the Riverlands, where the Seven Gods are generally worshiped. Supporters say it's keeping one's word, enemies say it's just keeping every old grudge alive for too long."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "river"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The people around Crowtree City swore an oath under the heart tree and sowed seeds in the same mud. For them, the dispute between Blackwood and Bracken has never been just the thousand-year feud in the song: a boundary moved a mile, and it might be a pasture, a well or who should pay rent next season. Nobles remember their ancestors, and ordinary people remember the roof beams that have been burned several times."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "river"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "priest",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Septons of the Seven often view Blackwood as a rare island of old gods in the Riverlands, while the Maester will remind people that truth and legend have long been entangled in ancient genealogies. The dead heart tree did not convert the family, but instead became the most striking memory: the tree died, but the oath was still spoken in front of it."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Blackwood The ancient ancestors of Crowtree City, one of the few believers of the old gods in the Riverlands, have their family emblem connected with dead weirwood trees and flocks of crows. His feud with Bracken contains conflicting family narratives, and no one side can be believed. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Blackwood The ancient ancestors of Crowtree City, one of the few believers of the old gods in the Riverlands, have their family emblem connected with dead weirwood trees and flocks of crows. His feud with Bracken contains conflicting family narratives, and no one side can be believed. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Blackwood The ancient ancestors of Crowtree City, one of the few believers of the old gods in the Riverlands, have their family emblem connected with dead weirwood trees and flocks of crows. His feud with Bracken contains conflicting family narratives, and no one side can be believed. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Blackwood The ancient ancestors of Crowtree City, one of the few believers of the old gods in the Riverlands, have their family emblem connected with dead weirwood trees and flocks of crows. His feud with Bracken contains conflicting family narratives, and no one side can be believed. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "House Blackwood: The ancient ancestors of Crowtree City, one of the few believers of the old gods in the Riverlands, have their family emblem connected with dead weirwood trees and flocks of crows. His feud with Bracken contains conflicting family narratives, and no one side can be believed."
+  ]
+}

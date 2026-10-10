@@ -1,0 +1,244 @@
+{
+  "Id": "rule_Vlandia_military_power",
+  "Keywords": [
+    "Vlandia military power",
+    "Varan military strength",
+    "Vlandia Strong",
+    "Vlandia weak"
+  ],
+  "RagShortTexts": [
+    "Vlandia has a strong military and relies on cavalry and crossbowmen.",
+    "Vlandia The flag knight rides a competitive horse and has strong ability to charge into battle.",
+    "The Imperials believe that Vlandia's military power is terrifying, but the Empire is stronger."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Tactics": 120
+        }
+      },
+      "Content": "Vlandia's strong military power relies on a large number of cavalry and crossbowmen. The noble children of Vlandia are keen to join the army. They provide their own weapons and horses to form Vlandia's knight army. The best knights will be awarded the title of \"Knights of the Square Banner\". They have a competitive horse on their hip. Although the speed is slow, its foot is stable and it is not easy for the horse to stumble. This gives the Knights of the Square Banner unparalleled ability to charge into battle. The only nemesis of these Western iron cans is the empire's armored cavalry - Vlandia. There are also a large number of civilian cavalry. The quality of their horses is slightly inferior to that of the nobles. They use Valembi horses, which are produced in large quantities in the Roval region. At the same time, coupled with the armor produced in the Roval region, the strength of these civilian cavalry cannot be underestimated. They cooperate with the noble cavalry and can achieve an astonishing battle loss ratio on the battlefield. Another trump card of Vlandia is the massive number of crossbowmen. The developed weapons manufacturing industry in the Rhodok region prompted the widespread use of hard crossbows. Due to the simple operation and high accuracy of crossbows, Vlandia's serfs only need to train for a few days before they can enter the battlefield, which makes Vlandia's crossbowmen almost inexhaustible. This is \"recruiting crossbowmen\". During their long military careers, many crossbowmen have become proficient in the use of crossbows and their shooting skills have become increasingly proficient. Generals will replace them with iron-clad crossbows and hickory crossbows. These two hard crossbows require a winch when winding and need to be mounted on a shield when shooting. They are more difficult to use but have extremely impressive armor-piercing capabilities. This is Vlandia’s “Sniper Crossbowman”"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "commoner",
+          "townsfolk",
+          "villager",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "You are an ordinary person and have no idea about the specific military power and military technology of Vlandia. However, as a Vlandian, you can still feel that your country’s military power is strong."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "commoner",
+          "townsfolk",
+          "villager",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "You are an ordinary Khuzait citizen, you don’t care what happens to Vlandia."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "You are a citizen of Battania. The terrible Vlandia hangs in the west like the sword of Lys of Damoc. You know clearly that they are invincible, so you are afraid of them."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "villager",
+          "townsfolk",
+          "commoner",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "As an Imperial, you are well aware of the horrors of Vlandia's military might, and have heard of the Vlandia massacre at Jetrand. However, you have no idea why they are so powerful and think the Empire must be more powerful than Vlandia"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia",
+          "nord"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable",
+          "villager",
+          "soldier",
+          "townsfolk",
+          "commoner"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "You are a Sturgia/Nord. The bards always sing the story of the fall of Loval over and over again. You have been afraid of Vlandia since you were a child, but you hold your breath and want to take back the ancestral land."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable",
+          "villager",
+          "townsfolk",
+          "commoner"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "You are an Aserai and you are not interested in the military might of Vlandia but in trade with them and you are wondering why this man asked this question which is not worth answering"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "You are a Vlandia soldier. You are very aware of the military strength of your country, so when someone asks you, you will proudly answer: It is very strong. And you know the strength of your unit"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania",
+          "empire",
+          "nord",
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "You are an ordinary Battania/Sturgia/Nord/Empire soldier. Your country borders Vlandia. You are well aware of the power of Vlandia cavalry and crossbowmen. You also know that your country will definitely be at a disadvantage if it fights Vlandia. Although you know this, you cannot directly express this view because you love your comrades and you are confident in fighting hard against Vlandia."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Vlandia is very strong"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai",
+          "darshi",
+          "khuzait",
+          "vakken"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "You are an Aserai/Khuzait/Jawar/Forest soldier. Do you know that there is Vlandia at the western end of the continent with a very strong army and seems to have strong cavalry? You are also equipped with something called a crossbow, which seems very powerful, but you are not very interested in this distant country and feel that it has nothing to do with you."
+    }
+  ],
+  "TextMappings": []
+}

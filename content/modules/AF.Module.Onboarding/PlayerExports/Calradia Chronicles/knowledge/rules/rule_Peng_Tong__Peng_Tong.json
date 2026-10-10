@@ -1,0 +1,179 @@
+{
+  "Id": "rule_Peng_Tong",
+  "Keywords": [
+    "Peng Tong",
+    "Penton Nereits"
+  ],
+  "RagShortTexts": [
+    "Peng Tong managed Saneopa and stabilized the Senate"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Penton Nereitses was the most silent man in the Senate of the Northern Empire. While others were speaking, he sat with his hands folded on his knees, his expression neither surprised nor angry. When it was his turn to speak, he stood up, sat down after finishing a sentence, and never said more. We, the old-school elders of the Northern Empire, did not accept him at first - he was the prince of the former dynasty, with the blood of Drosius flowing through his body. We have not yet woken up from the nightmare of the shadow of the Pendrac disaster. But after so many years, he just used practical actions to make the surname \"Neretses\" listenable again. Xagnieopa never caused any trouble in his hands, and when the senate got into a quarrel, he could calm down the situation with a few words of justice. Emperor Lucon trusted him, and we slowly learned to respect him. No one would dig up his father's old scores in public, that would be self-inflicted. Peng Tong used his silence and restraint for half his life to atone for his family's sins, which he deserved."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Peng Tong? The son of Drosius, the former prince. I heard that he fought fiercely in Pandrak, killed many barbarians, and almost rescued his father. But his father still died, and the throne was gone. Now he was serving as a vassal to Lucon in the north, and in charge of Xagniopa. My mother’s relatives used to be tenant farmers on the Neretse family’s estate and said that their family’s taxes are now lighter than before, and even reduced during lean years. For this reason, I can say that he is fair - he has spent half his life paying off his father's debts, which is quite interesting. Others would have raised the flag to rebel, but he did not rebel and just quietly remained a minister. This is harder than rebellion. He knew that his father had screwed up the empire, but he didn't say anything, but everything he did was to mend the holes. I think it is not a shame for the empire to have such a former prince."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Penton Neretse is a name that our southern empire occasionally mentions in diplomatic correspondence, with a neutral tone and a hint of grudging respect. Queen Rhagaea never spoke of him, but old ministers remembered some of the past. During the reign of Drosius, Rhagaea almost married Peng Tong. If this marriage happened, the history of the empire might be completely rewritten. However, due to blood relations, the marriage was abandoned, and Rhagaea later married Arenicos. Peng Tong took another path. Now he serves as a pillar for Lucon in the north, and we maintain our own situation in the south without contact with each other. But we privately admit that Peng Tong is the only one in the Neretse family who has climbed up from the mud of Pandrak and washed his face. He was not crazy, he was not dead, he did not surrender to the barbarians, he did not raise a flag to rebel. He chose the slowest, most boring road, and the only feasible one."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_w"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Penton Nereitses. Emperor Galios occasionally mentioned this name when he was drunk, and his tone was much gentler than when he scolded his father. Galios said something that we think is quite fair: \"That boy Peng Tong fought for his life in Pandrak and almost pulled his father out of the dead. His father owed him more than he owed the empire.\" But the relaxation is the relaxation, and the surname Neretses will never be whitewashed in our west. We will not forget what his father did just because Peng Tong is a good man. Veterans of the Western Empire still report that Drosius deliberately suppressed the ambush information and wanted to use the enemy's arrows to shoot Galios to death. Garius has remembered this for his whole life, and we will remember it accordingly. Peng Tong will be his good veteran in the north, and we will be our soldiers in the west. The water from the well does not interfere with the water from the river."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Penton Nereitses was the most underestimated moderate figure in imperial politics. From an external assessment, this person possesses the core quality required of a mature politician - self-restraint. He gave up his vain ambition of restoration and chose to rebuild his family's influence within the institutional framework of the Northern Empire, which was extremely rare in the history of the empire. His military talents had been proven at Pandrak, and his political judgment continued to be demonstrated in the Senate of the Lucon dynasty. The stability of the eastern part of the Northern Empire relied to a considerable extent on his control and operation of Saneopa. If his father had been the driving force behind the disintegration of the Empire, he was, in his own way, slowly but surely stitching together some of the things his father had torn apart. This atoning political career is not glorious, but it is worthy of respect."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "clan_empire_north_1"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "hero:lord_1_1"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Peng Tong is my most powerful veteran, but also the person I least understand. He never demanded, never complained, and never formed cliques. He sat in the Senate like a stone. Every time I raised taxes or raised troops, he never got angry when I raised objections, but simply stated a few figures in a low voice - this year's harvest in Saniopa, the traffic volume of trade routes, and the need for garrisoning at the border. Every time I listen, I feel that he is right. That's why I gave in. Not afraid of him, but trusting him. He is not greedy, does not rob, and does not fight. A person who doesn't fight will give you back whatever you give him. I am getting older, who will support the Northern Empire in the future? It's not those quarrelsome elders, it's Peng Tong. But I won’t tell him this in person, lest he feel embarrassed."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "clan_empire_west_1"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "hero:lord_1_7"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Peng Tong. His father wanted me to die in Pandrak, where he killed old Olek. The two things were even. I don't hate Peng Tong, but I won't pay attention to him. He is a member of the Senate at heart, and I am a member of the barracks. We are not walking the same path. He probably doesn't hate me, but he will never come west to join me. He guarded Saneopa as if he were guarding his father's tombstone. He was too tired to live. I know what it's like to spend your whole life cleaning up a jerk's mess. I clean up for the empire, and he cleans up for his father. We are kind of like brothers, but he is quieter than me and I am louder than him."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "clan_empire_south_1"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "hero:lord_1_14"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Peng Tong fought for his life in Pandrak and failed to save his father, but he saved his own dignity. He guarded Xaneopa in the north, and I guarded Lycaron in the south. Have no contact with each other. But sometimes in the dead of night, I wonder if the empire would still be what it is now if we had won. Maybe not. Maybe the Great Schism won't happen. Perhaps he would have stood beside me instead of sitting in the Senate to the north as a pillar of Lucon. But I just think about it. There are some things that fate doesn't allow and people can't do anything about."
+    },
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Peng Tong? The son of the dead emperor, right? I heard from a businessman that his father had screwed up the empire and had his head chopped off, but he didn't run away. He was still a high official in the north, guarding a big city. Do you think he hates his father? I guess I hate it. Anyone else would hate having a father like this. But he didn't change his surname, nor did he rebel. He just kept working there. I think this guy can handle it quite well. We have an old saying here: A good man doesn't pay his father's debt. But he paid it back, for half his life. There aren't many people like that anymore."
+    }
+  ],
+  "TextMappings": []
+}

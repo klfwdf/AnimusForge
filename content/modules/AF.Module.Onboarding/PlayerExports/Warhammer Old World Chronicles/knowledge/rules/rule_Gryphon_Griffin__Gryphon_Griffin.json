@@ -1,0 +1,212 @@
+{
+  "Id": "rule_Gryphon_Griffin",
+  "Keywords": [
+    "Griffin",
+    "Gryphon (Gryphon Griffin)",
+    "flying raptor",
+    "imperial mount",
+    "deathclaw (Gryphon Griffin)",
+    "Karl Franz mount",
+    "royal zoo",
+    "Griffin Egg",
+    "Eagle-winged beast",
+    "Imperial Air Force",
+    "Griffin Cavalry"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The griffin is the most powerful and dangerous flying raptor in the empire - it has the head and wings of an eagle, the body and claws of a lion, and stands taller than two war horses at the shoulder. The Imperial Emperor Karl Franz's mount 'Deathclaw' is the most famous griffin in the world. This behemoth can only be tamed by the bravest - or craziest - warriors at the cost of a lot of blood. A small number of griffins are tamed in the imperial royal zoo for war."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Griffin - the most primal and noble expression of Imperial power. No Imperial person can stand calmly in front of a gryphon with its wings fully extended—the forty-foot-wide wings can stir up air waves enough to blow over a tent with a single flapping. When those yellow eagle eyes sweep over you, you will understand for the first time what it means to be judged from the top of the food chain. The Royal Zoo, located on the western outskirts of Altdorf, is the Empire's only gryphon training facility licensed by both the Sigmar Church and the Academy of Magic - trainers here are the most dangerous and respected profession in the Empire, as about half of them end up dying at the claws of the griffons they thought they had tamed. Karl Franz's Deathclaw is the most powerful gryphon documented - in 2515 in the Imperial Era, it single-handedly killed a Chaos Two-Headed Dragon that had occupied the skies of Nordland for three generations, and took its two skulls back and placed them on the steps of the Imperial Palace. The griffon is more than just a mount for the empire, it is the embodiment of the empire's dignity in the sky - when you stand on the ground and look up and see a griffon hovering over the imperial army, you will understand that the enemy cannot come from above today. An imperial peasant may have never seen the emperor himself in his life, but as long as he sees the symbol of the golden griffon on the imperial military flag, every corner of his heart will be filled with a certainty that cannot be obtained elsewhere: We own the sky."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Griffins are the most luxurious and decisive tactical assets in the hands of imperial military commanders - luxury because there are currently no more than eight griffons in the entire empire that can be used in actual combat, and decisive because the military with aerial reconnaissance, control and strike capabilities has de facto air supremacy over enemies without air power. The tactical role of griffins on the battlefield can be summarized into three levels: first, strategic reconnaissance - a griffon hovering at an altitude of three thousand feet can see through any terrain information within a radius of twenty miles, and its vision far exceeds that of human cavalry scouts; second, battlefield air strikes - griffons can dive from high altitudes Then, use both claws to pierce the key commanders on the enemy's front line or the operating team of the enemy's war machine at the same time, and then instantly lift up and leave the dangerous area; the third and most subtle layer is psychological suppression - the enemy archers will instinctively reduce the altitude of their upward shots when they know that there is a griffon hovering above their heads. But the tactical fragility of griffins is equally fatal: their wings - especially the wing root joints - are huge targets. Even if a bow and arrow cannot kill a griffon, it is enough to make it unbalanced and fall to the ground. Once the griffin lands, it is no longer the king of the sky in the dense infantry phalanx but just a large target trapped on the ground. Any commander using an Emperor's Griffin on the battlefield should strictly limit the time the Griffin is deployed to no more than fifteen minutes - beyond this time the Griffin's stamina will begin to decline significantly and the risk will skyrocket."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "The biological genealogy of the gryphon is one of the most puzzling gaps in the study of Imperial nature. Griffons do not belong to any classification of animals known in the Old World - they are neither birds nor mammals, and their biological evolution does not have any fossil records of intermediate species in nature. The leading hypothesis of the Imperial University School of Nature is the ancient and vague 'Legacy of Chaos Theory' - the belief that griffins are a stable complex species left over from natural changes during the fragmentation era of the old world that was still in a state of chaos, rather than the product of any known evolutionary narrative. The breeding records of the Royal Zoo also reveal a series of disturbing facts: the incubation environment of griffon eggs is extremely demanding - it must simultaneously meet a very high nest temperature (approximately equal to human body temperature) and a wide range of temperature difference rhythm changes to simulate the incubation experience in high air currents. In the history of the Royal Zoo, the survival rate of young griffons hatched in captivity has never exceeded 20% - the vast majority of griffon eggs can only be hatched by female griffins, and the frequency of these female griffins in captivity is much lower than that of their wild counterparts (the former are known to have birth cycles at least seven years apart). The process of taming a griffon is also legendary - it does not rely on any operable training model, but depends on a phenomenon called the 'first sight moment' by trainers: if the first creature a young griffon sees after breaking out of its shell is a human, then the human will The griffon will treat it as a nest mate throughout its growth cycle - and if the 'first sight' subject does not have the willpower or physical ability to remain fearless when faced with the griffon as an adult, the griffin will never be fully tamed by anyone and must eventually be put to death. The 'first moment' between Karl Franz and the Deathclaw took place in 2495 Imperial Calendar - it was this moment that laid the unshakable spiritual foundation of contemporary Imperial air power."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The gryphon is a very special existence to the imperial people's gender imagination - it is both a conquered beast and a symbol of the empire's supreme power, and the act of riding a gryphon itself is an extremely masculine display of power in the subconscious mind of the imperial culture. No female Imperial lord in history is officially recorded as having tamed a gryphon - but my private intuition tells me that this is not because women can't do it, but because women have never been given enough support and permission to spend those few years of basic taming in gryphon taming facilities without being questioned by others and exhausting their patience. In my fief, I paid for retired trainers from the Royal Zoo to train provincial scouts in the use of falcons and giant eagles - training experience with such small birds could theoretically be extended to griffons. Griffons don't care about your gender - they look at the fear in your eyes when they decide whether to bite your shoulder off, and fear has nothing to do with gender. Perhaps one day in the future, a woman who is angry enough and capable enough will walk into the Royal Zoo and press the beak of the unyielding young griffon to the ground with her bloody hands - and then the history of the empire will have a new color."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Our family's relationship with griffons is not about ownership - no family in the Empire can truly own a griffin - but about being allowed access. For three generations after the founding of the Empire, the family continued to donate land and funds to the Royal Zoo, and the only return in exchange was a privilege that had never existed in a written document but had been enforced for more than a hundred years: when the Emperor was not in Altdorf, the patriarch of our family was allowed to enter the griffin enclosure accompanied by the chief trainer of the Royal Zoo, and only stood outside the fence no more than twenty feet away from the Royal griffin enclosure to watch. This made no sense militarily or legally - but it meant a certain kind of relational capital that could not be replicated in the microcosm of the imperial nobility. When someone at the Imperial Council banquet attempts to question the sincerity of our family's loyalty to the Emperor, I can simply mention in the most casual way that 'the last time you saw the Deathclaw on the fence, it yawned and showed its teeth - and at that moment you thought it was a miracle in itself that Karl Franz was riding on its back. 'The message the other person receives from your tone of voice and the fact that they can't refute it is far more weighty than your words themselves - because our family is literally standing on the fence that can't be faked, and he wasn't even allowed into the main gate of the Royal Zoo. In the power structure of the Empire, what you have is never as important as what you are allowed to access."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Only once in my life have I seen a live gryphon at close range from the ground - not at the Royal Zoo, but on the snowy battlefields of Ostermark. At that time, I was dragging a leg that could no longer run in the midst of a retreating mercenary spear team, thinking that this would be where I would end up in my life - the sound of the iron hooves of the orc cavalry was already so close behind me that I could smell the stink of the war pigs. Then the sky above the snow was suddenly torn apart by a sonic boom that I still can't describe - a huge black shadow with a golden edge fell from the sky and hit directly in the middle of the row of orc cavalry behind me. In the smoke and dust raised by the broken ice and mud, I only saw a giant wing sweeping over the heads of four war pigs, sweeping them into a pile of scrap metal, including humans and beasts. Then a roar directly triggered a physical resonance in my chest - and then the black figure pulled up again, and disappeared with his rider into the direction of the snowflakes rising from the ground back into the sky. After the scene calmed down, I turned around and looked at the area—the cavalry of ten war pigs, none of them intact. I don't know who that rider was - maybe Karl Franz himself, maybe one of the Emperor's personal griffin knights. What I do know is that every time I woke up from a nightmare after that, it was the same memory that saved me: that incomparable sense of presence as it tore the sky apart—the gryphon simply existed. Its very existence is all explanation."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The heart of the gryphon economy lies not in the market, but in the Royal Menagerie's annual budget - and it's a mysterious expenditure that has never been reviewed by the Imperial Council in any transparent way. The daily food intake of an adult griffon is about two whole sheep plus three live birds - this is not a metaphor, a griffon needs live food to maintain its predatory instinct, and if it is fed only dead meat it will become dull or even refuse to eat within a few weeks. The legal privileges of the Imperial Royal Zoo allow its purchasers to purchase from surrounding sheep farmers and hunters any live animals that meet the food needs of the griffons without being subject to market price restrictions - this has resulted in the sheep herding industry along the three rivers west of Altdorf actually relying entirely on the Royal Zoo as its only major customer. A complete saddle of a griffon - including the chest strap connected to the saddle, the saddle core that can withstand aerial flipping exercises, and the specially designed aerial straight-grip reins - are all custom-made by dwarves. A brand new griffon saddle requires at least a year of dedicated time by the dwarf saddlemaker, and its value cannot be measured by ordinary imperial gold coins. During my career as head of the Chamber of Commerce, the Royal Zoo’s annual live animal purchase contract was the most coveted and least controllable piece of the Imperial Contract Auction: coveted because as long as you obtained a live animal supply contract, you could enjoy vague tax breaks in the Altdorf tax system; uncontrollable because of the erratic appetites of griffins—a griffon may cause your supply plan to need to be adjusted significantly between the last month and the next due to seasonal appetite fluctuations."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Deathclaw - Emperor Karl Franz's legendary gryphon mount, which single-handedly defeated the Chaos Twins",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "gryphon flying raptor"
+  ]
+}

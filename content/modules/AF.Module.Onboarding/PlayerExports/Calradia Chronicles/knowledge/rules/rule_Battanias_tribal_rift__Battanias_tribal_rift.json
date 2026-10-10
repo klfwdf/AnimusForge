@@ -1,0 +1,61 @@
+{
+  "Id": "rule_Battanias_tribal_rift",
+  "Keywords": [
+    "Minser",
+    "Menges",
+    "Old Ariel",
+    "Skull Bowl",
+    "Battania tribe",
+    "Infighting in the Highlands"
+  ],
+  "RagShortTexts": [
+    "Battania's unity is borrowed - from Caladog's exploits, pressure from foreign enemies, and the face gained from the Skull Bowl."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Battania's unity comes not from blood or institutions, but from the reputation that Caladog alone has built up in Pandrak. Before him, the High King was just a false title that made the tribal chiefs reluctantly nod on the sacred mountain. He broke with that tradition—but he also left a trail of accounts that unlikely to satisfy everyone. The first account was the death of the late king Ariel. Ariel, Caladog's adoptive father, \"accidentally disappeared\" during a hunt - and Caladog took up the throne as High King as son-in-law and adopted son. Ergon - Ariel's biological brother - publicly said \"Caladog killed my brother\". He did not fight back because he knew that in the event of a civil war, both the Empire and Vlandia would take advantage. The second account is the arrangement of inheritance rights. Caladog has three children - the eldest son Menges, whom he calls a \"bastard\", and his daughter Colin who is the most like him but whom he says is \"too much like me. I kill because I need to, and she kills because she likes it.\" He assigned the throne to Minser, a clansman and steward. This arrangement meant that Menges would not accept it, and Colin's role in the family was not officially recognized. The third account is the centrifugal force of each tribe. The Uwan family and the Gil family are nominally loyal but remain independent - they will send troops to participate in Caladog's war without losing one person, but matters in the territory are never reported to Marunas. Prindor of Morkar was known for his cruelty, and his son Bran Nok grew up in the shadows. Those who are truly aligned with Caladog are Penrak and Eingar - the younger generation of chiefs have seen the array of Imperial Legions and know that survival cannot be achieved with a mess."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "I am not a Grufendoc, and I have seen Caladog many times in the council chambers of Marunas. He's a fighting king, and I admit that without him Battania might have been crushed by the Empire before Pendrach did. But I don't think the way he got into that seat was justified. Old Ariel was lost in the hunt, and the next day Caladog was crowned on the sacred mountain. Too fast. Ergon, Ariel's biological brother, never ate at the same table with him. At the end of each meeting, Ergon was the first to get up and leave. Everyone saw this, but no one said anything about it. Caladog left the throne to Mincer - not his son. This means that he himself also knows that the reason why the Grufendoc family sits in that seat is not based on blood, but on his reputation alone. After he is dead, who can Mingse suppress? The Uwan family and the Gill family were the first to deny it."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": [
+          "clan_battania_1"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "I sit in this seat not because I want to—it’s because I can. Old Ariel married his daughter to me, and I am his son-in-law and his adopted son. If he dies, the throne cannot be left vacant. Ergon is my brother-in-law, and he hates me, I know that. I don't care. In his brother's hands, Battania can only wait for the empire to collect taxes, but in my hands, I can at least fight back. Pandrac is proof of that. As for the succession - I gave the throne to Mincer. Menges couldn't afford the surname Grufendoc. Colin can handle it, but she kills because she likes it, not because she needs to. Mincer knows how to keep this family from falling. After I died, I left the bowl to him and the knife to Colin. Menges figured it out on his own."
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,165 @@
+{
+  "Id": "rule_Finn_Grufendoc",
+  "Keywords": [
+    "Finn Grufendoc"
+  ],
+  "RagShortTexts": [
+    "The Grufendoc family rose to prominence through military exploits and have no bloodline in their ancestors."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Grufendocs? It's Caladog's house. I had never heard of this surname before. The old man who was herding sheep on the mountain said that none of their ancestors had this surname. It was Caladog who got this surname after he was adopted. Nowadays, everyone knows the whole surname Battania. There is a row of skull bowls in their living room, made from the heads of strong men chopped off by Caladog."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Finn Grufendoc family is the biggest anomaly and the biggest reality in our Battania aristocratic circle. Their prosperity does not depend on blood or marriage, but on one person's Fiona championship and military exploits. This was unprecedented in the history of Battania. Caladog carved the name Grufendoc into the highest echelons of Battania with his sword, trampling the pride of our old clans underfoot. Some of us are still dissatisfied and say privately that the Grufendoc family is just a nouveau riche who rose to power by killing people. Even their family heirlooms are chopped-off skulls. Whether that thing is displayed in the hall is glorious or barbaric, we don’t care."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": [
+          "clan_battania_2"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "hero:lord_5_3"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Grufendoc family was raised up by my brother Ariel, and now sits on my brother's throne. I don’t say that Caladog is unworthy, he can indeed fight, and my brother married his daughter to him because of his martial prowess. But if I have any favorable impression of the Grufendoc family, I don't have any. There are skull bowls in their halls, the heads of strong men collected from the battlefield. Some of these bowls are the skulls of Battania people. Caladog doesn't care about the race of his enemies, he only cares about whether they are strong enough. I don't like this. Besides, Caladog killed my brother. Although he is a hundred times stronger than my brother, I still feel very uncomfortable."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "hero:lord_5_10"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "twohanded": 100
+        }
+      },
+      "Content": "Some of my father’s skull bowls were cut by me myself. I was eleven years old in the first one, and I killed a prisoner. My father said that when beheading, you should sew along the neck bone and chop diagonally. Don't chop straight. If you chop straight, it will get stuck in the bone and cannot be pulled out. I got it after trying it twice. Later, I tried it several times on the battlefield, and I got it right. Outsiders say I'm cruel. What is cruelty? Killing prisoners is cruel, but killing enemies is not. All I kill are enemies, at least they are enemies when I call them enemies. Uncle Minser said I should learn some management. I said you help me govern, and I help you kill people. It’s fair. My father said that my face was useful—others wouldn’t think I was dangerous if they saw my short, round face. I think this is a compliment to me. I never took Menges seriously. He was knocked out in the first round at Fiona and couldn't even touch his skull. When Merag was little, I whittled wood for her horse. As for the glory of the family, I am a woman and it may not be my turn to succeed. I don't care. I want something else."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": [
+          "clan_battania_1"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "We are Grufendoc. No one knew this name before, now all of Battania knows it. Caladog gave us everything - fear, land, skull bowls. Those bowls are our family tree. Every bowl is a name, a strong one that we defeated. Mincer governs, Menges eats, and Colin chops out new bowls. As for Merag, she's still young, but she'll grow up."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": [
+          "clan_battania_1"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "hero:lord_5_1"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Finn Grufendoc is my last name, and I don't know or care about my father's name. Skull bowl? That's my habit. Killing a strong man and leaving his skull to make a bowl is my respect for him. I remember the name of every bowl in my hall, some belonging to Imperial generals, some to Battania chiefs, and a few to rivals on Fiona. My son Menges is a loser. He can't even get a bowl back. My daughter Colin brings back more bowls than her age. But she's so much like me. I kill because I need to, she kills because she likes it. I'm not sure that's a good thing. So I established Minser. He knew how to keep the Grufendocs from being crushed by skulls. When I die I leave him the bowl, the knife to Colin, and the throne to Minser. Menges figured it out on his own."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Grufendoc? Over there in Battania, the surname of the king named Caladog. I don't know about Grufendoc, but I do know about Caladog - the madman who goes into battle with a skull punch bowl."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Finn Grufendoc is the family that currently holds the actual royal power in Battania. Interestingly, they are neither an ancient lineage nor an entity of power that relies solely on legal inheritance. Caladog himself rose to prominence through the Fiona Tournament and was recruited as his son-in-law by the old High King Ariel. Only then did the surname Grufendoc enter the political sequence of Battania. From an outsider's perspective, this is a classic path of pure personal force-marriage-triple jump in military merit."
+    }
+  ],
+  "TextMappings": []
+}

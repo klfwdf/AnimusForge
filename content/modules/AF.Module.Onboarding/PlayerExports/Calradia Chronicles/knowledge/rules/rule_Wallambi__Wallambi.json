@@ -1,0 +1,93 @@
+{
+  "Id": "rule_Wallambi",
+  "Keywords": [
+    "Wallombi"
+  ],
+  "RagShortTexts": [
+    "Vlandia’s horses have good endurance and hard hooves, and are the source of horses for the Vlandia army."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Valembi is a village near Fort Drapon, overlooking the mouth of the River Traang. Local landowners raise horses in paddocks reclaimed from riverside swamps. These horses that grow up by the river have good endurance and hard hooves, and are one of the important sources of horses for the Vlandia army."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The horses of Wallombi are grown in the swamps, and their hooves are much stronger than those of horses elsewhere. The paddock at the mouth of the Trang River is rich in water and grass. The horses have stepped on the wet ground since they were young, and their hooves are hard and not easy to rot. Many of the horses used by the cavalry and messengers of Fort Drapon came from Wallambila."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "townsfolk"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Wallombi’s horses are not expensive, but their hides are durable. Horses raised in the swamp paddocks at the mouth of the river can run on any road, and they are not prone to illness if they don't pick their feed. The whalers from Drapon sometimes came to buy one, rode it to the coast, and then used it to pull the whale carcass."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Wallumby's paddock is at the mouth of the Tran River, an endless swamp, where the horses run happily. Watching those horses stepping on a series of splashes in the shallow water, you will know what freedom is. Local horse owners said that these horses have strong legs and can run for a whole day without panting."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Wallombi",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "Fort Drapon",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}
