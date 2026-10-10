@@ -34,70 +34,70 @@ internal static class PlayerRpForgeDisplayTexts
 	private static readonly (string Literal, string Key, string Fallback)[] ExactMessages =
 	{
 		// --- crafter availability (TryResolveAvailablePlayerRpCrafter and siblings)
-		("玩家主队伍当前不可用。", "AF_ECO_UI_RpForgeErrMainPartyUnavailable", "The player's main party is currently unavailable."),
-		("当前主队伍中没有可用的家族成员或同伴。", "AF_ECO_UI_RpForgeErrNoCrafterInParty", "No available clan member or companion is in the main party."),
-		("尚未选择制造者。", "AF_ECO_UI_RpForgeErrCrafterNotSelected", "No crafter has been selected yet."),
-		("所选制造者已经不可用，请重新选择。", "AF_ECO_UI_RpForgeErrCrafterUnavailableReselect", "The selected crafter is no longer available; please choose again."),
-		("所选制造者已经离开玩家主队伍，请重新选择。", "AF_ECO_UI_RpForgeErrCrafterLeftParty", "The selected crafter has left the player's main party; please choose again."),
-		("无法确认制造者仍在玩家主队伍中。", "AF_ECO_UI_RpForgeErrCrafterPartyUnverified", "Could not confirm that the crafter is still in the player's main party."),
-		("所选制造者当前不可用。", "AF_ECO_UI_RpForgeErrCrafterCurrentlyUnavailable", "The selected crafter is currently unavailable."),
-		("所选制造者当前无法获得锻造经验。", "AF_ECO_UI_RpForgeErrCrafterNoCraftingXp", "The selected crafter cannot gain crafting experience right now."),
+		(EconomyDisplaySourceTexts.Get("Forge.RpForgeErrMainPartyUnavailable"), "AF_ECO_UI_RpForgeErrMainPartyUnavailable", "The player's main party is currently unavailable."),
+		(EconomyDisplaySourceTexts.Get("Forge.RpForgeErrNoCrafterInParty"), "AF_ECO_UI_RpForgeErrNoCrafterInParty", "No available clan member or companion is in the main party."),
+		(EconomyDisplaySourceTexts.Get("Forge.RpForgeErrCrafterNotSelected"), "AF_ECO_UI_RpForgeErrCrafterNotSelected", "No crafter has been selected yet."),
+		(EconomyDisplaySourceTexts.Get("Forge.RpForgeErrCrafterUnavailableReselect"), "AF_ECO_UI_RpForgeErrCrafterUnavailableReselect", "The selected crafter is no longer available; please choose again."),
+		(EconomyDisplaySourceTexts.Get("Forge.RpForgeErrCrafterLeftParty"), "AF_ECO_UI_RpForgeErrCrafterLeftParty", "The selected crafter has left the player's main party; please choose again."),
+		(EconomyDisplaySourceTexts.Get("Forge.RpForgeErrCrafterPartyUnverified"), "AF_ECO_UI_RpForgeErrCrafterPartyUnverified", "Could not confirm that the crafter is still in the player's main party."),
+		(EconomyDisplaySourceTexts.Get("Forge.RpForgeErrCrafterCurrentlyUnavailable"), "AF_ECO_UI_RpForgeErrCrafterCurrentlyUnavailable", "The selected crafter is currently unavailable."),
+		(EconomyDisplaySourceTexts.Get("Forge.RpForgeErrCrafterNoCraftingXp"), "AF_ECO_UI_RpForgeErrCrafterNoCraftingXp", "The selected crafter cannot gain crafting experience right now."),
 
 		// --- crafting stamina plumbing
-		("原版锻造体力系统当前不可用。", "AF_ECO_UI_RpForgeErrStaminaSystemUnavailable", "The native crafting stamina system is currently unavailable."),
-		("无法读取所选制造者的锻造体力。", "AF_ECO_UI_RpForgeErrStaminaUnreadable", "Could not read the selected crafter's crafting stamina."),
-		("所选制造者的最大锻造体力不可用。", "AF_ECO_UI_RpForgeErrMaxStaminaUnavailable", "The selected crafter's maximum crafting stamina is unavailable."),
-		("锻造体力在制造期间发生变化，请重新确认。", "AF_ECO_UI_RpForgeErrStaminaChangedDuringCraft", "Crafting stamina changed while the item was being crafted; please confirm again."),
-		("锻造体力扣除未能完成。", "AF_ECO_UI_RpForgeErrStaminaDeductionFailed", "The crafting stamina deduction could not be completed."),
+		(EconomyDisplaySourceTexts.Get("Forge.RpForgeErrStaminaSystemUnavailable"), "AF_ECO_UI_RpForgeErrStaminaSystemUnavailable", "The native crafting stamina system is currently unavailable."),
+		(EconomyDisplaySourceTexts.Get("Forge.RpForgeErrStaminaUnreadable"), "AF_ECO_UI_RpForgeErrStaminaUnreadable", "Could not read the selected crafter's crafting stamina."),
+		(EconomyDisplaySourceTexts.Get("Forge.RpForgeErrMaxStaminaUnavailable"), "AF_ECO_UI_RpForgeErrMaxStaminaUnavailable", "The selected crafter's maximum crafting stamina is unavailable."),
+		(EconomyDisplaySourceTexts.Get("Forge.RpForgeErrStaminaChangedDuringCraft"), "AF_ECO_UI_RpForgeErrStaminaChangedDuringCraft", "Crafting stamina changed while the item was being crafted; please confirm again."),
+		(EconomyDisplaySourceTexts.Get("Forge.RpForgeErrStaminaDeductionFailed"), "AF_ECO_UI_RpForgeErrStaminaDeductionFailed", "The crafting stamina deduction could not be completed."),
 
 		// --- template candidate selection
-		("模板候选已经失效。", "AF_ECO_UI_RpForgeErrTemplateCandidatesExpired", "The template candidates are no longer valid."),
-		("模板候选为空。", "AF_ECO_UI_RpForgeErrTemplateCandidatesEmpty", "The template candidate list is empty."),
-		("所选模板不在当前 Top 50 安全候选中。", "AF_ECO_UI_RpForgeErrTemplateNotInTop50", "The selected template is not in the current Top 50 safe candidates."),
-		("没有找到安全的垃圾物品模板。", "AF_ECO_UI_RpForgeErrNoSafeJunkTemplate", "No safe junk-item template was found."),
-		("匹配模板已经不可用。", "AF_ECO_UI_RpForgeErrMatchedTemplateUnavailable", "The matched template is no longer available."),
-		("所选模板ID为空。", "AF_ECO_UI_RpForgeErrTemplateIdEmpty", "The selected template ID is empty."),
-		("所选模板已经不可用。", "AF_ECO_UI_RpForgeErrTemplateUnavailable", "The selected template is no longer available."),
-		("精确匹配物品无法建立安全制造快照。", "AF_ECO_UI_RpForgeErrExactSnapshotFailed", "A safe crafting snapshot could not be built for the exactly matched item."),
-		("游戏数据中的精确匹配物品已经变化，请重新确认。", "AF_ECO_UI_RpForgeErrExactMatchChanged", "The exactly matched item in the game data has changed; please confirm again."),
-		("精确匹配模板已经不再属于当前安全制造类别。", "AF_ECO_UI_RpForgeErrExactKindChanged", "The exactly matched template no longer belongs to the current safe crafting category."),
-		("所选模板不再属于当前名称对应的安全武器装备类别。", "AF_ECO_UI_RpForgeErrTemplateEquipmentKindChanged", "The selected template no longer belongs to the safe equipment category for this name."),
-		("无装备后缀时，物品名称必须与所选模板名称或ID完全一致。", "AF_ECO_UI_RpForgeErrNameMustMatchTemplate", "Without an equipment suffix, the item name must exactly match the selected template's name or ID."),
-		("所选模板不再属于当前食物、饮料、水或药物类别。", "AF_ECO_UI_RpForgeErrTemplateFoodKindChanged", "The selected template no longer belongs to the current food, drink, water, or medicine category."),
-		("所选模板不再是安全的杂物或文书模板。", "AF_ECO_UI_RpForgeErrTemplateGoodsUnsafe", "The selected template is no longer a safe goods or document template."),
-		("所选模板价格已经变化，请重新建立候选榜单。", "AF_ECO_UI_RpForgeErrTemplatePriceChanged", "The selected template's price has changed; please rebuild the candidate list."),
-		("该装备类别没有可用模板。", "AF_ECO_UI_RpForgeErrNoTemplateInKind", "No template is available for that equipment category."),
-		("匹配到的装备模板缺少安全模型或完整组件。", "AF_ECO_UI_RpForgeErrTemplateComponentUnsafe", "The matched equipment template is missing a safe model or complete components."),
-		("该类别没有安全且可复制的武器装备模板。", "AF_ECO_UI_RpForgeErrNoSafeEquipmentTemplate", "No safe, copyable weapon or equipment template exists in that category."),
-		("没有安全的食物或杂物模板。", "AF_ECO_UI_RpForgeErrNoSafeFoodOrGoodsTemplate", "There is no safe food or goods template."),
-		("名称属于武器装备；请先勾选 FORGE AS WEAPON/EQUIPMENT?。", "AF_ECO_UI_RpForgeErrNameIsEquipment", "The name belongs to a weapon or equipment item; please tick FORGE AS WEAPON/EQUIPMENT? first."),
-		("装备名称需要以明确的中英文装备后缀结尾，或与已加载模板名称/ID完全一致。", "AF_ECO_UI_RpForgeErrEquipmentSuffixRequired", "An equipment name must end with an explicit Chinese or English equipment suffix, or exactly match a loaded template name/ID."),
-		("名称精确匹配到游戏中的普通物品；请取消勾选 FORGE AS WEAPON/EQUIPMENT?。", "AF_ECO_UI_RpForgeErrExactMatchIsGoods", "The name exactly matches an ordinary game item; please untick FORGE AS WEAPON/EQUIPMENT?."),
-		("名称精确匹配到游戏中的武器装备；请勾选 FORGE AS WEAPON/EQUIPMENT?。", "AF_ECO_UI_RpForgeErrExactMatchIsEquipment", "The name exactly matches a game weapon or equipment item; please tick FORGE AS WEAPON/EQUIPMENT?."),
-		("名称精确匹配到游戏物品，但该模板缺少可安全复制的组件或模型。", "AF_ECO_UI_RpForgeErrExactMatchComponentUnsafe", "The name exactly matches a game item, but that template lacks components or a model that can be copied safely."),
-		("玩家RP制造暂不支持直接制造马匹；马甲、马铠和马具仍受支持。", "AF_ECO_UI_RpForgeErrHorseCraftUnsupported", "Player RP crafting cannot craft horses directly; horse armour, barding, and harness remain supported."),
-		("玩家RP制造暂不支持旗帜模板。", "AF_ECO_UI_RpForgeErrBannerCraftUnsupported", "Player RP crafting does not support banner templates yet."),
+		(EconomyDisplaySourceTexts.Get("Forge.RpForgeErrTemplateCandidatesExpired"), "AF_ECO_UI_RpForgeErrTemplateCandidatesExpired", "The template candidates are no longer valid."),
+		(EconomyDisplaySourceTexts.Get("Forge.RpForgeErrTemplateCandidatesEmpty"), "AF_ECO_UI_RpForgeErrTemplateCandidatesEmpty", "The template candidate list is empty."),
+		(EconomyDisplaySourceTexts.Get("Forge.RpForgeErrTemplateNotInTop50"), "AF_ECO_UI_RpForgeErrTemplateNotInTop50", "The selected template is not in the current Top 50 safe candidates."),
+		(EconomyDisplaySourceTexts.Get("Forge.RpForgeErrNoSafeJunkTemplate"), "AF_ECO_UI_RpForgeErrNoSafeJunkTemplate", "No safe junk-item template was found."),
+		(EconomyDisplaySourceTexts.Get("Forge.RpForgeErrMatchedTemplateUnavailable"), "AF_ECO_UI_RpForgeErrMatchedTemplateUnavailable", "The matched template is no longer available."),
+		(EconomyDisplaySourceTexts.Get("Forge.RpForgeErrTemplateIdEmpty"), "AF_ECO_UI_RpForgeErrTemplateIdEmpty", "The selected template ID is empty."),
+		(EconomyDisplaySourceTexts.Get("Forge.RpForgeErrTemplateUnavailable"), "AF_ECO_UI_RpForgeErrTemplateUnavailable", "The selected template is no longer available."),
+		(EconomyDisplaySourceTexts.Get("Forge.RpForgeErrExactSnapshotFailed"), "AF_ECO_UI_RpForgeErrExactSnapshotFailed", "A safe crafting snapshot could not be built for the exactly matched item."),
+		(EconomyDisplaySourceTexts.Get("Forge.RpForgeErrExactMatchChanged"), "AF_ECO_UI_RpForgeErrExactMatchChanged", "The exactly matched item in the game data has changed; please confirm again."),
+		(EconomyDisplaySourceTexts.Get("Forge.RpForgeErrExactKindChanged"), "AF_ECO_UI_RpForgeErrExactKindChanged", "The exactly matched template no longer belongs to the current safe crafting category."),
+		(EconomyDisplaySourceTexts.Get("Forge.RpForgeErrTemplateEquipmentKindChanged"), "AF_ECO_UI_RpForgeErrTemplateEquipmentKindChanged", "The selected template no longer belongs to the safe equipment category for this name."),
+		(EconomyDisplaySourceTexts.Get("Forge.RpForgeErrNameMustMatchTemplate"), "AF_ECO_UI_RpForgeErrNameMustMatchTemplate", "Without an equipment suffix, the item name must exactly match the selected template's name or ID."),
+		(EconomyDisplaySourceTexts.Get("Forge.RpForgeErrTemplateFoodKindChanged"), "AF_ECO_UI_RpForgeErrTemplateFoodKindChanged", "The selected template no longer belongs to the current food, drink, water, or medicine category."),
+		(EconomyDisplaySourceTexts.Get("Forge.RpForgeErrTemplateGoodsUnsafe"), "AF_ECO_UI_RpForgeErrTemplateGoodsUnsafe", "The selected template is no longer a safe goods or document template."),
+		(EconomyDisplaySourceTexts.Get("Forge.RpForgeErrTemplatePriceChanged"), "AF_ECO_UI_RpForgeErrTemplatePriceChanged", "The selected template's price has changed; please rebuild the candidate list."),
+		(EconomyDisplaySourceTexts.Get("Forge.RpForgeErrNoTemplateInKind"), "AF_ECO_UI_RpForgeErrNoTemplateInKind", "No template is available for that equipment category."),
+		(EconomyDisplaySourceTexts.Get("Forge.RpForgeErrTemplateComponentUnsafe"), "AF_ECO_UI_RpForgeErrTemplateComponentUnsafe", "The matched equipment template is missing a safe model or complete components."),
+		(EconomyDisplaySourceTexts.Get("Forge.RpForgeErrNoSafeEquipmentTemplate"), "AF_ECO_UI_RpForgeErrNoSafeEquipmentTemplate", "No safe, copyable weapon or equipment template exists in that category."),
+		(EconomyDisplaySourceTexts.Get("Forge.RpForgeErrNoSafeFoodOrGoodsTemplate"), "AF_ECO_UI_RpForgeErrNoSafeFoodOrGoodsTemplate", "There is no safe food or goods template."),
+		(EconomyDisplaySourceTexts.Get("Forge.RpForgeErrNameIsEquipment"), "AF_ECO_UI_RpForgeErrNameIsEquipment", "The name belongs to a weapon or equipment item; please tick FORGE AS WEAPON/EQUIPMENT? first."),
+		(EconomyDisplaySourceTexts.Get("Forge.RpForgeErrEquipmentSuffixRequired"), "AF_ECO_UI_RpForgeErrEquipmentSuffixRequired", "An equipment name must end with an explicit Chinese or English equipment suffix, or exactly match a loaded template name/ID."),
+		(EconomyDisplaySourceTexts.Get("Forge.RpForgeErrExactMatchIsGoods"), "AF_ECO_UI_RpForgeErrExactMatchIsGoods", "The name exactly matches an ordinary game item; please untick FORGE AS WEAPON/EQUIPMENT?."),
+		(EconomyDisplaySourceTexts.Get("Forge.RpForgeErrExactMatchIsEquipment"), "AF_ECO_UI_RpForgeErrExactMatchIsEquipment", "The name exactly matches a game weapon or equipment item; please tick FORGE AS WEAPON/EQUIPMENT?."),
+		(EconomyDisplaySourceTexts.Get("Forge.RpForgeErrExactMatchComponentUnsafe"), "AF_ECO_UI_RpForgeErrExactMatchComponentUnsafe", "The name exactly matches a game item, but that template lacks components or a model that can be copied safely."),
+		(EconomyDisplaySourceTexts.Get("Forge.RpForgeErrHorseCraftUnsupported"), "AF_ECO_UI_RpForgeErrHorseCraftUnsupported", "Player RP crafting cannot craft horses directly; horse armour, barding, and harness remain supported."),
+		(EconomyDisplaySourceTexts.Get("Forge.RpForgeErrBannerCraftUnsupported"), "AF_ECO_UI_RpForgeErrBannerCraftUnsupported", "Player RP crafting does not support banner templates yet."),
 
 		// --- request, confirmation and economy guards
-		("制造请求已经失效。", "AF_ECO_UI_RpForgeErrRequestExpired", "The crafting request is no longer valid."),
-		("正在处理上一项制造，请勿重复点击。", "AF_ECO_UI_RpForgeErrCraftInProgress", "The previous craft is still being processed; please do not click again."),
-		("模板或价格已经变化，请重新确认。", "AF_ECO_UI_RpForgeErrTemplateOrPriceChanged", "The template or price has changed; please confirm again."),
-		("制造者资源或成品价值已经变化，请重新确认。", "AF_ECO_UI_RpForgeErrCrafterResourcesChanged", "The crafter's resources or the crafted item's value have changed; please confirm again."),
-		("锻造等级或三档概率已经变化，请重新确认。", "AF_ECO_UI_RpForgeErrSmithingTierChanged", "The smithing tier or the three outcome weights have changed; please confirm again."),
-		("最大锻造体力或体力消耗已经变化，请重新确认。", "AF_ECO_UI_RpForgeErrMaxStaminaChanged", "The maximum crafting stamina or the stamina cost has changed; please confirm again."),
-		("请输入有效的物品名称。", "AF_ECO_UI_RpForgeErrInvalidItemName", "Please enter a valid item name."),
-		("投入金额必须大于 0。", "AF_ECO_UI_RpForgeErrInvestmentNotPositive", "The invested amount must be greater than 0."),
-		("玩家或玩家背包尚未就绪。", "AF_ECO_UI_RpForgeErrPlayerNotReady", "The player or the player's inventory is not ready yet."),
-		("第纳尔不足。", "AF_ECO_UI_RpForgeErrNotEnoughDenars", "Not enough denars."),
-		("玩家背包不可用。", "AF_ECO_UI_RpForgeErrPlayerRosterUnavailable", "The player's inventory is unavailable."),
-		("扣款失败，未制造物品。", "AF_ECO_UI_RpForgeErrChargeFailed", "Payment failed; no item was crafted."),
-		("物品创建或加入背包失败。", "AF_ECO_UI_RpForgeErrItemCreationFailed", "The item could not be created or added to the inventory."),
-		("制造记录创建失败。", "AF_ECO_UI_RpForgeErrRecordCreationFailed", "The crafting record could not be created."),
-		("物品属性或价格写入失败。", "AF_ECO_UI_RpForgeErrItemStateWriteFailed", "The item's attributes or price could not be written."),
-		("物品价格写入失败。", "AF_ECO_UI_RpForgeErrItemPriceWriteFailed", "The item's price could not be written."),
+		(EconomyDisplaySourceTexts.Get("Forge.RpForgeErrRequestExpired"), "AF_ECO_UI_RpForgeErrRequestExpired", "The crafting request is no longer valid."),
+		(EconomyDisplaySourceTexts.Get("Forge.RpForgeErrCraftInProgress"), "AF_ECO_UI_RpForgeErrCraftInProgress", "The previous craft is still being processed; please do not click again."),
+		(EconomyDisplaySourceTexts.Get("Forge.RpForgeErrTemplateOrPriceChanged"), "AF_ECO_UI_RpForgeErrTemplateOrPriceChanged", "The template or price has changed; please confirm again."),
+		(EconomyDisplaySourceTexts.Get("Forge.RpForgeErrCrafterResourcesChanged"), "AF_ECO_UI_RpForgeErrCrafterResourcesChanged", "The crafter's resources or the crafted item's value have changed; please confirm again."),
+		(EconomyDisplaySourceTexts.Get("Forge.RpForgeErrSmithingTierChanged"), "AF_ECO_UI_RpForgeErrSmithingTierChanged", "The smithing tier or the three outcome weights have changed; please confirm again."),
+		(EconomyDisplaySourceTexts.Get("Forge.RpForgeErrMaxStaminaChanged"), "AF_ECO_UI_RpForgeErrMaxStaminaChanged", "The maximum crafting stamina or the stamina cost has changed; please confirm again."),
+		(EconomyDisplaySourceTexts.Get("Forge.RpForgeErrInvalidItemName"), "AF_ECO_UI_RpForgeErrInvalidItemName", "Please enter a valid item name."),
+		(EconomyDisplaySourceTexts.Get("Forge.RpForgeErrInvestmentNotPositive"), "AF_ECO_UI_RpForgeErrInvestmentNotPositive", "The invested amount must be greater than 0."),
+		(EconomyDisplaySourceTexts.Get("Forge.RpForgeErrPlayerNotReady"), "AF_ECO_UI_RpForgeErrPlayerNotReady", "The player or the player's inventory is not ready yet."),
+		(EconomyDisplaySourceTexts.Get("Forge.RpForgeErrNotEnoughDenars"), "AF_ECO_UI_RpForgeErrNotEnoughDenars", "Not enough denars."),
+		(EconomyDisplaySourceTexts.Get("Forge.RpForgeErrPlayerRosterUnavailable"), "AF_ECO_UI_RpForgeErrPlayerRosterUnavailable", "The player's inventory is unavailable."),
+		(EconomyDisplaySourceTexts.Get("Forge.RpForgeErrChargeFailed"), "AF_ECO_UI_RpForgeErrChargeFailed", "Payment failed; no item was crafted."),
+		(EconomyDisplaySourceTexts.Get("Forge.RpForgeErrItemCreationFailed"), "AF_ECO_UI_RpForgeErrItemCreationFailed", "The item could not be created or added to the inventory."),
+		(EconomyDisplaySourceTexts.Get("Forge.RpForgeErrRecordCreationFailed"), "AF_ECO_UI_RpForgeErrRecordCreationFailed", "The crafting record could not be created."),
+		(EconomyDisplaySourceTexts.Get("Forge.RpForgeErrItemStateWriteFailed"), "AF_ECO_UI_RpForgeErrItemStateWriteFailed", "The item's attributes or price could not be written."),
+		(EconomyDisplaySourceTexts.Get("Forge.RpForgeErrItemPriceWriteFailed"), "AF_ECO_UI_RpForgeErrItemPriceWriteFailed", "The item's price could not be written."),
 
 		// --- template type label fallback (GetPlayerRpTemplateTypeLabel)
-		("未知", "AF_ECO_UI_RpForgeLabelUnknownType", "Unknown")
+		(EconomyDisplaySourceTexts.Get("Forge.RpForgeLabelUnknownType"), "AF_ECO_UI_RpForgeLabelUnknownType", "Unknown")
 	};
 
 	/// <summary>
@@ -108,17 +108,17 @@ internal static class PlayerRpForgeDisplayTexts
 	/// </summary>
 	private static readonly (string Literal, string Key, string Fallback)[] RollbackIssueMessages =
 	{
-		("生成标识不属于本次玩家制造命名空间，未反注册对象", "AF_ECO_UI_RpForgeRollbackIssueForeignKey", "the generation key does not belong to this player-crafting namespace, so no object was unregistered"),
-		("玩家背包不可用，无法验证生成物品是否已移除", "AF_ECO_UI_RpForgeRollbackIssueRosterUnavailable", "the player's inventory is unavailable, so it could not be verified that the generated item was removed"),
-		("玩家背包仍残留本次生成物品", "AF_ECO_UI_RpForgeRollbackIssueRosterResidual", "the generated item is still left in the player's inventory"),
-		("对象管理器不可用，无法反注册生成物品", "AF_ECO_UI_RpForgeRollbackIssueObjectManagerUnavailable", "the object manager is unavailable, so the generated item could not be unregistered"),
-		("本次生成对象仍存在于字符串索引", "AF_ECO_UI_RpForgeRollbackIssueStringIndexResidual", "the generated object is still present in the string index"),
-		("本次生成对象仍存在于对象ID索引", "AF_ECO_UI_RpForgeRollbackIssueObjectIdIndexResidual", "the generated object is still present in the object-ID index"),
-		("对象ID清单缓存存在其他物品，已保留该缓存", "AF_ECO_UI_RpForgeRollbackIssueObjectIdCacheKept", "the object-ID manifest cache holds other items, so that cache was kept"),
-		("Detached 对象ID缓存存在其他物品，已保留该缓存", "AF_ECO_UI_RpForgeRollbackIssueDetachedCacheKept", "the detached object-ID cache holds other items, so that cache was kept"),
-		("Pending 对象ID缓存存在其他物品，已保留该缓存", "AF_ECO_UI_RpForgeRollbackIssuePendingCacheKept", "the pending object-ID cache holds other items, so that cache was kept"),
-		("同一玩家制造标识对应多个注册对象，已拒绝不安全反注册", "AF_ECO_UI_RpForgeRollbackIssueDuplicateRegistration", "one player-crafting key maps to several registered objects, so the unsafe unregistration was refused"),
-		("玩家制造对象ID已被其他对象占用，已拒绝不安全反注册", "AF_ECO_UI_RpForgeRollbackIssueObjectIdTaken", "the player-crafting object ID is taken by another object, so the unsafe unregistration was refused")
+		(EconomyDisplaySourceTexts.Get("Forge.RpForgeRollbackIssueForeignKey"), "AF_ECO_UI_RpForgeRollbackIssueForeignKey", "the generation key does not belong to this player-crafting namespace, so no object was unregistered"),
+		(EconomyDisplaySourceTexts.Get("Forge.RpForgeRollbackIssueRosterUnavailable"), "AF_ECO_UI_RpForgeRollbackIssueRosterUnavailable", "the player's inventory is unavailable, so it could not be verified that the generated item was removed"),
+		(EconomyDisplaySourceTexts.Get("Forge.RpForgeRollbackIssueRosterResidual"), "AF_ECO_UI_RpForgeRollbackIssueRosterResidual", "the generated item is still left in the player's inventory"),
+		(EconomyDisplaySourceTexts.Get("Forge.RpForgeRollbackIssueObjectManagerUnavailable"), "AF_ECO_UI_RpForgeRollbackIssueObjectManagerUnavailable", "the object manager is unavailable, so the generated item could not be unregistered"),
+		(EconomyDisplaySourceTexts.Get("Forge.RpForgeRollbackIssueStringIndexResidual"), "AF_ECO_UI_RpForgeRollbackIssueStringIndexResidual", "the generated object is still present in the string index"),
+		(EconomyDisplaySourceTexts.Get("Forge.RpForgeRollbackIssueObjectIdIndexResidual"), "AF_ECO_UI_RpForgeRollbackIssueObjectIdIndexResidual", "the generated object is still present in the object-ID index"),
+		(EconomyDisplaySourceTexts.Get("Forge.RpForgeRollbackIssueObjectIdCacheKept"), "AF_ECO_UI_RpForgeRollbackIssueObjectIdCacheKept", "the object-ID manifest cache holds other items, so that cache was kept"),
+		(EconomyDisplaySourceTexts.Get("Forge.RpForgeRollbackIssueDetachedCacheKept"), "AF_ECO_UI_RpForgeRollbackIssueDetachedCacheKept", "the detached object-ID cache holds other items, so that cache was kept"),
+		(EconomyDisplaySourceTexts.Get("Forge.RpForgeRollbackIssuePendingCacheKept"), "AF_ECO_UI_RpForgeRollbackIssuePendingCacheKept", "the pending object-ID cache holds other items, so that cache was kept"),
+		(EconomyDisplaySourceTexts.Get("Forge.RpForgeRollbackIssueDuplicateRegistration"), "AF_ECO_UI_RpForgeRollbackIssueDuplicateRegistration", "one player-crafting key maps to several registered objects, so the unsafe unregistration was refused"),
+		(EconomyDisplaySourceTexts.Get("Forge.RpForgeRollbackIssueObjectIdTaken"), "AF_ECO_UI_RpForgeRollbackIssueObjectIdTaken", "the player-crafting object ID is taken by another object, so the unsafe unregistration was refused")
 	};
 
 	/// <summary>
@@ -127,9 +127,9 @@ internal static class PlayerRpForgeDisplayTexts
 	/// </summary>
 	private static readonly (string Frame, string Key, string Fallback)[] RollbackExceptionFrames =
 	{
-		("玩家背包清理失败", "AF_ECO_UI_RpForgeRollbackIssueRosterCleanupFailed", "cleaning the player's inventory failed with {ERROR}"),
-		("记录或缓存清理失败", "AF_ECO_UI_RpForgeRollbackIssueRecordCleanupFailed", "cleaning the records or caches failed with {ERROR}"),
-		("反注册生成对象失败", "AF_ECO_UI_RpForgeRollbackIssueUnregisterFailed", "unregistering the generated object failed with {ERROR}")
+		(EconomyDisplaySourceTexts.Get("Forge.RpForgeRollbackIssueRosterCleanupFailed"), "AF_ECO_UI_RpForgeRollbackIssueRosterCleanupFailed", "cleaning the player's inventory failed with {ERROR}"),
+		(EconomyDisplaySourceTexts.Get("Forge.RpForgeRollbackIssueRecordCleanupFailed"), "AF_ECO_UI_RpForgeRollbackIssueRecordCleanupFailed", "cleaning the records or caches failed with {ERROR}"),
+		(EconomyDisplaySourceTexts.Get("Forge.RpForgeRollbackIssueUnregisterFailed"), "AF_ECO_UI_RpForgeRollbackIssueUnregisterFailed", "unregistering the generated object failed with {ERROR}")
 	};
 
 	/// <summary>
@@ -138,7 +138,7 @@ internal static class PlayerRpForgeDisplayTexts
 	/// dynamic, so the sentence is matched structurally.
 	/// </summary>
 	private static readonly Regex StaminaInsufficientPattern = new Regex(
-		@"^(?<who>.+?)的锻造体力不足：需要 (?<cost>\d+)，当前 (?<have>\d+)。$",
+		EconomyDisplaySourceTexts.Get("Forge.StaminaInsufficientPattern"),
 		RegexOptions.CultureInvariant);
 
 	/// <summary>
@@ -146,7 +146,7 @@ internal static class PlayerRpForgeDisplayTexts
 	/// constant, so the sentence is matched around it rather than by equality.
 	/// </summary>
 	private static readonly Regex ReservedMarkerPattern = new Regex(
-		@"^物品名称不能包含系统保留标记 (?<marker>.+)。$",
+		EconomyDisplaySourceTexts.Get("Forge.ReservedMarkerPattern"),
 		RegexOptions.CultureInvariant);
 
 	/// <summary>
@@ -156,7 +156,7 @@ internal static class PlayerRpForgeDisplayTexts
 	/// "；" splitting because the sentence itself contains a full-width semicolon.
 	/// </summary>
 	private static readonly Regex AmbiguousExactMatchPattern = new Regex(
-		@"^游戏中存在多个同名物品；请改为输入其中一个模板 StringId：(?<ids>.*)$",
+		EconomyDisplaySourceTexts.Get("Forge.AmbiguousExactMatchPattern"),
 		RegexOptions.CultureInvariant);
 
 	/// <summary>
@@ -164,28 +164,28 @@ internal static class PlayerRpForgeDisplayTexts
 	/// service and is kept verbatim.
 	/// </summary>
 	private static readonly Regex TemplateCloneFailedPattern = new Regex(
-		@"^无法安全复制该装备模板：(?<detail>.+)$",
+		EconomyDisplaySourceTexts.Get("Forge.TemplateCloneFailedPattern"),
 		RegexOptions.CultureInvariant);
 
 	/// <summary>
 	/// "退款失败：无法定位付款玩家，应退 &lt;n&gt; 第纳尔。"
 	/// </summary>
 	private static readonly Regex RefundPayerMissingPattern = new Regex(
-		@"^退款失败：无法定位付款玩家，应退 (?<expected>\d+) 第纳尔。$",
+		EconomyDisplaySourceTexts.Get("Forge.RefundPayerMissingPattern"),
 		RegexOptions.CultureInvariant);
 
 	/// <summary>
 	/// "退款失败：无法读取退款前余额（&lt;ExceptionType&gt;），应退 &lt;n&gt; 第纳尔。"
 	/// </summary>
 	private static readonly Regex RefundBalanceUnreadablePattern = new Regex(
-		@"^退款失败：无法读取退款前余额（(?<type>[^（）]+)），应退 (?<expected>\d+) 第纳尔。$",
+		EconomyDisplaySourceTexts.Get("Forge.RefundBalanceUnreadablePattern"),
 		RegexOptions.CultureInvariant);
 
 	/// <summary>
 	/// "退款失败：无法验证退款后余额（&lt;ExceptionType&gt;），应退 &lt;n&gt; 第纳尔。"
 	/// </summary>
 	private static readonly Regex RefundBalanceUnverifiedPattern = new Regex(
-		@"^退款失败：无法验证退款后余额（(?<type>[^（）]+)），应退 (?<expected>\d+) 第纳尔。$",
+		EconomyDisplaySourceTexts.Get("Forge.RefundBalanceUnverifiedPattern"),
 		RegexOptions.CultureInvariant);
 
 	/// <summary>
@@ -193,7 +193,7 @@ internal static class PlayerRpForgeDisplayTexts
 	/// "…第纳尔（&lt;ExceptionType&gt;）。" variant.
 	/// </summary>
 	private static readonly Regex RefundShortfallPattern = new Regex(
-		@"^退款失败：应退 (?<expected>\d+) 第纳尔，实际退回 (?<actual>\d+) 第纳尔(?<tail>。|（(?<type>[^（）]+)）。)$",
+		EconomyDisplaySourceTexts.Get("Forge.RefundShortfallPattern"),
 		RegexOptions.CultureInvariant);
 
 	/// <summary>
@@ -201,7 +201,7 @@ internal static class PlayerRpForgeDisplayTexts
 	/// <c>AppendPlayerRpCraftFailureStatus</c> in the commit rollback path.
 	/// </summary>
 	private static readonly Regex StaminaRestoreFailedPattern = new Regex(
-		@"^锻造体力未能恢复：(?<type>[^：。]+)。$",
+		EconomyDisplaySourceTexts.Get("Forge.StaminaRestoreFailedPattern"),
 		RegexOptions.CultureInvariant);
 
 	/// <summary>
@@ -209,7 +209,7 @@ internal static class PlayerRpForgeDisplayTexts
 	/// outer rollback itself threw, so the player must be told to check manually.
 	/// </summary>
 	private static readonly Regex RollbackThrewPattern = new Regex(
-		@"^退款失败：事务回滚发生 (?<type>[^，。]+)，请检查玩家第纳尔和背包。$",
+		EconomyDisplaySourceTexts.Get("Forge.RollbackThrewPattern"),
 		RegexOptions.CultureInvariant);
 
 	/// <summary>
@@ -226,7 +226,7 @@ internal static class PlayerRpForgeDisplayTexts
 	/// can be projected without changing the frame.
 	/// </summary>
 	private static readonly Regex RollbackIncompleteFramePattern = new Regex(
-		@"^(?<frame>物品回滚未完全完成|Item rollback was not fully completed)[：:]\s*(?<issues>.*)$",
+		EconomyDisplaySourceTexts.Get("Forge.RollbackIncompleteFramePattern"),
 		RegexOptions.CultureInvariant);
 
 	/// <summary>
@@ -514,7 +514,7 @@ internal static class PlayerRpForgeDisplayTexts
 		{
 			return null;
 		}
-		if (string.Equals(label.Trim(), "未知", StringComparison.Ordinal))
+		if (string.Equals(label.Trim(), EconomyDisplaySourceTexts.Get("Forge.RpForgeLabelUnknownType"), StringComparison.Ordinal))
 		{
 			return EconomyUiTexts.Localized("AF_ECO_UI_RpForgeLabelUnknownType", "Unknown");
 		}

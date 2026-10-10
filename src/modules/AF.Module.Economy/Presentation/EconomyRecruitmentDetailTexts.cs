@@ -21,8 +21,8 @@ namespace AnimusForge;
 /// </summary>
 internal static class EconomyRecruitmentDetailTexts
 {
-	private const string CarriedFiefPrefix = "，其封地 ";
-	private const string CarriedFiefSuffix = " 已随家族归入玩家王国";
+	private static readonly string CarriedFiefPrefix = EconomyDisplaySourceTexts.Get("Recruitment.CarriedFiefPrefix");
+	private static readonly string CarriedFiefSuffix = EconomyDisplaySourceTexts.Get("Recruitment.CarriedFiefSuffix");
 
 	// Greedy up to the final "）" so that a note which itself contains
 	// parentheses (for example an embedded exception message) is kept whole
@@ -139,7 +139,7 @@ internal static class EconomyRecruitmentDetailTexts
 	/// </summary>
 	private static string DescribeNote(string note)
 	{
-		Match match = Regex.Match(note, @"^(?<kingdom>.+) 已无可接任执政家族，将在目标家族离开后清理旧王国$", RegexOptions.CultureInvariant);
+		Match match = Regex.Match(note, EconomyDisplaySourceTexts.Get("Recruitment.RecruitmentOldKingdomWillBeCleaned"), RegexOptions.CultureInvariant);
 		if (match.Success)
 		{
 			return EconomyUiTexts.Localized(
@@ -148,7 +148,7 @@ internal static class EconomyRecruitmentDetailTexts
 				("KINGDOM", match.Groups["kingdom"].Value));
 		}
 
-		match = Regex.Match(note, @"^(?<kingdom>.+) 已由 (?<clan>.+) 接任执政家族$", RegexOptions.CultureInvariant);
+		match = Regex.Match(note, EconomyDisplaySourceTexts.Get("Recruitment.RecruitmentRulingClanSucceeded"), RegexOptions.CultureInvariant);
 		if (match.Success)
 		{
 			return EconomyUiTexts.Localized(
@@ -157,7 +157,7 @@ internal static class EconomyRecruitmentDetailTexts
 				("KINGDOM", match.Groups["kingdom"].Value), ("CLAN", match.Groups["clan"].Value));
 		}
 
-		match = Regex.Match(note, @"^(?<kingdom>.+) 已无可接任执政家族，已按原版逻辑解散$", RegexOptions.CultureInvariant);
+		match = Regex.Match(note, EconomyDisplaySourceTexts.Get("Recruitment.RecruitmentOldKingdomDissolvedNoSuccessor"), RegexOptions.CultureInvariant);
 		if (match.Success)
 		{
 			return EconomyUiTexts.Localized(
@@ -166,7 +166,7 @@ internal static class EconomyRecruitmentDetailTexts
 				("KINGDOM", match.Groups["kingdom"].Value));
 		}
 
-		match = Regex.Match(note, @"^(?<kingdom>.+) 已按原版逻辑解散$", RegexOptions.CultureInvariant);
+		match = Regex.Match(note, EconomyDisplaySourceTexts.Get("Recruitment.RecruitmentOldKingdomDissolved"), RegexOptions.CultureInvariant);
 		if (match.Success)
 		{
 			return EconomyUiTexts.Localized(
@@ -175,7 +175,7 @@ internal static class EconomyRecruitmentDetailTexts
 				("KINGDOM", match.Groups["kingdom"].Value));
 		}
 
-		match = Regex.Match(note, @"^(?<kingdom>.+) 已因原国王离开触发新统治者选举$", RegexOptions.CultureInvariant);
+		match = Regex.Match(note, EconomyDisplaySourceTexts.Get("Recruitment.RecruitmentRulerElectionTriggered"), RegexOptions.CultureInvariant);
 		if (match.Success)
 		{
 			return EconomyUiTexts.Localized(
@@ -184,7 +184,7 @@ internal static class EconomyRecruitmentDetailTexts
 				("KINGDOM", match.Groups["kingdom"].Value));
 		}
 
-		match = Regex.Match(note, @"^(?<kingdom>.+) 已由 (?<clan>.+) 直接接任执政$", RegexOptions.CultureInvariant);
+		match = Regex.Match(note, EconomyDisplaySourceTexts.Get("Recruitment.RecruitmentRulingClanTookOverDirectly"), RegexOptions.CultureInvariant);
 		if (match.Success)
 		{
 			return EconomyUiTexts.Localized(
@@ -193,7 +193,7 @@ internal static class EconomyRecruitmentDetailTexts
 				("KINGDOM", match.Groups["kingdom"].Value), ("CLAN", match.Groups["clan"].Value));
 		}
 
-		const string repairFailedPrefix = "旧王国执政家族修复失败：";
+		const string repairFailedPrefix = EconomyDisplaySourceTexts.Get("Recruitment.repairFailedPrefix");
 		if (note.StartsWith(repairFailedPrefix, StringComparison.Ordinal))
 		{
 			return EconomyUiTexts.Localized(
@@ -202,7 +202,7 @@ internal static class EconomyRecruitmentDetailTexts
 				("ERROR", note.Substring(repairFailedPrefix.Length)));
 		}
 
-		const string dissolveFailedPrefix = "旧王国解散失败：";
+		const string dissolveFailedPrefix = EconomyDisplaySourceTexts.Get("Recruitment.dissolveFailedPrefix");
 		if (note.StartsWith(dissolveFailedPrefix, StringComparison.Ordinal))
 		{
 			return EconomyUiTexts.Localized(
@@ -211,7 +211,7 @@ internal static class EconomyRecruitmentDetailTexts
 				("ERROR", note.Substring(dissolveFailedPrefix.Length)));
 		}
 
-		if (string.Equals(note, "已解除其俘虏身份", StringComparison.Ordinal))
+		if (string.Equals(note, EconomyDisplaySourceTexts.Get("Recruitment.RecruitmentCaptivityReleased"), StringComparison.Ordinal))
 		{
 			return EconomyUiTexts.Localized(
 				"AF_ECO_UI_RecruitmentCaptivityReleased",
