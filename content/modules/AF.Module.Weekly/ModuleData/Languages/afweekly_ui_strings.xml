@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base type="string">
+  <tags><tag language="English" /></tags>
+  <strings>
+    <string id="AF_WEEKLY_BatchLabel" text="Batch [{MODE}]: {GROUPS}" />
+    <string id="AF_WEEKLY_UnnamedBatch" text="Unnamed weekly-report batch [{MODE}]" />
+    <string id="AF_WEEKLY_OutputModeShort" text="Short" />
+    <string id="AF_WEEKLY_OutputModeFull" text="Full" />
+    <string id="AF_WEEKLY_UnnamedGroup" text="Unnamed group" />
+    <string id="AF_WEEKLY_WorldWeeklyReport" text="World weekly report" />
+    <string id="AF_WEEKLY_KingdomWeeklyReport" text="Kingdom weekly report" />
+  </strings>
+</base>

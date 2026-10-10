@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base type="string">
+  <tags><tag language="简体中文" /></tags>
+  <strings>
+    <string id="AF_WEEKLY_BatchLabel" text="批次[{MODE}]：{GROUPS}" />
+    <string id="AF_WEEKLY_UnnamedBatch" text="未命名周报批次[{MODE}]" />
+    <string id="AF_WEEKLY_OutputModeShort" text="短" />
+    <string id="AF_WEEKLY_OutputModeFull" text="全" />
+    <string id="AF_WEEKLY_UnnamedGroup" text="未命名分组" />
+    <string id="AF_WEEKLY_WorldWeeklyReport" text="世界周报" />
+    <string id="AF_WEEKLY_KingdomWeeklyReport" text="王国周报" />
+  </strings>
+</base>

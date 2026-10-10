@@ -85,6 +85,10 @@ internal sealed class WeeklyEditorPort : WeeklyEditorDisplayPort
  internal EnsureWeekZeroOpeningSummaryEventsCapability EnsureWeekZeroOpeningSummaryEvents;
  internal delegate string BuildWeeklyReportBatchDisplayLabelCapability(WeeklyReportBatchRequest batch);
  internal BuildWeeklyReportBatchDisplayLabelCapability BuildWeeklyReportBatchDisplayLabel;
+ internal delegate string BuildWeeklyReportBatchDisplayLabelForUiCapability(WeeklyReportBatchRequest batch);
+ internal BuildWeeklyReportBatchDisplayLabelForUiCapability BuildWeeklyReportBatchDisplayLabelForUi;
+ internal delegate string BuildWeeklyReportGroupDisplayLabelForUiCapability(WeeklyEventMaterialPreviewGroup group);
+ internal BuildWeeklyReportGroupDisplayLabelForUiCapability BuildWeeklyReportGroupDisplayLabelForUi;
 }
 
 internal sealed class WeeklyReportEditorController
@@ -550,7 +554,7 @@ internal static void ShowWeeklyFullOnDemandFailurePopup(string message)
 			DevWeeklyReportBatchPreviewEntry latestWeeklyReportBatchDevPreview = _port.FindLatestWeeklyReportBatchDevPreview(item);
 			string text = (latestWeeklyReportBatchDevPreview == null) ? WeeklyReportUiText.Get("AF_UI_Weekly_Editor_061","Not run") : (latestWeeklyReportBatchDevPreview.Success ? WeeklyReportUiText.Get("AF_UI_Weekly_Editor_062","Response available") : WeeklyReportUiText.Get("AF_UI_Weekly_Editor_063","Failed response"));
 			int count = (item?.Groups ?? new List<WeeklyEventMaterialPreviewGroup>()).Count;
-			list2.Add(new InquiryElement(item, _port.BuildWeeklyReportBatchDisplayLabel(item) + " [" + count + WeeklyReportUiText.Get("AF_UI_Weekly_Editor_064","blocks | ") + text + "]", null));
+			list2.Add(new InquiryElement(item, _port.BuildWeeklyReportBatchDisplayLabelForUi(item) + " [" + count + WeeklyReportUiText.Get("AF_UI_Weekly_Editor_064","blocks | ") + text + "]", null));
 		}
 		MultiSelectionInquiryData data = new MultiSelectionInquiryData(WeeklyReportUiText.Get("AF_UI_Weekly_Editor_065","This week's batch prompt/response"), BuildWeeklyBatchPromptPreviewMenuDescription(list), list2, isExitShown: true, 0, 1, WeeklyReportUiText.Get("AF_UI_Weekly_Editor_066","View details"), WeeklyReportUiText.Get("AF_UI_Weekly_Editor_006","Back"), delegate(List<InquiryElement> selected)
 		{
@@ -751,7 +755,7 @@ internal static void ShowWeeklyFullOnDemandFailurePopup(string message)
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.AppendLine(text + WeeklyReportUiText.Get("AF_UI_Weekly_Editor_100","An API/model error occurred during generation and could not be recovered automatically."));
 		stringBuilder.AppendLine();
-		stringBuilder.AppendLine(WeeklyReportUiText.Get("AF_UI_Weekly_Editor_101","Failed group:") + (weeklyReportRetryContext.FailedGroupTitle ?? WeeklyReportUiText.Get("AF_UI_Weekly_Editor_102","Unnamed group")));
+		stringBuilder.AppendLine(WeeklyReportUiText.Get("AF_UI_Weekly_Editor_101","Failed group:") + (string.IsNullOrWhiteSpace(weeklyReportRetryContext.FailedGroupTitleForUi) ? (weeklyReportRetryContext.FailedGroupTitle ?? WeeklyReportUiText.Get("AF_UI_Weekly_Editor_102","Unnamed group")) : weeklyReportRetryContext.FailedGroupTitleForUi));
 		stringBuilder.AppendLine(WeeklyReportUiText.Get("AF_UI_Weekly_Editor_103","Automatic retries:") + Math.Max(weeklyReportRetryContext.AttemptsUsed, 0) + "/3");
 		stringBuilder.AppendLine(WeeklyReportUiText.Get("AF_UI_Weekly_Editor_104","Time range:") + FormatNewsDate(weeklyReportRetryContext.StartDay) + WeeklyReportUiText.Get("AF_UI_Weekly_Editor_030"," to ") + FormatNewsDate(weeklyReportRetryContext.EndDay));
 		if (weeklyReportRetryContext.IsRequestsPerMinuteLimit)
@@ -858,7 +862,7 @@ internal static void ShowWeeklyFullOnDemandFailurePopup(string message)
 		}
 		UiStage = WeeklyReportUiStage.RetryProgress;
 		UiResumeAfterUtcTicks = DateTime.UtcNow.Ticks + TimeSpan.FromMilliseconds(150.0).Ticks;
-		string text = WeeklyReportUiText.Get("AF_UI_Weekly_Editor_128","Retrying generation of ") + (FormatNewsDate(RetryContext.EndDay) + WeeklyReportUiText.Get("AF_UI_Weekly_Editor_095","Weekly report")) + WeeklyReportUiText.Get("AF_UI_Weekly_Editor_129"," for this event. Please wait...\n\n- Current failed group: ") + (RetryContext.FailedGroupTitle ?? WeeklyReportUiText.Get("AF_UI_Weekly_Editor_102","Unnamed group")) + WeeklyReportUiText.Get("AF_UI_Weekly_Editor_130","\n- The background will retry each group up to three times\n- If you do not want to wait, you can exit the current save\n- You can also return to the previous screen and decide later whether to retry");
+		string text = WeeklyReportUiText.Get("AF_UI_Weekly_Editor_128","Retrying generation of ") + (FormatNewsDate(RetryContext.EndDay) + WeeklyReportUiText.Get("AF_UI_Weekly_Editor_095","Weekly report")) + WeeklyReportUiText.Get("AF_UI_Weekly_Editor_129"," for this event. Please wait...\n\n- Current failed group: ") + (string.IsNullOrWhiteSpace(RetryContext.FailedGroupTitleForUi) ? (RetryContext.FailedGroupTitle ?? WeeklyReportUiText.Get("AF_UI_Weekly_Editor_102","Unnamed group")) : RetryContext.FailedGroupTitleForUi) + WeeklyReportUiText.Get("AF_UI_Weekly_Editor_130","\n- The background will retry each group up to three times\n- If you do not want to wait, you can exit the current save\n- You can also return to the previous screen and decide later whether to retry");
 		InformationManager.ShowInquiry(new InquiryData(WeeklyReportUiText.Get("AF_UI_Weekly_Editor_131","Retrying this event"), text, isAffirmativeOptionShown: true, isNegativeOptionShown: true, WeeklyReportUiText.Get("AF_UI_Weekly_Editor_099","Save and exit"), WeeklyReportUiText.Get("AF_UI_Weekly_Editor_132","Back to previous screen"), () => { if (Take()) _port.ExitCurrentGameFromWeeklyReportGate(); }, () => { if (Take()) CancelWeeklyReportManualRetryAndReturn(); }), pauseGameActiveState: true);
 	}
 
