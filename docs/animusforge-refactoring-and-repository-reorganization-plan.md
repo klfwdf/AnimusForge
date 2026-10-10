@@ -9258,3 +9258,13 @@ R2计划交付门槛：已给固定技术路线、真实来源与目标、写入
 - `dotnet run --project tests/modules/AF.Module.Diplomacy/PlayerDocumentDraftTests -c Release`：退出0，65项通过。直接链接正式 VM/application/client/protocol/transport/save guard，Gauntlet/MCM/日志为替身；真实HTTP请求回放300—1000字/650目标/4256预算、下次缩短预算、显式API上限、范围外完整稿不提示不重试、空稿、编辑/关闭取消/读档及旧外交调用。
 - 原 `scripts/build/build_single_module.ps1 -ProjectRoot . -BannerlordRoot .tmp/stage_game_root -Bannerlord13ReferenceDir _deps_auto -Bannerlord14ReferenceDir .tmp/build_check/1.4 -RuntimeDependencyDir bin/Release/single_module_stage/AnimusForge/bin/Win64_Shipping_Client -HarmonyCorePath .tmp/stage_game_root/Modules/Bannerlord.MBOptionScreen/bin/Win64_Shipping_Client/0Harmony.dll -Configuration Debug`：退出0；1.3.15/1.4.6各350警告、0错误，Bootstrap 2个NU1900警告（NuGet审计服务不可达）、0错误；双最终 DLL Coup managed门禁通过。本次进程临时 import 排除 ignored net8 候选程序集污染并定位既有net472引用包，沿用之前验证方式，未改一键脚本。三产物marker/SHA与源码收据已核对并保存在 `artifacts/diplomacy-draft-length-20261011/receipt.json`；未Stage、部署、打包或推送。
 - 初次构建预检指定了已不存在的Debug Stage依赖路径，改用已存在Release依赖后通过；新格式断言曾错误假设旧清理器保留emoji，修正断言到既有多行语义，未改清理器。原失败与最终日志均保留。未验实机卷轴/真实provider生成篇幅或语义/玩家存档/全仓；本包离线证据不替代这些验收。回滚仅 focused inverse 产品 `462d0e929`，不回滚其他作者或改写历史。
+- 后续用户明确要求“将此改动推送”，授权本包本地检查点/产品/验证交接普通推送 `origin/main`。推送前远端main仍为基线 `50a5c27ebe0aea26797225520cfdcc847270aa15`，工作区干净，仅本任务3个提交待发布；授权记录作为第4个文档提交。远端结果通过 `git ls-remote` 精确核验并记录 `artifacts/diplomacy-draft-length-20261011/publication-receipt.json`；不继承部署、Stage、打包或实机授权。
+
+<a id="local-unified-deploy-20261011"></a>
+## 2026-10-11：拉取后的本地统一模块部署（DEPLOYED_MANAGED_FILES_VERIFIED / LIVE_PENDING）
+
+- 授权：先“拉取最新远端并编译”，后“部署到本地”。本工作区 main 从 `2846c980f` 快进到 `50a5c27eb`；其他任务随后提交代笔修复 `462d0e929`。本轮重新构建该干净源码；部署完成时 `bd443eb2c` 相比它仅修改 HANDOFF、主台账与源码地图，未改变产品。源码责任与坐标沿用[当前地图](architecture/af-framework-code-scope.md#diplomacy-draft-length-20261011)，本轮没有产品源码改动。
+- 原 `scripts/build/build_single_module.ps1` 以检测到的游戏根、Workshop根、Debug、`-Deploy` 执行，exit0。复用已验证进程级 `DirectoryBuildTargetsPath`，未修改一键脚本；实际引用为 `_deps_auto` 1.3.15.110062及 `.tmp/build_check/1.4` 1.4.6.115628。双实现、Bootstrap与双最终DLL Coup managed门禁均通过；日志与精确修订见 `artifacts/local-deploy-20261011-004733/build-deploy.log`、`receipt.json`。
+- 上轮 Stage 因并行构建覆盖共享产物而未完成。本轮确认无并行dotnet后，把不完整Stage保存在同证据目录 `previous-incomplete-stage/`，由原脚本完整重建并校验；保留其他任务的提交与改动。
+- 安装目标 `E:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge`；原脚本成功更新9个受管文件。部署后3381个Stage/安装文件逐项SHA-256一致；私有Recovery `deploy-3f90b2d9e9a54c04a02a7cc833682313` 的complete标记、9旧文件备份SHA与manifest一致。原脚本仅更新Stage清单文件，ONNX与未知清单外文件保留；未另行扫描前后全目录，因此不声称独立验证所有未知文件的字节保持。
+- 未启动游戏、实机、真实LLM、旧存档、全仓回归、打包或推送。安装回退使用上述私有Recovery逐文件恢复；不hard-reset或改写Git历史。本次部署接续相关产品条目的安装状态，保留原有LIVE_PENDING与专项未覆盖边界。

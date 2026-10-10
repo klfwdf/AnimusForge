@@ -1,7 +1,12 @@
+# 当前交接：本地统一模块部署（2026-10-11，DEPLOYED_MANAGED_FILES_VERIFIED / LIVE_PENDING）
+
+- 用户授权“部署到本地”；当前产品源码 `462d0e929`（后续 `bd443eb2c` 仅文档），重新通过 Debug 双API、Bootstrap与双Coup门禁后，原脚本部署到检测到的 `E:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge`，更新9文件；3381项安装/Stage SHA、9旧备份及Recovery complete通过。未启动游戏、打包或推送，实机验收仍待执行。
+- [唯一主台账与部署收据](docs/animusforge-refactoring-and-repository-reorganization-plan.md#local-unified-deploy-20261011)；[当前产品源码地图](docs/architecture/af-framework-code-scope.md#diplomacy-draft-length-20261011)。本条接续下方各产品记录的安装状态，不替代其专项或实机验收。
+
 # 当前交接：书记官代笔篇幅与回填简化（2026-10-11，OFFLINE_VERIFIED / LIVE_PENDING）
 
 - 用户要求直接生成并显示代笔稿。基线 `50a5c27eb`，检查点 `a2381a666`，产品 `462d0e929`，工作区 `E:/Mount-Blade-Bannerlord-AnimusForge-mod-main` / `main`。生成前明确MCM范围、中点目标、提纲扩写与文风优先级；预算随篇幅计算，完整稿不再以MCM字数拒收或提示，无新增重试。
-- 65项正式owner回放、Debug双API/Bootstrap及双Coup managed门禁通过；6源码锚点双模式通过。未验实机/真实provider/玩家存档/全仓，未Stage、部署、打包或推送；玩家显式API上限与原编辑器/空稿/坏协议/截断保护保留。
+- 65项正式owner回放、Debug双API/Bootstrap及双Coup managed门禁通过；6源码锚点双模式通过。未验实机/真实provider/玩家存档/全仓，未Stage、部署或打包；玩家显式API上限与原编辑器/空稿/坏协议/截断保护保留。用户后续明确授权将本次改动推送 `origin/main`，实际远端结果以本地 `publication-receipt.json` 核验。
 - [唯一主台账：范围、证据与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#diplomacy-draft-length-20261011)；[已核验源码与消费者](docs/architecture/af-framework-code-scope.md#diplomacy-draft-length-20261011)。本地证据 `artifacts/diplomacy-draft-length-20261011/receipt.json`，回滚仅 focused inverse 产品提交。
 
 # 当前交接：政策效果检索两片重构（2026-10-10，OFFLINE_VERIFIED_WITH_BASELINE_FAILURES）
