@@ -208,7 +208,7 @@ public sealed partial class PlayerNotorietyBehavior : CampaignBehaviorBase
 	// silently turn a response generated for one identity into another identity.
 	internal static string CaptureMemorySummaryHistoryRenderingIdentity()
 	{
-		string playerName = NormalizeLine(BuildPlayerHistoryDisplayName()).Replace("玩家", "").Trim();
+		string playerName = NormalizeLine(BuildPlayerHistoryDisplayName()).Replace(SocialSourceTexts.Get("S001"), "").Trim();
 		if (string.IsNullOrWhiteSpace(playerName)) playerName = BuildPlayerHistoryDisplayName();
 		return JsonConvert.SerializeObject(new
 		{
@@ -562,10 +562,10 @@ public sealed partial class PlayerNotorietyBehavior : CampaignBehaviorBase
 			Settlement settlement = ResolvePlayerCurrentSettlement() ?? rescuedHero.CurrentSettlement ?? rescuedHero.StayingInSettlement;
 			bool hasSettlement = settlement != null;
 			string settlementName = hasSettlement ? GetSettlementDisplayName(settlement) : "";
-			string locationText = hasSettlement ? settlementName : "越狱现场";
-			string locationPhrase = hasSettlement ? ("在" + settlementName + "的地牢中") : "从囚禁中";
+			string locationText = hasSettlement ? settlementName : SocialSourceTexts.Get("S002");
+			string locationPhrase = hasSettlement ? (SocialSourceTexts.Get("S003") + settlementName + SocialSourceTexts.Get("S004")) : SocialSourceTexts.Get("S005");
 			string rescuedName = GetHeroDisplayName(rescuedHero);
-			string text = "你" + locationPhrase + "越狱营救了" + rescuedName + "，并帮助其成功脱离囚禁。";
+			string text = SocialSourceTexts.Get("S006") + locationPhrase + SocialSourceTexts.Get("S007") + rescuedName + SocialSourceTexts.Get("S008");
 			string stableKey = "player_prison_break_rescue:" + GetHeroId(player) + ":" + GetHeroId(rescuedHero) + ":" + (settlement?.StringId ?? "") + ":" + day + ":" + hour;
 			RecordPlayerAction(
 				text,
@@ -651,7 +651,7 @@ public sealed partial class PlayerNotorietyBehavior : CampaignBehaviorBase
 				return;
 			}
 			string prisonerName = GetHeroDisplayName(prisoner);
-			string text = "你" + verb + prisonerName + "。";
+			string text = SocialSourceTexts.Get("S006") + verb + prisonerName + "。";
 			RecordPlayerRecentActionFromEvent(text, "hero_prisoner_released", GetHeroId(prisoner) + ":" + detail, prisoner?.Culture?.StringId ?? "", ResolvePlayerCurrentSettlement(), "");
 		}
 		catch (Exception ex)
@@ -669,7 +669,7 @@ public sealed partial class PlayerNotorietyBehavior : CampaignBehaviorBase
 			{
 				return;
 			}
-			string text = "你释放了 " + summary.TotalCount + " 名普通俘虏" + BuildRosterDetailSuffix(summary) + "。";
+			string text = SocialSourceTexts.Get("S009") + summary.TotalCount + SocialSourceTexts.Get("S010") + BuildRosterDetailSuffix(summary) + "。";
 			RecordPlayerRecentActionFromEvent(text, "prisoners_released", summary.Signature, summary.PrimaryCultureId, ResolvePlayerCurrentSettlement(), "");
 		}
 		catch (Exception ex)
@@ -693,8 +693,8 @@ public sealed partial class PlayerNotorietyBehavior : CampaignBehaviorBase
 			}
 			Settlement settlement = buyerParty?.Settlement ?? sellerParty?.Settlement ?? ResolvePlayerCurrentSettlement();
 			string buyerName = BuildPartyDisplayName(buyerParty);
-			string targetText = string.IsNullOrWhiteSpace(buyerName) ? "" : ("给" + buyerName);
-			string text = "你" + targetText + "出售了 " + summary.TotalCount + " 名俘虏" + BuildRosterDetailSuffix(summary) + "。";
+			string targetText = string.IsNullOrWhiteSpace(buyerName) ? "" : (SocialSourceTexts.Get("S011") + buyerName);
+			string text = SocialSourceTexts.Get("S006") + targetText + SocialSourceTexts.Get("S012") + summary.TotalCount + SocialSourceTexts.Get("S013") + BuildRosterDetailSuffix(summary) + "。";
 			RecordPlayerRecentActionFromEvent(text, "prisoners_sold", BuildPartyScope(buyerParty) + ":" + summary.Signature, summary.PrimaryCultureId, settlement, "");
 			if (buyerParty?.Settlement != null)
 			{
@@ -716,7 +716,7 @@ public sealed partial class PlayerNotorietyBehavior : CampaignBehaviorBase
 			{
 				return;
 			}
-			string text = "你招募了 " + summary.TotalCount + " 名曾为俘虏的士兵加入队伍" + BuildRosterDetailSuffix(summary) + "。";
+			string text = SocialSourceTexts.Get("S014") + summary.TotalCount + SocialSourceTexts.Get("S015") + BuildRosterDetailSuffix(summary) + "。";
 			RecordPlayerRecentActionFromEvent(text, "prisoners_recruited", summary.Signature, summary.PrimaryCultureId, ResolvePlayerCurrentSettlement(), "");
 		}
 		catch (Exception ex)
@@ -744,7 +744,7 @@ public sealed partial class PlayerNotorietyBehavior : CampaignBehaviorBase
 				return;
 			}
 			string settlementName = GetSettlementDisplayName(donatedSettlement);
-			string text = "你向" + settlementName + "移交了 " + summary.TotalCount + " 名俘虏" + BuildRosterDetailSuffix(summary) + "。";
+			string text = SocialSourceTexts.Get("S016") + settlementName + SocialSourceTexts.Get("S017") + summary.TotalCount + SocialSourceTexts.Get("S013") + BuildRosterDetailSuffix(summary) + "。";
 			RecordPlayerRecentActionFromEvent(text, "prisoners_donated", (donatedSettlement?.StringId ?? "") + ":" + summary.Signature, summary.PrimaryCultureId, donatedSettlement ?? ResolvePlayerCurrentSettlement(), settlementName);
 		}
 		catch (Exception ex)
@@ -793,8 +793,8 @@ public sealed partial class PlayerNotorietyBehavior : CampaignBehaviorBase
 			{
 				string settlementName = string.IsNullOrWhiteSpace(_currentSettlementStayName) ? GetSettlementDisplayName(settlement) : _currentSettlementStayName.Trim();
 				string text = stayHours >= 20.0
-					? ("你最近在" + settlementName + "停留了约 " + FormatStayDuration(stayHours) + "，进行休整和补给。")
-					: ("你最近在" + settlementName + "休整了约 " + FormatStayDuration(stayHours) + "。");
+					? (SocialSourceTexts.Get("S018") + settlementName + SocialSourceTexts.Get("S019") + FormatStayDuration(stayHours) + SocialSourceTexts.Get("S020"))
+					: (SocialSourceTexts.Get("S018") + settlementName + SocialSourceTexts.Get("S021") + FormatStayDuration(stayHours) + "。");
 				RecordPlayerRecentActionFromEvent(text, "settlement_rest_stay", settlementId + ":" + _currentSettlementStayStartDay + ":" + currentDay, settlement?.Culture?.StringId ?? "", settlement, settlementName);
 			}
 		}
@@ -818,8 +818,8 @@ public sealed partial class PlayerNotorietyBehavior : CampaignBehaviorBase
 			}
 			string settlementName = GetSettlementDisplayName(recruitmentSettlement);
 			string troopName = GetCharacterDisplayName(troop);
-			string sourceText = recruiter == null || recruiter == Hero.MainHero ? "" : ("，来源：" + GetHeroDisplayName(recruiter));
-			string text = "你在" + settlementName + "招募了 " + amount + " 名 " + troopName + sourceText + "。";
+			string sourceText = recruiter == null || recruiter == Hero.MainHero ? "" : (SocialSourceTexts.Get("S022") + GetHeroDisplayName(recruiter));
+			string text = SocialSourceTexts.Get("S023") + settlementName + SocialSourceTexts.Get("S024") + amount + SocialSourceTexts.Get("S025") + troopName + sourceText + "。";
 			string scope = (recruitmentSettlement?.StringId ?? "") + ":" + (troop.StringId ?? troopName) + ":" + GetHeroId(recruiter) + ":" + amount;
 			RecordPlayerRecentActionFromEvent(text, "troops_recruited", scope, troop.Culture?.StringId ?? "", recruitmentSettlement, settlementName);
 		}
@@ -845,8 +845,8 @@ public sealed partial class PlayerNotorietyBehavior : CampaignBehaviorBase
 			Settlement settlement = town?.Settlement;
 			string settlementName = GetSettlementDisplayName(settlement);
 			string winnerName = GetCharacterDisplayName(winner);
-			string prizeText = string.IsNullOrWhiteSpace(prize?.Name?.ToString()) ? "" : (" 奖品是" + prize.Name.ToString().Trim() + "。");
-			string text = "你参加了" + settlementName + "的竞技大会，但没有夺冠。本次冠军是" + winnerName + "。" + prizeText;
+			string prizeText = string.IsNullOrWhiteSpace(prize?.Name?.ToString()) ? "" : (SocialSourceTexts.Get("S026") + prize.Name.ToString().Trim() + "。");
+			string text = SocialSourceTexts.Get("S027") + settlementName + SocialSourceTexts.Get("S028") + winnerName + "。" + prizeText;
 			string scope = (settlement?.StringId ?? "") + ":" + GetCurrentGameDayIndex() + ":" + (winner?.StringId ?? winnerName);
 			RecordPlayerRecentActionFromEvent(text, "tournament_participated_nonwinner", scope, winner?.Culture?.StringId ?? "", settlement, settlementName);
 		}
@@ -866,7 +866,7 @@ public sealed partial class PlayerNotorietyBehavior : CampaignBehaviorBase
 			}
 			string opponentName = GetHeroDisplayName(opposingHero);
 			string resultText = GetBoardGameResultText(state);
-			string text = "你与" + opponentName + "下了一局棋，结果：" + resultText + "。";
+			string text = SocialSourceTexts.Get("S029") + opponentName + SocialSourceTexts.Get("S030") + resultText + "。";
 			string scope = GetHeroId(opposingHero) + ":" + state;
 			RecordPlayerRecentActionFromEvent(text, "board_game_result", scope, opposingHero?.Culture?.StringId ?? "", ResolvePlayerCurrentSettlement(), "");
 		}
@@ -885,7 +885,7 @@ public sealed partial class PlayerNotorietyBehavior : CampaignBehaviorBase
 				return;
 			}
 			string captiveName = GetHeroDisplayName(captiveHero);
-			string text = "有关" + captiveName + "的赎金提议没有达成。";
+			string text = SocialSourceTexts.Get("S031") + captiveName + SocialSourceTexts.Get("S032");
 			RecordPlayerRecentActionFromEvent(text, "ransom_offer_cancelled", GetHeroId(captiveHero), captiveHero.Culture?.StringId ?? "", ResolvePlayerCurrentSettlement(), "");
 		}
 		catch (Exception ex)
@@ -904,7 +904,7 @@ public sealed partial class PlayerNotorietyBehavior : CampaignBehaviorBase
 			}
 			string suitorName = GetHeroDisplayName(suitor);
 			string maidenName = GetHeroDisplayName(maiden);
-			string text = "有关" + suitorName + "与" + maidenName + "的婚约提议没有达成。";
+			string text = SocialSourceTexts.Get("S031") + suitorName + SocialSourceTexts.Get("S033") + maidenName + SocialSourceTexts.Get("S034");
 			Hero otherHero = IsPlayerClanHero(suitor) ? maiden : suitor;
 			RecordPlayerRecentActionFromEvent(text, "marriage_offer_cancelled", GetHeroId(suitor) + ":" + GetHeroId(maiden), otherHero?.Culture?.StringId ?? "", ResolvePlayerCurrentSettlement(), "");
 		}
@@ -922,8 +922,8 @@ public sealed partial class PlayerNotorietyBehavior : CampaignBehaviorBase
 			{
 				return;
 			}
-			string kingdomName = GetFactionDisplayName(offeredKingdom, "某个王国");
-			string text = "来自" + kingdomName + "的雇佣或效忠邀请没有达成。";
+			string kingdomName = GetFactionDisplayName(offeredKingdom, SocialSourceTexts.Get("S035"));
+			string text = SocialSourceTexts.Get("S036") + kingdomName + SocialSourceTexts.Get("S037");
 			RecordPlayerRecentActionFromEvent(text, "vassal_mercenary_offer_cancelled", GetKingdomId(offeredKingdom), "", null, kingdomName);
 		}
 		catch (Exception ex)
@@ -940,8 +940,8 @@ public sealed partial class PlayerNotorietyBehavior : CampaignBehaviorBase
 			{
 				return;
 			}
-			string partyName = string.IsNullOrWhiteSpace(party.Name?.ToString()) ? "一支部队" : party.Name.ToString().Trim();
-			string text = "你收到的接管" + partyName + "领导权提议没有达成。";
+			string partyName = string.IsNullOrWhiteSpace(party.Name?.ToString()) ? SocialSourceTexts.Get("S038") : party.Name.ToString().Trim();
+			string text = SocialSourceTexts.Get("S039") + partyName + SocialSourceTexts.Get("S040");
 			RecordPlayerRecentActionFromEvent(text, "party_leader_change_offer_cancelled", party.StringId ?? partyName, party.LeaderHero?.Culture?.StringId ?? "", party.CurrentSettlement ?? ResolvePlayerCurrentSettlement(), "");
 		}
 		catch (Exception ex)
@@ -958,8 +958,8 @@ public sealed partial class PlayerNotorietyBehavior : CampaignBehaviorBase
 			{
 				return;
 			}
-			string factionName = GetFactionDisplayName(opponentFaction, "对方势力");
-			string text = "你所在势力近期处理了来自" + factionName + "的和平提议。";
+			string factionName = GetFactionDisplayName(opponentFaction, SocialSourceTexts.Get("S041"));
+			string text = SocialSourceTexts.Get("S042") + factionName + SocialSourceTexts.Get("S043");
 			RecordPlayerRecentActionFromEvent(text, "peace_offer_resolved", GetFactionId(opponentFaction), "", null, factionName);
 		}
 		catch (Exception ex)
@@ -975,7 +975,7 @@ public sealed partial class PlayerNotorietyBehavior : CampaignBehaviorBase
 			Settlement settlement = alley?.Settlement ?? Settlement.CurrentSettlement ?? MobileParty.MainParty?.CurrentSettlement;
 			string settlementName = GetSettlementDisplayName(settlement);
 			string alleyName = GetAlleyDisplayName(alley);
-			string text = "你清理了" + settlementName + "的" + alleyName + "，并选择不占领该街巷。";
+			string text = SocialSourceTexts.Get("S044") + settlementName + SocialSourceTexts.Get("S045") + alleyName + SocialSourceTexts.Get("S046");
 			string scope = (settlement?.StringId ?? "") + ":" + (alley?.Tag ?? alleyName);
 			RecordPlayerRecentActionFromEvent(text, "alley_cleared_not_occupied", scope, settlement?.Culture?.StringId ?? "", settlement, settlementName);
 		}
@@ -1212,27 +1212,27 @@ public sealed partial class PlayerNotorietyBehavior : CampaignBehaviorBase
 	{
 		int targetChars = GetMajorPromptChars();
 		string playerName = NormalizePlayerDisplayName(playerDisplayName);
-		return "你是 AnimusForge 的" + playerName + "履历与知名度总结器。只输出严格 JSON：{\"summary_content\":\"新的" + playerName + "重大履历时间线摘要\",\"notoriety_delta\":0到10之间的小数}。"
-			+ "任务是重写，不是增量续写：已有摘要只作为待压缩素材，必须与新增素材打散、去重、合并，输出一份完整的新摘要来整体替换旧摘要。"
-			+ "summary_content 必须压缩到" + targetChars + "个中文字符以内；这是硬上限，不是建议。若事实放不下，必须主动删掉次要事件、重复信息、数字细节和长名单，不得为了保留全部内容而超长。"
-			+ "只保留最重要的关键人物、地点、胜败、承诺、身份变化和公开影响；同类战斗、任务、处决、招募必须归并概括，禁止逐条罗列。"
-			+ "提及履历主体时必须一律使用“" + playerName + "”，不得写“你”、“玩家”或文化加年龄段描述。"
-			+ "没有新增素材时只压缩已有摘要，notoriety_delta 输出0。不要编造素材没有的事实。"
-			+ "notoriety_delta 只评估本次新增公开素材，严禁根据已有摘要重复增加；范围0-10，小事应为0到1之间的小数，重大胜利、夺城、处决、王国事件才可接近10。";
+		return SocialPromptTexts.Get("P001") + playerName + SocialPromptTexts.Get("P002") + playerName + SocialPromptTexts.Get("P003")
+			+ SocialPromptTexts.Get("P004")
+			+ SocialPromptTexts.Get("P005") + targetChars + SocialPromptTexts.Get("P006")
+			+ SocialPromptTexts.Get("P007")
+			+ SocialPromptTexts.Get("P008") + playerName + SocialPromptTexts.Get("P009")
+			+ SocialPromptTexts.Get("P010")
+			+ SocialPromptTexts.Get("P011");
 	}
 
 	private string BuildSummaryUserPrompt(List<PlayerHistoryMaterial> materials, string playerDisplayName)
 	{
 		string playerName = NormalizePlayerDisplayName(playerDisplayName);
 		StringBuilder sb = new StringBuilder();
-		sb.AppendLine("已有" + playerName + "履历摘要：");
-		sb.AppendLine(string.IsNullOrWhiteSpace(_state.MajorSummary) ? "（无）" : RenderPlayerHistoryTextForPrompt(_state.MajorSummary.Trim(), playerName));
+		sb.AppendLine(SocialPromptTexts.Get("P012") + playerName + SocialPromptTexts.Get("P013"));
+		sb.AppendLine(string.IsNullOrWhiteSpace(_state.MajorSummary) ? SocialPromptTexts.Get("P014") : RenderPlayerHistoryTextForPrompt(_state.MajorSummary.Trim(), playerName));
 		sb.AppendLine();
-		sb.AppendLine("新增公开素材（" + playerName + "）：");
+		sb.AppendLine(SocialPromptTexts.Get("P015") + playerName + "）：");
 		List<PlayerHistoryMaterial> sourceMaterials = materials ?? new List<PlayerHistoryMaterial>();
 		if (sourceMaterials.Count == 0)
 		{
-			sb.AppendLine("（无新增素材；只压缩已有摘要，丢弃不重要信息）");
+			sb.AppendLine(SocialPromptTexts.Get("P016"));
 		}
 		foreach (PlayerHistoryMaterial material in sourceMaterials)
 		{
@@ -1240,10 +1240,10 @@ public sealed partial class PlayerNotorietyBehavior : CampaignBehaviorBase
 			{
 				continue;
 			}
-			sb.AppendLine("- [" + (string.IsNullOrWhiteSpace(material.GameDate) ? ("第" + material.Day + "日") : material.GameDate.Trim()) + "][" + (material.SourceKind ?? "material") + "][culture:" + string.Join(",", material.CultureIds ?? new List<string>()) + "] " + RenderPlayerHistoryTextForPrompt(material.Text.Trim(), playerName));
+			sb.AppendLine("- [" + (string.IsNullOrWhiteSpace(material.GameDate) ? (SocialPromptTexts.Get("P017") + material.Day + SocialPromptTexts.Get("P018")) : material.GameDate.Trim()) + "][" + (material.SourceKind ?? "material") + "][culture:" + string.Join(",", material.CultureIds ?? new List<string>()) + "] " + RenderPlayerHistoryTextForPrompt(material.Text.Trim(), playerName));
 		}
 		sb.AppendLine();
-		sb.AppendLine("现在整体重写。只输出 JSON；summary_content 最多 " + GetMajorPromptChars() + " 个中文字符。若超长，继续删除低价值细节后再输出。禁止在旧摘要后追加。");
+		sb.AppendLine(SocialPromptTexts.Get("P019") + GetMajorPromptChars() + SocialPromptTexts.Get("P020"));
 		return sb.ToString().Trim();
 	}
 
@@ -1358,7 +1358,7 @@ public sealed partial class PlayerNotorietyBehavior : CampaignBehaviorBase
 		{
 			return "";
 		}
-		return "【已知的" + playerName + "重大履历】\n" + major + "\n边界：以上是" + playerName + "公开履历，可自然提及，勿说成系统提示。";
+		return SocialPromptTexts.Get("P021") + playerName + SocialPromptTexts.Get("P022") + major + SocialPromptTexts.Get("P023") + playerName + SocialPromptTexts.Get("P024");
 	}
 
 	private string BuildPlayerRecentRuntimeInstruction(Hero observer, bool courier)
@@ -1396,12 +1396,12 @@ public sealed partial class PlayerNotorietyBehavior : CampaignBehaviorBase
 			return "";
 		}
 		StringBuilder sb = new StringBuilder();
-		sb.AppendLine("【已知的" + playerName + "近期行动】");
+		sb.AppendLine(SocialPromptTexts.Get("P021") + playerName + SocialPromptTexts.Get("P025"));
 		foreach (PlayerActionEntry entry in recent)
 		{
-			sb.AppendLine("- " + (string.IsNullOrWhiteSpace(entry.GameDate) ? ("第" + entry.Day + "日") : entry.GameDate.Trim()) + "：" + RenderPlayerActionTextForPrompt(entry.Text, playerName));
+			sb.AppendLine("- " + (string.IsNullOrWhiteSpace(entry.GameDate) ? (SocialPromptTexts.Get("P017") + entry.Day + SocialPromptTexts.Get("P018")) : entry.GameDate.Trim()) + "：" + RenderPlayerActionTextForPrompt(entry.Text, playerName));
 		}
-		sb.Append("边界：以上是" + playerName + "最近十天公开行动，可自然提及，勿说成系统提示。");
+		sb.Append(SocialPromptTexts.Get("P026") + playerName + SocialPromptTexts.Get("P027"));
 		return sb.ToString().Trim();
 	}
 
@@ -1477,7 +1477,7 @@ public sealed partial class PlayerNotorietyBehavior : CampaignBehaviorBase
 		catch
 		{
 		}
-		return "玩家";
+		return SocialSourceTexts.Get("S001");
 	}
 
 	private static string BuildPlayerDisplayNameForPrompt(string observerKey, string cultureId)
@@ -1498,13 +1498,13 @@ public sealed partial class PlayerNotorietyBehavior : CampaignBehaviorBase
 		catch
 		{
 		}
-		return "玩家";
+		return SocialSourceTexts.Get("S001");
 	}
 
 	private static string NormalizePlayerDisplayName(string playerDisplayName)
 	{
 		string text = NormalizeLine(playerDisplayName);
-		return string.IsNullOrWhiteSpace(text) ? "玩家" : text;
+		return string.IsNullOrWhiteSpace(text) ? SocialSourceTexts.Get("S001") : text;
 	}
 
 	private static string BuildSummaryPlayerDisplayName()
@@ -1516,7 +1516,7 @@ public sealed partial class PlayerNotorietyBehavior : CampaignBehaviorBase
 	{
 		try
 		{
-			string text = NormalizeLine(Hero.MainHero?.Name?.ToString()).Replace("玩家", "").Trim();
+			string text = NormalizeLine(Hero.MainHero?.Name?.ToString()).Replace(SocialSourceTexts.Get("S001"), "").Trim();
 			if (!string.IsNullOrWhiteSpace(text))
 			{
 				return text;
@@ -1525,7 +1525,7 @@ public sealed partial class PlayerNotorietyBehavior : CampaignBehaviorBase
 		catch
 		{
 		}
-		return "主角";
+		return SocialSourceTexts.Get("S047");
 	}
 
 	private static IEnumerable<string> BuildPlayerHistoryAnonymousAliases(string playerName)
@@ -1543,7 +1543,7 @@ public sealed partial class PlayerNotorietyBehavior : CampaignBehaviorBase
 		catch
 		{
 		}
-		string[] ageLabels = new string[6] { "少年", "青年", "壮年", "中年", "老年", "未知" };
+		string[] ageLabels = new string[6] { SocialSourceTexts.Get("S048"), SocialSourceTexts.Get("S049"), SocialSourceTexts.Get("S050"), SocialSourceTexts.Get("S051"), SocialSourceTexts.Get("S052"), SocialSourceTexts.Get("S053") };
 		foreach (CultureObject culture in GetCulturesForNotorietyPopup())
 		{
 			string cultureName = NormalizeLine(culture?.Name?.ToString());
@@ -1577,20 +1577,20 @@ public sealed partial class PlayerNotorietyBehavior : CampaignBehaviorBase
 		}
 		string name = NormalizePlayerDisplayName(playerDisplayName);
 		return text
-			.Replace("玩家的", name + "的")
-			.Replace("玩家", name)
-			.Replace("你们的", name + "一方的")
-			.Replace("你们", name + "一方")
-			.Replace("你方的", name + "一方的")
-			.Replace("你方", name + "一方")
-			.Replace("你的", name + "的")
-			.Replace("你部队", name + "的部队")
-			.Replace("你", name);
+			.Replace(SocialSourceTexts.Get("S054"), name + SocialSourceTexts.Get("S045"))
+			.Replace(SocialSourceTexts.Get("S001"), name)
+			.Replace(SocialSourceTexts.Get("S055"), name + SocialSourceTexts.Get("S056"))
+			.Replace(SocialSourceTexts.Get("S057"), name + SocialSourceTexts.Get("S058"))
+			.Replace(SocialSourceTexts.Get("S059"), name + SocialSourceTexts.Get("S056"))
+			.Replace(SocialSourceTexts.Get("S060"), name + SocialSourceTexts.Get("S058"))
+			.Replace(SocialSourceTexts.Get("S061"), name + SocialSourceTexts.Get("S045"))
+			.Replace(SocialSourceTexts.Get("S062"), name + SocialSourceTexts.Get("S063"))
+			.Replace(SocialSourceTexts.Get("S006"), name);
 	}
 
 	private static string RenderPlayerHistoryTextForPrompt(string rawText, string playerDisplayName)
 	{
-		string playerName = NormalizeLine(playerDisplayName).Replace("玩家", "").Trim();
+		string playerName = NormalizeLine(playerDisplayName).Replace(SocialSourceTexts.Get("S001"), "").Trim();
 		if (string.IsNullOrWhiteSpace(playerName))
 		{
 			playerName = BuildPlayerHistoryDisplayName();
@@ -1605,7 +1605,7 @@ public sealed partial class PlayerNotorietyBehavior : CampaignBehaviorBase
 
 	private static string RenderPlayerNamedReference(string rawText, string playerDisplayName)
 	{
-		string playerName = NormalizeLine(playerDisplayName).Replace("玩家", "").Trim();
+		string playerName = NormalizeLine(playerDisplayName).Replace(SocialSourceTexts.Get("S001"), "").Trim();
 		if (string.IsNullOrWhiteSpace(playerName))
 		{
 			playerName = BuildPlayerHistoryDisplayName();
@@ -1622,7 +1622,7 @@ public sealed partial class PlayerNotorietyBehavior : CampaignBehaviorBase
 		catch
 		{
 		}
-		return text.Replace("玩家", playerName);
+		return text.Replace(SocialSourceTexts.Get("S001"), playerName);
 	}
 
 	private bool IsLowProfileModeEnabled()
@@ -2432,7 +2432,7 @@ public sealed partial class PlayerNotorietyBehavior : CampaignBehaviorBase
 		try
 		{
 			int year = Math.Max(1, CampaignTime.Now.GetYear);
-			return ((year + 99) / 100).ToString() + "世纪";
+			return SocialUiLocalization.Format("AF_SOCIAL_UI_Century", "Century {NUMBER}", ("NUMBER", ((year + 99) / 100).ToString()));
 		}
 		catch
 		{
@@ -2830,7 +2830,7 @@ public sealed partial class PlayerNotorietyBehavior : CampaignBehaviorBase
 		{
 			return text;
 		}
-		return BuildLegacyVillageRaidDefenseText(text, "当地村庄", InferLegacyVillageRaidDefenseOutcome(text), isAftermath);
+		return BuildLegacyVillageRaidDefenseText(text, SocialSourceTexts.Get("S065"), InferLegacyVillageRaidDefenseOutcome(text), isAftermath);
 	}
 
 	private static bool IsLegacyVillageRaidDefenseRecord(string sourceKind, string stableKey, string text, out bool isAftermath)
@@ -2852,10 +2852,10 @@ public sealed partial class PlayerNotorietyBehavior : CampaignBehaviorBase
 		}
 		if (isAftermath)
 		{
-			return text.IndexOf("的袭掠已经结束", StringComparison.OrdinalIgnoreCase) >= 0
-				&& (text.IndexOf("清点缴获", StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf("收拢部队并处理残局", StringComparison.OrdinalIgnoreCase) >= 0);
+			return text.IndexOf(SocialSourceTexts.Get("S066"), StringComparison.OrdinalIgnoreCase) >= 0
+				&& (text.IndexOf(SocialSourceTexts.Get("S067"), StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf(SocialSourceTexts.Get("S068"), StringComparison.OrdinalIgnoreCase) >= 0);
 		}
-		return text.IndexOf("发动的袭掠中", StringComparison.OrdinalIgnoreCase) >= 0;
+		return text.IndexOf(SocialSourceTexts.Get("S069"), StringComparison.OrdinalIgnoreCase) >= 0;
 	}
 
 	private static string ResolveLegacyVillageRaidDefenseLocation(string locationText, string settlementName)
@@ -2865,18 +2865,18 @@ public sealed partial class PlayerNotorietyBehavior : CampaignBehaviorBase
 		{
 			place = NormalizeLine(settlementName);
 		}
-		return string.IsNullOrWhiteSpace(place) ? "当地村庄" : place;
+		return string.IsNullOrWhiteSpace(place) ? SocialSourceTexts.Get("S065") : place;
 	}
 
 	private static bool? InferLegacyVillageRaidDefenseOutcome(string text)
 	{
-		if ((text ?? "").IndexOf("袭掠中得手", StringComparison.OrdinalIgnoreCase) >= 0
-			|| (text ?? "").IndexOf("清点缴获", StringComparison.OrdinalIgnoreCase) >= 0)
+		if ((text ?? "").IndexOf(SocialSourceTexts.Get("S070"), StringComparison.OrdinalIgnoreCase) >= 0
+			|| (text ?? "").IndexOf(SocialSourceTexts.Get("S067"), StringComparison.OrdinalIgnoreCase) >= 0)
 		{
 			return true;
 		}
-		if ((text ?? "").IndexOf("袭掠中失利", StringComparison.OrdinalIgnoreCase) >= 0
-			|| (text ?? "").IndexOf("收拢部队并处理残局", StringComparison.OrdinalIgnoreCase) >= 0)
+		if ((text ?? "").IndexOf(SocialSourceTexts.Get("S071"), StringComparison.OrdinalIgnoreCase) >= 0
+			|| (text ?? "").IndexOf(SocialSourceTexts.Get("S068"), StringComparison.OrdinalIgnoreCase) >= 0)
 		{
 			return false;
 		}
@@ -2887,15 +2887,15 @@ public sealed partial class PlayerNotorietyBehavior : CampaignBehaviorBase
 	{
 		string corrected = isAftermath
 			? (won == true
-				? (place + "的袭掠已经结束，你协助守军击退了袭掠者，正在整顿部队。")
+				? (place + SocialSourceTexts.Get("S072"))
 				: (won == false
-					? (place + "的袭掠已经结束，袭掠者已经得手；你正在收拢部队并处理残局。")
-					: (place + "的袭掠已经结束，你正在协助守军整顿部队。")))
+					? (place + SocialSourceTexts.Get("S073"))
+					: (place + SocialSourceTexts.Get("S074"))))
 			: (won == true
-				? ("你在" + place + "参与村庄保卫战，击退了袭掠者。")
+				? (SocialSourceTexts.Get("S023") + place + SocialSourceTexts.Get("S075"))
 				: (won == false
-					? ("你在" + place + "参与村庄保卫战时失利，未能阻止袭掠者。")
-					: ("你在" + place + "参与了村庄保卫战。")));
+					? (SocialSourceTexts.Get("S023") + place + SocialSourceTexts.Get("S076"))
+					: (SocialSourceTexts.Get("S023") + place + SocialSourceTexts.Get("S077"))));
 		int sentenceEnd = (originalText ?? "").IndexOf('。');
 		if (sentenceEnd < 0 || sentenceEnd >= originalText.Length - 1)
 		{
@@ -2915,11 +2915,11 @@ public sealed partial class PlayerNotorietyBehavior : CampaignBehaviorBase
 		switch (detail)
 		{
 		case EndCaptivityDetail.Ransom:
-			return "接受赎金释放了英雄俘虏";
+			return SocialSourceTexts.Get("S078");
 		case EndCaptivityDetail.ReleasedByCompensation:
-			return "通过补偿协议释放了英雄俘虏";
+			return SocialSourceTexts.Get("S079");
 		case EndCaptivityDetail.ReleasedByChoice:
-			return "主动释放了英雄俘虏";
+			return SocialSourceTexts.Get("S080");
 		default:
 			return "";
 		}
@@ -2932,21 +2932,21 @@ public sealed partial class PlayerNotorietyBehavior : CampaignBehaviorBase
 		{
 			source = capturerFaction?.Name?.ToString();
 		}
-		string sourceSuffix = string.IsNullOrWhiteSpace(source) ? "" : ("，脱离了" + source.Trim() + "的囚禁");
+		string sourceSuffix = string.IsNullOrWhiteSpace(source) ? "" : (SocialSourceTexts.Get("S081") + source.Trim() + SocialSourceTexts.Get("S082"));
 		switch (detail)
 		{
 		case EndCaptivityDetail.Ransom:
-			return "你被赎金赎回并结束了俘虏状态" + sourceSuffix + "。";
+			return SocialSourceTexts.Get("S083") + sourceSuffix + "。";
 		case EndCaptivityDetail.ReleasedAfterPeace:
-			return "你因和平协议获释" + sourceSuffix + "。";
+			return SocialSourceTexts.Get("S084") + sourceSuffix + "。";
 		case EndCaptivityDetail.ReleasedAfterBattle:
-			return "你在战后获释" + sourceSuffix + "。";
+			return SocialSourceTexts.Get("S085") + sourceSuffix + "。";
 		case EndCaptivityDetail.ReleasedAfterEscape:
-			return "你成功逃脱囚禁" + sourceSuffix + "。";
+			return SocialSourceTexts.Get("S086") + sourceSuffix + "。";
 		case EndCaptivityDetail.ReleasedByCompensation:
-			return "你因补偿协议获释" + sourceSuffix + "。";
+			return SocialSourceTexts.Get("S087") + sourceSuffix + "。";
 		case EndCaptivityDetail.ReleasedByChoice:
-			return "你被释放并结束了俘虏状态" + sourceSuffix + "。";
+			return SocialSourceTexts.Get("S088") + sourceSuffix + "。";
 		default:
 			return "";
 		}
@@ -3016,10 +3016,10 @@ public sealed partial class PlayerNotorietyBehavior : CampaignBehaviorBase
 		summary.RegularCount = Math.Max(0, summary.TotalCount - summary.HeroCount);
 		summary.PrimaryCultureId = ordered.Select(x => x.Character?.Culture?.StringId ?? "").FirstOrDefault(x => !string.IsNullOrWhiteSpace(x)) ?? "";
 		summary.Signature = string.Join("|", ordered.Select(x => (x.Character?.StringId ?? GetCharacterDisplayName(x.Character)) + ":" + x.Count));
-		List<string> parts = ordered.Take(3).Select(x => x.Count + " 名 " + GetCharacterDisplayName(x.Character)).ToList();
+		List<string> parts = ordered.Take(3).Select(x => x.Count + SocialSourceTexts.Get("S025") + GetCharacterDisplayName(x.Character)).ToList();
 		if (ordered.Count > 3)
 		{
-			parts.Add("等");
+			parts.Add(SocialSourceTexts.Get("S089"));
 		}
 		summary.DetailText = string.Join("、", parts);
 		return summary;
@@ -3252,7 +3252,7 @@ public sealed partial class PlayerNotorietyBehavior : CampaignBehaviorBase
 	private static string GetAlleyDisplayName(Alley alley)
 	{
 		string text = alley?.Name?.ToString();
-		return string.IsNullOrWhiteSpace(text) ? "一处街巷" : text.Trim();
+		return string.IsNullOrWhiteSpace(text) ? SocialSourceTexts.Get("S090") : text.Trim();
 	}
 
 	private static string BuildPartyScope(PartyBase party)
@@ -3274,19 +3274,19 @@ public sealed partial class PlayerNotorietyBehavior : CampaignBehaviorBase
 	private static string GetHeroDisplayName(Hero hero)
 	{
 		string text = hero?.Name?.ToString();
-		return string.IsNullOrWhiteSpace(text) ? "未知英雄" : text.Trim();
+		return string.IsNullOrWhiteSpace(text) ? SocialSourceTexts.Get("S091") : text.Trim();
 	}
 
 	private static string GetCharacterDisplayName(CharacterObject character)
 	{
 		string text = character?.Name?.ToString();
-		return string.IsNullOrWhiteSpace(text) ? ((character?.StringId ?? "未知兵种").Trim()) : text.Trim();
+		return string.IsNullOrWhiteSpace(text) ? ((character?.StringId ?? SocialSourceTexts.Get("S092")).Trim()) : text.Trim();
 	}
 
 	private static string GetSettlementDisplayName(Settlement settlement)
 	{
 		string text = settlement?.Name?.ToString();
-		return string.IsNullOrWhiteSpace(text) ? "当前地点" : text.Trim();
+		return string.IsNullOrWhiteSpace(text) ? SocialSourceTexts.Get("S093") : text.Trim();
 	}
 
 	private static string GetKingdomId(Kingdom kingdom)
@@ -3346,13 +3346,13 @@ public sealed partial class PlayerNotorietyBehavior : CampaignBehaviorBase
 	{
 		if (stayHours >= 48.0)
 		{
-			return Math.Max(1, (int)Math.Round(stayHours / 24.0)) + " 天";
+			return Math.Max(1, (int)Math.Round(stayHours / 24.0)) + SocialSourceTexts.Get("S094");
 		}
 		if (stayHours >= 20.0)
 		{
-			return "1 天";
+			return SocialSourceTexts.Get("S095");
 		}
-		return Math.Max(1, (int)Math.Round(stayHours)) + " 小时";
+		return Math.Max(1, (int)Math.Round(stayHours)) + SocialSourceTexts.Get("S096");
 	}
 
 	private static string GetBoardGameResultText(BoardGameHelper.BoardGameState state)
@@ -3360,13 +3360,13 @@ public sealed partial class PlayerNotorietyBehavior : CampaignBehaviorBase
 		switch (state)
 		{
 		case BoardGameHelper.BoardGameState.Win:
-			return "获胜";
+			return SocialSourceTexts.Get("S097");
 		case BoardGameHelper.BoardGameState.Loss:
-			return "落败";
+			return SocialSourceTexts.Get("S098");
 		case BoardGameHelper.BoardGameState.Draw:
-			return "平局";
+			return SocialSourceTexts.Get("S099");
 		default:
-			return "结束";
+			return SocialSourceTexts.Get("S100");
 		}
 	}
 
@@ -3470,11 +3470,11 @@ public sealed partial class PlayerNotorietyBehavior : CampaignBehaviorBase
 		try
 		{
 			string text = CampaignTime.Now.ToString();
-			return string.IsNullOrWhiteSpace(text) ? ("第 " + GetCurrentGameDayIndex() + " 日") : text.Trim();
+			return string.IsNullOrWhiteSpace(text) ? (SocialSourceTexts.Get("S101") + GetCurrentGameDayIndex() + SocialSourceTexts.Get("S102")) : text.Trim();
 		}
 		catch
 		{
-			return "第 " + GetCurrentGameDayIndex() + " 日";
+			return SocialSourceTexts.Get("S101") + GetCurrentGameDayIndex() + SocialSourceTexts.Get("S102");
 		}
 	}
 

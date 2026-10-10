@@ -38,7 +38,7 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 
 	private const int MarriageCandidateMaxAgeGap = 25;
 
-	private static readonly string[] LoveLevelTexts = new string[10] { "极度排斥", "明显反感", "疏离警惕", "保持距离", "态度保留", "普通往来", "有些好感", "明显心动", "深度依恋", "非你不可" };
+	private static readonly string[] LoveLevelTexts = new string[10] { SocialPromptTexts.Get("P047"), SocialPromptTexts.Get("P048"), SocialPromptTexts.Get("P049"), SocialPromptTexts.Get("P050"), SocialPromptTexts.Get("P051"), SocialPromptTexts.Get("P052"), SocialPromptTexts.Get("P053"), SocialPromptTexts.Get("P054"), SocialPromptTexts.Get("P055"), SocialPromptTexts.Get("P056") };
 
 	private static readonly Regex LoveDeltaRegex = new Regex("\\[ACTION:LOVE_DELTA:([^\\]:]+):([+\\-]?\\d+)\\]", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
@@ -435,43 +435,43 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 	{
 		if (hero == null)
 		{
-			return "未知对象";
+			return SocialPromptTexts.Get("P028");
 		}
-		return GetClanNameSafe(hero) + "的" + (hero.Name?.ToString() ?? hero.StringId ?? "未知");
+		return GetClanNameSafe(hero) + SocialPromptTexts.Get("P029") + (hero.Name?.ToString() ?? hero.StringId ?? SocialPromptTexts.Get("P030"));
 	}
 
 	private static string GetMarriageGenderLabel(Hero hero)
 	{
 		if (hero == null)
 		{
-			return "未知";
+			return SocialPromptTexts.Get("P030");
 		}
 		try
 		{
-			return hero.IsFemale ? "女" : "男";
+			return hero.IsFemale ? SocialPromptTexts.Get("P031") : SocialPromptTexts.Get("P032");
 		}
 		catch
 		{
-			return "未知";
+			return SocialPromptTexts.Get("P030");
 		}
 	}
 
 	private static string GetHeroDisplayWithClanAndGender(Hero hero)
 	{
-		return GetHeroDisplayWithClan(hero) + "（性别=" + GetMarriageGenderLabel(hero) + "）";
+		return GetHeroDisplayWithClan(hero) + SocialPromptTexts.Get("P033") + GetMarriageGenderLabel(hero) + SocialPromptTexts.Get("P090");
 	}
 
-	private static string BuildBridePriceSummary(MarriageRecord record)
+	private static string BuildBridePriceSummary(MarriageRecord record, bool forPrompt = false)
 	{
 		if (record == null || record.BridePriceAmount <= 0)
 		{
-			return "无明确彩礼记录";
+			return (forPrompt ? SocialPromptTexts.Get("P085") : SocialSourceTexts.Get("S113"));
 		}
 		Clan clan = FindClanById(record.PayerClanId);
 		Clan clan2 = FindClanById(record.ReceiverClanId);
-		string text = clan?.Name?.ToString() ?? "未知家族";
-		string text2 = clan2?.Name?.ToString() ?? "未知家族";
-		return $"由{text}向{text2}支付彩礼 {record.BridePriceAmount:N0} 第纳尔";
+		string text = clan?.Name?.ToString() ?? (forPrompt ? SocialPromptTexts.Get("P086") : SocialSourceTexts.Get("S114"));
+		string text2 = clan2?.Name?.ToString() ?? (forPrompt ? SocialPromptTexts.Get("P086") : SocialSourceTexts.Get("S114"));
+		return string.Format((forPrompt ? SocialPromptTexts.Get("P087") : SocialSourceTexts.Get("S115")), text, text2, record.BridePriceAmount);
 	}
 
 	private static string BuildMarriageHeroFactLine(Hero hero, string tokenName)
@@ -485,22 +485,22 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 		{
 			if (hero.Spouse != null)
 			{
-				text = "，原版当前配偶=" + (hero.Spouse.Name?.ToString() ?? hero.Spouse.StringId ?? "未知");
+				text = SocialPromptTexts.Get("P034") + (hero.Spouse.Name?.ToString() ?? hero.Spouse.StringId ?? SocialPromptTexts.Get("P030"));
 			}
 		}
 		catch
 		{
 		}
-		return "- " + GetHeroDisplayWithClan(hero) + $"（{tokenName}={hero.StringId}，性别={GetMarriageGenderLabel(hero)}，年龄={hero.Age:0.#}{text}）";
+		return "- " + GetHeroDisplayWithClan(hero) + string.Format(SocialPromptTexts.Get("P035"), tokenName, hero.StringId, GetMarriageGenderLabel(hero), hero.Age, text);
 	}
 
-	private static string BuildFactBlock(string title, List<string> lines, string emptyText = "（无）")
+	private static string BuildFactBlock(string title, List<string> lines, string emptyText = null)
 	{
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.AppendLine(title);
 		if (lines == null || lines.Count <= 0)
 		{
-			stringBuilder.Append(emptyText);
+			stringBuilder.Append(emptyText ?? SocialPromptTexts.Get("P014"));
 		}
 		else
 		{
@@ -544,7 +544,7 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 			string text = BuildMarriageRecordKey(hero.StringId, hero2.StringId);
 			if (hashSet.Add(text))
 			{
-				yield return "- " + GetHeroDisplayWithClanAndGender(hero) + " 与 " + GetHeroDisplayWithClanAndGender(hero2) + " 已成婚；" + BuildBridePriceSummary(record) + "。";
+				yield return "- " + GetHeroDisplayWithClanAndGender(hero) + SocialPromptTexts.Get("P036") + GetHeroDisplayWithClanAndGender(hero2) + SocialPromptTexts.Get("P037") + BuildBridePriceSummary(record, forPrompt: true) + "。";
 			}
 		}
 		if (clan != null && clan2 != null)
@@ -560,7 +560,7 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 				if (hashSet.Add(text))
 				{
 					MarriageRecord marriageRecord = GetMarriageRecord(item, spouse);
-					yield return "- " + GetHeroDisplayWithClanAndGender(item) + " 与 " + GetHeroDisplayWithClanAndGender(spouse) + " 已成婚；" + BuildBridePriceSummary(marriageRecord) + "。";
+					yield return "- " + GetHeroDisplayWithClanAndGender(item) + SocialPromptTexts.Get("P036") + GetHeroDisplayWithClanAndGender(spouse) + SocialPromptTexts.Get("P037") + BuildBridePriceSummary(marriageRecord, forPrompt: true) + "。";
 				}
 			}
 		}
@@ -570,7 +570,7 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 			if (hashSet.Add(text2))
 			{
 				MarriageRecord marriageRecord2 = GetMarriageRecord(Hero.MainHero, speaker);
-				yield return "- " + GetHeroDisplayWithClanAndGender(Hero.MainHero) + " 与 " + GetHeroDisplayWithClanAndGender(speaker) + " 已成婚；" + BuildBridePriceSummary(marriageRecord2) + "。";
+				yield return "- " + GetHeroDisplayWithClanAndGender(Hero.MainHero) + SocialPromptTexts.Get("P036") + GetHeroDisplayWithClanAndGender(speaker) + SocialPromptTexts.Get("P037") + BuildBridePriceSummary(marriageRecord2, forPrompt: true) + "。";
 			}
 		}
 	}
@@ -583,11 +583,11 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 			List<string> list2 = GetClanMembersCompat(Clan.PlayerClan).Where(IsFormalMarriageCandidate).Select((Hero x) => BuildMarriageHeroFactLine(x, "playerClanHeroId")).Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
 			List<string> list3 = ((speaker?.Clan != null) ? GetClanMembersCompat(speaker.Clan).Where(IsFormalMarriageCandidate).Select((Hero x) => BuildMarriageHeroFactLine(x, "targetHeroId")).Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).ToList() : new List<string>());
 			StringBuilder stringBuilder = new StringBuilder();
-			stringBuilder.AppendLine("【玩家家族可婚配成员（允许已有配偶，事实清单）】");
-			stringBuilder.AppendLine("多配偶已允许：已婚者仍可作为候选；只禁止同一对对象重复结婚。原版当前配偶字段只能显示一个人，完整婚姻关系以本模组事实清单为准。");
+			stringBuilder.AppendLine(SocialPromptTexts.Get("P038"));
+			stringBuilder.AppendLine(SocialPromptTexts.Get("P039"));
 			if (list2.Count <= 0)
 			{
-				stringBuilder.AppendLine("（无）");
+				stringBuilder.AppendLine(SocialPromptTexts.Get("P014"));
 			}
 			else
 			{
@@ -596,11 +596,11 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 					stringBuilder.AppendLine(list2[i]);
 				}
 			}
-			stringBuilder.AppendLine("【对方家族可婚配成员（允许已有配偶，事实清单）】");
-			stringBuilder.AppendLine("多配偶已允许：已婚者仍可作为候选；只禁止同一对对象重复结婚。");
+			stringBuilder.AppendLine(SocialPromptTexts.Get("P040"));
+			stringBuilder.AppendLine(SocialPromptTexts.Get("P041"));
 			if (list3.Count <= 0)
 			{
-				stringBuilder.AppendLine("（无）");
+				stringBuilder.AppendLine(SocialPromptTexts.Get("P014"));
 			}
 			else
 			{
@@ -609,10 +609,10 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 					stringBuilder.AppendLine(list3[j]);
 				}
 			}
-			stringBuilder.AppendLine("【你们两家的现有婚姻（事实清单）】");
+			stringBuilder.AppendLine(SocialPromptTexts.Get("P042"));
 			if (list.Count <= 0)
 			{
-				stringBuilder.AppendLine("当前未发现玩家家族与你方家族之间的已成婚记录。");
+				stringBuilder.AppendLine(SocialPromptTexts.Get("P043"));
 			}
 			else
 			{
@@ -621,7 +621,7 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 					stringBuilder.AppendLine(list[l]);
 				}
 			}
-			stringBuilder.Append("正规结婚的人选须分别来自两份可婚配成员事实清单，最终由运行时婚姻规则校验。多配偶已允许，已有配偶不是拒绝理由；同一对对象不得重复结婚。离婚只能在“现有婚姻”里选人。若NPC愿意退还先前收取的彩礼，可按以上明细协商金额，也可明确表示不退还；不要把玩家还钱当作自动离婚结果。");
+			stringBuilder.Append(SocialPromptTexts.Get("P044"));
 			return stringBuilder.ToString().Trim();
 		}
 		catch
@@ -635,11 +635,11 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 		try
 		{
 			List<string> list = GetClanMembersCompat(Clan.PlayerClan).Where(IsFormalMarriageCandidate).Select((Hero x) => BuildMarriageHeroFactLine(x, "playerClanHeroId")).Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
-			return BuildFactBlock("【玩家家族可婚配成员（允许已有配偶，事实清单）】", list);
+			return BuildFactBlock(SocialPromptTexts.Get("P038"), list);
 		}
 		catch
 		{
-			return "【玩家家族可婚配成员（允许已有配偶，事实清单）】\n（无）";
+			return SocialPromptTexts.Get("P045");
 		}
 	}
 
@@ -648,11 +648,11 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 		try
 		{
 			List<string> list = ((speaker?.Clan != null) ? GetClanMembersCompat(speaker.Clan).Where(IsFormalMarriageCandidate).Select((Hero x) => BuildMarriageHeroFactLine(x, "targetHeroId")).Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).ToList() : new List<string>());
-			return BuildFactBlock("【对方家族可婚配成员（允许已有配偶，事实清单）】", list);
+			return BuildFactBlock(SocialPromptTexts.Get("P040"), list);
 		}
 		catch
 		{
-			return "【对方家族可婚配成员（允许已有配偶，事实清单）】\n（无）";
+			return SocialPromptTexts.Get("P046");
 		}
 	}
 
@@ -869,27 +869,27 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 		Hero mainHero = Hero.MainHero;
 		if (mainHero == null || targetHero == null)
 		{
-			reason = "未找到婚配双方。";
+			reason = SocialSourceTexts.Get("S116");
 			return false;
 		}
 		if (mainHero == targetHero)
 		{
-			reason = "不能和自己结婚。";
+			reason = SocialSourceTexts.Get("S117");
 			return false;
 		}
 		if (HasExistingMarriageBetween(mainHero, targetHero))
 		{
-			reason = "双方已经存在有效婚姻记录。";
+			reason = SocialSourceTexts.Get("S118");
 			return false;
 		}
 		if (!IsMarriageableHero(mainHero))
 		{
-			reason = "玩家当前状态不满足结婚条件。";
+			reason = SocialSourceTexts.Get("S119");
 			return false;
 		}
 		if (!IsMarriageableHero(targetHero))
 		{
-			reason = "目标当前状态不满足结婚条件。";
+			reason = SocialSourceTexts.Get("S120");
 			return false;
 		}
 		return true;
@@ -901,17 +901,17 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 		reason = "";
 		if (left == null || right == null)
 		{
-			reason = "未找到婚配双方。";
+			reason = SocialSourceTexts.Get("S116");
 			return false;
 		}
 		if (left == right)
 		{
-			reason = "不能和自己结婚。";
+			reason = SocialSourceTexts.Get("S117");
 			return false;
 		}
 		if (HasExistingMarriageBetween(left, right))
 		{
-			reason = "双方已经存在有效婚姻记录。";
+			reason = SocialSourceTexts.Get("S118");
 			return false;
 		}
 		return true;
@@ -979,7 +979,7 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 			Type type = typeof(ChangeRelationAction).Assembly.GetType("TaleWorlds.CampaignSystem.Actions.MarriageAction");
 			if (type == null)
 			{
-				failReason = "未找到原版 MarriageAction。";
+				failReason = SocialSourceTexts.Get("S121");
 				return false;
 			}
 			MethodInfo method = type.GetMethod("Apply", BindingFlags.Public | BindingFlags.Static, null, new Type[3]
@@ -996,7 +996,7 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 					NormalizeMarriedPlayerCompanionFamilySlots("marriage_action_success", left, right);
 					return true;
 				}
-				failReason = "MarriageAction 未抛异常，但婚姻未实际建立。";
+				failReason = SocialSourceTexts.Get("S122");
 				Logger.Log("Romance", "[WARN] MarriageAction returned without marriage state change.");
 				Logger.Log("Romance", "[WARN] MarriageAction left(after)=" + DescribeHeroMarriageState(left));
 				Logger.Log("Romance", "[WARN] MarriageAction right(after)=" + DescribeHeroMarriageState(right));
@@ -1015,13 +1015,13 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 					NormalizeMarriedPlayerCompanionFamilySlots("marriage_action_success", left, right);
 					return true;
 				}
-				failReason = "MarriageAction 未抛异常，但婚姻未实际建立。";
+				failReason = SocialSourceTexts.Get("S122");
 				Logger.Log("Romance", "[WARN] MarriageAction returned without marriage state change.");
 				Logger.Log("Romance", "[WARN] MarriageAction left(after)=" + DescribeHeroMarriageState(left));
 				Logger.Log("Romance", "[WARN] MarriageAction right(after)=" + DescribeHeroMarriageState(right));
 				return false;
 			}
-			failReason = "MarriageAction.Apply 签名不匹配。";
+			failReason = SocialSourceTexts.Get("S123");
 			return false;
 		}
 		catch (TargetInvocationException ex)
@@ -1069,12 +1069,12 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 		{
 			if (left == null || right == null)
 			{
-				failReason = "未找到婚配双方。";
+				failReason = SocialSourceTexts.Get("S116");
 				return false;
 			}
 			if (HasExistingMarriageBetween(left, right))
 			{
-				failReason = "双方已经存在有效婚姻记录。";
+				failReason = SocialSourceTexts.Get("S118");
 				return false;
 			}
 			if (!bypassMarriageEligibilityForAuthorizedTag && !TryValidateMarriagePairIgnoringRuntimeBlockers(left, right, out var reason, allowExistingSpouses: true))
@@ -1089,7 +1089,7 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 			var marriageModel = Campaign.Current?.Models?.MarriageModel;
 			if (marriageModel == null)
 			{
-				failReason = "未找到原版 MarriageModel。";
+				failReason = SocialSourceTexts.Get("S124");
 				return false;
 			}
 			Hero hero = left;
@@ -1267,7 +1267,7 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 		{
 			return false;
 		}
-		reason = "当前处于会面/遭遇流程，且仅被地图事件/军团等运行时状态拦截；已改走强制婚姻执行路径。";
+		reason = SocialSourceTexts.Get("S125");
 		return true;
 	}
 
@@ -1276,18 +1276,18 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 		reason = "";
 		if (left == null || right == null)
 		{
-			reason = "未找到婚配双方。";
+			reason = SocialSourceTexts.Get("S116");
 			return false;
 		}
 		var marriageModel = Campaign.Current?.Models?.MarriageModel;
 		if (marriageModel == null)
 		{
-			reason = "未找到原版 MarriageModel。";
+			reason = SocialSourceTexts.Get("S124");
 			return false;
 		}
 		if (!marriageModel.IsClanSuitableForMarriage(left.Clan) || !marriageModel.IsClanSuitableForMarriage(right.Clan))
 		{
-			reason = "有一方家族当前不适合结婚。";
+			reason = SocialSourceTexts.Get("S126");
 			return false;
 		}
 		if (!CanHeroMarryIgnoringRuntimeBlockers(left, out reason, allowExistingSpouses) || !CanHeroMarryIgnoringRuntimeBlockers(right, out reason, allowExistingSpouses))
@@ -1303,7 +1303,7 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 			}
 			if (methodInfo != null && methodInfo.Invoke(marriageModel, new object[3] { left, right, 3 }) is bool flag && flag)
 			{
-				reason = "双方存在近亲关系。";
+				reason = SocialSourceTexts.Get("S127");
 				return false;
 			}
 		}
@@ -1316,13 +1316,13 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 			Hero courtedHeroInOtherClan = Romance.GetCourtedHeroInOtherClan(left, right);
 			if (courtedHeroInOtherClan != null && courtedHeroInOtherClan != right)
 			{
-				reason = "玩家方当前已有其他婚配对象。";
+				reason = SocialSourceTexts.Get("S128");
 				return false;
 			}
 			Hero courtedHeroInOtherClan2 = Romance.GetCourtedHeroInOtherClan(right, left);
 			if (courtedHeroInOtherClan2 != null && courtedHeroInOtherClan2 != left)
 			{
-				reason = "对方当前已有其他婚配对象。";
+				reason = SocialSourceTexts.Get("S129");
 				return false;
 			}
 		}
@@ -1338,14 +1338,14 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 		reason = "";
 		if (hero == null)
 		{
-			reason = "未找到婚配对象。";
+			reason = SocialSourceTexts.Get("S130");
 			return false;
 		}
 		try
 		{
 			if (!hero.IsActive)
 			{
-				reason = $"{hero.Name} 当前未激活。";
+				reason = string.Format(SocialSourceTexts.Get("S131"), hero.Name);
 				return false;
 			}
 		}
@@ -1356,7 +1356,7 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 		{
 			if (!allowExistingSpouses && hero.Spouse != null)
 			{
-				reason = $"{hero.Name} 已有配偶。";
+				reason = string.Format(SocialSourceTexts.Get("S132"), hero.Name);
 				return false;
 			}
 		}
@@ -1367,7 +1367,7 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 		{
 			if (!hero.IsLord)
 			{
-				reason = $"{hero.Name} 不是领主英雄。";
+				reason = string.Format(SocialSourceTexts.Get("S133"), hero.Name);
 				return false;
 			}
 		}
@@ -1378,7 +1378,7 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 		{
 			if (hero.IsMinorFactionHero || hero.IsNotable || hero.IsTemplate)
 			{
-				reason = $"{hero.Name} 当前不属于可婚配英雄类型。";
+				reason = string.Format(SocialSourceTexts.Get("S134"), hero.Name);
 				return false;
 			}
 		}
@@ -1390,7 +1390,7 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 			int num = (hero.IsFemale ? (Campaign.Current?.Models?.MarriageModel?.MinimumMarriageAgeFemale ?? 18) : (Campaign.Current?.Models?.MarriageModel?.MinimumMarriageAgeMale ?? 18));
 			if (hero.CharacterObject?.Age < (float)num)
 			{
-				reason = $"{hero.Name} 年龄未达到婚配要求。";
+				reason = string.Format(SocialSourceTexts.Get("S135"), hero.Name);
 				return false;
 			}
 		}
@@ -1405,7 +1405,7 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 				CampaignEventDispatcher.Instance.CanHeroMarry(hero, ref result);
 				if (!result)
 				{
-					reason = $"{hero.Name} 当前被其他系统规则禁止结婚。";
+					reason = string.Format(SocialSourceTexts.Get("S136"), hero.Name);
 					return false;
 				}
 			}
@@ -1425,13 +1425,13 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 		{
 			if (left == null || right == null)
 			{
-				failReason = "未找到婚配双方。";
+				failReason = SocialSourceTexts.Get("S116");
 				return false;
 			}
 			var marriageModel = Campaign.Current?.Models?.MarriageModel;
 			if (marriageModel == null)
 			{
-				failReason = "未找到原版 MarriageModel。";
+				failReason = SocialSourceTexts.Get("S124");
 				return false;
 			}
 			Hero hero = left;
@@ -1506,7 +1506,7 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 				NormalizeMarriedPlayerCompanionFamilySlots("force_marriage_success", left, right);
 				return true;
 			}
-			failReason = "强制婚姻执行后婚姻未实际建立。";
+			failReason = SocialSourceTexts.Get("S137");
 			return false;
 		}
 		catch (Exception ex)
@@ -1603,7 +1603,7 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 	{
 		if (left == null || right == null)
 		{
-			return "未找到婚配双方。";
+			return SocialSourceTexts.Get("S116");
 		}
 		List<string> list = new List<string>();
 		try
@@ -1611,25 +1611,25 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 			var marriageModel = Campaign.Current?.Models?.MarriageModel;
 			if (marriageModel != null && !marriageModel.IsCoupleSuitableForMarriage(left, right) && (!IsSameGenderMarriagePair(left, right) || !TryValidateMarriagePairIgnoringRuntimeBlockers(left, right, out var _)))
 			{
-				list.Add("原版 MarriageModel 判定该组合当前不适合结婚");
+				list.Add(SocialSourceTexts.Get("S138"));
 			}
 		}
 		catch (Exception ex)
 		{
-			list.Add("读取原版婚配判定失败: " + ex.GetType().Name);
+			list.Add(SocialSourceTexts.Get("S139") + ex.GetType().Name);
 		}
 		try
 		{
 			if (left.Clan == null || right.Clan == null)
 			{
-				list.Add("有一方没有家族");
+				list.Add(SocialSourceTexts.Get("S140"));
 			}
 		}
 		catch
 		{
 		}
-		TryAppendHeroMarriageBlockers(left, "玩家方", list);
-		TryAppendHeroMarriageBlockers(right, "对方", list);
+		TryAppendHeroMarriageBlockers(left, SocialSourceTexts.Get("S141"), list);
+		TryAppendHeroMarriageBlockers(right, SocialSourceTexts.Get("S142"), list);
 		return string.Join("；", list.Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase));
 	}
 
@@ -1643,7 +1643,7 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 		{
 			if (!hero.IsActive)
 			{
-				reasons.Add(sideLabel + "未激活");
+				reasons.Add(sideLabel + SocialSourceTexts.Get("S143"));
 			}
 		}
 		catch
@@ -1653,7 +1653,7 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 		{
 			if (hero.Spouse != null)
 			{
-				reasons.Add(sideLabel + "已有配偶");
+				reasons.Add(sideLabel + SocialSourceTexts.Get("S144"));
 			}
 		}
 		catch
@@ -1663,7 +1663,7 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 		{
 			if (!hero.IsLord)
 			{
-				reasons.Add(sideLabel + "不是领主英雄");
+				reasons.Add(sideLabel + SocialSourceTexts.Get("S145"));
 			}
 		}
 		catch
@@ -1673,7 +1673,7 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 		{
 			if (hero.IsMinorFactionHero)
 			{
-				reasons.Add(sideLabel + "属于次要派系英雄");
+				reasons.Add(sideLabel + SocialSourceTexts.Get("S146"));
 			}
 		}
 		catch
@@ -1683,7 +1683,7 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 		{
 			if (hero.IsNotable)
 			{
-				reasons.Add(sideLabel + "是城镇要人");
+				reasons.Add(sideLabel + SocialSourceTexts.Get("S147"));
 			}
 		}
 		catch
@@ -1693,7 +1693,7 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 		{
 			if (hero.IsTemplate)
 			{
-				reasons.Add(sideLabel + "是模板英雄");
+				reasons.Add(sideLabel + SocialSourceTexts.Get("S148"));
 			}
 		}
 		catch
@@ -1703,7 +1703,7 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 		{
 			if (hero.PartyBelongedTo?.MapEvent != null)
 			{
-				reasons.Add(sideLabel + "正在地图事件中");
+				reasons.Add(sideLabel + SocialSourceTexts.Get("S149"));
 			}
 		}
 		catch
@@ -1713,7 +1713,7 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 		{
 			if (hero.PartyBelongedTo?.Army != null)
 			{
-				reasons.Add(sideLabel + "正在军团中");
+				reasons.Add(sideLabel + SocialSourceTexts.Get("S150"));
 			}
 		}
 		catch
@@ -2134,35 +2134,35 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 		reason = "";
 		if (left == null || right == null)
 		{
-			reason = "未找到婚配双方。";
+			reason = SocialSourceTexts.Get("S116");
 			return false;
 		}
 		if (HasExistingMarriageBetween(left, right))
 		{
-			reason = "双方已经存在有效婚姻记录。";
+			reason = SocialSourceTexts.Get("S118");
 			return false;
 		}
 		if (!IsFormalMarriageCandidate(left))
 		{
-			reason = "玩家方婚配人选不满足基础婚配条件。";
+			reason = SocialSourceTexts.Get("S151");
 			return false;
 		}
 		if (!IsFormalMarriageCandidate(right))
 		{
-			reason = "对方婚配人选不满足基础婚配条件。";
+			reason = SocialSourceTexts.Get("S152");
 			return false;
 		}
 		try
 		{
 			if (!IsMarriageAuthorityHero(left) && !IsMarriageAuthorityHero(right) && !RomanceRelationshipOwner.IsAgeGapAllowed(left.Age, right.Age, GetMarriageCandidateMaxAgeGapSetting()))
 			{
-				reason = "双方年龄差超过当前设置允许范围。";
+				reason = SocialSourceTexts.Get("S153");
 				return false;
 			}
 		}
 		catch
 		{
-			reason = "无法确认双方年龄差是否满足婚配条件。";
+			reason = SocialSourceTexts.Get("S154");
 			return false;
 		}
 		return true;
@@ -2173,24 +2173,24 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 		reason = "";
 		if (playerClan == null || targetClan == null)
 		{
-			reason = "未找到双方家族信息。";
+			reason = SocialSourceTexts.Get("S155");
 			return false;
 		}
 		if (playerClan == targetClan)
 		{
-			reason = "正规联姻要求双方来自不同家族。";
+			reason = SocialSourceTexts.Get("S156");
 			return false;
 		}
 		List<Hero> list = GetClanMembersCompat(playerClan).Where(IsFormalMarriageCandidate).ToList();
 		if (list.Count <= 0)
 		{
-			reason = "玩家家族当前没有符合基础条件的可婚配成员。";
+			reason = SocialSourceTexts.Get("S157");
 			return false;
 		}
 		List<Hero> list2 = GetClanMembersCompat(targetClan).Where(IsFormalMarriageCandidate).ToList();
 		if (list2.Count <= 0)
 		{
-			reason = "对方家族当前没有符合基础条件的可婚配成员。";
+			reason = SocialSourceTexts.Get("S158");
 			return false;
 		}
 		foreach (Hero item in list)
@@ -2203,7 +2203,7 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 				}
 			}
 		}
-		reason = "双方家族当前没有满足性别、年龄差和非重复婚姻条件的可婚配成员组合。";
+		reason = SocialSourceTexts.Get("S159");
 		return false;
 	}
 
@@ -2353,7 +2353,7 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 		{
 			return text.Trim();
 		}
-		return "无家族";
+		return SocialSourceTexts.Get("S160");
 	}
 
 	private void RegisterMarriageRecord(Hero left, Hero right, string marriageType, Clan payerClan, Clan receiverClan, int bridePriceAmount)
@@ -2383,24 +2383,24 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 		RegisterMarriageRecord(playerClanHero, targetHero, "formal", payerClan, receiverClan, bridePriceAmount);
 		string text = GetClanNameSafe(playerClanHero);
 		string text2 = GetClanNameSafe(targetHero);
-		string text3 = $"{text}的{playerClanHero.Name}";
-		string text4 = $"{text2}的{targetHero.Name}";
+		string text3 = string.Format(SocialSourceTexts.Get("S161"), text, playerClanHero.Name);
+		string text4 = string.Format(SocialSourceTexts.Get("S161"), text2, targetHero.Name);
 		string text5 = BuildBridePriceSummary(GetMarriageRecord(playerClanHero, targetHero));
 		if (leader != null)
 		{
-			MyBehavior.AppendExternalNpcFact(leader, $"你已经同意 {text3} 与 {text4} 正式成婚。{text5}。");
+			MyBehavior.AppendExternalNpcFact(leader, string.Format(SocialSourceTexts.Get("S162"), text3, text4, text5));
 		}
 		if (targetHero != leader)
 		{
-			MyBehavior.AppendExternalNpcFact(targetHero, $"你已经与 {text3} 正式成婚。{text5}。");
+			MyBehavior.AppendExternalNpcFact(targetHero, string.Format(SocialSourceTexts.Get("S163"), text3, text5));
 		}
 		if (playerClanHero == Hero.MainHero)
 		{
-			MyBehavior.AppendExternalPlayerFact(Hero.MainHero, $"你已经与 {text4} 正式成婚。{text5}。");
+			MyBehavior.AppendExternalPlayerFact(Hero.MainHero, string.Format(SocialSourceTexts.Get("S163"), text4, text5));
 		}
 		else
 		{
-			MyBehavior.AppendExternalNpcFact(playerClanHero, $"你已经与 {text4} 正式成婚。{text5}。");
+			MyBehavior.AppendExternalNpcFact(playerClanHero, string.Format(SocialSourceTexts.Get("S163"), text4, text5));
 		}
 	}
 
@@ -2412,12 +2412,12 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 		}
 		RegisterMarriageRecord(Hero.MainHero, targetHero, "elope", null, null, 0);
 		string text = GetClanNameSafe(targetHero);
-		MyBehavior.AppendExternalPlayerFact(Hero.MainHero, $"你已经与 {text}的{targetHero.Name} 私奔并成婚。");
-		MyBehavior.AppendExternalNpcFact(targetHero, "你已经与玩家私奔并成婚。");
+		MyBehavior.AppendExternalPlayerFact(Hero.MainHero, string.Format(SocialSourceTexts.Get("S164"), text, targetHero.Name));
+		MyBehavior.AppendExternalNpcFact(targetHero, SocialSourceTexts.Get("S165"));
 		Hero hero = targetHero.Clan?.Leader;
 		if (hero != null && hero != targetHero)
 		{
-			MyBehavior.AppendExternalNpcFact(hero, $"玩家已经与 {text}的{targetHero.Name} 私奔并成婚。");
+			MyBehavior.AppendExternalNpcFact(hero, string.Format(SocialSourceTexts.Get("S166"), text, targetHero.Name));
 		}
 	}
 
@@ -2429,19 +2429,19 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 		}
 		string text = GetClanNameSafe(playerClanHero);
 		string text2 = GetClanNameSafe(targetHero);
-		string text3 = $"{text}的{playerClanHero.Name}";
-		string text4 = $"{text2}的{targetHero.Name}";
-		string text5 = (refundedAmount > 0) ? $" 双方已议定返还彩礼 {refundedAmount:N0} 第纳尔。" : "";
-		MyBehavior.AppendExternalPlayerFact(Hero.MainHero, $"你们已经解除 {text3} 与 {text4} 的婚姻关系。{text5}".Trim());
-		MyBehavior.AppendExternalNpcFact(targetHero, $"你与 {text3} 的婚姻已经解除。{text5}".Trim());
+		string text3 = string.Format(SocialSourceTexts.Get("S161"), text, playerClanHero.Name);
+		string text4 = string.Format(SocialSourceTexts.Get("S161"), text2, targetHero.Name);
+		string text5 = (refundedAmount > 0) ? string.Format(SocialSourceTexts.Get("S167"), refundedAmount) : "";
+		MyBehavior.AppendExternalPlayerFact(Hero.MainHero, string.Format(SocialSourceTexts.Get("S168"), text3, text4, text5).Trim());
+		MyBehavior.AppendExternalNpcFact(targetHero, string.Format(SocialSourceTexts.Get("S169"), text3, text5).Trim());
 		if (playerClanHero != Hero.MainHero)
 		{
-			MyBehavior.AppendExternalNpcFact(playerClanHero, $"你与 {text4} 的婚姻已经解除。{text5}".Trim());
+			MyBehavior.AppendExternalNpcFact(playerClanHero, string.Format(SocialSourceTexts.Get("S169"), text4, text5).Trim());
 		}
 		Hero hero = targetHero.Clan?.Leader;
 		if (hero != null && hero != targetHero)
 		{
-			MyBehavior.AppendExternalNpcFact(hero, $"你方家族与 {text} 的婚姻安排已经解除。{text5}".Trim());
+			MyBehavior.AppendExternalNpcFact(hero, string.Format(SocialSourceTexts.Get("S170"), text, text5).Trim());
 		}
 	}
 
@@ -2451,37 +2451,37 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 		Hero mainHero = Hero.MainHero;
 		if (mainHero == null || playerClanHero == null || targetHero == null)
 		{
-			reason = "未找到婚配双方。";
+			reason = SocialSourceTexts.Get("S116");
 			return false;
 		}
 		if (playerClanHero.Clan == null || playerClanHero.Clan != mainHero.Clan)
 		{
-			reason = "玩家方婚配人选必须来自玩家家族。";
+			reason = SocialSourceTexts.Get("S171");
 			return false;
 		}
 		if (playerClanHero == targetHero)
 		{
-			reason = "不能让同一人与自己结婚。";
+			reason = SocialSourceTexts.Get("S172");
 			return false;
 		}
 		if (HasExistingMarriageBetween(playerClanHero, targetHero))
 		{
-			reason = "双方已经存在有效婚姻记录。";
+			reason = SocialSourceTexts.Get("S118");
 			return false;
 		}
 		if (playerClanHero.Clan != null && targetHero.Clan != null && playerClanHero.Clan == targetHero.Clan)
 		{
-			reason = "正规联姻要求双方来自不同家族。";
+			reason = SocialSourceTexts.Get("S156");
 			return false;
 		}
 		if (!IsMarriageableHero(playerClanHero))
 		{
-			reason = "玩家方婚配人选当前不满足基础婚配条件。";
+			reason = SocialSourceTexts.Get("S173");
 			return false;
 		}
 		if (!IsMarriageableHero(targetHero))
 		{
-			reason = "对方婚配人选当前不满足基础婚配条件。";
+			reason = SocialSourceTexts.Get("S174");
 			return false;
 		}
 		if (!IsFormalMarriagePairCompatible(playerClanHero, targetHero, out reason))
@@ -2500,22 +2500,22 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 		Hero mainHero = Hero.MainHero;
 		if (mainHero == null)
 		{
-			reason = "未找到玩家英雄。";
+			reason = SocialSourceTexts.Get("S175");
 			return false;
 		}
 		if (playerClanHero.Clan == null || playerClanHero.Clan != mainHero.Clan)
 		{
-			reason = "玩家方婚配人选必须来自玩家家族。";
+			reason = SocialSourceTexts.Get("S171");
 			return false;
 		}
 		if (targetHero.Clan == null)
 		{
-			reason = "目标没有家族，无法走家族联姻流程。";
+			reason = SocialSourceTexts.Get("S176");
 			return false;
 		}
 		if (playerClanHero.Clan == targetHero.Clan)
 		{
-			reason = "正规联姻要求双方来自不同家族。";
+			reason = SocialSourceTexts.Get("S156");
 			return false;
 		}
 		return true;
@@ -2526,18 +2526,18 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 		status = "";
 		if (!CanExecuteFormalMarriageTagPair(playerClanHero, targetHero, out var reason))
 		{
-			status = "正规联姻失败：" + reason;
+			status = SocialSourceTexts.Get("S177") + reason;
 			return false;
 		}
 		if (targetHero.Clan == null)
 		{
-			status = "正规联姻失败：目标没有家族，无法走家族联姻流程。";
+			status = SocialSourceTexts.Get("S178");
 			return false;
 		}
 		Hero leader = targetHero.Clan.Leader;
 		if (leader == null)
 		{
-			status = "正规联姻失败：未找到对方家族族长。";
+			status = SocialSourceTexts.Get("S179");
 			return false;
 		}
 		int num = Hero.MainHero?.Clan?.Tier ?? 0;
@@ -2558,12 +2558,12 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 			Logger.Log("Romance", "[WARN] MarriageAction failed after LLM tag, fallback to force apply: " + failReason);
 			if (ShouldUseAnimusForgeMultiMarriage(playerClanHero, targetHero))
 			{
-				status = "正规联姻失败：多配偶执行失败，" + failReason;
+				status = SocialSourceTexts.Get("S180") + failReason;
 				return false;
 			}
 			if (!TryForceApplyMarriageAction(playerClanHero, targetHero, out failReason))
 			{
-				status = "正规联姻失败：执行 MarriageAction 失败，" + failReason;
+				status = SocialSourceTexts.Get("S181") + failReason;
 				return false;
 			}
 		}
@@ -2598,16 +2598,16 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 			num9 = num8;
 		}
 		RecordFormalMarriageFacts(leader, playerClanHero, targetHero, clan, clan2, num9);
-		status = $"正规联姻成功：{playerClanHero.Name} 与 {targetHero.Name} 已成婚。等级差D={num3}，家族关系={clanRelationWithPlayer}，族长综合信任={effectiveTrust}。";
+		status = string.Format(SocialSourceTexts.Get("S182"), playerClanHero.Name, targetHero.Name, num3, clanRelationWithPlayer, effectiveTrust);
 		if (num7 > 0)
 		{
-			status += $" 已核销你先前主动交付给族长的彩礼 {num7:N0} 第纳尔。";
+			status += string.Format(SocialSourceTexts.Get("S183"), num7);
 		}
 		if (num8 > 0)
 		{
-			status += $" 对方族长已向玩家支付彩礼 {num8:N0} 第纳尔。";
-			MyBehavior.AppendExternalNpcFact(leader, $"你已经向玩家支付了彩礼 {num8:N0} 第纳尔。");
-			MyBehavior.AppendExternalPlayerFact(Hero.MainHero, $"你已经从 {leader?.Name?.ToString() ?? "对方族长"} 收到了彩礼 {num8:N0} 第纳尔。");
+			status += string.Format(SocialSourceTexts.Get("S184"), num8);
+			MyBehavior.AppendExternalNpcFact(leader, string.Format(SocialSourceTexts.Get("S185"), num8));
+			MyBehavior.AppendExternalPlayerFact(Hero.MainHero, string.Format(SocialSourceTexts.Get("S187"), leader?.Name?.ToString() ?? SocialSourceTexts.Get("S186"), num8));
 		}
 		return true;
 	}
@@ -2617,7 +2617,7 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 		status = "";
 		if (!CanExecuteMarriageTagPair(Hero.MainHero, targetHero, out var reason))
 		{
-			status = "私奔失败：" + reason;
+			status = SocialSourceTexts.Get("S188") + reason;
 			return false;
 		}
 		Hero leader = targetHero.Clan?.Leader;
@@ -2661,12 +2661,12 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 			Logger.Log("Romance", "[WARN] Elope MarriageAction failed after LLM tag, fallback to force apply: " + failReason);
 			if (ShouldUseAnimusForgeMultiMarriage(Hero.MainHero, targetHero))
 			{
-				status = "私奔失败：多配偶执行失败，" + failReason;
+				status = SocialSourceTexts.Get("S189") + failReason;
 				return false;
 			}
 			if (!TryForceApplyMarriageAction(Hero.MainHero, targetHero, out failReason))
 			{
-				status = "私奔失败：执行 MarriageAction 失败，" + failReason;
+				status = SocialSourceTexts.Get("S190") + failReason;
 				return false;
 			}
 		}
@@ -2690,7 +2690,7 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 			}
 			RewardSystemBehavior.Instance?.AdjustTrustForExternal(leader, -15, -10, "elope_penalty");
 		}
-		status = $"私奔成功：你与 {targetHero.Name} 已成婚。当前 L={privateLove}，对象私人信任={npcTrust}，对象家族融洽度F={num3}。";
+		status = string.Format(SocialSourceTexts.Get("S191"), targetHero.Name, privateLove, npcTrust, num3);
 		return true;
 	}
 
@@ -2699,18 +2699,18 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 		status = "";
 		if (playerClanHero == null || targetHero == null)
 		{
-			status = "离婚失败：未找到离婚双方。";
+			status = SocialSourceTexts.Get("S192");
 			return false;
 		}
 		MarriageRecord marriageRecord = GetMarriageRecord(playerClanHero, targetHero);
 		if (marriageRecord == null || !marriageRecord.IsActive)
 		{
-			status = "离婚失败：未找到有效婚姻记录。";
+			status = SocialSourceTexts.Get("S193");
 			return false;
 		}
 		if (!HasActiveAnimusMarriageRecord(playerClanHero, targetHero) && playerClanHero.Spouse != targetHero && targetHero.Spouse != playerClanHero)
 		{
-			status = "离婚失败：双方当前并非彼此配偶。";
+			status = SocialSourceTexts.Get("S194");
 			return false;
 		}
 		int num = (refundAmount.HasValue && refundAmount.Value > 0) ? refundAmount.Value : 0;
@@ -2744,7 +2744,7 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 		}
 		catch (Exception ex)
 		{
-			status = "离婚失败：解除配偶关系时异常，" + ex.Message;
+			status = SocialSourceTexts.Get("S195") + ex.Message;
 			return false;
 		}
 		MarriageRecord marriageRecord2 = marriageRecord;
@@ -2752,10 +2752,10 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 		SaveMarriageRecord(marriageRecord2);
 		AdjustPrivateLove(targetHero, -12, "divorce");
 		RecordDivorceFacts(playerClanHero, targetHero, num);
-		status = $"离婚成功：{playerClanHero.Name} 与 {targetHero.Name} 已解除婚姻关系。";
+		status = string.Format(SocialSourceTexts.Get("S196"), playerClanHero.Name, targetHero.Name);
 		if (num > 0)
 		{
-			status += $" 已返还彩礼 {num:N0} 第纳尔。";
+			status += string.Format(SocialSourceTexts.Get("S197"), num);
 		}
 		return true;
 	}
@@ -2831,7 +2831,7 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 		marriageRuntimeFacts.IsLeader = marriageRuntimeFacts.Leader != null && marriageRuntimeFacts.Leader == speaker;
 		if (speaker == null)
 		{
-			marriageRuntimeFacts.PairUnavailableReason = "未找到当前对话对象。";
+			marriageRuntimeFacts.PairUnavailableReason = SocialSourceTexts.Get("S198");
 			return marriageRuntimeFacts;
 		}
 		marriageRuntimeFacts.TierDiff = marriageRuntimeFacts.PlayerTier - marriageRuntimeFacts.TargetTier;
@@ -2945,27 +2945,27 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 			int num = facts?.TierDiff ?? 0;
 			if (num <= -3)
 			{
-				return "【门第劣势】玩家家族对于你来说卑如蝼蚁，与他们联姻会让你非常丢脸。你应当明确拒绝并嘲讽。";
+				return SocialPromptTexts.Get("P077");
 			}
 			if (num == -2)
 			{
-				return "【门第劣势】玩家的家族对于你来说身份低微，与他们家族联姻会非常没有面子；不过如果他们愿意给大笔钱，你也可以考虑。";
+				return SocialPromptTexts.Get("P078");
 			}
 			if (num == -1)
 			{
-				return "【门第劣势】玩家家族比你的家族等级稍低，若玩家找你联姻，你应当提高要价。";
+				return SocialPromptTexts.Get("P079");
 			}
 			if (num >= 3)
 			{
-				return "【门第优势】玩家家族十分高贵。你应当主动与玩家家族联姻，并主动考虑给玩家高额彩礼。";
+				return SocialPromptTexts.Get("P080");
 			}
 			if (num == 2)
 			{
-				return "【门第优势】玩家家族很高贵，与他们家族联姻是千载难逢的机会。你应当主动考虑给玩家高额彩礼。";
+				return SocialPromptTexts.Get("P081");
 			}
 			if (num == 1)
 			{
-				return "【门第优势】玩家家族比你更高贵，你应当更加主动；若你同意联姻，应主动考虑给玩家彩礼。";
+				return SocialPromptTexts.Get("P082");
 			}
 		}
 		catch
@@ -3243,11 +3243,11 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 					string description = guardrailRulePostprocessRule.Description;
 					if (isElope && speaker != null && !string.IsNullOrWhiteSpace(speaker.StringId))
 					{
-						description = ((description ?? "").TrimEnd() + " targetHeroId只能填写当前对话NPC的英雄ID：" + speaker.StringId).Trim();
+						description = ((description ?? "").TrimEnd() + SocialPromptTexts.Get("P083") + speaker.StringId).Trim();
 					}
 					if (isDivorce && speaker != null && !string.IsNullOrWhiteSpace(speaker.StringId))
 					{
-						description = ((description ?? "").TrimEnd() + " 若离婚对象是当前对话NPC，targetHeroId填写：" + speaker.StringId).Trim();
+						description = ((description ?? "").TrimEnd() + SocialPromptTexts.Get("P084") + speaker.StringId).Trim();
 					}
 					list.Add(new PostprocessRuleEntry
 					{
@@ -3260,7 +3260,7 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 				+ " formalAllowed=" + allowFormal
 				+ " formalBlockedReason=" + (formalBlockedReason ?? "")
 				+ " state=" + marriageRuntimeConstraintState
-				+ " rules=" + ((list.Count == 0) ? "（无）" : string.Join(",", list.Select((PostprocessRuleEntry x) => x?.Tag ?? "").Where((string x) => !string.IsNullOrWhiteSpace(x)))));
+				+ " rules=" + ((list.Count == 0) ? SocialSourceTexts.Get("S207") : string.Join(",", list.Select((PostprocessRuleEntry x) => x?.Tag ?? "").Where((string x) => !string.IsNullOrWhiteSpace(x)))));
 		}
 		catch (Exception ex)
 		{
@@ -3427,10 +3427,10 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 		string text4 = injectClanFacts ? BuildMarriagePostprocessPlayerCandidatesBlock(speaker) : null;
 		string text5 = injectClanFacts ? BuildMarriagePostprocessTargetCandidatesBlock(speaker) : null;
 		string text7 = AIConfigHandler.BuildActionPostprocessSystemPrompt(text2, text3, speaker?.Name?.ToString() ?? "NPC", null, null, null, text4, text5);
-		string text8 = AIConfigHandler.BuildActionPostprocessUserPrompt(actionPostprocessUserPromptTemplate, text2, speaker?.Name?.ToString() ?? "NPC", "（无）", text, null, null, null, text4, text5);
+		string text8 = AIConfigHandler.BuildActionPostprocessUserPrompt(actionPostprocessUserPromptTemplate, text2, speaker?.Name?.ToString() ?? "NPC", SocialPromptTexts.Get("P014"), text, null, null, null, text4, text5);
 		if (!AIConfigHandler.TryCallAuxiliaryActionPostprocess(text7, text8, 5000, 0f, out var content, out var error))
 		{
-			Logger.Log("Romance", "[MarriagePostprocess] 调用失败: " + error);
+			Logger.Log("Romance", SocialSourceTexts.Get("S208") + error);
 			return text.Trim();
 		}
 		string text9 = NormalizeMarriagePostprocessTags(content, list, speaker);
@@ -3489,11 +3489,11 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 				string status = "";
 				if (hero2 == null)
 				{
-					status = "正规联姻失败：未找到玩家家族婚配人选（playerClanHeroId）。";
+					status = SocialSourceTexts.Get("S209");
 				}
 				else if (hero3 == null)
 				{
-					status = "正规联姻失败：未找到对方婚配对象（targetHeroId）。";
+					status = SocialSourceTexts.Get("S210");
 				}
 				else if (TryExecuteFormalMarriage(speaker, hero2, hero3, bridePrice, out status))
 				{
@@ -3518,7 +3518,7 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 				string status2 = "";
 				if (hero4 == null)
 				{
-					status2 = "正规联姻失败：未找到对方婚配对象（targetHeroId）。";
+					status2 = SocialSourceTexts.Get("S210");
 				}
 				else if (TryExecuteFormalMarriage(speaker, Hero.MainHero, hero4, bridePrice2, out status2))
 				{
@@ -3537,7 +3537,7 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 				string status3 = "";
 				if (hero5 == null)
 				{
-					status3 = "私奔失败：未找到目标对象（targetHeroId）。";
+					status3 = SocialSourceTexts.Get("S211");
 				}
 				else if (TryExecuteElopeMarriage(speaker, hero5, out status3))
 				{
@@ -3562,11 +3562,11 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 				string status4 = "";
 				if (hero6 == null)
 				{
-					status4 = "离婚失败：未找到玩家家族离婚对象（playerClanHeroId）。";
+					status4 = SocialSourceTexts.Get("S212");
 				}
 				else if (hero7 == null)
 				{
-					status4 = "离婚失败：未找到对方离婚对象（targetHeroId）。";
+					status4 = SocialSourceTexts.Get("S213");
 				}
 				else if (TryExecuteDivorce(speaker, hero6, hero7, refundAmount, out status4))
 				{
@@ -3591,7 +3591,7 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 		}
 		catch (Exception ex)
 		{
-			Logger.Log("Romance", "[ERROR] ApplyMarriageTags 异常: " + ex);
+			Logger.Log("Romance", SocialSourceTexts.Get("S214") + ex);
 		}
 	}
 }
