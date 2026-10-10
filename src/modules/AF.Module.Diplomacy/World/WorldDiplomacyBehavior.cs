@@ -126,11 +126,11 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 	private MapNotificationView _registeredMapNotificationView;
 	private long _runtimeGeneration;
     private bool _persistenceWarningShown;
-    internal const string PersistenceUnavailableMessage = "外交存档数据异常，外交已暂停并保留原数据。请查看 Logs/Mod_Logic 中的 WorldDiplomacy 日志；当前外交操作已拒绝。";
+    internal static string PersistenceUnavailableMessage => DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_PersistenceUnavailable", "Diplomacy save data is inconsistent. Diplomacy is paused and the original data kept. Check the WorldDiplomacy log under Logs/Mod_Logic; the current diplomatic operation was refused.");
     internal string UnavailableReason => !ReferenceEquals(Instance, this) || !CampaignRuntimeGuard.IsLiveCampaign(_owningCampaign)
-        ? "外交操作所属会话已结束，请重新打开。"
+        ? DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_SessionEnded", "The session this diplomatic operation belongs to has ended. Please reopen it.")
         : PersistenceAdapter.HasCompleteRejectedEvidence ? PersistenceUnavailableMessage
-        : "外交存档读取异常，外交已暂停以保护原存档。请勿覆盖原档；查看 Logs/Mod_Logic 中的 WorldDiplomacy 日志。";
+        : DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_PersistenceUnreadable", "Diplomacy save data could not be read. Diplomacy is paused to protect the original save. Do not overwrite the original save; check the WorldDiplomacy log under Logs/Mod_Logic.");
 	// Runtime-only revision lets the world-message timeline detect a published document without cloning the archive every tick.
 	private long _worldMessageTimelineRevision = 1L;
 

@@ -493,7 +493,7 @@ internal static class WorldDiplomacyAnalysisApplication
 		port.Log("published player declaration retained after mechanic rejection document=" + document.DocumentId
 			+ " intent=" + normalizedIntent + " reason=" + (reason ?? ""));
 		port.Notify(
-			"外交宣言已经发布，但其中解析出的外交动作未执行：" + readableReason);
+			DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_DeclarePublishedMechanicRejected", "The diplomatic declaration has been published, but the diplomatic action parsed from it was not executed: ") + readableReason);
 		WorldDiplomacyDocumentExecutionApplication.FinalizePublishedDocumentAfterAnalysis(port, orchestration,
 			document,
 			port.ResolveKingdomId(document.AuthorKingdomId),
@@ -511,30 +511,30 @@ internal static class WorldDiplomacyAnalysisApplication
 		if (warReasonIndex >= 0)
 		{
 			string warReason = code.Substring(warReasonIndex + warPrefix.Length).Trim();
-			if (!string.IsNullOrWhiteSpace(warReason)) return "宣战未执行：" + warReason;
+			if (!string.IsNullOrWhiteSpace(warReason)) return DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_Reject_DeclareWarNotExecuted", "Declaration of war not executed: ") + warReason;
 		}
 		string detail =
             code.Contains("source_not_available") || code.Contains("source_not_known")
-                ? "原提案尚未送达本国、已失效或不存在，不能执行这次回应。"
+                ? DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_Reject_SourceUnavailable", "The original proposal has not reached your kingdom, has expired, or does not exist, so this reply cannot be executed.")
             : code.Contains("trade_acceptance_changes_terms")
-                ? "接受贸易原案时不能修改期限或附加条款；修改条件请另发新提案。"
+                ? DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_Reject_TradeTermsChanged", "Accepting a trade proposal cannot change its duration or add clauses; issue a new proposal for different terms.")
             : code.Contains("missing_source_offer") || code.Contains("without_exact_open_offer") || code.Contains("required_peace_offer_response_missing")
-				? "未能对应到对方仍有效的正式提案。请确认对方的提案宣言已送达且仍开放，或在该宣言上直接回复接受。"
+				? DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_Reject_NoOpenOffer", "No still-valid formal proposal from the other party could be matched. Confirm their proposal declaration has arrived and is still open, or accept directly on that declaration.")
 			: code.Contains("treaty_roles_must_match_participants") || code.Contains("treaty_requires_explicit_receiving_and_joining_roles")
-				? "条约的接收国与并入国（或宗主国与臣属国）必须正好是本次交涉的双方。"
+				? DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_Reject_TreatyRoles", "The treaty's receiving and joining kingdoms (or suzerain and subject) must be exactly the two parties to this negotiation.")
 			: code.Contains("treaty_acceptance_cannot_change_source_roles") || code.Contains("accept_peace_changes_offer_terms")
-				? "接受原案时不能修改原提案的条款；修改条件请另发新提案。"
-			: code.Contains("treaty_would_create_cycle") ? "该条约会造成臣属关系循环。"
-			: code.Contains("subject_already_has_treaty") ? "臣属方已存在臣属条约。"
-			: code.Contains("treaty_participants_not_available") ? "条约一方的王国或统治者当前不可用。"
-			: code.Contains("unsupported_extra_treaty_clause") ? "该条约不支持附加贡金、期限或割地条款。"
-			: code.Contains("peace_intent_between_kingdoms_not_at_war") || code.Contains("peace_legality_guard") ? "双方当前并不处于战争状态。"
-			: code.Contains("peace_terms") ? "和平条款当前无法原样执行。"
-			: code.Contains("declare_war_not_legal") ? "当前不满足宣战条件。"
-			: code.Contains("alliance_intent_conflicts") || code.Contains("trade_intent_conflicts") ? "与双方当前的同盟或贸易状态冲突。"
-			: code.Contains("final_live_legal_action_guard") || code.Contains("intent_not_in_current_legal_action_list") ? "该动作不在双方当前可执行的外交动作之内。"
-			: code.Contains("no_live_target") || code.Contains("no_eligible_parties") ? "对象王国不存在、已灭亡或没有独立外交权。"
-			: "当前局势不支持解析出的动作。";
+				? DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_Reject_AcceptChangesTerms", "Accepting a proposal cannot change its terms; issue a new proposal for different terms.")
+			: code.Contains("treaty_would_create_cycle") ? DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_Reject_TreatyCycle", "That treaty would create a cycle of vassalage.")
+			: code.Contains("subject_already_has_treaty") ? DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_Reject_SubjectHasTreaty", "The subject kingdom already has a vassalage treaty.")
+			: code.Contains("treaty_participants_not_available") ? DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_Reject_TreatyParticipantsUnavailable", "A kingdom or ruler party to the treaty is currently unavailable.")
+			: code.Contains("unsupported_extra_treaty_clause") ? DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_Reject_UnsupportedClause", "That treaty does not support extra tribute, duration, or cession clauses.")
+			: code.Contains("peace_intent_between_kingdoms_not_at_war") || code.Contains("peace_legality_guard") ? DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_Reject_NotAtWar", "The two parties are not currently at war.")
+			: code.Contains("peace_terms") ? DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_Reject_PeaceTerms", "The peace terms cannot currently be executed as written.")
+			: code.Contains("declare_war_not_legal") ? DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_Reject_DeclareWarNotLegal", "The conditions for declaring war are not currently met.")
+			: code.Contains("alliance_intent_conflicts") || code.Contains("trade_intent_conflicts") ? DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_Reject_StateConflict", "This conflicts with the two parties' current alliance or trade status.")
+			: code.Contains("final_live_legal_action_guard") || code.Contains("intent_not_in_current_legal_action_list") ? DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_Reject_NotInLegalActions", "That action is not among the diplomatic actions the two parties can currently execute.")
+			: code.Contains("no_live_target") || code.Contains("no_eligible_parties") ? DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_Reject_NoLiveTarget", "The target kingdom does not exist, has been destroyed, or has no independent diplomatic authority.")
+			: DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_Reject_UnsupportedByState", "The current situation does not support the parsed action.");
 		return string.IsNullOrWhiteSpace(code) ? detail : detail + "（" + code + "）";
 	}
 }

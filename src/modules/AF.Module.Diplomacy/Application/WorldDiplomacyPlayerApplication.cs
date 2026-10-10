@@ -57,13 +57,13 @@ internal static class WorldDiplomacyPlayerApplication
         string cleanBody = WorldDiplomacyTextRules.NormalizeBody(body);
         if (string.IsNullOrWhiteSpace(cleanBody))
         {
-            return "外交宣言正文不能为空。";
+            return DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_DeclareBodyEmpty", "The diplomatic declaration body cannot be empty.");
         }
         WorldDiplomacyPlayerContext player = world.Player;
         string playerKingdom = player.KingdomId;
         if (!player.IsRuler)
         {
-            return "你当前不再是王国统治者，外交宣言没有发布。";
+            return DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_DeclareNotRuler", "You are no longer the ruler of your kingdom, so the diplomatic declaration was not published.");
         }
         WorldDiplomacyRound round = orchestration.EnsureActiveRound(playerKingdom, null, isPlayerInsertion: true);
         WorldDiplomacyDocument document = orchestration.CreateDocument(
@@ -93,7 +93,7 @@ internal static class WorldDiplomacyPlayerApplication
         }
         orchestration.PublishPlayerAuthoredDocumentImmediately(document);
         orchestration.EnqueueAnalysisJob(document, priority: 100);
-        return "外交宣言已经公开发布；系统正在后台解析其对象、诉求与外交动作。";
+        return DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_DeclarePublished", "The diplomatic declaration has been published; the system is resolving its target, demands, and diplomatic actions in the background.");
     }
     internal static string SubmitPlayerReply(IWorldDiplomacyPlayerWorld world, string body,
         WorldDiplomacyDocument sourceDocument, WorldDiplomacyRound round,
@@ -101,8 +101,8 @@ internal static class WorldDiplomacyPlayerApplication
     {
         WorldDiplomacyPlayerContext context = world.Player;
         string cleanBody = WorldDiplomacyTextRules.NormalizeBody(body);
-        if (string.IsNullOrWhiteSpace(cleanBody)) return "外交回应正文不能为空。";
-        if (!context.IsRuler) return "你当前不再是王国统治者，外交回应没有发布。";
+        if (string.IsNullOrWhiteSpace(cleanBody)) return DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_ReplyBodyEmpty", "The diplomatic reply body cannot be empty.");
+        if (!context.IsRuler) return DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_ReplyNotRuler", "You are no longer the ruler of your kingdom, so the diplomatic reply was not published.");
         string player = context.KingdomId;
         string target = world.KingdomExists(sourceDocument.AuthorKingdomId) ? sourceDocument.AuthorKingdomId : null;
         if (player == null || target == null) return "";
@@ -113,7 +113,7 @@ internal static class WorldDiplomacyPlayerApplication
             if (round != null) round.ExternalOpeningContext = "玩家回应独立成案；原事件=" + previousRoundId
                 + "；背景公文=" + sourceDocument.DocumentId + "。原事件已结束，旧提案不因此恢复有效。";
         }
-        if (round == null) return "外交回应暂未发布：无法建立交涉回合。";
+        if (round == null) return DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_ReplyNoRound", "The diplomatic reply was not published: no negotiation round could be established.");
         WorldDiplomacyDocument response = orchestration.CreateDocument(
             player,
             target,
@@ -134,6 +134,6 @@ internal static class WorldDiplomacyPlayerApplication
         round.LastActivityDay = world.CurrentDay();
         orchestration.PublishPlayerAuthoredDocumentImmediately(response);
         orchestration.EnqueueAnalysisJob(response, priority: 100);
-        return "外交回应已经公开发布；系统正在后台解析其诉求与外交动作。";
+        return DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_ReplyPublished", "The diplomatic reply has been published; the system is resolving its demands and diplomatic actions in the background.");
     }
 }
