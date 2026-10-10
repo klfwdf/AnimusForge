@@ -4,7 +4,8 @@
 - B/C 以仓库内第二轮交付报告为准；主线补 Weekly 注册 `7341afe55`。25 对资源契约通过，现有 1.3/1.4 本地化 DLL 各 39,992 次解析通过；不是当前产品编译/实机验收。
 - 最新外部分工：用户已把世界书交B；[C政策](docs/handoffs/2026-10-10-localization-package-c-policy.md)、[D外交/内战](docs/handoffs/2026-10-10-localization-package-d-diplomacy-civilwar.md)、[E经济/任务](docs/handoffs/2026-10-10-localization-package-e-economy-issue.md)等待交接。旧E世界书计划已替代；主线负责共享错误UI、Memory集成、Prompt/协议外置与双包验收，详见[总计划](docs/handoffs/2026-10-10-localization-cde-plan.md)。既有中文共享事实不得直接替换为英文。
 - EN 世界书完整性待核实；现有英文资产不能替代中文全部文件的覆盖证明。未构建、Stage、部署、push 或正式打包；不接入 C# 语言探测。
-- 最新主线：NPC `45b0e18a5` / `76e592ce0` 完成110对显示键与37行动类型、注册接线；周报 `3e6a4da55` 完成34对显示键并分离保存诊断。26对资源与静态合同通过，现有双API本地化DLL各12,116次UI解析及四次fixture prepare-only通过；编译/实机未跑。工作树快照确认UI143处/31文件，1279候选待追踪；原诊断及近况日期区间仍待外置/英文显示，详见[周报交接](docs/handoffs/2026-10-10-localization-weekly-editor-display.md)。
+- 最新主线累计切片：菜单 `fb4909435`、Xihai `ad623a06d`；本轮新增71对键：Illustrator通知24+弹窗11（`c4ae38a5f`、`bee33dabc`）、Courier7（`c6f3b9d14`）、城堡23+Persona标题3（`f62cc9323`）、模型说明与篡位通知3（`14ac606ed`）。`60b11f09f` 清理6个英文终端分组中文并加纯英文资源门禁。26对资源、相关静态合同通过；现有双API本地化DLL各12,320次UI解析、1,068次Illustrator解析通过；不是产品编译/实机验收。
+- `323359e05` 修正盘点：仅具备实际调用和已注册英文键的19个MCM内部值视为已投影，原诊断仍待处理。最新工作树快照HEAD `323359e05`：确认UI45处/9文件/33去重原文，消费者候选1226，扫描无变化。含并发作者修改；数字是UI下限，不是全英文发行残余总数。用户明确暂不处理J17；世界书归B。原诊断、动态状态/标题、共享事实及近况日期区间仍待英文显示/外置。
 - [唯一主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#full-english-release-20261010)，[B 原报告](docs/handoffs/2026-10-10-localization-wave2-b-delivery.md)，[C 原报告](docs/handoffs/2026-10-10-localization-wave2-c-delivery.md)。回滚逐项 focused inverse，不覆盖其他作者或未跟踪原始英文资产。
 
 # 历史交接：MCM 模型预设与快报战事接续（2026-10-09，DEPLOYED_MANAGED_FILES_VERIFIED / LIVE_PENDING）

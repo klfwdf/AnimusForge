@@ -41,6 +41,27 @@ Memory prepare的既有PolicyLifecycle绑定还涉及保存字段本地化，待
 当前盘点为工作树快照（HEAD `6214b925f`，包含周报未提交候选及外部在途改动）：确认UI143位置/31文件/115去重原文，消费者候选1279；扫描期间无文件变化，一处中文世界书JSON解析错误归B核查。此数不能与全仓运行时中文量或翻译完成比例混用；原诊断12处转列saved_diagnostic_preview，仍待外置，不算已翻译。
 周报近况日期可能是first—last区间，继续保原存档完整区间；英文重建尚未实现。NPC原事实文字、旧记录正文、Prompt和日志提取仍未闭环；不将安全保留视为全英文完成。
 
+本轮主线新增71对键，按focused提交收口：Illustrator通知24（`c4ae38a5f`）、
+弹窗11（`bee33dabc`）、Courier7（`c6f3b9d14`，逆向基线修复`78316a40a`）、
+城堡通知23与Persona标题3（`f62cc9323`）、模型说明/篡位通知3（`14ac606ed`）。
+另`60b11f09f`清理6个英文终端Group中的中文，并加英文资源汉字门禁。
+菜单`fb4909435`与Xihai`ad623a06d`真实源码只读复审未见新增逻辑回归。
+详见[城堡证据](handoffs/2026-10-10-castle-aftermath-ui-delivery.md)、
+[Courier证据](handoffs/2026-10-10-localization-courier-failure-ui-slice.md)、
+[Illustrator弹窗证据](handoffs/2026-10-10-localization-illustrator-card-slice.md)。
+Persona标题仅在原dispatch闭包内解析，raw错误/返回值/后备人设不改；维护
+HeroPersonaGenerationTests helper闭包与受控TextObject线程leaf但未编译执行。
+26资源对与相关静态合同PASS；既有1.3/1.4本地化DLL各12,320次UI资源解析、
+1,068次Illustrator解析PASS，覆盖中英/French fallback/切回；不是当前C#运行验证。
+
+`323359e05`修正已接入MCM投影的19个内部值及retry sentinel分类，缺键/调用/仅评论
+等负控PASS。最新只读快照HEAD `323359e05`：确认UI45处/9文件/33去重原文，
+消费者候选1226、总139候选文件、扫描无变化。含外部在途改动；下降包含真实翻译
+与口径修正，不能当完成百分比。Policy30/Diplomacy3/Conversation8/Llm3/Weekly1
+为确认UI分布。原始诊断、城堡动态分组/状态/原因、Illustrator动态错误/标题/状态
+仍可上屏中文；不标全英文完成。世界书仍由B处理，主线不覆盖其资产。
+用户最新明确暂不处理J17，停止该支线；本地化继续，目标保持ACTIVE。
+
 NOT-RUN：当前产品编译、专项编译型回放、全部UI实机、长战役/旧档、
 正式CN/EN打包与N网上传。当前无发布验收。回滚：各产品focused inverse；
 历史交付报告保留原记录，后续修复另记，不回滚其他作者及未跟踪资产。
