@@ -1615,6 +1615,40 @@ Produces a very large log and is intended for developers only." />
   <string id="AF_UI_KingdomRebellion_TargetMissing" text="The forced rebellion cannot start: the target kingdom or clan was not found." />
   <string id="AF_UI_KingdomRebellion_ThisKingdom" text="this kingdom" />
   <string id="AF_UI_KingdomRebellion_UnknownKingdom" text="an unknown kingdom" />
+  <string id="AF_UI_KingdomRebellion_AlternateDefaultName" text="{CLAN} Independent League" />
+  <string id="AF_UI_KingdomRebellion_AutomaticPlayerImmune" text="{KINGDOM} is ruled by the player, and MCM player-kingdom stability rebellion immunity is enabled; this automatic stability rebellion was skipped." />
+  <string id="AF_UI_KingdomRebellion_AutomaticTargetChanged" text="This week's automatic rebellion was triggered, but the target kingdom or clan changed; execution cannot continue." />
+  <string id="AF_UI_KingdomRebellion_AutomaticTargetChangedAfterNaming" text="The rebel kingdom name was generated, but the target kingdom or clan changed; execution cannot continue." />
+  <string id="AF_UI_KingdomRebellion_ExecutionFailedPrefix" text="Rebellion execution failed: " />
+  <string id="AF_UI_KingdomRebellion_ExecutionFollowers" text=" Coalition follower clans: {FOLLOWERS}." />
+  <string id="AF_UI_KingdomRebellion_ExecutionInvalidNaming" text="The rebel kingdom naming result was invalid or duplicated an existing kingdom name; kingdom founding was aborted. Please fill in the event/rebellion API settings again and retry." />
+  <string id="AF_UI_KingdomRebellion_ExecutionManagerMissing" text="{CLAN} left {KINGDOM}, but KingdomManager was unavailable, so the new kingdom could not be completed." />
+  <string id="AF_UI_KingdomRebellion_ExecutionPlayerImmune" text="Rebellion execution failed: the kingdom is ruled by the player, and MCM player-kingdom stability rebellion immunity is enabled." />
+  <string id="AF_UI_KingdomRebellion_ExecutionPreconditionChanged" text="Pre-founding conditions changed; the clan did not leave the original kingdom." />
+  <string id="AF_UI_KingdomRebellion_ExecutionSkippedPlayerImmune" text="{KINGDOM} is ruled by the player, and MCM player-kingdom stability rebellion immunity is enabled; this stability rebellion was skipped." />
+  <string id="AF_UI_KingdomRebellion_ExecutionSuccess" text="{CLAN} left {KINGDOM} and founded {NEW_KINGDOM}." />
+  <string id="AF_UI_KingdomRebellion_ExecutionUnconfirmed" text="The clan left the original kingdom, but the new kingdom has not been confirmed." />
+  <string id="AF_UI_KingdomRebellion_FormerKingdom" text="the former kingdom" />
+  <string id="AF_UI_KingdomRebellion_NamingBackgroundFailurePrefix" text="Background rebel kingdom naming task failed: " />
+  <string id="AF_UI_KingdomRebellion_NamingClanMissing" text="The lead clan is missing; rebel kingdom naming cannot start." />
+  <string id="AF_UI_KingdomRebellion_NamingFailureDetailsSuffix" text=" The last failure details were shown in the lower-left message and written to the log." />
+  <string id="AF_UI_KingdomRebellion_NamingFailureNoRetry" text="Rebel kingdom naming did not complete; kingdom founding was aborted." />
+  <string id="AF_UI_KingdomRebellion_NamingFailureRetried" text="Rebel kingdom naming failed after {ATTEMPTS}/{MAX} automatic retries; kingdom founding was aborted." />
+  <string id="AF_UI_KingdomRebellion_NamingFailureRetrySuffix" text=" Please fill in the event/rebellion API settings again and retry." />
+  <string id="AF_UI_KingdomRebellion_NamingRetryBackgroundFailurePrefix" text="Background rebel kingdom naming retry failed: " />
+  <string id="AF_UI_KingdomRebellion_PlayerNamingEncyclopedia" text="{FORMAL} was founded by the {CLAN} clan during its civil war against {OLD_KINGDOM}." />
+  <string id="AF_UI_KingdomRebellion_ResolutionChanceMissed" text="{KINGDOM}'s rebellion roll missed this week. Stability tier: {TIER}; chance: {CHANCE}; roll: {ROLL}." />
+  <string id="AF_UI_KingdomRebellion_ResolutionDisabled" text="Kingdom stability and rebellion are disabled in MCM; the rebellion check was skipped." />
+  <string id="AF_UI_KingdomRebellion_ResolutionEliminated" text="{KINGDOM} has been eliminated; the rebellion check was skipped." />
+  <string id="AF_UI_KingdomRebellion_ResolutionExpectedFollowers" text="; expected follower clans: {FOLLOWERS}." />
+  <string id="AF_UI_KingdomRebellion_ResolutionLeaderMissing" text="{KINGDOM} has no valid leader; the rebellion check was skipped." />
+  <string id="AF_UI_KingdomRebellion_ResolutionNoCandidate" text="{KINGDOM} has no eligible clan with a town or castle for rebellion." />
+  <string id="AF_UI_KingdomRebellion_ResolutionNoChance" text="{KINGDOM} currently has {TIER} stability; there is no rebellion chance this week." />
+  <string id="AF_UI_KingdomRebellion_ResolutionNoExpectedFollowers" text="; no other clans are expected to join the coalition." />
+  <string id="AF_UI_KingdomRebellion_ResolutionPlayerImmune" text="{KINGDOM} is ruled by the player, and MCM player-kingdom stability rebellion immunity is enabled; the stability rebellion check was skipped." />
+  <string id="AF_UI_KingdomRebellion_ResolutionPreview" text="The most likely rebel clan is {CLAN} (relation {RELATION}, score {SCORE}){FOLLOWERS}" />
+  <string id="AF_UI_KingdomRebellion_ResolutionTargetMissing" text="The target kingdom could not be found." />
+  <string id="AF_UI_KingdomRebellion_DefaultName" text="{CLAN} League" />
   <string id="AF_UI_KingdomStability_NoKingdoms" text="No kingdoms are available for testing." />
   <string id="AF_UI_KingdomStability_Back" text="Back" />
   <string id="AF_UI_KingdomStability_LabDescription" text="Use this lab to test kingdom stability and town-holding clan rebellion logic." />
