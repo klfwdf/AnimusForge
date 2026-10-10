@@ -65,7 +65,7 @@ public partial class MyBehavior
         FinalCount = MemoryBusinessStateOwner.GetMemoryFinalInjectCountFromSettings,
         CandidateLimit = MemoryBusinessStateOwner.GetMemoryCandidateLimitFromSettings,
         PreprocessMode = MemoryBusinessStateOwner.GetMemoryPreprocessModeFromSettings,
-        ShowBlockingFailure = (title, message, generation) => MemoryFailureNotices.PublishMemoryFailureNotice(title, message, generation)
+        ShowBlockingFailure = (title, message, generation, display) => MemoryFailureNotices.PublishMemoryFailureNotice(title, message, generation, display)
     };
 
 	private static string BuildMemoryRecallQueryText(Hero hero, string currentInput, string secondaryInput, IEnumerable<DailyMemoryDraft> drafts, string capturedScene = null)

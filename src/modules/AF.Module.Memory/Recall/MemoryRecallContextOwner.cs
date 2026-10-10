@@ -90,6 +90,8 @@ internal static bool TryBuildMemoryRecallCandidates(List<CompressedMemoryBlock> 
 				sw.Stop();
 				Logger.Log("Logic", "[MemoryPerf] recall_candidates_failed hero=" + (debugHeroId ?? "") + " reason=query_embedding_unavailable queryLen=" + ((text ?? "").Length) + " queryMs=" + Math.Round(querySw.Elapsed.TotalMilliseconds, 2) + " totalMs=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2));
 				snapshot.RecordBlockingFailure("压缩记忆召回被阻塞", error + "\n\n请修复 embedding 模型或降低记忆块数量后重试。系统不会静默改用日期或全文兜底。", runtimeGeneration);
+                snapshot.SetBlockingDisplay("AF_MEMORY_UI_RecallBlockedTitle", "Compressed memory recall blocked",
+                    MemoryFailureUiText.T("AF_MEMORY_UI_RecallEmbeddingUnavailable", "Local ONNX embedding is unavailable; rich-title RAG cannot select compressed memories above the candidate limit.\n\nFix the embedding model or reduce the number of memory blocks, then retry. The system will not silently fall back to dates or full text."), runtimeGeneration);
 				return false;
 			}
 			querySw.Stop();
@@ -131,6 +133,8 @@ internal static bool TryBuildMemoryRecallCandidates(List<CompressedMemoryBlock> 
 				sw.Stop();
 				Logger.Log("Logic", "[MemoryPerf] recall_candidates_failed hero=" + (debugHeroId ?? "") + " reason=title_embedding_empty scanned=" + scanned + " failed=" + titleEmbeddingFailed + " queryMs=" + Math.Round(querySw.Elapsed.TotalMilliseconds, 2) + " titleMs=" + Math.Round(titleSw.Elapsed.TotalMilliseconds, 2) + " totalMs=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2));
 				snapshot.RecordBlockingFailure("压缩记忆召回被阻塞", error + "\n\n请修复 embedding 模型后重试。", runtimeGeneration);
+                snapshot.SetBlockingDisplay("AF_MEMORY_UI_RecallBlockedTitle", "Compressed memory recall blocked",
+                    MemoryFailureUiText.T("AF_MEMORY_UI_RecallTitleEmbeddingFailed", "Embedding failed for every compressed memory rich title.\n\nFix the embedding model, then retry."), runtimeGeneration);
 				return false;
 			}
 			candidates = list2.OrderByDescending((MemoryRecallCandidate x) => x.Score).ThenByDescending((MemoryRecallCandidate x) => x.Block.GameDayIndex).Take(candidateLimit).OrderBy((MemoryRecallCandidate x) => x.Block.GameDayIndex).ThenBy((MemoryRecallCandidate x) => x.Block.StartHour).ToList();
@@ -145,6 +149,7 @@ internal static bool TryBuildMemoryRecallCandidates(List<CompressedMemoryBlock> 
 			sw.Stop();
 			Logger.Log("Logic", "[MemoryPerf] recall_candidates_failed hero=" + (debugHeroId ?? "") + " reason=exception type=" + ex.GetType().Name + " totalMs=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2) + " msg=" + ex.Message);
 			snapshot.RecordBlockingFailure("压缩记忆召回异常", error, runtimeGeneration);
+            snapshot.SetBlockingDisplay("AF_MEMORY_UI_RecallExceptionTitle", "Compressed memory recall exception", MemoryFailureUiText.Error(error), runtimeGeneration);
 			return false;
 		}
 	}
@@ -233,6 +238,8 @@ internal static bool TrySelectMemoryIdsWithPreprocess(List<MemoryRecallCandidate
 				error = ex.Message;
 				Logger.Log("Logic", "[MemoryPerf] memory_preprocess_failed hero=" + (debugHeroId ?? "") + " mode=" + mode + " candidates=" + list.Count + " finalCount=" + finalCount + " promptChars=" + user.Length + " apiMs=" + Math.Round(apiSw.Elapsed.TotalMilliseconds, 2) + " totalMs=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2) + " reason=wait_exception type=" + ex.GetType().Name);
 				snapshot.RecordBlockingFailure("压缩记忆前处理失败", "记忆前处理请求异常：" + error, runtimeGeneration);
+            snapshot.SetBlockingDisplay("AF_MEMORY_UI_PreprocessFailedTitle", "Compressed memory preprocessing failed",
+                MemoryFailureUiText.T("AF_MEMORY_UI_PreprocessRequestException", "Memory preprocessing request exception: {ERROR}", ("ERROR", MemoryFailureUiText.Error(error))), runtimeGeneration);
 				return false;
 			}
 			apiSw.Stop();
@@ -242,6 +249,8 @@ internal static bool TrySelectMemoryIdsWithPreprocess(List<MemoryRecallCandidate
 				sw.Stop();
 				Logger.Log("Logic", "[MemoryPerf] memory_preprocess_failed hero=" + (debugHeroId ?? "") + " mode=" + mode + " candidates=" + list.Count + " finalCount=" + finalCount + " promptChars=" + user.Length + " apiMs=" + Math.Round(apiSw.Elapsed.TotalMilliseconds, 2) + " totalMs=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2) + " reason=api_failed error=" + (error ?? ""));
 				snapshot.RecordBlockingFailure("压缩记忆前处理失败", "记忆前处理没有成功：" + error + "\n\n请修复前处理 API 后重试。", runtimeGeneration);
+            snapshot.SetBlockingDisplay("AF_MEMORY_UI_PreprocessFailedTitle", "Compressed memory preprocessing failed",
+                MemoryFailureUiText.T("AF_MEMORY_UI_PreprocessUnsuccessful", "Memory preprocessing did not succeed: {ERROR}\n\nFix the preprocessing API, then retry.", ("ERROR", MemoryFailureUiText.Error(error))), runtimeGeneration);
 				return false;
 			}
 		}
@@ -251,6 +260,8 @@ internal static bool TrySelectMemoryIdsWithPreprocess(List<MemoryRecallCandidate
 			sw.Stop();
 			Logger.Log("Logic", "[MemoryPerf] memory_preprocess_failed hero=" + (debugHeroId ?? "") + " mode=" + mode + " candidates=" + list.Count + " finalCount=" + finalCount + " promptChars=" + user.Length + " apiMs=" + Math.Round(apiSw.Elapsed.TotalMilliseconds, 2) + " totalMs=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2) + " reason=api_failed error=" + (error ?? ""));
 			snapshot.RecordBlockingFailure("压缩记忆前处理失败", "记忆筛选请求失败：" + (error ?? "未知错误") + "\n\n请修复前处理 API 后重试。", runtimeGeneration);
+            snapshot.SetBlockingDisplay("AF_MEMORY_UI_PreprocessFailedTitle", "Compressed memory preprocessing failed",
+                MemoryFailureUiText.T("AF_MEMORY_UI_SelectionRequestFailed", "Memory selection request failed: {ERROR}\n\nFix the preprocessing API, then retry.", ("ERROR", MemoryFailureUiText.Error(error))), runtimeGeneration);
 			return false;
 		}
 		else
@@ -264,6 +275,9 @@ internal static bool TrySelectMemoryIdsWithPreprocess(List<MemoryRecallCandidate
 			sw.Stop();
 			Logger.Log("Logic", "[MemoryPerf] memory_preprocess_failed hero=" + (debugHeroId ?? "") + " mode=" + mode + " candidates=" + list.Count + " finalCount=" + finalCount + " promptChars=" + user.Length + " apiMs=" + Math.Round(apiSw.Elapsed.TotalMilliseconds, 2) + " totalMs=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2) + " reason=format_error parseError=" + (parseError ?? "") + " responseLen=" + ((content ?? "").Length));
 			snapshot.RecordBlockingFailure("压缩记忆前处理失败", error + "\n\n请修复前处理提示词或 API 输出后重试。", runtimeGeneration);
+            snapshot.SetBlockingDisplay("AF_MEMORY_UI_PreprocessFailedTitle", "Compressed memory preprocessing failed",
+                MemoryFailureUiText.T("AF_MEMORY_UI_PreprocessInvalidReply", "Memory preprocessing returned an invalid response: {ERROR}. Return only one JSON object containing rule_codes and memory_ids arrays.\n\nFull model reply:\n{REPLY}\n\nFix the preprocessing prompt or API output, then retry.",
+                    ("ERROR", string.IsNullOrWhiteSpace(parseError) ? "unknown" : parseError.Trim()), ("REPLY", string.IsNullOrWhiteSpace(content) ? MemoryFailureUiText.T("AF_MEMORY_UI_NoModelReply", "No model reply was received or could be parsed") : MemoryFailureUiText.Raw(content.Trim()))), runtimeGeneration);
 			throw new PreprocessFormatException(error);
 		}
 		if (selectedIds.Count < finalCount)
@@ -513,6 +527,12 @@ internal sealed class MemoryRecallRequest
     internal List<DailyMemoryDraft> Drafts;
     internal Func<string, string, string> FormatFailureDetail;
     internal string BlockingTitle, BlockingMessage;
+    internal MemoryFailureDisplay BlockingDisplay;
+    internal void SetBlockingDisplay(string titleId, string titleFallback, MemoryFailureUiText message, long generation)
+    {
+        if (generation != Generation) return;
+        BlockingDisplay = new MemoryFailureDisplay(MemoryFailureUiText.T(titleId, titleFallback), message);
+    }
     internal void RecordBlockingFailure(string title, string message, long generation)
     {
         if (generation != Generation) return;

@@ -236,6 +236,8 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 		public string Error = "";
 
+		[JsonIgnore] internal MemoryFailureUiText ErrorDisplay;
+
 		// A queued source can disappear while waiting for the daily worker; it is not an API failure and must not retry.
 		public bool IsObsolete;
 
@@ -254,6 +256,8 @@ public partial class MyBehavior : CampaignBehaviorBase
 
 		public string Error = "";
 
+		[JsonIgnore] internal MemoryFailureUiText ErrorDisplay;
+
 		// A queued source can disappear while waiting for the daily worker; it is not an API failure and must not retry.
 		public bool IsObsolete;
 
@@ -271,6 +275,8 @@ public partial class MyBehavior : CampaignBehaviorBase
 		public MajorActionSummaryState State;
 
 		public string Error = "";
+
+		[JsonIgnore] internal MemoryFailureUiText ErrorDisplay;
 
 		// A queued source can disappear while waiting for the daily worker; it is not an API failure and must not retry.
 		public bool IsObsolete;

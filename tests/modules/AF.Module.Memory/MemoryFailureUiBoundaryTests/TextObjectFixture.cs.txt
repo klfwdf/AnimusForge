@@ -1,0 +1,28 @@
+using System;
+using System.Collections.Generic;
+using System.Text.RegularExpressions;
+
+namespace TaleWorlds.Localization
+{
+    // Only localization is a fixture. Production display descriptions and lifecycle are linked.
+    public sealed class TextObject
+    {
+        public static readonly Dictionary<string, string> Translations = new();
+        public static Func<bool> IsMainThread = () => true;
+        public static int OffThread;
+        private readonly string _value;
+        private readonly Dictionary<string, string> _variables = new();
+        public TextObject(string value) { _value = value; }
+        public void SetTextVariable(string name, string value) { _variables[name] = value; }
+        public override string ToString()
+        {
+            if (!IsMainThread()) OffThread++;
+            string value = _value;
+            var key = Regex.Match(value, @"^\{=([^}]+)\}");
+            if (key.Success) value = Translations.TryGetValue(key.Groups[1].Value, out var translated)
+                ? translated : value.Substring(key.Length);
+            foreach (var variable in _variables) value = value.Replace("{" + variable.Key + "}", variable.Value);
+            return value;
+        }
+    }
+}
