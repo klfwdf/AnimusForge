@@ -15,8 +15,7 @@ namespace AnimusForge.Illustrator.UI.Gallery
     {
         internal static string ItemName(CachedIllustrationItem item)
         {
-            string title = AnimusForgeTextInputSanitizer.SanitizeSingleLine(item?.Title ?? "", 100).Trim();
-            return "《" + (title.Length == 0 ? "卡拉迪亚纪事" : title) + "》画卷";
+            return DisplayItemName(item);
         }
 
         internal static string Identity(CachedIllustrationItem item)
@@ -62,11 +61,13 @@ namespace AnimusForge.Illustrator.UI.Gallery
                 return false;
             }
             string name = ItemName(image);
-            if (!RewardSystemBehavior.TryCreateGeneratedInventoryItemForExternal(name, Identity(image), out ItemObject item, logSource: "gallery_rp"))
+            if (!RewardSystemBehavior.TryCreateGeneratedInventoryItemForExternal(name, Identity(image), out ItemObject item, logSource: "gallery_rp", preserveExistingDisplayName: true))
             {
                 message = IllustratorRemainingUiText.GalleryConversionCreateFailed;
                 return false;
             }
+            // A previous conversion owns its stored name. Do not overwrite it when the UI language changes.
+            name = item.Name?.ToString() ?? name;
             // Store the description before delivery: never hand out an item that NPCs cannot describe.
             if (!RewardSystemBehavior.TrySetGeneratedRpItemIntroductionForExternal(item.StringId, description, out string error))
             {
@@ -87,13 +88,13 @@ namespace AnimusForge.Illustrator.UI.Gallery
             }
             if (alreadyOwned)
             {
-                message = IllustratorRemainingUiText.GalleryConversionAlreadyOwned(DisplayItemName(image));
+                message = IllustratorRemainingUiText.GalleryConversionAlreadyOwned(name);
                 return true;
             }
             int added = RewardSystemBehavior.GenerateKnownInventoryItemToRosterForExternal(roster,
                 item.StringId, name, null, item.Id.InternalValue, 1, out _, out _, out _, out _, "gallery_rp");
             message = added > 0
-                ? IllustratorRemainingUiText.GalleryConversionDelivered(DisplayItemName(image))
+                ? IllustratorRemainingUiText.GalleryConversionDelivered(name)
                 : IllustratorRemainingUiText.GalleryConversionDeliveryFailed;
             return added > 0;
         }

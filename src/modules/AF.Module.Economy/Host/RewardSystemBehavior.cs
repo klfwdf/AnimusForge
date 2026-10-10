@@ -8865,6 +8865,9 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 	}
 
 	public static bool TryCreateGeneratedInventoryItemForExternal(string displayName, string identityKey, out ItemObject generatedItem, string templateItemId = null, string logSource = null)
+		=> TryCreateGeneratedInventoryItemForExternal(displayName, identityKey, out generatedItem, false, templateItemId, logSource);
+
+	public static bool TryCreateGeneratedInventoryItemForExternal(string displayName, string identityKey, out ItemObject generatedItem, bool preserveExistingDisplayName, string templateItemId = null, string logSource = null)
 	{
 		generatedItem = null;
 		try
@@ -8881,6 +8884,21 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 			}
 			string identity = string.IsNullOrWhiteSpace(identityKey) ? name : identityKey.Trim();
 			string generatedStringId = BuildGeneratedRewardItemStringId(identity, templateItem.StringId ?? "");
+			if (preserveExistingDisplayName)
+			{
+				// Existing metadata is authoritative for previously created items. No scan or save migration.
+				GeneratedRewardItemRecord existingRecord = Instance?.GetGeneratedRewardItemRecord(generatedStringId);
+				if (!string.IsNullOrWhiteSpace(existingRecord?.DisplayName))
+				{
+					name = existingRecord.DisplayName;
+				}
+				else
+				{
+					ItemObject existingItem = TryGetRegisteredGeneratedRewardItemByStringId(generatedStringId);
+					string existingName = existingItem?.Name?.ToString();
+					if (!string.IsNullOrWhiteSpace(existingName)) name = existingName;
+				}
+			}
 			generatedItem = TryGetOrCreateGeneratedRewardItem(generatedStringId, name, templateItem, logSource ?? "external_generated_inventory");
 			return generatedItem != null && TryEnsureGeneratedRewardItemCategory(generatedItem, templateItem, logSource ?? "external_generated_inventory");
 		}
