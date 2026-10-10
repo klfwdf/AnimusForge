@@ -93,7 +93,7 @@ internal sealed class KingdomStabilityLabController
 		string immunityText = protectedByImmunity ? Ui("AF_UI_KingdomStability_PlayerImmunitySuffix", " (player-kingdom stability rebellion immunity)") : "";
 		return Ui("AF_UI_KingdomStability_Label", "{KINGDOM} [{TIER}/{VALUE}] weekly rebellion chance {CHANCE}{IMMUNITY}",
 			("KINGDOM", _port.GetKingdomDisplayName(kingdom, Ui("AF_UI_KingdomStability_KingdomFallback", "kingdom"))),
-			("TIER", _port.GetKingdomStabilityTierText(kingdomStabilityValue)),
+			("TIER", KingdomStabilityUiText.Tier(kingdomStabilityValue)),
 			("VALUE", kingdomStabilityValue.ToString()),
 			("CHANCE", _port.FormatKingdomRebellionChance(protectedByImmunity ? 0f : _port.GetKingdomRebellionWeeklyChance(kingdomStabilityValue))),
 			("IMMUNITY", immunityText));
@@ -122,7 +122,7 @@ internal sealed class KingdomStabilityLabController
 		List<KingdomRebellionCandidateInfo> list2 = list.Where((KingdomRebellionCandidateInfo x) => x != null && x.Eligible).Take(5).ToList();
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.AppendLine(Ui("AF_UI_KingdomStability_DetailKingdom", "Kingdom: {KINGDOM}", ("KINGDOM", _port.GetKingdomDisplayName(kingdom, Ui("AF_UI_KingdomStability_KingdomFallback", "kingdom")))));
-		stringBuilder.AppendLine(Ui("AF_UI_KingdomStability_DetailStability", "Current stability: {VALUE} ({TIER})", ("VALUE", kingdomStabilityValue.ToString()), ("TIER", _port.GetKingdomStabilityTierText(kingdomStabilityValue))));
+		stringBuilder.AppendLine(Ui("AF_UI_KingdomStability_DetailStability", "Current stability: {VALUE} ({TIER})", ("VALUE", kingdomStabilityValue.ToString()), ("TIER", KingdomStabilityUiText.Tier(kingdomStabilityValue))));
 		stringBuilder.AppendLine(Ui("AF_UI_KingdomStability_DetailWeeklyBalance", "Dynamic weekly balance modifier: {VALUE}", ("VALUE", _port.FormatKingdomStabilityRelationOffsetText(kingdomStabilityWeeklyBalancingDelta))));
 		stringBuilder.AppendLine(Ui("AF_UI_KingdomStability_DetailRelation", "Current non-royal relation modifier: {VALUE} (applies to the king and adult non-royal clan members in this kingdom)", ("VALUE", _port.FormatKingdomStabilityRelationOffsetText(kingdomStabilityRelationTargetOffset))));
 		stringBuilder.AppendLine(Ui("AF_UI_KingdomStability_DetailClanCount", "Effective non-royal clans: {COUNT}; royal-domain daily loyalty modifier: {VALUE}", ("COUNT", lowClanCountRuleClanCount.ToString()), ("VALUE", _port.FormatKingdomStabilityRelationOffsetText(lowClanCountRoyalDomainLoyaltyAdjustment))));
@@ -214,7 +214,7 @@ internal sealed class KingdomStabilityLabController
 			return;
 		}
 		int kingdomStabilityValue = _port.GetKingdomStabilityValue(kingdom);
-		string text = Ui("AF_UI_KingdomStability_EditPrompt", "Enter a stability value from 0 to 100.\n\nCurrent value: {VALUE} ({TIER})\nDefault: 50 (Average)\n\nTiers:\n90-100 Extremely high\n75-89 High\n60-74 Fairly high\n40-59 Average\n25-39 Poor\n10-24 Very poor\n0-9 Extremely poor", ("VALUE", kingdomStabilityValue.ToString()), ("TIER", _port.GetKingdomStabilityTierText(kingdomStabilityValue)));
+		string text = Ui("AF_UI_KingdomStability_EditPrompt", "Enter a stability value from 0 to 100.\n\nCurrent value: {VALUE} ({TIER})\nDefault: 50 (Average)\n\nTiers:\n90-100 Extremely high\n75-89 High\n60-74 Fairly high\n40-59 Average\n25-39 Poor\n10-24 Very poor\n0-9 Extremely poor", ("VALUE", kingdomStabilityValue.ToString()), ("TIER", KingdomStabilityUiText.Tier(kingdomStabilityValue)));
 		InformationManager.ShowTextInquiry(new TextInquiryData(Ui("AF_UI_KingdomStability_EditTitle", "Adjust stability - {KINGDOM}", ("KINGDOM", _port.GetKingdomDisplayName(kingdom, Ui("AF_UI_KingdomStability_KingdomFallback", "kingdom")))), text, isAffirmativeOptionShown: true, isNegativeOptionShown: true, Ui("AF_UI_KingdomStability_Save", "Save"), Ui("AF_UI_KingdomStability_Back", "Back"), delegate(string input)
 		{
     if (!_port.IsCurrent(generation)) return;
@@ -226,7 +226,7 @@ internal sealed class KingdomStabilityLabController
 			}
 			result = _port.ClampKingdomStabilityValue(result);
 			_port.SetKingdomStabilityValue(kingdom, result);
-			InformationManager.DisplayMessage(new InformationMessage(Ui("AF_UI_KingdomStability_Updated", "{KINGDOM} stability updated to {VALUE} ({TIER}).", ("KINGDOM", _port.GetKingdomDisplayName(kingdom, Ui("AF_UI_KingdomStability_KingdomFallback", "kingdom"))), ("VALUE", result.ToString()), ("TIER", _port.GetKingdomStabilityTierText(result)))));
+			InformationManager.DisplayMessage(new InformationMessage(Ui("AF_UI_KingdomStability_Updated", "{KINGDOM} stability updated to {VALUE} ({TIER}).", ("KINGDOM", _port.GetKingdomDisplayName(kingdom, Ui("AF_UI_KingdomStability_KingdomFallback", "kingdom"))), ("VALUE", result.ToString()), ("TIER", KingdomStabilityUiText.Tier(result)))));
 			OpenDevKingdomStabilityDetailMenu(kingdom);
 		}, delegate
 		{
