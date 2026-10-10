@@ -2946,6 +2946,20 @@ HeroNPC 个性/背景、旧对话历史、压缩记忆、赊账/欠款、未命�
   <string id="AF_MCM_Marriage_MaxAgeGap_Hint" text="用于家族可婚配名单过滤。默认：25。" />
   <string id="AF_MCM_Marriage_OppositeGender" text="婚配名单仅限异性（旧兼容）" />
   <string id="AF_MCM_Marriage_OppositeGender_Hint" text="旧配置项保留用于兼容；当前婚姻机制允许同性婚配。默认关闭。" />
+  <string id="AF_MCM_Prompt_Group" text="9. 提示词扩展" />
+  <string id="AF_MCM_Editor_Rebellion_Hint" text="点击打开大文本编辑器，保存王国叛乱后新建王国命名所用的完整 system prompt。默认内置文案可按需删减或改写。" />
+  <string id="AF_MCM_Common_OpenManager" text="打开管理器" />
+  <string id="AF_MCM_Policy_Group" text="16. 政策系统" />
+  <string id="AF_MCM_Policy_EditPrompts_Title" text="政策提示词管理" />
+  <string id="AF_MCM_Policy_EditPrompts_Hint" text="统一编辑玩家 AI 编写、玩家政策评议、NPC 统治者政策，以及当前可用政策效果的理解与判定要求。" />
+  <string id="AF_MCM_Policy_ManageEffects_Title" text="政策效果模块管理" />
+  <string id="AF_MCM_Policy_ManageEffects_Hint" text="分别设置玩家政策、地方政策、NPC 统治者政策和附庸国政策可检索的效果模块。只影响保存后新发起的政策。" />
+  <string id="AF_MCM_Policy_SettlementBalance_Title" text="政策相关定居点上限调整" />
+  <string id="AF_MCM_Policy_AdjustLimits" text="调整上限与容量" />
+  <string id="AF_MCM_Policy_SettlementBalance_Hint" text="打开独立窗口，分别设置城市／城堡繁荣度、村庄户数、城市／城堡／村庄民兵人数，以及城市／城堡共用粮仓容量。适用于玩家和 NPC 的所有定居点，不要求先发布政策。\n限制的是总量，不是每日增益。每日按原版＋政策的净变化结算：正数最多加到上限，零或负数不受限制。例：上限 10000，9999＋100 只到 10000；已有 12000 不削减，正增长暂停，负增长正常。\n默认仅粮仓容量开启，城市和城堡最终容量均为 1000，不叠加城堡或建筑加成；其余六项默认关闭。繁荣度耗粮由“取消繁荣度耗粮”独立开关控制，默认保留原版。\n各项可单独开关，支持整数滑条和数值输入。保存后生效；取消或 Esc 丢弃修改；恢复默认后需保存。" />
+  <string id="AF_MCM_Policy_RecentActive_Title" text="AI 参考本国最近生效政策条数" />
+  <string id="AF_MCM_Policy_RecentActive_Hint" text="玩家政策评议和 NPC 新政策生成时，AI 最多参考多少条本国最新的现行政策。按新到旧读取，不区分玩家或 NPC 发布，默认 2 条。用于判断重复、冲突和延续，不是可生效政策的数量上限，也不改变已有政策效果。0 只关闭这组参考，政策不足不补位；不影响普通对话。" />
+  <string id="AF_MCM_Policy_RelatedActive_Title" text="AI 参考世界相关生效政策条数" />
+  <string id="AF_MCM_Policy_RelatedActive_Hint" text="在上面的本国最新政策之外，玩家政策评议和 NPC 新政策生成时，AI 最多额外参考多少条与当前政策内容相关的现行政策。候选来自所有国家（含本国），排除上面已选的政策，按相关度选取，默认 3 条，不设最低相似度门槛。两组默认最多参考 2＋3＝5 条，但不是可生效政策的数量上限。0 只关闭这组参考，候选不足不凑数；不影响普通对话或已有政策效果。" />
   </strings>
 </base>
-

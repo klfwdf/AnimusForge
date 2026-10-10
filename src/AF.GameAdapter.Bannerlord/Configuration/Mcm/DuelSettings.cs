@@ -2026,8 +2026,8 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		set => _playerCustomPromptRule = NormalizePlayerCustomPromptRuleText(value);
 	}
 
-	[SettingPropertyButton("玩家自定义规则文案", -1, true, "", Content = "打开编辑器", Order = 0, RequireRestart = false, HintText = "点击这里使用大文本编辑器保存完整规则文案。")]
-	[SettingPropertyGroup("9. 提示词扩展")]
+	[SettingPropertyButton("{=AF_MCM_Editor_PlayerRule_Title}Edit player custom rule text", -1, true, "", Content = "{=AF_MCM_Common_OpenEditor}Open editor", Order = 0, RequireRestart = false, HintText = "{=AF_MCM_Editor_PlayerRule_Hint}You can enter more than the 512-character MCM text-box limit; leave it blank to inject nothing.")]
+	[SettingPropertyGroup("{=AF_MCM_Prompt_Group}9. Prompt extensions")]
 	public Action EditPlayerCustomPromptRule { get; set; }
 
 	private string _kingdomRebellionSystemPrompt = LoadKingdomRebellionSystemPromptFromDiskOrDefault();
@@ -2038,8 +2038,8 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		set => _kingdomRebellionSystemPrompt = NormalizeKingdomRebellionSystemPromptText(value);
 	}
 
-	[SettingPropertyButton("王国叛乱系统提示词", -1, true, "", Content = "打开编辑器", Order = 1, RequireRestart = false, HintText = "点击这里使用大文本编辑器保存王国叛乱建国命名的完整 system prompt。默认内容为当前内置系统提示词，可按需要删减或改写。")]
-	[SettingPropertyGroup("9. 提示词扩展")]
+	[SettingPropertyButton("{=AF_MCM_Editor_Rebellion_Title}Edit kingdom rebellion system prompt", -1, true, "", Content = "{=AF_MCM_Common_OpenEditor}Open editor", Order = 1, RequireRestart = false, HintText = "{=AF_MCM_Editor_Rebellion_Hint}Open the long-text editor to save the complete system prompt used to name newly founded kingdoms after rebellions. The built-in default may be shortened or rewritten.")]
+	[SettingPropertyGroup("{=AF_MCM_Prompt_Group}9. Prompt extensions")]
 	public Action EditKingdomRebellionSystemPrompt { get; set; }
 
 	private string _weeklyReportWritingRequirements = LoadWeeklyReportWritingRequirementsFromDiskOrDefault();
@@ -2050,7 +2050,7 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		set => _weeklyReportWritingRequirements = NormalizeWeeklyReportWritingRequirementsText(value);
 	}
 
-	[SettingPropertyButton("周报写作要求文案", -1, true, "", Content = "打开编辑器", Order = 2, RequireRestart = false, HintText = "点击这里使用大文本编辑器修改周报生成的写作要求。默认文本就是内置写作要求；留空保存后表示不注入写作要求。")]
+	[SettingPropertyButton("{=AF_MCM_Editor_Weekly_Title}Edit weekly-report writing requirements", -1, true, "", Content = "{=AF_MCM_Common_OpenEditor}Open editor", Order = 2, RequireRestart = false, HintText = "{=AF_MCM_Editor_Weekly_Hint}The default text is built into the code; you can edit or clear it. Output format, REPORT_BLOCK, TAGS, and stability tags remain controlled by built-in rules.")]
 	[SettingPropertyGroup(NewsSettingsGroup + "/{=AF_MCM_News_Weekly}Weekly reports", GroupOrder = 0)]
 	public Action EditWeeklyReportWritingRequirements { get; set; }
 
@@ -2062,8 +2062,8 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		set => _npcPersonaGenerationRequirements = NormalizeNpcPersonaGenerationRequirementsText(value);
 	}
 
-	[SettingPropertyButton("NPC个性背景生成要求文案", -1, true, "", Content = "打开编辑器", Order = 3, RequireRestart = false, HintText = "编辑普通 Hero 与升格同伴共用的完整写作要求。默认文案来自模组内容，保存后使用你的文案替换；留空保存表示不注入写作要求，仅保留 JSON 协议与事实约束。")]
-	[SettingPropertyGroup("9. 提示词扩展")]
+	[SettingPropertyButton("{=AF_MCM_Editor_Persona_Title}Edit NPC personality/background requirements", -1, true, "", Content = "{=AF_MCM_Common_OpenEditor}Open editor", Order = 3, RequireRestart = false, HintText = "{=AF_MCM_Editor_Persona_Hint}You can change length, style, source selection, and regeneration de-duplication. Saving blank removes the extra requirements.")]
+	[SettingPropertyGroup("{=AF_MCM_Prompt_Group}9. Prompt extensions")]
 	public Action EditNpcPersonaGenerationRequirements { get; set; }
 
 	private string _dailyMemoryCompressionWritingRequirements = LoadDailyMemoryCompressionWritingRequirementsFromDiskOrDefault();
@@ -2074,8 +2074,8 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		set => _dailyMemoryCompressionWritingRequirements = NormalizeDailyMemoryCompressionWritingRequirementsText(value);
 	}
 
-	[SettingPropertyButton("日结压缩写作要求", -1, true, "", Content = "打开编辑器", Order = 4, RequireRestart = false, HintText = "修改日结压缩的文风和信息取舍。输出标签、公开性判断、AFEF 与身份事实规则不可覆盖。")]
-	[SettingPropertyGroup("9. 提示词扩展")]
+	[SettingPropertyButton("{=AF_MCM_Editor_DailyMemory_Title}Edit daily-memory compression requirements", -1, true, "", Content = "{=AF_MCM_Common_OpenEditor}Open editor", Order = 4, RequireRestart = false, HintText = "{=AF_MCM_Editor_DailyMemory_Hint}Edit only the style, information selection, and organization of the daily summary here. Tag structure, visibility, date and location, AFEF, identity facts, and length rules are fixed by the mod.")]
+	[SettingPropertyGroup("{=AF_MCM_Prompt_Group}9. Prompt extensions")]
 	public Action EditDailyMemoryCompressionWritingRequirements { get; set; }
 
 	private string _memoryOverviewCompressionWritingRequirements = LoadMemoryOverviewCompressionWritingRequirementsFromDiskOrDefault();
@@ -2086,8 +2086,8 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		set => _memoryOverviewCompressionWritingRequirements = NormalizeMemoryOverviewCompressionWritingRequirementsText(value);
 	}
 
-	[SettingPropertyButton("记忆大压缩写作要求", -1, true, "", Content = "打开编辑器", Order = 5, RequireRestart = false, HintText = "修改记忆大总结的文风和组织方式。输出标签、事实边界和长度范围不可覆盖。")]
-	[SettingPropertyGroup("9. 提示词扩展")]
+	[SettingPropertyButton("{=AF_MCM_Editor_MemoryOverview_Title}Edit memory-overview compression requirements", -1, true, "", Content = "{=AF_MCM_Common_OpenEditor}Open editor", Order = 5, RequireRestart = false, HintText = "{=AF_MCM_Editor_MemoryOverview_Hint}The SUMMARY tag, dates and locations, fact boundaries, identity rules, and length range are fixed by the mod; conflicting text cannot override hard rules. Leave blank to add no writing preference.")]
+	[SettingPropertyGroup("{=AF_MCM_Prompt_Group}9. Prompt extensions")]
 	public Action EditMemoryOverviewCompressionWritingRequirements { get; set; }
 
 	private string _majorActionCompressionWritingRequirements = LoadMajorActionCompressionWritingRequirementsFromDiskOrDefault();
@@ -2098,8 +2098,8 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		set => _majorActionCompressionWritingRequirements = NormalizeMajorActionCompressionWritingRequirementsText(value);
 	}
 
-	[SettingPropertyButton("重大履历压缩写作要求", -1, true, "", Content = "打开编辑器", Order = 6, RequireRestart = false, HintText = "修改 NPC 重大履历滚动摘要的文风和取舍。输出标签、事实边界和长度范围不可覆盖。")]
-	[SettingPropertyGroup("9. 提示词扩展")]
+	[SettingPropertyButton("{=AF_MCM_Editor_MajorAction_Title}Edit major-action compression requirements", -1, true, "", Content = "{=AF_MCM_Common_OpenEditor}Open editor", Order = 6, RequireRestart = false, HintText = "{=AF_MCM_Editor_MajorAction_Hint}The SUMMARY tag, dates and fact boundaries, rolling-merge behavior, and length range are fixed by the mod; conflicting text cannot override hard rules. Leave blank to add no writing preference.")]
+	[SettingPropertyGroup("{=AF_MCM_Prompt_Group}9. Prompt extensions")]
 	public Action EditMajorActionCompressionWritingRequirements { get; set; }
 
 	private string _customPolicyEvaluatorPrompt = LoadCustomPolicyEvaluatorPromptFromDiskOrDefault();
@@ -2122,24 +2122,24 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 
 	public Action EditNpcRulerPolicyPrompt { get; set; }
 
-	[SettingPropertyButton("政策提示词管理", -1, true, "", Content = "打开管理器", Order = 0, RequireRestart = false, HintText = "统一编辑玩家AI编写、玩家政策评议、NPC 统治者政策，以及当前可用政策效果的理解与判定要求。")]
-	[SettingPropertyGroup("16. 政策系统", GroupOrder = 0)]
+	[SettingPropertyButton("{=AF_MCM_Policy_EditPrompts_Title}Policy prompt manager", -1, true, "", Content = "{=AF_MCM_Common_OpenManager}Open manager", Order = 0, RequireRestart = false, HintText = "{=AF_MCM_Policy_EditPrompts_Hint}Edit player AI drafting, player-policy evaluation, NPC ruler policy, and the interpretation and evaluation requirements for currently available policy effects in one place.")]
+	[SettingPropertyGroup("{=AF_MCM_Policy_Group}16. Policy system", GroupOrder = 0)]
 	public Action EditPolicyPrompts { get; set; }
 
-	[SettingPropertyButton("政策效果模块管理", -1, true, "", Content = "打开管理器", Order = 1, RequireRestart = false, HintText = "分别设置玩家政策、地方政策、NPC 统治者政策和附庸国政策可检索的效果模块。只影响保存后新发起的政策。")]
-	[SettingPropertyGroup("16. 政策系统", GroupOrder = 0)]
+	[SettingPropertyButton("{=AF_MCM_Policy_ManageEffects_Title}Policy effect module manager", -1, true, "", Content = "{=AF_MCM_Common_OpenManager}Open manager", Order = 1, RequireRestart = false, HintText = "{=AF_MCM_Policy_ManageEffects_Hint}Choose which effect modules can be retrieved for player, local, NPC ruler, and vassal policies. Changes apply only to policies started after saving.")]
+	[SettingPropertyGroup("{=AF_MCM_Policy_Group}16. Policy system", GroupOrder = 0)]
 	public Action ManagePolicyEffectModules { get; set; }
 
-	[SettingPropertyButton("政策相关数值上限调整", -1, true, "", Content = "调整上限与容量", Order = 4, RequireRestart = false, HintText = "打开独立窗口，分别设置城市／城堡繁荣度、村庄户数、城市／城堡／村庄民兵人数，以及城市／城堡共用粮仓容量。适用于玩家和 NPC 的所有定居点，不要求先发布政策。\n限制的是总量，不是每日增益。每日按原版＋政策的净变化结算：正数最多加到上限，零或负数不受限制。例：上限 10000，9999＋100只到10000；已有12000不削减，正增长暂停，负增长正常。\n默认仅粮仓容量开启，城市和城堡最终容量均为1000，不叠加城堡或建筑加成；其余六项默认关闭。繁荣度耗粮由“取消繁荣度耗粮”独立开关控制，默认保留原版。\n各项可单独开关，支持整数滑条和数值输入。保存后生效；取消或 Esc 丢弃修改；恢复默认后需保存。")]
-	[SettingPropertyGroup("16. 政策系统", GroupOrder = 0)]
+	[SettingPropertyButton("{=AF_MCM_Policy_SettlementBalance_Title}Policy-related settlement caps", -1, true, "", Content = "{=AF_MCM_Policy_AdjustLimits}Adjust caps and capacity", Order = 4, RequireRestart = false, HintText = "{=AF_MCM_Policy_SettlementBalance_Hint}Open a separate window to set town/castle prosperity, village hearths, town/castle/village militia, and shared town/castle granary capacity. Applies to all player and NPC settlements; no policy publication is required.\nThese are total caps, not daily gains. Each day uses the native plus policy net change: positive growth stops at the cap, while zero or negative change is unrestricted. Example: with a cap of 10000, 9999 plus 100 reaches 10000; an existing 12000 is not reduced, positive growth pauses, and negative change proceeds normally.\nOnly granary capacity is enabled by default; town and castle final capacity is 1000, without castle or building bonuses. The other six options are disabled by default. Prosperity food consumption is controlled separately by the Disable prosperity food consumption switch and remains native by default.\nEach option can be toggled independently and supports integer sliders and numeric input. Changes apply after saving; Cancel or Esc discards edits; restoring defaults still requires saving.")]
+	[SettingPropertyGroup("{=AF_MCM_Policy_Group}16. Policy system", GroupOrder = 0)]
 	public Action EditSettlementBalance { get; set; }
 
-	[SettingPropertyInteger("AI评议参考本国最新政策条数", 0, 10, "0", Order = 2, RequireRestart = false, HintText = "玩家政策评议和 NPC 新政策生成时，AI 最多参考多少条本国最新的现行政策。按新到旧读取，不区分玩家或 NPC 发布，默认2条。用于判断重复、冲突和延续，不是可生效政策的数量上限，也不改变已有政策效果。0只关闭这组参考，政策不足不补位；不影响普通对话。")]
-	[SettingPropertyGroup("16. 政策系统", GroupOrder = 0)]
+	[SettingPropertyInteger("{=AF_MCM_Policy_RecentActive_Title}Recent active domestic policies referenced by AI", 0, 10, "0", Order = 2, RequireRestart = false, HintText = "{=AF_MCM_Policy_RecentActive_Hint}When evaluating player policies or generating NPC policies, the maximum number of the kingdom's latest active policies AI may reference. Reads newest to oldest regardless of publisher; default: 2. Used to detect duplicates, conflicts, and continuation; it is not a cap on policies that can take effect and does not change existing effects. 0 disables this reference set; fewer policies are not padded; ordinary dialogue is unaffected.")]
+	[SettingPropertyGroup("{=AF_MCM_Policy_Group}16. Policy system", GroupOrder = 0)]
 	public int PolicyRecentActiveCount { get; set; } = 2;
 
-	[SettingPropertyInteger("AI评议参考世界相关政策条数", 0, 10, "0", Order = 3, RequireRestart = false, HintText = "在上面的本国最新政策之外，玩家政策评议和 NPC 新政策生成时，AI 最多额外参考多少条与当前政策内容相关的现行政策。候选来自所有国家（含本国），排除上面已选的政策，按相关度选取，默认3条，不设最低相似度门槛。两组默认最多参考2＋3＝5条，但不是可生效政策的数量上限。0只关闭这组参考，候选不足不凑数；不影响普通对话或已有政策效果。")]
-	[SettingPropertyGroup("16. 政策系统", GroupOrder = 0)]
+	[SettingPropertyInteger("{=AF_MCM_Policy_RelatedActive_Title}Related active world policies referenced by AI", 0, 10, "0", Order = 3, RequireRestart = false, HintText = "{=AF_MCM_Policy_RelatedActive_Hint}In addition to the latest domestic policies above, the maximum number of active policies related to the current policy that AI may reference when evaluating player policies or generating NPC policies. Candidates come from all kingdoms, including the player's, and exclude policies already selected above; the most related are chosen with no minimum similarity threshold. Default: 3, so both sets reference at most 2 plus 3 = 5 policies; this is not a cap on policies that can take effect. 0 disables this set; insufficient candidates are not padded; ordinary dialogue and existing effects are unaffected.")]
+	[SettingPropertyGroup("{=AF_MCM_Policy_Group}16. Policy system", GroupOrder = 0)]
 	public int PolicyRelatedActiveCount { get; set; } = 3;
 
 	[SettingPropertyButton("自定义提示词JSON文件夹", -1, true, "", Content = "打开文件夹", Order = 9, RequireRestart = false, HintText = "打开 CustomPrompts 文件夹，可直接编辑各套提示词 JSON。")]
