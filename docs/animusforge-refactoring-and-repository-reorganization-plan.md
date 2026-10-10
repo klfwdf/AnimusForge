@@ -1,6 +1,13 @@
 <a id="full-english-release-20261010"></a>
 ## 全英文发行与 CN/EN 双包（2026-10-10，ACTIVE / NOT RELEASE READY）
 
+最新主线接收：政策C工作树已复审并提交 `19f11c941`（20文件），afpol中英各621唯一键；共享效果/失败恢复raw生产者，显示投影独立，模块36对新键和5个主线键依赖一并接收。修复raw清理规则与UI混用、英文溢出数量误报；政策测试完整双语oracle与NPC raw oracle已维护。raw30/模块90/失败92/oracle272项、26资源对、既有双API资源各2484解析PASS。不是当前产品构建或程序集契约执行。详见[政策复审](handoffs/2026-10-10-localization-policy-review-illustrator-errors.md#主线接收结果2026-10-10)与[外部C历史报告](handoffs/2026-10-10-localization-package-c-policy-delivery.md)。
+
+城堡选择器/处刑状态已提交 `b8ad0a54a`，7对新键、两个Bridge显示表达式逆向保真、26资源对与既有双API各12792次UI资源解析PASS；[详细交付](handoffs/2026-10-10-localization-castle-selection-execution.md#实际结果)。稳定扫描 `artifacts/localization/untranslated-after-c-review.json`：HEAD b8ad0a54a工作树快照，confirmed_ui=0，consumer_review=1250，137文件，扫描期间无变化。候选是位置，含事实/诊断/内部值，不当唯一未译条目或全英文百分比。中文原世界书JSON一份解析异常仍登记；不能用身份匹配未识别的2641文件否定用户确认B完成。
+
+C源码交付已接收；D已静态复核；E尚无最终交付回执。剩余实际工作含动态/旧事实正文与日期区间显示、默认Prompt/协议与运行时中文源码外置、EN资产装配门禁和最终CN/EN发行验收。旧快照“C在DSH运行/未提交”等由本记录接续。继续遵守不构建、Stage、部署、正式打包或Push，不加入C#语言探测。编译、Bootstrap、当前程序集契约、实机/旧档NOT-RUN，目标ACTIVE / NOT RELEASE READY。
+
+
 实际工作区 F:/AnimusForge-main，main；范围扩展基线 `7341afe55`。
 用户要求上 N 网完整英文、两套 ZIP 名区分 CN/EN、包内原文件名不变、
 运行时中文字符串不再硬编码。保留中文原版资产及存档、协议行为；源码注释
