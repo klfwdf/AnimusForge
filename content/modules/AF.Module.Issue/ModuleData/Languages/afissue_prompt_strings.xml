@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base type="string">
+  <tags><tag language="English" /></tags>
+  <strings>
+    <string id="AF_ISSUE_PROMPT_OfferHeader" text="[Vanilla quest context (for understanding only; do not copy verbatim)]" />
+    <string id="AF_ISSUE_PROMPT_OfferOpening" text="You currently have a vanilla quest you can offer to the player." />
+    <string id="AF_ISSUE_PROMPT_OfferTitle" text="Quest title: {TITLE}" />
+    <string id="AF_ISSUE_PROMPT_OfferSummary" text="Quest summary: {SUMMARY}" />
+    <string id="AF_ISSUE_PROMPT_OfferBrief" text="Your vanilla explanation to the player: {BRIEF}" />
+    <string id="AF_ISSUE_PROMPT_OfferPersonalSolution" text="Vanilla explanation of the player's personal solution: {DETAIL}" />
+    <string id="AF_ISSUE_PROMPT_OfferBaseReward" text="Vanilla base reward reference: {GOLD} denars. This is reference information only; you do not need to quote the exact amount." />
+    <string id="AF_ISSUE_PROMPT_OfferEligible" text="The player currently meets the acceptance conditions. If the player clearly agrees to take this quest, give only a natural verbal confirmation or acceptance in the body; do not output any action tag. Whether the quest is actually accepted is determined by post-processing from your response." />
+    <string id="AF_ISSUE_PROMPT_OfferReject" text="The player does not meet the vanilla prerequisites for accepting this quest; refuse firmly." />
+    <string id="AF_ISSUE_PROMPT_OfferReason" text="Vanilla reason this quest cannot currently be offered: {REASON}" />
+    <string id="AF_ISSUE_PROMPT_OfferAlternativeAvailable" text="This quest also supports being handled by one of the player's companions." />
+    <string id="AF_ISSUE_PROMPT_OfferAlternativeConsent" text="If the player explicitly asks for a companion to handle it and clearly names one of the candidates below, give only a natural verbal agreement in the body to that companion taking the assignment; post-processing decides whether it is actually assigned to them." />
+    <string id="AF_ISSUE_PROMPT_OfferAskCompanion" text="If the player only says to send a companion without naming anyone, ask a follow-up question first; do not treat the assignment as decided." />
+    <string id="AF_ISSUE_PROMPT_OfferCandidateList" text="You may choose only from the following candidates; never invent a companion:" />
+    <string id="AF_ISSUE_PROMPT_OfferTroopDispatchInfo" text="If post-processing confirms a companion assignment, the native troop-dispatch screen will open next to choose accompanying soldiers. In your response, decide only whether to accept and who will lead." />
+    <string id="AF_ISSUE_PROMPT_InProgressHeader" text="[Vanilla quest context: in progress]" />
+    <string id="AF_ISSUE_PROMPT_InProgressInstruction" text="You have already assigned a vanilla quest to the player. Do not offer it again as if for the first time, and do not output any quest-acceptance tag." />
+    <string id="AF_ISSUE_PROMPT_SharedQuestTitle" text="Quest title: {TITLE}" />
+    <string id="AF_ISSUE_PROMPT_InProgressQuestName" text="Vanilla quest name: {TITLE}" />
+    <string id="AF_ISSUE_PROMPT_InProgressCurrentState" text="Current state: {STATE}" />
+    <string id="AF_ISSUE_PROMPT_InProgressStateAlternative" text="The player delegated the quest to a companion. If the player claims the quest is complete, they are lying." />
+    <string id="AF_ISSUE_PROMPT_InProgressStateSelf" text="The player is carrying out the quest personally; it is not complete yet. If the player claims it is complete, they are lying." />
+    <string id="AF_ISSUE_PROMPT_InProgressCompanion" text="Current companion leading the mission: {HERO}" />
+    <string id="AF_ISSUE_PROMPT_InProgressDuration" text="Vanilla estimated total duration: {DAYS} days." />
+    <string id="AF_ISSUE_PROMPT_InProgressDeadline" text="Vanilla quest deadline: {DATE}" />
+    <string id="AF_ISSUE_PROMPT_JournalSummary" text="Recent vanilla quest journal summary:" />
+    <string id="AF_ISSUE_PROMPT_InProgressDiscussion" text="Respond to the player's words about progress, remind them of requirements, and say whether the task appears close to completion; do not reintroduce the question of accepting it." />
+    <string id="AF_ISSUE_PROMPT_NoActionTags" text="Never output [ACTION:ISSUE_ACCEPT_SELF], [ACTION:ISSUE_ACCEPT_ALT:*], or [ACTION:QUEST_TURN_IN] in the body; post-processing alone decides whether to trigger them." />
+    <string id="AF_ISSUE_PROMPT_TurnInHeader" text="[Vanilla quest context: ready to turn in]" />
+    <string id="AF_ISSUE_PROMPT_TurnInIntro" text="The vanilla system has confirmed a turn-in path is currently available. Do not issue the quest again; focus on checking and confirming results and discussing completion." />
+    <string id="AF_ISSUE_PROMPT_TurnInDiscussIntro" text="Opening meaning from the current vanilla discuss flow: {TEXT}" />
+    <string id="AF_ISSUE_PROMPT_TurnInCompletionSignal" text="Explicit completion signal detected by the system: {TEXT}" />
+    <string id="AF_ISSUE_PROMPT_TurnInVisibleOptions" text="Summary of currently visible vanilla player options:" />
+    <string id="AF_ISSUE_PROMPT_TurnInReady" text="The player has met the quest's completion conditions. If they say they are turning it in, confirm it is done, or come for inspection, naturally confirm completion or point out that it is still incomplete; do not output any action tag. Post-processing decides whether it is actually turned in." />
+    <string id="AF_ISSUE_PROMPT_TurnInUnclear" text="If the player is only asking for progress, has not finished, or is unclear, respond normally and do not state that the quest has been inspected and completed." />
+    <string id="AF_ISSUE_PROMPT_RecentHeader" text="[Vanilla quest context: just completed]" />
+    <string id="AF_ISSUE_PROMPT_RecentInstruction" text="The player has just completed a vanilla quest you assigned. Do not issue it again or output any quest-acceptance tag." />
+    <string id="AF_ISSUE_PROMPT_RecentQuest" text="Recently completed quest: {TITLE}" />
+    <string id="AF_ISSUE_PROMPT_RecentResult" text="Vanilla completion result: {DETAIL}" />
+    <string id="AF_ISSUE_PROMPT_RecentReward" text="Vanilla reward reference: {GOLD} denars." />
+    <string id="AF_ISSUE_PROMPT_RecentJournal" text="Recent vanilla quest records:" />
+    <string id="AF_ISSUE_PROMPT_RecentScope" text="This recently completed fact applies only to the next conversation and means the old quest has already been resolved." />
+    <string id="AF_ISSUE_PROMPT_RecentOtherQuests" text="If you have another vanilla quest to discuss now, you may continue with a new one; do not treat this completed old quest as unfinished or assign the same old quest again." />
+    <string id="AF_ISSUE_PROMPT_NoAvailable" text="[Vanilla quest context: no available quest] {GIVER} currently has no vanilla quest to offer." />
+    <string id="AF_ISSUE_PROMPT_GiverFallback" text="you" />
+    <string id="AF_ISSUE_PROMPT_UnnamedQuest" text="an unnamed quest" />
+    <string id="AF_ISSUE_PROMPT_CandidateSkill" text="Skill={VALUE}" />
+    <string id="AF_ISSUE_PROMPT_CandidateRisk" text="Failure risk={VALUE}" />
+    <string id="AF_ISSUE_PROMPT_CandidateDuration" text="Estimated duration={DAYS} days" />
+    <string id="AF_ISSUE_PROMPT_CandidateTroops" text="Required soldiers={VALUE}" />
+    <string id="AF_ISSUE_PROMPT_CandidateCasualties" text="Estimated casualties={VALUE}" />
+  </strings>
+</base>
