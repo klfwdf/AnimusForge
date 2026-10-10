@@ -1,7 +1,7 @@
 <a id="policy-effect-bounded-retrieval-20261010"></a>
 ### 政策效果检索：真实query、详情owner及玩家/NPC消费者
 
-片1`04409b29`，最终产品源码`c350529251bb1c5b1a16061e8735cf13c531118f`；状态、双API/真实ONNX证据与已知基线失败见[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#policy-effect-bounded-retrieval-20261010)。本地13锚点`artifacts/policy-retrieval-refactor-20261010/code-map.json`已按记录提交/working-tree校验。本表只覆盖具名职责，不覆盖整份Behavior或下方历史交付。
+公开片1`b7809f99`，最终产品源码`a1a4aa213f0ff82eb836dee25c40aaecbe492d29`，分别与原本地已验片1/片2源码树完全一致；发布映射、双API/真实ONNX证据与已知基线失败见[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#policy-effect-bounded-retrieval-20261010)。本地13锚点`artifacts/policy-retrieval-refactor-20261010/code-map-publication.json`已按公开产品提交/working-tree校验。本表只覆盖具名职责，不覆盖整份Behavior或下方历史交付。
 
 | 当前源码（一基范围）/符号 | 已接通的责任及未覆盖边界 |
 | --- | --- |
@@ -15,7 +15,7 @@
 | `PolicySystem/Effects/Modules/clanLeaderRelationOnce/ClanLeaderRelationOnceEffectModule.cs:24`；ModuleDescriptor.RetrievalText | 唯一模块语义文本调整；payload/数值/执行及JSON评估prompt未变 |
 | `tests/bridges/Policy/PolicyEffectModule.ContractTests/PolicyEffectRetrievalTests.cs:17–206`；Production contracts / NPC request snapshot / Detail coverage / ONNX matrix | 真实DLL算法、yield设置变更、受控目标目录和实际ONNX推理；fixture224案例，不覆盖真实provider输出、游戏目标/线程、UI或旧坏档 |
 
-无全量模块注入、数值或存档重构、外部API/DLL拆分、构建脚本变更、Tick新增、Stage/部署/打包/push。本包源码/contract/native推理通过不代表全仓合同或实机接受；两项同基线失败保留在主台账。
+无全量模块注入、数值或存档重构、外部API/DLL拆分、构建脚本变更、Tick新增、Stage/部署/打包；用户本轮追加推送授权及干净交付边界见主台账。本包源码/contract/native推理通过不代表全仓合同或实机接受；两项同基线失败保留在主台账。
 
 <a id="bulletin-independent-publishing-toggle-20261010"></a>
 ### 快报独立自动发布开关：实际门控与消费者

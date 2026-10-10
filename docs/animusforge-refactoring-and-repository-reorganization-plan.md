@@ -3,9 +3,9 @@
 
 ### 授权、基线与有限退出门
 
-- 本轮从只读审查转入用户明确授权的“两片全做，重构”；暂停后“继续”。工作区 `E:/AnimusForge-klfwdf`，分支 `main`，修前 `f577a9818ca2c3b88a3a0964a23f4ae17bfa8d10`，跟踪树 `8060cca0f8f52f9c40ea1687321637b02ed0a187`，开工干净。该树是已回滚后的远端产品基线，不恢复先前被拒绝的全模块注入实现或其ignored证据。
-- 检查点 `a8bedb1a`；片1 `04409b29`；片2产品源码 `c350529251bb1c5b1a16061e8735cf13c531118f`。退出门为真实生产查询、NPC请求冻结、18模块实际ONNX矩阵及双API编译/授权边界回归；已完成本包，不扩张到政策数值、执行器、存档迁移、对话渠道或全仓重构。
-- 用户单独批准原构建脚本清理本工作区的 `bin/Debug/single_module_artifacts` 和 `obj/single_module/Debug`；未改构建脚本，未使用Stage/Deploy。外部游戏/model/reference路径只作为只读输入；不push、不部署、不打包、不调用付费LLM。
+- 本轮从只读审查转入用户明确授权的“两片全做，重构”；暂停后“继续”。工作区 `E:/AnimusForge-klfwdf`，原本地 `main` 修前 `f577a9818ca2c3b88a3a0964a23f4ae17bfa8d10`，跟踪树 `8060cca0f8f52f9c40ea1687321637b02ed0a187`，开工干净。该树与安全远端基线 `410ff81cc4c6e95f941d1952c0ee3a4a664bff43` 完全一致，不恢复先前被拒绝的全模块注入实现或其ignored证据。
+- 原本地检查点 `a8bedb1a`；原片1 `04409b29` / 片2 `c350529251bb1c5b1a16061e8735cf13c531118f` 保留在本地历史。干净交付分支 `delivery/policy-bounded-retrieval-20261010` 从 `410ff81c` 移植为片1 `b7809f99ddaf1be97e1a2a9792a51711e801d444` / 片2产品源码 `a1a4aa213f0ff82eb836dee25c40aaecbe492d29`；两片源码树分别与原提交完全一致，复用原验证证据，不冒称重新构建。退出门为真实生产查询、NPC请求冻结、18模块实际ONNX矩阵及双API编译/授权边界回归；已完成本包，不扩张到政策数值、执行器、存档迁移、对话渠道或全仓重构。
+- 用户单独批准原构建脚本清理本工作区的 `bin/Debug/single_module_artifacts` 和 `obj/single_module/Debug`；未改构建脚本，未使用Stage/Deploy。外部游戏/model/reference路径只作为只读输入；不部署、不打包、不调用付费LLM。完成后用户追加“推送”授权：fetch确认远端仍为 `410ff81c`，只普通快进发布本包到 `origin/main`，不上传原本地回滚/交接链、不改写历史、不强推；实际发布提交和远端ref记入本地 `publication-receipt.json`。
 
 ### 旧行为、批准的新行为与真实owner
 
@@ -19,7 +19,7 @@
 
 ### 验证与证据层级
 
-本地证据目录 `artifacts/policy-retrieval-refactor-20261010/`；`verification-receipt.json`绑定源码/DLL SHA、`test-results.json`、模型五文件hash、fixture与13处源码坐标。ignored产物不提交，不把此前同名历史测试当作当前证明。
+本地证据目录 `artifacts/policy-retrieval-refactor-20261010/`；`verification-receipt.json`保留原已验提交/DLL SHA、`test-results.json`、模型五文件hash、fixture与13处源码坐标；发布映射、树一致性和远端核验另记 `publication-receipt.json`，不改写原验证收据。ignored产物不提交，公开验收摘要在本表及代码范围图，不依赖取得本地文件，也不把此前同名历史测试当作当前证明。
 
 | 检查 | 实际结果与局限 |
 | --- | --- |
@@ -28,7 +28,7 @@
 | 生产纯合同 | 两版各44新断言；覆盖真正yield后的MCM修改不变更在途snapshot、以后请求关闭、两NPC入口实际接线、候选18不触发旧12上限、12query预算、详情clamp8、禁掠/减值与否定、目录资格后的候选内补位/裁剪 |
 | 既有相关专项 | 两版各routing322、two-stage1408、all-modules1457（18模块）、NPC repair1318、pending150、effect-repair29、target-jurisdiction62、target-plan765、normalizer118、history1830通过。与ONNX/新合同合计28模式24通过，另4为下述两项同基线失败 |
 | 原统一构建 | Debug原命令exit0；引用1.3 `v1.3.15.110062` /1.4 `v1.4.6.115628`，各348警告/0错误；Bootstrap0警告/0错误，双Coup managed seam门禁通过。未Stage/安装/游戏加载 |
-| 源码坐标 | `verify_code_map.py --map artifacts/policy-retrieval-refactor-20261010/code-map.json`及`--working-tree`均13锚点PASS；仅本包定位，不宣称全仓历史图已同步或实机通过 |
+| 源码坐标 | 原`code-map.json`及映射到公开产品提交的`code-map-publication.json`按记录提交/`--working-tree`均13锚点PASS；仅本包定位，不宣称全仓历史图已同步或实机通过 |
 
 扩展失败明确保留：`--policy-prompt-management-only`失败于普通覆盖/日志/缓存目录与typed user-data root不一致；`--policy-log-contract-only`失败于`CustomPolicyBehavior.Management.cs`绕过`PolicySystemLog`。两API修前/修后均同断言失败，相关生产文件与基线逐字相同；日志`baseline-<api>-*.log`和当前同名模式可对照，不删除断言/刷新hash凑PASS。新ONNX模式只验证embedding路径及推理，不宣称全套游戏冷启动gate/reranker验收。
 
@@ -38,7 +38,7 @@
 - 本机224案例合计ONNX route计时1.3为1278ms/1.4为1318ms，单例最大291/290ms，包含重复文本cache命中及冷索引初始化；修前查询被吞导致workload更小，不能将其当等价性能优化，也不能把重复案例的0ms中位数当生产SLA。实际游戏目标目录耗时及真实模型输出仍需实机验证。
 - 矩阵是这些输入的candidate/detail覆盖，不保证所有自然语句召回、不证明否定模块最终一定不执行。无数值案例仍可召回评估候选，零效果由已有后处理合同决定；未新增相似度阈值或强迫效果。复杂指代/否定仍由完整原文+LLM判断。
 - 未真实LLM、实机NPC/玩家生成、真实大世界目标、旧存档、全仓回归或覆盖率仪器测量；不宣称80%覆盖、零bug或已修复其他历史缺口。没有存档schema/键迁移，无需用chunk合同结果替代本包验收。
-- 源码回滚按片2`c3505292`、片1`04409b29`依次做focused inverse；检查点`a8bedb1a`只作定位，禁止hard reset。基线DLL留在本证据目录`baseline/`，不是部署授权。将来推送须重新核对明确授权与本地排除历史，不能沿旧HANDOFF自动push。
+- 公开源码回滚按片2`a1a4aa21`、片1`b7809f99`依次做focused inverse；原本地检查点`a8bedb1a`只作定位，禁止hard reset。安全基线`410ff81c`可从公开历史取得；本地基线DLL留在证据目录`baseline/`，不是部署授权。本次推送只按最新明确授权执行，将来发布仍须重新核对授权与本地排除历史，不能沿旧HANDOFF自动push。
 
 <a id="bulletin-independent-publishing-toggle-20261010"></a>
 ## 快报独立自动发布开关接线修复（2026-10-10，OFFLINE_VERIFIED_NOT_DEPLOYED）
