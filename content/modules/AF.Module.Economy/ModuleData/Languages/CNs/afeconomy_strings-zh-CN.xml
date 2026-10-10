@@ -8,6 +8,14 @@
     <string id="AF_DEBT_PROMISE_COMPLETE" text="此承诺已完成或解除。" />
     <string id="AF_DEBT_PROMISE_EXPIRED" text="承诺已过期，但仍可在之后解除或完成。" />
     <string id="AF_ECO_DebtPromise_Instruction" text="与对方聊天即可完成或解除该承诺。" />
+    <string id="AF_ECO_UI_DebtPromiseCounterparty" text="对方" />
+    <string id="AF_ECO_UI_DebtPromiseNoNote" text="无" />
+    <string id="AF_ECO_UI_DebtPromisePlayer" text="玩家" />
+    <string id="AF_ECO_UI_DebtSeasonSpring" text="春" />
+    <string id="AF_ECO_UI_DebtSeasonSummer" text="夏" />
+    <string id="AF_ECO_UI_DebtSeasonAutumn" text="秋" />
+    <string id="AF_ECO_UI_DebtSeasonWinter" text="冬" />
+    <string id="AF_ECO_UI_DebtCalendarDate" text="{YEAR}年{SEASON}第{DAY}天" />
     <string id="AF_ECO_UI_CompanionReturnedClan" text="【同伴离队】{HERO} 已回到 {CLAN}。" />
     <string id="AF_ECO_UI_CompanionReturnedSettlement" text="【同伴离队】{HERO} 已回到 {SETTLEMENT}。" />
     <string id="AF_ECO_UI_CompanionWanderer" text="【同伴离队】{REASON}{HERO} 已成为流浪者。" />
