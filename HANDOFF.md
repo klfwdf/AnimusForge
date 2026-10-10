@@ -1,4 +1,5 @@
 # 当前交接：全英文发行与 CN/EN 双包（2026-10-10，ACTIVE / NOT RELEASE READY）
+- 当前主线`d00e33d07`：全模组中文硬编码外置/双语目标继续，B/C由用户派发外部；内战事实/显示、图库新物品名、债务/决斗已完成源码接线，27资源对和专项静态/既有双API资源解析PASS。全量20860位置/590文件（起始22357，含并行修改），不以UI清零当完成。Player默认规则语义差异、兼容词表EN门禁及大量运行时文本仍OPEN；当前产品编译/实机/正式包NOT-RUN。[主台账当前入口](docs/animusforge-refactoring-and-repository-reorganization-plan.md#full-english-release-20261010)，[切片与代码证据](docs/handoffs/2026-10-10-localization-mainline-integration.md)。下文旧进度按历史保留。
 - 主线已接收政策C `19f11c941`（20文件/621对键），raw/display及失败边界修复；raw30/模块90/失败92/oracle272项、26资源对、既有双API各2484资源解析PASS。城堡选择器/处刑显示 `b8ad0a54a`（7对键）已交付。稳定盘点confirmed UI 0/待审1250位置，不是全英文完成率；E待最终回执，当前编译/实机/正式双包NOT-RUN。[最新主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#full-english-release-20261010)。
 
 - 最新主线 `5173ec03e` / `3f8227076` 知名度与通知收口；`ecd8cca60` / `b510df4bb` 公告配图状态、图库默认介绍与试采说明，静态合同/26对资源/既有双API引用各1304次Illustrator解析PASS。稳定盘点7确认UI（Policy）/1210待审，无扫描变化。转RP真物品名和终端标签目录等仍OPEN；当前编译/实机/旧档/正式ZIP NOT-RUN。[最新切片及下一片](docs/handoffs/2026-10-10-localization-illustrator-bulletin-defaults.md)，[唯一主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#full-english-release-20261010)。
