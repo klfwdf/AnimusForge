@@ -1,6 +1,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using AnimusForge.Illustrator.UI;
 
 namespace AnimusForge.Illustrator.Engine
 {
@@ -86,7 +87,7 @@ namespace AnimusForge.Illustrator.Engine
                 // Evaluated on the game thread before invoking any GPU registration callback.
                 if (_disposed || !ReferenceEquals(_latest, request) || !_isCurrent()) return;
                 if (error != null) request.Failed?.Invoke(error.Message);
-                else if (prepared == null) request.Failed?.Invoke("图片不存在或无法解码，请刷新画廊。");
+                else if (prepared == null) request.Failed?.Invoke(IllustratorRemainingUiText.GalleryPreviewUnavailable);
                 else request.Ready?.Invoke(prepared);
             }
             finally { StartPending(); }

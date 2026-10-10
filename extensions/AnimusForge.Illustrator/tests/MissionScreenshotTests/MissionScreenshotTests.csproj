@@ -9,6 +9,9 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Net.Http" />
     <Compile Include="Program.cs" />
+    <Compile Include="../../src/UI/IllustratorUiText.cs" Link="IllustratorUiText.cs" />
+    <Compile Include="../../src/UI/IllustratorRemainingUiText.cs" Link="IllustratorRemainingUiText.cs" />
+    <Compile Include="../LocalizationCardSlice/LocalizationTextObject.cs" Link="LocalizationTextObject.cs" />
     <Compile Include="../../src/UI/Overlays/MissionPhotoOverlay.cs" Link="MissionPhotoOverlay.cs" />
     <Compile Include="NativeFakes.cs" />
     <Compile Include="../../src/Engine/MissionScreenshotCapture.cs" Link="MissionScreenshotCapture.cs" />

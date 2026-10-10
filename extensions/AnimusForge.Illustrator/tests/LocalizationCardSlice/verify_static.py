@@ -4,6 +4,7 @@ import json
 import re
 import subprocess
 import xml.etree.ElementTree as ET
+import verify_status_static as status_slice
 
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[3]
@@ -15,6 +16,7 @@ def old(path):
 
 path = PREFIX + "Overlays/IllustrationCardPopup.cs"
 source = (ROOT / path).read_text(encoding="utf-8-sig")
+source = status_slice.restore_popup(source)
 edits = [
     ('_dataSource.SetLoading("画卷正在后台生成，可关闭面板，完成后会通知并更新画廊。");', '_dataSource.SetLoading(IllustratorUiText.WeeklyBackground);'),
     ('_dataSource.SetLoading("正在基于本图重绘…");', '_dataSource.SetLoading(IllustratorUiText.WeeklyRedrawLoading);'),
@@ -52,6 +54,7 @@ for line in source.splitlines():
 
 text_path = PREFIX + "IllustratorUiText.cs"
 catalog = (ROOT / text_path).read_text(encoding="utf-8-sig")
+catalog = status_slice.restore_catalog(catalog)
 new_lines = []
 for key in PACKET["newKeys"]:
     candidates = [line for line in catalog.splitlines(keepends=True) if '"' + key["id"] + '"' in line]

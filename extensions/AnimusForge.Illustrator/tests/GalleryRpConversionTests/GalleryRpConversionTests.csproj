@@ -6,6 +6,9 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Program.cs" />
+    <Compile Include="../../src/UI/IllustratorUiText.cs" Link="IllustratorUiText.cs" />
+    <Compile Include="../../src/UI/IllustratorRemainingUiText.cs" Link="IllustratorRemainingUiText.cs" />
+    <Compile Include="../LocalizationCardSlice/LocalizationTextObject.cs" Link="LocalizationTextObject.cs" />
     <Compile Include="../../../../extensions/AnimusForge.Illustrator/src/UI/Gallery/GalleryRpItemConverter.cs" Link="GalleryRpItemConverter.cs" />
     <Compile Include="../../../../src/AF.GameAdapter.Bannerlord/UI/Common/AnimusForgeTextInputSanitizer.cs" Link="AnimusForgeTextInputSanitizer.cs" />
   </ItemGroup>

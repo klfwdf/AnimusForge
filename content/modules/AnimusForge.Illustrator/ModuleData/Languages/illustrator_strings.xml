@@ -271,5 +271,47 @@
   <string id="AF_ILL_UI_CARD_NOT_SAVED_OR_DISPLAYED" text="The image could not be saved or displayed." />
   <string id="AF_ILL_UI_SCENE_PROBE_LOADING" text="Rebuilding the nearby environment and capturing a complete panorama..." />
   <string id="AF_ILL_UI_SCENE_PROBE_DISPLAY_FAILED" text="The exported preview could not be displayed." />
+    <string id="AF_ILL_UI_STATUS_CHRONICLE" text="Chronicle illustration" />
+    <string id="AF_ILL_UI_STATUS_THEME" text="Theme: {THEME}" />
+    <string id="AF_ILL_UI_STATUS_STYLE_CHANGED" text="The style settings have changed. Click Redraw to apply the new style." />
+    <string id="AF_ILL_UI_STATUS_DIRECTOR_DISABLED" text="The director is disabled" />
+    <string id="AF_ILL_UI_STATUS_DIRECTOR_UNCONFIGURED" text="The director API is not configured" />
+    <string id="AF_ILL_UI_STATUS_DIRECTOR_CONSTRAINT" text="The director output violated character or equipment constraints" />
+    <string id="AF_ILL_UI_STATUS_DIRECTOR_NARRATIVE" text="The director output was not converted into a visual description" />
+    <string id="AF_ILL_UI_STATUS_DIRECTOR_STRUCTURE" text="The director output did not meet structure or composition requirements" />
+    <string id="AF_ILL_UI_STATUS_DIRECTOR_EMPTY" text="The director output lacked a visual description" />
+    <string id="AF_ILL_UI_STATUS_DIRECTOR_UNAVAILABLE" text="The director output was unavailable" />
+    <string id="AF_ILL_UI_STATUS_VISION_PREFIX" text="The director does not support image input; " />
+    <string id="AF_ILL_UI_STATUS_LOCAL_FALLBACK" text="{REASON}; local composition was used" />
+    <string id="AF_ILL_UI_STATUS_SCENE_TERRAIN" text="Field conversation: composing from terrain facts without a screenshot" />
+    <string id="AF_ILL_UI_STATUS_SCENE_DISABLED_SCREENSHOT" text="Scene panorama is disabled; using the current scene screenshot" />
+    <string id="AF_ILL_UI_STATUS_SCENE_DISABLED_FACTS" text="Scene panorama is disabled; composing from text facts" />
+    <string id="AF_ILL_UI_STATUS_SCENE_PANORAMA" text="Mission scene: panorama references within 30 meters are available" />
+    <string id="AF_ILL_UI_STATUS_SCENE_PANORAMA_NO_SCREENSHOT" text="Mission scene: panorama references within 30 meters are available; the current-position screenshot was unavailable" />
+    <string id="AF_ILL_UI_STATUS_SCENE_BUDGET" text="The environment exceeded the {LIMIT}-object budget. Environment capture was skipped; drawing continues." />
+    <string id="AF_ILL_UI_STATUS_DIRECTOR_FAILED" text="{REASON}; image generation stopped" />
+    <string id="AF_ILL_UI_STATUS_DIRECTOR_TRUNCATED" text="The director output was truncated; image generation stopped" />
+    <string id="AF_ILL_UI_STATUS_DIRECTOR_TEXT_ONLY" text="The director does not support image input; text-only planning was used" />
+    <string id="AF_ILL_UI_STATUS_DIRECTOR_VALIDATED" text="The director output was validated; the API did not return a finish marker" />
+    <string id="AF_ILL_UI_STATUS_DIRECTOR_COMPLETE" text="The director finished planning" />
+    <string id="AF_ILL_UI_GALLERY_PREVIEW_UNAVAILABLE" text="The image is missing or cannot be decoded. Refresh the gallery." />
+    <string id="AF_ILL_UI_GALLERY_REDRAW_LOADING" text="Redrawing from the selected illustration. You may close the gallery while you wait." />
+    <string id="AF_ILL_UI_GALLERY_REDRAW_COMPLETE" text="Redraw complete; saved as a new illustration." />
+    <string id="AF_ILL_UI_GALLERY_CONVERSION_UNAVAILABLE" text="The illustration or current campaign is no longer available. Reopen the gallery." />
+    <string id="AF_ILL_UI_GALLERY_CONVERSION_SOURCE_MISSING" text="The original image file no longer exists. No item was created." />
+    <string id="AF_ILL_UI_GALLERY_CONVERSION_DESCRIPTION_REQUIRED" text="Enter an illustration description for NPCs to read when you show them the item." />
+    <string id="AF_ILL_UI_GALLERY_CONVERSION_CREATE_FAILED" text="The illustration item could not be created. Nothing was added to the inventory." />
+    <string id="AF_ILL_UI_GALLERY_CONVERSION_DESCRIPTION_FAILED" text="The illustration description could not be saved: {ERROR}" />
+    <string id="AF_ILL_UI_GALLERY_CONVERSION_ALREADY_OWNED" text="{ITEM} is already in your inventory. Its description was updated; no duplicate was added." />
+    <string id="AF_ILL_UI_GALLERY_CONVERSION_DELIVERED" text="{ITEM} was added to your inventory. You can show it to NPCs using Show Item during a conversation." />
+    <string id="AF_ILL_UI_GALLERY_CONVERSION_DELIVERY_FAILED" text="The illustration could not be added to your inventory. Check your inventory and try again." />
+    <string id="AF_ILL_UI_GALLERY_CONVERSION_DEFAULT_TITLE" text="Calradia Chronicles" />
+    <string id="AF_ILL_UI_GALLERY_CONVERSION_ITEM_NAME" text="{TITLE} illustration scroll" />
+    <string id="AF_ILL_UI_PHOTO_AIM" text="Enter: capture image {COUNT} - Esc: cancel" />
+    <string id="AF_ILL_UI_PHOTO_DECISION" text="Captured {COUNT} images. Start generation?" />
+    <string id="AF_ILL_UI_PHOTO_STOPPED" text="This framing session was stopped" />
+    <string id="AF_ILL_UI_PHOTO_GENERATE" text="Generate" />
+    <string id="AF_ILL_UI_PHOTO_CONTINUE" text="Capture another" />
+    <string id="AF_ILL_UI_PHOTO_RESTART" text="Capture again" />
   </strings>
 </base>

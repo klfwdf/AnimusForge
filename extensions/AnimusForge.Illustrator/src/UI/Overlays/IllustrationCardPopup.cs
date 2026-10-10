@@ -278,7 +278,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
                 return;
             }
             if (update.Saved != null && PublishImage(update.Saved))
-                _dataSource.SetReady(update.Saved.DisplayStatusText);
+                _dataSource.SetReady(IllustrationStatusUiText.Cached(update.Saved));
             else _dataSource.SetReady(IllustratorUiText.CardPrepareFailed(update.Error ?? IllustratorUiText.WeeklyLoadFailed));
         }
 
@@ -346,7 +346,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
                 {
                     if (error != null) Debug.Print("[Illustrator] Encyclopedia cache read failed: " + error.Message);
                     if (cached != null && cached.ImageData != null && cached.ImageData.Length > 0 && popup.PublishImage(cached))
-                        popup._dataSource.SetReady(DiskImageCacheManager.CachedDisplayStatus(cached, IllustratorRuntime.CaptureOptions()?.StyleFingerprint));
+                        popup._dataSource.SetReady(IllustrationStatusUiText.Cached(cached, IllustratorRuntime.CaptureOptions()?.StyleFingerprint, checkStyle: true));
                     else
                         popup.ExecuteEncyclopediaGeneration(hero, tableauWidget);
                 }))
@@ -479,7 +479,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
                         if (error != null) Debug.Print("[Illustrator] Conversation cache read failed: " + error.Message);
                         if (cached != null && cached.ImageData != null && cached.ImageData.Length > 0 && popup.PublishImage(cached))
                         {
-                            popup._dataSource.SetReady(DiskImageCacheManager.CachedDisplayStatus(cached, IllustratorRuntime.CaptureOptions()?.StyleFingerprint));
+                            popup._dataSource.SetReady(IllustrationStatusUiText.Cached(cached, IllustratorRuntime.CaptureOptions()?.StyleFingerprint, checkStyle: true));
                         }
                         else
                         {
@@ -606,7 +606,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
                 }
                 var direction = await VisualDirectorEngine.CreateDirectionAsync(promptPlan, refs, options, token).ConfigureAwait(false);
                 string detailedPrompt = direction.Prompt;
-                IllustratorRuntime.Post(() => { if (!_closed && !token.IsCancellationRequested) _dataSource.StatusText = direction.StatusText + " · " + IllustratorUiText.WeeklyDrawing; });
+                IllustratorRuntime.Post(() => { if (!_closed && !token.IsCancellationRequested) _dataSource.StatusText = IllustrationStatusUiText.Direction(direction) + " · " + IllustratorUiText.WeeklyDrawing; });
                 var genRefs = options?.EnableReferenceImageForGeneration == false ? null : (System.Collections.Generic.IReadOnlyList<IllustrationReferenceImage>)genRefsList;
                 var result = await UniversalOpenAiImageClient.GenerateImageAsync(detailedPrompt, genRefs, options, token).ConfigureAwait(false);
                 string effectivePrompt = string.IsNullOrWhiteSpace(result.ResolvedPrompt) ? detailedPrompt : result.ResolvedPrompt;
@@ -624,7 +624,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
                 if (completion.Result != null && completion.Result.Success && completion.Result.ImageBytes != null &&
                     PublishImage(completion.SavedItem, completion.Result.ImageBytes, completion.Prompt))
                 {
-                    _dataSource.SetReady(completion.SavedItem?.DisplayStatusText ?? IllustratorUiText.PortraitComplete);
+                    _dataSource.SetReady(completion.SavedItem != null ? IllustrationStatusUiText.Cached(completion.SavedItem) : IllustratorUiText.PortraitComplete);
                 }
                 else
                 {
@@ -909,7 +909,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
                         promptPlan.DirectorOnlyFacts + sceneDirectorNote, promptPlan.PlayerRedrawPrompt);
                     sceneStatus = sceneCapture.StatusText;
                 }
-                IllustratorRuntime.Post(() => { if (!_closed && !token.IsCancellationRequested) _dataSource.StatusText = session != null ? IllustratorUiText.ConversationReferenceReuse : sceneStatus + " · " + IllustratorUiText.PortraitPreparing; });
+                IllustratorRuntime.Post(() => { if (!_closed && !token.IsCancellationRequested) _dataSource.StatusText = session != null ? IllustratorUiText.ConversationReferenceReuse : IllustrationStatusUiText.Scene(sceneStatus) + " · " + IllustratorUiText.PortraitPreparing; });
 
                 var characterRefs = new List<IllustrationReferenceImage>();
                 var generationCharacterRefs = new List<IllustrationReferenceImage>();
@@ -981,7 +981,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
                 string detailedPrompt = direction.Prompt;
                 if (options?.EnableReferenceImageForGeneration != false)
                     IllustrationReferenceRouting.AddSceneReferences(genRefs, sceneCapture?.References ?? session?.SceneReferences, direction, token);
-                IllustratorRuntime.Post(() => { if (!_closed && !token.IsCancellationRequested) _dataSource.StatusText = (session != null ? IllustratorUiText.ConversationReferenceReuse : sceneStatus + " · " + IllustratorUiText.PortraitPreparing) + " · " + direction.StatusText + " · " + IllustratorUiText.WeeklyDrawing; });
+                IllustratorRuntime.Post(() => { if (!_closed && !token.IsCancellationRequested) _dataSource.StatusText = (session != null ? IllustratorUiText.ConversationReferenceReuse : IllustrationStatusUiText.Scene(sceneStatus) + " · " + IllustratorUiText.PortraitPreparing) + " · " + IllustrationStatusUiText.Direction(direction) + " · " + IllustratorUiText.WeeklyDrawing; });
                 var finalGenRefs = options?.EnableReferenceImageForGeneration == false ? null : (System.Collections.Generic.IReadOnlyList<IllustrationReferenceImage>)genRefs;
                 var result = await UniversalOpenAiImageClient.GenerateImageAsync(detailedPrompt, finalGenRefs, options, token).ConfigureAwait(false);
                 string effectivePrompt = string.IsNullOrWhiteSpace(result.ResolvedPrompt) ? detailedPrompt : result.ResolvedPrompt;
@@ -1007,7 +1007,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
                         _autoReplyArmed = true;
                         ConversationIllustrationPatch.LogAutoRedraw("armed popup=" + _instanceId);
                     }
-                    _dataSource.SetReady(completion.SavedItem?.DisplayStatusText ?? IllustratorUiText.ConversationComplete);
+                    _dataSource.SetReady(completion.SavedItem != null ? IllustrationStatusUiText.Cached(completion.SavedItem) : IllustratorUiText.ConversationComplete);
                 }
                 else
                 {
