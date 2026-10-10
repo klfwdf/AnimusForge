@@ -217,5 +217,68 @@
     <string id="AF_WM_TailGovernorReturning" text="governor expedition returning to return garrison troops." />
     <string id="AF_WM_TailGovernorEnded" text="governor expedition ended or returned to native AI." />
     <string id="AF_WM_TailNativeResumed" text="resuming native behavior." />
+    <string id="AF_WM_Review_HoldUntilCompleted" text="{ACTOR} completed the order to stay in {SETTLEMENT} until the specified date." />
+    <string id="AF_WM_Review_HoldDaysCompleted" text="{ACTOR} completed the order to stay in {SETTLEMENT} for {DAYS} days." />
+    <string id="AF_WM_Review_PatrolCompleted" text="{ACTOR} completed the order to patrol near {SETTLEMENT} for {DAYS} days." />
+    <string id="AF_WM_Review_FollowCompleted" text="{ACTOR} completed the order to follow {TARGET} for {DAYS} days." />
+    <string id="AF_WM_Review_PartyCreationCancelled" text="Companion party creation for {HERO} was cancelled; follow-up world-map commands were not executed." />
+    <string id="AF_WM_Review_PartyCreated" text="{HERO} created a companion party and received {TROOPS} troops and {PRISONERS} prisoners." />
+    <string id="AF_WM_Review_QueueSafeExit" text="{ACTOR}'s world-map command queue ended; after the current battle resolves, the party will safely leave the siege and resume native behavior." />
+    <string id="AF_WM_Review_TimeoutCommand" text="{ACTOR}'s world-map command timed out; the current command was skipped." />
+    <string id="AF_WM_Review_TimeoutTravel" text="{ACTOR} could not reach {SETTLEMENT} before the time limit; the travel command was skipped." />
+    <string id="AF_WM_Review_TimeoutPatrol" text="{ACTOR} could not reach the area near {SETTLEMENT} before the time limit; the patrol command was skipped." />
+    <string id="AF_WM_Review_TimeoutFollow" text="{ACTOR} could not catch up with {TARGET} before the time limit; the follow command was skipped." />
+    <string id="AF_WM_Review_TimeoutMerge" text="{ACTOR} could not meet the player's party before the time limit; the return command was skipped." />
+    <string id="AF_WM_Review_RaidCompleted" text="{HERO} completed the raid on {SETTLEMENT}." />
+    <string id="AF_WM_Review_PartyDefeated" text="{PARTY}'s party was defeated." />
+    <string id="AF_WM_Review_PartyRepelled" text="{PARTY}'s party was repelled." />
+    <string id="AF_WM_Review_SettlementCaptured" text="{SETTLEMENT} was captured." />
+    <string id="AF_WM_Review_GovernorNoReturnTarget" text="{HERO}'s governor expedition has no safe clan town or castle to return to; the party was preserved and returned to native AI." />
+    <string id="AF_WM_Review_GovernorReturnUnsafe" text="{HERO}'s governor expedition could not safely transfer assets on return; the party was preserved and returned to native AI." />
+    <string id="AF_WM_Review_HideoutMissingResult" text="The native battle ended without a confirmed hideout result; the attack was not repeated." />
+    <string id="AF_WM_Review_HideoutQuestBusy" text="The target is reserved by a story or quest; the hideout attack was not started." />
+    <string id="AF_WM_Review_HideoutUnavailable" text="The target is unavailable or safe battle resolution is not ready; the hideout attack was not started." />
+    <string id="AF_WM_Review_HideoutAlreadyEmpty" text="The target no longer has bandits; another party's clearance was not counted as this command's success." />
+    <string id="AF_WM_Review_HideoutActorIneligible" text="The executing party cannot fight the target bandits; no war was declared and the target was not forcibly removed." />
+    <string id="AF_WM_Review_HideoutBattleNotCreated" text="The native hideout battle could not be created." />
+    <string id="AF_WM_Review_HideoutCleared" text="The native battle was won and the resident bandits were cleared." />
+    <string id="AF_WM_Review_HideoutDefeated" text="The native battle determined that the clearing party was defeated." />
+    <string id="AF_WM_Review_HideoutIncomplete" text="No definitive clearance was confirmed, or the target still has resident bandits." />
+    <string id="AF_WM_Review_TimeoutNoResult" text="The command timed out without a definitive result." />
+    <string id="AF_WM_Review_PartyCreationInvalid" text="The new task party was not created correctly." />
+    <string id="AF_WM_Review_GovernorResignFailed" text="The current governor could not safely step down." />
+    <string id="AF_WM_Review_GovernorPartyInvalid" text="The native lord party was not correctly created for this governor and clan." />
+    <string id="AF_WM_Review_GovernorRosterMissing" text="The new lord party roster is unavailable." />
+    <string id="AF_WM_Review_GovernorUnexpectedHero" text="An unexpected hero appeared in the new lord party; creation was stopped." />
+    <string id="AF_WM_Review_GovernorTemplateRemaining" text="Native template troops, prisoners, or ships could not be fully removed." />
+    <string id="AF_WM_Review_GovernorTemplateShips" text="Native lord party template ships could not be removed." />
+    <string id="AF_WM_Review_GovernorTransferInputs" text="The garrison, expedition party, or troop transfer plan is unavailable." />
+    <string id="AF_WM_Review_GovernorTransferTroop" text="The garrison transfer plan contains an invalid troop type." />
+    <string id="AF_WM_Review_GovernorTroopChanged" text="Garrison troop state changed before transfer: {TROOP}" />
+    <string id="AF_WM_Review_GovernorTroopDeduction" text="Garrison troop deduction verification failed: {TROOP}" />
+    <string id="AF_WM_Review_GovernorXpDeduction" text="Garrison XP deduction was inconsistent: {TROOP}" />
+    <string id="AF_WM_Review_GovernorTroopWrite" text="Expedition troop insertion verification failed: {TROOP}" />
+    <string id="AF_WM_Review_GovernorConservation" text="Garrison and expedition troop or XP conservation verification failed: {TROOP}" />
+    <string id="AF_WM_Review_GovernorTransferFailure" text="Governor expedition troop transfer failed: troop={TROOP} step={STEP}" />
+    <string id="AF_WM_Review_ArmyMaintained" text="{ACTOR} spent {COST} influence to maintain the army and continue {ACTION} {SETTLEMENT} (leader influence: {INFLUENCE})." />
+    <string id="AF_WM_Review_MergeCompleted" text="{HERO} met the player's party and transferred {TROOPS} members, {PRISONERS} prisoners, and all supplies; the temporary expedition record was cleared." />
+    <string id="AF_WM_Review_GuestMergeCompleted" text="{HERO} met the player's party and transferred {TROOPS} members, {PRISONERS} prisoners, and all supplies; the original party was disbanded. {GUEST} accompanies the player as a foreign-clan guest, retaining clan, occupation, and companion status." />
+    <string id="AF_WM_Review_GovernorReturned" text="{HERO}'s expedition returned to {SETTLEMENT}; troops, prisoners, and supplies were placed and the temporary party was removed.{SHIPS} {RESTORATION}" />
+    <string id="AF_WM_Review_ForeignGuestWarDeparture" text="{HERO}'s faction is at war with the player, so the foreign-clan guest left the player's party and returned to {DESTINATION}; troops and supplies previously merged into the player's party were not automatically withdrawn." />
+    <string id="AF_WM_Review_ForeignGuestPartyReleased" text="{HERO}'s faction is at war with the player, so the foreign-clan guest party left player control and returned to the original clan's native AI; its troops and supplies were not automatically transferred to the player's party." />
+    <string id="AF_WM_Review_Raiding" text="raiding" />
+    <string id="AF_WM_Review_Besieging" text="besieging" />
+    <string id="AF_WM_Review_ClanTerritory" text="the original clan's territory" />
+    <string id="AF_WM_Review_GovernorRestored" text="The original governorship was restored." />
+    <string id="AF_WM_Review_GovernorRetained" text="The current governor was not displaced." />
+    <string id="AF_WM_Review_ShipsReturned" text=" {COUNT} accompanying ships were transferred to the settlement." />
+    <string id="AF_WM_Review_Casualties" text=" Battle losses: own side {ACTOR}, enemy side {TARGET}." />
+    <string id="AF_WM_Review_RebellionNoFiefs" text="The player's clan has no fiefs and cannot rebel while retaining land." />
+    <string id="AF_WM_Review_RebellionWarMissing" text="The rebellion action failed to establish war with the former kingdom." />
+    <string id="AF_WM_Review_RebellionException" text="The player's clan rebellion failed: {DETAIL}" />
+    <string id="AF_WM_Review_RebellionStarted" text="The player's clan retained its fiefs and rebelled against {KINGDOM}; {HERO} then continued {ACTION} {TARGET}." />
+    <string id="AF_WM_Review_TroopXpInputs" text="Troop XP adjustment parameters are invalid: {TROOP}" />
+    <string id="AF_WM_Review_TroopXpWrite" text="Troop XP write verification failed: {TROOP}; context={CONTEXT}" />
+    <string id="AF_WM_Review_Attacking" text="attacking" />
   </strings>
 </base>

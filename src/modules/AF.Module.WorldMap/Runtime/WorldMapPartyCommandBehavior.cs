@@ -8133,6 +8133,9 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 
 		string text = message.Trim();
 
+		if (!ContainsChineseDisplayText(text)) return text;
+		if (TryProjectAdditionalWorldMapMessage(text, out string additionalDisplay)) return additionalDisplay;
+
 		Match match = Regex.Match(text, @"^(?<hero>.+)无法创建同伴部队：(?<detail>.*)$");
 		if (match.Success)
 		{
@@ -8379,6 +8382,14 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 	private static string LocalizeAttackDetail(string detail)
 	{
 		string d = (detail ?? "").Trim();
+		Match casualty = Regex.Match(d, @"^(?<detail>.*?)\s*战斗损失：己方(?<actor>\d+)人，敌方(?<target>\d+)人。?$");
+		if (casualty.Success)
+		{
+			return LocalizeAttackDetail(casualty.Groups["detail"].Value)
+				+ WorldMapUiText.Result("AF_WM_Review_Casualties", " Battle losses: own side {ACTOR}, enemy side {TARGET}.",
+					("ACTOR", casualty.Groups["actor"].Value), ("TARGET", casualty.Groups["target"].Value));
+		}
+		if (TryProjectAdditionalWorldMapMessage(d, out string additionalDetail)) return additionalDetail;
 		if (d.EndsWith("。")) d = d.Substring(0, d.Length - 1).Trim();
 
 		if (d == "玩家家族不存在，无法执行叛乱攻击")
