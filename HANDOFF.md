@@ -1,3 +1,9 @@
+# 当前交接：Agent Plan HTTP TTS 兼容（2026-10-11，OFFLINE_VERIFIED / STAGE_VERIFIED / WAITING_FOR_LAUNCHER_CLOSE）
+
+- 用户要求补齐套餐语音兼容。检查点 `6cd5efc33`，产品 `1376309e1`；精确放行 `/api/v3/plan/tts/unidirectional` 到既有 V3 transport，MCM/终端说明同步。修前新增2例失败，修后64生命周期/按钮回归、实际1.4 DLL的V1 7/V3 46协议回放、Debug双API/Bootstrap/双Coup门禁通过，8源码锚点双模式通过。
+- 本地统一Stage已通过原部署脚本的完整校验；两次安装均因启动器占用Bootstrap旧DLL而自动回滚，各9项旧文件SHA独立核对通过。第一次正常关闭后启动器被再次打开；已请求用户退出游戏/启动器并保持关闭后回复，再继续已授权的原脚本覆盖。当前游戏目录仍为旧版本，未收费API请求、推送、打包或实机验收。
+- [唯一主台账、失败/回滚证据与待办](docs/animusforge-refactoring-and-repository-reorganization-plan.md#tts-agent-plan-20261011)；[本轮已核源码地图](docs/architecture/af-framework-code-scope.md#tts-agent-plan-20261011)。本地证据 `artifacts/tts-agent-plan-20261011/`，后续只续安装与实际接受，不重复改产品或回滚其他作者。
+
 # 当前交接：本地统一模块部署（2026-10-11，DEPLOYED_MANAGED_FILES_VERIFIED / LIVE_PENDING）
 
 - 用户授权“部署到本地”；当前产品源码 `462d0e929`（后续 `bd443eb2c` 仅文档），重新通过 Debug 双API、Bootstrap与双Coup门禁后，原脚本部署到检测到的 `E:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge`，更新9文件；3381项安装/Stage SHA、9旧备份及Recovery complete通过。未启动游戏、打包或推送，实机验收仍待执行。
