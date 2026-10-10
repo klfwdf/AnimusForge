@@ -9119,3 +9119,14 @@ R2计划交付门槛：已给固定技术路线、真实来源与目标、写入
 3. 行军中 STOP；战斗中 STOP 后保存/读取，确认不重开战斗、不执行后续队列、仍隔离玩家专用回调。保存/加载测试须用可回滚的独立存档，不在进行中的新清剿战斗里降级旧 DLL。
 
 本地收据与真实日志在忽略的 `artifacts/npc-hideout-clear-20261009/`；推送确认以同目录 API/远端 ref 复核收据为准，未将本地 commit 当作远端成功。源码回滚采用产品提交的 focused inverse/revert，不重写历史；已在新战斗中保存的存档不承诺向旧 DLL 降级兼容。
+
+<a id="localization-wave2-20261010"></a>
+## UI 本地化交付审查与第二轮三方分工（2026-10-10，VERIFY）
+
+- 用户授权审查旧 Half B/C、量化剩余并分为主线 A 与两份外部包，延后构建。真实根 `F:/AnimusForge-main`，`main`；保护 Prompt/世界书平行英文资产与既有 NuGet。无语言探测、存档、构建入口、push/deploy 变更。
+- B/C 的实际提交与消费者已核对，存在 Memory 未注册、字面换行、派系诉求/政治结果 UI、Weekly 批次标签、Policy/Knowledge 弹窗残余。报告旧完成状态不代表全 UI 完成，Policy 新增数纠正为176对。源码修订/一基范围、已覆盖与保留职责见[审查及源码入口](handoffs/2026-10-10-localization-wave2-review.md)。
+- 主线修复 `d0144359e`（Memory LanguageFile）、`e96f9a133`（17对XML换行）、`a329a700b`（外交XML声明/native loader及全对验证、TTS英文fallback）、`aafcbe336`（Illustrator编辑器/模型通知30对）。资源解析只在既有UI事件/主线程完成时发生，后台返回错误数据，无Tick新扫描/反射。
+- 最新候选快照源 `aafcbe336`：全量中文93,658；保守UI候选1,352/192文件。A 513/86、B 435/26、C 404/80；不等于实际漏译总数/完成比例。原始/当前逐条快照位于忽略的 `artifacts/localization/`；文件表和[B](handoffs/2026-10-10-localization-wave2-b-handoff.md)/[C](handoffs/2026-10-10-localization-wave2-c-handoff.md)接力已生成，各候选文件归属无交集且完整覆盖；外部包待用户交接开工，主线A继续执行。
+- PASS：24对中英键集、唯一ID/变量/注册契约；真实1.3与1.4引用Localization DLL各37,748次解析（EN/zh/French fallback/切回EN）；diff检查。新增门禁检查mapped-only漏注册、原生XML节点布局和Memory字面换行。不是产品编译或实机UI验收。
+- NOT-RUN：本轮双API/Bootstrap构建、Stage/全部UI契约、实机/旧档/完整战役/输入与截断；完整J15历史GCCZ Prompt漂移保留，不刷新hash。等待三方收敛再统一构建。
+- 回滚用上述focused commits的定向revert，不reset或改写历史。旧Half B/C文件保留历史，新执行边界以本条链接为准。

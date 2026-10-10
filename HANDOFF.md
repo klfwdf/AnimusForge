@@ -2030,3 +2030,7 @@ LIVE/真实旧档/网络/TTS/帧性能NOT_RUN；证书全局影响归因UNKNOWN�
 
 - 产品 `b51bf5b88`：宣战最终合法性拦截保留具体原因，显示冷却/保护剩余天数及战争数量；未改变宣战规则。外交回放4007断言、双API/Bootstrap/双接缝PASS。未实机、部署、打包或推送。
 - [主台账与源码范围](docs/animusforge-refactoring-and-repository-reorganization-plan.md#war-rejection-diagnostics-20261009)，证据 `artifacts/war-rejection-20261009/`；回滚 `git revert b51bf5b88`。其他会话修改保留。
+
+## UI 本地化第二轮三方接力（2026-10-10，VERIFY）
+
+旧 B/C 已审查，Memory注册/换行、外交XML加载及TTS fallback已修；主线A新增Illustrator30对。最新扫描1,352个UI候选/192文件，不是确认漏译总数。主线A 513/86，外部B 435/26，外部C 404/80；文件边界和新接力链接见[唯一主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#localization-wave2-20261010)。24对契约、真实1.3/1.4本地化DLL各37,748次解析PASS；本轮未构建/实机/部署/push，待三方收敛统一验证。
