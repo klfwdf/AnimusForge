@@ -7,6 +7,7 @@ using TaleWorlds.CampaignSystem;
 using TaleWorlds.Library;
 using TaleWorlds.ScreenSystem;
 using AnimusForge.Illustrator.Engine;
+using AnimusForge.Illustrator.UI;
 using Newtonsoft.Json.Linq;
 
 namespace AnimusForge.Illustrator.Core
@@ -325,9 +326,9 @@ namespace AnimusForge.Illustrator.Core
         {
             AssertMainThread();
             if (update.Saved != null)
-                InformationManager.DisplayMessage(new InformationMessage("[AI画卷] " + update.Saved.Title + " 绘制完成，已更新到画廊。"));
+                InformationManager.DisplayMessage(new InformationMessage(IllustratorUiText.GenerationComplete(update.Saved.Title)));
             else
-                InformationManager.DisplayMessage(new InformationMessage("[AI画卷] 绘制失败：" + update.Error));
+                InformationManager.DisplayMessage(new InformationMessage(IllustratorUiText.GenerationFailed(update.Error)));
             var listeners = GenerationUpdated;
             if (listeners == null) return;
             foreach (Action<IllustrationGenerationUpdate> listener in listeners.GetInvocationList())
@@ -469,7 +470,7 @@ namespace AnimusForge.Illustrator.Core
             {
                 Debug.Print($"[Illustrator] Run rejected: scope not current (closed={_closed}, topScreenMismatch={!ReferenceEquals(_screen, ScreenManager.TopScreen)}, finalized={_screen?.IsFinalized}).");
                 GenerationDiagnostics.WriteDelivery(null, "scope_rejected", "scope stale/closed/screen changed; category=" + _category);
-                fail("生图上下文已失效（界面已切换或弹窗已关闭），请重新打开。");
+                fail(IllustratorUiText.GenerationScopeExpired);
                 return false;
             }
             _request?.Cancel();
@@ -532,7 +533,7 @@ namespace AnimusForge.Illustrator.Core
                             catch (Exception ex) { GenerationDiagnostics.WriteDelivery(diagnosticId, "ui_callback_failed", ex.GetType().Name); fail(ex.Message); }
                         }
                         else if (!(error is OperationCanceledException)) fail(error.Message);
-                        else fail("生成请求超时：上游模型在限定时间内无响应，请稍后重试。");
+                        else fail(IllustratorUiText.GenerationTimeout);
                     }
                     if (update != null)
                     {
@@ -548,7 +549,7 @@ namespace AnimusForge.Illustrator.Core
                 _request = null;
                 source.Dispose();
                 GenerationDiagnostics.WriteDelivery(null, "worker_admission_rejected", "four-worker capacity or host unavailable");
-                fail("生图任务繁忙，请等待已有任务完成后重试。");
+                fail(IllustratorUiText.GenerationBusy);
             }
             return started;
         }

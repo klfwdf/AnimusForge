@@ -236,5 +236,29 @@
     <string id="AF_ILL_UI_OPTION_STYLE_ANIME" text="日系半写实叙事插画 (提示词注入)" />
     <string id="AF_ILL_UI_OPTION_DISPLAY_PANEL" text="独立面板" />
     <string id="AF_ILL_UI_OPTION_DISPLAY_FULLSCREEN" text="全屏覆盖（默认）" />
+    <string id="AF_ILL_MENU_GALLERY" text="卡拉迪亚纪事画廊 (AI 画卷)" />
+    <string id="AF_ILL_NOTIFY_GENERATION_COMPLETE" text="[AI画卷] {TITLE} 绘制完成，已更新到画廊。" />
+    <string id="AF_ILL_NOTIFY_GENERATION_FAILED" text="[AI画卷] 绘制失败：{ERROR}" />
+    <string id="AF_ILL_MISSION_NOTICE" text="[AI画卷] {STATUS}" />
+    <string id="AF_ILL_MISSION_CANCELLED" text="本次取景已取消，未发送生图请求。" />
+    <string id="AF_ILL_MISSION_CAPTURE_FAILED" text="取景失败：{ERROR}" />
+    <string id="AF_ILL_MISSION_START_FAILED" text="生图启动失败：{ERROR}" />
+    <string id="AF_ILL_MISSION_FAILED" text="生图失败：{ERROR}" />
+    <string id="AF_ILL_MISSION_BATTLE_TITLE" text="战斗现场" />
+    <string id="AF_ILL_MISSION_INPUT_HINT" text="点击生图：自由取景，Enter 截取一至两张，确认后由导演推演插画。" />
+    <string id="AF_ILL_MISSION_INPUT_PLACEHOLDER" text="当前模式只提供截图生图，不发送 NPC 喊话。" />
+    <string id="AF_ILL_MISSION_NO_DIALOGUE" text="[场景喊话] 当前自定义战斗没有可用的交流链路。" />
+    <string id="AF_ILL_MISSION_CAPTURING" text="[AI画卷] 正在采集现场，截图完成后即可再次生图。" />
+    <string id="AF_ILL_MISSION_FRAMING" text="自由取景：Enter 截图，最多两张；确认后才发送生成请求。" />
+    <string id="AF_ILL_MISSION_DIRECTING" text="现场截图已确认，导演正在推演…" />
+    <string id="AF_ILL_MISSION_GENERATING" text="导演已完成，正在生成插画；可关闭面板…" />
+    <string id="AF_ILL_MISSION_SAVED" text="插画已保存到画廊。" />
+    <string id="AF_ILL_MISSION_BUSY" text="生图任务繁忙，请等待已有任务完成。" />
+    <string id="AF_ILL_MISSION_PREPARING" text="现场截图已确认，正在准备画卷…" />
+    <string id="AF_ILL_MISSION_PANEL_UNAVAILABLE" text="[AI画卷] 等待面板打开失败，生成仍在后台继续，完成后可到画廊查看。" />
+    <string id="AF_ILL_MISSION_SCOPE_CANCELLED" text="截图生图已取消（生图关闭或宿主切换）。" />
+    <string id="AF_ILL_NOTIFY_SCOPE_EXPIRED" text="生图上下文已失效（界面已切换或弹窗已关闭），请重新打开。" />
+    <string id="AF_ILL_NOTIFY_TIMEOUT" text="生成请求超时：上游模型在限定时间内无响应，请稍后重试。" />
+    <string id="AF_ILL_NOTIFY_BUSY" text="生图任务繁忙，请等待已有任务完成后重试。" />
   </strings>
 </base>

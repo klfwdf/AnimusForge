@@ -132,5 +132,29 @@ namespace AnimusForge.Illustrator.UI
         internal static string ConversationComplete => Resolve("AF_ILL_UI_CONVERSATION_COMPLETE", "Conversation illustration complete.");
         internal static string PortraitTitle(string hero) => Format("AF_ILL_UI_PORTRAIT_TITLE", "Chronicle portrait · {HERO}", "HERO", hero);
         internal static string ConversationTitle(string partner) => Format("AF_ILL_UI_CONVERSATION_TITLE", "Conversation illustration · with {HERO}", "HERO", partner);
+        internal static string GalleryMenu => Resolve("AF_ILL_MENU_GALLERY", "Calradia Visual Chronicle Gallery (AI illustrations)");
+        internal static string GenerationComplete(string title) => Format("AF_ILL_NOTIFY_GENERATION_COMPLETE", "[AI Illustration] {TITLE} is complete and the gallery has been updated.", "TITLE", title);
+        internal static string GenerationFailed(string error) => Format("AF_ILL_NOTIFY_GENERATION_FAILED", "[AI Illustration] Generation failed: {ERROR}", "ERROR", error);
+        internal static string MissionNotice(string status) => Format("AF_ILL_MISSION_NOTICE", "[AI Illustration] {STATUS}", "STATUS", status);
+        internal static string MissionCancelled => Resolve("AF_ILL_MISSION_CANCELLED", "Capture cancelled; no image generation request was sent.");
+        internal static string MissionCaptureFailed(string error) => Format("AF_ILL_MISSION_CAPTURE_FAILED", "Capture failed: {ERROR}", "ERROR", error);
+        internal static string MissionStartFailed(string error) => Format("AF_ILL_MISSION_START_FAILED", "Could not start image generation: {ERROR}", "ERROR", error);
+        internal static string MissionFailed(string error) => Format("AF_ILL_MISSION_FAILED", "Image generation failed: {ERROR}", "ERROR", error);
+        internal static string MissionBattleTitle => Resolve("AF_ILL_MISSION_BATTLE_TITLE", "Battle scene");
+        internal static string MissionInputHint => Resolve("AF_ILL_MISSION_INPUT_HINT", "Click Generate image to frame the scene freely. Press Enter to capture one or two images, then confirm for the director to plan the illustration.");
+        internal static string MissionInputPlaceholder => Resolve("AF_ILL_MISSION_INPUT_PLACEHOLDER", "This mode only generates images from screenshots; it does not send NPC shouts.");
+        internal static string MissionNoDialogue => Resolve("AF_ILL_MISSION_NO_DIALOGUE", "[Scene Shout] No dialogue channel is available in this custom battle.");
+        internal static string MissionCapturing => Resolve("AF_ILL_MISSION_CAPTURING", "[AI Illustration] Capturing the scene. You can generate another image once capture is complete.");
+        internal static string MissionFraming => Resolve("AF_ILL_MISSION_FRAMING", "Frame the scene freely: press Enter to capture up to two images. Generation starts only after confirmation.");
+        internal static string MissionDirecting => Resolve("AF_ILL_MISSION_DIRECTING", "Screenshots confirmed; the director is planning the illustration...");
+        internal static string MissionGenerating => Resolve("AF_ILL_MISSION_GENERATING", "The director has finished; generating the illustration. You may close the panel...");
+        internal static string MissionSaved => Resolve("AF_ILL_MISSION_SAVED", "Illustration saved to the gallery.");
+        internal static string MissionBusy => Resolve("AF_ILL_MISSION_BUSY", "Image generation is busy. Wait for the existing tasks to finish.");
+        internal static string MissionPreparing => Resolve("AF_ILL_MISSION_PREPARING", "Screenshots confirmed; preparing the illustration...");
+        internal static string MissionPanelUnavailable => Resolve("AF_ILL_MISSION_PANEL_UNAVAILABLE", "[AI Illustration] The progress panel could not be opened. Generation continues in the background; view the result in the gallery when it is complete.");
+        internal static string MissionScopeCancelled => Resolve("AF_ILL_MISSION_SCOPE_CANCELLED", "Screenshot illustration cancelled because image generation was disabled or the host changed.");
+        internal static string GenerationScopeExpired => Resolve("AF_ILL_NOTIFY_SCOPE_EXPIRED", "The image generation context has expired because the view changed or the panel closed. Reopen it to continue.");
+        internal static string GenerationTimeout => Resolve("AF_ILL_NOTIFY_TIMEOUT", "Image generation timed out: the upstream model did not respond within the time limit. Try again later.");
+        internal static string GenerationBusy => Resolve("AF_ILL_NOTIFY_BUSY", "Image generation is busy. Wait for the existing tasks to finish, then try again.");
     }
 }
