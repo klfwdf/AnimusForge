@@ -2995,5 +2995,14 @@ HeroNPC 个性/背景、旧对话历史、压缩记忆、赊账/欠款、未命�
   <string id="AF_MCM_Policy_RecentActive_Hint" text="玩家政策评议和 NPC 新政策生成时，AI 最多参考多少条本国最新的现行政策。按新到旧读取，不区分玩家或 NPC 发布，默认 2 条。用于判断重复、冲突和延续，不是可生效政策的数量上限，也不改变已有政策效果。0 只关闭这组参考，政策不足不补位；不影响普通对话。" />
   <string id="AF_MCM_Policy_RelatedActive_Title" text="AI 参考世界相关生效政策条数" />
   <string id="AF_MCM_Policy_RelatedActive_Hint" text="在上面的本国最新政策之外，玩家政策评议和 NPC 新政策生成时，AI 最多额外参考多少条与当前政策内容相关的现行政策。候选来自所有国家（含本国），排除上面已选的政策，按相关度选取，默认 3 条，不设最低相似度门槛。两组默认最多参考 2＋3＝5 条，但不是可生效政策的数量上限。0 只关闭这组参考，候选不足不凑数；不影响普通对话或已有政策效果。" />
+  <string id="AF_MCM_Prompt_Folder" text="自定义提示词JSON文件夹" />
+  <string id="AF_MCM_Prompt_OpenFolder" text="打开文件夹" />
+  <string id="AF_MCM_Prompt_Folder_Hint" text="打开 CustomPrompts 文件夹，可直接编辑各套提示词 JSON。" />
+  <string id="AF_MCM_Prompt_KeepSceneNarration" text="保留场景喊话动作/内心描写" />
+  <string id="AF_MCM_Prompt_KeepSceneNarration_Hint" text="关闭：仍使用详细动作/内心文案，但输出时过滤动作描写、心理活动。开启：保留动作描写和内心活动。" />
+  <string id="AF_MCM_Prompt_KeepAsteriskActions" text="保留星号动作描写" />
+  <string id="AF_MCM_Prompt_KeepAsteriskActions_Hint" text="开启后，即使关闭“保留场景喊话动作/内心描写”，也不会清洗被 **...** 或 *...* 包住的动作内容。" />
+  <string id="AF_MCM_Prompt_CustomSceneFormat" text="自定义格式：不注入默认场景回复提示词" />
+  <string id="AF_MCM_Prompt_CustomSceneFormat_Hint" text="开启后，不再注入单人交谈身份限制，以及“回复格式/动作/内心/字数”的默认要求。请在“玩家自定义规则文案”中自行提供完整格式。默认关闭。" />
   </strings>
 </base>

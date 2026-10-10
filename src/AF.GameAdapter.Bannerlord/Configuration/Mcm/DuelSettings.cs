@@ -2142,20 +2142,20 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 	[SettingPropertyGroup("{=AF_MCM_Policy_Group}16. Policy system", GroupOrder = 0)]
 	public int PolicyRelatedActiveCount { get; set; } = 3;
 
-	[SettingPropertyButton("自定义提示词JSON文件夹", -1, true, "", Content = "打开文件夹", Order = 9, RequireRestart = false, HintText = "打开 CustomPrompts 文件夹，可直接编辑各套提示词 JSON。")]
-	[SettingPropertyGroup("9. 提示词扩展")]
+	[SettingPropertyButton("{=AF_MCM_Prompt_Folder}Custom prompt JSON folder", -1, true, "", Content = "{=AF_MCM_Prompt_OpenFolder}Open folder", Order = 9, RequireRestart = false, HintText = "{=AF_MCM_Prompt_Folder_Hint}Open the CustomPrompts folder to edit prompt JSON files directly.")]
+	[SettingPropertyGroup("{=AF_MCM_Prompt_Group}9. Prompt extensions")]
 	public Action OpenCustomPromptTextStoreFolderAction { get; set; }
 
-	[SettingPropertyBool("保留场景喊话动作/内心描写", Order = 10, RequireRestart = false, HintText = "关闭：仍使用详细动作/内心文案，但输出时过滤动作描写、心理活动。开启：保留动作描写和内心活动。")]
-	[SettingPropertyGroup("9. 提示词扩展")]
+	[SettingPropertyBool("{=AF_MCM_Prompt_KeepSceneNarration}Keep scene-shout actions and inner thoughts", Order = 10, RequireRestart = false, HintText = "{=AF_MCM_Prompt_KeepSceneNarration_Hint}When disabled, detailed action and inner-thought prompts are still used, but these descriptions are filtered from output. When enabled, actions and inner thoughts are retained.")]
+	[SettingPropertyGroup("{=AF_MCM_Prompt_Group}9. Prompt extensions")]
 	public bool UseDetailedSceneSpeechPrompt { get; set; } = true;
 
-	[SettingPropertyBool("保留星号动作描写", Order = 11, RequireRestart = false, HintText = "开启后，即使关闭“保留场景喊话动作/内心描写”，也不会清洗被 **...** 或 *...* 包住的动作内容。")]
-	[SettingPropertyGroup("9. 提示词扩展")]
+	[SettingPropertyBool("{=AF_MCM_Prompt_KeepAsteriskActions}Keep actions enclosed in asterisks", Order = 11, RequireRestart = false, HintText = "{=AF_MCM_Prompt_KeepAsteriskActions_Hint}Retain actions enclosed in **...** or *...*, even when keeping scene-shout actions and inner thoughts is disabled.")]
+	[SettingPropertyGroup("{=AF_MCM_Prompt_Group}9. Prompt extensions")]
 	public bool PreserveSceneAsteriskActions { get; set; } = false;
 
-	[SettingPropertyBool("自定义格式：不注入默认场景回复提示词", Order = 12, RequireRestart = false, HintText = "开启后，不再注入单人交谈身份限制，以及“回复格式/动作/内心/字数”的默认要求。请在“玩家自定义规则文案”中自行提供完整格式。默认关闭。")]
-	[SettingPropertyGroup("9. 提示词扩展")]
+	[SettingPropertyBool("{=AF_MCM_Prompt_CustomSceneFormat}Custom format: omit default scene-reply prompt", Order = 12, RequireRestart = false, HintText = "{=AF_MCM_Prompt_CustomSceneFormat_Hint}Omit the default one-on-one identity restrictions and reply format, action, inner-thought, and length requirements. Provide a complete format in the player custom rules. Disabled by default.")]
+	[SettingPropertyGroup("{=AF_MCM_Prompt_Group}9. Prompt extensions")]
 	public bool DisableBuiltInSceneReplyFormatPrompt { get; set; } = false;
 
 	[SettingPropertyBool("{=AF_MCM_Policy_UseAiCost}Evaluate policy cost with AI", Order = 1, RequireRestart = false, HintText = "{=AF_MCM_Policy_UseAiCost_Hint}When enabled, AI estimates the denar cost from policy scale and execution difficulty; insufficient denars proportionally reduce all policy effects. When disabled, use the fixed denar cost below.")]
@@ -2493,7 +2493,7 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 	public int SetsOtherSettlementFollowerLimit { get; set; } = SetsSettlementEntryProfile.OtherSettlementSelectedFollowerDefaultLimit;
 
 	[SettingPropertyInteger("{=AF_MCM_Intimacy_PregnancyChance}Pregnancy chance (%)", 0, 100, "0", Order = 0, RequireRestart = false, HintText = "{=AF_MCM_Intimacy_PregnancyChance_Hint}After the intimacy action tag confirms intercourse and ejaculation occurred this round, the female partner pregnancy chance is applied. 0 means never; 100 means certain. Default: 50%.")]
-	[SettingPropertyGroup("{{=AF_MCM_Intimacy_Group}}15. Intimacy and pregnancy")]
+	[SettingPropertyGroup("{=AF_MCM_Intimacy_Group}15. Intimacy and pregnancy")]
 	public int IntimacyPregnancyChancePercent { get; set; } = 50;
 
 	public bool UseMcmKnowledgeRetrieval { get; set; } = true;
