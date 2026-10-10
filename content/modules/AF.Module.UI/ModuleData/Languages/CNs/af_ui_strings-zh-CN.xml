@@ -2359,7 +2359,7 @@ HeroNPC 个性/背景、旧对话历史、压缩记忆、赊账/欠款、未命�
   <string id="AF_TERMINAL_UI_VassalageManagementInfo" text="臣属管理说明" />
   <string id="AF_UI_ErrorAnalysis_NoRecentError" text="[AnimusForge] 当前没有可分析的最近错误。" />
   <string id="AF_UI_ErrorAnalysis_Title" text="分析报错？" />
-  <string id="AF_UI_ErrorAnalysis_ConfirmBody" text="刚才的“{TITLE}”完整详情已显示在左下角消息。\n\n是否使用前处理 API 分析原因和处理建议？当前操作窗口会在此确认后自动恢复。" />
+  <string id="AF_UI_ErrorAnalysis_ConfirmBody" text="刚才的“{TITLE}”完整详情已显示在左下角消息。&#10;&#10;是否使用前处理 API 分析原因和处理建议？当前操作窗口会在此确认后自动恢复。" />
   <string id="AF_UI_ErrorAnalysis_Analyze" text="分析" />
   <string id="AF_UI_ErrorAnalysis_Skip" text="暂不分析" />
   <string id="AF_UI_ErrorAnalysis_AlreadyRunning" text="[AnimusForge] 已有一个报错正在分析，请稍候。" />
@@ -3058,5 +3058,11 @@ HeroNPC 个性/背景、旧对话历史、压缩记忆、赊账/欠款、未命�
   <string id="AF_UI_ErrorAnalysis_EmptyAnalysis" text="未生成分析结果。" />
   <string id="AF_UI_ErrorAnalysis_FailureBody" text="前处理 API 未能完成报错分析。&#10;&#10;【分析请求错误】&#10;{ERROR}&#10;&#10;【原报错】&#10;{TITLE}&#10;{DETAIL}" />
   <string id="AF_UI_ErrorAnalysis_FailedTitle" text="AI 分析失败" />
+  <string id="AF_UI_ErrorAnalysis_ConfigUnavailable" text="无法读取 MCM 前处理 API 配置。" />
+  <string id="AF_UI_ErrorAnalysis_ConfigIncomplete" text="前处理 API 地址、密钥或模型名未配置完整。" />
+  <string id="AF_UI_ErrorAnalysis_HttpFailure" text="前处理 API 返回 HTTP {STATUS}。" />
+  <string id="AF_UI_ErrorAnalysis_RequestFailure" text="前处理 API 请求失败：{CODE}" />
+  <string id="AF_UI_ErrorAnalysis_EmptyReply" text="前处理 API 已响应，但没有解析出可用的模型回复。" />
+  <string id="AF_UI_ErrorAnalysis_Timeout" text="前处理 API 分析超过 60 秒，已取消本次请求。" />
   </strings>
 </base>

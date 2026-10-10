@@ -43,6 +43,30 @@ public static class AiErrorAnalysisInquiry
 	[ThreadStatic]
 	private static bool _suppressEnhancement;
 
+	private enum AnalysisFailureKind
+	{
+		ConfigurationUnavailable,
+		ConfigurationIncomplete,
+		Http,
+		Request,
+		EmptyReply,
+		Timeout,
+		Exception
+	}
+
+	// Carry detached error data across the worker boundary; resolve language on publication.
+	private sealed class AnalysisFailure
+	{
+		public readonly AnalysisFailureKind Kind;
+		public readonly string Detail;
+
+		public AnalysisFailure(AnalysisFailureKind kind, string detail = "")
+		{
+			Kind = kind;
+			Detail = detail ?? "";
+		}
+	}
+
 	public static void EnsurePatched(Harmony harmony)
 	{
 		if (harmony == null || Interlocked.CompareExchange(ref _patchState, 1, 0) != 0)
@@ -178,7 +202,7 @@ public static class AiErrorAnalysisInquiry
 			_suppressEnhancement = true;
 			InformationManager.ShowInquiry(new InquiryData(
 				Ui("AF_UI_ErrorAnalysis_Title", "Analyze the error?"),
-				UiFormat("AF_UI_ErrorAnalysis_ConfirmBody", "The full details of “{TITLE}” were shown in the lower-left message feed.\n\nUse the preprocessing API to analyze the cause and suggest next steps? The current action window will resume after this choice.", ("TITLE", NormalizeText(title, "AnimusForge error"))),
+				UiFormat("AF_UI_ErrorAnalysis_ConfirmBody", "The full details of “{TITLE}” were shown in the lower-left message feed.\n\nUse the preprocessing API to analyze the cause and suggest next steps? The current action window will resume after this choice.", ("TITLE", NormalizeText(title, Ui("AF_UI_ErrorAnalysis_ErrorTitle", "AnimusForge error")))),
 				isAffirmativeOptionShown: true,
 				isNegativeOptionShown: true,
 				Ui("AF_UI_ErrorAnalysis_Analyze", "Analyze"),
@@ -299,16 +323,16 @@ public static class AiErrorAnalysisInquiry
 		});
 	}
 
-	private static bool TryAnalyzeWithPreprocessApi(string title, string detail, out string analysis, out string error)
+	private static bool TryAnalyzeWithPreprocessApi(string title, string detail, out string analysis, out AnalysisFailure error)
 	{
 		analysis = "";
-		error = "";
+		error = null;
 		try
 		{
 			DuelSettings settings = DuelSettings.GetSettings();
 			if (settings == null)
 			{
-				error = "无法读取 MCM 前处理 API 配置。";
+				error = new AnalysisFailure(AnalysisFailureKind.ConfigurationUnavailable);
 				return false;
 			}
 			string apiUrl = DuelSettings.GetEffectiveApiUrl(settings.AuxiliaryApiUrl ?? "");
@@ -316,7 +340,7 @@ public static class AiErrorAnalysisInquiry
 			string modelName = settings.GetEffectiveAuxiliaryModelName();
 			if (string.IsNullOrWhiteSpace(apiUrl) || string.IsNullOrWhiteSpace(apiKey) || string.IsNullOrWhiteSpace(modelName))
 			{
-				error = "前处理 API 地址、密钥或模型名未配置完整。";
+				error = new AnalysisFailure(AnalysisFailureKind.ConfigurationIncomplete);
 				return false;
 			}
 			string safeTitle = RedactConfiguredApiKeys(title, settings);
@@ -361,31 +385,30 @@ public static class AiErrorAnalysisInquiry
 			{
 				int? statusCode = generated?.Metadata?.StatusCode;
 				error = statusCode.HasValue
-					? "前处理 API 返回 HTTP " + statusCode.Value.ToString(System.Globalization.CultureInfo.InvariantCulture) + "。"
-					: "前处理 API 请求失败：" + (generated?.ErrorCode ?? "empty_result");
+					? new AnalysisFailure(AnalysisFailureKind.Http, statusCode.Value.ToString(System.Globalization.CultureInfo.InvariantCulture))
+					: new AnalysisFailure(AnalysisFailureKind.Request, generated?.ErrorCode ?? "empty_result");
 				Logger.Log("AiErrorAnalysis", "分析请求失败 status=" + (statusCode?.ToString() ?? "unknown") + " model=" + modelName + " mode=" + controlMode);
 				return false;
 			}
 			analysis = NormalizeText(generated.RawText, "");
 			if (string.IsNullOrWhiteSpace(analysis))
 			{
-				error = "前处理 API 已响应，但没有解析出可用的模型回复。";
+				error = new AnalysisFailure(AnalysisFailureKind.EmptyReply);
 				return false;
 			}
 			// 分析结果直接显示在左下角，因此保留模型完整回复，不再为旧弹窗做额外截断。
-			analysis = NormalizeText(analysis, "未生成分析结果。");
 			Logger.Log("AiErrorAnalysis", "分析完成 model=" + modelName + " inputChars=" + detail.Length + " outputChars=" + analysis.Length + " mode=" + controlMode);
 			return true;
 		}
 		catch (OperationCanceledException)
 		{
-			error = "前处理 API 分析超过 60 秒，已取消本次请求。";
+			error = new AnalysisFailure(AnalysisFailureKind.Timeout);
 			return false;
 		}
 		catch (Exception ex)
 		{
-			error = ex.GetType().Name + ": " + ex.Message;
-			Logger.Log("AiErrorAnalysis", "分析请求异常: " + error);
+			error = new AnalysisFailure(AnalysisFailureKind.Exception, ex.GetType().Name + ": " + ex.Message);
+			Logger.Log("AiErrorAnalysis", "分析请求异常: " + error.Detail);
 			return false;
 		}
 	}
@@ -400,15 +423,40 @@ public static class AiErrorAnalysisInquiry
 		SafeInvoke(onClosed);
 	}
 
-	private static void ShowAnalysisFailure(string originalTitle, string originalDetail, string error, Action onClosed)
+	private static void ShowAnalysisFailure(string originalTitle, string originalDetail, AnalysisFailure error, Action onClosed)
 	{
 		string text = UiFormat("AF_UI_ErrorAnalysis_FailureBody", "The preprocessing API could not complete the error analysis.\n\n[Analysis request error]\n{ERROR}\n\n[Original error]\n{TITLE}\n{DETAIL}",
-			("ERROR", NormalizeText(error, Ui("AF_UI_Retry_UnknownError", "Unknown error"))),
+			("ERROR", ResolveAnalysisFailure(error)),
 			("TITLE", NormalizeText(originalTitle, Ui("AF_UI_ErrorAnalysis_ErrorTitle", "AnimusForge error"))),
 			("DETAIL", NormalizeText(originalDetail, Ui("AF_UI_Retry_UnknownError", "Unknown error"))));
 		// AI 分析失败本身也是纯诊断报告，保持为左下角消息并恢复原来的关闭回调。
 		NonBlockingErrorReport.Show(Ui("AF_UI_ErrorAnalysis_FailedTitle", "AI analysis failed"), text, rememberForAnalysis: false);
 		SafeInvoke(onClosed);
+	}
+
+	private static string ResolveAnalysisFailure(AnalysisFailure error)
+	{
+		if (error == null)
+		{
+			return Ui("AF_UI_Retry_UnknownError", "Unknown error");
+		}
+		switch (error.Kind)
+		{
+			case AnalysisFailureKind.ConfigurationUnavailable:
+				return Ui("AF_UI_ErrorAnalysis_ConfigUnavailable", "Could not read the MCM preprocessing API configuration.");
+			case AnalysisFailureKind.ConfigurationIncomplete:
+				return Ui("AF_UI_ErrorAnalysis_ConfigIncomplete", "The preprocessing API URL, key, or model name is not fully configured.");
+			case AnalysisFailureKind.Http:
+				return UiFormat("AF_UI_ErrorAnalysis_HttpFailure", "The preprocessing API returned HTTP {STATUS}.", ("STATUS", error.Detail));
+			case AnalysisFailureKind.Request:
+				return UiFormat("AF_UI_ErrorAnalysis_RequestFailure", "The preprocessing API request failed: {CODE}", ("CODE", error.Detail));
+			case AnalysisFailureKind.EmptyReply:
+				return Ui("AF_UI_ErrorAnalysis_EmptyReply", "The preprocessing API responded, but no usable model reply could be parsed.");
+			case AnalysisFailureKind.Timeout:
+				return Ui("AF_UI_ErrorAnalysis_Timeout", "The preprocessing API analysis exceeded 60 seconds; the request was canceled.");
+			default:
+				return NormalizeText(error.Detail, Ui("AF_UI_Retry_UnknownError", "Unknown error"));
+		}
 	}
 
 	private static string LimitForAnalysis(string value)
