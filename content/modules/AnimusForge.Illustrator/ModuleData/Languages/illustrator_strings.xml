@@ -180,5 +180,35 @@
     <string id="AF_ILL_UI_GALLERY_DELETED" text="Deleted: {TITLE} (moved to recycle area)" />
     <string id="AF_ILL_UI_GALLERY_DEFAULT_MARKER" text=" [Default]" />
     <string id="AF_ILL_UI_GALLERY_FAVORITE_MARKER" text=" [Favorite]" />
+    <string id="AF_ILL_UI_BACK" text="Back" />
+    <string id="AF_ILL_UI_SETTINGS_STYLE_TITLE" text="Edit custom style prompt" />
+    <string id="AF_ILL_UI_SETTINGS_STYLE_DESCRIPTION" text="Active only with the custom prompt style preset. Added as style instructions to every image-generation channel." />
+    <string id="AF_ILL_UI_SETTINGS_STYLE_PLACEHOLDER" text="For example: classical impasto oil painting, light watercolor, dark epic realism, cinematic lighting, pencil sketch. Leave blank to add no style instructions." />
+    <string id="AF_ILL_UI_SETTINGS_STYLE_FAILED" text="[Illustrator] Could not open the style prompt editor: {ERROR}" />
+    <string id="AF_ILL_UI_SETTINGS_DIRECTOR_TITLE" text="Edit custom director prompt" />
+    <string id="AF_ILL_UI_SETTINGS_DIRECTOR_DESCRIPTION" text="For the Visual Director only: controls composition, action, shot size, and narrative without overriding actual people, equipment, events, or the four-section output format. Inactive when the director is disabled or unconfigured." />
+    <string id="AF_ILL_UI_SETTINGS_DIRECTOR_PLACEHOLDER" text="For example: prioritize interaction between characters over static front-facing poses; choose a moment that explains the current event. Leave blank to restore default rules." />
+    <string id="AF_ILL_UI_SETTINGS_DIRECTOR_FAILED" text="[Illustrator] Could not open the director prompt editor: {ERROR}" />
+    <string id="AF_ILL_UI_SETTINGS_NEGATIVE_TITLE" text="Edit negative prompt" />
+    <string id="AF_ILL_UI_SETTINGS_NEGATIVE_DESCRIPTION" text="Added to the image prompt as exclusions, telling the model what must not appear in the image." />
+    <string id="AF_ILL_UI_SETTINGS_NEGATIVE_PLACEHOLDER" text="For example: blur, distortion, extra fingers, modern objects, watermark text, low quality. Leave blank to add no exclusions." />
+    <string id="AF_ILL_UI_SETTINGS_NEGATIVE_FAILED" text="[Illustrator] Could not open the negative prompt editor: {ERROR}" />
+    <string id="AF_ILL_UI_SETTINGS_IMAGE_FETCH_PENDING" text="[AI Image] Model list is already being fetched. Please wait." />
+    <string id="AF_ILL_UI_SETTINGS_IMAGE_FETCH_ENDPOINT" text="[AI Image] Enter the image API endpoint (Base URL) first." />
+    <string id="AF_ILL_UI_SETTINGS_IMAGE_FETCH_STARTED" text="[AI Image] Fetching available models..." />
+    <string id="AF_ILL_UI_SETTINGS_IMAGE_FETCH_ERROR" text="[AI Image] Could not fetch models: {ERROR}" />
+    <string id="AF_ILL_UI_SETTINGS_IMAGE_FETCH_BUSY" text="[AI Image] Background tasks are busy. Try again later." />
+    <string id="AF_ILL_UI_SETTINGS_IMAGE_PLAYER2" text="[AI Image] Player2 detected. Select generation/edit models in the Player2 app; the model name on this page is not sent." />
+    <string id="AF_ILL_UI_SETTINGS_IMAGE_FETCH_SUCCESS" text="[AI Image] Fetched {COUNT} available models. Current model retained: {MODEL}. The dropdown has been refreshed." />
+    <string id="AF_ILL_UI_SETTINGS_DIRECTOR_FETCH_PENDING" text="[Visual Director] Director models are already being fetched. Please wait." />
+    <string id="AF_ILL_UI_SETTINGS_DIRECTOR_FETCH_HOST" text="[Visual Director] No separate endpoint configured; fetching models from the main module's conversation API..." />
+    <string id="AF_ILL_UI_SETTINGS_DIRECTOR_FETCH_ENDPOINT" text="[Visual Director] Enter a director API endpoint or configure the main module's conversation API first." />
+    <string id="AF_ILL_UI_SETTINGS_DIRECTOR_FETCH_STARTED" text="[Visual Director] Fetching models from the separate director API endpoint..." />
+    <string id="AF_ILL_UI_SETTINGS_DIRECTOR_FETCH_ERROR" text="[Visual Director] Could not fetch models: {ERROR}" />
+    <string id="AF_ILL_UI_SETTINGS_DIRECTOR_FETCH_BUSY" text="[Visual Director] Background tasks are busy. Try again later." />
+    <string id="AF_ILL_UI_SETTINGS_DIRECTOR_FETCH_SUCCESS" text="[Visual Director] Fetched {COUNT} available models. The dropdown has been refreshed." />
+    <string id="AF_ILL_UI_SETTINGS_FETCH_EMPTY_RESULT" text="Empty result" />
+    <string id="AF_ILL_UI_SETTINGS_FETCH_HTTP_ERROR" text="Fetch failed (HTTP {STATUS}): {BODY}" />
+    <string id="AF_ILL_UI_SETTINGS_FETCH_NO_MODELS" text="The API returned success, but no usable model data could be parsed." />
   </strings>
 </base>

@@ -17,6 +17,7 @@ using Newtonsoft.Json.Linq;
 using TaleWorlds.Library;
 using AnimusForge.Illustrator.Core;
 using AnimusForge.Illustrator.Engine;
+using AnimusForge.Illustrator.UI;
 using AnimusForge.Illustrator.UI.Patches;
 
 namespace AnimusForge.Illustrator
@@ -594,7 +595,10 @@ namespace AnimusForge.Illustrator
             try
             {
                 string initialText = CustomStylePrompt ?? "";
-                DevTextEditorHelper.ShowLongTextEditor("编辑自定义画风提示词", "仅当画风预设选“提示词”时生效，内容作为【画风指令】注入所有生图通道的提示词末尾。", "例如：古典厚涂油画, 水彩淡彩插画, 暗黑史诗写实, 电影级光影, 铅笔素描。留空则不注入。", initialText, delegate (string input)
+                DevTextEditorHelper.ShowLongTextEditor(
+                    IllustratorUiText.Resolve("AF_ILL_UI_SETTINGS_STYLE_TITLE", "Edit custom style prompt"),
+                    IllustratorUiText.Resolve("AF_ILL_UI_SETTINGS_STYLE_DESCRIPTION", "Active only with the custom prompt style preset. Added as style instructions to every image-generation channel."),
+                    IllustratorUiText.Resolve("AF_ILL_UI_SETTINGS_STYLE_PLACEHOLDER", "For example: classical impasto oil painting, light watercolor, dark epic realism, cinematic lighting, pencil sketch. Leave blank to add no style instructions."), initialText, delegate (string input)
                 {
                     CustomStylePrompt = input ?? "";
                     if (Instance != null && !ReferenceEquals(Instance, this))
@@ -602,11 +606,11 @@ namespace AnimusForge.Illustrator
                         Instance.CustomStylePrompt = CustomStylePrompt;
                     }
                     SaveCurrentSettings();
-                }, null, "保存", "返回");
+                }, null, IllustratorUiText.Save, IllustratorUiText.Resolve("AF_ILL_UI_BACK", "Back"));
             }
             catch (Exception ex)
             {
-                InformationManager.DisplayMessage(new InformationMessage("[Illustrator] 打开画风提示词编辑器失败: " + ex.Message, Color.FromUint(4294901760u)));
+                InformationManager.DisplayMessage(new InformationMessage(IllustratorUiText.Format("AF_ILL_UI_SETTINGS_STYLE_FAILED", "[Illustrator] Could not open the style prompt editor: {ERROR}", "ERROR", ex.Message), Color.FromUint(4294901760u)));
             }
         }
 
@@ -614,20 +618,20 @@ namespace AnimusForge.Illustrator
         {
             try
             {
-                DevTextEditorHelper.ShowLongTextEditor("编辑自定义导演提示词",
-                    "只给视觉导演：控制构图、动作、景别和叙事，不覆盖真实人物/装备/事件，不改变四段输出格式。导演关闭或未配置时不生效。",
-                    "例如：优先表现人物之间的互动，避免总是正面站桩；选择能解释当前事件的瞬间。留空恢复默认规则。",
+                DevTextEditorHelper.ShowLongTextEditor(IllustratorUiText.Resolve("AF_ILL_UI_SETTINGS_DIRECTOR_TITLE", "Edit custom director prompt"),
+                    IllustratorUiText.Resolve("AF_ILL_UI_SETTINGS_DIRECTOR_DESCRIPTION", "For the Visual Director only: controls composition, action, shot size, and narrative without overriding actual people, equipment, events, or the four-section output format. Inactive when the director is disabled or unconfigured."),
+                    IllustratorUiText.Resolve("AF_ILL_UI_SETTINGS_DIRECTOR_PLACEHOLDER", "For example: prioritize interaction between characters over static front-facing poses; choose a moment that explains the current event. Leave blank to restore default rules."),
                     CustomDirectorPrompt ?? "", delegate (string input)
                     {
                         CustomDirectorPrompt = (input ?? "").Trim();
                         if (Instance != null && !ReferenceEquals(Instance, this))
                             Instance.CustomDirectorPrompt = CustomDirectorPrompt;
                         SaveCurrentSettings();
-                    }, null, "保存", "返回");
+                    }, null, IllustratorUiText.Save, IllustratorUiText.Resolve("AF_ILL_UI_BACK", "Back"));
             }
             catch (Exception ex)
             {
-                InformationManager.DisplayMessage(new InformationMessage("[AI画卷] 打开导演提示词编辑器失败: " + ex.Message, Color.FromUint(4294901760u)));
+                InformationManager.DisplayMessage(new InformationMessage(IllustratorUiText.Format("AF_ILL_UI_SETTINGS_DIRECTOR_FAILED", "[Illustrator] Could not open the director prompt editor: {ERROR}", "ERROR", ex.Message), Color.FromUint(4294901760u)));
             }
         }
 
@@ -636,7 +640,10 @@ namespace AnimusForge.Illustrator
             try
             {
                 string initialText = NegativePrompt ?? "";
-                DevTextEditorHelper.ShowLongTextEditor("编辑负面提示词", "内容作为禁止指令注入生图提示词，告诉模型画面中不要出现什么。", "例如：模糊, 变形, 多余手指, 现代物品, 水印文字, 低画质。留空则不注入。", initialText, delegate (string input)
+                DevTextEditorHelper.ShowLongTextEditor(
+                    IllustratorUiText.Resolve("AF_ILL_UI_SETTINGS_NEGATIVE_TITLE", "Edit negative prompt"),
+                    IllustratorUiText.Resolve("AF_ILL_UI_SETTINGS_NEGATIVE_DESCRIPTION", "Added to the image prompt as exclusions, telling the model what must not appear in the image."),
+                    IllustratorUiText.Resolve("AF_ILL_UI_SETTINGS_NEGATIVE_PLACEHOLDER", "For example: blur, distortion, extra fingers, modern objects, watermark text, low quality. Leave blank to add no exclusions."), initialText, delegate (string input)
                 {
                     NegativePrompt = input ?? "";
                     if (Instance != null && !ReferenceEquals(Instance, this))
@@ -644,11 +651,11 @@ namespace AnimusForge.Illustrator
                         Instance.NegativePrompt = NegativePrompt;
                     }
                     SaveCurrentSettings();
-                }, null, "保存", "返回");
+                }, null, IllustratorUiText.Save, IllustratorUiText.Resolve("AF_ILL_UI_BACK", "Back"));
             }
             catch (Exception ex)
             {
-                InformationManager.DisplayMessage(new InformationMessage("[Illustrator] 打开负面提示词编辑器失败: " + ex.Message, Color.FromUint(4294901760u)));
+                InformationManager.DisplayMessage(new InformationMessage(IllustratorUiText.Format("AF_ILL_UI_SETTINGS_NEGATIVE_FAILED", "[Illustrator] Could not open the negative prompt editor: {ERROR}", "ERROR", ex.Message), Color.FromUint(4294901760u)));
             }
         }
 
@@ -765,7 +772,7 @@ namespace AnimusForge.Illustrator
 
             if (_modelFetchInProgress)
             {
-                InformationManager.DisplayMessage(new InformationMessage("[AI生图] 模型列表正在拉取中，请稍候。", Color.FromUint(4294967040u)));
+                InformationManager.DisplayMessage(new InformationMessage(IllustratorUiText.Resolve("AF_ILL_UI_SETTINGS_IMAGE_FETCH_PENDING", "[AI Image] Model list is already being fetched. Please wait."), Color.FromUint(4294967040u)));
                 return;
             }
 
@@ -773,19 +780,19 @@ namespace AnimusForge.Illustrator
             string apiKey = (ApiKey ?? string.Empty).Trim();
             if (string.IsNullOrWhiteSpace(baseUrl))
             {
-                InformationManager.DisplayMessage(new InformationMessage("[AI生图] 请先填写生图 API 端点地址 (Base URL)！", Color.FromUint(4294901760u)));
+                InformationManager.DisplayMessage(new InformationMessage(IllustratorUiText.Resolve("AF_ILL_UI_SETTINGS_IMAGE_FETCH_ENDPOINT", "[AI Image] Enter the image API endpoint (Base URL) first."), Color.FromUint(4294901760u)));
                 return;
             }
 
             _modelFetchInProgress = true;
-            InformationManager.DisplayMessage(new InformationMessage("[AI生图] 正在拉取可用模型列表...", Color.FromUint(4294967040u)));
+            InformationManager.DisplayMessage(new InformationMessage(IllustratorUiText.Resolve("AF_ILL_UI_SETTINGS_IMAGE_FETCH_STARTED", "[AI Image] Fetching available models..."), Color.FromUint(4294967040u)));
 
             bool started = IllustratorRuntime.Start(() => FetchModelListAsync(baseUrl, apiKey), (result, error) =>
             {
                 _modelFetchInProgress = false;
                 if (error != null)
                 {
-                    InformationManager.DisplayMessage(new InformationMessage($"[AI生图] 拉取模型异常: {error.Message}", Color.FromUint(4294901760u)));
+                    InformationManager.DisplayMessage(new InformationMessage(IllustratorUiText.Format("AF_ILL_UI_SETTINGS_IMAGE_FETCH_ERROR", "[AI Image] Could not fetch models: {ERROR}", "ERROR", error.Message), Color.FromUint(4294901760u)));
                     return;
                 }
                 ApplyFetchedModels(result);
@@ -794,7 +801,7 @@ namespace AnimusForge.Illustrator
             if (!started)
             {
                 _modelFetchInProgress = false;
-                InformationManager.DisplayMessage(new InformationMessage("[AI生图] 后台任务繁忙，请稍后重试。", Color.FromUint(4294901760u)));
+                InformationManager.DisplayMessage(new InformationMessage(IllustratorUiText.Resolve("AF_ILL_UI_SETTINGS_IMAGE_FETCH_BUSY", "[AI Image] Background tasks are busy. Try again later."), Color.FromUint(4294901760u)));
             }
         }
 
@@ -803,6 +810,21 @@ namespace AnimusForge.Illustrator
             public bool Player2;
             public List<string> Models;
             public string Error;
+            public int HttpStatus;
+            public string ResponseBody;
+            public bool NoModelData;
+        }
+
+        // Only the main-thread completion resolves language resources; workers return failure data.
+        private static string ModelListErrorText(ModelListFetchResult result)
+        {
+            if (result == null)
+                return IllustratorUiText.Resolve("AF_ILL_UI_SETTINGS_FETCH_EMPTY_RESULT", "Empty result");
+            if (result.HttpStatus != 0)
+                return IllustratorUiText.Format2("AF_ILL_UI_SETTINGS_FETCH_HTTP_ERROR", "Fetch failed (HTTP {STATUS}): {BODY}", "STATUS", result.HttpStatus, "BODY", result.ResponseBody);
+            if (result.NoModelData)
+                return IllustratorUiText.Resolve("AF_ILL_UI_SETTINGS_FETCH_NO_MODELS", "The API returned success, but no usable model data could be parsed.");
+            return result.Error ?? "";
         }
 
         private static async Task<ModelListFetchResult> FetchModelListAsync(string baseUrl, string apiKey)
@@ -838,7 +860,7 @@ namespace AnimusForge.Illustrator
                         string json = await resp.Content.ReadAsStringAsync().ConfigureAwait(false);
                         if (!resp.IsSuccessStatusCode)
                         {
-                            return new ModelListFetchResult { Error = $"拉取失败 (HTTP {(int)resp.StatusCode}): {json}" };
+                            return new ModelListFetchResult { HttpStatus = (int)resp.StatusCode, ResponseBody = json };
                         }
 
                         JObject parsed = JObject.Parse(json);
@@ -850,7 +872,7 @@ namespace AnimusForge.Illustrator
                         }
                         if (data == null || data.Count == 0)
                         {
-                            return new ModelListFetchResult { Error = "接口返回成功，但未解析到可用模型数据。" };
+                            return new ModelListFetchResult { NoModelData = true };
                         }
 
                         var list = new List<string>();
@@ -888,12 +910,12 @@ namespace AnimusForge.Illustrator
             IllustratorRuntime.AssertMainThread();
             if (result == null)
             {
-                InformationManager.DisplayMessage(new InformationMessage("[AI生图] 拉取模型异常: 空结果", Color.FromUint(4294901760u)));
+                InformationManager.DisplayMessage(new InformationMessage(IllustratorUiText.Format("AF_ILL_UI_SETTINGS_IMAGE_FETCH_ERROR", "[AI Image] Could not fetch models: {ERROR}", "ERROR", ModelListErrorText(result)), Color.FromUint(4294901760u)));
                 return;
             }
-            if (!string.IsNullOrWhiteSpace(result.Error))
+            if (result.HttpStatus != 0 || result.NoModelData || !string.IsNullOrWhiteSpace(result.Error))
             {
-                InformationManager.DisplayMessage(new InformationMessage($"[AI生图] {result.Error}", Color.FromUint(4294901760u)));
+                InformationManager.DisplayMessage(new InformationMessage(IllustratorUiText.Format("AF_ILL_UI_SETTINGS_IMAGE_FETCH_ERROR", "[AI Image] Could not fetch models: {ERROR}", "ERROR", ModelListErrorText(result)), Color.FromUint(4294901760u)));
                 return;
             }
 
@@ -901,7 +923,7 @@ namespace AnimusForge.Illustrator
             {
                 ReplaceModelDropdown(new Dropdown<string>(new[] { "使用 Player2 应用中选择的模型" }, 0));
                 RequestMcmRefresh();
-                InformationManager.DisplayMessage(new InformationMessage("[AI生图] 已确认Player2：生成/编辑模型请在Player2应用中选择，本页模型名不参与请求。"));
+                InformationManager.DisplayMessage(new InformationMessage(IllustratorUiText.Resolve("AF_ILL_UI_SETTINGS_IMAGE_PLAYER2", "[AI Image] Player2 detected. Select generation/edit models in the Player2 app; the model name on this page is not sent.")));
                 return;
             }
             lock (_modelLock)
@@ -917,7 +939,7 @@ namespace AnimusForge.Illustrator
 
             SaveCurrentSettings();
             RequestMcmRefresh();
-            InformationManager.DisplayMessage(new InformationMessage($"[AI生图] 成功获取 {result.Models.Count} 个可用模型！保留当前模型: {ModelName}，下拉选单已即时刷新。", Color.FromUint(4278255360u)));
+            InformationManager.DisplayMessage(new InformationMessage(IllustratorUiText.Format2("AF_ILL_UI_SETTINGS_IMAGE_FETCH_SUCCESS", "[AI Image] Fetched {COUNT} available models. Current model retained: {MODEL}. The dropdown has been refreshed.", "COUNT", result.Models.Count, "MODEL", ModelName), Color.FromUint(4278255360u)));
         }
 
         public static void SaveCurrentSettings()
@@ -975,7 +997,7 @@ namespace AnimusForge.Illustrator
 
             if (_directorModelFetchInProgress)
             {
-                InformationManager.DisplayMessage(new InformationMessage("[视觉导演] 导演模型列表正在拉取中，请稍候。", Color.FromUint(4294967040u)));
+                InformationManager.DisplayMessage(new InformationMessage(IllustratorUiText.Resolve("AF_ILL_UI_SETTINGS_DIRECTOR_FETCH_PENDING", "[Visual Director] Director models are already being fetched. Please wait."), Color.FromUint(4294967040u)));
                 return;
             }
 
@@ -991,11 +1013,11 @@ namespace AnimusForge.Illustrator
                     {
                         apiKey = hostKey;
                     }
-                    InformationManager.DisplayMessage(new InformationMessage("[视觉导演] 未配置独立端点，正在向主模块正文 API 拉取模型列表...", Color.FromUint(4294967040u)));
+                    InformationManager.DisplayMessage(new InformationMessage(IllustratorUiText.Resolve("AF_ILL_UI_SETTINGS_DIRECTOR_FETCH_HOST", "[Visual Director] No separate endpoint configured; fetching models from the main module's conversation API..."), Color.FromUint(4294967040u)));
                 }
                 else
                 {
-                    InformationManager.DisplayMessage(new InformationMessage("[视觉导演] 请先填写导演 API 端点地址，或在主模块配置正文 API！", Color.FromUint(4294901760u)));
+                    InformationManager.DisplayMessage(new InformationMessage(IllustratorUiText.Resolve("AF_ILL_UI_SETTINGS_DIRECTOR_FETCH_ENDPOINT", "[Visual Director] Enter a director API endpoint or configure the main module's conversation API first."), Color.FromUint(4294901760u)));
                     return;
                 }
             }
@@ -1005,7 +1027,7 @@ namespace AnimusForge.Illustrator
                 {
                     apiKey = hostKey;
                 }
-                InformationManager.DisplayMessage(new InformationMessage("[视觉导演] 正在向独立导演 API 端点拉取模型列表...", Color.FromUint(4294967040u)));
+                InformationManager.DisplayMessage(new InformationMessage(IllustratorUiText.Resolve("AF_ILL_UI_SETTINGS_DIRECTOR_FETCH_STARTED", "[Visual Director] Fetching models from the separate director API endpoint..."), Color.FromUint(4294967040u)));
             }
 
             _directorModelFetchInProgress = true;
@@ -1015,7 +1037,7 @@ namespace AnimusForge.Illustrator
                 _directorModelFetchInProgress = false;
                 if (error != null)
                 {
-                    InformationManager.DisplayMessage(new InformationMessage($"[视觉导演] 拉取模型异常: {error.Message}", Color.FromUint(4294901760u)));
+                    InformationManager.DisplayMessage(new InformationMessage(IllustratorUiText.Format("AF_ILL_UI_SETTINGS_DIRECTOR_FETCH_ERROR", "[Visual Director] Could not fetch models: {ERROR}", "ERROR", error.Message), Color.FromUint(4294901760u)));
                     return;
                 }
                 ApplyFetchedDirectorModels(result);
@@ -1024,7 +1046,7 @@ namespace AnimusForge.Illustrator
             if (!started)
             {
                 _directorModelFetchInProgress = false;
-                InformationManager.DisplayMessage(new InformationMessage("[视觉导演] 后台任务繁忙，请稍后重试。", Color.FromUint(4294901760u)));
+                InformationManager.DisplayMessage(new InformationMessage(IllustratorUiText.Resolve("AF_ILL_UI_SETTINGS_DIRECTOR_FETCH_BUSY", "[Visual Director] Background tasks are busy. Try again later."), Color.FromUint(4294901760u)));
             }
         }
 
@@ -1058,14 +1080,14 @@ namespace AnimusForge.Illustrator
                         string json = await resp.Content.ReadAsStringAsync().ConfigureAwait(false);
                         if (!resp.IsSuccessStatusCode)
                         {
-                            return new ModelListFetchResult { Error = $"拉取失败 (HTTP {(int)resp.StatusCode}): {json}" };
+                            return new ModelListFetchResult { HttpStatus = (int)resp.StatusCode, ResponseBody = json };
                         }
 
                         JObject parsed = JObject.Parse(json);
                         JArray data = parsed["data"] as JArray;
                         if (data == null || data.Count == 0)
                         {
-                            return new ModelListFetchResult { Error = "接口返回成功，但未解析到可用模型数据。" };
+                            return new ModelListFetchResult { NoModelData = true };
                         }
 
                         var list = new List<string>();
@@ -1103,12 +1125,12 @@ namespace AnimusForge.Illustrator
             IllustratorRuntime.AssertMainThread();
             if (result == null)
             {
-                InformationManager.DisplayMessage(new InformationMessage("[视觉导演] 拉取模型异常: 空结果", Color.FromUint(4294901760u)));
+                InformationManager.DisplayMessage(new InformationMessage(IllustratorUiText.Format("AF_ILL_UI_SETTINGS_DIRECTOR_FETCH_ERROR", "[Visual Director] Could not fetch models: {ERROR}", "ERROR", ModelListErrorText(result)), Color.FromUint(4294901760u)));
                 return;
             }
-            if (!string.IsNullOrWhiteSpace(result.Error))
+            if (result.HttpStatus != 0 || result.NoModelData || !string.IsNullOrWhiteSpace(result.Error))
             {
-                InformationManager.DisplayMessage(new InformationMessage($"[视觉导演] {result.Error}", Color.FromUint(4294901760u)));
+                InformationManager.DisplayMessage(new InformationMessage(IllustratorUiText.Format("AF_ILL_UI_SETTINGS_DIRECTOR_FETCH_ERROR", "[Visual Director] Could not fetch models: {ERROR}", "ERROR", ModelListErrorText(result)), Color.FromUint(4294901760u)));
                 return;
             }
 
@@ -1129,7 +1151,7 @@ namespace AnimusForge.Illustrator
 
             SaveCurrentSettings();
             RequestMcmRefresh();
-            InformationManager.DisplayMessage(new InformationMessage($"[视觉导演] 成功获取 {result.Models.Count} 个可用模型！下拉选单已即时刷新。", Color.FromUint(4278255360u)));
+            InformationManager.DisplayMessage(new InformationMessage(IllustratorUiText.Format("AF_ILL_UI_SETTINGS_DIRECTOR_FETCH_SUCCESS", "[Visual Director] Fetched {COUNT} available models. The dropdown has been refreshed.", "COUNT", result.Models.Count), Color.FromUint(4278255360u)));
         }
 
         private static string GetDirectorCacheFilePath()
