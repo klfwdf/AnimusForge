@@ -843,7 +843,7 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 		{
 			ShowPlayerRpForgeError(
 				Ui("AF_TERMINAL_UI_Forge_PreviewFailed", "Unable to preview crafting result"),
-				error,
+				PlayerRpForgeDisplayTexts.ForDisplay(error),
 				runtimeGeneration,
 				() => OpenPlayerRpForgePopup(request?.CrafterHeroId));
 			return;
@@ -1105,7 +1105,7 @@ public class AnimusForgeTerminalBehavior : CampaignBehaviorBase
 					{
 						ShowPlayerRpForgeError(
 							Ui("AF_TERMINAL_UI_Forge_CommitFailed", "Crafting did not complete"),
-							commitError,
+							PlayerRpForgeDisplayTexts.ForDisplay(commitError),
 							runtimeGeneration,
 							() => OpenPlayerRpForgePopup(preview.CrafterHeroId));
 						return;
