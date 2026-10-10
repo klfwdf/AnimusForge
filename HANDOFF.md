@@ -1,12 +1,13 @@
 # 当前交接：全英文发行与 CN/EN 双包（2026-10-10，ACTIVE / NOT RELEASE READY）
+- 主线已接收政策C `19f11c941`（20文件/621对键），raw/display及失败边界修复；raw30/模块90/失败92/oracle272项、26资源对、既有双API各2484资源解析PASS。城堡选择器/处刑显示 `b8ad0a54a`（7对键）已交付。稳定盘点confirmed UI 0/待审1250位置，不是全英文完成率；E待最终回执，当前编译/实机/正式双包NOT-RUN。[最新主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#full-english-release-20261010)。
 
 - 最新主线 `5173ec03e` / `3f8227076` 知名度与通知收口；`ecd8cca60` / `b510df4bb` 公告配图状态、图库默认介绍与试采说明，静态合同/26对资源/既有双API引用各1304次Illustrator解析PASS。稳定盘点7确认UI（Policy）/1210待审，无扫描变化。转RP真物品名和终端标签目录等仍OPEN；当前编译/实机/旧档/正式ZIP NOT-RUN。[最新切片及下一片](docs/handoffs/2026-10-10-localization-illustrator-bulletin-defaults.md)，[唯一主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#full-english-release-20261010)。
 
 - 主线失败显示 `dfae5984d`：11入口/17对键，原诊断与dispatcher保持，静态/26对资源/既有双API DLL各12628次UI解析PASS；盘点7确认UI、1220待审（含6个重新登记的原诊断）。当前编译/实机仍NOT-RUN，下一片为玩家百科知名度标签与刷新去重。[切片证据](docs/handoffs/2026-10-10-localization-llm-failure-display.md)，[唯一主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#full-english-release-20261010)。
 - 最新用户目标替代早期仅 UI 的范围：全部默认运行时文本与内容英文可用，完整保留中文原版；ZIP 名区分 `_CN` / `_EN`，包内原文件名、单模块及双 API 实现身份不变。
 - B/C 以仓库内第二轮交付报告为准；主线补 Weekly 注册 `7341afe55`。25 对资源契约通过，现有 1.3/1.4 本地化 DLL 各 39,992 次解析通过；不是当前产品编译/实机验收。
-- 最新外部分工：用户已把世界书交B；[C政策](docs/handoffs/2026-10-10-localization-package-c-policy.md)、[D外交/内战](docs/handoffs/2026-10-10-localization-package-d-diplomacy-civilwar.md)、[E经济/任务](docs/handoffs/2026-10-10-localization-package-e-economy-issue.md)等待交接。旧E世界书计划已替代；主线负责共享错误UI、Memory集成、Prompt/协议外置与双包验收，详见[总计划](docs/handoffs/2026-10-10-localization-cde-plan.md)。既有中文共享事实不得直接替换为英文。
-- EN 世界书完整性待核实；现有英文资产不能替代中文全部文件的覆盖证明。未构建、Stage、部署、push 或正式打包；不接入 C# 语言探测。
+- 最新外部分工：用户确认世界书B已完成；D 四提交已交付，静态复核 PASS；C政策/E经济任务在DSH仍显示进行中。主线新提交 `bda62c6e6` 编辑器默认文案、`6329b2641` 稳定度百科与跨语言刷新接线。详见[唯一主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#full-english-release-20261010)。既有中文共享事实不得直接替换为英文；C#编译/实机/正式打包 NOT-RUN。
+- EN 世界书B完成状态来自用户确认，最终装配门禁尚未由主线验收。未构建、Stage、部署、push 或正式打包；不接入 C# 语言探测。
 - 最新主线累计切片：菜单 `fb4909435`、Xihai `ad623a06d`；本轮新增71对键：Illustrator通知24+弹窗11（`c4ae38a5f`、`bee33dabc`）、Courier7（`c6f3b9d14`）、城堡23+Persona标题3（`f62cc9323`）、模型说明与篡位通知3（`14ac606ed`）。`60b11f09f` 清理6个英文终端分组中文并加纯英文资源门禁。26对资源、相关静态合同通过；现有双API本地化DLL各12,320次UI解析、1,068次Illustrator解析通过；不是产品编译/实机验收。
 - `323359e05` 修正盘点：仅具备实际调用和已注册英文键的19个MCM内部值视为已投影，原诊断仍待处理。最新工作树快照HEAD `323359e05`：确认UI45处/9文件/33去重原文，消费者候选1226，扫描无变化。含并发作者修改；数字是UI下限，不是全英文发行残余总数。用户明确暂不处理J17；世界书归B。原诊断、动态状态/标题、共享事实及近况日期区间仍待英文显示/外置。
 - [唯一主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#full-english-release-20261010)，[B 原报告](docs/handoffs/2026-10-10-localization-wave2-b-delivery.md)，[C 原报告](docs/handoffs/2026-10-10-localization-wave2-c-delivery.md)。回滚逐项 focused inverse，不覆盖其他作者或未跟踪原始英文资产。
