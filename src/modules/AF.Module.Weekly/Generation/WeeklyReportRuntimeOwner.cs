@@ -1438,11 +1438,11 @@ internal bool ProcessPendingWeeklyWaveLaunches()
 		{
 			if (context.WaveIndex == 1)
 			{
-				_port.DisplayMessage(Ui("AF_WEEKLY_GenerationStarted", "Started generating {LABEL}: {TARGETS} weekly-report targets in {BATCHES} batches. Requests are sent as minute-sized bursts, {BURST} requests per minute.", ("LABEL", context.DisplayLabel), ("TARGETS", context.TotalTargets), ("BATCHES", context.TotalBatches), ("BURST", context.BurstSize)));
+				_port.DisplayMessage(Ui("AF_WEEKLY_GenerationStarted", "Started generating {LABEL}: {TARGETS} weekly-report targets in {BATCHES} batches. Requests are sent as minute-sized bursts, {BURST} requests per minute.", ("LABEL", context.DisplayLabel), ("TARGETS", context.TotalTargets.ToString()), ("BATCHES", context.TotalBatches.ToString()), ("BURST", context.BurstSize.ToString())));
 			}
 			string waveLabel = string.Join(" | ", context.Batches.Select(BuildWeeklyReportBatchDisplayLabel).Where((string x) => !string.IsNullOrWhiteSpace(x)));
 			Logger.Log("EventWeeklyReport", "[BATCH-WAVE] " + context.DisplayLabel + " wave " + context.WaveIndex + "/" + context.TotalWaves + " launch count=" + context.Batches.Count + " :: " + waveLabel);
-			_port.DisplayMessage(Ui("AF_WEEKLY_WaveLaunched", "Weekly-report batch {WAVE}/{TOTAL} launched with {COUNT} requests.", ("WAVE", context.WaveIndex), ("TOTAL", context.TotalWaves), ("COUNT", context.Batches.Count)));
+			_port.DisplayMessage(Ui("AF_WEEKLY_WaveLaunched", "Weekly-report batch {WAVE}/{TOTAL} launched with {COUNT} requests.", ("WAVE", context.WaveIndex.ToString()), ("TOTAL", context.TotalWaves.ToString()), ("COUNT", context.Batches.Count.ToString())));
 			runningTasks = new List<Task<WeeklyReportBatchExecutionResult>>(context.Batches.Count);
 			for (int i = 0; i < context.Batches.Count; i++)
 			{
