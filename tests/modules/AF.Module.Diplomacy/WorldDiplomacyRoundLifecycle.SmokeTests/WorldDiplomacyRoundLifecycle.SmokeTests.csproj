@@ -162,4 +162,4 @@
     <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Domain/WorldDiplomacyLiveRoundRules.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Persistence/WorldDiplomacyDialogueRecords.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Persistence/WorldDiplomacyPlayerResponse.cs" />
-</ItemGroup><ItemGroup><Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyRequestHistoryApplication.cs" /></ItemGroup><ItemGroup><EmbeddedResource Include="../../../../content/modules/AF.Module.Diplomacy/ModuleData/DiplomacyPromptTexts.json" LogicalName="DiplomacyPromptFixture.zh.json" /></ItemGroup></Project>
+</ItemGroup><ItemGroup><Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyRequestHistoryApplication.cs" /></ItemGroup><ItemGroup><EmbeddedResource Include="../../../../content/modules/AF.Module.Diplomacy/ModuleData/DiplomacyPromptCompatibility.json" LogicalName="AnimusForge.Diplomacy.PromptCompatibility.json" /></ItemGroup></Project>

@@ -123,7 +123,7 @@ internal static class WorldDiplomacyPromptComposer
 	sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_028", "Most recent document delivered to this court came from=") + (previous ?? "") + "=" + world.KingdomName(previous));
 	sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_029", "The sender is merely the source of the latest document, not a program-selected target. This kingdom must choose from the allowed action targets below."));
 	sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_030", "Allowed action targets=") + string.Join(",", legalTargetIds));
-		sb.AppendLine(WorldDiplomacyPromptContractRules.BuildCurrentLegalDiplomaticOptions(legalActionsByTarget));
+		sb.AppendLine(WorldDiplomacyPromptContractRules.BuildCurrentLegalDiplomaticOptions(legalActionsByTarget, world.LocalizePrompt));
 		WorldDiplomacyRoundOffer requiredPeaceOffer = world.FindRequiredPeaceOfferResponse(
 			round,
 			author,
@@ -166,8 +166,8 @@ internal static class WorldDiplomacyPromptComposer
 		int remainingDays = Math.Max(0, targetDays - age);
 	sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_044", "These negotiations have lasted=") + age.ToString(CultureInfo.InvariantCulture) + world.LocalizePrompt("AF_DIP_Prompt_Composer_045", " days; expected duration=") + targetDays.ToString(CultureInfo.InvariantCulture)
 		+ world.LocalizePrompt("AF_DIP_Prompt_Composer_046", " days; time until expected closure=") + remainingDays.ToString(CultureInfo.InvariantCulture) + world.LocalizePrompt("AF_DIP_Prompt_Composer_047", " days; current document exchange stage=") + round.RelayPassNumber.ToString(CultureInfo.InvariantCulture));
-		WorldDiplomacyPromptContractRules.AppendRoundSubstantiveProgressRequirement(sb, round, age, targetDays);
-		WorldDiplomacyPromptContractRules.AppendOpenOfferAnswerRequirement(sb, round, author);
+		WorldDiplomacyPromptContractRules.AppendRoundSubstantiveProgressRequirement(sb, round, age, targetDays, world.LocalizePrompt);
+		WorldDiplomacyPromptContractRules.AppendOpenOfferAnswerRequirement(sb, round, author, world.LocalizePrompt);
 	if (age * 100 >= targetDays * 85) sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_048", "The final stage has begun: choose a currently available action that can bring the situation to a conclusion."));
 	else if (age * 100 >= targetDays * 70) sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_049", "The round is in its later stages: prioritize resolving differences and reaching a definite outcome."));
 		if (!string.IsNullOrWhiteSpace(round.ExternalOpeningContext))
@@ -490,7 +490,7 @@ internal static class WorldDiplomacyPromptComposer
 	sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_119", "Document title:") + document.Title);
 	sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_120", "Document body:") + document.Body);
 	sb.AppendLine("【MODE=ANALYZE】");
-		sb.AppendLine(WorldDiplomacyPromptContractRules.BuildAnalysisModeContract());
+		sb.AppendLine(WorldDiplomacyPromptContractRules.BuildAnalysisModeContract(world.LocalizePrompt));
 		return sb.ToString().TrimEnd();
 	}
 	internal static string BuildFallbackAnalysisJson(WorldDiplomacyDocument document, string targetKingdomId)
@@ -756,7 +756,7 @@ internal static class WorldDiplomacyPromptComposer
 	{
 		List<string> actions = legalActions as List<string> ?? legalActions?.ToList() ?? new List<string>();
 		string line = BuildCompactDiplomaticRelationshipLine(world, authorId, candidateId)
-			+ world.LocalizePrompt("AF_DIP_Prompt_Composer_196", "; available actions=") + WorldDiplomacyPromptContractRules.DescribePotentialDiplomaticActions(actions);
+			+ world.LocalizePrompt("AF_DIP_Prompt_Composer_196", "; available actions=") + WorldDiplomacyPromptContractRules.DescribePotentialDiplomaticActions(actions, world.LocalizePrompt);
 		string captivityHint = BuildRulerCaptivityTargetHint(world, authorId, candidateId);
 		if (!string.IsNullOrWhiteSpace(captivityHint)) line += "\n  " + captivityHint;
 		string reputationConflictOpportunity = string.IsNullOrWhiteSpace(candidateId) ? "" : WorldDiplomacyTextRules.BuildLowReputationConflictOpportunityContext(

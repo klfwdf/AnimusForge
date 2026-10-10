@@ -165,3 +165,15 @@ UI词法快照`mainline-after-20261010.json`为较早`6e6e2fa1a`工作树：1246
 - 全语言资源29对、Package D（外交1061对/王国114对）和BattleSpeech131项静态/模拟PASS。按用户输出语言澄清，撤去本会话新增的两处英文演讲强制措辞；原中文演讲强制简体中文仍存在，未伪称历史上没有语言要求。固定MODE新英文草稿也不再新增强制英文回复。
 - C计划已附加包内选版/UTF-8/协议原值要求，未冒称向未知外部会话发送。C正在修改的IssueDisplayTexts和其他作者dirty未纳入提交。
 - 未验证/未完成：新C#实际加载、产品1.3/1.4编译/回放、游戏/旧档、正式双ZIP均未跑；场景演讲等其他Prompt仍有旧UI选语言路径；固定MODE合同、世界书全覆盖和具名嵌入资源门禁仍待落实。此片不是全模组验收。回滚用本片精确提交focused inverse。
+
+## 并行外交合同与场景包集成（2026-10-11）
+
+- 用户明确授权子智能体，并要求先完成分配范围再集中复核。场景实现子任务已提交115e8a1ed（意图ead5c8841）；外交合同子任务接续主线dirty整文件实现，统一由主线提交。世界书审计曾发现重复/语义问题，用户明确归B后即中止；只产生work目录资料，未修改或合入任何世界书产品文件。C的Issue两文件并行dirty保留。
+- WorldDiplomacyPromptContractRules.cs：118对自然语言合同加入包内DiplomacyPromptTexts CN/EN资源，17处标记/协议/匹配值原样移入独立DiplomacyPromptCompatibility.json；该文件中文字面量为0。18旧签名通过兼容嵌入资源保持旧行为，新建/重建/两种刷新/发送前尾部重组/分析/压缩/草稿纠正/谈判进展/未答复提案/合法动作/制度称谓生产路径显式传包内resolver。旧标记、cache affinity key、JSON动作字段不译。已知英文制度/亲属标题加入插入定位兼容。
+- BuildPolicySignalContext的两处历史事实生产者继续走原始兼容文本；这是原值外置，不计为新增英文输出。其他持久历史、自定义正文及未迁移模块仍可带中文。英文包没有新增“必须英文回答”；固定长度保留数值，仅去除英文文本中的“中文字符”限定。
+- 场景221条包语料：初始化及三个生产语言入口改为包内XML；接受任意自然语言字母及中英截句标点，移除活跃CN包两条强制简体中文规则，旧embedded表保留兼容。修复专用演讲prelude以实际包内标题识别，保留scope/claim检查；prelude、失败说明等外置。普通会话中文前后缀与旧错误前缀匹配仍有待处理边界。
+- 主线共享集成：根csproj原CoreProject/*.cs已包含新类，不额外重复Compile。content-map加入SceneActionPromptTexts.xml单目标，EN选择同路径.en.xml；只对该提示词XML选版，不改双语UI。XML契约检查键集、变量与动作协议一致。外交旧签名嵌入源转为独立Compatibility JSON，实际包提示词文件不含这些中文协议兼容数据。
+- 集中验证：外交FixedMode与Packaged契约PASS（118对、原216键保持、18旧签名、完整中文算法反向还原、Rules Han=0）；Composer与CommonContract旧合同因新增resolver调用出现过期inverse断言，逐个加入5+2个明确接线的正反检查后PASS，未删除原业务比较。全资源29对PASS。场景子任务270/494/131静态检查PASS；主线40项ProjectionOnly、真实221条XML对/EN选择/无Han检查PASS，无ZIP或产品构建。
+- 静态发现的两个实际错误已修：自动补参数生成零参重载时出现无类型localize；Scheduling发送前重建尾部遗漏resolver。另两种任务刷新已补传resolver。旧/新回放资源同步但C#没有编译运行。不能以这些静态检查声称产品、DLL调用、旧档或游戏通过。
+- 最新全量快照runtime-literals-excluding-external-current.json：含本片工作树18765处/577文件，扫描无错误或变化；C承包两入口当前为0，Issue其他文件84处仍归主线。世界书不在源码计数里。与最初22357比较仅为硬编码净减少16.1%，不是翻译完成率。
+- 回滚：场景自有路径115e8a1ed及本次主线集成提交做focused inverse，不reset、不覆盖其他作者dirty。后续仍需模块级接线、兼容资源角色化门禁、统一编译/游戏验收；全模组目标ACTIVE。

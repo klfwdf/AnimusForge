@@ -146,12 +146,12 @@ public static void EnqueueCompressionJob(
         Func<int> resolveOutputTokenLimit,
         Func<string, string> newId,
         Action<WorldDiplomacyJob, long> captureHistory,
-        Action<string> log)
+        Action<string> log, Func<string, string, string> localize = null)
 {
     ensureInitialized();
     WorldDiplomacyCanonicalHistoryState history = storage.CanonicalHistory;
     (int minimumCharacters, int maximumCharacters) = declarationCharacterRange();
-    string systemPrompt = WorldDiplomacyPromptContractRules.BuildCanonicalHistorySystemPrompt(commonSystemPrefix(), minimumCharacters, maximumCharacters);
+    string systemPrompt = WorldDiplomacyPromptContractRules.BuildCanonicalHistorySystemPrompt(commonSystemPrefix(), minimumCharacters, maximumCharacters, localize);
     // Reserve room for the request contract, mode parameters, archive headings and message framing.
     long inputBudget = Math.Min(compressionTriggerTokens, WorldDiplomacyRequestHistoryApplication.CompressionInputLimit)
         - WorldDiplomacyRoundLifecycleRules.EstimateHistoryTokens(systemPrompt, estimateTokens) - 2048L;
@@ -199,7 +199,7 @@ public static void EnqueueCompressionJob(
         CompressionOverallTargetTokens = overallTargetTokens,
         CompressionTargetTokens = summaryTargetTokens,
         SystemPrompt = systemPrompt,
-        UserPrompt = WorldDiplomacyPromptContractRules.BuildTokenCompressionPrompt(batchId, throughSequence, tokenCount, summaryTargetTokens, protectedTokens),
+        UserPrompt = WorldDiplomacyPromptContractRules.BuildTokenCompressionPrompt(batchId, throughSequence, tokenCount, summaryTargetTokens, protectedTokens, localize),
         CacheAffinityKey = WorldDiplomacyPromptContractRules.CanonicalHistoryCacheAffinityKey,
         MaxTokens = Math.Min(configuredOutputTokenLimit, summaryTargetTokens + outputTokenReserve)
     };

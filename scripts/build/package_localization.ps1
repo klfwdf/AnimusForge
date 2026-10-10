@@ -44,8 +44,9 @@ function Get-AnimusForgeWorldbookEnglishIndex {
 function Get-AnimusForgeEnglishAsset {
     param([Parameter(Mandatory = $true)]$Entry, [Parameter(Mandatory = $true)]$Worldbook)
     $source = [string]$Entry.SourcePath
-    $stem = $source -replace '(?:\.zh-CN)?\.json$', ''
-    foreach ($candidate in @(($stem + '.en.json'), ($stem + '.en-US.json'))) {
+    $extension = [IO.Path]::GetExtension($source)
+    $stem = $source -replace '(?:\.zh-CN)?\.(?:json|xml)$', ''
+    foreach ($candidate in @(($stem + '.en' + $extension), ($stem + '.en-US' + $extension))) {
         if (Test-Path -LiteralPath $candidate -PathType Leaf) {
             Assert-AnimusForgeNoReparsePoint -Path $candidate -Label 'English asset'
             return $candidate
@@ -115,6 +116,23 @@ function Assert-AnimusForgeEnglishJsonContract {
     }
 }
 
+function Assert-AnimusForgePromptXmlContract {
+    param([string]$OriginalPath, [string]$EnglishPath)
+    [xml]$original = Get-Content -LiteralPath $OriginalPath -Raw -Encoding UTF8
+    [xml]$english = Get-Content -LiteralPath $EnglishPath -Raw -Encoding UTF8
+    if ($original.base.language -cne 'zh-CN' -or $english.base.language -cne 'en') { throw 'Prompt XML edition is incorrect.' }
+    $left = @{}; $right = @{}
+    foreach ($row in $original.base.strings.string) { $left.Add([string]$row.id, [string]$row.text) }
+    foreach ($row in $english.base.strings.string) { $right.Add([string]$row.id, [string]$row.text) }
+    if ((@($left.Keys | Sort-Object) -join "`n") -cne (@($right.Keys | Sort-Object) -join "`n")) { throw 'Prompt XML key set changed.' }
+    $pattern = '\{[A-Za-z_][A-Za-z0-9_]*\}|\[(?:ACTION|RELAY|AD|ADP|AFEF):[^\]\r\n]*\]'
+    foreach ($key in $left.Keys) {
+        $before = @([regex]::Matches($left[$key], $pattern) | ForEach-Object Value | Sort-Object -Unique)
+        $after = @([regex]::Matches($right[$key], $pattern) | ForEach-Object Value | Sort-Object -Unique)
+        if (($before -join "`n") -cne ($after -join "`n")) { throw "Prompt XML variable/protocol changed: $key" }
+    }
+}
+
 function Get-AnimusForgePackageProjection {
     param(
         [Parameter(Mandatory = $true)][string]$ProjectRoot,
@@ -147,6 +165,12 @@ function Get-AnimusForgePackageProjection {
         $bytes = $null
         if ($relative -ceq 'SubModule.xml') {
             $bytes = Get-VersionedSubModuleBytes -SubModulePath $source -NewVersion $PackageVersion
+        }
+        elseif ($Language -eq 'EN' -and $relative -ceq 'ModuleData/SceneActionPromptTexts.xml') {
+            $english = Get-AnimusForgeEnglishAsset -Entry $byTarget[$relative] -Worldbook $worldbook
+            if (-not $english) { throw "English scene prompt corpus is missing: $relative" }
+            Assert-AnimusForgePromptXmlContract -OriginalPath $byTarget[$relative].SourcePath -EnglishPath $english
+            $source = $english
         }
         elseif ($Language -eq 'EN' -and $relative -match '\.json$' -and $byTarget.ContainsKey($relative)) {
             $english = Get-AnimusForgeEnglishAsset -Entry $byTarget[$relative] -Worldbook $worldbook
