@@ -62,6 +62,7 @@ internal static class Program
     {
         Rules();
         SnapshotAndRewrite();
+        LengthBudgetAndFill();
         Editing();
         ClosedAndLoaded();
         FailuresAndFallback();
@@ -74,18 +75,21 @@ internal static class Program
     {
         var input = new WorldDiplomacyPlayerDraftInput("与瓦兰迪亚议和", 40, 200, 1);
         var messages = WorldDiplomacyPlayerDraftRules.BuildMessages(input, "简明冷峻");
-        Test.That(messages.Count == 3 && (string)messages[2]["content"] == "MODE=PLAYER_DRAFT\n【当前纸面内容】\n与瓦兰迪亚议和", "Only current player material");
-        Test.That((string)messages[1]["content"] == "【沿用外交MCM写作偏好，仅在忠实于玩家原意时适用】\n简明冷峻", "Shared preference verbatim");
+        Test.That(messages.Count == 2 && (string)messages[1]["content"] == "MODE=PLAYER_DRAFT\n【当前纸面内容】\n与瓦兰迪亚议和", "Only current player material");
+        string system = (string)messages[0]["content"];
+        Test.That(system.Contains("【沿用外交MCM写作偏好，仅在忠实于玩家原意时适用】\n简明冷峻"), "Shared preference verbatim");
+        Test.That(system.Contains("约120字") && system.Contains("须扩写") && system.Contains("篇幅要求优先")
+            && system.IndexOf("【本次篇幅要求】", StringComparison.Ordinal) > system.IndexOf("简明冷峻", StringComparison.Ordinal), "Target and expansion take precedence over brevity preference");
         Test.That(messages[0]["content"].ToString().Contains("40—200") && messages[0]["content"].ToString().Contains("禁止自行添加"), "Length and authorship guard");
         Test.That(WorldDiplomacyPlayerDraftRules.BuildMessages(input, "").Count == 2, "Blank preference not replaced by autonomous contract");
-        Test.That(WorldDiplomacyPlayerDraftRules.Parse(Json(Draft), input).Body == Draft, "Valid draft preserved");
-        foreach (var invalid in new[] { "", "{}", "null", "[]", "{\"body\":null}", "{\"body\":42}", "{\"body\":\"甲\",\"actions\":[]}", "{\"body\":\"甲\",\"body\":\"乙\"}", "```json\n" + Json(Draft) + "\n```", Json(Draft) + " trailing", Json("太短"), Json(new string('字', 201)) })
-            Test.That(!WorldDiplomacyPlayerDraftRules.Parse(invalid, input).Success, "Reject malformed, duplicate, hidden fields or invalid length: " + invalid.Substring(0, Math.Min(25, invalid.Length)));
-        Test.That(!WorldDiplomacyPlayerDraftRules.Parse(Json(new string('字', 6001)), input).Success, "No silent truncation");
-        Test.That(WorldDiplomacyPlayerDraftRules.CountVisibleCharacters("甲， \t\n乙😀") == 4, "Punctuation counts, formatting whitespace does not, surrogate pair counts once");
+        Test.That(WorldDiplomacyPlayerDraftRules.Parse(Json(Draft)).Body == Draft, "Valid draft preserved");
+        foreach (var invalid in new[] { "", "{}", "null", "[]", "{\"body\":null}", "{\"body\":42}", "{\"body\":\"甲\",\"actions\":[]}", "{\"body\":\"甲\",\"body\":\"乙\"}", "```json\n" + Json(Draft) + "\n```", Json(Draft) + " trailing", Json(" \t\n"), Json("\u0001\u0002") })
+            Test.That(!WorldDiplomacyPlayerDraftRules.Parse(invalid).Success, "Reject malformed, duplicate, hidden fields or empty body: " + invalid.Substring(0, Math.Min(25, invalid.Length)));
+        Test.That(!WorldDiplomacyPlayerDraftRules.Parse(Json(new string('字', 6001))).Success, "Editor capacity preserved, no silent truncation");
+        Test.That(WorldDiplomacyPlayerDraftRules.Parse(Json("甲， \t\n乙")).Body == "甲， \t\n乙", "Multiline formatting preserved");
         var fixedLength = new WorldDiplomacyPlayerDraftInput("提纲", 100, 40, 1);
         Test.That(fixedLength.MaximumCharacters == 100, "max below min normalized");
-        Test.That(WorldDiplomacyPlayerDraftRules.Parse(Json(new string('字', 100)), fixedLength).Success, "Exact endpoints allowed");
+        Test.That(WorldDiplomacyPlayerDraftRules.Parse(Json(new string('字', 100))).Success, "Exact endpoints allowed");
     }
 
     private static void SnapshotAndRewrite()
@@ -107,7 +111,7 @@ internal static class Program
         Test.Until(() => handler.Get(0) != null, "request sent");
         var first = handler.Get(0);
         Test.That(first.Auth == "fixture-event" && (string)first.Body["model"] == "event-model", "Main-thread route and credentials frozen");
-        Test.That((int)first.Body["max_tokens"] == 1800 && (float)first.Body["temperature"] == 0.4f, "Diplomatic token and temperature profile");
+        Test.That((int)first.Body["max_tokens"] == 1056 && (float)first.Body["temperature"] == 0.4f, "Length-based budget and diplomatic temperature frozen");
         Test.That(first.Body["messages"].ToString().Contains("简明冷峻") && !first.Body["messages"].ToString().Contains("新文风"), "Preference frozen");
         Test.That(DuelSettings.Reads == reads && handler.Get(1) == null, "No worker settings read or duplicate send");
         handler.Finish(0, Json(Draft)); Drain(vm);
@@ -120,6 +124,36 @@ internal static class Program
         handler.Finish(1, Json(rewritten)); Drain(vm);
         Test.That(vm.BodyText == rewritten, "Rewrite replaces current text");
         vm.ExecutePublish(); Test.That(publishes == 1, "Only explicit player publication"); vm.OnFinalize();
+    }
+
+    private static void LengthBudgetAndFill()
+    {
+        var (handler, vm) = Window();
+        DuelSettings.Current.MinChars = 300;
+        DuelSettings.Current.MaxChars = 1000;
+        DuelSettings.Current.EventAndRebellionApiMaxTokens = 12000;
+        vm.BodyText = "即日起，西帝国将缮甲利兵，时刻准备着收复帝国故土，一统帝国。";
+        vm.ExecuteAutoDraft(); Test.Until(() => handler.Get(0) != null, "large draft request");
+        Test.That((int)handler.Get(0).Body["max_tokens"] == 4256, "Long drafts are not capped at the old fixed 1800-token request");
+        string system = (string)handler.Get(0).Body["messages"][0]["content"];
+        Test.That(system.Contains("300—1000") && system.Contains("约650字"), "MCM range and midpoint reach actual HTTP request before writing");
+        handler.Finish(0, Json(Draft)); Drain(vm);
+        Test.That(vm.BodyText == Draft && vm.CanPublish && !vm.HintText.Contains("字数") && handler.Get(1) == null, "Below-range draft fills without length warning or retry");
+
+        DuelSettings.Current.MinChars = 40;
+        DuelSettings.Current.MaxChars = 100;
+        vm.ExecuteAutoDraft(); Test.Until(() => handler.Get(1) != null, "shorter budget");
+        Test.That((int)handler.Get(1).Body["max_tokens"] == 656, "Next request captures reduced MCM length budget");
+        string longDraft = new string('字', 201);
+        handler.Finish(1, Json(longDraft)); Drain(vm);
+        Test.That(vm.BodyText == longDraft && vm.CanPublish && !vm.HintText.Contains("字数") && handler.Get(2) == null, "Above-range draft fills in full without length warning or retry");
+
+        DuelSettings.Current.MinChars = 1000;
+        DuelSettings.Current.MaxChars = 40;
+        DuelSettings.Current.EventAndRebellionApiMaxTokens = 512;
+        vm.ExecuteAutoDraft(); Test.Until(() => handler.Get(2) != null, "configured API cap");
+        Test.That((int)handler.Get(2).Body["max_tokens"] == 512 && handler.Get(2).Body["messages"].ToString().Contains("1000—1000"), "Explicit API configuration cap and normalized MCM range remain effective");
+        handler.Finish(2, Json(Draft)); Drain(vm); vm.OnFinalize();
     }
 
     private static void Editing()
@@ -156,8 +190,8 @@ internal static class Program
         Test.That(vm.BodyText == "保持原文" && vm.CanAutoDraft && handler.Get(1) == null, "Failure keeps input, no domain retry");
         vm.ExecuteAutoDraft(); Test.Until(() => handler.Get(1) != null, "truncated"); handler.Finish(1, Json(Draft), "length"); Drain(vm);
         Test.That(vm.BodyText == "保持原文" && vm.HintText.Contains("截断"), "Truncation rejected");
-        vm.ExecuteAutoDraft(); Test.Until(() => handler.Get(2) != null, "bad length"); handler.Finish(2, Json("太短")); Drain(vm);
-        Test.That(vm.BodyText == "保持原文" && vm.HintText.Contains("字数"), "Invalid length keeps input"); vm.OnFinalize();
+        vm.ExecuteAutoDraft(); Test.Until(() => handler.Get(2) != null, "empty body"); handler.Finish(2, Json(" \t\n")); Drain(vm);
+        Test.That(vm.BodyText == "保持原文" && vm.CanAutoDraft && handler.Get(3) == null, "Empty draft keeps input without retry"); vm.OnFinalize();
         var (fallback, reply) = Window(); DuelSettings.Current.EventAndRebellionApiKey = "";
         reply.BodyText = "我方接受原案，请对方安排后续交涉。"; reply.ExecuteAutoDraft(); Test.Until(() => fallback.Get(0) != null, "fallback");
         Test.That(fallback.Get(0).Url.Contains("main.example") && fallback.Get(0).Auth == "fixture-main", "Partial event config falls back to main");
