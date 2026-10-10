@@ -9270,8 +9270,14 @@ R2计划交付门槛：已给固定技术路线、真实来源与目标、写入
 - 未启动游戏、实机、真实LLM、旧存档、全仓回归、打包或推送。安装回退使用上述私有Recovery逐文件恢复；不hard-reset或改写Git历史。本次部署接续相关产品条目的安装状态，保留原有LIVE_PENDING与专项未覆盖边界。
 
 <a id="tts-agent-plan-20261011"></a>
-## 2026-10-11：Agent Plan HTTP TTS 地址兼容（ACTIVE）
+## 2026-10-11：Agent Plan HTTP TTS 地址兼容（OFFLINE_VERIFIED / STAGE_VERIFIED / WAITING_FOR_LAUNCHER_CLOSE / LIVE_PENDING）
 
 - 最新请求：“将这个兼容问题补齐”；工作区 `E:/Mount-Blade-Bannerlord-AnimusForge-mod-main` / main，基线 `c8389bdfa`，初始工作区干净。普通V3路径已支持；Agent Plan官方HTTP路径 `/api/v3/plan/tts/unidirectional` 被 `VolcTtsGateway.GetVersion` 的其他V3拒绝分支拦截。官方依据为 https://docs.volcengine.com/docs/ark/agent-plan-personal-voice-model?lang=zh ，用户控制台截图与之匹配。
 - 范围：明确识别这一个套餐HTTP路径并复用既有V3 transport；更新MCM/终端地址与凭据说明、已有TTS回放。不改V1默认值、凭据保存键、音色映射、PCM/WAV播放、口型、重试/取消/超时或存档，不放行WS/SSE/ASR等其他路径。每次合成/测试预检只增加一次有界字符串比较，无新增Tick、扫描、反射或缓存责任。
 - 完成门：原生产消费者的套餐无AppID按钮/队列回归、实际候选DLL的loopback协议与负向路由检查、1.3/1.4+Bootstrap及双Coup门禁；沿本会话授权部署当前修复到本地统一模块并核对hash与备份。未授权推送、打包或真实收费API调用；实机语音由用户保存配置后验收。
+- 检查点 `6cd5efc33`，已验产品 `1376309e1d91864dc5170d0a6ebc047e67a8fe54`。`VolcTtsGateway.GetVersion` 精确增加套餐路径，复用独立V3 client及X-Api-Key/Resource鉴权；地址和401/403提示、MCM与终端帮助同步。生产接线/测试/一基范围与覆盖边界见[当前源码地图](architecture/af-framework-code-scope.md#tts-agent-plan-20261011)，8锚点按产品提交和working-tree双模式通过；不把地图验证当游戏验收。
+- 完整生产TtsEngine/router及正式按钮提取回归：修前新增套餐正向2例失败、其余62例通过；修后64 PASS/0 FAIL。provider/game/native为受控叶，不调用真实服务。刚构建的实际1.4 DLL loopback回放：V1 7项、V3 46项通过，含套餐两格式、保留URL/请求头、空AppID、非法WS/SSE/ASR/近似路径、401/403/429/500/302无重试/回退、取消、30秒总超时与音频/传输预算；原V1及播放器WAV解析保留。`artifacts/tts-agent-plan-20261011/lifetime-baseline.log`、`lifetime-fixed.log`、`gateway-replay-verified.log`为分层证据。
+- 原 `build_single_module.ps1` Debug双API/Bootstrap及双Coup managed门禁exit0；两实现各350警告、0错误，Bootstrap/门禁0警告0错误。沿用前次已验进程级 `DirectoryBuildTargetsPath`，未改构建入口。实际1.3引用1.3.15.110062、1.4引用1.4.6.115628；构建日志 `artifacts/tts-agent-plan-20261011/build.log`。回放最初明确依赖路径没有manifest、输出没有位于bin子目录而被守卫拒绝；改为实际Workshop精确模块根和全新隔离bin/net8.0后通过，未放宽验证或覆盖旧输出。
+- 原 `deploy_module.ps1` 已生成并通过清洁Stage/layout/current-artifact校验的本地统一模块 `bin/Debug/single_module_stage/AnimusForge`；游戏目录安装尚未成功，完成安装及SHA/Recovery核对后再接续最终状态。未运行实机声音/口型、真实Agent Plan账号授权/额度、玩家存档或全仓回归；未推送、打包或自动填入玩家密钥。源码回滚仅focused inverse产品提交，安装回退按本次Recovery逐文件恢复，不改写历史或回滚其他作者。
+- 首次部署因正在运行的原版启动器占用Bootstrap旧DLL，删除同卷替换临时文件失败；原脚本自动回滚。私有Recovery `deploy-d2ffd653ef5e4a3482d0bc68cd179382` 有rolled-back标记，9项安装文件SHA均匹配旧清单，见本地 `rollback-receipt.json`；不把该次失败算部署成功。只发现启动器、无游戏进程，调用CloseMainWindow正常关闭并确认退出；核对本次遗留单个临时文件与旧Bootstrap备份SHA一致后删除，未强制结束游戏或清理其他文件。原脚本重试日志 `deploy-retry.log`，正在按相同已验产物执行。
+- 重试期间启动器于01:45:01再次打开（PID23160），旧Bootstrap临时备份再度被占用；临时文件属性仅Archive，非只读。第二次Recovery `deploy-dd50844519114744881f3e955745576e` 有rolled-back标记，9项旧安装SHA再次全部匹配，见 `rollback-retry-receipt.json`。已请求用户退出游戏/启动器并保持关闭后回复，等待该运行条件再继续原部署；不强制结束进程、不把可用Stage或代码修复当安装完成。第二次替换临时文件仅属本次失败操作，待释放后以旧Bootstrap SHA核对再定点清理，其他清单外文件不动。

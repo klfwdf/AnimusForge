@@ -1,3 +1,20 @@
+<a id="tts-agent-plan-20261011"></a>
+### Agent Plan：HTTP TTS 路由与实际消费者
+
+产品 `1376309e1d91864dc5170d0a6ebc047e67a8fe54`；本地八锚点 `artifacts/tts-agent-plan-20261011/code-map.json` 已按产品修订与 working-tree 核验。行为、回归、构建、部署及未覆盖边界见[唯一主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#tts-agent-plan-20261011)。本条只接续套餐 HTTP 地址兼容，不替代历史 TTS 生命周期或实机验收。
+
+| 一基范围 / 符号 | owner、消费者与覆盖边界 |
+| --- | --- |
+| `src/modules/AF.Module.Llm/Tts/VolcTtsGateway.cs:21–31`；GetVersion | 精确新增套餐 HTTP 路径识别，复用原 V3 gateway；仍拒绝其他 V3/WS/SSE/ASR 路径，不重写用户 URL、不追加回退请求 |
+| 同文件 `40–60`；DescribeError | 地址与鉴权失败提示包含 Agent Plan；错误反馈继续走原主线程队列 |
+| `src/AF.GameAdapter.Bannerlord/Configuration/Mcm/DuelSettings.cs:1955–1975`；TtsVolcDedicatedEnabled/ApiUrl/ApiKey；`src/AF.GameAdapter.Bannerlord/UI/Terminal/TerminalSettingsRegistry.cs:178–184` | 两设置入口同步套餐地址及专属 Key 说明；默认值、保存键和设置身份不变 |
+| MCM 同文件 `6683–6746`；TestTtsVolcDedicatedVoice（未改） | 原测试按钮调用共享路由；套餐地址不要求 AppID，仍检验总开关、专用开关和队列接受结果 |
+| `src/modules/AF.Module.Llm/Tts/TtsEngine.cs:1011–1051`；CallVolcApi（未改） | 生产消费者透传 endpoint、请求取消 token、DTO 与凭据，复用原独立 V3 HttpClient；不改变播放器、口型和任务所有者 |
+| `tests/modules/AF.Module.Llm/TtsRequestLifetimeRegressionTests/Harness.cs.txt:60–76`；Agent Plan 三用例 | 完整生产 engine/router 与提取的正式按钮，provider/game/native 叶受控；验证空 AppID、单次请求和取消所有权，拒绝 stream |
+| `tests/replay/TtsGatewayReplayTests/V3Cases.cs:14–141`；Run | 刚构建的实际 1.4 DLL + loopback server，校验两类 V3 地址/请求头/PCM/WAV、非法路径、HTTP 错误不重试、取消/超时/容量；不调用收费服务、不证明账号授权或实机声音 |
+
+频率为每次合成/测试预检一次有界路径比较；无新增 Tick、全量扫描、反射或缓存状态。V1 默认与已有播放/存档/公共 API 责任仍保留原 owner。
+
 <a id="diplomacy-draft-length-20261011"></a>
 ### 书记官代笔：生成前篇幅预算与完整稿回填
 
