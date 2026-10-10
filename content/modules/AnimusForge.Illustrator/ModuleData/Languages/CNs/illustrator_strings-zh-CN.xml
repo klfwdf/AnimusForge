@@ -324,5 +324,11 @@
     <string id="AF_ILL_UI_BULLETIN_RETRY" text="{ERROR}；可点击重绘。" />
     <string id="AF_ILL_UI_BULLETIN_SAVE_IMAGE_FAILED" text="未能保存图片" />
     <string id="AF_ILL_UI_BULLETIN_SAVE_UNAVAILABLE" text="无法保存" />
+    <string id="AF_ILL_UI_GALLERY_INTRODUCTION_NAME" text="这是一幅名为{ITEM}的画作。" />
+    <string id="AF_ILL_UI_GALLERY_INTRODUCTION_THEME" text="画面主题：{THEME}" />
+    <string id="AF_ILL_UI_GALLERY_INTRODUCTION_ACTION" text="画面描绘：{ACTION}" />
+    <string id="AF_ILL_UI_GALLERY_INTRODUCTION_UNANNOTATED" text="画面内容尚未注明。" />
+    <string id="AF_ILL_UI_GALLERY_INTRODUCTION_FICTION" text="画中的内容属于艺术描绘，不代表其中的事件已经真实发生。" />
+    <string id="AF_ILL_UI_SCENE_PROBE_NOTE" text="【独立场景试采预览】从附近30米的静态副本采集前后左右上下六个90度方向，投影为360×180度全景。中央为前方，左右边缘在后方相接，顶部/底部是上方/下方。展开拉伸不是建筑变形；人物未复制，观察补光不代表现场采光。未调用导演或生图模型，未写入图库或设为默认图。" />
   </strings>
 </base>

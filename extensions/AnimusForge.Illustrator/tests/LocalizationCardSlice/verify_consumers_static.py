@@ -17,6 +17,7 @@ def old(path):
 edits = {
     "UI/Gallery/IllustratorGalleryPopupVM.cs": [
         ("selected.Item.DisplayStatusText", "IllustrationStatusUiText.Cached(selected.Item)", 2),
+        ("GalleryRpItemConverter.ItemName(image)", "GalleryRpItemConverter.DisplayItemName(image)", 1),
     ],
     "UI/Patches/WeeklyReportPopupIllustrationPatch.cs": [
         ("else _sink.StatusText = cached.DisplayStatusText;", "else _sink.StatusText = IllustrationStatusUiText.Cached(cached);", 1),

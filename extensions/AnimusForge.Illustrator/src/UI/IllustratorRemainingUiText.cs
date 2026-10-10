@@ -2,8 +2,7 @@ using TaleWorlds.Localization;
 
 namespace AnimusForge.Illustrator.UI
 {
-    // Narrow display catalog for the remaining gallery/conversion/photo sinks. Asset titles and descriptions
-    // are intentionally kept in their producer path; these methods only create player-facing messages.
+    // Fixed display and editable input defaults. Existing asset titles and metadata stay in their producer path.
     internal static class IllustratorRemainingUiText
     {
         private static string Resolve(string id, string fallback)
@@ -29,6 +28,11 @@ namespace AnimusForge.Illustrator.UI
         internal static string GalleryConversionDeliveryFailed => Resolve("AF_ILL_UI_GALLERY_CONVERSION_DELIVERY_FAILED", "The illustration could not be added to your inventory. Check your inventory and try again.");
         internal static string GalleryConversionDefaultTitle => Resolve("AF_ILL_UI_GALLERY_CONVERSION_DEFAULT_TITLE", "Calradia Chronicles");
         internal static string GalleryConversionItemName(string title) => Format("AF_ILL_UI_GALLERY_CONVERSION_ITEM_NAME", "{TITLE} illustration scroll", "TITLE", title);
+        internal static string GalleryIntroductionName(string item) => Format("AF_ILL_UI_GALLERY_INTRODUCTION_NAME", "This is a painting called {ITEM}.", "ITEM", item);
+        internal static string GalleryIntroductionTheme(string theme) => Format("AF_ILL_UI_GALLERY_INTRODUCTION_THEME", "Theme: {THEME}", "THEME", theme);
+        internal static string GalleryIntroductionAction(string action) => Format("AF_ILL_UI_GALLERY_INTRODUCTION_ACTION", "Depicts: {ACTION}", "ACTION", action);
+        internal static string GalleryIntroductionUnannotated => Resolve("AF_ILL_UI_GALLERY_INTRODUCTION_UNANNOTATED", "The contents of this painting have not been described.");
+        internal static string GalleryIntroductionFiction => Resolve("AF_ILL_UI_GALLERY_INTRODUCTION_FICTION", "The contents of the painting are an artistic depiction and do not mean that these events actually happened.");
         internal static string PhotoAim(int count) => Format("AF_ILL_UI_PHOTO_AIM", "Enter: capture image {COUNT} - Esc: cancel", "COUNT", count);
         internal static string PhotoDecision(int count) => Format("AF_ILL_UI_PHOTO_DECISION", "Captured {COUNT} images. Start generation?", "COUNT", count);
         internal static string PhotoStopped => Resolve("AF_ILL_UI_PHOTO_STOPPED", "This framing session was stopped");

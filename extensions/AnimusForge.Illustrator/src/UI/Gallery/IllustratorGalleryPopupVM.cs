@@ -450,7 +450,7 @@ namespace AnimusForge.Illustrator.UI.Gallery
             _rpConversionOpen = true;
             OnPropertyChanged(nameof(CanConvertToRpItem));
                     OnPropertyChanged(nameof(CanRedrawBasedOnImage));
-            bool opened = CourierLetterInputPopup.Show(IllustratorUiText.GalleryConvertTitle, GalleryRpItemConverter.ItemName(image),
+            bool opened = CourierLetterInputPopup.Show(IllustratorUiText.GalleryConvertTitle, GalleryRpItemConverter.DisplayItemName(image),
                 IllustratorUiText.GalleryConvertHint,
                 GalleryRpItemConverter.BuildIntroduction(image), description =>
                 {

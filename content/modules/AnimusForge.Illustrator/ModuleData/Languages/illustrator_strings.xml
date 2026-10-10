@@ -324,5 +324,11 @@
     <string id="AF_ILL_UI_BULLETIN_RETRY" text="{ERROR}; click Redraw to try again." />
     <string id="AF_ILL_UI_BULLETIN_SAVE_IMAGE_FAILED" text="The image could not be saved" />
     <string id="AF_ILL_UI_BULLETIN_SAVE_UNAVAILABLE" text="Could not save" />
+    <string id="AF_ILL_UI_GALLERY_INTRODUCTION_NAME" text="This is a painting called {ITEM}." />
+    <string id="AF_ILL_UI_GALLERY_INTRODUCTION_THEME" text="Theme: {THEME}" />
+    <string id="AF_ILL_UI_GALLERY_INTRODUCTION_ACTION" text="Depicts: {ACTION}" />
+    <string id="AF_ILL_UI_GALLERY_INTRODUCTION_UNANNOTATED" text="The contents of this painting have not been described." />
+    <string id="AF_ILL_UI_GALLERY_INTRODUCTION_FICTION" text="The contents of the painting are an artistic depiction and do not mean that these events actually happened." />
+    <string id="AF_ILL_UI_SCENE_PROBE_NOTE" text="Isolated scene capture preview: six 90-degree views (front, back, left, right, up, and down) are captured from a static copy of the environment within 30 meters and projected into a 360-by-180-degree panorama. The center faces forward, the left and right edges meet behind you, and the top and bottom face up and down. Projection stretching does not mean the buildings are deformed. Characters were not copied, and the observation lighting does not represent the scene's actual lighting. No director or image model was called. This preview was not saved to the gallery or set as the default image." />
   </strings>
 </base>

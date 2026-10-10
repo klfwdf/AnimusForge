@@ -4,6 +4,7 @@ import json
 import re
 import subprocess
 import xml.etree.ElementTree as ET
+from verify_gallery_defaults_static import restore_converter
 
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[3]
@@ -51,6 +52,8 @@ display_helper = '''        private static string DisplayItemName(CachedIllustra
 for relative, replacements in edits.items():
     path = PREFIX + relative
     source = (ROOT / path).read_text(encoding="utf-8-sig")
+    if relative.endswith("GalleryRpItemConverter.cs"):
+        source = restore_converter(source)
     restored = source
     baseline = old(path)
     for before, after in replacements:
@@ -83,4 +86,4 @@ for project in ["GalleryRpConversionTests", "MissionScreenshotTests"]:
         resolved = [path.parent / include for include in includes if include.endswith(name)]
         assert len(resolved) == 1 and resolved[0].is_file(), (project, name)
 
-print("PASS remaining Illustrator UI exact inverse; 19 EN/CN keys; asset title/intro unchanged; event callbacks/roster logic unchanged; test closure present; no compiler/API run")
+print("PASS earlier Illustrator UI slice inverse after restoring newer editable-default display slice; 19 EN/CN keys; original ItemName/roster/callbacks unchanged; no compiler/API run")
