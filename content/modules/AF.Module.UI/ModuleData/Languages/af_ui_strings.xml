@@ -3114,6 +3114,13 @@ Choose how to proceed:" />
   <string id="AF_CASTLE_UI_LORD_SALE" text="[Castle aftermath] {LORD} was handed to the ransom broker for {GOLD} denars at the current native tavern ransom price; the lord was released from captivity and left the scene." />
   <string id="AF_CASTLE_UI_EXECUTION_QUEUED" text="[Castle aftermath] Execution was ordered for {LORD}; opening the native confirmation. Cancelling will not change the lord's life or captivity status." />
   <string id="AF_CASTLE_UI_EXECUTION_FAILED" text="[Castle aftermath] Could not open the native execution confirmation for {LORD}; no death was applied. Try again later; details were logged." />
+  <string id="AF_CASTLE_UI_EXECUTION_CANCELLED" text="[Castle aftermath] Execution of {LORD} was cancelled; the lord remains alive and captive, and you may negotiate again." />
+  <string id="AF_CASTLE_UI_EXECUTION_PERSISTENCE_FAILED" text="[Castle aftermath] The native execution confirmation for {LORD} ended, but the native game did not record the character's death. This disposition had no effect; you may retry later." />
+  <string id="AF_CASTLE_UI_EXECUTION_FINALIZATION_PENDING" text="[Castle aftermath] The execution death marker for {LORD} was recorded, but native character finalization is still pending. Further disposition and normal departure are unavailable in this scene." />
+  <string id="AF_CASTLE_UI_EXECUTION_CONFIRMATION_PENDING" text="[Castle aftermath] The native execution confirmation for {LORD} is still open; confirm or cancel it first." />
+  <string id="AF_CASTLE_UI_ROSTER_AVAILABLE" text="Available party troops, army leaders, and prisoners" />
+  <string id="AF_CASTLE_UI_ROSTER_SELECTED" text="Castle aftermath party" />
+  <string id="AF_CASTLE_UI_ROSTER_HEADER" text="Select soldiers and prisoners to enter the castle" />
   <string id="AF_CASTLE_UI_EXECUTION_COMPLETED" text="[Castle aftermath] You confirmed the execution of {LORD}, who fell in the castle scene. The native character death has been persisted; relationships and clan consequences are handled by the native campaign system." />
   <string id="AF_CASTLE_UI_EXECUTION_COMPLETED_NO_SCENE" text="[Castle aftermath] You confirmed the execution of {LORD}; the scene death animation failed, but the death has been persisted. Relationships and clan consequences are handled by the native campaign system." />
   <string id="AF_CASTLE_UI_CAPACITY_NONE" text="[Castle aftermath] No main-party slots are available for recruitment ({FREE} free, reserved by earlier recruitment groups). This recruitment was not staged; free slots or choose another disposition." />

@@ -66,6 +66,14 @@ internal static class CastleAftermathUiText
         => Text("AF_CASTLE_UI_EXECUTION_QUEUED", "[Castle aftermath] Execution was ordered for {LORD}; opening the native confirmation. Cancelling will not change the lord's life or captivity status.", ("LORD", Name(lordName)));
     internal static string ExecutionFailed(string lordName)
         => Text("AF_CASTLE_UI_EXECUTION_FAILED", "[Castle aftermath] Could not open the native execution confirmation for {LORD}; no death was applied. Try again later; details were logged.", ("LORD", Name(lordName)));
+    internal static string ExecutionCancelled(string lordName)
+        => Text("AF_CASTLE_UI_EXECUTION_CANCELLED", "[Castle aftermath] Execution of {LORD} was cancelled; the lord remains alive and captive, and you may negotiate again.", ("LORD", Name(lordName)));
+    internal static string ExecutionPersistenceFailed(string lordName)
+        => Text("AF_CASTLE_UI_EXECUTION_PERSISTENCE_FAILED", "[Castle aftermath] The native execution confirmation for {LORD} ended, but the native game did not record the character's death. This disposition had no effect; you may retry later.", ("LORD", Name(lordName)));
+    internal static string ExecutionFinalizationPending(string lordName)
+        => Text("AF_CASTLE_UI_EXECUTION_FINALIZATION_PENDING", "[Castle aftermath] The execution death marker for {LORD} was recorded, but native character finalization is still pending. Further disposition and normal departure are unavailable in this scene.", ("LORD", Name(lordName)));
+    internal static string ExecutionConfirmationPending(string lordName)
+        => Text("AF_CASTLE_UI_EXECUTION_CONFIRMATION_PENDING", "[Castle aftermath] The native execution confirmation for {LORD} is still open; confirm or cancel it first.", ("LORD", Name(lordName)));
     internal static string ExecutionCompleted(string lordName, bool sceneDeathApplied)
         => sceneDeathApplied
             ? Text("AF_CASTLE_UI_EXECUTION_COMPLETED", "[Castle aftermath] You confirmed the execution of {LORD}, who fell in the castle scene. The native character death has been persisted; relationships and clan consequences are handled by the native campaign system.", ("LORD", Name(lordName)))
