@@ -330,5 +330,22 @@
     <string id="AF_ILL_UI_GALLERY_INTRODUCTION_UNANNOTATED" text="The contents of this painting have not been described." />
     <string id="AF_ILL_UI_GALLERY_INTRODUCTION_FICTION" text="The contents of the painting are an artistic depiction and do not mean that these events actually happened." />
     <string id="AF_ILL_UI_SCENE_PROBE_NOTE" text="Isolated scene capture preview: six 90-degree views (front, back, left, right, up, and down) are captured from a static copy of the environment within 30 meters and projected into a 360-by-180-degree panorama. The center faces forward, the left and right edges meet behind you, and the top and bottom face up and down. Projection stretching does not mean the buildings are deformed. Characters were not copied, and the observation lighting does not represent the scene's actual lighting. No director or image model was called. This preview was not saved to the gallery or set as the default image." />
+    <string id="AF_ILL_ERROR_PORTRAIT_REFERENCE" text="The encyclopedia's complete equipped portrait could not be captured off-screen. Generation stopped; check failureCode in this request's portrait_stage_result." />
+    <string id="AF_ILL_ERROR_PLAYER_REFERENCE" text="The player's complete equipped portrait could not be captured off-screen. Generation stopped." />
+    <string id="AF_ILL_ERROR_PARTNER_REFERENCE" text="The other character's complete equipped portrait could not be captured off-screen. Generation stopped." />
+    <string id="AF_ILL_ERROR_PROBE_MISSING" text="The isolated scene capture did not return a complete panorama reference." />
+    <string id="AF_ILL_ERROR_PROBE_EMPTY" text="The isolated scene capture returned an empty reference composite." />
+    <string id="AF_ILL_ERROR_CAPTURE_QUEUE" text="The game-thread task queue is full. Illustration capture could not run." />
+    <string id="AF_ILL_ERROR_DISABLED" text="AI image generation is disabled." />
+    <string id="AF_ILL_ERROR_ENDPOINT_MISSING" text="No image API endpoint (Base URL) is configured." />
+    <string id="AF_ILL_ERROR_MISSION_UNAVAILABLE" text="No player scene is available for screenshot illustration, or image generation is disabled." />
+    <string id="AF_ILL_ERROR_CONFIGURE_API" text="Configure the image API first." />
+    <string id="AF_ILL_ERROR_REDRAW_SOURCE" text="Redrawing from this image requires a valid current image. No request was sent." />
+    <string id="AF_ILL_ERROR_EDITS_REFERENCE" text="The images/edits endpoint requires a usable reference image. Enable references and capture a character or scene reference before generating. No request was sent." />
+    <string id="AF_ILL_ERROR_GENERATIONS_REFERENCE" text="The exact images/generations endpoint cannot accept reference images. Use /images/edits or enable the conversation multimodal image channel. No request was sent." />
+    <string id="AF_ILL_ERROR_RESPONSE_IMAGE" text="No valid image data could be extracted from the server response." />
+    <string id="AF_ILL_ERROR_CANCELLED" text="The image generation request was cancelled." />
+    <string id="AF_ILL_ERROR_TIMEOUT" text="The image generation request exceeded its total budget of {SECONDS} seconds." />
+    <string id="AF_ILL_ERROR_COMMUNICATION" text="Image generation communication error: {DETAIL}" />
   </strings>
 </base>
