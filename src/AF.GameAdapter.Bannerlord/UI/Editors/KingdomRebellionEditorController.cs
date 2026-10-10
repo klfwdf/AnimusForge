@@ -275,7 +275,7 @@ internal void ShowAutomaticKingdomRebellionCompletionPopup(PendingAutomaticKingd
 		}
 		if (!string.IsNullOrWhiteSpace(context?.StabilityTierText))
 		{
-			stringBuilder.AppendLine(Ui("AF_UI_KingdomRebellion_StabilityAtTrigger", "Stability at trigger:") + context.StabilityValue + " (" + context.StabilityTierText + ")");
+			stringBuilder.AppendLine(Ui("AF_UI_KingdomRebellion_StabilityAtTrigger", "Stability at trigger:") + context.StabilityValue + " (" + KingdomStabilityUiText.Tier(context.StabilityValue) + ")");
 		}
 		if (clan != null)
 		{

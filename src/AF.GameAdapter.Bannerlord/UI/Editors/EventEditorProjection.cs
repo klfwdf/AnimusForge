@@ -18,7 +18,7 @@ internal static class EventEditorProjection
 		}
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.AppendLine(EventEditorUiText.T("AF_UI_Event_Rebellion_Kingdom", "Kingdom: {KINGDOM}", ("KINGDOM", port.GetKingdomDisplayName(result.Kingdom, EventEditorUiText.T("AF_UI_Event_Kingdom_Fallback", "kingdom")))));
-		stringBuilder.AppendLine(EventEditorUiText.T("AF_UI_Event_Rebellion_Stability", "Stability: {VALUE} ({TIER})", ("VALUE", result.StabilityValue.ToString()), ("TIER", result.StabilityTierText ?? "unknown")));
+		stringBuilder.AppendLine(EventEditorUiText.T("AF_UI_Event_Rebellion_Stability", "Stability: {VALUE} ({TIER})", ("VALUE", result.StabilityValue.ToString()), ("TIER", string.IsNullOrWhiteSpace(result.StabilityTierText) ? "unknown" : KingdomStabilityUiText.Tier(result.StabilityValue))));
 		if (!result.Forced)
 		{
 			stringBuilder.AppendLine(EventEditorUiText.T("AF_UI_Event_Rebellion_Chance", "Weekly rebellion chance: {VALUE}", ("VALUE", port.FormatKingdomRebellionChance(result.TriggerChance))));
