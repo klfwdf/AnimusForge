@@ -16,7 +16,8 @@ en={n.get('id'):n.get('text','') for e,z in registered_pairs(ROOT) for n in ET.p
 zh={n.get('id'):n.get('text','') for e,z in registered_pairs(ROOT) for n in ET.parse(z).getroot().iter('string')}
 string=r'"(?:\\.|[^"\\])*"'
 group=r'(?:'+string+r'|DuelSettings\.NewsSettingsGroup)'
-pattern=re.compile(r'new TerminalSettingDef\(('+string+r'),\s*('+string+r'),\s*('+group+r'),\s*('+string+r'),\s*('+string+r')')
+category=r'(?:'+string+r'|TerminalCategories\.\w+)'
+pattern=re.compile(r'new TerminalSettingDef\(('+string+r'),\s*('+category+r'),\s*('+group+r'),\s*('+string+r'),\s*('+string+r')')
 rows=list(pattern.finditer(source))
 assert len(rows)==source.count('new TerminalSettingDef('), 'unreviewed registry definition syntax'
 ids=[decode(m[1]) for m in rows]

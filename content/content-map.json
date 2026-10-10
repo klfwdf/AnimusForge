@@ -17131,6 +17131,12 @@
       "source": "content/modules/AnimusForge.XihaiAction/ModuleData/Languages/CNs/afscene_speech_strings-zh-CN.xml",
       "target": "ModuleData/Languages/CNs/afscene_speech_strings-zh-CN.xml",
       "logicalName": "AnimusForge.SceneActions.Speech.zh-CN.xml"
+    },
+    {
+      "owner": "AF.Foundation.Localization",
+      "source": "content/foundation/AF.Foundation.Localization/ModuleData/TerminalCategories.json",
+      "target": "ModuleData/TerminalCategories.json",
+      "logicalName": "AnimusForge.Defaults.TerminalCategories.json"
     }
   ]
 }
