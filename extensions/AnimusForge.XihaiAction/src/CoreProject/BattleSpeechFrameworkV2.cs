@@ -612,11 +612,11 @@ namespace AnimusForge.SceneActions.Core
             string rejectionReason = GetTroopSpeechRejectionReason(
                 candidate,
                 forbiddenNames);
-            if (rejectionReason == null && HasSpeechLanguage(candidate, useChinese))
+            if (rejectionReason == null && HasNaturalSpeech(candidate))
             {
                 return candidate;
             }
-            fallbackReason = rejectionReason ?? (useChinese ? "non_chinese" : "non_english");
+            fallbackReason = rejectionReason ?? "no_speech_text";
 
             return SelectLocalFallbackSpeech(
                 rawText,
@@ -850,11 +850,11 @@ namespace AnimusForge.SceneActions.Core
             return lines.FirstOrDefault(line => !string.IsNullOrWhiteSpace(line))?.Trim() ?? string.Empty;
         }
 
-        private static bool HasSpeechLanguage(string text, bool useChinese)
+        private static bool HasNaturalSpeech(string text)
         {
-            return useChinese ? ContainsChinese(text) : !string.IsNullOrEmpty(text) &&
-                text.Any(character => (character >= 'A' && character <= 'Z') ||
-                                      (character >= 'a' && character <= 'z'));
+            // Package language selects instructions and fallback prose, never
+            // which natural language the player/model is permitted to use.
+            return !string.IsNullOrEmpty(text) && text.Any(char.IsLetter);
         }
 
         private static bool ContainsChinese(string text)
@@ -919,7 +919,7 @@ namespace AnimusForge.SceneActions.Core
             {
                 return text;
             }
-            MatchCollection sentences = Regex.Matches(text, useChinese ? @"[^。！？!?；;]+[。！？!?；;]" : @"[^.!?;]+[.!?;]");
+            MatchCollection sentences = Regex.Matches(text, @"[^。！？.!?；;]+[。！？.!?；;]");
             string result = string.Empty;
             foreach (Match sentence in sentences)
             {
@@ -937,16 +937,16 @@ namespace AnimusForge.SceneActions.Core
 
             string prefix = text.Substring(0, maximumChars).Trim();
             int lastBoundary = prefix.LastIndexOfAny(
-                useChinese ? new[] { '。', '！', '？', '!', '?', '；', ';', '，', ',' } : new[] { '.', '!', '?', ';', ',' });
+                new[] { '。', '！', '？', '.', '!', '?', '；', ';', '，', ',' });
             if (lastBoundary + 1 >= minimumChars)
             {
                 return prefix.Substring(0, lastBoundary + 1).Trim();
             }
             if (prefix.Length == maximumChars && maximumChars > 0 &&
-                Array.IndexOf(useChinese ? new[] { '。', '！', '？', '!', '?', '；', ';' } : new[] { '.', '!', '?', ';' },
+                Array.IndexOf(new[] { '。', '！', '？', '.', '!', '?', '；', ';' },
                     prefix[prefix.Length - 1]) < 0)
             {
-                prefix = prefix.Substring(0, prefix.Length - 1) + (useChinese ? "。" : ".");
+                prefix = prefix.Substring(0, prefix.Length - 1) + (ContainsChinese(text) ? "。" : ".");
             }
             return prefix;
         }
@@ -1445,7 +1445,7 @@ namespace AnimusForge.SceneActions.Core
                     foreach (string value in values.Take(MaximumAudienceReplies))
                     {
                         string reply = value.Trim();
-                        if (!HasSpeechLanguage(reply, useChinese) ||
+                        if (!HasNaturalSpeech(reply) ||
                             reply.IndexOfAny(new[] { '\r', '\n', '*', '<', '>', '[', ']' }) >= 0 ||
                             SpeechProtocolOnlyPattern.IsMatch(reply) ||
                             string.Equals(reply, "NONE", StringComparison.Ordinal))

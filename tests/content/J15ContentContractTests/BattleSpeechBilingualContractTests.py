@@ -36,7 +36,9 @@ for file in ['BattleSpeechFrameworkV2.cs', 'BattleSpeechDiversityV1.cs', 'Battle
     for key in re.findall(r'BattleSpeechText.Text\("([^"]+)"', source):
         check(all(prefix + key in values for values in resources.values()), file + '/' + key + ' exists')
 core = (CORE / 'BattleSpeechFrameworkV2.cs').read_text(encoding='utf-8-sig')
-check('HasSpeechLanguage(candidate, useChinese)' in core and '!HasSpeechLanguage(reply, useChinese)' in core, 'body and audience use explicit locale')
+check('HasNaturalSpeech(candidate)' in core and '!HasNaturalSpeech(reply)' in core and
+      'text.Any(char.IsLetter)' in core and 'HasSpeechLanguage(' not in core,
+      'body and audience accept natural language independently of package language')
 check('BattleSpeechText.List("AudienceFillers", useChinese)' in core and 'bool chinese = useChinese;' in core, 'fallback filler language is explicit')
 check('return NormalizeNpcSpeechReply(rawText, minimumChars, maximumChars, forbiddenNames, out fallbackReason, true);' in core, 'legacy normalization retains Chinese default')
 check('SpeechProtocolOnlyPattern.IsMatch(text)' in core and 'SpeechProtocolOnlyPattern.IsMatch(reply)' in core, 'protocol-only text rejected at both boundaries')

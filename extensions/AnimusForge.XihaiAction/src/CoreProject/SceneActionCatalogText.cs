@@ -37,8 +37,10 @@ namespace AnimusForge.SceneActions.Core
         // while the immutable V3/V4 action contract initializes its legacy fields.
         private static class ChineseCache { internal static readonly Catalog Value = Load("zh-CN"); }
         private static class EnglishCache { internal static readonly Catalog Value = Load("en"); }
+        private static class PackageCache { internal static readonly Catalog Value = Build(SceneActionPromptPackage.ReadSection("AF_SCENE_CATALOG_")); }
 
-        private static Catalog For(bool useChinese) => useChinese ? ChineseCache.Value : EnglishCache.Value;
+        private static Catalog For(bool useChinese) => SceneActionPromptPackage.IsLoaded && useChinese == SceneActionPromptPackage.UseChinese
+            ? PackageCache.Value : useChinese ? ChineseCache.Value : EnglishCache.Value;
         internal static Entry Get(string key, bool useChinese) => For(useChinese).Entries[key];
         internal static string Prompt(string key, bool useChinese) => For(useChinese).Strings["Prompt_" + key];
 
@@ -78,6 +80,12 @@ namespace AnimusForge.SceneActions.Core
                         throw new InvalidDataException("Invalid scene action text entry.");
                     strings.Add(id.Substring(prefix.Length), value);
                 }
+                return Build(strings);
+            }
+        }
+
+        private static Catalog Build(Dictionary<string, string> strings)
+        {
                 var catalog = new Catalog
                 {
                     Format = strings["Format"].Replace("{KEY}", "{0}").Replace("{NAME}", "{1}").Replace("{DESCRIPTION}", "{2}"),
@@ -92,7 +100,6 @@ namespace AnimusForge.SceneActions.Core
                     }
                 if (catalog.Entries.Count != 27) throw new InvalidDataException("Incomplete scene action text catalog.");
                 return catalog;
-            }
         }
     }
 }
