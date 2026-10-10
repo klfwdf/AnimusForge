@@ -17079,6 +17079,16 @@
       "owner": "AF.Module.UI",
       "source": "content/modules/AF.Module.UI/ModuleData/Languages/CNs/afnpcaction_editor_strings-zh-CN.xml",
       "target": "ModuleData/Languages/CNs/afnpcaction_editor_strings-zh-CN.xml"
+    },
+    {
+      "owner": "AF.Foundation.Localization",
+      "source": "content/foundation/AF.Foundation.Localization/ModuleData/Languages/af_runtime_strings.xml",
+      "target": "ModuleData/Languages/af_runtime_strings.xml"
+    },
+    {
+      "owner": "AF.Foundation.Localization",
+      "source": "content/foundation/AF.Foundation.Localization/ModuleData/Languages/CNs/af_runtime_strings-zh-CN.xml",
+      "target": "ModuleData/Languages/CNs/af_runtime_strings-zh-CN.xml"
     }
   ]
 }

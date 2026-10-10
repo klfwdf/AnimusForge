@@ -6871,6 +6871,7 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		TestTownAmbientAiConnection = delegate
 		{
 			LlmRetryPrompt.CaptureMainThreadContext();
+			ConnectionTestText testText = ConnectionTestText.Capture("Ambient");
 			Task.Run(async delegate
 			{
 				try
@@ -6880,7 +6881,7 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 					if (result != null && result.Success)
 					{
 						InformationManager.DisplayMessage(new InformationMessage(UiFormat("AF_MCM_Ambient_Success", "[Ambient AI] Connection succeeded. This test used about {INPUT} input + {OUTPUT} output tokens.", ("INPUT", result.InputTokens), ("OUTPUT", result.OutputTokens)), Color.FromUint(4278255360u)));
-						Logger.Log("DuelSettings", "环境 AI 独立接口测试成功 inputTokens=" + result.InputTokens + " outputTokens=" + result.OutputTokens);
+						Logger.Log("DuelSettings", testText.SuccessPrefix + "inputTokens=" + result.InputTokens + " outputTokens=" + result.OutputTokens);
 					}
 					else
 					{
@@ -6895,18 +6896,19 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 				catch (Exception ex)
 				{
 					ShowLlmFailurePopup(Ui("AF_MCM_Ambient_ExceptionTitle", "Ambient AI connection test error"), ex.Message);
-					Logger.Log("DuelSettings", "环境 AI 独立接口测试异常: " + ex.Message);
+					Logger.Log("DuelSettings", testText.ExceptionPrefix + ex.Message);
 				}
 			});
 		};
 		TestConnection = delegate
 		{
 			LlmRetryPrompt.CaptureMainThreadContext();
+			ConnectionTestText testText = ConnectionTestText.Capture("Main");
 			Task.Run(async delegate
 			{
 				try
 				{
-					Logger.Log("DuelSettings", "用户点击了 [测试 API 连接] 按钮...");
+					Logger.Log("DuelSettings", testText.Started);
 					string effectiveModelName = GetEffectiveMainModelName();
 					if (string.IsNullOrWhiteSpace(ApiKey))
 					{
@@ -6932,7 +6934,7 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 								new JObject
 								{
 									["role"] = "user",
-									["content"] = "我是一名冒险者，你好啊！(扮演一名叫哈宝的可爱孩童，继续生成20字左右的热情回复)"
+									["content"] = testText.PromptUser
 								}
 							},
 							["stream"] = false
@@ -6948,7 +6950,7 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 							if (!string.IsNullOrWhiteSpace(aiReply))
 							{
 								InformationManager.DisplayMessage(new InformationMessage(Ui("AF_MCM_Api_MainSuccess", "Connection is working. Main API reply: ") + aiReply.Trim(), Color.FromUint(4278255360u)));
-								Logger.Log("DuelSettings", "测试成功! AI回复: " + aiReply);
+								Logger.Log("DuelSettings", testText.SuccessPrefix + aiReply);
 							}
 							else
 							{
@@ -6961,7 +6963,7 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 							string text = BuildApiErrorHint(effectiveApiUrl, effectiveModelName, statusCode, responseString);
 							string reason = UiFormat("AF_MCM_Api_StatusReason", "Connection failed with status code {STATUS}.", ("STATUS", statusCode)) + (string.IsNullOrWhiteSpace(text) ? "" : ("\n" + Ui("AF_MCM_Api_Troubleshooting", "Troubleshooting suggestion: ") + text));
 							ShowLlmFailurePopup(Ui("AF_MCM_Api_MainTestFailed", "Main API connection test failed"), reason, "", responseString);
-							Logger.Log("DuelSettings", $"测试失败! 状态码: {statusCode} | 错误信息: {responseString}");
+							Logger.Log("DuelSettings", testText.Failure(statusCode, responseString));
 						}
 					}
 				}
@@ -6969,18 +6971,19 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 				{
 					Exception ex2 = ex;
 					ShowLlmFailurePopup(Ui("AF_MCM_Api_MainTestException", "Main API connection test error"), ex2.Message);
-					Logger.Log("DuelSettings", "测试崩溃: " + ex2.Message);
+					Logger.Log("DuelSettings", testText.ExceptionPrefix + ex2.Message);
 				}
 			});
 		};
 		TestAuxiliaryConnection = delegate
 		{
 			LlmRetryPrompt.CaptureMainThreadContext();
+			ConnectionTestText testText = ConnectionTestText.Capture("Preprocess");
 			Task.Run(async delegate
 			{
 				try
 				{
-					Logger.Log("DuelSettings", "用户点击了[测试辅助API连接]按钮...");
+					Logger.Log("DuelSettings", testText.Started);
 					string effectiveModelName = GetEffectiveAuxiliaryModelName();
 					if (string.IsNullOrWhiteSpace(AuxiliaryApiKey))
 					{
@@ -7031,7 +7034,7 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 						if (!validEnvelope)
 						{
 							ShowLlmFailurePopup(Ui("AF_MCM_Api_PreprocessReplyParseFailed", "Preprocessing API reply parsing failed"), UiFormat("AF_MCM_Api_PreprocessInvalidJson", "The preprocessing API is reachable{MODE}, but its JSON envelope is invalid: {ERROR}", ("MODE", text), ("ERROR", formatError)), reply, responseString);
-							Logger.Log("DuelSettings", "辅助API连接成功但前处理格式错误: " + formatError + " | reply=" + (reply ?? ""));
+							Logger.Log("DuelSettings", testText.InvalidFormatPrefix + formatError + " | reply=" + (reply ?? ""));
 						}
 						else
 						{
@@ -7044,24 +7047,25 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 						string hint = BuildApiErrorHint(effectiveApiUrl, effectiveModelName, statusCode, responseString);
 						string reason = UiFormat("AF_MCM_Api_StatusReason", "Connection failed with status code {STATUS}.", ("STATUS", statusCode)) + (string.IsNullOrWhiteSpace(hint) ? "" : ("\n" + Ui("AF_MCM_Api_Troubleshooting", "Troubleshooting suggestion: ") + hint));
 						ShowLlmFailurePopup(Ui("AF_MCM_Api_PreprocessTestFailed", "Preprocessing API connection test failed"), reason, "", responseString);
-						Logger.Log("DuelSettings", $"辅助API测试失败! 状态码: {statusCode} | 错误信息: {responseString}");
+						Logger.Log("DuelSettings", testText.Failure(statusCode, responseString));
 					}
 				}
 				catch (Exception ex)
 				{
 					ShowLlmFailurePopup(Ui("AF_MCM_Api_PreprocessTestException", "Preprocessing API connection test error"), ex.Message);
-					Logger.Log("DuelSettings", "辅助API测试崩溃: " + ex.Message);
+					Logger.Log("DuelSettings", testText.ExceptionPrefix + ex.Message);
 				}
 			});
 		};
 		TestActionPostprocessConnection = delegate
 		{
 			LlmRetryPrompt.CaptureMainThreadContext();
+			ConnectionTestText testText = ConnectionTestText.Capture("Postprocess");
 			Task.Run(async delegate
 			{
 				try
 				{
-					Logger.Log("DuelSettings", "用户点击了[测试后处理API连接]按钮...");
+					Logger.Log("DuelSettings", testText.Started);
 					string effectiveModelName = GetEffectiveActionPostprocessModelName();
 					if (string.IsNullOrWhiteSpace(ActionPostprocessApiKey))
 					{
@@ -7087,12 +7091,12 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 							new JObject
 							{
 								["role"] = "system",
-								["content"] = "你是一个标签输出器，只输出标签。"
+								["content"] = testText.PromptSystem
 							},
 							new JObject
 							{
 								["role"] = "user",
-								["content"] = "只输出 [ACTION:MOOD:NEUTRAL]"
+								["content"] = testText.PromptUser
 							}
 						},
 						["stream"] = false,
@@ -7112,7 +7116,7 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 						{
 							string firstResponseString = responseString;
 							emptyReplyReason = UiFormat("AF_MCM_Api_ReasoningOnly", "The connection succeeded, but the model used the entire test output budget for reasoning and produced no final content. completion_tokens={COMPLETION}, reasoning_tokens={REASONING}.", ("COMPLETION", completionTokens), ("REASONING", reasoningTokens));
-							Logger.Log("DuelSettings", "后处理API测试首次回复仅含思考且达到token上限，关闭思考后重试: completion_tokens=" + completionTokens + " reasoning_tokens=" + reasoningTokens);
+							Logger.Log("DuelSettings", testText.ReasoningRetryPrefix + completionTokens + " reasoning_tokens=" + reasoningTokens);
 							JObject retryPayload = (JObject)requestPayload.DeepClone();
 							ApplyThinkingControls(retryPayload, effectiveApiUrl, effectiveModelName, false, ReasoningEffortLow, out var retryControlMode);
 							ConfiguredChatValidationExchange retryResponse = await SendConnectionTestRequestAsync("action_postprocess_validation_retry", effectiveApiUrl, effectiveModelName, ActionPostprocessApiKey, retryPayload, CancellationToken.None);
@@ -7124,18 +7128,18 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 								{
 									reply = retryReply;
 									recoveredFromReasoningTokenLimit = true;
-									Logger.Log("DuelSettings", "后处理API测试关闭思考重试成功: control_mode=" + retryControlMode + " reply=" + retryReply);
+									Logger.Log("DuelSettings", testText.RetrySucceededPrefix + retryControlMode + " reply=" + retryReply);
 								}
 								else
 								{
 									emptyReplyReason += " " + Ui("AF_MCM_Api_RetryContentEmpty", "Content is still empty after retrying with reasoning disabled.");
-									responseString = "【首次响应】\n" + firstResponseString + "\n\n【关闭思考重试响应】\n" + retryResponseString;
+									responseString = testText.FirstResponseHeader + firstResponseString + testText.RetryResponseHeader + retryResponseString;
 								}
 							}
 							else
 							{
 								emptyReplyReason += " " + UiFormat("AF_MCM_Api_RetryFailed", "Retry with reasoning disabled failed with status code {STATUS}.", ("STATUS", (HttpStatusCode)retryResponse.StatusCode));
-								responseString = "【首次响应】\n" + firstResponseString + "\n\n【关闭思考重试响应】\n" + retryResponseString;
+								responseString = testText.FirstResponseHeader + firstResponseString + testText.RetryResponseHeader + retryResponseString;
 							}
 						}
 						if (string.IsNullOrWhiteSpace(reply))
@@ -7154,24 +7158,25 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 						string hint = BuildApiErrorHint(effectiveApiUrl, effectiveModelName, statusCode, responseString);
 						string reason = UiFormat("AF_MCM_Api_StatusReason", "Connection failed with status code {STATUS}.", ("STATUS", statusCode)) + (string.IsNullOrWhiteSpace(hint) ? "" : ("\n" + Ui("AF_MCM_Api_Troubleshooting", "Troubleshooting suggestion: ") + hint));
 						ShowLlmFailurePopup(Ui("AF_MCM_Api_PostprocessTestFailed", "Postprocessing API connection test failed"), reason, "", responseString);
-						Logger.Log("DuelSettings", $"后处理API测试失败! 状态码: {statusCode} | 错误信息: {responseString}");
+						Logger.Log("DuelSettings", testText.Failure(statusCode, responseString));
 					}
 				}
 				catch (Exception ex)
 				{
 					ShowLlmFailurePopup(Ui("AF_MCM_Api_PostprocessTestException", "Postprocessing API connection test error"), ex.Message);
-					Logger.Log("DuelSettings", "后处理API测试崩溃: " + ex.Message);
+					Logger.Log("DuelSettings", testText.ExceptionPrefix + ex.Message);
 				}
 			});
 		};
 		TestEventAndRebellionConnection = delegate
 		{
 			LlmRetryPrompt.CaptureMainThreadContext();
+			ConnectionTestText testText = ConnectionTestText.Capture("Event");
 			Task.Run(async delegate
 			{
 				try
 				{
-					Logger.Log("DuelSettings", "用户点击了[测试事件/叛乱专用API连接]按钮...");
+					Logger.Log("DuelSettings", testText.Started);
 					string effectiveModelName = GetEffectiveEventAndRebellionModelName();
 					if (string.IsNullOrWhiteSpace(EventAndRebellionApiUrl))
 					{
@@ -7198,12 +7203,12 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 							new JObject
 							{
 								["role"] = "system",
-								["content"] = "你是一名测试回显助手，只输出一句短回复。"
+								["content"] = testText.PromptSystem
 							},
 							new JObject
 							{
 								["role"] = "user",
-								["content"] = "请回复：事件与叛乱接口连通"
+								["content"] = testText.PromptUser
 							}
 						},
 						["stream"] = false,
@@ -7232,13 +7237,13 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 						string hint = BuildApiErrorHint(effectiveApiUrl, effectiveModelName, statusCode, responseString);
 						string reason = UiFormat("AF_MCM_Api_StatusReason", "Connection failed with status code {STATUS}.", ("STATUS", statusCode)) + (string.IsNullOrWhiteSpace(hint) ? "" : ("\n" + Ui("AF_MCM_Api_Troubleshooting", "Troubleshooting suggestion: ") + hint));
 						ShowLlmFailurePopup(Ui("AF_MCM_Api_EventTestFailed", "Event/rebellion API connection test failed"), reason, "", responseString);
-						Logger.Log("DuelSettings", $"事件/叛乱API测试失败! 状态码: {statusCode} | 错误信息: {responseString}");
+						Logger.Log("DuelSettings", testText.Failure(statusCode, responseString));
 					}
 				}
 				catch (Exception ex)
 				{
 					ShowLlmFailurePopup(Ui("AF_MCM_Api_EventTestException", "Event/rebellion API connection test error"), ex.Message);
-					Logger.Log("DuelSettings", "事件/叛乱API测试崩溃: " + ex.Message);
+					Logger.Log("DuelSettings", testText.ExceptionPrefix + ex.Message);
 				}
 			});
 		};
