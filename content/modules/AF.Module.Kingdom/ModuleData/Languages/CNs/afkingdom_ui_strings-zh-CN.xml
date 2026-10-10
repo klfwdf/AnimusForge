@@ -73,5 +73,7 @@
     <string id="AF_KINGDOM_UI_Rebellion_NamingNameInvalid" text="模型返回的国名为空、无效或与现有王国重名。" />
     <string id="AF_KINGDOM_UI_Rebellion_NamingParseFailed" text="模型返回无法按 [NAME]/[SHORT]/[LORE] 格式解析。" />
     <string id="AF_KINGDOM_UI_Rebellion_NamingFailed" text="叛乱命名失败。" />
+    <string id="AF_KINGDOM_CW_World_UnknownClan" text="某家族" />
+    <string id="AF_KINGDOM_CW_Notice_DemandChanged" text="你将派系诉求更改为{A}；{B} 个其他家族继续参与。派系不会自动起兵。" />
 </strings>
 </base>

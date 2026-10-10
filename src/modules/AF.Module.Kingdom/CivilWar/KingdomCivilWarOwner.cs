@@ -267,7 +267,9 @@ internal sealed partial class KingdomCivilWarOwner
 	{
 		if (faction == null) return "";
 		CivilWarDemandDef demand = CivilWarCatalog.FindDemand(faction.DemandId);
-		return CivilWarUiText.T("AF_KINGDOM_CW_Core_UltimatumDelivered", "{FACTION} has delivered an ultimatum: {DEMAND}", ("FACTION", FactionName(faction, demand)), ("DEMAND", FormatDemand(demand, faction.TargetName)))
+		// Display text for an inquiry: use the localized projections. FactionName/FormatDemand keep
+		// serving the stored history, AFEF and weekly material.
+		return CivilWarUiText.T("AF_KINGDOM_CW_Core_UltimatumDelivered", "{FACTION} has delivered an ultimatum: {DEMAND}", ("FACTION", FactionDisplayName(faction, demand)), ("DEMAND", CivilWarUiText.DemandDisplayText(demand, ResolveDemandTargetDisplay(demand, faction, null))))
 			+ CivilWarUiText.T("AF_KINGDOM_CW_Core_UltimatumStatus", "\n\nRefused {COUNT} times. Without an answer it will be decided automatically on day {DAY}. A refusal may lead to civil war.", ("COUNT", faction.Refusals.ToString()), ("DAY", faction.AnswerDeadlineDay.ToString()));
 	}
 
@@ -636,8 +638,13 @@ internal sealed partial class KingdomCivilWarOwner
 	internal static string DescribeFollowPrompt(KingdomCivilWarFactionState faction)
 	{
 		if (faction == null) return "";
-		string name = FactionName(faction, CivilWarCatalog.FindDemand(faction.DemandId));
-		string rebel = CivilWarWorld.KingdomName(CivilWarWorld.FindKingdom(faction.RebelKingdomId));
+		CivilWarDemandDef demand = CivilWarCatalog.FindDemand(faction.DemandId);
+		// Display text for an inquiry: the faction name uses the localized projection. The rebel kingdom
+		// is resolved from the live object so a destroyed kingdom does not leak the Chinese "some
+		// kingdom" placeholder that CivilWarWorld.KingdomName answers for a null kingdom.
+		string name = FactionDisplayName(faction, demand);
+		Kingdom rebelKingdom = CivilWarWorld.FindKingdom(faction.RebelKingdomId);
+		string rebel = rebelKingdom == null ? CivilWarUiText.T("AF_KINGDOM_CW_World_UnknownKingdom", "some kingdom") : CivilWarWorld.KingdomName(rebelKingdom);
 		return CivilWarUiText.T("AF_KINGDOM_CW_Core_FollowPromptIntro", "The {FACTION} you belong to has risen and founded {REBEL}, going to war with the crown.", ("FACTION", name), ("REBEL", rebel))
 			+ CivilWarUiText.T("AF_KINGDOM_CW_Core_FollowPromptFollow", "\n\nFollow: your clan takes its fiefs over to {REBEL}; when the civil war ends you return with the outcome (if the crown wins, you will be punished).", ("REBEL", rebel))
 			+ CivilWarUiText.T("AF_KINGDOM_CW_Core_FollowPromptStay", "\nStay: your clan sides with the crown and turns against its former comrades.");
@@ -929,7 +936,9 @@ internal sealed partial class KingdomCivilWarOwner
 		if (accept)
 		{
 			var result = Execute(new CivilWarActionRequest { OperationId = Guid.NewGuid().ToString("N"), KingdomId = kingdom.StringId, FactionId = faction.Id, Action = CivilWarAction.Concede }, Clan.PlayerClan);
-			message = result.Message; return result.Status == CivilWarActionStatus.Applied;
+			// Display path: the Concede result carries a projection key, so the notification renders the
+			// localized sentence instead of the raw Chinese receipt text.
+			message = CivilWarUiText.ResultNotice(result); return result.Status == CivilWarActionStatus.Applied;
 		}
 		int week = CivilWarWorld.CurrentWeek();
 		CivilWarTuning tuning = DuelSettings.BuildCivilWarTuning();
@@ -1226,6 +1235,7 @@ internal sealed partial class KingdomCivilWarOwner
 		else if (f.Stage == KingdomCivilWarStage.Ultimatum)
 		{
 			p.DeadlineLabel = CivilWarUiText.T("AF_KINGDOM_CW_Panel_Ultimatum", "Ultimatum");
+			p.DeadlineIsUltimatum = true;
 			p.DeadlineValue = f.PlayerAnswerPending ? Math.Max(0, f.AnswerDeadlineDay - day).ToString() : CivilWarUiText.T("AF_KINGDOM_CW_Panel_RulingPending", "Under review");
 			p.DeadlineUnit = f.PlayerAnswerPending ? CivilWarUiText.T("AF_KINGDOM_CW_Panel_UnitDays", "d") : "";
 			p.DeadlineNote = f.PlayerAnswerPending ? CivilWarUiText.T("AF_KINGDOM_CW_Panel_NoteAwaitKingReply", "Waiting for the king's answer within the deadline") : CivilWarUiText.T("AF_KINGDOM_CW_Panel_NoteKingRuling", "The king is deciding");
@@ -1346,7 +1356,14 @@ internal sealed partial class KingdomCivilWarOwner
 	// so English never renders the catalog's Chinese "…为首的反对派" rule text. Stored history, AFEF and
 	// weekly material keep using FactionName, which stays on the catalog format.
 	private static string FactionDisplayName(KingdomCivilWarFactionState faction, CivilWarDemandDef demand)
-		=> CivilWarUiText.T("AF_KINGDOM_CW_Panel_FactionName", "{LEADER}'s {TAG}", ("LEADER", CivilWarWorld.ClanName(CivilWarWorld.FindClan(faction?.LeaderClanId))), ("TAG", CivilWarUiText.DemandTag(demand)));
+	{
+		// Check the clan object first: CivilWarWorld.ClanName answers a Chinese "some clan" placeholder
+		// for a null clan, which must not leak into the English panel.
+		Clan leader = CivilWarWorld.FindClan(faction?.LeaderClanId);
+		return CivilWarUiText.T("AF_KINGDOM_CW_Panel_FactionName", "{LEADER}'s {TAG}",
+			("LEADER", leader == null ? CivilWarUiText.T("AF_KINGDOM_CW_World_UnknownClan", "an unknown clan") : CivilWarWorld.ClanName(leader)),
+			("TAG", CivilWarUiText.DemandTag(demand)));
+	}
 
 	private static string SignedRelation(Clan clan, Kingdom kingdom)
 	{
@@ -1477,12 +1494,17 @@ internal sealed partial class KingdomCivilWarOwner
 		switch (demand.Target)
 		{
 			case CivilWarDemandTarget.EnemyKingdom:
-				string enemy = CivilWarWorld.KingdomName(CivilWarWorld.FindKingdom(faction?.TargetId));
-				return string.IsNullOrWhiteSpace(enemy) ? stored : enemy;
+				// FindKingdom returns null for a kingdom destroyed since the demand was recorded, and
+				// CivilWarWorld.KingdomName would then answer its Chinese "some kingdom" placeholder.
+				// Check the object, not the string, so that case keeps the stored fact instead.
+				Kingdom enemy = CivilWarWorld.FindKingdom(faction?.TargetId);
+				return enemy == null ? stored : CivilWarWorld.KingdomName(enemy);
 			case CivilWarDemandTarget.ImposedPolicy:
 				string policy = kingdom?.ActivePolicies?.FirstOrDefault(x => x.StringId == faction?.TargetId)?.Name?.ToString();
 				if (!string.IsNullOrWhiteSpace(policy)) return policy;
-				return CivilWarUiText.T("AF_KINGDOM_CW_Panel_TargetCurrentPolicy", "the current policy");
+				// The policy may already be repealed, or the caller may not have the kingdom at hand;
+				// the recorded name is still the truthful target in that case.
+				return string.IsNullOrWhiteSpace(stored) ? CivilWarUiText.T("AF_KINGDOM_CW_Panel_TargetCurrentPolicy", "the current policy") : stored;
 			default:
 				return stored;
 		}

@@ -120,6 +120,9 @@ internal sealed class CivilWarPanelFaction
 	public string RefusalUnit = "";
 	// Right-hand deadline block of the dossier header.
 	public string DeadlineLabel = "";
+	// Stable display state for the ultimatum deadline label. The UI must not compare DeadlineLabel,
+	// which is a localized string; this flag carries the same fact independently of language.
+	public bool DeadlineIsUltimatum;
 	public string DeadlineValue = "";
 	public string DeadlineUnit = "";
 	public string DeadlineNote = "";

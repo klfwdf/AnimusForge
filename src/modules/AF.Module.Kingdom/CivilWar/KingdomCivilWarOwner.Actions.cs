@@ -299,7 +299,8 @@ internal sealed partial class KingdomCivilWarOwner
 		}
 		else if (r.Action == CivilWarAction.ChangeDemand)
 		{
-			result.Message = ChangePlayerFactionDemand(k, s, f, r, week, tuning);
+			result.Message = ChangePlayerFactionDemand(k, s, f, r, week, tuning, out string changedDemand, out string changedRetained);
+			Project(result, "DemandChanged", changedDemand, changedRetained);
 		}
 		else if (r.Action == CivilWarAction.DissolveOwn)
 		{
