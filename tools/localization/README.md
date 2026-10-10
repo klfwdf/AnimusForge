@@ -1,5 +1,19 @@
 # 本地化盘点工具
 
+尚无英文对应的盘点：
+
+```powershell
+python tools/localization/inventory_untranslated.py `
+  --output artifacts/localization/untranslated-only-current.json
+```
+
+只将已注册键、已追踪显示投影或有效平行英文 JSON 视为英文证据。
+标准世界书逐文件匹配相对路径、人物 ID 前缀或知识规则 JSON Id；不能因为
+`Calradia Chronicles` 目录存在就排除整个中文原版。已改成英文 Id 的规则且无
+明确映射时仍标为待核查，不按名字猜测等价。报告含源文件 hash、扫描期间变化、
+解析错误、UI 确认下限和消费者候选，内容资产与 UI 分开统计。
+两个旧协议模板可在资产盘点保留，但不代表纯英文发行门禁通过。
+
 运行：
 
 ```powershell
