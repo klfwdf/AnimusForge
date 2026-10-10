@@ -39,17 +39,17 @@ public sealed partial class PlayerNotorietyBehavior : CampaignBehaviorBase
 
 	private static readonly string[] NotorietyLevelTexts = new string[11]
 	{
-		"默默无闻",
-		"鲜为人知",
-		"略有耳闻",
-		"渐为人知",
-		"口耳相传",
-		"广为人知",
-		"远近皆知",
-		"街知巷闻",
-		"妇孺皆知",
-		"家喻户晓",
-		"人尽皆知"
+		"{=AF_SOCIAL_UI_Notoriety_Level0}Obscure",
+		"{=AF_SOCIAL_UI_Notoriety_Level1}Little known",
+		"{=AF_SOCIAL_UI_Notoriety_Level2}Faintly recognized",
+		"{=AF_SOCIAL_UI_Notoriety_Level3}Gaining recognition",
+		"{=AF_SOCIAL_UI_Notoriety_Level4}Talked about",
+		"{=AF_SOCIAL_UI_Notoriety_Level5}Widely known",
+		"{=AF_SOCIAL_UI_Notoriety_Level6}Known far and wide",
+		"{=AF_SOCIAL_UI_Notoriety_Level7}The talk of every street",
+		"{=AF_SOCIAL_UI_Notoriety_Level8}Known to young and old",
+		"{=AF_SOCIAL_UI_Notoriety_Level9}A household name",
+		"{=AF_SOCIAL_UI_Notoriety_Level10}Known to everyone"
 	};
 
 	private static readonly string[] CultureDisplayOrder = new string[6]
@@ -2291,7 +2291,7 @@ public sealed partial class PlayerNotorietyBehavior : CampaignBehaviorBase
 			sb.AppendLine(UiText("AF_UI_Notoriety_LowProfileActive", "[Low-profile mode] Active. People outside the player's current party will not recognize the player for now; new actions during low-profile mode still enter major history, recent actions, and weekly report material."));
 			sb.AppendLine();
 		}
-		string playerName = "玩家";
+		string playerName = UiText("AF_SOCIAL_UI_Notoriety_Player", "Player");
 		string summary = RenderPlayerHistoryTextForPrompt((_state.MajorSummary ?? "").Trim(), BuildPlayerHistoryDisplayName());
 		if (!string.IsNullOrWhiteSpace(summary))
 		{
@@ -2313,7 +2313,7 @@ public sealed partial class PlayerNotorietyBehavior : CampaignBehaviorBase
 			sb.AppendLine(UiText("AF_UI_Notoriety_RecentActions", "[Recent actions]"));
 			foreach (PlayerActionEntry entry in recentActions)
 			{
-				sb.AppendLine("- " + (string.IsNullOrWhiteSpace(entry.GameDate) ? ("第" + entry.Day + "日") : entry.GameDate.Trim()) + "：" + RenderPlayerActionTextForPrompt(entry.Text, playerName));
+				sb.AppendLine(BuildNotorietyActionLineForDisplay(entry.Day, entry.GameDate, RenderPlayerActionTextForPrompt(entry.Text, playerName)));
 			}
 		}
 		string text = sb.ToString().Trim();
@@ -2399,7 +2399,7 @@ public sealed partial class PlayerNotorietyBehavior : CampaignBehaviorBase
 			return name.Trim();
 		}
 		string id = NormalizeCultureId(fallbackId);
-		return string.IsNullOrWhiteSpace(id) ? "未知文化" : id;
+		return string.IsNullOrWhiteSpace(id) ? UiText("AF_SOCIAL_UI_Notoriety_UnknownCulture", "Unknown culture") : id;
 	}
 
 	private static Color ResolveCultureFillColor(CultureObject culture)
@@ -2447,58 +2447,70 @@ public sealed partial class PlayerNotorietyBehavior : CampaignBehaviorBase
 		double world = ClampPercentDouble(_state.WorldNotoriety);
 		int clanTierBonus = GetPlayerClanTierBonus();
 		double effectiveWorld = ClampPercentDouble(world + clanTierBonus);
-		sb.AppendLine("【玩家知名度】");
-		sb.AppendLine("世界知名度：" + FormatScore(effectiveWorld) + "/100（" + GetLevelText(effectiveWorld) + "；基础 " + FormatScore(world) + " + 家族修正 " + clanTierBonus + "）");
-		sb.AppendLine("家族等级修正：+" + clanTierBonus);
+		sb.AppendLine(UiText("AF_SOCIAL_UI_Notoriety_Heading", "[Player notoriety]"));
+		sb.AppendLine(SocialUiLocalization.Format("AF_SOCIAL_UI_Notoriety_WorldScore", "World notoriety: {EFFECTIVE}/100 ({LEVEL}; base {BASE} + clan bonus {BONUS})",
+			("EFFECTIVE", FormatScore(effectiveWorld)), ("LEVEL", GetLevelText(effectiveWorld)), ("BASE", FormatScore(world)), ("BONUS", clanTierBonus)));
+		sb.AppendLine(SocialUiLocalization.Format("AF_SOCIAL_UI_Notoriety_ClanBonus", "Clan tier bonus: +{BONUS}", ("BONUS", clanTierBonus)));
 		sb.AppendLine();
-		sb.AppendLine("【文化知名度】");
+		sb.AppendLine(UiText("AF_SOCIAL_UI_Notoriety_CultureHeading", "[Culture notoriety]"));
 		if (_state.CultureNotoriety.Count == 0)
 		{
-			sb.AppendLine("（暂无文化知名度）");
+			sb.AppendLine(UiText("AF_SOCIAL_UI_Notoriety_NoCultures", "(No culture notoriety yet)"));
 		}
 		else
 		{
 			foreach (KeyValuePair<string, double> pair in _state.CultureNotoriety.OrderByDescending(x => x.Value).ThenBy(x => x.Key))
 			{
 				double effective = ClampPercentDouble(pair.Value + world + clanTierBonus);
-				sb.AppendLine("- " + ResolveCultureDisplayName(pair.Key) + "：" + FormatScore(pair.Value) + "/100；有效 " + FormatScore(effective) + "/100（" + GetLevelText(effective) + "）");
+				sb.AppendLine(SocialUiLocalization.Format("AF_SOCIAL_UI_Notoriety_CultureScore", "- {CULTURE}: {BASE}/100; effective {EFFECTIVE}/100 ({LEVEL})",
+					("CULTURE", ResolveCultureDisplayName(pair.Key)), ("BASE", FormatScore(pair.Value)), ("EFFECTIVE", FormatScore(effective)), ("LEVEL", GetLevelText(effective))));
 			}
 		}
 		string history = BuildMajorHistoryForPrompt(BuildPlayerHistoryDisplayName());
 		if (!string.IsNullOrWhiteSpace(history))
 		{
 			sb.AppendLine();
-			sb.AppendLine("【玩家履历】");
+			sb.AppendLine(UiText("AF_SOCIAL_UI_Notoriety_HistoryHeading", "[Player history]"));
 			sb.AppendLine(history);
 		}
 		PruneRecentActions();
 		if (_state.RecentActions.Count > 0)
 		{
 			sb.AppendLine();
-			sb.AppendLine("【玩家近期行动】");
+			sb.AppendLine(UiText("AF_UI_Notoriety_RecentActions", "[Recent actions]"));
+			string playerName = UiText("AF_SOCIAL_UI_Notoriety_Player", "Player");
 			foreach (PlayerActionEntry entry in _state.RecentActions.OrderByDescending(x => x.Day).ThenByDescending(x => x.Sequence).Take(20))
 			{
-				sb.AppendLine("- " + (string.IsNullOrWhiteSpace(entry.GameDate) ? ("第" + entry.Day + "日") : entry.GameDate.Trim()) + "：" + RenderPlayerActionTextForPrompt(entry.Text, "玩家"));
+				sb.AppendLine(BuildNotorietyActionLineForDisplay(entry.Day, entry.GameDate, RenderPlayerActionTextForPrompt(entry.Text, playerName)));
 			}
 		}
 		if (includeRawMaterials)
 		{
 			List<PlayerHistoryMaterial> pending = _state.MajorMaterials.Where(x => x != null && !x.Summarized).OrderBy(x => x.Day).ThenBy(x => x.CreatedUtcTicks).ToList();
 			sb.AppendLine();
-			sb.AppendLine("【未总结素材】");
+			sb.AppendLine(UiText("AF_SOCIAL_UI_Notoriety_PendingHeading", "[Unsummarized material]"));
 			if (pending.Count == 0)
 			{
-				sb.AppendLine("（无）");
+				sb.AppendLine(UiText("AF_SOCIAL_UI_Notoriety_NoPending", "(None)"));
 			}
 			else
 			{
 				foreach (PlayerHistoryMaterial material in pending.Take(30))
 				{
-					sb.AppendLine("- " + (string.IsNullOrWhiteSpace(material.GameDate) ? ("第" + material.Day + "日") : material.GameDate.Trim()) + "：" + RenderPlayerHistoryTextForPrompt(material.Text, BuildPlayerHistoryDisplayName()));
+					sb.AppendLine(BuildNotorietyActionLineForDisplay(material.Day, material.GameDate, RenderPlayerHistoryTextForPrompt(material.Text, BuildPlayerHistoryDisplayName())));
 				}
 			}
 		}
 		return sb.ToString().Trim();
+	}
+
+	private static string BuildNotorietyActionLineForDisplay(int day, string gameDate, string text)
+	{
+		// Existing dates and history remain authoritative; only the empty-date fallback is generated here.
+		string date = string.IsNullOrWhiteSpace(gameDate)
+			? SocialUiLocalization.Format("AF_SOCIAL_UI_Notoriety_Day", "Day {DAY}", ("DAY", day))
+			: gameDate.Trim();
+		return SocialUiLocalization.Format("AF_SOCIAL_UI_Notoriety_ActionLine", "- {DATE}: {TEXT}", ("DATE", date), ("TEXT", text));
 	}
 
 	private void OpenPlayerNotorietyView()
@@ -3608,7 +3620,7 @@ public sealed partial class PlayerNotorietyBehavior : CampaignBehaviorBase
 		{
 			index = 10;
 		}
-		return NotorietyLevelTexts[index];
+		return new TextObject(NotorietyLevelTexts[index]).ToString();
 	}
 
 	private static string FormatScore(double value)
@@ -3622,7 +3634,7 @@ public sealed partial class PlayerNotorietyBehavior : CampaignBehaviorBase
 		string id = NormalizeCultureId(cultureId);
 		if (string.IsNullOrWhiteSpace(id))
 		{
-			return "未知文化";
+			return UiText("AF_SOCIAL_UI_Notoriety_UnknownCulture", "Unknown culture");
 		}
 		try
 		{

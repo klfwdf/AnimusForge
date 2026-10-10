@@ -88,6 +88,30 @@
     <string id="AF_SOCIAL_UI_MarriageReasonMultiFailed" text="Polygamy execution failed: {DETAIL}" />
     <string id="AF_SOCIAL_UI_MarriageReasonActionFailed" text="MarriageAction execution failed: {DETAIL}" />
     <string id="AF_SOCIAL_UI_MarriageReasonDissolveException" text="Error dissolving marriage: {DETAIL}" />
+    <string id="AF_SOCIAL_UI_Notoriety_Heading" text="[Player notoriety]" />
+    <string id="AF_SOCIAL_UI_Notoriety_WorldScore" text="World notoriety: {EFFECTIVE}/100 ({LEVEL}; base {BASE} + clan bonus {BONUS})" />
+    <string id="AF_SOCIAL_UI_Notoriety_ClanBonus" text="Clan tier bonus: +{BONUS}" />
+    <string id="AF_SOCIAL_UI_Notoriety_CultureHeading" text="[Culture notoriety]" />
+    <string id="AF_SOCIAL_UI_Notoriety_NoCultures" text="(No culture notoriety yet)" />
+    <string id="AF_SOCIAL_UI_Notoriety_CultureScore" text="- {CULTURE}: {BASE}/100; effective {EFFECTIVE}/100 ({LEVEL})" />
+    <string id="AF_SOCIAL_UI_Notoriety_HistoryHeading" text="[Player history]" />
+    <string id="AF_SOCIAL_UI_Notoriety_PendingHeading" text="[Unsummarized material]" />
+    <string id="AF_SOCIAL_UI_Notoriety_NoPending" text="(None)" />
+    <string id="AF_SOCIAL_UI_Notoriety_Player" text="Player" />
+    <string id="AF_SOCIAL_UI_Notoriety_Day" text="Day {DAY}" />
+    <string id="AF_SOCIAL_UI_Notoriety_ActionLine" text="- {DATE}: {TEXT}" />
+    <string id="AF_SOCIAL_UI_Notoriety_UnknownCulture" text="Unknown culture" />
+    <string id="AF_SOCIAL_UI_Notoriety_Level0" text="Obscure" />
+    <string id="AF_SOCIAL_UI_Notoriety_Level1" text="Little known" />
+    <string id="AF_SOCIAL_UI_Notoriety_Level2" text="Faintly recognized" />
+    <string id="AF_SOCIAL_UI_Notoriety_Level3" text="Gaining recognition" />
+    <string id="AF_SOCIAL_UI_Notoriety_Level4" text="Talked about" />
+    <string id="AF_SOCIAL_UI_Notoriety_Level5" text="Widely known" />
+    <string id="AF_SOCIAL_UI_Notoriety_Level6" text="Known far and wide" />
+    <string id="AF_SOCIAL_UI_Notoriety_Level7" text="The talk of every street" />
+    <string id="AF_SOCIAL_UI_Notoriety_Level8" text="Known to young and old" />
+    <string id="AF_SOCIAL_UI_Notoriety_Level9" text="A household name" />
+    <string id="AF_SOCIAL_UI_Notoriety_Level10" text="Known to everyone" />
   </strings>
 </base>
 
