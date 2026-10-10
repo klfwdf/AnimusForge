@@ -18,14 +18,14 @@ internal sealed class WeeklyReportSectionSplit
 
 internal static class WeeklyReportTextHelper
 {
-	private const string EmptySectionText = "本周未见明显变化。";
+	private static string EmptySectionText => WeeklyReportUiText.Get("AF_WEEKLY_EmptySection", "No significant changes were recorded this week.");
 
 	public static void SplitChronicleBodyForDisplay(string bodyText, out string military, out string diplomatic, out string domestic)
 	{
 		WeeklyReportSectionSplit split = SplitChronicleBody(bodyText);
 		if (!split.HasExplicitSections)
 		{
-			military = string.IsNullOrWhiteSpace(split.NormalizedBodyText) ? EmptySectionText : ("该期旧周报尚未按三类保存，原文如下：\n\n" + split.NormalizedBodyText.Trim());
+			military = string.IsNullOrWhiteSpace(split.NormalizedBodyText) ? EmptySectionText : (WeeklyReportUiText.Get("AF_WEEKLY_LegacyUnsectionedReport", "This older report was not saved in three sections. Its original text follows:\n\n") + split.NormalizedBodyText.Trim());
 			diplomatic = EmptySectionText;
 			domestic = EmptySectionText;
 			return;
@@ -165,13 +165,16 @@ internal static class WeeklyReportTextHelper
 		section = 0;
 		remainder = line ?? "";
 		string text = (line ?? "").TrimStart();
-		if (TryConsumeHeading(text, 1, "军事事件", out section, out remainder)
-			|| TryConsumeHeading(text, 1, "军事事件与战役", out section, out remainder)
-			|| TryConsumeHeading(text, 2, "外交事件", out section, out remainder)
-			|| TryConsumeHeading(text, 2, "外交事务", out section, out remainder)
-			|| TryConsumeHeading(text, 3, "领地内事件", out section, out remainder)
-			|| TryConsumeHeading(text, 3, "领内事件", out section, out remainder)
-			|| TryConsumeHeading(text, 3, "内政事件", out section, out remainder))
+		if (TryConsumeHeading(text, 1, WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0729"), out section, out remainder)
+			|| TryConsumeHeading(text, 1, WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0730"), out section, out remainder)
+			|| TryConsumeHeading(text, 2, WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0731"), out section, out remainder)
+			|| TryConsumeHeading(text, 2, WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0732"), out section, out remainder)
+			|| TryConsumeHeading(text, 3, WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0733"), out section, out remainder)
+			|| TryConsumeHeading(text, 3, WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0734"), out section, out remainder)
+			|| TryConsumeHeading(text, 3, WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0735"), out section, out remainder)
+			|| TryConsumeHeading(text, 1, "Military events", out section, out remainder)
+			|| TryConsumeHeading(text, 2, "Diplomatic events", out section, out remainder)
+			|| TryConsumeHeading(text, 3, "Domestic events", out section, out remainder))
 		{
 			return true;
 		}

@@ -9,5 +9,6 @@
     <Compile Include="../../../../src/modules/AF.Module.Weekly/Materials/WeeklyMaterialAggregationOwner.cs" Link="WeeklyMaterialAggregationOwner.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Weekly/Materials/WeeklyPromptMaterialOwner.cs" Link="WeeklyPromptMaterialOwner.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Weekly/Materials/WeeklyAggregateEventLineOwner.cs" Link="WeeklyAggregateEventLineOwner.cs" />
+    <EmbeddedResource Include="../../../../content/modules/AF.Module.Weekly/ModuleData/WeeklyMaterialCompatibility.json" LogicalName="AnimusForge.Weekly.MaterialCompatibility.json" />
   </ItemGroup>
 </Project>

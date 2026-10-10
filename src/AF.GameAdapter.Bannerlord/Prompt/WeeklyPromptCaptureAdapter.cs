@@ -614,45 +614,45 @@ internal static string BuildWeeklyReportFullOnDemandSystemPrompt(RequestPromptCa
 	{
 		WeeklyReportPromptProfile weeklyReportPromptProfile = ports.Profile();
 		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.AppendLine("你是一名负责整理当前剧本世界时局的史官。");
-		stringBuilder.AppendLine("你的任务是根据已保存的完整素材，为一条历史短周报补写完整正文。");
-		stringBuilder.AppendLine("这次补写只用于档案馆展示，不参与当前稳定度结算。");
+		stringBuilder.AppendLine(WeeklyMaterialTexts.Prompt("AF_WEEKLY_Prompt_031"));
+		stringBuilder.AppendLine(WeeklyMaterialTexts.Prompt("AF_WEEKLY_Prompt_032"));
+		stringBuilder.AppendLine(WeeklyMaterialTexts.Prompt("AF_WEEKLY_Prompt_033"));
 		WeeklyPromptMaterialOwner.AppendWeeklyReportWritingRequirements(stringBuilder, ports.WritingRequirements());
 		WeeklyPromptMaterialOwner.AppendWeeklyReportVillageRaidWritingRule(stringBuilder);
 		WeeklyPromptMaterialOwner.AppendWeeklyReportPoliticalReasonWritingRule(stringBuilder, true);
 		WeeklyPromptMaterialOwner.AppendWeeklyReportSettlementReasonWritingRule(stringBuilder);
 		stringBuilder.AppendLine(" ");
-		stringBuilder.AppendLine("篇幅要求：");
-		stringBuilder.AppendLine($"- 当前档位：{weeklyReportPromptProfile.Label}");
-		stringBuilder.AppendLine($"- 正文必须控制在 {weeklyReportPromptProfile.MinWords} 到 {weeklyReportPromptProfile.MaxWords} 字之间。");
-		stringBuilder.AppendLine("- SHORT 短摘要必须控制在 20 到 140 字之间。");
+		stringBuilder.AppendLine(WeeklyMaterialTexts.Prompt("AF_WEEKLY_Prompt_034"));
+		stringBuilder.AppendLine(string.Format(WeeklyMaterialTexts.Prompt("AF_WEEKLY_Prompt_035"), weeklyReportPromptProfile.Label));
+		stringBuilder.AppendLine(string.Format(WeeklyMaterialTexts.Prompt("AF_WEEKLY_Prompt_036"), weeklyReportPromptProfile.MinWords, weeklyReportPromptProfile.MaxWords));
+		stringBuilder.AppendLine(WeeklyMaterialTexts.Prompt("AF_WEEKLY_Prompt_037"));
 		stringBuilder.AppendLine(" ");
-		stringBuilder.AppendLine("输出格式：");
-		stringBuilder.AppendLine("[TITLE]周报标题");
-		stringBuilder.AppendLine("[SHORT]20-140字短摘要");
-		stringBuilder.AppendLine("[REPORT]周报正文");
+		stringBuilder.AppendLine(WeeklyMaterialTexts.Prompt("AF_WEEKLY_Prompt_038"));
+		stringBuilder.AppendLine(WeeklyMaterialTexts.Prompt("AF_WEEKLY_Prompt_039"));
+		stringBuilder.AppendLine(WeeklyMaterialTexts.Prompt("AF_WEEKLY_Prompt_040"));
+		stringBuilder.AppendLine(WeeklyMaterialTexts.Prompt("AF_WEEKLY_Prompt_041"));
 		stringBuilder.AppendLine(" ");
-		stringBuilder.AppendLine("严禁输出 [TAGS]，严禁输出任何稳定度标签。");
-		stringBuilder.AppendLine("不要输出除 [TITLE]、[SHORT]、[REPORT] 之外的其他字段。");
+		stringBuilder.AppendLine(WeeklyMaterialTexts.Prompt("AF_WEEKLY_Prompt_042"));
+		stringBuilder.AppendLine(WeeklyMaterialTexts.Prompt("AF_WEEKLY_Prompt_043"));
 		return stringBuilder.ToString().TrimEnd();
 	}
 internal static string BuildWeeklyReportFullOnDemandUserPrompt(RequestPromptCapturePorts ports, WeeklyEventMaterialPreviewGroup group, int weekIndex)
 	{
 		WeeklyReportPromptProfile weeklyReportPromptProfile = ports.Profile();
 		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.AppendLine("【历史周报完整正文补写任务】");
-		stringBuilder.AppendLine("当前要补写的是：" + (string.Equals((group?.GroupKind ?? "").Trim(), "world", StringComparison.OrdinalIgnoreCase) ? "世界周报" : "王国周报"));
-		stringBuilder.AppendLine("当前周数：第 " + weekIndex + " 周");
+		stringBuilder.AppendLine(WeeklyMaterialTexts.Prompt("AF_WEEKLY_Prompt_044"));
+		stringBuilder.AppendLine(WeeklyMaterialTexts.Prompt("AF_WEEKLY_Prompt_045") + (string.Equals((group?.GroupKind ?? "").Trim(), "world", StringComparison.OrdinalIgnoreCase) ? WeeklyMaterialTexts.Prompt("AF_WEEKLY_Prompt_046") : WeeklyMaterialTexts.Prompt("AF_WEEKLY_Prompt_047")));
+		stringBuilder.AppendLine(WeeklyMaterialTexts.Prompt("AF_WEEKLY_Prompt_048") + weekIndex + WeeklyMaterialTexts.Prompt("AF_WEEKLY_Prompt_049"));
 		if (!string.IsNullOrWhiteSpace(group?.KingdomId))
 		{
-			stringBuilder.AppendLine("指定王国：" + MemoryEntityIdentityBannerlordAdapter.ResolveKingdomDisplay(group.KingdomId));
+			stringBuilder.AppendLine(WeeklyMaterialTexts.Prompt("AF_WEEKLY_Prompt_050") + MemoryEntityIdentityBannerlordAdapter.ResolveKingdomDisplay(group.KingdomId));
 		}
-		stringBuilder.AppendLine("篇幅档位：" + weeklyReportPromptProfile.Label);
+		stringBuilder.AppendLine(WeeklyMaterialTexts.Prompt("AF_WEEKLY_Prompt_051") + weeklyReportPromptProfile.Label);
 		stringBuilder.AppendLine(" ");
-		stringBuilder.AppendLine("【该期保存的完整素材】");
+		stringBuilder.AppendLine(WeeklyMaterialTexts.Prompt("AF_WEEKLY_Prompt_052"));
 		stringBuilder.AppendLine(ports.Materials(group));
 		stringBuilder.AppendLine();
-		stringBuilder.AppendLine("请只使用上面的该期保存素材输出 [TITLE]、[SHORT]、[REPORT]。不要输出 [TAGS] 或任何稳定度标签。");
+		stringBuilder.AppendLine(WeeklyMaterialTexts.Prompt("AF_WEEKLY_Prompt_053"));
 		return stringBuilder.ToString().TrimEnd();
 	}
 internal static string BuildWeeklyReportUserPrompt(RequestPromptCapturePorts ports, WeeklyEventMaterialPreviewGroup group, int weekIndex, int startDay, int endDay)
@@ -660,14 +660,14 @@ internal static string BuildWeeklyReportUserPrompt(RequestPromptCapturePorts por
 		WeeklyReportPromptProfile weeklyReportPromptProfile = ports.Profile();
 		bool flag = (group?.OutputMode ?? WeeklyReportOutputMode.FullReport) == WeeklyReportOutputMode.TitleShortTagsOnly;
 		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.AppendLine("【周报生成任务】");
-		stringBuilder.AppendLine("当前要生成的是：" + (string.Equals((group?.GroupKind ?? "").Trim(), "world", StringComparison.OrdinalIgnoreCase) ? "世界周报" : "王国周报"));
-		stringBuilder.AppendLine("输出模式：" + (flag ? "title_short_tags_only" : "full_report"));
-		stringBuilder.AppendLine("当前周数：第 " + weekIndex + " 周");
-		stringBuilder.AppendLine("本周取材区间：第 " + Math.Max(0, startDay) + " 日 到 第 " + Math.Max(startDay, endDay) + " 日");
+		stringBuilder.AppendLine(WeeklyMaterialTexts.Prompt("AF_WEEKLY_Prompt_054"));
+		stringBuilder.AppendLine(WeeklyMaterialTexts.Prompt("AF_WEEKLY_Prompt_055") + (string.Equals((group?.GroupKind ?? "").Trim(), "world", StringComparison.OrdinalIgnoreCase) ? WeeklyMaterialTexts.Prompt("AF_WEEKLY_Prompt_056") : WeeklyMaterialTexts.Prompt("AF_WEEKLY_Prompt_057")));
+		stringBuilder.AppendLine(WeeklyMaterialTexts.Prompt("AF_WEEKLY_Prompt_058") + (flag ? "title_short_tags_only" : "full_report"));
+		stringBuilder.AppendLine(WeeklyMaterialTexts.Prompt("AF_WEEKLY_Prompt_059") + weekIndex + WeeklyMaterialTexts.Prompt("AF_WEEKLY_Prompt_060"));
+		stringBuilder.AppendLine(WeeklyMaterialTexts.Prompt("AF_WEEKLY_Prompt_061") + Math.Max(0, startDay) + WeeklyMaterialTexts.Prompt("AF_WEEKLY_Prompt_062") + Math.Max(startDay, endDay) + WeeklyMaterialTexts.Prompt("AF_WEEKLY_Prompt_063"));
 		if (!string.IsNullOrWhiteSpace(group?.KingdomId))
 		{
-			stringBuilder.AppendLine("指定王国：" + MemoryEntityIdentityBannerlordAdapter.ResolveKingdomDisplay(group.KingdomId));
+			stringBuilder.AppendLine(WeeklyMaterialTexts.Prompt("AF_WEEKLY_Prompt_064") + MemoryEntityIdentityBannerlordAdapter.ResolveKingdomDisplay(group.KingdomId));
 		}
 		string weeklyReportCurrentKingdomStabilityTierText = ports.Stability(group);
 		if (!string.IsNullOrWhiteSpace(weeklyReportCurrentKingdomStabilityTierText))
@@ -676,32 +676,32 @@ internal static string BuildWeeklyReportUserPrompt(RequestPromptCapturePorts por
 		}
 		if (string.Equals((group?.GroupKind ?? "").Trim(), "kingdom", StringComparison.OrdinalIgnoreCase))
 		{
-			stringBuilder.AppendLine("隐藏稳定度评级要求：请只根据本周这个王国的整体局势，在 [TAGS] 中选择一个稳定度评级标签。");
-			stringBuilder.AppendLine("军事胜利偏向上调稳定度，军事失利偏向下调稳定度。");
-			stringBuilder.AppendLine("若本周只是略有小问题，用 STAB_DOWN_1；若问题不小、明显走弱，用 STAB_DOWN_2；若形势恶劣，用 STAB_DOWN_3；若局势接近失控或已经失控，用 STAB_DOWN_4。");
-			stringBuilder.AppendLine("若本周大体还行、略有起色，用 STAB_UP_1；若局势不错、明显改善，用 STAB_UP_2；若局势良好、政局趋稳，用 STAB_UP_3；若局势极佳、统治明显巩固，用 STAB_UP_4。");
-			stringBuilder.AppendLine("若本周总体只是延续旧势，没有足够明显的改善或恶化，就用 STAB_FLAT。");
-			stringBuilder.AppendLine("不要解释标签含义，不要在正文里提到你做了评级。");
+			stringBuilder.AppendLine(WeeklyMaterialTexts.Prompt("AF_WEEKLY_Prompt_065"));
+			stringBuilder.AppendLine(WeeklyMaterialTexts.Prompt("AF_WEEKLY_Prompt_066"));
+			stringBuilder.AppendLine(WeeklyMaterialTexts.Prompt("AF_WEEKLY_Prompt_067"));
+			stringBuilder.AppendLine(WeeklyMaterialTexts.Prompt("AF_WEEKLY_Prompt_068"));
+			stringBuilder.AppendLine(WeeklyMaterialTexts.Prompt("AF_WEEKLY_Prompt_069"));
+			stringBuilder.AppendLine(WeeklyMaterialTexts.Prompt("AF_WEEKLY_Prompt_070"));
 		}
-		stringBuilder.AppendLine("篇幅档位：" + weeklyReportPromptProfile.Label);
+		stringBuilder.AppendLine(WeeklyMaterialTexts.Prompt("AF_WEEKLY_Prompt_071") + weeklyReportPromptProfile.Label);
 		stringBuilder.AppendLine(" ");
 		if (!flag && (group?.IncludePreviousReportInPrompt ?? true))
 		{
-			stringBuilder.AppendLine("【上一周短摘要】");
-			stringBuilder.AppendLine("上一周短摘要只用于保持连续性，不是本周事实来源；禁止复用上一周标题或正文。");
+			stringBuilder.AppendLine(WeeklyMaterialTexts.Prompt("AF_WEEKLY_Prompt_072"));
+			stringBuilder.AppendLine(WeeklyMaterialTexts.Prompt("AF_WEEKLY_Prompt_073"));
 			stringBuilder.AppendLine(ports.Previous(group, weekIndex));
 			stringBuilder.AppendLine();
 		}
-		stringBuilder.AppendLine("【本周素材】");
+		stringBuilder.AppendLine(WeeklyMaterialTexts.Prompt("AF_WEEKLY_Prompt_074"));
 		stringBuilder.AppendLine(ports.Materials(group));
 		stringBuilder.AppendLine();
 		if (flag)
 		{
-			stringBuilder.AppendLine("请只输出标题、短摘要和标签，不要输出正文。");
+			stringBuilder.AppendLine(WeeklyMaterialTexts.Prompt("AF_WEEKLY_Prompt_075"));
 		}
 		else
 		{
-			stringBuilder.AppendLine("请将这些素材融合成一篇流利的周报，既不要逐条照抄，也不要漏掉本周显著的大事。");
+			stringBuilder.AppendLine(WeeklyMaterialTexts.Prompt("AF_WEEKLY_Prompt_076"));
 		}
 		return stringBuilder.ToString().TrimEnd();
 	}
@@ -710,11 +710,11 @@ internal static string BuildWeeklyBatchReportSystemPrompt(RequestPromptCapturePo
 		WeeklyReportPromptProfile weeklyReportPromptProfile = ports.Profile();
 		bool flag = (batch?.OutputMode ?? WeeklyReportOutputMode.FullReport) == WeeklyReportOutputMode.TitleShortTagsOnly;
 		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.AppendLine("你是一名负责整理当前剧本世界时局的史官。");
-		stringBuilder.AppendLine("你会一次收到多个周报目标，每个目标要么是世界周报，要么是单个王国周报。");
-		stringBuilder.AppendLine("本请求的 batch_mode 固定为 " + (flag ? "title_short_tags_only" : "full_report") + "，只处理这种模式的 block。");
-		stringBuilder.AppendLine("你必须严格按输入 block 分别生成，不得漏块，不得串写，不得合并不同 report_id。");
-		stringBuilder.AppendLine("输入里的 previous_report 只作连续性参考，不是本周事实来源；本周标题、短摘要、正文和稳定度标签必须依据 materials，禁止复用上一周标题或正文。");
+		stringBuilder.AppendLine(WeeklyMaterialTexts.Prompt("AF_WEEKLY_Prompt_077"));
+		stringBuilder.AppendLine(WeeklyMaterialTexts.Prompt("AF_WEEKLY_Prompt_078"));
+		stringBuilder.AppendLine(WeeklyMaterialTexts.Prompt("AF_WEEKLY_Prompt_079") + (flag ? "title_short_tags_only" : "full_report") + WeeklyMaterialTexts.Prompt("AF_WEEKLY_Prompt_080"));
+		stringBuilder.AppendLine(WeeklyMaterialTexts.Prompt("AF_WEEKLY_Prompt_081"));
+		stringBuilder.AppendLine(WeeklyMaterialTexts.Prompt("AF_WEEKLY_Prompt_082"));
 		WeeklyPromptMaterialOwner.AppendWeeklyReportWritingRequirements(stringBuilder, ports.WritingRequirements());
 		WeeklyPromptMaterialOwner.AppendWeeklyReportVillageRaidWritingRule(stringBuilder);
 		WeeklyPromptMaterialOwner.AppendWeeklyReportPoliticalReasonWritingRule(stringBuilder, !flag);
@@ -723,41 +723,41 @@ internal static string BuildWeeklyBatchReportSystemPrompt(RequestPromptCapturePo
 			WeeklyPromptMaterialOwner.AppendWeeklyReportSettlementReasonWritingRule(stringBuilder);
 		}
 		stringBuilder.AppendLine(" ");
-		stringBuilder.AppendLine("篇幅要求：");
-		stringBuilder.AppendLine($"- 当前档位：{weeklyReportPromptProfile.Label}");
+		stringBuilder.AppendLine(WeeklyMaterialTexts.Prompt("AF_WEEKLY_Prompt_083"));
+		stringBuilder.AppendLine(string.Format(WeeklyMaterialTexts.Prompt("AF_WEEKLY_Prompt_084"), weeklyReportPromptProfile.Label));
 		if (!flag)
 		{
-			stringBuilder.AppendLine($"- 每个 block 的正文必须控制在 {weeklyReportPromptProfile.MinWords} 到 {weeklyReportPromptProfile.MaxWords} 字之间。");
+			stringBuilder.AppendLine(string.Format(WeeklyMaterialTexts.Prompt("AF_WEEKLY_Prompt_085"), weeklyReportPromptProfile.MinWords, weeklyReportPromptProfile.MaxWords));
 		}
-		stringBuilder.AppendLine("- 每个 block 的 SHORT 必须控制在 20 到 140 字之间。");
+		stringBuilder.AppendLine(WeeklyMaterialTexts.Prompt("AF_WEEKLY_Prompt_086"));
 		stringBuilder.AppendLine(" ");
-		stringBuilder.AppendLine("输出要求：");
-		stringBuilder.AppendLine("1. 必须按输入顺序输出全部 block。");
-		stringBuilder.AppendLine("2. 每个 block 都必须使用以下格式：");
+		stringBuilder.AppendLine(WeeklyMaterialTexts.Prompt("AF_WEEKLY_Prompt_087"));
+		stringBuilder.AppendLine(WeeklyMaterialTexts.Prompt("AF_WEEKLY_Prompt_088"));
+		stringBuilder.AppendLine(WeeklyMaterialTexts.Prompt("AF_WEEKLY_Prompt_089"));
 		stringBuilder.AppendLine("[REPORT_BLOCK_BEGIN]");
-		stringBuilder.AppendLine("report_id=原样返回输入中的 report_id");
+		stringBuilder.AppendLine(WeeklyMaterialTexts.Prompt("AF_WEEKLY_Prompt_090"));
 		stringBuilder.AppendLine("mode=" + (flag ? "title_short_tags_only" : "full_report"));
-		stringBuilder.AppendLine("kind=world 或 kingdom");
-		stringBuilder.AppendLine("kingdom_id=如果 kind=kingdom 则原样返回输入中的 kingdom_id；如果 kind=world 则留空");
-		stringBuilder.AppendLine("[TITLE]标题");
-		stringBuilder.AppendLine("[SHORT]短摘要");
+		stringBuilder.AppendLine(WeeklyMaterialTexts.Prompt("AF_WEEKLY_Prompt_091"));
+		stringBuilder.AppendLine(WeeklyMaterialTexts.Prompt("AF_WEEKLY_Prompt_092"));
+		stringBuilder.AppendLine(WeeklyMaterialTexts.Prompt("AF_WEEKLY_Prompt_093"));
+		stringBuilder.AppendLine(WeeklyMaterialTexts.Prompt("AF_WEEKLY_Prompt_094"));
 		if (!flag)
 		{
-			stringBuilder.AppendLine("[REPORT]正文,\n【军事事件】\n【外交事件】\n【领地内事件】");
+			stringBuilder.AppendLine(WeeklyMaterialTexts.Prompt("AF_WEEKLY_Prompt_095"));
 		}
 		stringBuilder.AppendLine("[TAGS]");
 		stringBuilder.AppendLine("STAB_FLAT");
 		stringBuilder.AppendLine("[REPORT_BLOCK_END]");
 		if (flag)
 		{
-			stringBuilder.AppendLine("3. 每个 block 只允许输出 [TITLE] [SHORT] [TAGS]，严禁输出 [REPORT]。");
+			stringBuilder.AppendLine(WeeklyMaterialTexts.Prompt("AF_WEEKLY_Prompt_096"));
 		}
 		else
 		{
-			stringBuilder.AppendLine("3. 每个 block 必须输出 [TITLE] [SHORT] [REPORT] [TAGS]。");
+			stringBuilder.AppendLine(WeeklyMaterialTexts.Prompt("AF_WEEKLY_Prompt_097"));
 		}
-		stringBuilder.AppendLine("4. [TAGS] 的下一行只能写一个稳定度标签：STAB_DOWN_4、STAB_DOWN_3、STAB_DOWN_2、STAB_DOWN_1、STAB_FLAT、STAB_UP_1、STAB_UP_2、STAB_UP_3、STAB_UP_4；不要中文标签、标点或解释。问题不大少给down。");
-		stringBuilder.AppendLine("5. 不要输出 [REPORT_BLOCK_BEGIN]/[REPORT_BLOCK_END] 之外的额外说明。");
+		stringBuilder.AppendLine(WeeklyMaterialTexts.Prompt("AF_WEEKLY_Prompt_098"));
+		stringBuilder.AppendLine(WeeklyMaterialTexts.Prompt("AF_WEEKLY_Prompt_099"));
 		return stringBuilder.ToString().TrimEnd();
 	}
 internal static string BuildWeeklyBatchReportUserPrompt(RequestPromptCapturePorts ports, WeeklyReportBatchRequest batch)
@@ -792,13 +792,13 @@ internal static string BuildWeeklyBatchPromptInputBlock(RequestPromptCapturePort
 			string weeklyReportCurrentKingdomStabilityTierText = ports.Stability(group);
 			if (!string.IsNullOrWhiteSpace(weeklyReportCurrentKingdomStabilityTierText))
 			{
-				stringBuilder.AppendLine("stability=" + weeklyReportCurrentKingdomStabilityTierText.Replace("当前王国稳定度评级：", "").Trim());
+				stringBuilder.AppendLine("stability=" + weeklyReportCurrentKingdomStabilityTierText.Replace(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0887"), "").Trim());
 			}
 		}
 		stringBuilder.AppendLine("title_hint=" + ports.DefaultTitle(group, weekIndex));
 		if (!flag2 && (group?.IncludePreviousReportInPrompt ?? true))
 		{
-			stringBuilder.AppendLine("previous_report_note=上一周短摘要只用于连续性参考，禁止复用上一周标题或正文；本周内容必须依据 materials。");
+			stringBuilder.AppendLine(WeeklyMaterialTexts.Prompt("AF_WEEKLY_Prompt_100"));
 			stringBuilder.AppendLine("previous_report=");
 			stringBuilder.AppendLine(ports.Previous(group, weekIndex));
 		}

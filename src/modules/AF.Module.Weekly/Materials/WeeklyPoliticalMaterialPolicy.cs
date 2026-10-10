@@ -27,7 +27,7 @@ internal static class WeeklyPoliticalMaterialPolicy
 	{
 		List<string> source = parts ?? new List<string>();
 		List<string> selected = new List<string>();
-		string topicPart = source.FirstOrDefault((string x) => (x ?? "").StartsWith("议题类型：", StringComparison.OrdinalIgnoreCase));
+		string topicPart = source.FirstOrDefault((string x) => (x ?? "").StartsWith(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0412"), StringComparison.OrdinalIgnoreCase));
 		AddPoliticalReasonPartIfUseful(selected, topicPart);
 		string corePart = BuildPoliticalReasonCorePart(source);
 		AddPoliticalReasonPartIfUseful(selected, corePart);
@@ -73,9 +73,9 @@ internal static class WeeklyPoliticalMaterialPolicy
 			return "";
 		}
 		text = Regex.Replace(text, "\\s+", " ");
-		if (text.StartsWith("原版理由：", StringComparison.OrdinalIgnoreCase))
+		if (text.StartsWith(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0413"), StringComparison.OrdinalIgnoreCase))
 		{
-			text = "原版理由：" + TrimPoliticalReasonPart(text.Substring("原版理由：".Length), 62);
+			text = WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0414") + TrimPoliticalReasonPart(text.Substring(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0415").Length), 62);
 		}
 		return TrimPoliticalReasonPart(text, PoliticalReasonMaxPartLength);
 	}
@@ -106,21 +106,21 @@ internal static class WeeklyPoliticalMaterialPolicy
 			return "";
 		}
 		List<string> tags = new List<string>();
-		AddPoliticalReasonCoreTag(tags, parts, "关系因素", "关系", "不满", "负面", "不高于0", "恶化");
-		AddPoliticalReasonCoreTag(tags, parts, "实力对比", "实力对比", "野战力量", "家族强度", "战争部队", "兵员");
-		AddPoliticalReasonCoreTag(tags, parts, "模型评分", "评分", "阈值", "支持度", "模型倾向", "倾向");
-		AddPoliticalReasonCoreTag(tags, parts, "封地利益", "封地", "要塞", "城镇", "城堡", "连片治理");
-		AddPoliticalReasonCoreTag(tags, parts, "政策取向", "政策权重", "王权", "贵族寡头", "平民");
-		AddPoliticalReasonCoreTag(tags, parts, "盟约义务", "盟友", "结盟", "召战", "应召");
-		AddPoliticalReasonCoreTag(tags, parts, "贸易利益", "贸易协议", "贸易");
-		AddPoliticalReasonCoreTag(tags, parts, "战争状态", "宣战", "议和", "参战", "交战");
-		AddPoliticalReasonCoreTag(tags, parts, "财政成本", "贡金", "费用", "付款", "资金不足");
-		AddPoliticalReasonCoreTag(tags, parts, "议会支持", "投票支持", "支持者表态", "支持获选者");
+		AddPoliticalReasonCoreTag(tags, parts, WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0416"), WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0417"), WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0418"), WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0419"), WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0420"), WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0421"));
+		AddPoliticalReasonCoreTag(tags, parts, WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0422"), WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0423"), WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0424"), WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0425"), WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0426"), WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0427"));
+		AddPoliticalReasonCoreTag(tags, parts, WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0428"), WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0429"), WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0430"), WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0431"), WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0432"), WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0433"));
+		AddPoliticalReasonCoreTag(tags, parts, WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0434"), WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0435"), WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0436"), WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0437"), WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0438"), WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0439"));
+		AddPoliticalReasonCoreTag(tags, parts, WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0440"), WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0441"), WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0442"), WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0443"), WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0444"));
+		AddPoliticalReasonCoreTag(tags, parts, WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0445"), WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0446"), WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0447"), WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0448"), WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0449"));
+		AddPoliticalReasonCoreTag(tags, parts, WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0450"), WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0451"), WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0452"));
+		AddPoliticalReasonCoreTag(tags, parts, WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0453"), WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0454"), WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0455"), WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0456"), WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0457"));
+		AddPoliticalReasonCoreTag(tags, parts, WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0458"), WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0459"), WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0460"), WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0461"), WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0462"));
+		AddPoliticalReasonCoreTag(tags, parts, WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0463"), WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0464"), WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0465"), WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0466"));
 		if (tags.Count == 0)
 		{
 			return "";
 		}
-		return "核心原因：" + string.Join("、", tags.Take(4));
+		return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0467") + string.Join("、", tags.Take(4));
 	}
 
 	internal static void AddPoliticalReasonCoreTag(List<string> tags, List<string> parts, string tag, params string[] keywords)
@@ -143,31 +143,31 @@ internal static class WeeklyPoliticalMaterialPolicy
 	internal static int GetPoliticalReasonPartPriority(string part)
 	{
 		string text = part ?? "";
-		if (text.StartsWith("原版理由：", StringComparison.OrdinalIgnoreCase))
+		if (text.StartsWith(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0468"), StringComparison.OrdinalIgnoreCase))
 		{
 			return 0;
 		}
-		if (text.IndexOf("评分", StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf("阈值", StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf("支持度", StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf("模型倾向", StringComparison.OrdinalIgnoreCase) >= 0)
+		if (text.IndexOf(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0469"), StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0470"), StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0471"), StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0472"), StringComparison.OrdinalIgnoreCase) >= 0)
 		{
 			return 1;
 		}
-		if (text.IndexOf("关系", StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf("实力对比", StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf("野战力量", StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf("家族强度", StringComparison.OrdinalIgnoreCase) >= 0)
+		if (text.IndexOf(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0473"), StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0474"), StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0475"), StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0476"), StringComparison.OrdinalIgnoreCase) >= 0)
 		{
 			return 2;
 		}
-		if (text.IndexOf("政策权重", StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf("权重方向", StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf("封地", StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf("要塞", StringComparison.OrdinalIgnoreCase) >= 0)
+		if (text.IndexOf(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0477"), StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0478"), StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0479"), StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0480"), StringComparison.OrdinalIgnoreCase) >= 0)
 		{
 			return 3;
 		}
-		if (text.IndexOf("投票支持", StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf("支持者", StringComparison.OrdinalIgnoreCase) >= 0)
+		if (text.IndexOf(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0481"), StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0482"), StringComparison.OrdinalIgnoreCase) >= 0)
 		{
 			return 4;
 		}
-		if (text.IndexOf("费用", StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf("贡金", StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf("付款", StringComparison.OrdinalIgnoreCase) >= 0)
+		if (text.IndexOf(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0483"), StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0484"), StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0485"), StringComparison.OrdinalIgnoreCase) >= 0)
 		{
 			return 5;
 		}
-		if (text.IndexOf("战争", StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf("盟友", StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf("贸易", StringComparison.OrdinalIgnoreCase) >= 0)
+		if (text.IndexOf(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0486"), StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0487"), StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0488"), StringComparison.OrdinalIgnoreCase) >= 0)
 		{
 			return 6;
 		}

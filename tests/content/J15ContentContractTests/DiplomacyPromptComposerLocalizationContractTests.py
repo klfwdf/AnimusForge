@@ -48,6 +48,8 @@ for old_call in (
     localized_call = old_call[:-1] + ('' if old_call.endswith('()') else ', ') + 'world.LocalizePrompt)'
     assert restored.count(localized_call) == 1, localized_call
     restored = restored.replace(localized_call, old_call)
+assert restored.count(', world.LocalizePrompt)') == 17, 'decision descriptions use the package resolver'
+restored = restored.replace(', world.LocalizePrompt)', ')')
 def normalize(s):
     return LEX.sub(lambda m: json.dumps(decode(m[0]), ensure_ascii=False) if m.lastgroup == 'string' else m[0], s)
 assert normalize(restored) == normalize(baseline), 'all branching, IDs, history/raw fields and Chinese prompt bytes preserved'

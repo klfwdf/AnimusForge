@@ -61,19 +61,19 @@ internal static class WeeklyMemoryMaterialPolicy
 				string label = BuildWeeklyMemoryMaterialTagLabel(tag);
 				if (!string.IsNullOrWhiteSpace(label))
 				{
-					reasons.Add("重大标签：" + label);
+					reasons.Add(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0345") + label);
 				}
 			}
 			long value = estimateTagValue(tag);
 			if (value > 0L)
 			{
 				evaluation.EstimatedValueDenars = AddWeeklyMemoryMaterialValue(evaluation.EstimatedValueDenars, value);
-				reasons.Add(BuildWeeklyMemoryMaterialTagLabel(tag) + "估值 " + value + " 第纳尔");
+				reasons.Add(BuildWeeklyMemoryMaterialTagLabel(tag) + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0346") + value + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0347"));
 			}
 		}
 		if (evaluation.EstimatedValueDenars > ValueThresholdDenars)
 		{
-			reasons.Add("本轮金额/估值合计严格大于 " + ValueThresholdDenars + " 第纳尔");
+			reasons.Add(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0348") + ValueThresholdDenars + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0349"));
 		}
 		evaluation.Reason = string.Join("；", reasons.Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase));
 		return evaluation;
@@ -86,21 +86,21 @@ internal static class WeeklyMemoryMaterialPolicy
 		{
 			npcName = "NPC";
 		}
-		string date = string.IsNullOrWhiteSpace(block?.GameDate) ? ("第" + Math.Max(0, block?.GameDayIndex ?? 0) + "日") : block.GameDate.Trim();
-		sb.Append("公开聊天日结素材：").Append(date).Append(" ").Append(hourRange).Append("，玩家与 ").Append(npcName).Append(" 的交流被日结标记为公开。");
+		string date = string.IsNullOrWhiteSpace(block?.GameDate) ? (WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0350") + Math.Max(0, block?.GameDayIndex ?? 0) + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0351")) : block.GameDate.Trim();
+		sb.Append(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0352")).Append(date).Append(" ").Append(hourRange).Append(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0353")).Append(npcName).Append(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0354"));
 		List<string> scenes = (block?.Scenes ?? new List<string>()).Where((string x) => !string.IsNullOrWhiteSpace((x ?? "").Trim())).Select((string x) => x.Trim()).Distinct(StringComparer.OrdinalIgnoreCase).Take(4).ToList();
 		if (scenes.Count > 0)
 		{
-			sb.Append(" 场景：").Append(string.Join("、", scenes)).Append("。");
+			sb.Append(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0355")).Append(string.Join("、", scenes)).Append("。");
 		}
 		if (!string.IsNullOrWhiteSpace(block?.RichTitle))
 		{
-			sb.Append(" 日结标题：").Append(block.RichTitle.Trim()).Append("。");
+			sb.Append(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0356")).Append(block.RichTitle.Trim()).Append("。");
 		}
-		sb.Append(" 公开素材：").Append((material ?? "").Trim()).Append("。");
+		sb.Append(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0357")).Append((material ?? "").Trim()).Append("。");
 		if (!string.IsNullOrWhiteSpace(block?.PlayerPublicityReason))
 		{
-			sb.Append(" 公开原因：").Append(block.PlayerPublicityReason.Trim()).Append("。");
+			sb.Append(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0358")).Append(block.PlayerPublicityReason.Trim()).Append("。");
 		}
 		return sb.ToString().Trim();
 	}
@@ -118,7 +118,7 @@ internal static class WeeklyMemoryMaterialPolicy
             result.Add(new WeeklyDialogueMaterial {
                 KingdomId = kingdomId,
                 StableKey = "player_dialogue_memory:" + kingdomId + ":" + blockId + ":" + hash,
-                Label = "玩家交涉记忆 - " + (string.IsNullOrWhiteSpace(block.HeroName) ? "NPC" : block.HeroName.Trim()),
+                Label = WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0359") + (string.IsNullOrWhiteSpace(block.HeroName) ? "NPC" : block.HeroName.Trim()),
                 Snapshot = BuildWeeklyMemoryMaterialSnapshotText(block, items),
                 SettlementId = items.Select(x => (x.FootholdSettlementId ?? "").Trim()).FirstOrDefault(x => !string.IsNullOrWhiteSpace(x)) ?? "",
                 TriggerCount = items.Count,
@@ -136,42 +136,42 @@ internal static class WeeklyMemoryMaterialPolicy
 		{
 			npcName = triggers?.Select((WeeklyMemoryMaterialTrigger x) => x?.NpcName).FirstOrDefault((string x) => !string.IsNullOrWhiteSpace(x)) ?? "NPC";
 		}
-		sb.Append("玩家与 ").Append(npcName).Append(" 的交流在后处理阶段被识别为本周王国周报素材。");
+		sb.Append(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0360")).Append(npcName).Append(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0361"));
 		if (!string.IsNullOrWhiteSpace(block?.RichTitle))
 		{
-			sb.Append(" 记忆标题：").Append(block.RichTitle.Trim()).Append("。");
+			sb.Append(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0362")).Append(block.RichTitle.Trim()).Append("。");
 		}
 		if (!string.IsNullOrWhiteSpace(block?.Summary))
 		{
-			sb.Append(" 记忆摘要：").Append(block.Summary.Trim()).Append("。");
+			sb.Append(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0363")).Append(block.Summary.Trim()).Append("。");
 		}
 		if (!string.IsNullOrWhiteSpace(block?.PlayerPublicity))
 		{
-			sb.Append(" 日结公开判定：").Append(block.PlayerPublicity.Trim()).Append("。");
+			sb.Append(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0364")).Append(block.PlayerPublicity.Trim()).Append("。");
 		}
 		if (!string.IsNullOrWhiteSpace(block?.PlayerPublicityReason))
 		{
-			sb.Append(" 公开判定原因：").Append(block.PlayerPublicityReason.Trim()).Append("。");
+			sb.Append(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0365")).Append(block.PlayerPublicityReason.Trim()).Append("。");
 		}
 		List<string> scenes = (block?.Scenes ?? new List<string>()).Where((string x) => !string.IsNullOrWhiteSpace((x ?? "").Trim())).Select((string x) => x.Trim()).Distinct(StringComparer.OrdinalIgnoreCase).Take(4).ToList();
 		if (scenes.Count > 0)
 		{
-			sb.Append(" 场景：").Append(string.Join("、", scenes)).Append("。");
+			sb.Append(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0366")).Append(string.Join("、", scenes)).Append("。");
 		}
 		List<string> labels = (triggers ?? new List<WeeklyMemoryMaterialTrigger>()).SelectMany((WeeklyMemoryMaterialTrigger x) => x?.Tags ?? new List<string>()).Select(BuildWeeklyMemoryMaterialTagLabel).Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).Take(20).ToList();
 		if (labels.Count > 0)
 		{
-			sb.Append(" 触发机制：").Append(string.Join("、", labels)).Append("。");
+			sb.Append(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0367")).Append(string.Join("、", labels)).Append("。");
 		}
 		long value = (triggers ?? new List<WeeklyMemoryMaterialTrigger>()).Sum((WeeklyMemoryMaterialTrigger x) => Math.Max(0L, x?.EstimatedValueDenars ?? 0L));
 		if (value > 0L)
 		{
-			sb.Append(" 本轮标签估值合计约 ").Append(value).Append(" 第纳尔。");
+			sb.Append(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0368")).Append(value).Append(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0369"));
 		}
 		List<string> reasons = (triggers ?? new List<WeeklyMemoryMaterialTrigger>()).Select((WeeklyMemoryMaterialTrigger x) => (x?.TriggerReason ?? "").Trim()).Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).Take(6).ToList();
 		if (reasons.Count > 0)
 		{
-			sb.Append(" 触发依据：").Append(string.Join("；", reasons)).Append("。");
+			sb.Append(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0370")).Append(string.Join("；", reasons)).Append("。");
 		}
 		return sb.ToString().Trim();
 	}
@@ -188,10 +188,10 @@ internal static class WeeklyMemoryMaterialPolicy
 		}
 		evaluation.EstimatedValueDenars = AddWeeklyMemoryMaterialValue(evaluation.EstimatedValueDenars, value);
 		List<string> reasons = (evaluation.Reason ?? "").Split(new char[1] { '；' }, StringSplitOptions.RemoveEmptyEntries).Select((string x) => x.Trim()).Where((string x) => !string.IsNullOrWhiteSpace(x)).ToList();
-		reasons.Add("玩家转移价值估值 " + value + " 第纳尔");
+		reasons.Add(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0371") + value + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0372"));
 		if (evaluation.EstimatedValueDenars > ValueThresholdDenars)
 		{
-			reasons.Add("本轮金额/估值合计严格大于 " + ValueThresholdDenars + " 第纳尔");
+			reasons.Add(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0373") + ValueThresholdDenars + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0374"));
 		}
 		evaluation.Reason = string.Join("；", reasons.Distinct(StringComparer.OrdinalIgnoreCase));
 	}
@@ -263,36 +263,36 @@ internal static class WeeklyMemoryMaterialPolicy
 	internal static bool IsPlayerTransferredValueWeeklyMemoryFact(string text, string npcName)
 	{
 		string value = (text ?? "").Trim();
-		if (string.IsNullOrWhiteSpace(value) || !value.StartsWith("[AFEF玩家行为补充]", StringComparison.Ordinal))
+		if (string.IsNullOrWhiteSpace(value) || !value.StartsWith(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0375"), StringComparison.Ordinal))
 		{
 			return false;
 		}
-		if (value.IndexOf("展示", StringComparison.Ordinal) >= 0 || value.IndexOf("看了看", StringComparison.Ordinal) >= 0 || value.IndexOf("暂未交付", StringComparison.Ordinal) >= 0 || value.IndexOf("没有转移所有权", StringComparison.Ordinal) >= 0 || value.IndexOf("未能确认送达", StringComparison.Ordinal) >= 0 || value.IndexOf("准备通过信使", StringComparison.Ordinal) >= 0)
+		if (value.IndexOf(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0376"), StringComparison.Ordinal) >= 0 || value.IndexOf(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0377"), StringComparison.Ordinal) >= 0 || value.IndexOf(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0378"), StringComparison.Ordinal) >= 0 || value.IndexOf(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0379"), StringComparison.Ordinal) >= 0 || value.IndexOf(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0380"), StringComparison.Ordinal) >= 0 || value.IndexOf(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0381"), StringComparison.Ordinal) >= 0)
 		{
 			return false;
 		}
-		if (value.IndexOf("已经将", StringComparison.Ordinal) >= 0 && (value.IndexOf("交给", StringComparison.Ordinal) >= 0 || value.IndexOf("转交给", StringComparison.Ordinal) >= 0))
+		if (value.IndexOf(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0382"), StringComparison.Ordinal) >= 0 && (value.IndexOf(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0383"), StringComparison.Ordinal) >= 0 || value.IndexOf(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0384"), StringComparison.Ordinal) >= 0))
 		{
 			return true;
 		}
-		if (value.IndexOf("通过信使", StringComparison.Ordinal) >= 0 && value.IndexOf("转移了", StringComparison.Ordinal) >= 0)
+		if (value.IndexOf(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0385"), StringComparison.Ordinal) >= 0 && value.IndexOf(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0386"), StringComparison.Ordinal) >= 0)
 		{
 			return true;
 		}
-		return value.IndexOf("转移了", StringComparison.Ordinal) >= 0 && value.IndexOf("估值约", StringComparison.Ordinal) >= 0;
+		return value.IndexOf(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0387"), StringComparison.Ordinal) >= 0 && value.IndexOf(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0388"), StringComparison.Ordinal) >= 0;
 	}
 
 	internal static long ExtractPlayerTransferredValueFromWeeklyMemoryFact(string text)
 	{
 		long value = 0L;
-		foreach (Match match in Regex.Matches(text ?? "", "(?:合计总值约|总值约|估值约|价值约)\\s*(\\d+)\\s*第纳尔", RegexOptions.IgnoreCase))
+		foreach (Match match in Regex.Matches(text ?? "", WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0389"), RegexOptions.IgnoreCase))
 		{
 			if (TryParsePositiveLong(match.Groups[1].Value, out var parsed))
 			{
 				value = Math.Max(value, parsed);
 			}
 		}
-		foreach (Match match in Regex.Matches(text ?? "", "(?:已经将|转移了)\\s*(\\d+)\\s*第纳尔", RegexOptions.IgnoreCase))
+		foreach (Match match in Regex.Matches(text ?? "", WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0390"), RegexOptions.IgnoreCase))
 		{
 			if (TryParsePositiveLong(match.Groups[1].Value, out var parsed))
 			{
@@ -341,75 +341,75 @@ internal static class WeeklyMemoryMaterialPolicy
 		string text = (tag ?? "").Trim();
 		if (string.Equals(text, "[WEEKLY:ECONOMY_GIVE_GOLD]", StringComparison.OrdinalIgnoreCase))
 		{
-			return "已确认的金币给付";
+			return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0391");
 		}
 		if (string.Equals(text, "[WEEKLY:ECONOMY_GIVE_ASSET]", StringComparison.OrdinalIgnoreCase))
 		{
-			return "已确认的资产给付";
+			return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0392");
 		}
 		if (string.Equals(text, "[WEEKLY:ECONOMY_DEBT_CREATE]", StringComparison.OrdinalIgnoreCase))
 		{
-			return "已确认的债务建立";
+			return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0393");
 		}
 		if (string.Equals(text, "[WEEKLY:ECONOMY_DEBT_RESOLVE]", StringComparison.OrdinalIgnoreCase))
 		{
-			return "已确认的债务清偿";
+			return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0394");
 		}
 		if (string.Equals(text, "[WEEKLY:ECONOMY_SETTLEMENT_TRANSFER]", StringComparison.OrdinalIgnoreCase))
 		{
-			return "已确认的定居点资产转移";
+			return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0395");
 		}
 		if (string.Equals(text, "[ACTION:DUEL]", StringComparison.OrdinalIgnoreCase))
 		{
-			return "决斗";
+			return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0396");
 		}
 		if (text.StartsWith("[ACTION:GIVE_ASSET:GOLD:", StringComparison.OrdinalIgnoreCase))
 		{
-			return "给付金币";
+			return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0397");
 		}
 		if (text.StartsWith("[AD:", StringComparison.OrdinalIgnoreCase))
 		{
-			return "新增债务";
+			return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0398");
 		}
 		if (text.StartsWith("[ADP:", StringComparison.OrdinalIgnoreCase))
 		{
-			return "债务清偿";
+			return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0399");
 		}
 		if (text.StartsWith("[ATT:", StringComparison.OrdinalIgnoreCase))
 		{
-			return "部队转移";
+			return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0400");
 		}
 		if (text.StartsWith("[ATP:", StringComparison.OrdinalIgnoreCase))
 		{
-			return "俘虏转移";
+			return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0401");
 		}
 		if (text.StartsWith("[ACTION:GIVE_ASSET:", StringComparison.OrdinalIgnoreCase))
 		{
-			return "给付资产";
+			return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0402");
 		}
 		if (text.StartsWith("[ACTION:KINGDOM_SERVICE:", StringComparison.OrdinalIgnoreCase))
 		{
-			return "王国服役变更";
+			return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0403");
 		}
 		if (text.StartsWith("[ACTION:MARRIAGE_FORMAL:", StringComparison.OrdinalIgnoreCase))
 		{
-			return "正式婚姻";
+			return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0404");
 		}
 		if (text.StartsWith("[ACTION:MARRIAGE_ELOPE:", StringComparison.OrdinalIgnoreCase))
 		{
-			return "私奔婚姻";
+			return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0405");
 		}
 		if (text.StartsWith("[ACTION:DIVORCE:", StringComparison.OrdinalIgnoreCase))
 		{
-			return "离婚";
+			return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0406");
 		}
 		if (text.StartsWith("[ACTION:AGENDA:", StringComparison.OrdinalIgnoreCase))
 		{
-			return "王国议程承诺";
+			return WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0407");
 		}
 		if (IsWeeklyMemoryMaterialSiegeTag(text))
 		{
-			return Regex.Replace(text, "^\\[ACTION:|\\]$", "", RegexOptions.IgnoreCase).Replace("SIEGE_", "攻城处置:");
+			return Regex.Replace(text, "^\\[ACTION:|\\]$", "", RegexOptions.IgnoreCase).Replace("SIEGE_", WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0408"));
 		}
 		return "";
 	}

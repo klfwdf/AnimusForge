@@ -9,5 +9,7 @@
     <string id="AF_WEEKLY_UnnamedGroup" text="Unnamed group" />
     <string id="AF_WEEKLY_WorldWeeklyReport" text="World weekly report" />
     <string id="AF_WEEKLY_KingdomWeeklyReport" text="Kingdom weekly report" />
+    <string id="AF_WEEKLY_EmptySection" text="No significant changes were recorded this week." />
+    <string id="AF_WEEKLY_LegacyUnsectionedReport" text="This older report was not saved in three sections. Its original text follows:&#xA;&#xA;" />
   </strings>
 </base>

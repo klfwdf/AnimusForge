@@ -129,9 +129,9 @@ internal static class WeeklyMemoryMaterialValuePolicy
         string originDate = candidate.OriginGameDay == context.CurrentDay() ? context.CurrentDate()
             : "day:" + candidate.OriginGameDay.ToString(CultureInfo.InvariantCulture);
         string reason = string.Join("；", atoms.Select(atom => WeeklyMemoryMaterialPolicy.BuildWeeklyMemoryMaterialTagLabel(atom.Label)
-            + " owner-confirmed " + atom.ValueDenars.ToString(CultureInfo.InvariantCulture) + " 第纳尔")
+            + " owner-confirmed " + atom.ValueDenars.ToString(CultureInfo.InvariantCulture) + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0409"))
             .Distinct(StringComparer.OrdinalIgnoreCase))
-            + "；本轮已确认估值合计严格大于 " + WeeklyMemoryMaterialPolicy.ValueThresholdDenars.ToString(CultureInfo.InvariantCulture) + " 第纳尔";
+            + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0410") + WeeklyMemoryMaterialPolicy.ValueThresholdDenars.ToString(CultureInfo.InvariantCulture) + WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0411");
         return WeeklyMemoryMaterialFrozenPayload.TryCreate(context.MemoryId, resolvedName, originDate,
             context.FootholdKingdomId, context.FootholdSettlementId, atoms, totalValue, reason, out payload, out errorCode);
     }
