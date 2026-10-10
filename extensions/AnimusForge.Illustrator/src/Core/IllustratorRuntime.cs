@@ -326,7 +326,7 @@ namespace AnimusForge.Illustrator.Core
         {
             AssertMainThread();
             if (update.Saved != null)
-                InformationManager.DisplayMessage(new InformationMessage(IllustratorUiText.GenerationComplete(update.Saved.Title)));
+                InformationManager.DisplayMessage(new InformationMessage(IllustratorUiText.GenerationComplete(IllustratorUiText.ProjectKnownDefaultTitle(update.Saved.Title, update.Saved.Category))));
             else
                 InformationManager.DisplayMessage(new InformationMessage(IllustratorUiText.GenerationFailed(update.Error)));
             var listeners = GenerationUpdated;

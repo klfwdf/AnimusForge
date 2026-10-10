@@ -1,3 +1,4 @@
+using System;
 using TaleWorlds.Localization;
 
 namespace AnimusForge.Illustrator.UI
@@ -137,7 +138,33 @@ namespace AnimusForge.Illustrator.UI
         internal static string PortraitComplete => Resolve("AF_ILL_UI_PORTRAIT_COMPLETE", "Chronicle portrait complete.");
         internal static string ConversationComplete => Resolve("AF_ILL_UI_CONVERSATION_COMPLETE", "Conversation illustration complete.");
         internal static string PortraitTitle(string hero) => Format("AF_ILL_UI_PORTRAIT_TITLE", "Chronicle portrait · {HERO}", "HERO", hero);
+        internal static string DefaultHeroName => Resolve("AF_ILL_UI_DEFAULT_HERO_NAME", "Hero");
+        internal static string DefaultPartnerName => Resolve("AF_ILL_UI_DEFAULT_PARTNER_NAME", "the other person");
         internal static string ConversationTitle(string partner) => Format("AF_ILL_UI_CONVERSATION_TITLE", "Conversation illustration · with {HERO}", "HERO", partner);
+        internal static string ProjectKnownDefaultTitle(string title, string category)
+        {
+            if (string.IsNullOrWhiteSpace(title)) return title ?? string.Empty;
+            if (string.Equals(title, "卡拉迪亚历史画卷", StringComparison.Ordinal))
+                return Resolve("AF_ILL_UI_GALLERY_LEGACY_DEFAULT_TITLE", "Calradia history illustration");
+            const string portraitSuffix = " 纪事肖像";
+            if (string.Equals(category, "encyclopedia", StringComparison.Ordinal) && title.EndsWith(portraitSuffix, StringComparison.Ordinal))
+            {
+                string hero = title.Substring(0, title.Length - portraitSuffix.Length);
+                if (!string.IsNullOrWhiteSpace(hero)) return PortraitTitle(string.Equals(hero, "英雄", StringComparison.Ordinal) ? DefaultHeroName : hero);
+            }
+            const string meetingPrefix = "与 ";
+            const string meetingSuffix = " 的会晤纪事";
+            if (string.Equals(category, "conversation", StringComparison.Ordinal) && title.StartsWith(meetingPrefix, StringComparison.Ordinal) && title.EndsWith(meetingSuffix, StringComparison.Ordinal))
+            {
+                int partnerLength = title.Length - meetingPrefix.Length - meetingSuffix.Length;
+                if (partnerLength > 0)
+                {
+                    string partner = title.Substring(meetingPrefix.Length, partnerLength);
+                    return ConversationTitle(string.Equals(partner, "对方", StringComparison.Ordinal) ? DefaultPartnerName : partner);
+                }
+            }
+            return title;
+        }
         internal static string ConversationSessionChanged => Resolve("AF_ILL_UI_CONVERSATION_SESSION_CHANGED", "The previous conversation illustration was archived; the current conversation has changed.");
         internal static string ConversationFirstImageRequired => Resolve("AF_ILL_UI_CONVERSATION_FIRST_IMAGE_REQUIRED", "Click Redraw to create the first scene illustration for this conversation.");
         internal static string ConversationPreparing => Resolve("AF_ILL_UI_CONVERSATION_PREPARING", "The AI artist is analyzing the conversation and body language...");

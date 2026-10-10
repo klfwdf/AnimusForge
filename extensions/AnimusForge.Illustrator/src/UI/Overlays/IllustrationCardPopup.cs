@@ -334,7 +334,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
                     popup?.ExecuteEncyclopediaGeneration(hero, tableauWidget, prompt);
                 });
 
-                string heroName = hero.Name != null ? hero.Name.ToString() : "英雄";
+                string heroName = hero.Name != null ? hero.Name.ToString() : IllustratorUiText.DefaultHeroName;
                 popup._dataSource.TitleText = IllustratorUiText.PortraitTitle(heroName);
                 topScreen.AddLayer(popup._layer);
                 _activeInstance = popup;
@@ -461,7 +461,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
                     ? convContext.InterlocutorHero.Name.ToString()
                     : (convContext.InterlocutorCharacter != null && convContext.InterlocutorCharacter.Name != null
                         ? convContext.InterlocutorCharacter.Name.ToString()
-                        : "对方");
+                        : IllustratorUiText.DefaultPartnerName);
 
                 popup._dataSource.TitleText = useFullscreen ? IllustratorUiText.SceneTitle : IllustratorUiText.ConversationTitle(partnerName);
                 if (popup._backdropLayer != null) topScreen.AddLayer(popup._backdropLayer);
@@ -1042,7 +1042,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
             _displayedImage = item;
             _dataSource.SetEditableImage(item != null);
             _activeSpriteName = spriteName;
-            if (!string.IsNullOrWhiteSpace(item?.Title)) _dataSource.TitleText = item.Title;
+            if (!string.IsNullOrWhiteSpace(item?.Title)) _dataSource.TitleText = IllustratorUiText.ProjectKnownDefaultTitle(item.Title, item.Category);
             _dataSource.SetIllustration(item?.SubjectKey ?? spriteName, spriteName, prompt);
             if (_backdropLayer != null) HideMapConversationSceneUnderIllustration();
             GenerationDiagnostics.WriteDelivery(item?.DiagnosticId, "ui_publish_complete", "sprite=" + spriteName + "; bytes=" + (imageBytes?.Length ?? 0) + "; publishMs=" + publishClock.ElapsedMilliseconds);
