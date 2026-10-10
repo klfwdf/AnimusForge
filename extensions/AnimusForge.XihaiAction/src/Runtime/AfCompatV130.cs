@@ -421,15 +421,20 @@ namespace AnimusForge.XihaiAction
                 _harmony.Patch(
                     _strictSceneMessagesSystemPromptMethod,
                     prefix: new HarmonyMethod(strictPromptPrefix));
+                // Bridge installation runs on the host thread. Workers use only
+                // this frozen language choice and immutable Core text resources.
+                bool useChinese = string.Equals(
+                    new TaleWorlds.Localization.TextObject("{=AF_RUNTIME_SceneActions_Language}en").ToString(),
+                    "zh-CN", StringComparison.Ordinal);
                 if (!AfV130ConfiguredGatewayTransport.TryCreate(out IAfClassifierTransport configuredTransport))
                 {
                     _classifierProvider =
-                        new AfV130AuxiliaryTextClassifier(_classifierApiMethod);
+                        new AfV130AuxiliaryTextClassifier(_classifierApiMethod, useChinese);
                 }
                 else
                 {
                     _classifierProvider =
-                        new AfV130AuxiliaryTextClassifier(configuredTransport);
+                        new AfV130AuxiliaryTextClassifier(configuredTransport, useChinese);
                 }
                 _classifierRegistration = SceneActionsRuntimeHost.RegisterClassifier(
                     ClassifierProviderId,

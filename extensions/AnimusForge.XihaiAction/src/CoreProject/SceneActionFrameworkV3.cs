@@ -94,7 +94,7 @@ namespace AnimusForge.SceneActions.Core
         private static readonly ReadOnlyCollection<SceneActionContractEntryV3> Entries =
             Array.AsReadOnly(new[]
             {
-                Legacy(Kneel, "跪下", "身体实际屈膝跪地、跪伏或跪拜。",
+                Legacy(Kneel, SceneActionCatalogText.Get("kneel", true).Name, SceneActionCatalogText.Get("kneel", true).Description,
                     new[] { "跪下", "kneel" },
                     new[]
                     {
@@ -102,9 +102,9 @@ namespace AnimusForge.SceneActions.Core
                         "屈下一膝向其行礼", "屈下一膝", "屈膝跪下", "屈膝跪地", "单膝跪下",
                         "双膝跪下", "单膝着地", "双膝着地"
                     },
-                    new[] { "他缓缓屈膝跪下。", "她双膝着地跪伏下来。" },
-                    new[] { "他拒绝跪下。", "如果跪下会怎样？" }),
-                Legacy(StandUp, "站起", "从本模块拥有的跪姿中实际起身或站直。",
+                    SceneActionCatalogText.Get("kneel", true).Positive,
+                    SceneActionCatalogText.Get("kneel", true).Negative),
+                Legacy(StandUp, SceneActionCatalogText.Get("stand_up", true).Name, SceneActionCatalogText.Get("stand_up", true).Description,
                     new[] { "站起来", "stand up" },
                     new[]
                     {
@@ -112,9 +112,9 @@ namespace AnimusForge.SceneActions.Core
                         "借力从跪姿站直起来", "从跪着的姿势站起来", "由跪姿重新起立",
                         "从跪姿重新起立", "重新起立", "起立", "站直腰背"
                     },
-                    new[] { "他撑地站起身。", "她从跪姿中站了起来。" },
-                    new[] { "他想站起来。", "她叫别人起身。" }),
-                Legacy(Xihai, "西海动作", "纳粹礼/希特勒礼，或右臂向前斜上方伸直约45度的固定抬手礼。",
+                    SceneActionCatalogText.Get("stand_up", true).Positive,
+                    SceneActionCatalogText.Get("stand_up", true).Negative),
+                Legacy(Xihai, SceneActionCatalogText.Get("xihai", true).Name, SceneActionCatalogText.Get("xihai", true).Description,
                     new[] { "西海", "xihai" },
                     new[]
                     {
@@ -124,9 +124,9 @@ namespace AnimusForge.SceneActions.Core
                         "右臂抬到斜上方约四十五度，手指并拢，掌心向下行礼",
                         "raised his right arm at forty-five degrees in salute"
                     },
-                    new[] { "他将右臂向前斜上方伸直约四十五度。", "她明确行了一个纳粹式举手礼。" },
-                    new[] { "他普通地抬手致意。", "她挥手向众人问好。" }),
-                Legacy(Cheer, "欢呼", "实际喝彩、振臂高呼或高声叫好。",
+                    SceneActionCatalogText.Get("xihai", true).Positive,
+                    SceneActionCatalogText.Get("xihai", true).Negative),
+                Legacy(Cheer, SceneActionCatalogText.Get("cheer", true).Name, SceneActionCatalogText.Get("cheer", true).Description,
                     new[] { "欢呼", "cheer" },
                     new[]
                     {
@@ -134,35 +134,27 @@ namespace AnimusForge.SceneActions.Core
                         "兴奋地振臂呐喊", "全场欢声雷动，他挥舞双臂叫好",
                         "raised her fist and cheered loudly"
                     },
-                    new[] { "他振臂高声欢呼。", "她兴奋地喝彩起来。" },
-                    new[] { "他没有欢呼。", "他谈到了昨夜的欢呼。" }),
-                Legacy(Applaud, "鼓掌", "双手实际拍击以鼓掌、拍手或拍掌。",
+                    SceneActionCatalogText.Get("cheer", true).Positive,
+                    SceneActionCatalogText.Get("cheer", true).Negative),
+                Legacy(Applaud, SceneActionCatalogText.Get("applaud", true).Name, SceneActionCatalogText.Get("applaud", true).Description,
                     new[] { "鼓掌", "applaud" },
                     new[]
                     {
                         "鼓掌", "拍手", "拍掌", "啪啪拍了几下手", "拍了几下手",
                         "啪啪啪拍手", "双手连续拍击，掌声不断", "clapped her hands"
                     },
-                    new[] { "他笑着鼓起掌来。", "她连续拍了拍手。" },
-                    new[] { "他拒绝鼓掌。", "掌声这个词是什么意思？" }),
-                Legacy(Respect, "普通行礼", "礼节性回礼、欠身、鞠躬、作揖或普通致意；不含抬手敬礼、军礼、西海特征或明确深鞠躬。",
+                    SceneActionCatalogText.Get("applaud", true).Positive,
+                    SceneActionCatalogText.Get("applaud", true).Negative),
+                Legacy(Respect, SceneActionCatalogText.Get("respect", true).Name, SceneActionCatalogText.Get("respect", true).Description,
                     new[] { "行礼", "salute" },
                     new[]
                     {
                         "行礼", "鞠躬",
                         "鞠了一躬", "鞠一躬", "致意", "bowed politely", "bowed in respect"
                     },
-                    new[]
-                    {
-                        "他抬手向对方致意。", "她礼貌地鞠了一躬。", "bowed politely",
-                        "bowed in respect"
-                    },
-                    new[]
-                    {
-                        "他抬手行了一个军礼。", "她站直后抬手敬礼。",
-                        "他把右臂斜上伸直四十五度。", "她深深弯腰鞠躬到底。"
-                    }),
-                Legacy(Threat, "威胁", "实际作出恐吓、挥拳、握拳或恫吓示威动作。",
+                    SceneActionCatalogText.Get("respect", true).Positive,
+                    SceneActionCatalogText.Get("respect", true).Negative),
+                Legacy(Threat, SceneActionCatalogText.Get("threat", true).Name, SceneActionCatalogText.Get("threat", true).Description,
                     new[] { "威胁", "threaten" },
                     new[]
                     {
@@ -172,9 +164,9 @@ namespace AnimusForge.SceneActions.Core
                         "clenched fist threateningly", "made a threatening fist gesture",
                         "threateningly clenched his fist", "shook a fist threateningly"
                     },
-                    new[] { "他握紧拳头作势威胁。", "她挥拳向对手示威。" },
-                    new[] { "他只是口头谈论威胁。", "他没有作出恐吓动作。" }),
-                Legacy(Surrender, "投降", "实际举手、认输、缴械或放弃抵抗。",
+                    SceneActionCatalogText.Get("threat", true).Positive,
+                    SceneActionCatalogText.Get("threat", true).Negative),
+                Legacy(Surrender, SceneActionCatalogText.Get("surrender", true).Name, SceneActionCatalogText.Get("surrender", true).Description,
                     new[] { "投降", "surrender" },
                     new[]
                     {
@@ -182,9 +174,9 @@ namespace AnimusForge.SceneActions.Core
                         "把兵器掷在地上举手认输",
                         "dropped his weapon and raised both hands in surrender"
                     },
-                    new[] { "他高举双手表示投降。", "她放弃抵抗认输了。" },
-                    new[] { "他拒绝投降。", "她命令敌人投降。" }),
-                Legacy(Laugh, "大笑", "实际发出明显笑声，或放声、开怀、仰头大笑。",
+                    SceneActionCatalogText.Get("surrender", true).Positive,
+                    SceneActionCatalogText.Get("surrender", true).Negative),
+                Legacy(Laugh, SceneActionCatalogText.Get("laugh", true).Name, SceneActionCatalogText.Get("laugh", true).Description,
                     new[] { "大笑", "laugh" },
                     new[]
                     {
@@ -194,9 +186,9 @@ namespace AnimusForge.SceneActions.Core
                         "放声大笑前仰后合", "burst out laughing",
                         "burst into laughter", "let out a burst of laughter"
                     },
-                    new[] { "他仰头放声大笑。", "她骤然发出一阵笑声。" },
-                    new[] { "他强忍着没有笑。", "他说出‘大笑’二字。" }),
-                Legacy(Point, "指向", "实际伸手或抬手指向某人、某物或某处。",
+                    SceneActionCatalogText.Get("laugh", true).Positive,
+                    SceneActionCatalogText.Get("laugh", true).Negative),
+                Legacy(Point, SceneActionCatalogText.Get("point", true).Name, SceneActionCatalogText.Get("point", true).Description,
                     new[] { "指向", "point" },
                     new[]
                     {
@@ -204,18 +196,18 @@ namespace AnimusForge.SceneActions.Core
                         "明确朝左侧门口点去", "朝左侧门口点去", "越过人群点去",
                         "抬手朝北门一指", "朝北门一指", "抬手一指", "gestured toward the gate"
                     },
-                    new[] { "他伸手指向城门旁边。", "她抬手朝远处一指。" },
-                    new[] { "他没有指出方向。", "她要求别人指向门口。" }),
-                Legacy(Rage, "愤怒", "实际发怒、暴怒、怒吼或愤怒挥动手臂。",
+                    SceneActionCatalogText.Get("point", true).Positive,
+                    SceneActionCatalogText.Get("point", true).Negative),
+                Legacy(Rage, SceneActionCatalogText.Get("rage", true).Name, SceneActionCatalogText.Get("rage", true).Description,
                     new[] { "愤怒", "rage" },
                     new[]
                     {
                         "愤怒", "发怒", "勃然大怒", "怒不可遏，猛地一跺脚",
                         "怒不可遏地跺脚", "气得挥拳怒吼", "flew into a rage and roared"
                     },
-                    new[] { "他勃然大怒并怒吼。", "她愤怒地挥动双臂。" },
-                    new[] { "他并未发怒。", "如果愤怒会发生什么？" }),
-                Legacy(Fear, "害怕", "实际表现出惊恐、害怕、慌张或瑟瑟发抖。",
+                    SceneActionCatalogText.Get("rage", true).Positive,
+                    SceneActionCatalogText.Get("rage", true).Negative),
+                Legacy(Fear, SceneActionCatalogText.Get("fear", true).Name, SceneActionCatalogText.Get("fear", true).Description,
                     new[] { "害怕", "fear" },
                     new[]
                     {
@@ -224,96 +216,96 @@ namespace AnimusForge.SceneActions.Core
                         "诚惶诚恐地", "局促不安地", "畏缩着", "战战兢兢地",
                         "胆怯地向后缩", "惶惶不安地", "trembled in fear"
                     },
-                    new[] { "他惊恐地瑟瑟发抖。", "她害怕得连连后退摆手。" },
-                    new[] { "他声称自己并不害怕。", "她只是在解释恐惧。" }),
-                Legacy(Disappointed, "失望", "实际垂头丧气、沮丧、摇头叹息或无奈叹气。",
+                    SceneActionCatalogText.Get("fear", true).Positive,
+                    SceneActionCatalogText.Get("fear", true).Negative),
+                Legacy(Disappointed, SceneActionCatalogText.Get("disappointed", true).Name, SceneActionCatalogText.Get("disappointed", true).Description,
                     new[] { "失望", "disappointed" },
                     new[]
                     {
                         "失望", "沮丧", "摇头叹息", "摇了摇头叹息", "满脸失落，默默垂下头",
                         "垂头丧气地叹了口气", "sighed in disappointment"
                     },
-                    new[] { "他失望地摇头叹息。", "她垂头丧气地低下头。" },
-                    new[] { "他摇头表示不同意。", "她没有表现出失望。" }),
-                Legacy(Challenge, "挑衅", "实际勾手、招手叫阵或作出挑战姿态。",
+                    SceneActionCatalogText.Get("disappointed", true).Positive,
+                    SceneActionCatalogText.Get("disappointed", true).Negative),
+                Legacy(Challenge, SceneActionCatalogText.Get("challenge", true).Name, SceneActionCatalogText.Get("challenge", true).Description,
                     new[] { "挑衅", "challenge" },
                     new[] { "挑衅", "叫阵", "勾手挑战", "beckoned challengingly" },
-                    new[] { "他勾手挑衅对手上前。", "她摆出叫阵挑战的姿态。" },
-                    new[] { "他友好地招手问候。", "他拒绝接受挑战。" }),
-                Legacy(Search, "环顾", "实际环顾、张望、扫视四周或搜寻目标。",
+                    SceneActionCatalogText.Get("challenge", true).Positive,
+                    SceneActionCatalogText.Get("challenge", true).Negative),
+                Legacy(Search, SceneActionCatalogText.Get("search", true).Name, SceneActionCatalogText.Get("search", true).Description,
                     new[] { "环顾", "search" },
                     new[]
                     {
                         "环顾", "张望", "扫视四周", "警惕地左顾右盼", "左顾右盼",
                         "环视四周寻找踪迹", "scanned the room"
                     },
-                    new[] { "他警惕地扫视四周。", "她左右张望寻找对手。" },
-                    new[] { "他没有四处张望。", "她谈论如何搜寻。" }),
-                Legacy(Dance, "跳舞", "身体实际随节奏舞动或起舞。",
+                    SceneActionCatalogText.Get("search", true).Positive,
+                    SceneActionCatalogText.Get("search", true).Negative),
+                Legacy(Dance, SceneActionCatalogText.Get("dance", true).Name, SceneActionCatalogText.Get("dance", true).Description,
                     new[] { "跳舞", "dance" },
                     new[]
                     {
                         "跳舞", "起舞", "随节奏舞动", "随着鼓点扭动起来",
                         "随着鼓点扭动身体", "转身跳起舞来", "started dancing"
                     },
-                    new[] { "他随节奏翩翩起舞。", "她开心地跳起舞来。" },
-                    new[] { "他不打算跳舞。", "她只是说了‘跳舞’。" }),
-                NewAction(Greet, ActionMode.RandomGroup, true, "问候",
-                    "实际挥手、抬手或招手向他人打招呼；单纯说‘你好’不算动作。",
+                    SceneActionCatalogText.Get("dance", true).Positive,
+                    SceneActionCatalogText.Get("dance", true).Negative),
+                NewAction(Greet, ActionMode.RandomGroup, true, SceneActionCatalogText.Get("greet", true).Name,
+                    SceneActionCatalogText.Get("greet", true).Description,
                     new[] { "问候", "打招呼", "greet" },
                     new[] { "挥了挥手", "挥挥手", "招了招手", "挥手问候", "挥了挥手打招呼", "抬手打招呼", "抬手向来人问候", "抬手向来人打招呼", "招手问候", "招了招手致意", "向他挥手致意", "挥手致意", "微笑着挥手致意", "抬手挥了挥向我问好", "waved in greeting", "greeted with a wave", "waved hello", "挥手打招呼", "打招呼", "左右挥了挥", "抬起手左右挥了挥", "主动打了个招呼" },
                     new[] { "问候", "打招呼", "挥手", "招手", "你好", "hello", "greet", "greeting", "waved" },
-                    new[] { "他微笑着挥手问候。", "她朝众人招了招手打招呼。" },
-                    new[] { "他说：‘你好。’", "他没有向任何人挥手。" }),
-                NewAction(Agree, ActionMode.RandomGroup, true, "点头同意",
-                    "实际点头表示同意、赞成或应允；口头同意本身不算动作。",
+                    SceneActionCatalogText.Get("greet", true).Positive,
+                    SceneActionCatalogText.Get("greet", true).Negative),
+                NewAction(Agree, ActionMode.RandomGroup, true, SceneActionCatalogText.Get("agree", true).Name,
+                    SceneActionCatalogText.Get("agree", true).Description,
                     new[] { "点头同意", "点头赞成", "agree" },
                     new[] { "点了点头", "点点头", "点头同意", "点头表示同意", "点头表示赞成", "点了点头表示赞成", "点头应允", "点头答应", "点头认可", "颔首赞同", "郑重地点头表示同意", "nodded in agreement", "nodded firmly in agreement", "nodded yes", "nodded approvingly", "郑重地点了点头", "郑重地点了点头表示同意", "郑重地点了点头表示赞成" },
                     new[] { "同意", "答应", "赞成", "认可", "点头", "agree", "agreed", "agreement" },
-                    new[] { "他认真地点头同意。", "她点了点头表示赞成。" },
-                    new[] { "他说：‘好，我同意。’", "他没有点头。" }),
-                NewAction(Disagree, ActionMode.RandomGroup, true, "摇头否定",
-                    "实际摇头表示否定、反对或拒绝；纯口头拒绝不算动作。",
+                    SceneActionCatalogText.Get("agree", true).Positive,
+                    SceneActionCatalogText.Get("agree", true).Negative),
+                NewAction(Disagree, ActionMode.RandomGroup, true, SceneActionCatalogText.Get("disagree", true).Name,
+                    SceneActionCatalogText.Get("disagree", true).Description,
                     new[] { "摇头否定", "摇头反对", "disagree" },
                     new[] { "摇了摇头", "摇摇头", "摇头否定", "摇头表示反对", "摇头表示不同意", "摇了摇头拒绝", "摇头不同意", "摇头表示不赞成", "摇头回绝", "用力摇头表示否定", "摇头拒绝", "shook his head in disagreement", "shook her head no", "shook his head to disagree", "shook his head to show clear disagreement", "摇了几下头", "摆手明确表示反对", "连续摇头表示反对" },
                     new[] { "不同意", "反对", "拒绝", "否定", "摇头", "disagree", "disagreed", "disagreement" },
-                    new[] { "他坚定地摇头否定。", "她摇了摇头表示反对。" },
-                    new[] { "他说：‘我不同意。’", "他失望地摇头叹息。" }),
-                NewAction(Unsure, ActionMode.RandomGroup, true, "摊手犹豫",
-                    "实际耸肩、摊手或用身体动作表示不知道、不确定和犹豫。",
+                    SceneActionCatalogText.Get("disagree", true).Positive,
+                    SceneActionCatalogText.Get("disagree", true).Negative),
+                NewAction(Unsure, ActionMode.RandomGroup, true, SceneActionCatalogText.Get("unsure", true).Name,
+                    SceneActionCatalogText.Get("unsure", true).Description,
                     new[] { "摊手", "摊手表示不知道", "unsure", "shrug" },
                     new[] { "摊了摊手", "耸耸肩", "摊手表示不知道", "摊开双手表示不确定", "耸了耸肩", "迟疑地摊手", "困惑地摊开手", "困惑地摊开双手", "无奈地耸肩", "耸肩摊手，一脸茫然", "犹豫地摊开双手", "shrugged uncertainly", "shrugged, unsure", "shrugged and opened his hands uncertainly", "spread his hands in uncertainty", "摊开双手耸了耸肩", "显得完全拿不准", "拿不准" },
                     new[] { "摊手", "耸肩", "不确定手势", "犹豫动作", "uncertain", "uncertainty" },
-                    new[] { "他困惑地摊开双手。", "她迟疑地耸了耸肩。" },
-                    new[] { "他说：‘我不知道。’", "他没有做出任何犹豫动作。" }),
-                NewAction(Explain, ActionMode.RandomGroup, true, "手势解释",
-                    "实际用双手比划、摊手或配合手势进行解释说明。",
+                    SceneActionCatalogText.Get("unsure", true).Positive,
+                    SceneActionCatalogText.Get("unsure", true).Negative),
+                NewAction(Explain, ActionMode.RandomGroup, true, SceneActionCatalogText.Get("explain", true).Name,
+                    SceneActionCatalogText.Get("explain", true).Description,
                     new[] { "比划解释", "手势解释", "explain" },
                     new[] { "比划着解释", "用手势解释", "摊手说明", "摊开双手作出说明", "一边比划一边解释", "一边比划一边说明", "挥动双手作出解释", "用手比划着讲解", "边说边用双手比划解释", "摊开掌心详细说明", "gestured while explaining", "gestured back and forth while explaining", "gestured back and forth while explaining the plan", "explained with his hands", "explained with a hand gesture", "摊开手掌", "来回比划着说明", "比划着说明", "一边摊开手掌一边来回比划着说明" },
                     new[] { "解释", "说明", "讲解", "比划", "手势", "explaining", "explanation" },
-                    new[] { "他一边比划一边解释。", "她摊开双手作出说明。" },
-                    new[] { "他只是在口头解释。", "她要求别人作出解释。" }),
-                NewAction(Promise, ActionMode.OneShot, true, "举手起誓",
-                    "实际举手、立誓或作出明确的承诺手势；口头保证本身不算动作。",
+                    SceneActionCatalogText.Get("explain", true).Positive,
+                    SceneActionCatalogText.Get("explain", true).Negative),
+                NewAction(Promise, ActionMode.OneShot, true, SceneActionCatalogText.Get("promise", true).Name,
+                    SceneActionCatalogText.Get("promise", true).Description,
                     new[] { "举手起誓", "郑重起誓", "promise" },
                     new[] { "举手起誓", "抬手立誓", "抬起右手作出承诺", "郑重地作出承诺手势", "举起右手发誓", "做出起誓动作", "庄重地立下誓言", "抬起右手发誓保证", "举手立下誓言", "raised his hand to swear", "made an oath gesture", "raised his hand and swore", "raised his right hand and swore", "raised her right hand and swore", "举起右手郑重起誓", "拍了拍胸口作保证", "作保证" },
                     new[] { "承诺", "保证", "发誓", "起誓", "立誓", "promise", "promised", "swore" },
-                    new[] { "他郑重地举手起誓。", "她抬起右手作出承诺。" },
-                    new[] { "他说：‘我保证。’", "他拒绝作出承诺。" }),
-                NewAction(CrossArms, ActionMode.OneShot, true, "抱臂",
-                    "实际将双臂交叉在胸前或抱臂而立，按一次性手势播放。",
+                    SceneActionCatalogText.Get("promise", true).Positive,
+                    SceneActionCatalogText.Get("promise", true).Negative),
+                NewAction(CrossArms, ActionMode.OneShot, true, SceneActionCatalogText.Get("cross_arms", true).Name,
+                    SceneActionCatalogText.Get("cross_arms", true).Description,
                     new[] { "抱臂", "双臂交叉", "cross arms", "crossarms" },
                     new[] { "抱起双臂", "抱臂", "抱臂而立", "双臂抱胸而立", "双臂交叉在胸前", "把手臂交叉在胸前", "胳膊交叉在胸前", "环抱双臂", "交叉双臂站着", "crossed his arms", "folded her arms", "folded his arms", "收回双手", "交叉抱在胸前", "两条手臂交叉抱在胸前" },
                     new[] { "抱臂", "双臂交叉", "交叉手臂", "cross arms", "crossed arms" },
-                    new[] { "他抱起双臂站在原地。", "她将双臂交叉在胸前。" },
-                    new[] { "他没有抱起手臂。", "两条路线彼此交叉。" }),
-                NewAction(DeepBow, ActionMode.OneShot, false, "深鞠躬",
-                    "身体明显深弯腰完成深鞠躬；普通鞠躬和普通行礼仍属于respect。",
+                    SceneActionCatalogText.Get("cross_arms", true).Positive,
+                    SceneActionCatalogText.Get("cross_arms", true).Negative),
+                NewAction(DeepBow, ActionMode.OneShot, false, SceneActionCatalogText.Get("deep_bow", true).Name,
+                    SceneActionCatalogText.Get("deep_bow", true).Description,
                     new[] { "深鞠躬", "深深鞠躬", "deep bow", "deepbow" },
                     new[] { "深鞠躬", "深深鞠躬", "深深鞠了一躬", "深深地鞠了一躬", "弯下腰深深鞠了一躬", "弯腰深鞠一躬", "躬身到底", "躬身到底郑重致礼", "九十度鞠躬", "深深弯腰致礼", "深深弯腰鞠躬到底", "深深弯下腰行大礼", "bowed deeply", "made a deep bow", "made a profound bow", "深深鞠躬到底", "弯腰近乎九十度", "弯腰深鞠到底" },
                     new[] { "深鞠躬", "深深鞠躬", "九十度鞠躬", "deep bow" },
-                    new[] { "他弯下腰深深鞠了一躬。", "她躬身到底郑重致礼。" },
-                    new[] { "他礼貌地普通鞠躬。", "他只是抬手致意。" })
+                    SceneActionCatalogText.Get("deep_bow", true).Positive,
+                    SceneActionCatalogText.Get("deep_bow", true).Negative)
             });
 
         private static readonly HashSet<string> NewIntentKeys = new HashSet<string>(
@@ -623,6 +615,9 @@ namespace AnimusForge.SceneActions.Core
             return false;
         }
         public static string BuildClassifierDefinitionBlock(IEnumerable<string> allowedIntentKeys)
+            => BuildClassifierDefinitionBlock(allowedIntentKeys, true);
+
+        public static string BuildClassifierDefinitionBlock(IEnumerable<string> allowedIntentKeys, bool useChinese)
         {
             HashSet<string> allowed = new HashSet<string>(
                 allowedIntentKeys ?? Enumerable.Empty<string>(),
@@ -630,10 +625,7 @@ namespace AnimusForge.SceneActions.Core
             return string.Join("\n", Entries
                 .Where(entry => allowed.Contains(entry.IntentKey))
                 .Select(entry =>
-                    entry.IntentKey + "（" + entry.DisplayNameZhCn + "）：" +
-                    entry.SemanticDescriptionZhCn +
-                    " 正例：" + string.Join("；", entry.PositiveExamples) +
-                    " 反例：" + string.Join("；", entry.NegativeExamples)));
+                    SceneActionCatalogText.FormatEntry(entry.IntentKey, useChinese, true)));
         }
 
         public static void ValidateCatalog(SceneActionCatalog catalog)

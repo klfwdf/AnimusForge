@@ -60,3 +60,11 @@ UI词法快照`mainline-after-20261010.json`为较早`6e6e2fa1a`工作树：1246
 - `CoreProject/SceneActionVocabulary.cs`嵌套静态缓存只加载一次嵌入XML，使用BCL XmlReader/XmlDocument，无新增包依赖、磁盘轮询或游戏对象访问。统一模组与独立Core项目均嵌入同一资源；content-map登记同一逻辑名。
 - 迁移反向重建三份源文件与基线一致（换行标准化），证据`artifacts/localization/scene-vocabulary-migration-20261010.json`和`verify_scene_vocabulary_20261010.py`。`SceneActionVocabularyContractTests.py` PASS 110检查；资源合同PASS 27对；diff空白检查通过。Core编译/动作解析测试及双实现产品编译仍NOT RUN。
 - 这只是识别输入外置，不代表动作模块提示词/日志/显示全部双语完成；规则内嵌别名和正则仍待后续处理。双语兼容数据的英文发行门禁仍OPEN。
+
+## 场景动作双语目录与分类提示词（2026-10-10）
+
+- `SceneActionFrameworkV3/V4`的27个动作名称/语义、115条正反例及`AfV130AuxiliaryTextClassifier`四段提示词移入`afscene_catalog_strings`中英对（115键）。CN逐值对照Git基线`f90f9128b`完全一致；原动作键、匹配词、执行权限及协议保持。`SceneActionCatalogText`按语言一次性读取嵌入XML，独立Core和主程序集使用相同资源，无新依赖或Tick读取。
+- V3/V4的`BuildClassifierDefinitionBlock`、`NpcReplyDirectiveTagV1.BuildCatalogText`保留旧签名并新增显式语言重载；统一后处理`SceneActionDirectiveController.BuildSceneActionDirectiveRules`选择当前语言，两个分类器transport从`AfCompatV130.TryInstall`接收安装时语言快照。后台只用不可变字符串。分类器运行期间更改游戏语言需要重建provider/重启；未做实机语言切换验收。
+- 命名占位符经Core转换为string.Format索引。初次数字占位符被真实TaleWorlds解析为数字，已修复并复验；不以修改测试oracle绕过。`SceneActionBilingualCatalogContractTests.py`493静态检查、原文比对、词表110、连接测试36及资源28对PASS。既有1.3/1.4各460次目录解析、各84次运行时资源解析PASS。
+- Core测试Program.cs新增27动作双语/白名单/中文旧格式/协议断言，但编译测试NOT RUN；上述资源解析不加载本次新C#。当前产品双编译、LLM真实判定、实机、正式包仍NOT RUN，英文嵌入资源门禁仍需后续语义分类。
+- 全量源码新快照`runtime-literals-mainline-current.json`（HEAD `85ca920e4`含本切片工作树和外部B/C）：1827文件、19952中文位置、589含中文文件、14063去重值，无扫描中变化；不能把所有减少归功主线，不能当成双语完成率。

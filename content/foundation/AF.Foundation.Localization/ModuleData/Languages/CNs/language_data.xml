@@ -27,4 +27,5 @@
   <LanguageFile xml_path="CNs/afweekly_ui_strings-zh-CN.xml" />
   <LanguageFile xml_path="CNs/afnpcaction_editor_strings-zh-CN.xml" />
   <LanguageFile xml_path="CNs/af_runtime_strings-zh-CN.xml" />
+  <LanguageFile xml_path="CNs/afscene_catalog_strings-zh-CN.xml" />
 </LanguageData>

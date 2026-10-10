@@ -93,6 +93,12 @@
     <EmbeddedResource Include="content\modules\AnimusForge.XihaiAction\ModuleData\SceneActionVocabulary.xml">
       <LogicalName>AnimusForge.Defaults.SceneActionVocabulary.xml</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="content\modules\AnimusForge.XihaiAction\ModuleData\Languages\afscene_catalog_strings.xml">
+      <LogicalName>AnimusForge.SceneActions.Catalog.en.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="content\modules\AnimusForge.XihaiAction\ModuleData\Languages\CNs\afscene_catalog_strings-zh-CN.xml">
+      <LogicalName>AnimusForge.SceneActions.Catalog.zh-CN.xml</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="content\modules\AF.Module.Economy\ModuleData\GeneratedRpVocabulary.json">
       <LogicalName>AnimusForge.Defaults.GeneratedRpVocabulary.json</LogicalName>
     </EmbeddedResource>

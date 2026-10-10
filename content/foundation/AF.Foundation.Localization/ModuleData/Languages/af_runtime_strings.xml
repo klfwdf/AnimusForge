@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <base type="string">
   <strings>
+    <string id="AF_RUNTIME_SceneActions_Language" text="en" />
     <string id="AF_RUNTIME_ApiTest_Stage_Main" text="Main API" />
     <string id="AF_RUNTIME_ApiTest_Stage_Preprocess" text="Preprocessing API" />
     <string id="AF_RUNTIME_ApiTest_Stage_Postprocess" text="Postprocessing API" />
