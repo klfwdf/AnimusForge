@@ -25,6 +25,13 @@
 3. 各种状态、剩余时间、周期、续期/成本/独立度原因、终止原因中的中文尾巴；
    用户/模型原始文本不凭空重写，固定系统reason用投影，并明确未知旧内容回退。
 4. 复查本包所有Inquiry/HUD/VM公开字段、按钮Hint及错误正文，不能只扫直接TextObject。
+5. 已复审发现 wave-1 `07fcfc634` 的 `RegisterUnifiedPlayerPolicy`
+   (`Core/CustomPolicyBehavior.Lifecycle.cs:4122/:4126`) 把 `PolicyName` 默认值和
+   `FeedbackTitle` 改为语言相关文本，二者进入 `NpcRulerPolicyRecord`，
+   `Npc/NpcRulerPolicyBehavior.cs:134` 通过 `_afNpcRulerPolicyRecords_v1` 保存。
+   这也是Memory prepare共享J17门禁的首个哈希阻断，不能当纯UI漂移直接刷hash。
+   保持原事实与存档语义，固定中文默认值须外置而非硬编码；新增独立UI投影并追踪
+   FeedbackTitle所有消费路径。给主线方法级证据，再由主线维护共享批准/逆变换。
 
 ## 测试必须跟随真实行为
 

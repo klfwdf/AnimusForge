@@ -16,3 +16,13 @@
 - 盘点快照：确认 UI 143 处 / 31 文件 / 115 个去重文本；另有 1,279 个消费者候选待追踪。该数字是保守 UI 下限，不是全仓剩余量。
 
 未验证：C# 编译、编译型 fixture、实机、旧档、正式 CN/EN ZIP、Stage、部署、N 网发布。回滚使用本切片 focused inverse；不回滚 B 世界书或 C/D/E 并发修改。
+
+提交 `3e6a4da55`。代码入口（一基行号，按该修订）：
+
+- `src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.WeeklyEditorUi.cs:60`：诊断port；`:71`、`:96`：显示档位；`:176`、`:179`：原runtime预览接线。
+- `src/AF.GameAdapter.Bannerlord/UI/Editors/WeeklyReportEditorController.cs:696`、`:699`：真实UI预览消费者。
+- `src/AF.GameAdapter.Bannerlord/UI/Editors/WeeklyEditorProjection.cs:41`、`:58`：显示素材类型和档位；`:154`、`:171`：单期/批次显示预览。
+- `src/AF.GameAdapter.Bannerlord/Records/WeeklyDiagnosticPreviewProjection.cs:12`：原字段格式；`BuildSingle` / `BuildBatch`：保存与日志预览。
+- `src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.WeeklyRuntime.cs:32`、`:35`：原runtime委托。
+
+盘点快照HEAD为 `6214b925f`，实际扫描包含周报提交前候选与外部工作树改动；原诊断12个中文位置归 `saved_diagnostic_preview`，仍需全英文发行外置。世界书原中文JSON一处无效控制字符交B处理，未修改中文原件。
