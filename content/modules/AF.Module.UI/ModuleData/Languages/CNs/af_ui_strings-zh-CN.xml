@@ -3098,5 +3098,20 @@ HeroNPC 个性/背景、旧对话历史、压缩记忆、赊账/欠款、未命�
   <string id="AF_UI_WeeklyProjection_Profile2" text="第二档（200-800字）" />
   <string id="AF_UI_WeeklyProjection_Profile3" text="第三档（200-1200字）" />
   <string id="AF_UI_WeeklyProjection_Profile4" text="第四档（200-1500字）" />
+  <string id="AF_UI_Developer_RootEntry" text="【开发】数据管理" />
+  <string id="AF_UI_Developer_RootHero" text="HeroNPC编辑（领主/流浪者/同伴）" />
+  <string id="AF_UI_Developer_RootNonHero" text="非heroNPC编辑（士兵/平民/无名/无姓NPC）" />
+  <string id="AF_UI_Developer_RootKnowledge" text="知识编辑" />
+  <string id="AF_UI_Developer_RootEvent" text="事件编辑" />
+  <string id="AF_UI_Developer_RootKingdomProfiles" text="国家战略与性格" />
+  <string id="AF_UI_Developer_RootImportExport" text="全部导出/导入" />
+  <string id="AF_UI_Developer_RootVoiceMapping" text="声音映射管理（VoiceMapping）" />
+  <string id="AF_UI_QuickTalkDisabled" text="该交谈选项已被模组禁用，请使用造访进入场景后再互动。" />
+  <string id="AF_NOTIFY_NewsCollection_NewBulletin" text="快报已从本次开局开始收集事件。" />
+  <string id="AF_NOTIFY_NewsCollection_NewWeekly" text="周报已从本次开局开始收集，累计7个游戏日后生成第一期。" />
+  <string id="AF_NOTIFY_NewsCollection_SwitchBulletin" text="已切换快报：从现在重新收集事件，历史档案保留。" />
+  <string id="AF_NOTIFY_NewsCollection_SwitchWeekly" text="已切换周报：从现在重新收集，累计7个游戏日后生成第一期；旧重试已取消。" />
+  <string id="AF_NOTIFY_NativeConversation_InputOpened" text="已打开 AnimusForge 自由对话输入框。" />
+  <string id="AF_NOTIFY_Escort_PrisonersSpawned" text="【贵族俘虏随行】已带入 {COUNT} 名英雄俘虏，归入第 8 编队。" />
   </strings>
 </base>
