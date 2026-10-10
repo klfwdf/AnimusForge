@@ -19,6 +19,14 @@ namespace AnimusForge.Illustrator.UI
             return text.ToString();
         }
 
+        internal static string Format2(string id, string englishFallback, string firstName, object firstValue, string secondName, object secondValue)
+        {
+            var text = new TextObject($"{{={id}}}{englishFallback}");
+            text.SetTextVariable(firstName, firstValue?.ToString() ?? string.Empty);
+            text.SetTextVariable(secondName, secondValue?.ToString() ?? string.Empty);
+            return text.ToString();
+        }
+
         internal static string Format3(string id, string englishFallback, string firstName, object firstValue, string secondName, object secondValue, string thirdName, object thirdValue)
         {
             var text = new TextObject($"{{={id}}}{englishFallback}");

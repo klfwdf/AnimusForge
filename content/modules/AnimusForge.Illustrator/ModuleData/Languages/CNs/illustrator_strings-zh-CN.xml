@@ -180,5 +180,35 @@
     <string id="AF_ILL_UI_GALLERY_DELETED" text="已删除：{TITLE}（文件已移入回收区）" />
     <string id="AF_ILL_UI_GALLERY_DEFAULT_MARKER" text="【默认】" />
     <string id="AF_ILL_UI_GALLERY_FAVORITE_MARKER" text="【收藏】" />
+    <string id="AF_ILL_UI_BACK" text="返回" />
+    <string id="AF_ILL_UI_SETTINGS_STYLE_TITLE" text="编辑自定义画风提示词" />
+    <string id="AF_ILL_UI_SETTINGS_STYLE_DESCRIPTION" text="仅当画风预设选“提示词”时生效，内容作为【画风指令】注入所有生图通道的提示词末尾。" />
+    <string id="AF_ILL_UI_SETTINGS_STYLE_PLACEHOLDER" text="例如：古典厚涂油画, 水彩淡彩插画, 暗黑史诗写实, 电影级光影, 铅笔素描。留空则不注入。" />
+    <string id="AF_ILL_UI_SETTINGS_STYLE_FAILED" text="[Illustrator] 打开画风提示词编辑器失败: {ERROR}" />
+    <string id="AF_ILL_UI_SETTINGS_DIRECTOR_TITLE" text="编辑自定义导演提示词" />
+    <string id="AF_ILL_UI_SETTINGS_DIRECTOR_DESCRIPTION" text="只给视觉导演：控制构图、动作、景别和叙事，不覆盖真实人物/装备/事件，不改变四段输出格式。导演关闭或未配置时不生效。" />
+    <string id="AF_ILL_UI_SETTINGS_DIRECTOR_PLACEHOLDER" text="例如：优先表现人物之间的互动，避免总是正面站桩；选择能解释当前事件的瞬间。留空恢复默认规则。" />
+    <string id="AF_ILL_UI_SETTINGS_DIRECTOR_FAILED" text="[AI画卷] 打开导演提示词编辑器失败: {ERROR}" />
+    <string id="AF_ILL_UI_SETTINGS_NEGATIVE_TITLE" text="编辑负面提示词" />
+    <string id="AF_ILL_UI_SETTINGS_NEGATIVE_DESCRIPTION" text="内容作为禁止指令注入生图提示词，告诉模型画面中不要出现什么。" />
+    <string id="AF_ILL_UI_SETTINGS_NEGATIVE_PLACEHOLDER" text="例如：模糊, 变形, 多余手指, 现代物品, 水印文字, 低画质。留空则不注入。" />
+    <string id="AF_ILL_UI_SETTINGS_NEGATIVE_FAILED" text="[Illustrator] 打开负面提示词编辑器失败: {ERROR}" />
+    <string id="AF_ILL_UI_SETTINGS_IMAGE_FETCH_PENDING" text="[AI生图] 模型列表正在拉取中，请稍候。" />
+    <string id="AF_ILL_UI_SETTINGS_IMAGE_FETCH_ENDPOINT" text="[AI生图] 请先填写生图 API 端点地址 (Base URL)！" />
+    <string id="AF_ILL_UI_SETTINGS_IMAGE_FETCH_STARTED" text="[AI生图] 正在拉取可用模型列表..." />
+    <string id="AF_ILL_UI_SETTINGS_IMAGE_FETCH_ERROR" text="[AI生图] 拉取模型异常: {ERROR}" />
+    <string id="AF_ILL_UI_SETTINGS_IMAGE_FETCH_BUSY" text="[AI生图] 后台任务繁忙，请稍后重试。" />
+    <string id="AF_ILL_UI_SETTINGS_IMAGE_PLAYER2" text="[AI生图] 已确认Player2：生成/编辑模型请在Player2应用中选择，本页模型名不参与请求。" />
+    <string id="AF_ILL_UI_SETTINGS_IMAGE_FETCH_SUCCESS" text="[AI生图] 成功获取 {COUNT} 个可用模型！保留当前模型: {MODEL}，下拉选单已即时刷新。" />
+    <string id="AF_ILL_UI_SETTINGS_DIRECTOR_FETCH_PENDING" text="[视觉导演] 导演模型列表正在拉取中，请稍候。" />
+    <string id="AF_ILL_UI_SETTINGS_DIRECTOR_FETCH_HOST" text="[视觉导演] 未配置独立端点，正在向主模块正文 API 拉取模型列表..." />
+    <string id="AF_ILL_UI_SETTINGS_DIRECTOR_FETCH_ENDPOINT" text="[视觉导演] 请先填写导演 API 端点地址，或在主模块配置正文 API！" />
+    <string id="AF_ILL_UI_SETTINGS_DIRECTOR_FETCH_STARTED" text="[视觉导演] 正在向独立导演 API 端点拉取模型列表..." />
+    <string id="AF_ILL_UI_SETTINGS_DIRECTOR_FETCH_ERROR" text="[视觉导演] 拉取模型异常: {ERROR}" />
+    <string id="AF_ILL_UI_SETTINGS_DIRECTOR_FETCH_BUSY" text="[视觉导演] 后台任务繁忙，请稍后重试。" />
+    <string id="AF_ILL_UI_SETTINGS_DIRECTOR_FETCH_SUCCESS" text="[视觉导演] 成功获取 {COUNT} 个可用模型！下拉选单已即时刷新。" />
+    <string id="AF_ILL_UI_SETTINGS_FETCH_EMPTY_RESULT" text="空结果" />
+    <string id="AF_ILL_UI_SETTINGS_FETCH_HTTP_ERROR" text="拉取失败 (HTTP {STATUS}): {BODY}" />
+    <string id="AF_ILL_UI_SETTINGS_FETCH_NO_MODELS" text="接口返回成功，但未解析到可用模型数据。" />
   </strings>
 </base>
