@@ -347,5 +347,8 @@
     <string id="AF_ILL_ERROR_CANCELLED" text="生图请求已取消" />
     <string id="AF_ILL_ERROR_TIMEOUT" text="生图请求超过{SECONDS}秒总预算" />
     <string id="AF_ILL_ERROR_COMMUNICATION" text="生图通信异常: {DETAIL}" />
+    <string id="AF_ILL_UI_GALLERY_LEGACY_DEFAULT_TITLE" text="卡拉迪亚历史画卷" />
+    <string id="AF_ILL_UI_DEFAULT_HERO_NAME" text="英雄" />
+    <string id="AF_ILL_UI_DEFAULT_PARTNER_NAME" text="对方" />
   </strings>
 </base>

@@ -14,6 +14,7 @@ namespace AnimusForge.Illustrator.UI.Gallery
     {
         private readonly CachedIllustrationItem _item;
         private readonly Action<IllustrationItemVM> _onSelect;
+        private readonly string _displayTitle;
         private bool _isSelected;
 
         public CachedIllustrationItem Item => _item;
@@ -22,11 +23,12 @@ namespace AnimusForge.Illustrator.UI.Gallery
         {
             _item = item;
             _onSelect = onSelect;
+            _displayTitle = string.IsNullOrWhiteSpace(item?.Title) ? IllustratorUiText.GalleryTitle : IllustratorUiText.ProjectKnownDefaultTitle(item.Title, item.Category);
             // 纹理材质采用延迟按需加载 (Lazy Loading)：仅在用户选中具体条目时才读取文件并注册纹理，避免打开画廊瞬间阻塞主线程与显存膨胀
         }
 
         [DataSourceProperty]
-        public string Title => IllustratorUiText.GalleryItemTitle(string.IsNullOrWhiteSpace(_item.Title) ? IllustratorUiText.GalleryTitle : _item.Title, _item.IsDefault, _item.IsFavorite);
+        public string Title => IllustratorUiText.GalleryItemTitle(_displayTitle, _item.IsDefault, _item.IsFavorite);
 
         [DataSourceProperty]
         public string DateText => _item.CreatedTime.ToLocalTime().ToString("yyyy/MM/dd HH:mm");

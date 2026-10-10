@@ -347,5 +347,8 @@
     <string id="AF_ILL_ERROR_CANCELLED" text="The image generation request was cancelled." />
     <string id="AF_ILL_ERROR_TIMEOUT" text="The image generation request exceeded its total budget of {SECONDS} seconds." />
     <string id="AF_ILL_ERROR_COMMUNICATION" text="Image generation communication error: {DETAIL}" />
+    <string id="AF_ILL_UI_GALLERY_LEGACY_DEFAULT_TITLE" text="Calradia history illustration" />
+    <string id="AF_ILL_UI_DEFAULT_HERO_NAME" text="Hero" />
+    <string id="AF_ILL_UI_DEFAULT_PARTNER_NAME" text="the other person" />
   </strings>
 </base>

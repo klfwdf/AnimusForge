@@ -60,6 +60,31 @@ def main():
         assert "IllustratorRuntime.Post(" in line, "Worker status must resolve on the main thread"
     worker = runtime.split("bool started = IllustratorRuntime.Start(async () =>", 1)[1].split("}, (result, error) =>", 1)[0]
     assert "IllustratorUiText" not in worker, "Background runtime must not resolve UI text"
+    assert en["AF_ILL_UI_GALLERY_LEGACY_DEFAULT_TITLE"] == "Calradia history illustration"
+    assert zh["AF_ILL_UI_GALLERY_LEGACY_DEFAULT_TITLE"] == "卡拉迪亚历史画卷"
+    assert en["AF_ILL_UI_DEFAULT_HERO_NAME"] == "Hero" and zh["AF_ILL_UI_DEFAULT_HERO_NAME"] == "英雄"
+    assert en["AF_ILL_UI_DEFAULT_PARTNER_NAME"] == "the other person" and zh["AF_ILL_UI_DEFAULT_PARTNER_NAME"] == "对方"
+    default_title = helper.split("internal static string ProjectKnownDefaultTitle", 1)[1].split("internal static string ConversationSessionChanged", 1)[0]
+    assert 'string.Equals(title, "卡拉迪亚历史画卷", StringComparison.Ordinal)' in default_title
+    assert 'string.Equals(category, "encyclopedia", StringComparison.Ordinal)' in default_title
+    assert 'string.Equals(hero, "英雄", StringComparison.Ordinal) ? DefaultHeroName : hero' in default_title
+    assert 'string.Equals(category, "conversation", StringComparison.Ordinal)' in default_title
+    assert 'string.Equals(partner, "对方", StringComparison.Ordinal) ? DefaultPartnerName : partner' in default_title
+    assert "return title;" in default_title, "Unknown/custom titles must remain unchanged"
+    card = (SOURCE / "UI/Overlays/IllustrationCardPopup.cs").read_text(encoding="utf-8-sig")
+    assert 'hero.Name != null ? hero.Name.ToString() : IllustratorUiText.DefaultHeroName' in card
+    assert ': IllustratorUiText.DefaultPartnerName);' in card
+    assert 'string heroName = hero.Name?.ToString() ?? "英雄";' in card, "Prompt/source fallback must remain raw"
+    assert ': "对方");' in card, "Conversation model/source fallback must remain raw"
+    gallery = (SOURCE / "UI/Gallery/IllustratorGalleryPopupVM.cs").read_text(encoding="utf-8-sig")
+    cache = (SOURCE / "Engine/DiskImageCacheManager.cs").read_text(encoding="utf-8-sig")
+    assert "ProjectKnownDefaultTitle(item.Title, item.Category)" in card
+    assert 'string.IsNullOrWhiteSpace(direction.Title) ? $"{heroName} 纪事肖像" : direction.Title' in card
+    assert 'string.IsNullOrWhiteSpace(direction.Title) ? $"与 {partnerName} 的会晤纪事" : direction.Title' in card
+    assert "SaveImage(key, result.ImageBytes, effectivePrompt," in card, "Image prompt/save input changed"
+    assert "ProjectKnownDefaultTitle(item.Title, item.Category)" in gallery
+    assert 'Title = "卡拉迪亚历史画卷"' in cache, "Legacy cache title must remain raw"
+    assert "GenerationComplete(IllustratorUiText.ProjectKnownDefaultTitle(update.Saved.Title, update.Saved.Category))" in runtime
 
     mapped = json.loads((ROOT / "content/content-map.json").read_text(encoding="utf-8-sig"))["entries"]
     sources = {entry["target"]: ROOT / entry["source"] for entry in mapped}
