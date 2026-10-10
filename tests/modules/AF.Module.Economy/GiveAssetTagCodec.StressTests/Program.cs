@@ -393,7 +393,14 @@ Test.True(playerRpPopup.Contains("popup._ignoreSubmitUntilUtc = DateTime.UtcNow.
     && Regex.IsMatch(terminalBehavior,
         @"InformationManager\.DisplayMessage\([\s\S]{0,500}?PlayerRpForgePopup\.TryRestoreEditing\(sessionId\);",
         RegexOptions.CultureInvariant), "failed player RP preview must debounce queued duplicate submit commands");
-Test.True(playerRpCrafting.Contains("\\n未命中时：垃圾物品（投入仍会消耗）。", StringComparison.Ordinal)
+// Pre-existing-break repair (not a Package E feature): 4f694e894 externalized this miss-warning
+// into AF_ECO_UI_RpForgeConfirmationChance without updating this assertion. The display text and
+// the wiring to it are still asserted; the rejection/safety conjuncts below are untouched.
+string economyEnRpForgeConfirm = File.ReadAllText(Path.Combine(repoRoot, "content/modules/AF.Module.Economy/ModuleData/Languages/afeconomy_strings.xml"));
+string economyCnRpForgeConfirm = File.ReadAllText(Path.Combine(repoRoot, "content/modules/AF.Module.Economy/ModuleData/Languages/CNs/afeconomy_strings-zh-CN.xml"));
+Test.True(economyCnRpForgeConfirm.Contains("\\n未命中时：垃圾物品（投入仍会消耗）。", StringComparison.Ordinal)
+    && economyEnRpForgeConfirm.Contains("On a miss: a junk item", StringComparison.Ordinal)
+    && playerRpCrafting.Contains("EconomyUiTexts.PlayerRpConfirmationChance(", StringComparison.Ordinal)
     && !playerRpCrafting.Contains("\\n失败结果：垃圾物品", StringComparison.Ordinal)
     && terminalBehavior.Contains("SanitizePlayerRpForgeInquiryText", StringComparison.Ordinal)
     && terminalBehavior.Contains("BreakPlayerRpForgeInquiryToken", StringComparison.Ordinal)
@@ -427,14 +434,25 @@ Test.True(compactEquipmentProbabilityPreview.Success
     && !compactEquipmentProbabilityPreview.Value.Contains("TryCreateSnapshot", StringComparison.Ordinal)
     && !compactEquipmentProbabilityPreview.Value.Contains("BuildAttributeSummary", StringComparison.Ordinal),
     "equipment confirmation must show only three compact probability outcomes without building full stat snapshots");
+// Pre-existing-break repair (same cause as above): 4f694e894 externalized the equipment
+// confirmation effect summaries and the degradation warning into AF_ECO_UI_RpForgeEquipment*.
+// The warning trigger stays asserted on the producer; the display text is asserted in its
+// authoritative bilingual resource, and the wiring is asserted on the producer.
 Test.True(playerRpCrafting.Contains("if (badWeight > normalWeight)", StringComparison.Ordinal)
-    && playerRpCrafting.Contains("【警告】劣化概率高于 33.33%", StringComparison.Ordinal)
-    && playerRpCrafting.Contains("建议将锻造从 ", StringComparison.Ordinal)
-    && playerRpCrafting.Contains("PlayerRpTemplatePricePerSmithingLevel.ToString", StringComparison.Ordinal)
-    && playerRpCrafting.Contains(" 第纳尔对应 1 级）。", StringComparison.Ordinal)
-    && playerRpCrafting.Contains("有效正属性保留 ", StringComparison.Ordinal)
-    && playerRpCrafting.Contains("每项有效正属性 +", StringComparison.Ordinal)
-    && playerRpCrafting.Contains("有效正属性与重量不变", StringComparison.Ordinal),
+    && playerRpCrafting.Contains("PlayerRpTemplatePricePerSmithingLevel));", StringComparison.Ordinal)
+    && playerRpCrafting.Contains("GetPlayerRpEquipmentRecommendedSmithingLevel(", StringComparison.Ordinal)
+    && playerRpCrafting.Contains("EconomyUiTexts.PlayerRpEquipmentWarning(", StringComparison.Ordinal)
+    && playerRpCrafting.Contains("EconomyUiTexts.PlayerRpEquipmentEffectRetained(", StringComparison.Ordinal)
+    && playerRpCrafting.Contains("EconomyUiTexts.PlayerRpEquipmentEffectBonus(", StringComparison.Ordinal)
+    && playerRpCrafting.Contains("EconomyUiTexts.PlayerRpEquipmentEffectStable(", StringComparison.Ordinal)
+    && economyCnRpForgeConfirm.Contains("【警告】劣化概率高于 33.33%", StringComparison.Ordinal)
+    && economyEnRpForgeConfirm.Contains("degradation is more likely than 33.33%", StringComparison.Ordinal)
+    && economyCnRpForgeConfirm.Contains("有效正属性保留 ", StringComparison.Ordinal)
+    && economyCnRpForgeConfirm.Contains("每项有效正属性 +", StringComparison.Ordinal)
+    && economyCnRpForgeConfirm.Contains("有效正属性与重量不变", StringComparison.Ordinal)
+    && economyEnRpForgeConfirm.Contains("positive attributes retained", StringComparison.Ordinal)
+    && economyEnRpForgeConfirm.Contains("each positive attribute +", StringComparison.Ordinal)
+    && economyEnRpForgeConfirm.Contains("positive attributes and weight unchanged", StringComparison.Ordinal),
     "equipment confirmation effect summaries or degradation warning are missing");
 Test.True(playerRpCrafting.Contains("GetPlayerRpEquipmentRecommendedSmithingLevel(templateBaseValue)", StringComparison.Ordinal)
     && playerRpCrafting.Contains("PlayerRpTemplatePricePerSmithingLevel = 1000", StringComparison.Ordinal)
@@ -467,10 +485,19 @@ Test.True(playerRpCrafting.Contains("PlayerRpMasterSmithingLevel = 275", StringC
     && playerRpCrafting.Contains("if (underfunded)", StringComparison.Ordinal)
     && playerRpCrafting.Contains("return;", StringComparison.Ordinal),
     "smithing 275 must remove the bad roll and add normal +3/good +6 only after the template is fully funded");
+// Pre-existing-break repair (same cause as above): the compact crafter selection was externalized
+// into the AF_TERMINAL_UI_Forge_* keys, so its Chinese literals no longer exist in the terminal
+// behavior. The compact-selection behavior stays asserted on the producer; the display text is
+// asserted in its authoritative bilingual resource, and the wiring is asserted on the producer.
+string terminalForgeEnglish = File.ReadAllText(Path.Combine(repoRoot, "content/modules/AF.Module.UI/ModuleData/Languages/af_ui_strings.xml"));
+string terminalForgeChinese = File.ReadAllText(Path.Combine(repoRoot, "content/modules/AF.Module.UI/ModuleData/Languages/CNs/af_ui_strings-zh-CN.xml"));
 Test.True(terminalBehavior.Contains("OpenPlayerRpCrafterSelection()", StringComparison.Ordinal)
-    && terminalBehavior.Contains("\"选择制造者\"", StringComparison.Ordinal)
-    && terminalBehavior.Contains("\"　锻造等级：\"", StringComparison.Ordinal)
-    && terminalBehavior.Contains("\"　锻造体力：\"", StringComparison.Ordinal)
+    && terminalBehavior.Contains("Ui(\"AF_TERMINAL_UI_Forge_SelectCrafter\"", StringComparison.Ordinal)
+    && terminalBehavior.Contains("UiFormat(\"AF_TERMINAL_UI_Forge_CrafterEntry\"", StringComparison.Ordinal)
+    && terminalForgeChinese.Contains("锻造等级：{SKILL}", StringComparison.Ordinal)
+    && terminalForgeChinese.Contains("锻造体力：{STAMINA}", StringComparison.Ordinal)
+    && terminalForgeEnglish.Contains("Smithing skill: {SKILL}", StringComparison.Ordinal)
+    && terminalForgeEnglish.Contains("Crafting stamina: {STAMINA}", StringComparison.Ordinal)
     && terminalBehavior.Contains("isSeachAvailable: false", StringComparison.Ordinal),
     "player RP forge must open a compact crafter selection before the parchment editor");
 Test.True(playerRpCrafting.Contains("TryGetAvailablePlayerRpCraftersForExternal", StringComparison.Ordinal)
@@ -500,14 +527,17 @@ Test.True(playerRpCrafting.Contains("current.SmithingSkill != preview.SmithingSk
     "equipment commit must reject probability changes after the confirmation preview");
 Test.True(!playerRpCrafting.Contains("\\n玩家锻造：", StringComparison.Ordinal)
     && !playerRpCrafting.Contains("\\n优良 / 正常 / 劣化：", StringComparison.Ordinal)
-    && terminalBehavior.Contains("confirmationTitle = \"制造“\" + compactItemName", StringComparison.Ordinal),
+    && terminalBehavior.Contains("UiFormat(\"AF_TERMINAL_UI_Forge_ConfirmationWeaponTitle\"", StringComparison.Ordinal)
+    && terminalBehavior.Contains("(\"NAME\", compactItemName)", StringComparison.Ordinal)
+    && terminalForgeChinese.Contains("制造“{NAME}”", StringComparison.Ordinal)
+    && terminalForgeEnglish.Contains("Craft &quot;{NAME}&quot;", StringComparison.Ordinal),
     "equipment confirmation still exposes the verbose numeric header instead of moving identity to the title");
 Test.True(!terminalBehavior.Contains("TryPreviewPlayerRpCraftExactMatchForExternal(", StringComparison.Ordinal)
     && terminalBehavior.Contains("TryBuildPlayerRpCraftTemplateSelectionForExternal(", StringComparison.Ordinal)
     && terminalBehavior.Contains("ShowPlayerRpCraftTemplateSelection(", StringComparison.Ordinal),
     "every U-key forge submission must enter the player-controlled template list instead of an automatic exact-match path");
 Test.True(playerRpCrafting.Contains("\"player_choice\"", StringComparison.Ordinal)
-    && playerRpCrafting.Contains("模板选择：玩家手动选择（Top ", StringComparison.Ordinal)
+    && playerRpCrafting.Contains("EconomyUiTexts.PlayerRpConfirmationPlayerChoice(candidates.Count)", StringComparison.Ordinal)
     && playerRpCrafting.Contains("requireExactGameItemMatch", StringComparison.Ordinal)
     && playerRpCrafting.Contains("TryValidatePlayerRpSelectedTemplateForCurrentRequest(", StringComparison.Ordinal),
     "manual choice must retain template safety and current-price revalidation before preview and commit");
