@@ -3285,5 +3285,57 @@ HeroNPC 个性/背景、旧对话历史、压缩记忆、赊账/欠款、未命�
   <string id="AF_UI_Terminal_HotkeySet" text="快捷键 {TITLE} 已设置为 [{KEY}]。" />
   <string id="AF_UI_Weekly_Browser_PageStatus" text="第 {CURRENT} / {TOTAL} 页" />
   <string id="AF_UI_Weekly_Notice_Current" text="本期周报" />
+  <string id="AF_UI_Weekly_Bulletin_ScopeWorld" text="时事快报" />
+  <string id="AF_UI_Weekly_Bulletin_ScopeKingdom" text="王国快报" />
+  <string id="AF_UI_Weekly_Bulletin_ScopeNamedKingdom" text="{KINGDOM}快报" />
+  <string id="AF_UI_Weekly_Bulletin_Issue" text="第{ISSUE}期" />
+  <string id="AF_UI_Weekly_Bulletin_KingdomSeparator" text="、" />
+  <string id="AF_UI_Weekly_Bulletin_InvolvedKingdoms" text="涉及 {KINGDOMS}" />
+  <string id="AF_UI_Weekly_Bulletin_MinorMessage" text="消息" />
+  <string id="AF_UI_Weekly_Bulletin_CategoryDiplomacy" text="外 交" />
+  <string id="AF_UI_Weekly_Bulletin_CategoryConflict" text="战 事" />
+  <string id="AF_UI_Weekly_Bulletin_CategoryRaids" text="劫 掠" />
+  <string id="AF_UI_Weekly_Bulletin_CategoryTerritory" text="领 地" />
+  <string id="AF_UI_Weekly_Bulletin_CategoryObituaries" text="讣 闻" />
+  <string id="AF_UI_Weekly_Bulletin_CategoryCaptivity" text="被 俘" />
+  <string id="AF_UI_Weekly_Bulletin_CategoryStateAffairs" text="国 事" />
+  <string id="AF_UI_Weekly_Bulletin_CategoryCurrentAffairs" text="时 事" />
+  <string id="AF_UI_Weekly_Bulletin_KindDefault" text="时事快报" />
+  <string id="AF_UI_Weekly_Bulletin_KindWarDeclared" text="烽烟再起" />
+  <string id="AF_UI_Weekly_Bulletin_KindDiplomaticDeclaration" text="外交宣言" />
+  <string id="AF_UI_Weekly_Bulletin_KindRulerPolicy" text="施政新令" />
+  <string id="AF_UI_Weekly_Bulletin_KindNobleGathering" text="贵族宴集" />
+  <string id="AF_UI_Weekly_Bulletin_KindTournamentFinished" text="竞技捷报" />
+  <string id="AF_UI_Weekly_Bulletin_KindPeaceMade" text="干戈暂息" />
+  <string id="AF_UI_Weekly_Bulletin_KindSettlementSiege" text="城池易主" />
+  <string id="AF_UI_Weekly_Bulletin_KindSettlementTransfer" text="领地移交" />
+  <string id="AF_UI_Weekly_Bulletin_KindFiefGrant" text="封地授予" />
+  <string id="AF_UI_Weekly_Bulletin_KindBattle" text="战场急报" />
+  <string id="AF_UI_Weekly_Bulletin_KindSallyOutBattle" text="出城战报" />
+  <string id="AF_UI_Weekly_Bulletin_KindRulerKilled" text="君王陨落" />
+  <string id="AF_UI_Weekly_Bulletin_KindLordKilled" text="贵族殒命" />
+  <string id="AF_UI_Weekly_Bulletin_KindLordCaptured" text="贵胄被俘" />
+  <string id="AF_UI_Weekly_Bulletin_KindKingdomDestroyed" text="王国覆灭" />
+  <string id="AF_UI_Weekly_Bulletin_KindKingdomCreated" text="新国崛起" />
+  <string id="AF_UI_Weekly_Bulletin_KindKingdomRebellion" text="叛旗高举" />
+  <string id="AF_UI_Weekly_Bulletin_KindCivilWar" text="内战爆发" />
+  <string id="AF_UI_Weekly_Bulletin_KindCivilWarResolution" text="内战结束" />
+  <string id="AF_UI_Weekly_Bulletin_KindCivilWarPolitics" text="派系交涉" />
+  <string id="AF_UI_Weekly_Bulletin_KindCoupSuccess" text="政变夺位" />
+  <string id="AF_UI_Weekly_Bulletin_KindCoupFailure" text="政变失败" />
+  <string id="AF_UI_Weekly_Bulletin_KindRaid" text="村庄遭劫" />
+  <string id="AF_UI_Weekly_Bulletin_KindAllianceFormed" text="盟约缔结" />
+  <string id="AF_UI_Weekly_Bulletin_KindAllianceEnded" text="盟约解除" />
+  <string id="AF_UI_Weekly_Bulletin_KindRulerChanged" text="新君即位" />
+  <string id="AF_UI_Weekly_Bulletin_KindRoyalMarriage" text="王室联姻" />
+  <string id="AF_UI_Weekly_Bulletin_KindNobleMarriage" text="贵胄联姻" />
+  <string id="AF_UI_Weekly_Bulletin_KindClanDefection" text="家族改投" />
+  <string id="AF_UI_Weekly_Bulletin_KindClanDestroyed" text="家族覆亡" />
+  <string id="AF_UI_Weekly_Bulletin_KindArmyGathered" text="大军集结" />
+  <string id="AF_UI_Weekly_Bulletin_KindTownUnrest" text="民心浮动" />
+  <string id="AF_UI_Weekly_Bulletin_KindTownRebellion" text="城中民变" />
+  <string id="AF_UI_Weekly_Bulletin_KindKingdomAnnexed" text="王国并吞" />
+  <string id="AF_UI_Weekly_Bulletin_KindVassalageEstablished" text="称臣纳贡" />
+  <string id="AF_UI_Weekly_Bulletin_KindVassalageEnded" text="宗藩决裂" />
 </strings>
 </base>
