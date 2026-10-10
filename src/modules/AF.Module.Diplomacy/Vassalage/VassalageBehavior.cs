@@ -1803,10 +1803,13 @@ internal sealed partial class VassalageBehavior : CampaignBehaviorBase
 		if (UsesSubjectIndependence(normalizedType))
 		{
 			TryGetSubjectIndependenceStatus(agreement, out int independence, out int breakawayThreshold, out int rulerRelation, out string rulerName);
-			obedienceText = independence.ToString(CultureInfo.InvariantCulture) + "/100；脱离阈值 " + breakawayThreshold.ToString(CultureInfo.InvariantCulture) + "；" + rulerName + "关系 " + FormatSignedRelation(rulerRelation);
+			obedienceText = DiplomacyUiLocalization.Format("AF_DIP_UI_Vassalage_Terminal_Obedience", "{VALUE}/100; breakaway threshold {THRESHOLD}; {RULER} relation {RELATION}",
+				("VALUE", independence.ToString(CultureInfo.InvariantCulture)),
+				("THRESHOLD", breakawayThreshold.ToString(CultureInfo.InvariantCulture)),
+				("RULER", rulerName), ("RELATION", FormatSignedRelation(rulerRelation)));
 			obedienceShortText = independence.ToString(CultureInfo.InvariantCulture) + "/100";
 		}
-		string elapsedText = elapsedDays.ToString(CultureInfo.InvariantCulture) + "天";
+		string elapsedText = DiplomacyUiLocalization.Format("AF_DIP_UI_Vassalage_Terminal_ElapsedDays", "{DAYS} days", ("DAYS", elapsedDays.ToString(CultureInfo.InvariantCulture)));
 		string title = vassalName + " · " + typeName + " · " + elapsedText;
 		if (!string.IsNullOrWhiteSpace(obedienceShortText))
 		{
@@ -1827,7 +1830,7 @@ internal sealed partial class VassalageBehavior : CampaignBehaviorBase
 			IsTributePaying = isTributePaying,
 			TributeRecordCount = recordCount,
 			EntryTitleText = title,
-			EntryHintText = DiplomacyUiLocalization.Format("AF_DIP_UI_Vassalage_Terminal_SubjectHint", "Treaty: {TYPE}\nSigned: {DATE}\nDuration: {DAYS}{INDEPENDENCE}{TRIBUTE}", ("TYPE", typeName), ("DATE", FormatCampaignDate(createdDay)), ("DAYS", elapsedText), ("INDEPENDENCE", string.IsNullOrWhiteSpace(obedienceText) ? "" : "\nIndependence: " + obedienceText), ("TRIBUTE", isTributePaying ? "\nClick to view detailed tribute records." : "\nThis subject type does not generate tribute records."))
+			EntryHintText = DiplomacyUiLocalization.Format("AF_DIP_UI_Vassalage_Terminal_SubjectHint", "Treaty: {TYPE}\nSigned: {DATE}\nDuration: {DAYS}{INDEPENDENCE}{TRIBUTE}", ("TYPE", typeName), ("DATE", FormatCampaignDate(createdDay)), ("DAYS", elapsedText), ("INDEPENDENCE", string.IsNullOrWhiteSpace(obedienceText) ? "" : DiplomacyUiLocalization.Text("AF_DIP_UI_Vassalage_Terminal_IndependenceLabel", "\nIndependence: ") + obedienceText), ("TRIBUTE", isTributePaying ? DiplomacyUiLocalization.Text("AF_DIP_UI_Vassalage_Terminal_TributeClickHint", "\nClick to view detailed tribute records.") : DiplomacyUiLocalization.Text("AF_DIP_UI_Vassalage_Terminal_TypeNoTributeHint", "\nThis subject type does not generate tribute records.")))
 		};
 	}
 
@@ -1858,13 +1861,14 @@ internal sealed partial class VassalageBehavior : CampaignBehaviorBase
 			return DiplomacyUiLocalization.Text("AF_DIP_UI_Vassalage_Terminal_InvalidRecordLine", "- This tribute record is no longer valid.");
 		}
 		return "- " + FormatCampaignDate(record.SettlementDay)
-			+ "，臣属国力：" + FormatTributaryPaymentNumber(record.TributaryStrength)
-			+ "；入库：繁荣 +" + FormatTributaryPaymentNumber(record.PlayerProsperityGain)
-			+ "、食物库存 +" + FormatTributaryPaymentNumber(record.PlayerFoodGain)
-			+ "、村庄户数 +" + FormatTributaryPaymentNumber(record.PlayerHearthGain)
-			+ "；贡赋代价：繁荣 -" + FormatTributaryPaymentNumber(Math.Abs(record.TributaryProsperityLoss))
-			+ "、食物库存 -" + FormatTributaryPaymentNumber(Math.Abs(record.TributaryFoodLoss))
-			+ "、村庄户数 -" + FormatTributaryPaymentNumber(Math.Abs(record.TributaryHearthLoss));
+			+ DiplomacyUiLocalization.Format("AF_DIP_UI_Vassalage_Terminal_HistoryLine", " · Subject strength: {STRENGTH}; deposited: prosperity +{PROSPERITY}, food +{FOOD}, village hearth +{HEARTH}; tribute cost: prosperity -{COST_PROSPERITY}, food -{COST_FOOD}, village hearth -{COST_HEARTH}.",
+				("STRENGTH", FormatTributaryPaymentNumber(record.TributaryStrength)),
+				("PROSPERITY", FormatTributaryPaymentNumber(record.PlayerProsperityGain)),
+				("FOOD", FormatTributaryPaymentNumber(record.PlayerFoodGain)),
+				("HEARTH", FormatTributaryPaymentNumber(record.PlayerHearthGain)),
+				("COST_PROSPERITY", FormatTributaryPaymentNumber(Math.Abs(record.TributaryProsperityLoss))),
+				("COST_FOOD", FormatTributaryPaymentNumber(Math.Abs(record.TributaryFoodLoss))),
+				("COST_HEARTH", FormatTributaryPaymentNumber(Math.Abs(record.TributaryHearthLoss))));
 	}
 
 	private static TerminalTributaryPaymentRecordData BuildTerminalTributaryPaymentRecordData(TributaryPaymentNoticeRecord record)
@@ -1888,12 +1892,13 @@ internal sealed partial class VassalageBehavior : CampaignBehaviorBase
 		string tributaryCostText = BuildTributaryPaymentClassifiedTributaryCostText(record);
 		if (string.IsNullOrWhiteSpace(tributaryCostText))
 		{
-			tributaryCostText = "繁荣度 -" + FormatTributaryPaymentNumber(Math.Abs(record.TributaryProsperityLoss))
-				+ "（城镇 " + record.TributaryTownCount.ToString(CultureInfo.InvariantCulture)
-				+ "，城堡 " + record.TributaryCastleCount.ToString(CultureInfo.InvariantCulture) + "）\n"
-				+ "粮食 -" + FormatTributaryPaymentNumber(Math.Abs(record.TributaryFoodLoss)) + "\n"
-				+ "户数 -" + FormatTributaryPaymentNumber(Math.Abs(record.TributaryHearthLoss))
-				+ "（村庄 " + record.TributaryVillageCount.ToString(CultureInfo.InvariantCulture) + "）";
+			tributaryCostText = DiplomacyUiLocalization.Format("AF_DIP_UI_Vassalage_Terminal_CostFallback", "Prosperity -{PROSPERITY} (towns {TOWNS}, castles {CASTLES})\nFood -{FOOD}\nHearth -{HEARTH} (villages {VILLAGES})",
+				("PROSPERITY", FormatTributaryPaymentNumber(Math.Abs(record.TributaryProsperityLoss))),
+				("TOWNS", record.TributaryTownCount.ToString(CultureInfo.InvariantCulture)),
+				("CASTLES", record.TributaryCastleCount.ToString(CultureInfo.InvariantCulture)),
+				("FOOD", FormatTributaryPaymentNumber(Math.Abs(record.TributaryFoodLoss))),
+				("HEARTH", FormatTributaryPaymentNumber(Math.Abs(record.TributaryHearthLoss))),
+				("VILLAGES", record.TributaryVillageCount.ToString(CultureInfo.InvariantCulture)));
 		}
 		return new TerminalTributaryPaymentRecordData
 		{
@@ -4161,14 +4166,15 @@ internal sealed partial class VassalageBehavior : CampaignBehaviorBase
 			+ (wasAtWarWithPlayer ? (peaceAfterAgreement ? "双方已在改订后停战。" : "双方停战将在安全时同步执行。") : "")
 			+ revisedWarSyncStatusText
 			+ (otherQueuedDiplomacySyncCount > 0 ? ("另有 " + otherQueuedDiplomacySyncCount.ToString(CultureInfo.InvariantCulture) + " 项外交安排将在局势安全时生效。") : "");
-		string summary = GetKingdomDisplayName(targetKingdom, "臣属国") + "的臣属条约已由" + oldTypeText + "改订为" + newTypeText + "。";
-		string detail = "宫廷书记官已重写臣属条约：\n\n"
-			+ "臣属国：" + GetKingdomDisplayName(targetKingdom, "臣属国") + "\n"
-			+ "原条约类型：" + oldTypeText + "\n"
-			+ "新条约类型：" + newTypeText + "\n"
-			+ "原立约日：" + FormatCampaignDate(oldCreatedDay) + "\n"
-			+ "新立约日：" + FormatCampaignDate(newCreatedDay) + "\n\n"
-			+ "旧约随之作废：立约日重置，旧约相关贡赋记录、忠诚度与保护安排均已归档。";
+		string summary = DiplomacyUiLocalization.Format("AF_DIP_UI_Vassalage_AgreementRevisedSummary",
+			"The vassalage treaty of {SUBJECT} has been revised from {OLD} to {NEW}.",
+			("SUBJECT", GetKingdomDisplayName(targetKingdom, GetVassalageTypeProjection(oldType))),
+			("OLD", GetVassalageTypeProjection(oldType)), ("NEW", GetVassalageTypeProjection(newType)));
+		string detail = DiplomacyUiLocalization.Format("AF_DIP_UI_Vassalage_AgreementRevisedDetail",
+			"The court scribe has rewritten the vassalage treaty:\n\nSubject: {SUBJECT}\nPrevious treaty type: {OLD}\nNew treaty type: {NEW}\nPrevious signing date: {OLD_DATE}\nNew signing date: {NEW_DATE}\n\nThe old treaty is void: the signing date resets, and the old treaty's tribute records, loyalty, and protection arrangements are archived.",
+			("SUBJECT", GetKingdomDisplayName(targetKingdom, GetVassalageTypeProjection(oldType))),
+			("OLD", GetVassalageTypeProjection(oldType)), ("NEW", GetVassalageTypeProjection(newType)),
+			("OLD_DATE", FormatCampaignDate(oldCreatedDay)), ("NEW_DATE", FormatCampaignDate(newCreatedDay)));
 		QueueInfoNotice("agreement_revised", targetKingdom, playerKingdom, DiplomacyUiLocalization.Text("AF_DIP_UI_Vassalage_AgreementRevisedTitle", "Vassalage treaty revised"), summary, detail);
 		Logger.Log("Vassalage", "Agreement revised suzerain=" + existing.SuzerainKingdomId + " vassal=" + existing.VassalKingdomId + " oldType=" + oldType + " newType=" + newType);
 		VassalageDiagnosticLog.Event("agreement.revise.success", new Dictionary<string, object>
@@ -5744,16 +5750,17 @@ internal sealed partial class VassalageBehavior : CampaignBehaviorBase
 		Kingdom suzerain = agreement.ResolveSuzerain();
 		Kingdom vassal = agreement.ResolveVassal();
 		AfVassalageType type = NormalizeVassalageType(agreement.Type);
-		string vassalName = GetKingdomDisplayName(vassal, GetVassalageTypeDisplayName(type));
-		string typeName = GetVassalageTypeDisplayName(type);
-		string summary = vassalName + "的" + typeName + "条约已经终止。";
-		string detail = "宫廷急报：\n\n"
-			+ "臣属国：" + vassalName + "\n"
-			+ "条约类型：" + typeName + "\n"
-			+ "立约日：" + FormatCampaignDate(agreement.CreatedDay) + "\n"
-			+ "终止日：" + FormatCampaignDate(GetCurrentCampaignDay()) + "\n"
-			+ "终止原因：" + GetAgreementBreakReasonDisplayText(reason) + "\n\n"
-			+ message.Trim();
+		string vassalName = GetKingdomDisplayName(vassal, GetVassalageTypeProjection(type));
+		string typeName = GetVassalageTypeProjection(type);
+		string summary = DiplomacyUiLocalization.Format("AF_DIP_UI_Vassalage_AgreementBrokenSummary", "The {TYPE} treaty with {SUBJECT} has ended.",
+			("SUBJECT", vassalName), ("TYPE", typeName));
+		string detail = DiplomacyUiLocalization.Format("AF_DIP_UI_Vassalage_AgreementBrokenDetail",
+			"Urgent court dispatch:\n\nSubject: {SUBJECT}\nTreaty type: {TYPE}\nSigned: {SIGNED}\nEnded: {ENDED}\nReason: {REASON}\n\n{MESSAGE}",
+			("SUBJECT", vassalName), ("TYPE", typeName),
+			("SIGNED", FormatCampaignDate(agreement.CreatedDay)),
+			("ENDED", FormatCampaignDate(GetCurrentCampaignDay())),
+			("REASON", GetAgreementBreakReasonDisplayText(reason)),
+			("MESSAGE", message.Trim()));
 		VassalageDiagnosticLog.Event("notice.queue_agreement_broken", new Dictionary<string, object>
 		{
 			["agreementId"] = agreement.AgreementId,
@@ -5771,23 +5778,25 @@ internal sealed partial class VassalageBehavior : CampaignBehaviorBase
 		switch ((reason ?? "").Trim())
 		{
 		case "suzerain_released_subject":
-			return "宗主国主动释放，臣属国恢复独立";
+			return DiplomacyUiLocalization.Text("AF_DIP_UI_Vassalage_BreakReasonReleased", "The suzerain released the subject, which regains independence.");
 		case "player_broke_subject_agreement":
-			return "宗主国主动撕毁臣属誓约";
+			return DiplomacyUiLocalization.Text("AF_DIP_UI_Vassalage_BreakReasonPlayerBroke", "The suzerain tore up the vassal oath.");
 		case "tributary_protection_refused":
-			return "宗主国拒绝履行朝贡庇护";
+			return DiplomacyUiLocalization.Text("AF_DIP_UI_Vassalage_BreakReasonProtectionRefused", "The suzerain refused to honour the tributary protection obligation.");
 		case "tributary_protection_dismissed":
-			return "宗主国未回应朝贡国求援";
+			return DiplomacyUiLocalization.Text("AF_DIP_UI_Vassalage_BreakReasonProtectionDismissed", "The suzerain did not answer the tributary's plea for aid.");
 		case "garrison_obedience_collapsed":
-			return "卫戍国独立度达到脱离阈值";
+			return DiplomacyUiLocalization.Text("AF_DIP_UI_Vassalage_BreakReasonGarrisonCollapsed", "The garrison kingdom's independence reached the breakaway threshold.");
 		case "vassal_policy_independence_threshold":
-			return "附庸国独立度达到脱离阈值";
+			return DiplomacyUiLocalization.Text("AF_DIP_UI_Vassalage_BreakReasonVassalCollapsed", "The vassal's independence reached the breakaway threshold.");
 		case "subject_ruler_relation_threshold":
-			return "独立度达到当前统治者关系对应的脱离阈值";
+			return DiplomacyUiLocalization.Text("AF_DIP_UI_Vassalage_BreakReasonRelationThreshold", "Independence reached the breakaway threshold set by the current ruler's relation.");
 		case "kingdom_annexation":
-			return "王国被吞并";
+			return DiplomacyUiLocalization.Text("AF_DIP_UI_Vassalage_BreakReasonAnnexation", "The kingdom was annexed.");
 		default:
-			return string.IsNullOrWhiteSpace(reason) ? "臣属关系终止" : reason.Trim();
+			return string.IsNullOrWhiteSpace(reason)
+				? DiplomacyUiLocalization.Text("AF_DIP_UI_Vassalage_BreakReasonVassalageEnded", "The vassalage ended.")
+				: reason.Trim();
 		}
 	}
 
@@ -5812,12 +5821,14 @@ internal sealed partial class VassalageBehavior : CampaignBehaviorBase
 			BringControlledSubjectsIntoWar(declaringKingdom, "tributary_declared_war_on_controlled_subject");
 			string declaringSubjectText = BuildPlayerSubjectWarNoticeName(declaringKingdom, declaringType);
 			string targetSubjectText = BuildPlayerSubjectWarNoticeName(targetKingdom, targetType);
-			string summary = declaringSubjectText + "宣战了" + targetSubjectText + "；朝贡条约已经终止，宗主国已自动维护臣属秩序。";
-			string detailText = "边境急报：\n\n"
-				+ "背约方：" + declaringSubjectText + "\n"
-				+ "被宣战方：" + targetSubjectText + "\n\n"
-				+ declaringName + "主动攻击受宗主控制的臣属国，朝贡条约已经终止。\n"
-				+ GetKingdomDisplayName(playerKingdom, "玩家王国") + "已经自动保护" + targetName + "，并号令所有卫戍国与附庸国共同对原朝贡国开战。";
+			string summary = DiplomacyUiLocalization.Format("AF_DIP_UI_Vassalage_TributaryBreachSummary",
+				"{DECLARING} declared war on {TARGET}; the tributary treaty has ended and the suzerain has moved to restore subject order.",
+				("DECLARING", declaringSubjectText), ("TARGET", targetSubjectText));
+			string detailText = DiplomacyUiLocalization.Format("AF_DIP_UI_Vassalage_TributaryBreachDetail",
+				"Border dispatch:\n\nParty breaking the treaty: {DECLARING}\nParty declared upon: {TARGET}\n\n{BREAKER} attacked a subject under the suzerain's control, so the tributary treaty has ended.\n{SUZERAIN} has automatically protected {TARGET_NAME} and ordered all garrison kingdoms and vassals to join the war against the former tributary.",
+				("DECLARING", declaringSubjectText), ("TARGET", targetSubjectText),
+				("BREAKER", declaringName), ("SUZERAIN", GetKingdomDisplayName(playerKingdom, DiplomacyUiLocalization.Text("AF_DIP_UI_Vassalage_PlayerKingdomFallback", "the player kingdom"))),
+				("TARGET_NAME", targetName));
 			QueueInfoNotice("tributary_controlled_subject_war", declaringKingdom, targetKingdom, DiplomacyUiLocalization.Text("AF_DIP_UI_Vassalage_TributaryBreachTitle", "Tributary treaty breached"), summary, detailText);
 			VassalageDiagnosticLog.Event("war_declared.tributary_controlled_subject", new Dictionary<string, object>
 			{
@@ -5837,11 +5848,12 @@ internal sealed partial class VassalageBehavior : CampaignBehaviorBase
 		{
 			string declaringSubjectText = BuildPlayerSubjectWarNoticeName(declaringKingdom, declaringType);
 			string targetSubjectText = BuildPlayerSubjectWarNoticeName(targetKingdom, targetType);
-			string summary = declaringSubjectText + "宣战了" + targetSubjectText + "；此为朝贡国之间的自主战争，宗主国不介入。";
-			string detailText = "边境急报：\n\n"
-				+ "宣战方：" + declaringSubjectText + "\n"
-				+ "被宣战方：" + targetSubjectText + "\n\n"
-				+ "两个朝贡国均保留军事自主权。此战被视为朝贡国之间的自主战争，宗主国不会自动保护、不会自动参战，也不会解除任何朝贡条约。";
+			string summary = DiplomacyUiLocalization.Format("AF_DIP_UI_Vassalage_TributariesAtWarSummary",
+				"{DECLARING} declared war on {TARGET}; this is an autonomous war between tributaries, and the suzerain stays out.",
+				("DECLARING", declaringSubjectText), ("TARGET", targetSubjectText));
+			string detailText = DiplomacyUiLocalization.Format("AF_DIP_UI_Vassalage_TributariesAtWarDetail",
+				"Border dispatch:\n\nDeclaring party: {DECLARING}\nParty declared upon: {TARGET}\n\nBoth tributaries keep military autonomy. This war is treated as an autonomous war between tributaries: the suzerain will not protect automatically, will not join automatically, and will not dissolve any tributary treaty.",
+				("DECLARING", declaringSubjectText), ("TARGET", targetSubjectText));
 			QueueInfoNotice("tributary_tributary_war", declaringKingdom, targetKingdom, DiplomacyUiLocalization.Text("AF_DIP_UI_Vassalage_TributariesAtWarTitle", "Tributaries at war"), summary, detailText);
 			VassalageDiagnosticLog.Event("war_declared.tributary_tributary_notice", new Dictionary<string, object>
 			{
@@ -8163,9 +8175,13 @@ internal sealed partial class VassalageBehavior : CampaignBehaviorBase
 		string tributaryCostText = BuildTributaryPaymentClassifiedTributaryCostText(record);
 		if (string.IsNullOrWhiteSpace(tributaryCostText))
 		{
-			tributaryCostText = "繁荣度 -" + FormatTributaryPaymentNumber(record.TributaryProsperityLoss) + "（城镇 " + record.TributaryTownCount.ToString(CultureInfo.InvariantCulture) + "，城堡 " + record.TributaryCastleCount.ToString(CultureInfo.InvariantCulture) + "）\n"
-				+ "粮食 -" + FormatTributaryPaymentNumber(record.TributaryFoodLoss) + "\n"
-				+ "户数 -" + FormatTributaryPaymentNumber(record.TributaryHearthLoss) + "（村庄 " + record.TributaryVillageCount.ToString(CultureInfo.InvariantCulture) + "）";
+			tributaryCostText = DiplomacyUiLocalization.Format("AF_DIP_UI_Vassalage_Terminal_CostFallback", "Prosperity -{PROSPERITY} (towns {TOWNS}, castles {CASTLES})\nFood -{FOOD}\nHearth -{HEARTH} (villages {VILLAGES})",
+				("PROSPERITY", FormatTributaryPaymentNumber(record.TributaryProsperityLoss)),
+				("TOWNS", record.TributaryTownCount.ToString(CultureInfo.InvariantCulture)),
+				("CASTLES", record.TributaryCastleCount.ToString(CultureInfo.InvariantCulture)),
+				("FOOD", FormatTributaryPaymentNumber(record.TributaryFoodLoss)),
+				("HEARTH", FormatTributaryPaymentNumber(record.TributaryHearthLoss)),
+				("VILLAGES", record.TributaryVillageCount.ToString(CultureInfo.InvariantCulture)));
 		}
 		return DiplomacyUiLocalization.Format("AF_DIP_UI_Vassalage_TributePaymentDetail",
 			"The tributary caravan has reached the court. The ledger records:\n\nSubject: {TRIBUTARY}\nRecorded: {DATE}\nTribute value: {VALUE}\n\n[SUZERAIN FIEF GAINS]\n{GAINS}\n[TRIBUTARY COST]\n{COST}",
@@ -8191,7 +8207,7 @@ internal sealed partial class VassalageBehavior : CampaignBehaviorBase
 				return string.Join("\n", lines.Select((string x) => "- " + x)) + "\n";
 			}
 		}
-		return "本次贡赋未能分配到宗主国领地。\n";
+		return DiplomacyUiLocalization.Text("AF_DIP_UI_Vassalage_Terminal_NoSettlementGainLine", "This tribute could not be distributed to the suzerain's fiefs.") + "\n";
 	}
 
 	private static string BuildTributaryPaymentClassifiedPlayerGainText(TributaryPaymentNoticeRecord record, bool showPaymentRatio)
@@ -8202,7 +8218,7 @@ internal sealed partial class VassalageBehavior : CampaignBehaviorBase
 		}
 		string text = "";
 		text += BuildTributaryPaymentPlayerFortificationTypeLine(
-			"城镇",
+			DiplomacyUiLocalization.Text("AF_DIP_UI_Vassalage_FiefTown", "Towns"),
 			record.PlayerTownCount,
 			record.TownProsperityGainPerFief,
 			record.TownFoodGainPerFief,
@@ -8212,7 +8228,7 @@ internal sealed partial class VassalageBehavior : CampaignBehaviorBase
 			record.PlayerTownFoodGain,
 			showPaymentRatio);
 		text += BuildTributaryPaymentPlayerFortificationTypeLine(
-			"城堡",
+			DiplomacyUiLocalization.Text("AF_DIP_UI_Vassalage_FiefCastle", "Castles"),
 			record.PlayerCastleCount,
 			record.CastleProsperityGainPerFief,
 			record.CastleFoodGainPerFief,
@@ -8239,12 +8255,13 @@ internal sealed partial class VassalageBehavior : CampaignBehaviorBase
 		float appliedProsperityPerFief = Math.Max(0f, prosperityPerFief * ClampTributaryPaymentRatio(prosperityPaymentRatio));
 		float appliedFoodPerFief = Math.Max(0f, foodPerFief * ClampTributaryPaymentRatio(foodPaymentRatio));
 		float expectedFoodTotal = Math.Max(0f, appliedFoodPerFief * count);
-		return label + "（" + count.ToString(CultureInfo.InvariantCulture) + "）：每座入库 繁荣度 "
-			+ BuildTributaryPaymentPerFiefGainText(appliedProsperityPerFief, prosperityPerFief, prosperityPaymentRatio, "座", showPaymentRatio)
-			+ "，粮食 "
-			+ BuildTributaryPaymentPerFiefGainText(appliedFoodPerFief, foodPerFief, foodPaymentRatio, "座", showPaymentRatio)
-			+ BuildTributaryPaymentFoodLimitNote(actualFoodTotal, expectedFoodTotal)
-			+ "\n";
+		return DiplomacyUiLocalization.Format("AF_DIP_UI_Vassalage_PerFiefFortificationLine",
+			"{LABEL} ({COUNT}): each fief deposits prosperity {PROSPERITY}, food {FOOD}{FOOD_LIMIT}\n",
+			("LABEL", label),
+			("COUNT", count.ToString(CultureInfo.InvariantCulture)),
+			("PROSPERITY", BuildTributaryPaymentPerFiefGainText(appliedProsperityPerFief, prosperityPerFief, prosperityPaymentRatio, DiplomacyUiLocalization.Text("AF_DIP_UI_Vassalage_PerFiefUnit", " per fief"), showPaymentRatio)),
+			("FOOD", BuildTributaryPaymentPerFiefGainText(appliedFoodPerFief, foodPerFief, foodPaymentRatio, DiplomacyUiLocalization.Text("AF_DIP_UI_Vassalage_PerFiefUnit", " per fief"), showPaymentRatio)),
+			("FOOD_LIMIT", BuildTributaryPaymentFoodLimitNote(actualFoodTotal, expectedFoodTotal)));
 	}
 
 	private static string BuildTributaryPaymentPlayerVillageTypeLine(int count, int hearthPerFief, float hearthPaymentRatio, float actualHearthTotal, bool showPaymentRatio)
@@ -8254,9 +8271,10 @@ internal sealed partial class VassalageBehavior : CampaignBehaviorBase
 			return "";
 		}
 		float appliedHearthPerFief = Math.Max(0f, hearthPerFief * ClampTributaryPaymentRatio(hearthPaymentRatio));
-		return "村庄（" + count.ToString(CultureInfo.InvariantCulture) + "）：每村增加 户数 "
-			+ BuildTributaryPaymentPerFiefGainText(appliedHearthPerFief, hearthPerFief, hearthPaymentRatio, "村", showPaymentRatio)
-			+ "\n";
+		return DiplomacyUiLocalization.Format("AF_DIP_UI_Vassalage_PerVillageLine",
+			"Villages ({COUNT}): each village gains hearth {HEARTH}\n",
+			("COUNT", count.ToString(CultureInfo.InvariantCulture)),
+			("HEARTH", BuildTributaryPaymentPerFiefGainText(appliedHearthPerFief, hearthPerFief, hearthPaymentRatio, DiplomacyUiLocalization.Text("AF_DIP_UI_Vassalage_PerVillageUnit", " per village"), showPaymentRatio)));
 	}
 
 	private static string BuildTributaryPaymentPerFiefGainText(float appliedPerFief, float originalPerFief, float paymentRatio, string unitText, bool showPaymentRatio)
@@ -8264,8 +8282,9 @@ internal sealed partial class VassalageBehavior : CampaignBehaviorBase
 		string text = "+" + FormatTributaryPaymentNumber(appliedPerFief) + "/" + unitText;
 		if (showPaymentRatio && originalPerFief > 0f && ClampTributaryPaymentRatio(paymentRatio) < 0.999f)
 		{
-			text += "（原 +" + FormatTributaryPaymentNumber(originalPerFief) + "/" + unitText
-				+ "，实缴率 " + FormatTributaryPaymentPercent(paymentRatio) + "）";
+			text += DiplomacyUiLocalization.Format("AF_DIP_UI_Vassalage_PerFiefBaseline", " (was +{ORIGINAL}/{UNIT}, settled at {RATIO})",
+				("ORIGINAL", FormatTributaryPaymentNumber(originalPerFief)), ("UNIT", unitText),
+				("RATIO", FormatTributaryPaymentPercent(paymentRatio)));
 		}
 		return text;
 	}
@@ -8284,20 +8303,26 @@ internal sealed partial class VassalageBehavior : CampaignBehaviorBase
 		string text = "";
 		if (record.TributaryTownCount > 0)
 		{
-			text += "城镇（" + record.TributaryTownCount.ToString(CultureInfo.InvariantCulture) + "）：每座缴纳 繁荣度 -"
-				+ FormatTributaryPaymentNumber(record.TributaryTownProsperityLoss / Math.Max(1, record.TributaryTownCount))
-				+ "，食物库存 -" + FormatTributaryPaymentNumber(record.TributaryTownFoodLoss / Math.Max(1, record.TributaryTownCount)) + "\n";
+			text += DiplomacyUiLocalization.Format("AF_DIP_UI_Vassalage_TownPaymentLine",
+				"Towns ({COUNT}): each pays prosperity -{PROSPERITY}, food stock -{FOOD}\n",
+				("COUNT", record.TributaryTownCount.ToString(CultureInfo.InvariantCulture)),
+				("PROSPERITY", FormatTributaryPaymentNumber(record.TributaryTownProsperityLoss / Math.Max(1, record.TributaryTownCount))),
+				("FOOD", FormatTributaryPaymentNumber(record.TributaryTownFoodLoss / Math.Max(1, record.TributaryTownCount))));
 		}
 		if (record.TributaryCastleCount > 0)
 		{
-			text += "城堡（" + record.TributaryCastleCount.ToString(CultureInfo.InvariantCulture) + "）：每座缴纳 繁荣度 -"
-				+ FormatTributaryPaymentNumber(record.TributaryCastleProsperityLoss / Math.Max(1, record.TributaryCastleCount))
-				+ "，食物库存 -" + FormatTributaryPaymentNumber(record.TributaryCastleFoodLoss / Math.Max(1, record.TributaryCastleCount)) + "\n";
+			text += DiplomacyUiLocalization.Format("AF_DIP_UI_Vassalage_CastlePaymentLine",
+				"Castles ({COUNT}): each pays prosperity -{PROSPERITY}, food stock -{FOOD}\n",
+				("COUNT", record.TributaryCastleCount.ToString(CultureInfo.InvariantCulture)),
+				("PROSPERITY", FormatTributaryPaymentNumber(record.TributaryCastleProsperityLoss / Math.Max(1, record.TributaryCastleCount))),
+				("FOOD", FormatTributaryPaymentNumber(record.TributaryCastleFoodLoss / Math.Max(1, record.TributaryCastleCount))));
 		}
 		if (record.TributaryVillageCount > 0)
 		{
-			text += "村庄（" + record.TributaryVillageCount.ToString(CultureInfo.InvariantCulture) + "）：每村缴纳 户数 -"
-				+ FormatTributaryPaymentNumber(record.TributaryVillageHearthLoss / Math.Max(1, record.TributaryVillageCount));
+			text += DiplomacyUiLocalization.Format("AF_DIP_UI_Vassalage_VillagePaymentLine",
+				"Villages ({COUNT}): each pays hearth -{HEARTH}",
+				("COUNT", record.TributaryVillageCount.ToString(CultureInfo.InvariantCulture)),
+				("HEARTH", FormatTributaryPaymentNumber(record.TributaryVillageHearthLoss / Math.Max(1, record.TributaryVillageCount))));
 		}
 		return text.TrimEnd('\n');
 	}
@@ -8324,20 +8349,21 @@ internal sealed partial class VassalageBehavior : CampaignBehaviorBase
 
 	private static string BuildTributaryPaymentPlayerGainLine(string label, float actualGain, float plannedGain, float paymentRatio, string extraText, bool showPaymentRatio)
 	{
-		string text = label + "：+" + FormatTributaryPaymentNumber(actualGain);
+		string text = label + ": +" + FormatTributaryPaymentNumber(actualGain);
 		if (showPaymentRatio)
 		{
-			text += "（应得 +" + FormatTributaryPaymentNumber(plannedGain)
-				+ "，实缴率 " + FormatTributaryPaymentPercent(paymentRatio);
+			text += DiplomacyUiLocalization.Format("AF_DIP_UI_Vassalage_GainRatioNote", " (expected +{PLANNED}, settled at {RATIO}",
+				("PLANNED", FormatTributaryPaymentNumber(plannedGain)),
+				("RATIO", FormatTributaryPaymentPercent(paymentRatio)));
 			if (!string.IsNullOrWhiteSpace(extraText))
 			{
-				text += "；" + extraText;
+				text += "; " + extraText;
 			}
-			return text + "）\n";
+			return text + ")\n";
 		}
 		if (!string.IsNullOrWhiteSpace(extraText))
 		{
-			text += "（" + extraText + "）";
+			text += " (" + extraText + ")";
 		}
 		return text + "\n";
 	}
@@ -8397,6 +8423,23 @@ internal sealed partial class VassalageBehavior : CampaignBehaviorBase
 		}
 	}
 
+	// Display-only projection of the vassalage type. The raw Chinese label above stays the shared
+	// fact: it is embedded into world-bulletin LLM material by CaptureWorldBulletinVassalage
+	// (WorldBulletinCampaignMaterialPolicy.VassalageEstablishedSentence / VassalageEndedSentence).
+	// Use this projection only at strings that reach the player's screen.
+	private static string GetVassalageTypeProjection(AfVassalageType type)
+	{
+		switch (NormalizeVassalageType(type))
+		{
+		case AfVassalageType.Tributary:
+			return DiplomacyUiLocalization.Text("AF_DIP_UI_Vassalage_TypeTributary", "tributary");
+		case AfVassalageType.Garrison:
+			return DiplomacyUiLocalization.Text("AF_DIP_UI_Vassalage_TypeGarrison", "garrison kingdom");
+		default:
+			return DiplomacyUiLocalization.Text("AF_DIP_UI_Vassalage_TypeVassal", "vassal");
+		}
+	}
+
 	private static string FormatCampaignDate(int absoluteDay)
 	{
 		int daysPerSeason = GetDaysInSeasonSafe();
@@ -8406,8 +8449,10 @@ internal sealed partial class VassalageBehavior : CampaignBehaviorBase
 		int dayOfYear = day % daysPerYear;
 		int seasonIndex = Math.Min(3, dayOfYear / daysPerSeason);
 		int dayOfSeason = dayOfYear % daysPerSeason + 1;
-		return year.ToString(CultureInfo.InvariantCulture) + "年 " + GetCampaignSeasonName(seasonIndex) + " "
-			+ dayOfSeason.ToString(CultureInfo.InvariantCulture) + "日";
+		return DiplomacyUiLocalization.Format("AF_DIP_UI_Vassalage_CampaignDate", "Year {YEAR}, {SEASON} {DAY}",
+			("YEAR", (year + 1).ToString(CultureInfo.InvariantCulture)),
+			("SEASON", GetCampaignSeasonName(seasonIndex)),
+			("DAY", dayOfSeason.ToString(CultureInfo.InvariantCulture)));
 	}
 
 	private static int GetDaysInSeasonSafe()
@@ -8447,15 +8492,15 @@ internal sealed partial class VassalageBehavior : CampaignBehaviorBase
 		switch (seasonIndex)
 		{
 		case 0:
-			return "春季";
+			return DiplomacyUiLocalization.Text("AF_DIP_UI_Vassalage_SeasonSpring", "spring");
 		case 1:
-			return "夏季";
+			return DiplomacyUiLocalization.Text("AF_DIP_UI_Vassalage_SeasonSummer", "summer");
 		case 2:
-			return "秋季";
+			return DiplomacyUiLocalization.Text("AF_DIP_UI_Vassalage_SeasonAutumn", "autumn");
 		case 3:
-			return "冬季";
+			return DiplomacyUiLocalization.Text("AF_DIP_UI_Vassalage_SeasonWinter", "winter");
 		default:
-			return "未知季节";
+			return DiplomacyUiLocalization.Text("AF_DIP_UI_Vassalage_SeasonUnknown", "unknown season");
 		}
 	}
 
@@ -8471,21 +8516,25 @@ internal sealed partial class VassalageBehavior : CampaignBehaviorBase
 
 	private static string BuildPlayerSubjectWarNoticeName(Kingdom kingdom, AfVassalageType type)
 	{
-		string typeText = GetVassalageTypeDisplayName(type);
-		return "你的" + typeText + GetKingdomDisplayName(kingdom, "该国");
+		// Player-facing label only; feed through the display projection so English UI does not leak
+		// the shared Chinese vassalage type fact.
+		return DiplomacyUiLocalization.Format("AF_DIP_UI_Vassalage_SubjectWarNoticeName", "your {TYPE}{KINGDOM}",
+			("TYPE", GetVassalageTypeProjection(type)), ("KINGDOM", GetKingdomDisplayName(kingdom, DiplomacyUiLocalization.Text("AF_DIP_UI_Vassalage_SubjectWarNoticeKingdomFallback", " subject kingdom"))));
 	}
 
 	private static string BuildTributaryPaymentFortificationGainLine(Settlement settlement, float prosperityGain, float foodGain)
 	{
-		return GetSettlementDisplayName(settlement)
-			+ "：繁荣度 +" + FormatTributaryPaymentNumber(prosperityGain)
-			+ "，粮食 +" + FormatTributaryPaymentNumber(foodGain);
+		return DiplomacyUiLocalization.Format("AF_DIP_UI_Vassalage_SettlementFortificationGain", "{SETTLEMENT}: prosperity +{PROSPERITY}, food +{FOOD}",
+			("SETTLEMENT", GetSettlementDisplayName(settlement)),
+			("PROSPERITY", FormatTributaryPaymentNumber(prosperityGain)),
+			("FOOD", FormatTributaryPaymentNumber(foodGain)));
 	}
 
 	private static string BuildTributaryPaymentVillageGainLine(Settlement settlement, float hearthGain)
 	{
-		return GetSettlementDisplayName(settlement)
-			+ "：户数 +" + FormatTributaryPaymentNumber(hearthGain);
+		return DiplomacyUiLocalization.Format("AF_DIP_UI_Vassalage_SettlementVillageGain", "{SETTLEMENT}: hearth +{HEARTH}",
+			("SETTLEMENT", GetSettlementDisplayName(settlement)),
+			("HEARTH", FormatTributaryPaymentNumber(hearthGain)));
 	}
 
 	private static string GetSettlementDisplayName(Settlement settlement)

@@ -860,5 +860,124 @@
     <string id="AF_KINGDOM_CW_Stability_High" text="高" />
     <string id="AF_KINGDOM_CW_Stability_Poor" text="较弱" />
     <string id="AF_KINGDOM_CW_Stability_VeryPoor" text="微弱" />
-  </strings>
+      <string id="AF_DIP_UI_Vassalage_TypeTributary" text="朝贡国" />
+    <string id="AF_DIP_UI_Vassalage_TypeGarrison" text="卫戍国" />
+    <string id="AF_DIP_UI_Vassalage_TypeVassal" text="附庸国" />
+    <string id="AF_DIP_UI_Vassalage_SubjectWarNoticeName" text="你的{TYPE}{KINGDOM}" />
+    <string id="AF_DIP_UI_Vassalage_SubjectWarNoticeKingdomFallback" text="该国" />
+    <string id="AF_DIP_UI_Vassalage_PlayerKingdomFallback" text="玩家王国" />
+    <string id="AF_DIP_UI_Vassalage_CampaignDate" text="{YEAR}年 {SEASON} {DAY}日" />
+    <string id="AF_DIP_UI_Vassalage_SeasonSpring" text="春季" />
+    <string id="AF_DIP_UI_Vassalage_SeasonSummer" text="夏季" />
+    <string id="AF_DIP_UI_Vassalage_SeasonAutumn" text="秋季" />
+    <string id="AF_DIP_UI_Vassalage_SeasonWinter" text="冬季" />
+    <string id="AF_DIP_UI_Vassalage_SeasonUnknown" text="未知季节" />
+    <string id="AF_DIP_UI_Vassalage_FiefTown" text="城镇" />
+    <string id="AF_DIP_UI_Vassalage_FiefCastle" text="城堡" />
+    <string id="AF_DIP_UI_Vassalage_PerFiefUnit" text="座" />
+    <string id="AF_DIP_UI_Vassalage_PerVillageUnit" text="村" />
+    <string id="AF_DIP_UI_Vassalage_Terminal_Obedience" text="{VALUE}/100；脱离阈值 {THRESHOLD}；{RULER}关系 {RELATION}" />
+    <string id="AF_DIP_UI_Vassalage_Terminal_ElapsedDays" text="{DAYS}天" />
+    <string id="AF_DIP_UI_Vassalage_Terminal_IndependenceLabel" text="&#10;独立度：" />
+    <string id="AF_DIP_UI_Vassalage_Terminal_TributeClickHint" text="&#10;点击查看详细贡赋记录。" />
+    <string id="AF_DIP_UI_Vassalage_Terminal_TypeNoTributeHint" text="&#10;该臣属类型不产生贡赋记录。" />
+    <string id="AF_DIP_UI_Vassalage_Terminal_HistoryLine" text="，臣属国力：{STRENGTH}；入库：繁荣 +{PROSPERITY}、食物库存 +{FOOD}、村庄户数 +{HEARTH}；贡赋代价：繁荣 -{COST_PROSPERITY}、食物库存 -{COST_FOOD}、村庄户数 -{COST_HEARTH}。" />
+    <string id="AF_DIP_UI_Vassalage_Terminal_CostFallback" text="繁荣度 -{PROSPERITY}（城镇 {TOWNS}，城堡 {CASTLES}）&#10;粮食 -{FOOD}&#10;户数 -{HEARTH}（村庄 {VILLAGES}）" />
+    <string id="AF_DIP_UI_Vassalage_Terminal_NoSettlementGainLine" text="本次贡赋未能分配到宗主国领地。" />
+    <string id="AF_DIP_UI_Vassalage_PerFiefFortificationLine" text="{LABEL}（{COUNT}）：每座入库 繁荣度 {PROSPERITY}，粮食 {FOOD}{FOOD_LIMIT}&#10;" />
+    <string id="AF_DIP_UI_Vassalage_PerVillageLine" text="村庄（{COUNT}）：每村增加 户数 {HEARTH}&#10;" />
+    <string id="AF_DIP_UI_Vassalage_PerFiefBaseline" text="（原 +{ORIGINAL}/{UNIT}，实缴率 {RATIO}）" />
+    <string id="AF_DIP_UI_Vassalage_GainRatioNote" text="（应得 +{PLANNED}，实缴率 {RATIO}" />
+    <string id="AF_DIP_UI_Vassalage_TownPaymentLine" text="城镇（{COUNT}）：每座缴纳 繁荣度 -{PROSPERITY}，食物库存 -{FOOD}&#10;" />
+    <string id="AF_DIP_UI_Vassalage_CastlePaymentLine" text="城堡（{COUNT}）：每座缴纳 繁荣度 -{PROSPERITY}，食物库存 -{FOOD}&#10;" />
+    <string id="AF_DIP_UI_Vassalage_VillagePaymentLine" text="村庄（{COUNT}）：每村缴纳 户数 -{HEARTH}" />
+    <string id="AF_DIP_UI_Vassalage_SettlementFortificationGain" text="{SETTLEMENT}：繁荣度 +{PROSPERITY}，粮食 +{FOOD}" />
+    <string id="AF_DIP_UI_Vassalage_SettlementVillageGain" text="{SETTLEMENT}：户数 +{HEARTH}" />
+    <string id="AF_DIP_UI_Vassalage_AgreementRevisedSummary" text="{SUBJECT}的臣属条约已由{OLD}改订为{NEW}。" />
+    <string id="AF_DIP_UI_Vassalage_AgreementRevisedDetail" text="宫廷书记官已重写臣属条约：&#10;&#10;臣属国：{SUBJECT}&#10;原条约类型：{OLD}&#10;新条约类型：{NEW}&#10;原立约日：{OLD_DATE}&#10;新立约日：{NEW_DATE}&#10;&#10;旧约随之作废：立约日重置，旧约相关贡赋记录、忠诚度与保护安排均已归档。" />
+    <string id="AF_DIP_UI_Vassalage_AgreementBrokenSummary" text="{SUBJECT}的{TYPE}条约已经终止。" />
+    <string id="AF_DIP_UI_Vassalage_AgreementBrokenDetail" text="宫廷急报：&#10;&#10;臣属国：{SUBJECT}&#10;条约类型：{TYPE}&#10;立约日：{SIGNED}&#10;终止日：{ENDED}&#10;终止原因：{REASON}&#10;&#10;{MESSAGE}" />
+    <string id="AF_DIP_UI_Vassalage_BreakReasonReleased" text="宗主国主动释放，臣属国恢复独立" />
+    <string id="AF_DIP_UI_Vassalage_BreakReasonPlayerBroke" text="宗主国主动撕毁臣属誓约" />
+    <string id="AF_DIP_UI_Vassalage_BreakReasonProtectionRefused" text="宗主国拒绝履行朝贡庇护" />
+    <string id="AF_DIP_UI_Vassalage_BreakReasonProtectionDismissed" text="宗主国未回应朝贡国求援" />
+    <string id="AF_DIP_UI_Vassalage_BreakReasonGarrisonCollapsed" text="卫戍国独立度达到脱离阈值" />
+    <string id="AF_DIP_UI_Vassalage_BreakReasonVassalCollapsed" text="附庸国独立度达到脱离阈值" />
+    <string id="AF_DIP_UI_Vassalage_BreakReasonRelationThreshold" text="独立度达到当前统治者关系对应的脱离阈值" />
+    <string id="AF_DIP_UI_Vassalage_BreakReasonAnnexation" text="王国被吞并" />
+    <string id="AF_DIP_UI_Vassalage_BreakReasonVassalageEnded" text="臣属关系终止" />
+    <string id="AF_DIP_UI_Vassalage_TributaryBreachSummary" text="{DECLARING}宣战了{TARGET}；朝贡条约已经终止，宗主国已自动维护臣属秩序。" />
+    <string id="AF_DIP_UI_Vassalage_TributaryBreachDetail" text="边境急报：&#10;&#10;背约方：{DECLARING}&#10;被宣战方：{TARGET}&#10;&#10;{BREAKER}主动攻击受宗主控制的臣属国，朝贡条约已经终止。&#10;{SUZERAIN}已经自动保护{TARGET_NAME}，并号令所有卫戍国与附庸国共同对原朝贡国开战。" />
+    <string id="AF_DIP_UI_Vassalage_TributariesAtWarSummary" text="{DECLARING}宣战了{TARGET}；此为朝贡国之间的自主战争，宗主国不介入。" />
+    <string id="AF_DIP_UI_Vassalage_TributariesAtWarDetail" text="边境急报：&#10;&#10;宣战方：{DECLARING}&#10;被宣战方：{TARGET}&#10;&#10;两个朝贡国均保留军事自主权。此战被视为朝贡国之间的自主战争，宗主国不会自动保护、不会自动参战，也不会解除任何朝贡条约。" />
+    <string id="AF_DIP_UI_WorldDiplomacy_PersistenceUnavailable" text="外交存档数据异常，外交已暂停并保留原数据。请查看 Logs/Mod_Logic 中的 WorldDiplomacy 日志；当前外交操作已拒绝。" />
+    <string id="AF_DIP_UI_WorldDiplomacy_SessionEnded" text="外交操作所属会话已结束，请重新打开。" />
+    <string id="AF_DIP_UI_WorldDiplomacy_PersistenceUnreadable" text="外交存档读取异常，外交已暂停以保护原存档。请勿覆盖原档；查看 Logs/Mod_Logic 中的 WorldDiplomacy 日志。" />
+    <string id="AF_DIP_UI_WorldDiplomacy_DeclareBodyEmpty" text="外交宣言正文不能为空。" />
+    <string id="AF_DIP_UI_WorldDiplomacy_DeclareNotRuler" text="你当前不再是王国统治者，外交宣言没有发布。" />
+    <string id="AF_DIP_UI_WorldDiplomacy_DeclarePublished" text="外交宣言已经公开发布；系统正在后台解析其对象、诉求与外交动作。" />
+    <string id="AF_DIP_UI_WorldDiplomacy_ReplyBodyEmpty" text="外交回应正文不能为空。" />
+    <string id="AF_DIP_UI_WorldDiplomacy_ReplyNotRuler" text="你当前不再是王国统治者，外交回应没有发布。" />
+    <string id="AF_DIP_UI_WorldDiplomacy_ReplyNoRound" text="外交回应暂未发布：无法建立交涉回合。" />
+    <string id="AF_DIP_UI_WorldDiplomacy_ReplyPublished" text="外交回应已经公开发布；系统正在后台解析其诉求与外交动作。" />
+    <string id="AF_DIP_UI_WorldDiplomacy_ImpactResultSection" text="【外交结果】" />
+    <string id="AF_DIP_UI_WorldDiplomacy_ImpactReputationSection" text="【国际声誉】" />
+    <string id="AF_DIP_UI_WorldDiplomacy_ImpactPrestigeSection" text="【国家威望】" />
+    <string id="AF_DIP_UI_WorldDiplomacy_ImpactOtherKingdomsSection" text="【其他国家影响】" />
+    <string id="AF_DIP_UI_WorldDiplomacy_ImpactDeltaLabel" text="变化：" />
+    <string id="AF_DIP_UI_WorldDiplomacy_ImpactReasonLabel" text="原因：" />
+    <string id="AF_DIP_UI_WorldDiplomacy_ImpactNoReputationChange" text="本篇没有形成明确的国际声誉变化。" />
+    <string id="AF_DIP_UI_WorldDiplomacy_ImpactNoPrestigeChange" text="本篇没有触发国家威望结算。" />
+    <string id="AF_DIP_UI_WorldDiplomacy_ImpactNoReason" text="无说明" />
+    <string id="AF_DIP_UI_WorldDiplomacy_UnknownKingdom" text="未知国家" />
+    <string id="AF_DIP_UI_WorldDiplomacy_BodyArchived" text="（该旧公文正文已压缩至年度摘要。）" />
+    <string id="AF_DIP_UI_WorldDiplomacy_BodyCompressed" text="该旧公文正文已经压缩，可查看对应年度外交摘要。" />
+    <string id="AF_DIP_UI_WorldDiplomacy_BodySectionTitle" text="公告正文" />
+    <string id="AF_DIP_UI_WorldDiplomacy_ImpactSectionTitle" text="外交结果与外交影响" />
+    <string id="AF_DIP_UI_WorldDiplomacy_WorldBulletin" text="世界公告" />
+    <string id="AF_DIP_UI_WorldDiplomacy_IndexMetaDeclaration" text="外交宣言：" />
+    <string id="AF_DIP_UI_WorldDiplomacy_UnreadMarker" text="新" />
+    <string id="AF_DIP_UI_WorldDiplomacy_ChronicleArchive" text="外交编年档案" />
+    <string id="AF_DIP_UI_WorldDiplomacy_AnnualSummaryKind" text="年度外交摘要" />
+    <string id="AF_DIP_UI_WorldDiplomacy_WorldSharedMemory" text="世界共享记忆" />
+    <string id="AF_DIP_UI_WorldDiplomacy_YearLabel" text="第{YEAR}年" />
+    <string id="AF_DIP_UI_WorldDiplomacy_AnnualRecordTitle" text="第{YEAR}年外交纪要" />
+    <string id="AF_DIP_UI_WorldDiplomacy_AnnualCompressedArchive" text="年度压缩档案" />
+    <string id="AF_DIP_UI_WorldDiplomacy_AnnualSummarySection" text="年度摘要" />
+    <string id="AF_DIP_UI_WorldDiplomacy_MajorEventsSection" text="重大事件索引" />
+    <string id="AF_DIP_UI_WorldDiplomacy_HistoryCompactionKind" text="外交历史整理" />
+    <string id="AF_DIP_UI_WorldDiplomacy_LongTermMemory" text="长期外交记忆" />
+    <string id="AF_DIP_UI_WorldDiplomacy_HistoryCompactionTitle" text="外交历史整理档案" />
+    <string id="AF_DIP_UI_WorldDiplomacy_CompactionMeta" text="累计 {TOKENS} Tokens 后整理" />
+    <string id="AF_DIP_UI_WorldDiplomacy_DiplomaticRecordSection" text="外交纪要" />
+    <string id="AF_DIP_UI_WorldDiplomacy_GameConfirmedResultsSection" text="游戏确认结果" />
+    <string id="AF_DIP_UI_WorldDiplomacy_StandingSection" text="【国家威望与国际声誉】" />
+    <string id="AF_DIP_UI_WorldDiplomacy_StandingPrestigeLabel" text="国家威望：" />
+    <string id="AF_DIP_UI_WorldDiplomacy_StandingPrestigeHint" text="/100（该国的外交信用与威慑；过低会损害国内贵族关系）" />
+    <string id="AF_DIP_UI_WorldDiplomacy_StandingReputationLabel" text="国际声誉：" />
+    <string id="AF_DIP_UI_WorldDiplomacy_StandingReputationHint" text="/100（他国对该国的评价；影响合作意愿与施压倾向）" />
+    <string id="AF_DIP_UI_WorldDiplomacy_ArchiveSubtitleIdle" text="统一查看自定义政策、政策衍生事件与各国公开发布的外交宣言。" />
+    <string id="AF_DIP_UI_WorldDiplomacy_DefaultTopic" text="外交交涉" />
+    <string id="AF_DIP_UI_WorldDiplomacy_ActiveEventPrefix" text="当前外交事件：" />
+    <string id="AF_DIP_UI_WorldDiplomacy_ActiveEventInProgress" text="  ·  进行中" />
+    <string id="AF_DIP_UI_WorldDiplomacy_ActiveEventParticipants" text="  ·  参与国：" />
+    <string id="AF_DIP_UI_WorldDiplomacy_Reject_SourceUnavailable" text="原提案尚未送达本国、已失效或不存在，不能执行这次回应。" />
+    <string id="AF_DIP_UI_WorldDiplomacy_Reject_TradeTermsChanged" text="接受贸易原案时不能修改期限或附加条款；修改条件请另发新提案。" />
+    <string id="AF_DIP_UI_WorldDiplomacy_Reject_NoOpenOffer" text="未能对应到对方仍有效的正式提案。请确认对方的提案宣言已送达且仍开放，或在该宣言上直接回复接受。" />
+    <string id="AF_DIP_UI_WorldDiplomacy_Reject_TreatyRoles" text="条约的接收国与并入国（或宗主国与臣属国）必须正好是本次交涉的双方。" />
+    <string id="AF_DIP_UI_WorldDiplomacy_Reject_AcceptChangesTerms" text="接受原案时不能修改原提案的条款；修改条件请另发新提案。" />
+    <string id="AF_DIP_UI_WorldDiplomacy_Reject_TreatyCycle" text="该条约会造成臣属关系循环。" />
+    <string id="AF_DIP_UI_WorldDiplomacy_Reject_SubjectHasTreaty" text="臣属方已存在臣属条约。" />
+    <string id="AF_DIP_UI_WorldDiplomacy_Reject_TreatyParticipantsUnavailable" text="条约一方的王国或统治者当前不可用。" />
+    <string id="AF_DIP_UI_WorldDiplomacy_Reject_UnsupportedClause" text="该条约不支持附加贡金、期限或割地条款。" />
+    <string id="AF_DIP_UI_WorldDiplomacy_Reject_NotAtWar" text="双方当前并不处于战争状态。" />
+    <string id="AF_DIP_UI_WorldDiplomacy_Reject_PeaceTerms" text="和平条款当前无法原样执行。" />
+    <string id="AF_DIP_UI_WorldDiplomacy_Reject_DeclareWarNotLegal" text="当前不满足宣战条件。" />
+    <string id="AF_DIP_UI_WorldDiplomacy_Reject_StateConflict" text="与双方当前的同盟或贸易状态冲突。" />
+    <string id="AF_DIP_UI_WorldDiplomacy_Reject_NotInLegalActions" text="该动作不在双方当前可执行的外交动作之内。" />
+    <string id="AF_DIP_UI_WorldDiplomacy_Reject_NoLiveTarget" text="对象王国不存在、已灭亡或没有独立外交权。" />
+    <string id="AF_DIP_UI_WorldDiplomacy_Reject_UnsupportedByState" text="当前局势不支持解析出的动作。" />
+    <string id="AF_DIP_UI_WorldDiplomacy_DeclarePublishedMechanicRejected" text="外交宣言已经发布，但其中解析出的外交动作未执行：" />
+    <string id="AF_DIP_UI_WorldDiplomacy_Reject_DeclareWarNotExecuted" text="宣战未执行：" />
+</strings>
 </base>

@@ -860,5 +860,124 @@
     <string id="AF_KINGDOM_CW_Stability_High" text="High" />
     <string id="AF_KINGDOM_CW_Stability_Poor" text="Poor" />
     <string id="AF_KINGDOM_CW_Stability_VeryPoor" text="Very poor" />
-  </strings>
+      <string id="AF_DIP_UI_Vassalage_TypeTributary" text="tributary" />
+    <string id="AF_DIP_UI_Vassalage_TypeGarrison" text="garrison kingdom" />
+    <string id="AF_DIP_UI_Vassalage_TypeVassal" text="vassal" />
+    <string id="AF_DIP_UI_Vassalage_SubjectWarNoticeName" text="your {TYPE}{KINGDOM}" />
+    <string id="AF_DIP_UI_Vassalage_SubjectWarNoticeKingdomFallback" text=" subject kingdom" />
+    <string id="AF_DIP_UI_Vassalage_PlayerKingdomFallback" text="the player kingdom" />
+    <string id="AF_DIP_UI_Vassalage_CampaignDate" text="Year {YEAR}, {SEASON} {DAY}" />
+    <string id="AF_DIP_UI_Vassalage_SeasonSpring" text="spring" />
+    <string id="AF_DIP_UI_Vassalage_SeasonSummer" text="summer" />
+    <string id="AF_DIP_UI_Vassalage_SeasonAutumn" text="autumn" />
+    <string id="AF_DIP_UI_Vassalage_SeasonWinter" text="winter" />
+    <string id="AF_DIP_UI_Vassalage_SeasonUnknown" text="unknown season" />
+    <string id="AF_DIP_UI_Vassalage_FiefTown" text="Towns" />
+    <string id="AF_DIP_UI_Vassalage_FiefCastle" text="Castles" />
+    <string id="AF_DIP_UI_Vassalage_PerFiefUnit" text=" per fief" />
+    <string id="AF_DIP_UI_Vassalage_PerVillageUnit" text=" per village" />
+    <string id="AF_DIP_UI_Vassalage_Terminal_Obedience" text="{VALUE}/100; breakaway threshold {THRESHOLD}; {RULER} relation {RELATION}" />
+    <string id="AF_DIP_UI_Vassalage_Terminal_ElapsedDays" text="{DAYS} days" />
+    <string id="AF_DIP_UI_Vassalage_Terminal_IndependenceLabel" text="&#10;Independence:  " />
+    <string id="AF_DIP_UI_Vassalage_Terminal_TributeClickHint" text="&#10;Click to view detailed tribute records." />
+    <string id="AF_DIP_UI_Vassalage_Terminal_TypeNoTributeHint" text="&#10;This subject type does not generate tribute records." />
+    <string id="AF_DIP_UI_Vassalage_Terminal_HistoryLine" text=" · Subject strength: {STRENGTH}; deposited: prosperity +{PROSPERITY}, food +{FOOD}, village hearth +{HEARTH}; tribute cost: prosperity -{COST_PROSPERITY}, food -{COST_FOOD}, village hearth -{COST_HEARTH}." />
+    <string id="AF_DIP_UI_Vassalage_Terminal_CostFallback" text="Prosperity -{PROSPERITY} (towns {TOWNS}, castles {CASTLES})&#10;Food -{FOOD}&#10;Hearth -{HEARTH} (villages {VILLAGES})" />
+    <string id="AF_DIP_UI_Vassalage_Terminal_NoSettlementGainLine" text="This tribute could not be distributed to the suzerain's fiefs." />
+    <string id="AF_DIP_UI_Vassalage_PerFiefFortificationLine" text="{LABEL} ({COUNT}): each fief deposits prosperity {PROSPERITY}, food {FOOD}{FOOD_LIMIT}&#10;" />
+    <string id="AF_DIP_UI_Vassalage_PerVillageLine" text="Villages ({COUNT}): each village gains hearth {HEARTH}&#10;" />
+    <string id="AF_DIP_UI_Vassalage_PerFiefBaseline" text=" (was +{ORIGINAL}/{UNIT}, settled at {RATIO})" />
+    <string id="AF_DIP_UI_Vassalage_GainRatioNote" text=" (expected +{PLANNED}, settled at {RATIO}" />
+    <string id="AF_DIP_UI_Vassalage_TownPaymentLine" text="Towns ({COUNT}): each pays prosperity -{PROSPERITY}, food stock -{FOOD}&#10;" />
+    <string id="AF_DIP_UI_Vassalage_CastlePaymentLine" text="Castles ({COUNT}): each pays prosperity -{PROSPERITY}, food stock -{FOOD}&#10;" />
+    <string id="AF_DIP_UI_Vassalage_VillagePaymentLine" text="Villages ({COUNT}): each pays hearth -{HEARTH}" />
+    <string id="AF_DIP_UI_Vassalage_SettlementFortificationGain" text="{SETTLEMENT}: prosperity +{PROSPERITY}, food +{FOOD}" />
+    <string id="AF_DIP_UI_Vassalage_SettlementVillageGain" text="{SETTLEMENT}: hearth +{HEARTH}" />
+    <string id="AF_DIP_UI_Vassalage_AgreementRevisedSummary" text="The vassalage treaty of {SUBJECT} has been revised from {OLD} to {NEW}." />
+    <string id="AF_DIP_UI_Vassalage_AgreementRevisedDetail" text="The court scribe has rewritten the vassalage treaty:&#10;&#10;Subject: {SUBJECT}&#10;Previous treaty type: {OLD}&#10;New treaty type: {NEW}&#10;Previous signing date: {OLD_DATE}&#10;New signing date: {NEW_DATE}&#10;&#10;The old treaty is void: the signing date resets, and the old treaty's tribute records, loyalty, and protection arrangements are archived." />
+    <string id="AF_DIP_UI_Vassalage_AgreementBrokenSummary" text="The {TYPE} treaty with {SUBJECT} has ended." />
+    <string id="AF_DIP_UI_Vassalage_AgreementBrokenDetail" text="Urgent court dispatch:&#10;&#10;Subject: {SUBJECT}&#10;Treaty type: {TYPE}&#10;Signed: {SIGNED}&#10;Ended: {ENDED}&#10;Reason: {REASON}&#10;&#10;{MESSAGE}" />
+    <string id="AF_DIP_UI_Vassalage_BreakReasonReleased" text="The suzerain released the subject, which regains independence." />
+    <string id="AF_DIP_UI_Vassalage_BreakReasonPlayerBroke" text="The suzerain tore up the vassal oath." />
+    <string id="AF_DIP_UI_Vassalage_BreakReasonProtectionRefused" text="The suzerain refused to honour the tributary protection obligation." />
+    <string id="AF_DIP_UI_Vassalage_BreakReasonProtectionDismissed" text="The suzerain did not answer the tributary's plea for aid." />
+    <string id="AF_DIP_UI_Vassalage_BreakReasonGarrisonCollapsed" text="The garrison kingdom's independence reached the breakaway threshold." />
+    <string id="AF_DIP_UI_Vassalage_BreakReasonVassalCollapsed" text="The vassal's independence reached the breakaway threshold." />
+    <string id="AF_DIP_UI_Vassalage_BreakReasonRelationThreshold" text="Independence reached the breakaway threshold set by the current ruler's relation." />
+    <string id="AF_DIP_UI_Vassalage_BreakReasonAnnexation" text="The kingdom was annexed." />
+    <string id="AF_DIP_UI_Vassalage_BreakReasonVassalageEnded" text="The vassalage ended." />
+    <string id="AF_DIP_UI_Vassalage_TributaryBreachSummary" text="{DECLARING} declared war on {TARGET}; the tributary treaty has ended and the suzerain has moved to restore subject order." />
+    <string id="AF_DIP_UI_Vassalage_TributaryBreachDetail" text="Border dispatch:&#10;&#10;Party breaking the treaty: {DECLARING}&#10;Party declared upon: {TARGET}&#10;&#10;{BREAKER} attacked a subject under the suzerain's control, so the tributary treaty has ended.&#10;{SUZERAIN} has automatically protected {TARGET_NAME} and ordered all garrison kingdoms and vassals to join the war against the former tributary." />
+    <string id="AF_DIP_UI_Vassalage_TributariesAtWarSummary" text="{DECLARING} declared war on {TARGET}; this is an autonomous war between tributaries, and the suzerain stays out." />
+    <string id="AF_DIP_UI_Vassalage_TributariesAtWarDetail" text="Border dispatch:&#10;&#10;Declaring party: {DECLARING}&#10;Party declared upon: {TARGET}&#10;&#10;Both tributaries keep military autonomy. This war is treated as an autonomous war between tributaries: the suzerain will not protect automatically, will not join automatically, and will not dissolve any tributary treaty." />
+    <string id="AF_DIP_UI_WorldDiplomacy_PersistenceUnavailable" text="Diplomacy save data is inconsistent. Diplomacy is paused and the original data kept. Check the WorldDiplomacy log under Logs/Mod_Logic; the current diplomatic operation was refused." />
+    <string id="AF_DIP_UI_WorldDiplomacy_SessionEnded" text="The session this diplomatic operation belongs to has ended. Please reopen it." />
+    <string id="AF_DIP_UI_WorldDiplomacy_PersistenceUnreadable" text="Diplomacy save data could not be read. Diplomacy is paused to protect the original save. Do not overwrite the original save; check the WorldDiplomacy log under Logs/Mod_Logic." />
+    <string id="AF_DIP_UI_WorldDiplomacy_DeclareBodyEmpty" text="The diplomatic declaration body cannot be empty." />
+    <string id="AF_DIP_UI_WorldDiplomacy_DeclareNotRuler" text="You are no longer the ruler of your kingdom, so the diplomatic declaration was not published." />
+    <string id="AF_DIP_UI_WorldDiplomacy_DeclarePublished" text="The diplomatic declaration has been published; the system is resolving its target, demands, and diplomatic actions in the background." />
+    <string id="AF_DIP_UI_WorldDiplomacy_ReplyBodyEmpty" text="The diplomatic reply body cannot be empty." />
+    <string id="AF_DIP_UI_WorldDiplomacy_ReplyNotRuler" text="You are no longer the ruler of your kingdom, so the diplomatic reply was not published." />
+    <string id="AF_DIP_UI_WorldDiplomacy_ReplyNoRound" text="The diplomatic reply was not published: no negotiation round could be established." />
+    <string id="AF_DIP_UI_WorldDiplomacy_ReplyPublished" text="The diplomatic reply has been published; the system is resolving its demands and diplomatic actions in the background." />
+    <string id="AF_DIP_UI_WorldDiplomacy_ImpactResultSection" text="【Diplomatic result】" />
+    <string id="AF_DIP_UI_WorldDiplomacy_ImpactReputationSection" text="【International reputation】" />
+    <string id="AF_DIP_UI_WorldDiplomacy_ImpactPrestigeSection" text="【National prestige】" />
+    <string id="AF_DIP_UI_WorldDiplomacy_ImpactOtherKingdomsSection" text="【Impact on other kingdoms】" />
+    <string id="AF_DIP_UI_WorldDiplomacy_ImpactDeltaLabel" text="Change:  " />
+    <string id="AF_DIP_UI_WorldDiplomacy_ImpactReasonLabel" text="Reason:  " />
+    <string id="AF_DIP_UI_WorldDiplomacy_ImpactNoReputationChange" text="This declaration produced no clear change in international reputation." />
+    <string id="AF_DIP_UI_WorldDiplomacy_ImpactNoPrestigeChange" text="This declaration triggered no national prestige settlement." />
+    <string id="AF_DIP_UI_WorldDiplomacy_ImpactNoReason" text="no explanation given" />
+    <string id="AF_DIP_UI_WorldDiplomacy_UnknownKingdom" text="Unknown kingdom" />
+    <string id="AF_DIP_UI_WorldDiplomacy_BodyArchived" text="(This older declaration's body has been compressed into an annual summary.)" />
+    <string id="AF_DIP_UI_WorldDiplomacy_BodyCompressed" text="This older declaration's body has been compressed; see the matching annual diplomatic summary." />
+    <string id="AF_DIP_UI_WorldDiplomacy_BodySectionTitle" text="Declaration body" />
+    <string id="AF_DIP_UI_WorldDiplomacy_ImpactSectionTitle" text="Diplomatic result and impact" />
+    <string id="AF_DIP_UI_WorldDiplomacy_WorldBulletin" text="World bulletin" />
+    <string id="AF_DIP_UI_WorldDiplomacy_IndexMetaDeclaration" text="Diplomatic declaration:  " />
+    <string id="AF_DIP_UI_WorldDiplomacy_UnreadMarker" text="New" />
+    <string id="AF_DIP_UI_WorldDiplomacy_ChronicleArchive" text="Diplomatic chronicle archive" />
+    <string id="AF_DIP_UI_WorldDiplomacy_AnnualSummaryKind" text="Annual diplomatic summary" />
+    <string id="AF_DIP_UI_WorldDiplomacy_WorldSharedMemory" text="World shared memory" />
+    <string id="AF_DIP_UI_WorldDiplomacy_YearLabel" text="Year {YEAR}" />
+    <string id="AF_DIP_UI_WorldDiplomacy_AnnualRecordTitle" text="Year {YEAR} diplomatic record" />
+    <string id="AF_DIP_UI_WorldDiplomacy_AnnualCompressedArchive" text="Annual compressed archive" />
+    <string id="AF_DIP_UI_WorldDiplomacy_AnnualSummarySection" text="Annual summary" />
+    <string id="AF_DIP_UI_WorldDiplomacy_MajorEventsSection" text="Major event index" />
+    <string id="AF_DIP_UI_WorldDiplomacy_HistoryCompactionKind" text="Diplomatic history compaction" />
+    <string id="AF_DIP_UI_WorldDiplomacy_LongTermMemory" text="Long-term diplomatic memory" />
+    <string id="AF_DIP_UI_WorldDiplomacy_HistoryCompactionTitle" text="Diplomatic history compaction record" />
+    <string id="AF_DIP_UI_WorldDiplomacy_CompactionMeta" text="Compacted after {TOKENS} accumulated tokens" />
+    <string id="AF_DIP_UI_WorldDiplomacy_DiplomaticRecordSection" text="Diplomatic record" />
+    <string id="AF_DIP_UI_WorldDiplomacy_GameConfirmedResultsSection" text="Game-confirmed results" />
+    <string id="AF_DIP_UI_WorldDiplomacy_StandingSection" text="【National prestige and international reputation】" />
+    <string id="AF_DIP_UI_WorldDiplomacy_StandingPrestigeLabel" text="National prestige:  " />
+    <string id="AF_DIP_UI_WorldDiplomacy_StandingPrestigeHint" text="/100 (this kingdom's diplomatic credit and deterrence; too low a value damages relations with its nobles)" />
+    <string id="AF_DIP_UI_WorldDiplomacy_StandingReputationLabel" text="International reputation:  " />
+    <string id="AF_DIP_UI_WorldDiplomacy_StandingReputationHint" text="/100 (how other kingdoms judge this one; affects willingness to cooperate and to apply pressure)" />
+    <string id="AF_DIP_UI_WorldDiplomacy_ArchiveSubtitleIdle" text="Review custom policies, policy-derived events, and diplomatic declarations published by every kingdom in one place." />
+    <string id="AF_DIP_UI_WorldDiplomacy_DefaultTopic" text="diplomatic negotiation" />
+    <string id="AF_DIP_UI_WorldDiplomacy_ActiveEventPrefix" text="Current diplomatic event:  " />
+    <string id="AF_DIP_UI_WorldDiplomacy_ActiveEventInProgress" text="  ·  In progress" />
+    <string id="AF_DIP_UI_WorldDiplomacy_ActiveEventParticipants" text="  ·  Participants:  " />
+    <string id="AF_DIP_UI_WorldDiplomacy_Reject_SourceUnavailable" text="The original proposal has not reached your kingdom, has expired, or does not exist, so this reply cannot be executed." />
+    <string id="AF_DIP_UI_WorldDiplomacy_Reject_TradeTermsChanged" text="Accepting a trade proposal cannot change its duration or add clauses; issue a new proposal for different terms." />
+    <string id="AF_DIP_UI_WorldDiplomacy_Reject_NoOpenOffer" text="No still-valid formal proposal from the other party could be matched. Confirm their proposal declaration has arrived and is still open, or accept directly on that declaration." />
+    <string id="AF_DIP_UI_WorldDiplomacy_Reject_TreatyRoles" text="The treaty's receiving and joining kingdoms (or suzerain and subject) must be exactly the two parties to this negotiation." />
+    <string id="AF_DIP_UI_WorldDiplomacy_Reject_AcceptChangesTerms" text="Accepting a proposal cannot change its terms; issue a new proposal for different terms." />
+    <string id="AF_DIP_UI_WorldDiplomacy_Reject_TreatyCycle" text="That treaty would create a cycle of vassalage." />
+    <string id="AF_DIP_UI_WorldDiplomacy_Reject_SubjectHasTreaty" text="The subject kingdom already has a vassalage treaty." />
+    <string id="AF_DIP_UI_WorldDiplomacy_Reject_TreatyParticipantsUnavailable" text="A kingdom or ruler party to the treaty is currently unavailable." />
+    <string id="AF_DIP_UI_WorldDiplomacy_Reject_UnsupportedClause" text="That treaty does not support extra tribute, duration, or cession clauses." />
+    <string id="AF_DIP_UI_WorldDiplomacy_Reject_NotAtWar" text="The two parties are not currently at war." />
+    <string id="AF_DIP_UI_WorldDiplomacy_Reject_PeaceTerms" text="The peace terms cannot currently be executed as written." />
+    <string id="AF_DIP_UI_WorldDiplomacy_Reject_DeclareWarNotLegal" text="The conditions for declaring war are not currently met." />
+    <string id="AF_DIP_UI_WorldDiplomacy_Reject_StateConflict" text="This conflicts with the two parties' current alliance or trade status." />
+    <string id="AF_DIP_UI_WorldDiplomacy_Reject_NotInLegalActions" text="That action is not among the diplomatic actions the two parties can currently execute." />
+    <string id="AF_DIP_UI_WorldDiplomacy_Reject_NoLiveTarget" text="The target kingdom does not exist, has been destroyed, or has no independent diplomatic authority." />
+    <string id="AF_DIP_UI_WorldDiplomacy_Reject_UnsupportedByState" text="The current situation does not support the parsed action." />
+    <string id="AF_DIP_UI_WorldDiplomacy_DeclarePublishedMechanicRejected" text="The diplomatic declaration has been published, but the diplomatic action parsed from it was not executed: " />
+    <string id="AF_DIP_UI_WorldDiplomacy_Reject_DeclareWarNotExecuted" text="Declaration of war not executed: " />
+</strings>
 </base>
