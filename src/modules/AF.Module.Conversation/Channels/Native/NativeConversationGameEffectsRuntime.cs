@@ -290,7 +290,7 @@ internal sealed partial class NativeConversationGameEffectsRuntime
 						{
 							if (!string.IsNullOrWhiteSpace(notification))
 							{
-								InformationManager.DisplayMessage(new InformationMessage(notification, notification.IndexOf("失败", StringComparison.OrdinalIgnoreCase) >= 0 ? new Color(1f, 0.45f, 0.25f) : new Color(0.4f, 1f, 0.4f)));
+								InformationManager.DisplayMessage(new InformationMessage(notification, (notification.IndexOf("失败", StringComparison.OrdinalIgnoreCase) >= 0 || notification.IndexOf("fail", StringComparison.OrdinalIgnoreCase) >= 0) ? new Color(1f, 0.45f, 0.25f) : new Color(0.4f, 1f, 0.4f)));
 							}
 						}
 					}

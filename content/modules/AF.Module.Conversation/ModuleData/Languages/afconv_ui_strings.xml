@@ -295,5 +295,34 @@
     <string id="AF_CONV_UI_Scene_PostprocessStatus" text="Processing NPC actions..." />
     <string id="AF_CONV_UI_Scene_PostprocessWaiting" text="Waiting for the previous NPC action processing to finish..." />
     <string id="AF_CONV_UI_Scene_PostprocessTimeout" text="[Scene shout] Previous NPC action processing timed out and was reset." />
+    <string id="AF_CONV_UI_Issue_NoOfferable" text="No vanilla quest is currently available to accept." />
+    <string id="AF_CONV_UI_Issue_PreconditionsNotMet" text="You do not currently meet the requirements to accept this quest." />
+    <string id="AF_CONV_UI_Issue_CannotAcceptReason" text="Cannot accept this quest right now: {REASON}" />
+    <string id="AF_CONV_UI_Issue_ManagerUnavailable" text="IssueManager is unavailable; cannot start quest." />
+    <string id="AF_CONV_UI_Issue_StartFailed" text="Failed to start vanilla quest." />
+    <string id="AF_CONV_UI_Issue_FinalizeFailed" text="Quest was created, but failed to finalize vanilla acceptance." />
+    <string id="AF_CONV_UI_Issue_AcceptedSelf" text="Accepted quest: {TITLE}" />
+    <string id="AF_CONV_UI_Issue_AcceptException" text="An error occurred while accepting the quest." />
+    <string id="AF_CONV_UI_Issue_AltDispatchPending" text="A companion dispatch screen is already pending confirmation." />
+    <string id="AF_CONV_UI_Issue_NoAltSolution" text="This quest cannot be solved by a companion right now." />
+    <string id="AF_CONV_UI_Issue_CannotAltReason" text="Cannot assign to companion: {REASON}" />
+    <string id="AF_CONV_UI_Issue_CompanionNotAllowed" text="The chosen companion is not in the allowed list." />
+    <string id="AF_CONV_UI_Issue_CompanionUnavailable" text="This companion is currently unavailable." />
+    <string id="AF_CONV_UI_Issue_CompanionConfirmedSelectTroops" text="Confirmed that {HERO} will lead. Please select the accompanying troops." />
+    <string id="AF_CONV_UI_Issue_AltStartException" text="An error occurred while starting the companion solution." />
+    <string id="AF_CONV_UI_Issue_AltAccepted" text="{HERO} has taken over the quest: {TITLE}" />
+    <string id="AF_CONV_UI_Issue_AltConfirmException" text="An error occurred while confirming companion assignment." />
+    <string id="AF_CONV_UI_Issue_CompanionNotFound" text="Companion not found." />
+    <string id="AF_CONV_UI_Issue_CompanionNotInParty" text="This companion is not in your main party." />
+    <string id="AF_CONV_UI_Issue_CompanionWounded" text="This companion is currently wounded." />
+    <string id="AF_CONV_UI_Issue_CompanionPregnant" text="This companion is currently pregnant." />
+    <string id="AF_CONV_UI_Issue_PartyUnavailable" text="Player party is currently unavailable." />
+    <string id="AF_CONV_UI_Issue_NoEligibleCompanion" text="No eligible companion is available in your party." />
+    <string id="AF_CONV_UI_Issue_NoTurnInQuest" text="No quest available to turn in via conversation." />
+    <string id="AF_CONV_UI_Issue_TurnInFailed" text="Failed to turn in vanilla quest." />
+    <string id="AF_CONV_UI_Issue_TurnedIn" text="Turned in quest: {TITLE}" />
+    <string id="AF_CONV_UI_Issue_DispatchCancelled" text="Companion mission troop dispatch was cancelled." />
+    <string id="AF_CONV_UI_Issue_TroopsNotSatisfied" text="Selected troops do not meet the quest requirements." />
+    <string id="AF_CONV_UI_Issue_TroopsNotSatisfiedReason" text="Selected troops do not meet the quest requirements: {REASON}" />
   </strings>
 </base>

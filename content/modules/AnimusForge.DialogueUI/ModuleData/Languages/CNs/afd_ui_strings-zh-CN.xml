@@ -182,5 +182,6 @@
     <string id="AFD_UI_Trade_GiveListExpired" text="给予列表已失效，请重新打开。" />
     <string id="AFD_UI_Trade_ResourcesUpdated" text="资源列表已更新，请重新打开。" />
     <string id="AFD_UI_Trade_SelectionExpired" text="资源或数量已失效，请重新选择。" />
+    <string id="AFD_SubModule_Name" text="AnimusForge - 羊皮纸对话界面" />
   </strings>
 </base>

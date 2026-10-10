@@ -276,7 +276,7 @@ internal static partial class VanillaIssueOfferBridge
 		{
 			_dispatchOwner.TryTake(expected, out _);
 			SafeRestoreAlternativeRoster(expected.Issue);
-			ShowInfo("已取消同伴代办派兵。", isError: true);
+			ShowInfo(ConversationUiLocalization.Text("AF_CONV_UI_Issue_DispatchCancelled", "Companion mission troop dispatch was cancelled."), isError: true);
 			return;
 		}
 		TextObject explanation;
@@ -284,7 +284,9 @@ internal static partial class VanillaIssueOfferBridge
 		{
 			_dispatchOwner.TryTake(expected, out _);
 			SafeRestoreAlternativeRoster(expected.Issue);
-			ShowInfo("当前派兵结果不满足任务要求" + (string.IsNullOrWhiteSpace(GetText(explanation)) ? "。" : ("：" + GetText(explanation))), isError: true);
+			ShowInfo(string.IsNullOrWhiteSpace(GetText(explanation))
+				? ConversationUiLocalization.Text("AF_CONV_UI_Issue_TroopsNotSatisfied", "Selected troops do not meet the quest requirements.")
+				: ConversationUiLocalization.Text("AF_CONV_UI_Issue_TroopsNotSatisfiedReason", "Selected troops do not meet the quest requirements: {REASON}", ("REASON", GetText(explanation))), isError: true);
 			return;
 		}
 		if (_dispatchOwner.TryTake(expected, out PendingAlternativeDispatch pendingAlternativeDispatch))

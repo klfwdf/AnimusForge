@@ -1119,42 +1119,90 @@ public sealed class TownAmbientDialogueMissionBehavior : MissionBehavior
 		}
 	}
 
+	private static string LocalizePlayerTitle(string title)
+	{
+		switch (title)
+		{
+			case "陛下":
+				return new TextObject("{=AF_CONV_AMBIENT_Title_Majesty}Your Majesty").ToString();
+			case "大人":
+				return new TextObject("{=AF_CONV_AMBIENT_Title_Lord}my Lord").ToString();
+			case "雇佣兵":
+				return new TextObject("{=AF_CONV_AMBIENT_Title_Mercenary}mercenary").ToString();
+			case "旅人":
+				return new TextObject("{=AF_CONV_AMBIENT_Title_Traveler}traveler").ToString();
+			default:
+				return title ?? string.Empty;
+		}
+	}
+
+	private static string LocalizePlayerStatus(string status)
+	{
+		switch (status)
+		{
+			case "国家统治者":
+				return new TextObject("{=AF_CONV_AMBIENT_Status_Ruler}Ruler of the Realm").ToString();
+			case "本地领主":
+				return new TextObject("{=AF_CONV_AMBIENT_Status_LocalLord}Local Lord").ToString();
+			case "领主":
+				return new TextObject("{=AF_CONV_AMBIENT_Status_Lord}Lord").ToString();
+			case "雇佣兵":
+				return new TextObject("{=AF_CONV_AMBIENT_Status_Mercenary}Mercenary").ToString();
+			case "冒险者":
+				return new TextObject("{=AF_CONV_AMBIENT_Status_Adventurer}Adventurer").ToString();
+			default:
+				return status ?? string.Empty;
+		}
+	}
+
 	private static string Render(string text, NpcDataPacket npc, Settlement settlement, string sceneTag, TownAmbientPlayerContext playerContext = null)
 	{
-		string owner = (settlement.OwnerClan ?? settlement.Village?.Bound?.OwnerClan)?.Leader?.Name?.ToString() ?? "领主";
-		string town = settlement.Name?.ToString() ?? "这座城镇";
+		string owner = (settlement.OwnerClan ?? settlement.Village?.Bound?.OwnerClan)?.Leader?.Name?.ToString()
+			?? new TextObject("{=AF_CONV_AMBIENT_Owner_Fallback}the Lord").ToString();
+		string town = settlement.Name?.ToString()
+			?? new TextObject("{=AF_CONV_AMBIENT_Town_Fallback}this town").ToString();
 		Town contextTown = GetContextTown(settlement);
 		float loyalty = contextTown?.Loyalty ?? 100f;
 		float prosperity = contextTown?.Prosperity ?? 0f;
-		string taxMood = loyalty < 25f ? "税吏逼得紧" : loyalty < 60f ? "税负不轻" : "税负尚可";
+		string taxMood = loyalty < 25f
+			? new TextObject("{=AF_CONV_AMBIENT_TaxMood_Oppressive}the tax collectors press hard").ToString()
+			: loyalty < 60f
+				? new TextObject("{=AF_CONV_AMBIENT_TaxMood_Heavy}taxes are heavy").ToString()
+				: new TextObject("{=AF_CONV_AMBIENT_TaxMood_Moderate}taxes are fair").ToString();
 		int hour = CampaignTime.Now.GetHourOfDay;
-		string timeGreeting = TownAmbientTime.GetGreeting(hour);
-		string timePeriod = TownAmbientTime.GetDisplayName(hour);
+		string timeGreeting = TownAmbientTime.GetLocalizedGreeting(hour);
+		string timePeriod = TownAmbientTime.GetLocalizedDisplayName(hour);
 		playerContext ??= TownAmbientPlayerContext.Empty;
+		string localizedTitle = LocalizePlayerTitle(playerContext.Title);
+		string localizedStatus = LocalizePlayerStatus(playerContext.Status);
 		string spokenText = ExtractSpokenText(text);
 		// Resolve stable TextObject tokens before dynamic ambient placeholders. The
 		// JSON keeps an English fallback while the native language resources supply
 		// the zh-CN line, so no custom language probing or per-tick reflection is
 		// needed. Legacy/plain strings still pass through unchanged.
 		spokenText = new TextObject(spokenText).ToString();
-		string playerAddress = playerContext.IsFormalTitleHolder ? playerContext.Title : playerContext.Name;
-		return spokenText.Replace("{speaker}", npc.Name ?? "路人")
+		string playerAddress = playerContext.IsFormalTitleHolder
+			? localizedTitle
+			: (playerContext.Name == "这位旅人"
+				? new TextObject("{=AF_CONV_AMBIENT_Player_TravelerFallback}this traveler").ToString()
+				: playerContext.Name);
+		return spokenText.Replace("{speaker}", npc.Name ?? new TextObject("{=AF_CONV_AMBIENT_Speaker_Fallback}passerby").ToString())
 			.Replace("{town}", town)
 			.Replace("{owner}", owner)
-			.Replace("{culture}", npc.CultureId ?? "本地")
-			.Replace("{role}", npc.RoleDesc ?? "平民")
+			.Replace("{culture}", npc.CultureId ?? new TextObject("{=AF_CONV_AMBIENT_Culture_Fallback}local").ToString())
+			.Replace("{role}", npc.RoleDesc ?? new TextObject("{=AF_CONV_AMBIENT_Role_Fallback}commoner").ToString())
 			.Replace("{age}", npc.Age.ToString("0"))
-			.Replace("{scene}", sceneTag ?? "街道")
+			.Replace("{scene}", sceneTag ?? new TextObject("{=AF_CONV_AMBIENT_Scene_Fallback}street").ToString())
 			.Replace("{loyalty}", loyalty.ToString("0"))
 			.Replace("{prosperity}", prosperity.ToString("0"))
 			.Replace("{tax_mood}", taxMood)
 			.Replace("{time_greeting}", timeGreeting)
 			.Replace("{time_period}", timePeriod)
 			.Replace("{player_name}", playerAddress)
-			.Replace("{player_title}", playerContext.Title)
-			.Replace("{player_status}", playerContext.Status)
-			.Replace("{player_clan}", playerContext.ClanName)
-			.Replace("{player_kingdom}", playerContext.KingdomName)
+			.Replace("{player_title}", localizedTitle)
+			.Replace("{player_status}", localizedStatus)
+			.Replace("{player_clan}", playerContext.ClanName == "无家族归属" ? new TextObject("{=AF_CONV_AMBIENT_Clan_Fallback}unaffiliated clan").ToString() : playerContext.ClanName)
+			.Replace("{player_kingdom}", playerContext.KingdomName == "无王国归属" ? new TextObject("{=AF_CONV_AMBIENT_Kingdom_Fallback}unaffiliated kingdom").ToString() : playerContext.KingdomName)
 			.Replace("{player_gold}", playerContext.Gold.ToString("N0"))
 			.Replace("{player_renown}", playerContext.Renown.ToString("0"))
 			.Replace("{player_tier}", playerContext.ClanTier.ToString("0"))

@@ -295,5 +295,34 @@
     <string id="AF_CONV_UI_Scene_PostprocessStatus" text="正在处理 NPC 行为……" />
     <string id="AF_CONV_UI_Scene_PostprocessWaiting" text="正在等待上一轮 NPC 行为处理完成……" />
     <string id="AF_CONV_UI_Scene_PostprocessTimeout" text="[场景喊话] 上一轮 NPC 行为处理超时，已自动重置。" />
+    <string id="AF_CONV_UI_Issue_NoOfferable" text="当前没有可接取的原版任务。" />
+    <string id="AF_CONV_UI_Issue_PreconditionsNotMet" text="当前不满足该任务的接取条件。" />
+    <string id="AF_CONV_UI_Issue_CannotAcceptReason" text="当前还不能接这项任务：{REASON}" />
+    <string id="AF_CONV_UI_Issue_ManagerUnavailable" text="IssueManager 不可用，无法启动任务。" />
+    <string id="AF_CONV_UI_Issue_StartFailed" text="原版任务启动失败。" />
+    <string id="AF_CONV_UI_Issue_FinalizeFailed" text="任务已生成，但未能完成原版接受收尾。" />
+    <string id="AF_CONV_UI_Issue_AcceptedSelf" text="已接取任务：{TITLE}" />
+    <string id="AF_CONV_UI_Issue_AcceptException" text="接取任务时出现异常。" />
+    <string id="AF_CONV_UI_Issue_AltDispatchPending" text="当前已有一个待确认的同伴代办派兵界面。" />
+    <string id="AF_CONV_UI_Issue_NoAltSolution" text="当前不能通过同伴代办这项任务。" />
+    <string id="AF_CONV_UI_Issue_CannotAltReason" text="当前不能同伴代办：{REASON}" />
+    <string id="AF_CONV_UI_Issue_CompanionNotAllowed" text="LLM 选择的同伴不在当前允许列表中。" />
+    <string id="AF_CONV_UI_Issue_CompanionUnavailable" text="该同伴当前不可用。" />
+    <string id="AF_CONV_UI_Issue_CompanionConfirmedSelectTroops" text="已确认由 {HERO} 带队，接下来请选择随行士兵。" />
+    <string id="AF_CONV_UI_Issue_AltStartException" text="启动同伴代办流程时出现异常。" />
+    <string id="AF_CONV_UI_Issue_AltAccepted" text="已由 {HERO} 接手任务：{TITLE}" />
+    <string id="AF_CONV_UI_Issue_AltConfirmException" text="确认同伴代办时出现异常。" />
+    <string id="AF_CONV_UI_Issue_CompanionNotFound" text="未找到同伴。" />
+    <string id="AF_CONV_UI_Issue_CompanionNotInParty" text="该同伴当前不在主队。" />
+    <string id="AF_CONV_UI_Issue_CompanionWounded" text="该同伴当前负伤。" />
+    <string id="AF_CONV_UI_Issue_CompanionPregnant" text="该同伴当前怀孕。" />
+    <string id="AF_CONV_UI_Issue_PartyUnavailable" text="当前玩家队伍不可用。" />
+    <string id="AF_CONV_UI_Issue_NoEligibleCompanion" text="玩家队伍里当前没有符合条件的可用同伴。" />
+    <string id="AF_CONV_UI_Issue_NoTurnInQuest" text="当前没有可通过原版 discuss 流交付的任务。" />
+    <string id="AF_CONV_UI_Issue_TurnInFailed" text="原版任务交付执行失败。" />
+    <string id="AF_CONV_UI_Issue_TurnedIn" text="已交付任务：{TITLE}" />
+    <string id="AF_CONV_UI_Issue_DispatchCancelled" text="已取消同伴代办派兵。" />
+    <string id="AF_CONV_UI_Issue_TroopsNotSatisfied" text="当前派兵结果不满足任务要求。" />
+    <string id="AF_CONV_UI_Issue_TroopsNotSatisfiedReason" text="当前派兵结果不满足任务要求：{REASON}" />
   </strings>
 </base>

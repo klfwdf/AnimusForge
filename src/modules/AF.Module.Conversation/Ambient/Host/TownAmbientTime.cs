@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using TaleWorlds.Localization;
 
 namespace AnimusForge;
 
@@ -46,6 +47,21 @@ internal static class TownAmbientTime
 		}
 	}
 
+	public static string GetLocalizedDisplayName(int hour)
+	{
+		switch (GetBand(hour))
+		{
+			case TownAmbientTimeBand.Dawn:
+				return new TextObject("{=AF_CONV_AMBIENT_TimePeriod_Dawn}dawn").ToString();
+			case TownAmbientTimeBand.Day:
+				return new TextObject("{=AF_CONV_AMBIENT_TimePeriod_Day}daytime").ToString();
+			case TownAmbientTimeBand.Evening:
+				return new TextObject("{=AF_CONV_AMBIENT_TimePeriod_Evening}evening").ToString();
+			default:
+				return new TextObject("{=AF_CONV_AMBIENT_TimePeriod_Night}night").ToString();
+		}
+	}
+
 	public static string GetGreeting(int hour)
 	{
 		switch (GetBand(hour))
@@ -54,6 +70,21 @@ internal static class TownAmbientTime
 			case TownAmbientTimeBand.Day: return "午安";
 			case TownAmbientTimeBand.Evening: return "傍晚好";
 			default: return "晚上好";
+		}
+	}
+
+	public static string GetLocalizedGreeting(int hour)
+	{
+		switch (GetBand(hour))
+		{
+			case TownAmbientTimeBand.Dawn:
+				return new TextObject("{=AF_CONV_AMBIENT_TimeGreeting_Dawn}Good morning").ToString();
+			case TownAmbientTimeBand.Day:
+				return new TextObject("{=AF_CONV_AMBIENT_TimeGreeting_Day}Good day").ToString();
+			case TownAmbientTimeBand.Evening:
+				return new TextObject("{=AF_CONV_AMBIENT_TimeGreeting_Evening}Good evening").ToString();
+			default:
+				return new TextObject("{=AF_CONV_AMBIENT_TimeGreeting_Night}Good evening").ToString();
 		}
 	}
 

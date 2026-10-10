@@ -1954,5 +1954,34 @@
     <string id="AF_CONV_AMBIENT_coup_hall_panic_reply_01_TEXT" text="从后厨的门出去，快！" />
     <string id="AF_CONV_AMBIENT_coup_hall_panic_reply_02_TEXT" text="别出声，等他们打完再说。" />
     <string id="AF_CONV_AMBIENT_coup_hall_panic_reply_03_TEXT" text="这下王座真要换人坐了。" />
+    <string id="AF_CONV_AMBIENT_TaxMood_Oppressive" text="税吏逼得紧" />
+    <string id="AF_CONV_AMBIENT_TaxMood_Heavy" text="税负不轻" />
+    <string id="AF_CONV_AMBIENT_TaxMood_Moderate" text="税负尚可" />
+    <string id="AF_CONV_AMBIENT_TimeGreeting_Dawn" text="早安" />
+    <string id="AF_CONV_AMBIENT_TimeGreeting_Day" text="午安" />
+    <string id="AF_CONV_AMBIENT_TimeGreeting_Evening" text="傍晚好" />
+    <string id="AF_CONV_AMBIENT_TimeGreeting_Night" text="晚上好" />
+    <string id="AF_CONV_AMBIENT_TimePeriod_Dawn" text="清晨" />
+    <string id="AF_CONV_AMBIENT_TimePeriod_Day" text="白天" />
+    <string id="AF_CONV_AMBIENT_TimePeriod_Evening" text="傍晚" />
+    <string id="AF_CONV_AMBIENT_TimePeriod_Night" text="夜里" />
+    <string id="AF_CONV_AMBIENT_Title_Majesty" text="陛下" />
+    <string id="AF_CONV_AMBIENT_Title_Lord" text="大人" />
+    <string id="AF_CONV_AMBIENT_Title_Mercenary" text="雇佣兵" />
+    <string id="AF_CONV_AMBIENT_Title_Traveler" text="旅人" />
+    <string id="AF_CONV_AMBIENT_Status_Ruler" text="国家统治者" />
+    <string id="AF_CONV_AMBIENT_Status_LocalLord" text="本地领主" />
+    <string id="AF_CONV_AMBIENT_Status_Lord" text="领主" />
+    <string id="AF_CONV_AMBIENT_Status_Mercenary" text="雇佣兵" />
+    <string id="AF_CONV_AMBIENT_Status_Adventurer" text="冒险者" />
+    <string id="AF_CONV_AMBIENT_Owner_Fallback" text="领主" />
+    <string id="AF_CONV_AMBIENT_Town_Fallback" text="这座城镇" />
+    <string id="AF_CONV_AMBIENT_Speaker_Fallback" text="路人" />
+    <string id="AF_CONV_AMBIENT_Culture_Fallback" text="本地" />
+    <string id="AF_CONV_AMBIENT_Role_Fallback" text="平民" />
+    <string id="AF_CONV_AMBIENT_Scene_Fallback" text="街道" />
+    <string id="AF_CONV_AMBIENT_Clan_Fallback" text="无家族归属" />
+    <string id="AF_CONV_AMBIENT_Kingdom_Fallback" text="无王国归属" />
+    <string id="AF_CONV_AMBIENT_Player_TravelerFallback" text="这位旅人" />
   </strings>
 </base>

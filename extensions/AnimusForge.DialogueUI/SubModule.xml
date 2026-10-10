@@ -1,5 +1,5 @@
 <Module>
-  <Name value="AnimusForge - 羊皮纸对话界面" />
+  <Name value="{=AFD_SubModule_Name}AnimusForge - Parchment Dialogue UI" />
   <Id value="AnimusForge_DialogueUI" />
   <Version value="v0.1.0" />
   <SingleplayerModule value="true" />
