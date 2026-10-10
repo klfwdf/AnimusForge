@@ -231,7 +231,10 @@ internal static class Program
         Test.Equal(5, ReadIntConstant(settings, "WorldDiplomacyPromptJsonVersion"),
             "the warning-wording prompt migration must use JSON version 5");
 
-        string previousDefault = ReadStringConstant(settings, "PreviousDefaultWorldDiplomacyPreferenceV4");
+        using JsonDocument legacyPrompts = JsonDocument.Parse(ReadRepositoryFile(
+            "content/foundation/AF.Foundation.Localization/ModuleData/LegacySettingsPrompts.json"));
+        string previousDefault = legacyPrompts.RootElement.GetProperty("Values")
+            .GetProperty("PreviousDefaultWorldDiplomacyPreferenceV4").GetString()!;
         string currentDefault = ReadStringConstant(settings, "DefaultWorldDiplomacyPreference");
         Test.True(previousDefault.Contains("警告与通牒", StringComparison.Ordinal)
                   && currentDefault.Contains("谴责与最后通牒", StringComparison.Ordinal),

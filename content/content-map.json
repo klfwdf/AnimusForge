@@ -17113,6 +17113,12 @@
       "source": "content/modules/AnimusForge.XihaiAction/ModuleData/Languages/CNs/afscene_catalog_strings-zh-CN.xml",
       "target": "ModuleData/Languages/CNs/afscene_catalog_strings-zh-CN.xml",
       "logicalName": "AnimusForge.SceneActions.Catalog.zh-CN.xml"
+    },
+    {
+      "owner": "AF.Foundation.Localization",
+      "source": "content/foundation/AF.Foundation.Localization/ModuleData/LegacySettingsPrompts.json",
+      "target": "ModuleData/LegacySettingsPrompts.json",
+      "logicalName": "AnimusForge.Defaults.LegacySettingsPrompts.json"
     }
   ]
 }
