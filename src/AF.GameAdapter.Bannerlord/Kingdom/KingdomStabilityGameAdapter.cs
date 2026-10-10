@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using TaleWorlds.CampaignSystem.Settlements;
 using TaleWorlds.Library;
+using TaleWorlds.Localization;
 using static AnimusForge.MemoryEntityIdentityBannerlordAdapter;
 using static AnimusForge.KingdomStabilityPolicy;
 using TaleWorlds.CampaignSystem;
@@ -398,32 +399,68 @@ internal string BuildKingdomStabilityEncyclopediaText(Kingdom kingdom)
 		int activeClanCount = CountActiveKingdomClansForLowClanCountRule(kingdom);
 		int royalDomainLoyaltyAdjustment = enabled && !protectedByImmunity && activeClanCount <= 4 ? GetLowClanCountRoyalDomainLoyaltyAdjustment(stabilityValue, activeClanCount) : 0;
 		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.AppendLine("【王国稳定度】");
-		stringBuilder.AppendLine("当前数值：" + stabilityValue + "/100（" + GetKingdomStabilityTierText(stabilityValue) + "）");
+		stringBuilder.AppendLine(DisplayText("AF_UI_KingdomStability_EncyclopediaTitle", "Kingdom stability"));
+		stringBuilder.AppendLine(DisplayText("AF_UI_KingdomStability_EncyclopediaCurrentValue", "Current value: {VALUE}/100 ({TIER})", ("VALUE", stabilityValue.ToString()), ("TIER", GetKingdomStabilityTierDisplayText(stabilityValue))));
 		if (!enabled)
 		{
-			stringBuilder.AppendLine("机制状态：MCM 已关闭，仅显示当前保存数值。");
+			stringBuilder.AppendLine(DisplayText("AF_UI_KingdomStability_EncyclopediaDisabled", "System status: MCM is disabled; only the saved value is shown."));
 			return stringBuilder.ToString().TrimEnd();
 		}
 		if (protectedByImmunity)
 		{
-			stringBuilder.AppendLine("本周叛乱概率：0%（玩家王国稳定度叛乱免疫）");
+			stringBuilder.AppendLine(DisplayText("AF_UI_KingdomStability_DetailImmuneChance", "This week's rebellion chance: 0% (player-kingdom stability rebellion immunity is enabled)"));
 		}
 		else
 		{
-			stringBuilder.AppendLine("本周叛乱概率：" + FormatKingdomRebellionChance(rebellionChance));
+			stringBuilder.AppendLine(DisplayText("AF_UI_KingdomStability_DetailChance", "This week's rebellion chance: {CHANCE}", ("CHANCE", FormatKingdomRebellionChance(rebellionChance))));
 		}
 		List<string> effects = new List<string>();
 		if (relationOffset != 0)
 		{
-			effects.Add("国王与本国非王族成年成员关系修正 " + FormatKingdomStabilityRelationOffsetText(relationOffset));
+			effects.Add(DisplayText("AF_UI_KingdomStability_EncyclopediaRelationEffect", "King-to-non-royal adult relation modifier: {VALUE}", ("VALUE", FormatKingdomStabilityRelationOffsetText(relationOffset))));
 		}
 		if (royalDomainLoyaltyAdjustment != 0)
 		{
-			effects.Add("王室直辖地忠诚日修正 " + FormatKingdomStabilityRelationOffsetText(royalDomainLoyaltyAdjustment));
+			effects.Add(DisplayText("AF_UI_KingdomStability_EncyclopediaRoyalDomainEffect", "Royal-domain daily loyalty modifier: {VALUE}", ("VALUE", FormatKingdomStabilityRelationOffsetText(royalDomainLoyaltyAdjustment))));
 		}
-		stringBuilder.AppendLine(effects.Count == 0 ? "当前额外影响：无" : ("当前额外影响：" + string.Join("；", effects)));
+		stringBuilder.AppendLine(effects.Count == 0
+			? DisplayText("AF_UI_KingdomStability_EncyclopediaNoEffects", "Current additional effects: none")
+			: DisplayText("AF_UI_KingdomStability_EncyclopediaEffects", "Current additional effects: {EFFECTS}", ("EFFECTS", string.Join("; ", effects))));
 		return stringBuilder.ToString().TrimEnd();
+	}
+
+	private static string GetKingdomStabilityTierDisplayText(int value)
+	{
+		switch (KingdomStabilityPolicy.GetKingdomStabilityTier(value))
+		{
+		case KingdomStabilityTier.ExtremelyHigh:
+			return DisplayText("AF_KINGDOM_CW_Stability_ExtremelyHigh", "Extremely high");
+		case KingdomStabilityTier.High:
+			return DisplayText("AF_KINGDOM_CW_Stability_High", "High");
+		case KingdomStabilityTier.FairlyHigh:
+			return DisplayText("AF_KINGDOM_CW_Stability_FairlyHigh", "Fairly high");
+		case KingdomStabilityTier.Average:
+			return DisplayText("AF_KINGDOM_CW_Stability_Average", "Average");
+		case KingdomStabilityTier.Poor:
+			return DisplayText("AF_KINGDOM_CW_Stability_Poor", "Poor");
+		case KingdomStabilityTier.VeryPoor:
+			return DisplayText("AF_KINGDOM_CW_Stability_VeryPoor", "Very poor");
+		default:
+			return DisplayText("AF_KINGDOM_CW_Stability_ExtremelyPoor", "Extremely poor");
+		}
+	}
+
+	private static string DisplayText(string id, string fallback, params (string Name, string Value)[] variables)
+	{
+		TextObject text = new TextObject("{=" + id + "}" + fallback);
+		if (variables != null)
+		{
+			foreach ((string name, string value) in variables)
+			{
+				text.SetTextVariable(name, value ?? string.Empty);
+			}
+		}
+		return text.ToString();
 	}
 
 internal int GetKingdomStabilityValue(Kingdom kingdom)

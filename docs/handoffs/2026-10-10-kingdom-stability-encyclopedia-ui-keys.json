@@ -1,0 +1,29 @@
+{
+  "source": "src/AF.GameAdapter.Bannerlord/Kingdom/KingdomStabilityGameAdapter.cs",
+  "scope": "player-facing encyclopedia display projection",
+  "newKeys": [
+    {"id":"AF_UI_KingdomStability_EncyclopediaTitle","en":"Kingdom stability","zh":"【王国稳定度】"},
+    {"id":"AF_UI_KingdomStability_EncyclopediaCurrentValue","en":"Current value: {VALUE}/100 ({TIER})","zh":"当前数值：{VALUE}/100（{TIER}）"},
+    {"id":"AF_UI_KingdomStability_EncyclopediaDisabled","en":"System status: MCM is disabled; only the saved value is shown.","zh":"机制状态：MCM 已关闭，仅显示当前保存数值。"},
+    {"id":"AF_UI_KingdomStability_EncyclopediaRelationEffect","en":"King-to-non-royal adult relation modifier: {VALUE}","zh":"国王与本国非王族成年成员关系修正：{VALUE}"},
+    {"id":"AF_UI_KingdomStability_EncyclopediaRoyalDomainEffect","en":"Royal-domain daily loyalty modifier: {VALUE}","zh":"王室直辖地忠诚日修正：{VALUE}"},
+    {"id":"AF_UI_KingdomStability_EncyclopediaNoEffects","en":"Current additional effects: none","zh":"当前额外影响：无"},
+    {"id":"AF_UI_KingdomStability_EncyclopediaEffects","en":"Current additional effects: {EFFECTS}","zh":"当前额外影响：{EFFECTS}"}
+  ],
+  "reusedKeys": [
+    "AF_UI_KingdomStability_DetailImmuneChance",
+    "AF_UI_KingdomStability_DetailChance",
+    "AF_KINGDOM_CW_Stability_ExtremelyHigh",
+    "AF_KINGDOM_CW_Stability_High",
+    "AF_KINGDOM_CW_Stability_FairlyHigh",
+    "AF_KINGDOM_CW_Stability_Average",
+    "AF_KINGDOM_CW_Stability_Poor",
+    "AF_KINGDOM_CW_Stability_VeryPoor",
+    "AF_KINGDOM_CW_Stability_ExtremelyPoor"
+  ],
+  "notes": [
+    "GetKingdomStabilityTierText remains unchanged because it is shared by weekly reports, runtime results, and editor paths.",
+    "EncyclopediaKingdomStabilityPatch now retains an exact per-page suffix and recognizes complete legacy/current title lines; refresh, language switch and disabling no longer depend only on the Chinese marker.",
+    "C# build and live game verification were intentionally not run."
+  ]
+}

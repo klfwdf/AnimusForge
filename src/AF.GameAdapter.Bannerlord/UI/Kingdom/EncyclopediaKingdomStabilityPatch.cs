@@ -1,15 +1,19 @@
 using System;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using HarmonyLib;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.ViewModelCollection.Encyclopedia.Pages;
+using TaleWorlds.Localization;
 
 namespace AnimusForge;
 
 public static class EncyclopediaKingdomStabilityPatch
 {
 	private const string StabilityMarker = "【王国稳定度】";
+	private sealed class AppendedBlock { internal string Text = ""; }
+	private static readonly ConditionalWeakTable<EncyclopediaFactionPageVM, AppendedBlock> AppendedBlocks = new ConditionalWeakTable<EncyclopediaFactionPageVM, AppendedBlock>();
 
 	private static readonly FieldInfo FactionField = AccessTools.Field(typeof(EncyclopediaFactionPageVM), "_faction");
 	private static readonly object SyncRoot = new object();
@@ -53,12 +57,16 @@ public static class EncyclopediaKingdomStabilityPatch
 			string standingText = DiplomacyPresentationBridge.Standing(kingdom?.StringId);
 			string combinedText = string.Join("\n\n", new[] { stabilityText, standingText }
 				.Where(x => !string.IsNullOrWhiteSpace(x)));
+			AppendedBlock previous = AppendedBlocks.GetValue(__instance, _ => new AppendedBlock());
+			string baseText = RemoveExistingStabilityBlock(__instance.InformationText, previous.Text);
 			if (string.IsNullOrWhiteSpace(combinedText))
 			{
-				__instance.InformationText = RemoveExistingStabilityBlock(__instance.InformationText);
+				__instance.InformationText = baseText;
+				previous.Text = "";
 				return;
 			}
-			__instance.InformationText = AppendOrReplaceStabilityBlock(__instance.InformationText, combinedText);
+			__instance.InformationText = AppendOrReplaceStabilityBlock(baseText, combinedText);
+			previous.Text = combinedText.Trim();
 		}
 		catch (Exception ex)
 		{
@@ -77,7 +85,7 @@ public static class EncyclopediaKingdomStabilityPatch
 
 	private static string AppendOrReplaceStabilityBlock(string input, string block)
 	{
-		string baseText = RemoveExistingStabilityBlock(input).Trim();
+		string baseText = (input ?? "").Trim();
 		string stabilityBlock = (block ?? "").Trim();
 		if (string.IsNullOrWhiteSpace(stabilityBlock))
 		{
@@ -86,10 +94,32 @@ public static class EncyclopediaKingdomStabilityPatch
 		return string.IsNullOrWhiteSpace(baseText) ? stabilityBlock : (baseText + "\n\n" + stabilityBlock);
 	}
 
-	private static string RemoveExistingStabilityBlock(string input)
+	private static string RemoveExistingStabilityBlock(string input, string previousBlock = null)
 	{
 		string text = input ?? "";
-		int markerIndex = text.IndexOf(StabilityMarker, StringComparison.Ordinal);
+		// Exact per-page suffix also covers language changes and standing-only blocks.
+		if (!string.IsNullOrEmpty(previousBlock) && text.EndsWith(previousBlock, StringComparison.Ordinal))
+		{
+			int start = text.Length - previousBlock.Length;
+			if (start == 0 || text[start - 1] == '\n') text = text.Substring(0, start).TrimEnd();
+		}
+		int markerIndex = -1;
+		foreach (string marker in new[] { StabilityMarker, "Kingdom stability", new TextObject("{=AF_UI_KingdomStability_EncyclopediaTitle}Kingdom stability").ToString() })
+		{
+			int start = 0;
+			while (!string.IsNullOrEmpty(marker) && start < text.Length)
+			{
+				int found = text.IndexOf(marker, start, StringComparison.Ordinal);
+				if (found < 0) break;
+				int end = found + marker.Length;
+				if ((found == 0 || text[found - 1] == '\n') && (end == text.Length || text[end] == '\r' || text[end] == '\n'))
+				{
+					if (markerIndex < 0 || found < markerIndex) markerIndex = found;
+					break;
+				}
+				start = end;
+			}
+		}
 		if (markerIndex < 0)
 		{
 			return text;
