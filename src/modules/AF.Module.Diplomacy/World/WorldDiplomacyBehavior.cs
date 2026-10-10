@@ -1154,7 +1154,7 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 				+ " 统治者";
 
 				lore = library.BuildLoreContextWithoutPlayerContext(query, ruler, "world_diplomacy_realm_voice", entities);
-				string result = WorldDiplomacyPromptContractRules.BuildRealmInstitutionalVoiceText(kingdomName, cultureName, rulerTitle, governmentHardFact, lore);
+				string result = WorldDiplomacyPromptContractRules.BuildRealmInstitutionalVoiceText(kingdomName, cultureName, rulerTitle, governmentHardFact, lore, DiplomacyPromptTexts.Get);
 				if (_realmInstitutionalVoiceCache.Count >= 32)
 				{
 					_realmInstitutionalVoiceCache.Clear();
@@ -1167,7 +1167,7 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 		{
 			lore = "";
 		}
-		return WorldDiplomacyPromptContractRules.BuildRealmInstitutionalVoiceText(kingdomName, cultureName, rulerTitle, governmentHardFact, lore);
+		return WorldDiplomacyPromptContractRules.BuildRealmInstitutionalVoiceText(kingdomName, cultureName, rulerTitle, governmentHardFact, lore, DiplomacyPromptTexts.Get);
 	}
 	private static string ResolveRealmRulerTitle(Kingdom kingdom, Hero ruler)
 	{

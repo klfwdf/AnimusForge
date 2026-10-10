@@ -44,10 +44,14 @@ $entries = @(
     @{ owner='Fixture'; source='content/en_language.xml'; target='ModuleData/Languages/language_data.xml' },
     @{ owner='Fixture'; source='content/zh.xml'; target='ModuleData/Languages/CNs/zh.xml' },
     @{ owner='Fixture'; source='content/zh_language.xml'; target='ModuleData/Languages/CNs/language_data.xml' },
-    @{ owner='Fixture'; source="content/modules/AF.Module.Onboarding/PlayerExports/$book/personality_background/lord_1__original.json"; target="PlayerExports/$book/personality_background/lord_1__original.json" }
+    @{ owner='Fixture'; source="content/modules/AF.Module.Onboarding/PlayerExports/$book/personality_background/lord_1__original.json"; target="PlayerExports/$book/personality_background/lord_1__original.json" },
+    @{ owner='Fixture'; source='content/SceneActionPromptTexts.xml'; target='ModuleData/SceneActionPromptTexts.xml' }
 )
 FixtureText (Join-Path $root 'content/Prompt.json') ('{"Text":"' + $han + '"}')
 FixtureText (Join-Path $root 'content/Prompt.en.json') '{"Text":"English prompt"}'
+FixtureText (Join-Path $root 'content/SceneActionPromptTexts.xml') ('<base language="zh-CN"><strings><string id="Scene" text="' + $han + ' {NAME} [ACTION:QUEST_TURN_IN]" /></strings></base>')
+$sceneEnglish = '<base language="en"><strings><string id="Scene" text="English {NAME} [ACTION:QUEST_TURN_IN]" /></strings></base>'
+FixtureText (Join-Path $root 'content/SceneActionPromptTexts.en.xml') $sceneEnglish
 FixtureText (Join-Path $RunRoot 'protocol-cn.json') '{"Text":"{HERO} [ACTION:DUEL:1]", "TopicId":"duel", "Rules":["One", "Two"]}'
 FixtureText (Join-Path $RunRoot 'protocol-en.json') '{"Text":"{HERO} [ACTION:DUEL:1]", "TopicId":"duel", "Rules":["Translated one", "Translated two"]}'
 Assert-AnimusForgeEnglishJsonContract -OriginalPath (Join-Path $RunRoot 'protocol-cn.json') -EnglishPath (Join-Path $RunRoot 'protocol-en.json')
@@ -70,6 +74,10 @@ $snapshots = @{}
 foreach ($file in Get-ChildItem -LiteralPath $root -Recurse -File) { $snapshots[$file.FullName] = (Get-FileHash -LiteralPath $file.FullName).Hash }
 $cn = @(Get-AnimusForgePackageProjection -ProjectRoot $root -StageModuleDir $stage -Language CN -PackageVersion v1.5.6)
 $en = @(Get-AnimusForgePackageProjection -ProjectRoot $root -StageModuleDir $stage -Language EN -PackageVersion v1.5.6)
+Check (@($en | Where-Object Target -eq 'ModuleData/SceneActionPromptTexts.xml')[0].SourcePath.EndsWith('SceneActionPromptTexts.en.xml')) 'Scene prompt XML selects the EN body under the same target.'
+FixtureText (Join-Path $root 'content/SceneActionPromptTexts.en.xml') ($sceneEnglish.Replace('{NAME}', '{WRONG}'))
+Reject { Get-AnimusForgePackageProjection -ProjectRoot $root -StageModuleDir $stage -Language EN -PackageVersion v1.5.6 } 'Scene XML variable drift must be rejected.' 'Prompt XML variable/protocol changed:'
+FixtureText (Join-Path $root 'content/SceneActionPromptTexts.en.xml') $sceneEnglish
 FixtureText (Join-Path $root 'content/Prompt.en.json') '{"Text":"English prompt", "LostContract":true}'
 Reject { Get-AnimusForgePackageProjection -ProjectRoot $root -StageModuleDir $stage -Language EN -PackageVersion v1.5.6 } 'English schema drift must fail closed.' 'JSON field set changed:'
 FixtureText (Join-Path $root 'content/Prompt.en.json') '{"Text":"English prompt"}'

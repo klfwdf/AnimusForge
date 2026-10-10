@@ -17148,6 +17148,17 @@
       "owner": "AF.Module.Diplomacy",
       "source": "content/modules/AF.Module.Diplomacy/ModuleData/DiplomacyPromptTexts.json",
       "target": "ModuleData/DiplomacyPromptTexts.json"
+    },
+    {
+      "owner": "AnimusForge.XihaiAction",
+      "source": "content/modules/AnimusForge.XihaiAction/ModuleData/SceneActionPromptTexts.xml",
+      "target": "ModuleData/SceneActionPromptTexts.xml"
+    },
+    {
+      "owner": "AF.Module.Diplomacy",
+      "source": "content/modules/AF.Module.Diplomacy/ModuleData/DiplomacyPromptCompatibility.json",
+      "target": "ModuleData/DiplomacyPromptCompatibility.json",
+      "logicalName": "AnimusForge.Diplomacy.PromptCompatibility.json"
     }
   ]
 }

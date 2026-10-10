@@ -399,7 +399,7 @@ internal sealed partial class WorldDiplomacyOrchestration
         string tail = DiplomacyRoundWorkRules.BuildRequestTail(round, knownDocuments, job.PlayerResponseSourceIds);
         int modeMarker = job.UserPrompt.LastIndexOf("【MODE=DECLARE】", StringComparison.Ordinal);
         string basePrompt = modeMarker >= 0 ? job.UserPrompt.Substring(0, modeMarker) : job.UserPrompt;
-        job.UserPrompt = BuildDeclareModePrompt(basePrompt + tail);
+        job.UserPrompt = BuildDeclareModePrompt(basePrompt + tail, _host.PromptWorld().LocalizePrompt);
         if (job.PlayerResponseSourceIds.Count > 0) job.Priority = Math.Max(job.Priority, 95);
     }
 

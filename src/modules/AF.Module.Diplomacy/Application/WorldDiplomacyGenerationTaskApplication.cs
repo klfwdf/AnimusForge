@@ -124,7 +124,7 @@ internal static class WorldDiplomacyGenerationTaskApplication
         Action<WorldDiplomacyJob, string, string, string> abandonGeneration,
         Func<string, string, bool> isAtWar,
         Action<WorldDiplomacyJob> enqueue,
-        Action<string> log, bool playerDiplomacy = false)
+        Action<string> log, bool playerDiplomacy = false, Func<string, string, string> localize = null)
 	{
 		if (string.IsNullOrWhiteSpace(authorId) || (string.IsNullOrWhiteSpace(targetId) && !allowUntargeted))
 		{
@@ -253,8 +253,8 @@ internal static class WorldDiplomacyGenerationTaskApplication
 		string frozenCommonContract = getCommonContract?.Invoke(owningRound);
 		(int minimumCharacters, int maximumCharacters) = declarationCharRange?.Invoke() ?? (0, 0);
 		string systemPrompt = isRelayTurn
-			? WorldDiplomacyPromptContractRules.BuildRelayGenerationSystemPrompt(frozenCommonContract, minimumCharacters, maximumCharacters)
-			: WorldDiplomacyPromptContractRules.BuildGenerationSystemPrompt(frozenCommonContract, minimumCharacters, maximumCharacters);
+			? WorldDiplomacyPromptContractRules.BuildRelayGenerationSystemPrompt(frozenCommonContract, minimumCharacters, maximumCharacters, localize)
+			: WorldDiplomacyPromptContractRules.BuildGenerationSystemPrompt(frozenCommonContract, minimumCharacters, maximumCharacters, localize);
 		syncCanonicalHistory?.Invoke();
 		bool includeEmbeddedRoundPlan = !isRelayTurn && !isResponse && owningRound != null && string.IsNullOrWhiteSpace(owningRound.RootDocumentId);
 		List<string> roundPlanCandidates = new List<string>();
@@ -268,7 +268,7 @@ internal static class WorldDiplomacyGenerationTaskApplication
 			? buildRelayPrompt?.Invoke(owningRound, authorId, targetId, sourceDocument, externalResponseOnly)
 			: buildGenerationPrompt?.Invoke(authorId, targetId, exchange, isResponse, sourceDocument, isReminder, roundId,
 				allowUntargeted, roundPlanCandidates, externalResponseOnly);
-		string userPrompt = WorldDiplomacyPromptContractRules.BuildDeclareModePrompt(dynamicPrompt);
+		string userPrompt = WorldDiplomacyPromptContractRules.BuildDeclareModePrompt(dynamicPrompt, localize);
 		WorldDiplomacyJob job = new WorldDiplomacyJob
 		{
 			JobId = createId?.Invoke("diplomacy_generate"),

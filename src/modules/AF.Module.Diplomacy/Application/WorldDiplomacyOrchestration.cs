@@ -607,7 +607,7 @@ internal sealed partial class WorldDiplomacyOrchestration : IWorldDiplomacyOrche
 
     public bool TryRebuildPendingJob(WorldDiplomacyJob job)
     {
-        return WorldDiplomacyJobPreparationApplication.Rebuild(_host.JobPreparation(), this, job);
+        return WorldDiplomacyJobPreparationApplication.Rebuild(_host.JobPreparation(), this, job, _host.PromptWorld().LocalizePrompt);
     }
 
     public string BuildCanonicalHistoryBlock(long throughSequence = long.MaxValue)
@@ -650,7 +650,7 @@ internal sealed partial class WorldDiplomacyOrchestration : IWorldDiplomacyOrche
             _host.ConfiguredOutputTokenLimit,
             _host.NewId,
             (job, seq) => CaptureCanonicalHistoryForJob(job, syncSources: false, throughSequence: seq),
-            _host.Log);
+            _host.Log, _host.PromptWorld().LocalizePrompt);
     }
 
     public void CommitCompression(WorldDiplomacyJob job, string raw)
@@ -1111,7 +1111,7 @@ internal sealed partial class WorldDiplomacyOrchestration : IWorldDiplomacyOrche
             AbandonRejectedGeneration,
             _host.IsAtWarByKingdomIds,
             EnqueueJob,
-            _host.Log, playerDiplomacy);
+            _host.Log, playerDiplomacy, _host.PromptWorld().LocalizePrompt);
     }
 
     public bool EnsureGenerationJobHasKingdomStrategicProfile(WorldDiplomacyJob job)
@@ -1123,13 +1123,13 @@ internal sealed partial class WorldDiplomacyOrchestration : IWorldDiplomacyOrche
     public bool RefreshDiplomaticActionPresentationAndPrompt(WorldDiplomacyJob job)
     {
         return WorldDiplomacyJobPreparationApplication.RefreshDiplomaticActionPresentationAndPrompt(
-            _host.JobPreparation(), this, job);
+            _host.JobPreparation(), this, job, _host.PromptWorld().LocalizePrompt);
     }
 
     public bool RefreshDiplomaticThreatPresentationAndPrompt(WorldDiplomacyJob job)
     {
         return WorldDiplomacyJobPreparationApplication.RefreshDiplomaticThreatPresentationAndPrompt(
-            _host.JobPreparation(), this, job);
+            _host.JobPreparation(), this, job, _host.PromptWorld().LocalizePrompt);
     }
 
     public void EnqueueAnalysisJob(WorldDiplomacyDocument document, int priority)
@@ -1138,7 +1138,7 @@ internal sealed partial class WorldDiplomacyOrchestration : IWorldDiplomacyOrche
         if (document?.IsPlayerAuthored == true) EnsurePlayerDocumentRound(document);
         WorldDiplomacyJobPreparationApplication.PrepareAnalysisJob(
             document, priority, Storage, _host.CurrentDay(), _host.AnalysisMaxTokens(),
-            _host.NewId, ResolveRound, _host.CommonDiplomacyContract, BuildAnalysisPrompt, EnqueueJob);
+            _host.NewId, ResolveRound, _host.CommonDiplomacyContract, BuildAnalysisPrompt, EnqueueJob, _host.PromptWorld().LocalizePrompt);
     }
 
     public void EnqueueRoundPlanJob(WorldDiplomacyRound round, WorldDiplomacyDocument root)

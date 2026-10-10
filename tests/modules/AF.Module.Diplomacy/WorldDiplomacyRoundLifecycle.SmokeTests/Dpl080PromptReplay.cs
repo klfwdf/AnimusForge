@@ -96,7 +96,7 @@ internal sealed class PromptWorldFixture : IWorldDiplomacyDraftRepairWorld
     private static readonly Dictionary<string, string> ChinesePrompts = LoadPromptStrings();
     private static Dictionary<string, string> LoadPromptStrings()
     {
-        using var stream = typeof(PromptWorldFixture).Assembly.GetManifestResourceStream("DiplomacyPromptFixture.zh.json");
+        using var stream = typeof(PromptWorldFixture).Assembly.GetManifestResourceStream("AnimusForge.Diplomacy.PromptCompatibility.json");
         using var reader = new System.IO.StreamReader(stream);
         return JObject.Parse(reader.ReadToEnd()).Properties().ToDictionary(x => x.Name, x => (string)x.Value);
     }

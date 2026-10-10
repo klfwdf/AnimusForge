@@ -111,6 +111,9 @@
     <EmbeddedResource Include="content\modules\AnimusForge.XihaiAction\ModuleData\Languages\CNs\afscene_catalog_strings-zh-CN.xml">
       <LogicalName>AnimusForge.SceneActions.Catalog.zh-CN.xml</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="content\modules\AF.Module.Diplomacy\ModuleData\DiplomacyPromptCompatibility.json">
+      <LogicalName>AnimusForge.Diplomacy.PromptCompatibility.json</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="content\modules\AF.Module.Economy\ModuleData\EconomyDisplaySources.json">
       <LogicalName>AnimusForge.Defaults.EconomyDisplaySources.json</LogicalName>
     </EmbeddedResource>

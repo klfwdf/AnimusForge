@@ -11,7 +11,7 @@ for suffix, xml_path in (('', 'Languages/CNs/afdip_ui_strings-zh-CN.xml'), ('.en
     old_xml = subprocess.check_output(['git', 'show', 'a7de67231:' + base + xml_path], cwd=ROOT)
     expected = {n.get('id'): n.get('text').replace('[[AF_JSON_OPEN]]', '{').replace('[[AF_JSON_CLOSE]]', '}')
                 for n in ET.fromstring(old_xml).iter('string') if n.get('id').startswith('AF_DIP_Prompt_')}
-    assert data == expected and len(data) == 216, suffix + ': exact package content migration'
+    assert {k: data[k] for k in expected} == expected and set(data) == set(expected) | {'AF_DIP_Contract_' + str(i).zfill(3) for i in range(118)}, suffix + ': exact package content migration'
     assert not any(n.get('id').startswith('AF_DIP_Prompt_') for n in ET.parse(ROOT / base / xml_path).iter('string'))
     schema = data['AF_DIP_Prompt_Composer_015']
     assert json.loads(schema[schema.index('{'):])['selected_kingdom_ids'] == ['ID']
@@ -26,4 +26,4 @@ adapter = (ROOT / 'src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.
 assert '=> DiplomacyPromptTexts.Get(id, englishFallback);' in adapter
 common = (ROOT / 'src/AF.GameAdapter.Bannerlord/Configuration/Mcm/DuelSettings.DiplomacyPromptLocalization.cs').read_text(encoding='utf-8-sig')
 assert common.count('DiplomacyPromptTexts.Get(') == 4 and 'DiplomacyUiLocalization' not in common
-print('PASS packaged diplomacy prompts: 216 exact CN/EN pairs, stable JSON schema, single mapped target and cached package-only readers; C# NOT RUN')
+print('PASS packaged diplomacy prompts: 216 migrated plus 118 fixed-contract CN/EN pairs, stable JSON schema, single mapped target and cached package-only readers; C# NOT RUN')

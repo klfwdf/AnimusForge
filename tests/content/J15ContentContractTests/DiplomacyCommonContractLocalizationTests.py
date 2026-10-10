@@ -47,5 +47,8 @@ assert raw == (constant(settings, 'DefaultWorldDiplomacyContractCore') + '\n' + 
 host_path = 'src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.cs'
 host = (ROOT / host_path).read_text(encoding='utf-8-sig')
 host_baseline = subprocess.check_output(['git', 'show', 'd446823a6:' + host_path], cwd=ROOT).decode('utf-8-sig').replace('\r\n', '\n')
-assert host.replace('DuelSettings.LocalizeWorldDiplomacyContractForPrompt(DuelSettings.GetWorldDiplomacyCommonContractForExternal() ?? "")', 'DuelSettings.GetWorldDiplomacyCommonContractForExternal() ?? ""') == host_baseline
+voice_call = 'BuildRealmInstitutionalVoiceText(kingdomName, cultureName, rulerTitle, governmentHardFact, lore, DiplomacyPromptTexts.Get)'
+assert host.count(voice_call) == 2
+restored_host = host.replace(voice_call, 'BuildRealmInstitutionalVoiceText(kingdomName, cultureName, rulerTitle, governmentHardFact, lore)')
+assert restored_host.replace('DuelSettings.LocalizeWorldDiplomacyContractForPrompt(DuelSettings.GetWorldDiplomacyCommonContractForExternal() ?? "")', 'DuelSettings.GetWorldDiplomacyCommonContractForExternal() ?? ""') == host_baseline
 print('PASS common diplomacy contract: 4 paired resources, raw settings/public API preserved, single live host binding, custom preference retention; compiled replay NOT RUN')

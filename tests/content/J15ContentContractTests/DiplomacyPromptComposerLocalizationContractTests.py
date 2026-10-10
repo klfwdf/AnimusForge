@@ -38,6 +38,16 @@ def restore(match):
 restored = re.sub(r'world.LocalizePrompt\("(AF_DIP_Prompt_Composer_\d+)", ("(?:\\.|[^"\\])*")\)', restore, source)
 restored = restored.replace('AppendPlayerContext(StringBuilder sb, IWorldDiplomacyPromptWorld world, IWorldDiplomacyOrchestration orchestration,', 'AppendPlayerContext(StringBuilder sb, IWorldDiplomacyOrchestration orchestration,')
 restored = restored.replace('AppendPlayerContext(sb, world, orchestration,', 'AppendPlayerContext(sb, orchestration,')
+for old_call in (
+    'BuildCurrentLegalDiplomaticOptions(legalActionsByTarget)',
+    'AppendRoundSubstantiveProgressRequirement(sb, round, age, targetDays)',
+    'AppendOpenOfferAnswerRequirement(sb, round, author)',
+    'BuildAnalysisModeContract()',
+    'DescribePotentialDiplomaticActions(actions)',
+):
+    localized_call = old_call[:-1] + ('' if old_call.endswith('()') else ', ') + 'world.LocalizePrompt)'
+    assert restored.count(localized_call) == 1, localized_call
+    restored = restored.replace(localized_call, old_call)
 def normalize(s):
     return LEX.sub(lambda m: json.dumps(decode(m[0]), ensure_ascii=False) if m.lastgroup == 'string' else m[0], s)
 assert normalize(restored) == normalize(baseline), 'all branching, IDs, history/raw fields and Chinese prompt bytes preserved'
