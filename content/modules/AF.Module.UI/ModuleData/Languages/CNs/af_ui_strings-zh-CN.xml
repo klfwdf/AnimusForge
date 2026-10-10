@@ -3201,5 +3201,12 @@ HeroNPC 个性/背景、旧对话历史、压缩记忆、赊账/欠款、未命�
   <string id="AF_UI_KingdomRebellion_ReasonPlayerImmune" text="玩家王国稳定度叛乱免疫" />
   <string id="AF_UI_KingdomRebellion_ReasonNamingSkipped" text="跳过了叛乱建国命名" />
   <string id="AF_UI_Editor_OpenFailed" text="文本编辑器未能打开，请关闭后重试。" />
+  <string id="AF_UI_KingdomStability_EncyclopediaCurrentValue" text="当前数值：{VALUE}/100（{TIER}）" />
+  <string id="AF_UI_KingdomStability_EncyclopediaDisabled" text="机制状态：MCM 已关闭，仅显示当前保存数值。" />
+  <string id="AF_UI_KingdomStability_EncyclopediaEffects" text="当前额外影响：{EFFECTS}" />
+  <string id="AF_UI_KingdomStability_EncyclopediaNoEffects" text="当前额外影响：无" />
+  <string id="AF_UI_KingdomStability_EncyclopediaRelationEffect" text="国王与本国非王族成年成员关系修正：{VALUE}" />
+  <string id="AF_UI_KingdomStability_EncyclopediaRoyalDomainEffect" text="王室直辖地忠诚日修正：{VALUE}" />
+  <string id="AF_UI_KingdomStability_EncyclopediaTitle" text="【王国稳定度】" />
 </strings>
 </base>
