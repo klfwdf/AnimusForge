@@ -3337,5 +3337,19 @@ HeroNPC 个性/背景、旧对话历史、压缩记忆、赊账/欠款、未命�
   <string id="AF_UI_Weekly_Bulletin_KindKingdomAnnexed" text="王国并吞" />
   <string id="AF_UI_Weekly_Bulletin_KindVassalageEstablished" text="称臣纳贡" />
   <string id="AF_UI_Weekly_Bulletin_KindVassalageEnded" text="宗藩决裂" />
+  <string id="AF_UI_TagCatalog_VillageActionGatherElders" text="召集长老" />
+  <string id="AF_UI_TagCatalog_VillageActionRestrainTroops" text="约束军纪" />
+  <string id="AF_UI_TagCatalog_VillageActionPacify" text="平息" />
+  <string id="AF_UI_TagCatalog_VillageActionRelief" text="赈济" />
+  <string id="AF_UI_TagCatalog_VillageActionFine" text="罚赎" />
+  <string id="AF_UI_TagCatalog_VillageActionRequisitionFood" text="征粮" />
+  <string id="AF_UI_TagCatalog_VillageActionRequisitionProduce" text="征收物产" />
+  <string id="AF_UI_TagCatalog_VillageActionRequisitionLivestock" text="征收牲畜" />
+  <string id="AF_UI_TagCatalog_VillageActionLevyRecruits" text="征丁" />
+  <string id="AF_UI_TagCatalog_VillageActionPunishRingleader" text="惩办首恶" />
+  <string id="AF_UI_TagCatalog_VillageActionConfiscateProperty" text="查抄村产" />
+  <string id="AF_UI_TagCatalog_VillageActionDestroyLivelihood" text="毁坏生计" />
+  <string id="AF_UI_TagCatalog_VillageActionMassacre" text="屠村" />
+  <string id="AF_UI_TagCatalog_VillageActionCulturalReform" text="文化改造" />
 </strings>
 </base>

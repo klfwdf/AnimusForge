@@ -67,9 +67,31 @@ internal static class TagCatalogUiText
         {
             string action = description.Substring(villagePrefix.Length);
             if (VillageActions.Contains(action))
-                return Format("AF_UI_TagCatalog_DescriptionVillage", "Triggered only by an explicit player command in an authorized ordinary village scene: {ACTION}", "ACTION", action);
+                return Format("AF_UI_TagCatalog_DescriptionVillage", "Triggered only by an explicit player command in an authorized ordinary village scene: {ACTION}", "ACTION", VillageActionDisplay(action));
         }
         return description;
+    }
+
+    private static string VillageActionDisplay(string action)
+    {
+        switch (action)
+        {
+            case "GatherElders": return Text("AF_UI_TagCatalog_VillageActionGatherElders", "Gather elders");
+            case "RestrainTroops": return Text("AF_UI_TagCatalog_VillageActionRestrainTroops", "Enforce troop discipline");
+            case "Pacify": return Text("AF_UI_TagCatalog_VillageActionPacify", "Pacify the village");
+            case "Relief": return Text("AF_UI_TagCatalog_VillageActionRelief", "Provide relief");
+            case "Fine": return Text("AF_UI_TagCatalog_VillageActionFine", "Levy fines");
+            case "RequisitionFood": return Text("AF_UI_TagCatalog_VillageActionRequisitionFood", "Requisition food");
+            case "RequisitionProduce": return Text("AF_UI_TagCatalog_VillageActionRequisitionProduce", "Requisition produce");
+            case "RequisitionLivestock": return Text("AF_UI_TagCatalog_VillageActionRequisitionLivestock", "Requisition livestock");
+            case "LevyRecruits": return Text("AF_UI_TagCatalog_VillageActionLevyRecruits", "Levy recruits");
+            case "PunishRingleader": return Text("AF_UI_TagCatalog_VillageActionPunishRingleader", "Punish the ringleader");
+            case "ConfiscateProperty": return Text("AF_UI_TagCatalog_VillageActionConfiscateProperty", "Confiscate village property");
+            case "DestroyLivelihood": return Text("AF_UI_TagCatalog_VillageActionDestroyLivelihood", "Destroy livelihoods");
+            case "Massacre": return Text("AF_UI_TagCatalog_VillageActionMassacre", "Massacre");
+            case "CulturalReform": return Text("AF_UI_TagCatalog_VillageActionCulturalReform", "Enforce cultural reform");
+            default: return action;
+        }
     }
 
     internal static string Source(string raw)
