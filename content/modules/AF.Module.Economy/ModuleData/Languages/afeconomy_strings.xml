@@ -190,5 +190,69 @@
     <string id="AF_ECO_UI_FactionIdClanRebelGiverNoClan" text="Execution failed: rebel leader {GIVER} has no clan." />
     <string id="AF_ECO_UI_FactionIdClanRebelGiverNotLeader" text="Execution failed: rebel leader {GIVER} is not the leader of clan {CLAN} and cannot lead a rebellion." />
     <string id="AF_ECO_UI_FactionIdClanRebelSuccess" text="{CLAN} has formally broken away from kingdom {KINGDOM} and raised the banner of civil war." />
+    <string id="AF_ECO_UI_FixedAssetMissingParties" text="Missing transfer counterparties." />
+    <string id="AF_ECO_UI_FixedAssetNpcOnly" text="Postprocess only allows NPCs to transfer fixed assets to the player." />
+    <string id="AF_ECO_UI_FixedAssetClanMemberBlocked" text="Clan members or companions cannot be transferred via fixed assets." />
+    <string id="AF_ECO_UI_FixedAssetMissingAsset" text="Missing transferable fixed asset." />
+    <string id="AF_ECO_UI_FixedAssetUnknownType" text="Unknown fixed asset type." />
+    <string id="AF_ECO_UI_FixedAssetQuantityMustBeOne" text="Fixed asset quantity must be 1." />
+    <string id="AF_ECO_UI_FixedAssetTargetNoClan" text="Target recipient does not have a valid clan." />
+    <string id="AF_ECO_UI_FixedAssetWorkshopMissingRecipient" text="Missing workshop recipient." />
+    <string id="AF_ECO_UI_FixedAssetWorkshopRecipientInvalid" text="Workshop recipient is not a valid living hero." />
+    <string id="AF_ECO_UI_FixedAssetCaravanMissingRecipient" text="Missing caravan recipient." />
+    <string id="AF_ECO_UI_FixedAssetUnknownDirection" text="Unknown fixed asset transfer direction ({DIRECTION})." />
+    <string id="AF_ECO_UI_FixedAssetException" text="Transfer failed with an error: {ERROR}" />
+    <string id="AF_ECO_UI_FixedAssetSettlementToPlayer" text="{ASSET} was transferred to the player's clan (payment not automatically deducted)." />
+    <string id="AF_ECO_UI_FixedAssetSettlementToNpc" text="Player transferred {ASSET} to {GIVER}'s clan (payment not automatically deducted)." />
+    <string id="AF_ECO_UI_FixedAssetAssetToPlayer" text="{ASSET} was transferred to the player (payment not automatically deducted)." />
+    <string id="AF_ECO_UI_FixedAssetAssetToNpc" text="Player transferred {ASSET} to {GIVER} (payment not automatically deducted)." />
+    <string id="AF_ECO_UI_FixedAssetAlreadyTargetClan" text="{ASSET} already belongs to the target clan." />
+    <string id="AF_ECO_UI_FixedAssetAlreadyTargetPerson" text="{ASSET} already belongs to the target character." />
+    <string id="AF_ECO_UI_FixedAssetNotFortification" text="{ASSET} is not a transferable town or castle." />
+    <string id="AF_ECO_UI_FixedAssetNoValidOwner" text="{ASSET} has no recognized valid owner." />
+    <string id="AF_ECO_UI_FixedAssetUnderSiege" text="{ASSET} is currently in battle or under siege and cannot be transferred." />
+    <string id="AF_ECO_UI_FixedAssetNotGiverClan" text="{ASSET} does not belong to {GIVER}'s clan and cannot be transferred to the player." />
+    <string id="AF_ECO_UI_FixedAssetNotPlayerClan" text="{ASSET} currently does not belong to the player's clan." />
+    <string id="AF_ECO_UI_FixedAssetNotWorkshop" text="{ASSET} is not a workshop that can be safely transferred." />
+    <string id="AF_ECO_UI_FixedAssetNoWorkshopOwner" text="{ASSET} currently has no recognized workshop owner." />
+    <string id="AF_ECO_UI_FixedAssetWorkshopOwnerDead" text="{ASSET}'s current workshop owner is invalid or deceased." />
+    <string id="AF_ECO_UI_FixedAssetNotGiver" text="{ASSET} does not belong to {GIVER} and cannot be transferred to the player." />
+    <string id="AF_ECO_UI_FixedAssetNotPlayer" text="{ASSET} currently does not belong to the player." />
+    <string id="AF_ECO_UI_FixedAssetNotCaravan" text="{ASSET} is not a transferable caravan." />
+    <string id="AF_ECO_UI_FixedAssetCaravanInEvent" text="{ASSET} is currently in an event or battle and cannot be transferred." />
+    <string id="AF_ECO_UI_FixedAssetCaravanOwnerDead" text="{ASSET}'s current caravan owner is invalid or deceased." />
+    <string id="AF_ECO_UI_FixedAssetCaravanNoHomeSettlement" text="{ASSET} lacks an available home settlement for the caravan." />
+    <string id="AF_ECO_UI_KingdomTransferPlayerClanNotFound" text="Player clan was not found." />
+    <string id="AF_ECO_UI_KingdomTransferNotKing" text="The conversation partner is not a reigning king who can abdicate." />
+    <string id="AF_ECO_UI_KingdomTransferNoKingdom" text="The conversation partner has no valid kingdom." />
+    <string id="AF_ECO_UI_KingdomTransferAlreadyKing" text="The player's clan cannot reacquire the crown through abdication." />
+    <string id="AF_ECO_UI_KingdomTransferAlreadyRuling" text="{CLAN} is already the ruling clan of {KINGDOM}." />
+    <string id="AF_ECO_UI_KingdomTransferPartnerNotKing" text="{GIVER} is not the king of {KINGDOM} and cannot abdicate." />
+    <string id="AF_ECO_UI_KingdomTransferJoinFailed" text="The player's clan failed to join {KINGDOM}; the crown was not transferred." />
+    <string id="AF_ECO_UI_FactionOnlyLeaderCanPledge" text="Only the active clan leader can pledge the entire clan." />
+    <string id="AF_ECO_UI_FactionNoKingdomToAccept" text="The player currently has no valid kingdom to accept the clan." />
+    <string id="AF_ECO_UI_FactionPlayerNotRuler" text="The player is not the ruler of the kingdom and cannot approve clan allegiance directly." />
+    <string id="AF_ECO_UI_FactionTargetKingdomInvalid" text="The target kingdom is invalid or has been eliminated." />
+    <string id="AF_ECO_UI_FactionNpcClanNotFound" text="The NPC's clan could not be found." />
+    <string id="AF_ECO_UI_FactionCannotRePledgePlayerClan" text="The player's clan cannot re-pledge allegiance through this NPC." />
+    <string id="AF_ECO_UI_FactionOnlyClanLeaderCanChoose" text="Only the clan leader can pledge the clan's allegiance to a kingdom." />
+    <string id="AF_ECO_UI_FactionPlayerNotInKingdom" text="The player is not currently part of any faction." />
+    <string id="AF_ECO_UI_FactionNoKingdomForTarget" text="The player currently has no kingdom for the target clan to join." />
+    <string id="AF_ECO_UI_FactionPartnerNotVassal" text="The conversation partner is not a vassal of this faction and cannot sign a mercenary contract." />
+    <string id="AF_ECO_UI_FactionPlayerAlreadyVassal" text="The player is already a vassal of a kingdom and cannot join as a mercenary." />
+    <string id="AF_ECO_UI_FactionOnlyKingGrantsVassalage" text="Only the king of the target kingdom can grant official vassalage." />
+    <string id="AF_ECO_UI_FactionAlreadyServesKingdom" text="{CLAN} already serves {KINGDOM}." />
+    <string id="AF_ECO_UI_FactionClanEliminated" text="{CLAN} has been eliminated or is unavailable." />
+    <string id="AF_ECO_UI_FactionClanJoinFailed" text="{CLAN} failed to join {KINGDOM}." />
+    <string id="AF_ECO_UI_FactionMercToLordSuccess" text="{CLAN} ended its mercenary contract and joined {KINGDOM} as a lord." />
+    <string id="AF_ECO_UI_FactionDefectToLordSuccess" text="{CLAN} defected from {OLD_KINGDOM} and joined {KINGDOM} as a lord." />
+    <string id="AF_ECO_UI_FactionJoinAsLordSuccess" text="{CLAN} joined {KINGDOM} as a lord." />
+    <string id="AF_ECO_UI_FactionPlayerEndMercSuccess" text="The player ended their mercenary contract with {KINGDOM}." />
+    <string id="AF_ECO_UI_FactionPlayerLeaveVassalSuccess" text="The player left {KINGDOM} and is no longer an official vassal." />
+    <string id="AF_ECO_UI_FactionPlayerJoinMercSuccess" text="The player joined {KINGDOM} as a mercenary." />
+    <string id="AF_ECO_UI_FactionPlayerAlreadyVassalSkip" text="The player is already an official vassal of {KINGDOM}." />
+    <string id="AF_ECO_UI_FactionPlayerFailVassal" text="The player failed to become an official vassal of {KINGDOM}." />
+    <string id="AF_ECO_UI_FactionPlayerJoinVassalSuccess" text="The player joined {KINGDOM} as an official vassal." />
+    <string id="AF_ECO_UI_FactionException" text="Faction action failed with an error: {ERROR}" />
   </strings>
 </base>

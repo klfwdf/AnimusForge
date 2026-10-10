@@ -190,5 +190,69 @@
     <string id="AF_ECO_UI_FactionIdClanRebelGiverNoClan" text="执行失败：叛乱发起人 {GIVER} 没有所属家族。" />
     <string id="AF_ECO_UI_FactionIdClanRebelGiverNotLeader" text="执行失败：叛乱发起人 {GIVER} 并非家族 {CLAN} 的领袖，无法带领家族举旗自立。" />
     <string id="AF_ECO_UI_FactionIdClanRebelSuccess" text="{CLAN} 已正式脱离王国 {KINGDOM}，并举旗加入内战叛变阵营。" />
+    <string id="AF_ECO_UI_FixedAssetMissingParties" text="执行失败：缺少转移双方。" />
+    <string id="AF_ECO_UI_FixedAssetNpcOnly" text="执行失败：后处理仅允许 NPC 向玩家转移固定资产。" />
+    <string id="AF_ECO_UI_FixedAssetClanMemberBlocked" text="执行失败：家族成员或同伴不允许通过固定资产转移。" />
+    <string id="AF_ECO_UI_FixedAssetMissingAsset" text="执行失败：缺少可转移固定资产。" />
+    <string id="AF_ECO_UI_FixedAssetUnknownType" text="执行失败：未知固定资产类型。" />
+    <string id="AF_ECO_UI_FixedAssetQuantityMustBeOne" text="执行失败：固定资产数量必须为 1。" />
+    <string id="AF_ECO_UI_FixedAssetTargetNoClan" text="执行失败：目标接收方没有合法家族。" />
+    <string id="AF_ECO_UI_FixedAssetWorkshopMissingRecipient" text="执行失败：缺少工坊接收者。" />
+    <string id="AF_ECO_UI_FixedAssetWorkshopRecipientInvalid" text="执行失败：工坊接收者不是有效存活英雄。" />
+    <string id="AF_ECO_UI_FixedAssetCaravanMissingRecipient" text="执行失败：缺少商队接收者。" />
+    <string id="AF_ECO_UI_FixedAssetUnknownDirection" text="执行失败：未知固定资产转移方向 {DIRECTION}。" />
+    <string id="AF_ECO_UI_FixedAssetException" text="执行失败（异常）：{ERROR}" />
+    <string id="AF_ECO_UI_FixedAssetSettlementToPlayer" text="执行成功：{ASSET} 已转交给玩家家族（未自动扣款）。" />
+    <string id="AF_ECO_UI_FixedAssetSettlementToNpc" text="执行成功：玩家已将 {ASSET} 转交给 {GIVER} 的家族（未自动扣款）。" />
+    <string id="AF_ECO_UI_FixedAssetAssetToPlayer" text="执行成功：{ASSET} 已转交给玩家（未自动扣款）。" />
+    <string id="AF_ECO_UI_FixedAssetAssetToNpc" text="执行成功：玩家已将 {ASSET} 转交给 {GIVER}（未自动扣款）。" />
+    <string id="AF_ECO_UI_FixedAssetAlreadyTargetClan" text="执行跳过：{ASSET} 已经属于目标家族。" />
+    <string id="AF_ECO_UI_FixedAssetAlreadyTargetPerson" text="执行跳过：{ASSET} 已经属于目标人物。" />
+    <string id="AF_ECO_UI_FixedAssetNotFortification" text="执行失败：{ASSET} 不是可转移的城市或城堡。" />
+    <string id="AF_ECO_UI_FixedAssetNoValidOwner" text="执行失败：{ASSET} 当前没有可识别的合法归属。" />
+    <string id="AF_ECO_UI_FixedAssetUnderSiege" text="执行失败：{ASSET} 当前处于战事或围攻状态，不能转移。" />
+    <string id="AF_ECO_UI_FixedAssetNotGiverClan" text="执行失败：{ASSET} 不属于 {GIVER} 的家族，不能由其转给玩家。" />
+    <string id="AF_ECO_UI_FixedAssetNotPlayerClan" text="执行失败：{ASSET} 当前不属于玩家家族。" />
+    <string id="AF_ECO_UI_FixedAssetNotWorkshop" text="执行失败：{ASSET} 不是可安全转移的工坊。" />
+    <string id="AF_ECO_UI_FixedAssetNoWorkshopOwner" text="执行失败：{ASSET} 当前没有可识别的工坊主人。" />
+    <string id="AF_ECO_UI_FixedAssetWorkshopOwnerDead" text="执行失败：{ASSET} 当前工坊主人无效或已死亡。" />
+    <string id="AF_ECO_UI_FixedAssetNotGiver" text="执行失败：{ASSET} 不属于 {GIVER}，不能由其转给玩家。" />
+    <string id="AF_ECO_UI_FixedAssetNotPlayer" text="执行失败：{ASSET} 当前不属于玩家本人。" />
+    <string id="AF_ECO_UI_FixedAssetNotCaravan" text="执行失败：{ASSET} 不是可转移商队。" />
+    <string id="AF_ECO_UI_FixedAssetCaravanInEvent" text="执行失败：{ASSET} 当前处于事件或战斗中，不能转移。" />
+    <string id="AF_ECO_UI_FixedAssetCaravanOwnerDead" text="执行失败：{ASSET} 当前商队主人无效或已死亡。" />
+    <string id="AF_ECO_UI_FixedAssetCaravanNoHomeSettlement" text="执行失败：{ASSET} 缺少可用的商队归属定居点。" />
+    <string id="AF_ECO_UI_KingdomTransferPlayerClanNotFound" text="执行失败：未找到玩家家族。" />
+    <string id="AF_ECO_UI_KingdomTransferNotKing" text="执行失败：当前对话对象不是可让位的王国国王。" />
+    <string id="AF_ECO_UI_KingdomTransferNoKingdom" text="执行失败：当前对话对象没有有效王国。" />
+    <string id="AF_ECO_UI_KingdomTransferAlreadyKing" text="执行失败：玩家家族不能通过对方让位重复取得王位。" />
+    <string id="AF_ECO_UI_KingdomTransferAlreadyRuling" text="执行跳过：{CLAN} 已经是 {KINGDOM} 的执政家族。" />
+    <string id="AF_ECO_UI_KingdomTransferPartnerNotKing" text="执行失败：{GIVER} 不是 {KINGDOM} 的国王，不能让出王位。" />
+    <string id="AF_ECO_UI_KingdomTransferJoinFailed" text="执行失败：玩家家族未能加入 {KINGDOM}，王位没有转移。" />
+    <string id="AF_ECO_UI_FactionOnlyLeaderCanPledge" text="执行失败：只有被招揄家族的现任族长才能代表全族归附。" />
+    <string id="AF_ECO_UI_FactionNoKingdomToAccept" text="执行失败：玩家当前没有可接纳该家族的有效王国。" />
+    <string id="AF_ECO_UI_FactionPlayerNotRuler" text="执行失败：玩家不是所属王国的统治者，不能在城堡现场直接批准全族归附。" />
+    <string id="AF_ECO_UI_FactionTargetKingdomInvalid" text="执行失败：目标王国无效或已经灭亡。" />
+    <string id="AF_ECO_UI_FactionNpcClanNotFound" text="执行失败：未找到当前NPC所属家族。" />
+    <string id="AF_ECO_UI_FactionCannotRePledgePlayerClan" text="执行失败：玩家家族不能通过当前NPC重复归附其他王国。" />
+    <string id="AF_ECO_UI_FactionOnlyClanLeaderCanChoose" text="执行失败：只有当前家族族长本人才能代表全族选择效忠王国。" />
+    <string id="AF_ECO_UI_FactionPlayerNotInKingdom" text="执行失败：玩家当前未加入任何势力，无需退出。" />
+    <string id="AF_ECO_UI_FactionNoKingdomForTarget" text="执行失败：玩家当前没有可供目标家族加入的王国。" />
+    <string id="AF_ECO_UI_FactionPartnerNotVassal" text="执行失败：当前对话对象并非该势力正式封臣，不能签订雇佣兵契约。" />
+    <string id="AF_ECO_UI_FactionPlayerAlreadyVassal" text="执行失败：玩家已是某王国正式封臣，不能再作为雇佣兵加入。" />
+    <string id="AF_ECO_UI_FactionOnlyKingGrantsVassalage" text="执行失败：只有目标王国的国王才能授予正式封臣身份。" />
+    <string id="AF_ECO_UI_FactionAlreadyServesKingdom" text="执行跳过：{CLAN} 已经效力于 {KINGDOM}。" />
+    <string id="AF_ECO_UI_FactionClanEliminated" text="执行失败：{CLAN} 已经灭亡或不可用。" />
+    <string id="AF_ECO_UI_FactionClanJoinFailed" text="执行失败：{CLAN} 未能加入 {KINGDOM}。" />
+    <string id="AF_ECO_UI_FactionMercToLordSuccess" text="执行成功：{CLAN} 已结束旧雇佣关系，并作为领主加入 {KINGDOM}。" />
+    <string id="AF_ECO_UI_FactionDefectToLordSuccess" text="执行成功：{CLAN} 已脱离 {OLD_KINGDOM}，并作为领主加入 {KINGDOM}。" />
+    <string id="AF_ECO_UI_FactionJoinAsLordSuccess" text="执行成功：{CLAN} 已作为领主加入 {KINGDOM}。" />
+    <string id="AF_ECO_UI_FactionPlayerEndMercSuccess" text="执行成功：玩家已结束与 {KINGDOM} 的雇佣兵契约。" />
+    <string id="AF_ECO_UI_FactionPlayerLeaveVassalSuccess" text="执行成功：玩家已退出 {KINGDOM}，不再是其正式封臣。" />
+    <string id="AF_ECO_UI_FactionPlayerJoinMercSuccess" text="执行成功：玩家已作为雇佣兵加入 {KINGDOM}。" />
+    <string id="AF_ECO_UI_FactionPlayerAlreadyVassalSkip" text="执行跳过：玩家已是 {KINGDOM} 的正式封臣。" />
+    <string id="AF_ECO_UI_FactionPlayerFailVassal" text="执行失败：玩家未能成为 {KINGDOM} 的正式封臣。" />
+    <string id="AF_ECO_UI_FactionPlayerJoinVassalSuccess" text="执行成功：玩家已加入 {KINGDOM} 成为正式封臣。" />
+    <string id="AF_ECO_UI_FactionException" text="执行失败（异常）：{ERROR}" />
   </strings>
 </base>
