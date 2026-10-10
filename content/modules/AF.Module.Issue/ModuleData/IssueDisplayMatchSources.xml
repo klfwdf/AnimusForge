@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<IssueDisplayMatchSources schemaVersion="1">
+  <Match id="NoQuestOrGiver">未找到任务或发放者。</Match>
+  <Match id="QuestNotCreated">任务对象未创建。</Match>
+  <Match id="AcceptBranchEnded">原版接取分支已立即结束或移除了任务，未能进入普通进行中状态。</Match>
+  <Match id="QuestNotOngoing">任务没有进入进行中状态。</Match>
+  <Match id="AcceptFinalizeException">原版任务接受收尾异常。</Match>
+  <Match id="NoOngoingVanillaQuest">当前没有进行中的原版任务。</Match>
+  <Match id="NoDiscussFlow">当前任务没有可用的原版 discuss 流。</Match>
+  <Match id="DiscussAgentMissing">当前场景中找不到原版 discuss 探测所需的 Agent。</Match>
+  <Match id="ConversationManagerUnavailable">当前原版 ConversationManager 不可用于静默任务交付。</Match>
+  <Match id="NoClearTurnInOption">当前原版 discuss 流里没有足够明确的可交付成功选项。</Match>
+  <Match id="TurnInMissingArgs">缺少原版任务交付执行参数。</Match>
+  <Match id="TurnInAmbiguousBranch">原版交付链在中途出现多条分支，且无法高置信度自动选择。</Match>
+  <Match id="TurnInNotCompleted">原版交付链已运行，但任务仍未完成。</Match>
+  <Match id="TurnInProbeExceptionPrefix">静默原版任务交付异常: </Match>
+  <Match id="UnknownCompanion">未知同伴</Match>
+  <Match id="CandidateSkillFallback">技能</Match>
+  <Match id="CandidateFailureRiskLabel">失败风险=</Match>
+  <Match id="CandidateDurationLabel">预计耗时=</Match>
+  <Match id="CandidateDaysSuffix">天</Match>
+  <Match id="CandidateTroopsLabel">需士兵=</Match>
+  <Match id="CandidateCasualtiesLabel">预计伤亡=</Match>
+  <Match id="UnnamedQuestFallback">未命名任务</Match>
+  <Match id="RecentJournalHeading">原版任务日志摘要：</Match>
+</IssueDisplayMatchSources>

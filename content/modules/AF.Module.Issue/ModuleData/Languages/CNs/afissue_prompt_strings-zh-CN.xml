@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base type="string">
+  <tags><tag language="简体中文" /></tags>
+  <strings>
+    <string id="AF_ISSUE_PROMPT_OfferHeader" text="【原版任务上下文（仅供理解，不要逐字照抄）】" />
+    <string id="AF_ISSUE_PROMPT_OfferOpening" text="你当前有一项原版任务可向玩家委托" />
+    <string id="AF_ISSUE_PROMPT_OfferTitle" text="任务标题：{TITLE}" />
+    <string id="AF_ISSUE_PROMPT_OfferSummary" text="任务摘要：{SUMMARY}" />
+    <string id="AF_ISSUE_PROMPT_OfferBrief" text="你向玩家开口时的原版要点：{BRIEF}" />
+    <string id="AF_ISSUE_PROMPT_OfferPersonalSolution" text="原版对“玩家亲自去做”的补充说明：{DETAIL}" />
+    <string id="AF_ISSUE_PROMPT_OfferBaseReward" text="原版参考基础报酬：{GOLD} 第纳尔。这里只是参考，不要求你逐字报数。" />
+    <string id="AF_ISSUE_PROMPT_OfferEligible" text="当前玩家满足接取条件。如果玩家明确同意接这个任务，你在正文里只需自然口头确认或答应即可，不要输出任何动作标签；是否真正接取，由后处理依据你的表态判断。" />
+    <string id="AF_ISSUE_PROMPT_OfferReject" text="当前玩家还不满足这项任务的原版接取前提,请严词拒绝！" />
+    <string id="AF_ISSUE_PROMPT_OfferReason" text="当前不能交付的原版原因：{REASON}" />
+    <string id="AF_ISSUE_PROMPT_OfferAlternativeAvailable" text="这项任务也支持“由玩家的一名同伴率队代办”。" />
+    <string id="AF_ISSUE_PROMPT_OfferAlternativeConsent" text="若玩家明确要求由同伴代办，并且明确指定了下列候选中的某一人，你在正文里只需自然口头同意由该同伴代办即可，不要输出任何动作标签；是否真正按该同伴代办，由后处理判断。" />
+    <string id="AF_ISSUE_PROMPT_OfferAskCompanion" text="若玩家只说“派个同伴去”但没有明确指名，你必须先追问，不得把事情当成已经定下。" />
+    <string id="AF_ISSUE_PROMPT_OfferCandidateList" text="你只能从下列候选名单中选择，绝对不能编造新的同伴：" />
+    <string id="AF_ISSUE_PROMPT_OfferTroopDispatchInfo" text="若后处理最终判定为同伴代办，系统会接着弹出原生派兵界面来选择随行士兵；你正文里只负责决定是否接受以及由谁带队。" />
+    <string id="AF_ISSUE_PROMPT_InProgressHeader" text="【原版任务上下文：进行中】" />
+    <string id="AF_ISSUE_PROMPT_InProgressInstruction" text="你已经把一项原版任务交给了玩家。现在不要再像第一次那样重新发任务，也不要再输出任何接任务标签。" />
+    <string id="AF_ISSUE_PROMPT_SharedQuestTitle" text="任务标题：{TITLE}" />
+    <string id="AF_ISSUE_PROMPT_InProgressQuestName" text="原版任务名：{TITLE}" />
+    <string id="AF_ISSUE_PROMPT_InProgressCurrentState" text="当前状态：{STATE}" />
+    <string id="AF_ISSUE_PROMPT_InProgressStateAlternative" text="玩家已委派同伴代办，如果玩家说类似任务已完成的话，那他就是在骗人" />
+    <string id="AF_ISSUE_PROMPT_InProgressStateSelf" text="玩家亲自执行中,任务暂未完成，如果玩家说类似任务已完成的话，那他就是在骗人" />
+    <string id="AF_ISSUE_PROMPT_InProgressCompanion" text="当前带队同伴：{HERO}" />
+    <string id="AF_ISSUE_PROMPT_InProgressDuration" text="原版预计总耗时：{DAYS} 天。" />
+    <string id="AF_ISSUE_PROMPT_InProgressDeadline" text="原版任务截止时间：{DATE}" />
+    <string id="AF_ISSUE_PROMPT_JournalSummary" text="原版任务日志摘要：" />
+    <string id="AF_ISSUE_PROMPT_InProgressDiscussion" text="你现在应当根据玩家的话讨论进度、提醒要求、回答是否快办成，而不是重新介绍“要不要接任务”。" />
+    <string id="AF_ISSUE_PROMPT_NoActionTags" text="正文严禁输出 [ACTION:ISSUE_ACCEPT_SELF]、[ACTION:ISSUE_ACCEPT_ALT:*] 或 [ACTION:QUEST_TURN_IN]；是否触发只交给后处理判断。" />
+    <string id="AF_ISSUE_PROMPT_TurnInHeader" text="【原版任务上下文：待交付】" />
+    <string id="AF_ISSUE_PROMPT_TurnInIntro" text="原版系统已确认：这项任务当前存在可执行的交付路径。现在不要再重新发布任务，而是把语气放在验收、确认结果、讨论完成情况上。" />
+    <string id="AF_ISSUE_PROMPT_TurnInDiscussIntro" text="你此刻原版 discuss 流里的开场语义：{TEXT}" />
+    <string id="AF_ISSUE_PROMPT_TurnInCompletionSignal" text="系统检测到的显式完成信号：{TEXT}" />
+    <string id="AF_ISSUE_PROMPT_TurnInVisibleOptions" text="当前原版可见的玩家选项摘要：" />
+    <string id="AF_ISSUE_PROMPT_TurnInReady" text="玩家已经满足了任务完成条件。如果玩家说要交付任务、确认已经做完，或来让你验收，你在正文里只需自然确认验收完成或指出仍未完成，不要输出任何动作标签；是否真正交付，由后处理依据你的表态判断。" />
+    <string id="AF_ISSUE_PROMPT_TurnInUnclear" text="如果玩家只是询问进度、还没有完成、或者表述不清，你就只按对话回应，不要把事情说成已经验收。" />
+    <string id="AF_ISSUE_PROMPT_RecentHeader" text="【原版任务上下文：刚完成】" />
+    <string id="AF_ISSUE_PROMPT_RecentInstruction" text="玩家最近刚完成了一项你交给他的原版任务。现在不要再重新发任务，也不要再输出任何接任务标签。" />
+    <string id="AF_ISSUE_PROMPT_RecentQuest" text="最近完成的任务：{TITLE}" />
+    <string id="AF_ISSUE_PROMPT_RecentResult" text="原版完成结果：{DETAIL}" />
+    <string id="AF_ISSUE_PROMPT_RecentReward" text="原版奖励参考：{GOLD} 第纳尔。" />
+    <string id="AF_ISSUE_PROMPT_RecentJournal" text="最近的原版任务记录：" />
+    <string id="AF_ISSUE_PROMPT_RecentScope" text="这条“最近完成”事实只用于下一次与你的对话，表示那项旧任务已经有结果了。" />
+    <string id="AF_ISSUE_PROMPT_RecentOtherQuests" text="如果你现在还有别的原版任务可谈，可以继续谈新的任务；但不要把这项刚完成的旧任务当成还没完成，也不要把同一件旧任务重新发给玩家。" />
+    <string id="AF_ISSUE_PROMPT_NoAvailable" text="【原版任务上下文：当前无任务】{GIVER}当前没有任何可派发的原版任务。" />
+    <string id="AF_ISSUE_PROMPT_GiverFallback" text="你" />
+    <string id="AF_ISSUE_PROMPT_UnnamedQuest" text="未命名任务" />
+    <string id="AF_ISSUE_PROMPT_CandidateSkill" text="技能={VALUE}" />
+    <string id="AF_ISSUE_PROMPT_CandidateRisk" text="失败风险={VALUE}" />
+    <string id="AF_ISSUE_PROMPT_CandidateDuration" text="预计耗时={DAYS}天" />
+    <string id="AF_ISSUE_PROMPT_CandidateTroops" text="需士兵={VALUE}" />
+    <string id="AF_ISSUE_PROMPT_CandidateCasualties" text="预计伤亡={VALUE}" />
+  </strings>
+</base>
