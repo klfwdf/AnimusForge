@@ -1954,5 +1954,34 @@
     <string id="AF_CONV_AMBIENT_coup_hall_panic_reply_01_TEXT" text="Get out of the kitchen door, quickly!" />
     <string id="AF_CONV_AMBIENT_coup_hall_panic_reply_02_TEXT" text="Be quiet and wait until they finish." />
     <string id="AF_CONV_AMBIENT_coup_hall_panic_reply_03_TEXT" text="This time the throne really needs to be replaced." />
+    <string id="AF_CONV_AMBIENT_TaxMood_Oppressive" text="the tax collectors press hard" />
+    <string id="AF_CONV_AMBIENT_TaxMood_Heavy" text="taxes are heavy" />
+    <string id="AF_CONV_AMBIENT_TaxMood_Moderate" text="taxes are fair" />
+    <string id="AF_CONV_AMBIENT_TimeGreeting_Dawn" text="Good morning" />
+    <string id="AF_CONV_AMBIENT_TimeGreeting_Day" text="Good day" />
+    <string id="AF_CONV_AMBIENT_TimeGreeting_Evening" text="Good evening" />
+    <string id="AF_CONV_AMBIENT_TimeGreeting_Night" text="Good evening" />
+    <string id="AF_CONV_AMBIENT_TimePeriod_Dawn" text="dawn" />
+    <string id="AF_CONV_AMBIENT_TimePeriod_Day" text="daytime" />
+    <string id="AF_CONV_AMBIENT_TimePeriod_Evening" text="evening" />
+    <string id="AF_CONV_AMBIENT_TimePeriod_Night" text="night" />
+    <string id="AF_CONV_AMBIENT_Title_Majesty" text="Your Majesty" />
+    <string id="AF_CONV_AMBIENT_Title_Lord" text="my Lord" />
+    <string id="AF_CONV_AMBIENT_Title_Mercenary" text="mercenary" />
+    <string id="AF_CONV_AMBIENT_Title_Traveler" text="traveler" />
+    <string id="AF_CONV_AMBIENT_Status_Ruler" text="Ruler of the Realm" />
+    <string id="AF_CONV_AMBIENT_Status_LocalLord" text="Local Lord" />
+    <string id="AF_CONV_AMBIENT_Status_Lord" text="Lord" />
+    <string id="AF_CONV_AMBIENT_Status_Mercenary" text="Mercenary" />
+    <string id="AF_CONV_AMBIENT_Status_Adventurer" text="Adventurer" />
+    <string id="AF_CONV_AMBIENT_Owner_Fallback" text="the Lord" />
+    <string id="AF_CONV_AMBIENT_Town_Fallback" text="this town" />
+    <string id="AF_CONV_AMBIENT_Speaker_Fallback" text="passerby" />
+    <string id="AF_CONV_AMBIENT_Culture_Fallback" text="local" />
+    <string id="AF_CONV_AMBIENT_Role_Fallback" text="commoner" />
+    <string id="AF_CONV_AMBIENT_Scene_Fallback" text="street" />
+    <string id="AF_CONV_AMBIENT_Clan_Fallback" text="unaffiliated clan" />
+    <string id="AF_CONV_AMBIENT_Kingdom_Fallback" text="unaffiliated kingdom" />
+    <string id="AF_CONV_AMBIENT_Player_TravelerFallback" text="this traveler" />
   </strings>
 </base>

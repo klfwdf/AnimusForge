@@ -226,7 +226,7 @@ internal sealed class SceneSystemNpcShoutRuntime
 										{
 											if (!string.IsNullOrWhiteSpace(notification3))
 											{
-												InformationManager.DisplayMessage(new InformationMessage(notification3, notification3.IndexOf("失败", StringComparison.OrdinalIgnoreCase) >= 0 ? new Color(1f, 0.45f, 0.25f) : new Color(0.4f, 1f, 0.4f)));
+												InformationManager.DisplayMessage(new InformationMessage(notification3, (notification3.IndexOf("失败", StringComparison.OrdinalIgnoreCase) >= 0 || notification3.IndexOf("fail", StringComparison.OrdinalIgnoreCase) >= 0) ? new Color(1f, 0.45f, 0.25f) : new Color(0.4f, 1f, 0.4f)));
 											}
 										}
 									}
