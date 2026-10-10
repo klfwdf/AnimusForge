@@ -91,13 +91,13 @@ internal sealed class PromotedPersonaGenerationApplicationAdapter
 					? LlmRetryPrompt.BuildFailureDetail("升格同伴人设模型回复解析失败，将使用本地后备人设。", resp, apiCallResult.ResponseBody)
 					: (apiCallResult.ErrorMessage ?? LlmRetryPrompt.BuildFailureDetail("升格同伴人设生成失败，将使用本地后备人设。", resp, apiCallResult.ResponseBody));
 				Logger.Log("NpcPersona", "[WARN] Promoted companion persona fallback hero=" + heroId + ": " + failureDetail);
-				LlmRetryPrompt.ShowFailurePopup("升格同伴人设生成失败", failureDetail);
+				LlmRetryPrompt.ShowFailurePopup(PersonaFailureUiText.PromotedPersonaTitle, failureDetail);
 			}
                 }
                 catch (Exception ex)
                 {
                     Logger.Log("NpcPersona", "[WARN] Promoted companion persona generation error hero=" + heroId + ": " + ex.Message);
-                    LlmRetryPrompt.ShowFailurePopup("升格同伴人设生成失败", LlmRetryPrompt.BuildFailureDetail(ex.Message, ""));
+                    LlmRetryPrompt.ShowFailurePopup(PersonaFailureUiText.PromotedPersonaTitle, LlmRetryPrompt.BuildFailureDetail(ex.Message, ""));
                 }
 		if (!personaSaved)
 		{
@@ -122,7 +122,7 @@ internal sealed class PromotedPersonaGenerationApplicationAdapter
             await _dispatch(runtimeGeneration, () =>
             {
                 if (work != null && !_reservations.IsCurrent(work.Reservation)) return false;
-                LlmRetryPrompt.ShowFailurePopup("升格同伴人设生成失败", LlmRetryPrompt.BuildFailureDetail(ex.Message, ""));
+                LlmRetryPrompt.ShowFailurePopup(PersonaFailureUiText.PromotedPersonaTitle, LlmRetryPrompt.BuildFailureDetail(ex.Message, ""));
                 return true;
             }).ConfigureAwait(false);
         }
@@ -169,7 +169,7 @@ internal sealed class PromotedPersonaGenerationApplicationAdapter
 				string failureDetail = apiCallResult.Success
 					? LlmRetryPrompt.BuildFailureDetail("升格同伴技能模型回复解析失败，将保留兵种模板技能。", resp, apiCallResult.ResponseBody)
 					: (apiCallResult.ErrorMessage ?? LlmRetryPrompt.BuildFailureDetail("升格同伴技能生成失败，将保留兵种模板技能。", resp, apiCallResult.ResponseBody));
-				LlmRetryPrompt.ShowFailurePopup("升格同伴技能生成失败", failureDetail);
+				LlmRetryPrompt.ShowFailurePopup(PersonaFailureUiText.PromotedSkillsTitle, failureDetail);
 			}
                 return true;
             }).ConfigureAwait(false);
@@ -180,7 +180,7 @@ internal sealed class PromotedPersonaGenerationApplicationAdapter
             {
                 if (!_reservations.IsCurrent(lease) || !ReferenceEquals(_findHero(lease.Id), hero)) return false;
                 Logger.Log("NpcPersona", "[WARN] Promoted companion skill generation error hero=" + lease.Id + ": " + ex.Message);
-                LlmRetryPrompt.ShowFailurePopup("升格同伴技能生成失败", LlmRetryPrompt.BuildFailureDetail(ex.Message, ""));
+                LlmRetryPrompt.ShowFailurePopup(PersonaFailureUiText.PromotedSkillsTitle, LlmRetryPrompt.BuildFailureDetail(ex.Message, ""));
                 return true;
             }).ConfigureAwait(false);
         }

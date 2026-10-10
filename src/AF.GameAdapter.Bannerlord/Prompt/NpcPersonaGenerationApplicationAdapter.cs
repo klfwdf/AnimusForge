@@ -199,7 +199,7 @@ internal bool IsNpcPersonaGenerationInFlight(Hero hero)
         if (!string.IsNullOrWhiteSpace(failure))
             await _dispatch(generation, () =>
             {
-                LlmRetryPrompt.ShowFailurePopup("NPC 个性与背景生成失败", failure);
+                LlmRetryPrompt.ShowFailurePopup(PersonaFailureUiText.NpcTitle, failure);
                 return true;
             }).ConfigureAwait(false);
     }

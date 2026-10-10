@@ -72,11 +72,12 @@ if not a.original:
  (out/'Promoted.cs').write_text(promoted,encoding='utf-8');files.append(out/'Promoted.cs')
 if not a.original:
  (out/'Policy.cs').write_text(policy,encoding='utf-8');files.append(out/'Policy.cs')
- files += [ROOT/'src/modules/AF.Module.Persona/Generation/NpcPersonaTextRules.cs',ROOT/'src/modules/AF.Module.Llm/Protocol/JsonResponseTextCodec.cs']
+ files += [ROOT/'src/modules/AF.Module.Persona/Generation/NpcPersonaTextRules.cs',ROOT/'src/modules/AF.Module.Llm/Protocol/JsonResponseTextCodec.cs',ROOT/'src/AF.GameAdapter.Bannerlord/UI/Errors/PersonaFailureUiText.cs',HERE/'LocalizationBoundary.cs.txt']
 # Bind exact whole application classes, scalar game/network fixtures, and generated mutation bytes.
 import json,hashlib
 physical=['src/AF.GameAdapter.Bannerlord/Prompt/NpcPersonaGenerationApplicationAdapter.cs','src/AF.GameAdapter.Bannerlord/Prompt/PromotedPersonaGenerationApplicationAdapter.cs','src/modules/AF.Module.Persona/Profiles/PersonaProfileStateOwner.cs','src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.PersonaGeneration.cs','src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.PromotedPersonaGeneration.cs','src/modules/AF.Module.Persona/Generation/NpcPersonaProfilePolicy.cs','src/modules/AF.Module.Persona/Generation/NpcPersonaGenerationOwner.cs','src/modules/AF.Module.Persona/Generation/NpcPersonaTextRules.cs']
 physical += [str(path.relative_to(ROOT)).replace('\\','/') for path in HERE.iterdir() if path.name=='run.py' or path.suffix=='.txt']
+physical.append('src/AF.GameAdapter.Bannerlord/UI/Errors/PersonaFailureUiText.cs')
 (out/'source-manifest.json').write_text(json.dumps({'mutation':a.mutate,'actualCurrent':{path:hashlib.sha256((ROOT/path).read_bytes()).hexdigest() for path in physical},'compiled':{str(path):hashlib.sha256(path.read_bytes()).hexdigest() for path in files},'scope':'whole two Persona applications + soleProfile/Reservation/realDispatcher; only game/provider/skills boundaries controlled; sibling Kingdom naming excluded'},indent=2),encoding='utf-8')
 project=util.project(out,'HeroPersonaProof',files,executable=True)
 if not a.original:

@@ -4592,7 +4592,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				{
 					CastleAftermathDispositionSessionBridge.UnmarkApplied(action, role, targetAgent, targetHero);
 					InformationManager.DisplayMessage(new InformationMessage(
-						SiegeCastleActionOutcomeTextProfile.BuildCareInsufficientMessage(),
+						CastleAftermathUiText.CareInsufficient,
 						Color.FromUint(SiegeCastleActionOutcomeTextProfile.WarningColor)));
 					return false;
 				}
@@ -4600,14 +4600,14 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				{
 					CastleAftermathPrisonerTrustRuntimeBridge.AdjustLordTrust(targetHero, SiegeCastlePrisonerTrustProfile.TreatTrustDelta, "treat_lord");
 					InformationManager.DisplayMessage(new InformationMessage(
-						SiegeCastleActionOutcomeTextProfile.BuildLordProcessMessage(action, targetHero?.Name?.ToString()),
+						CastleAftermathUiText.LordProcess(action, targetHero?.Name?.ToString()),
 						Color.FromUint(SiegeCastleActionOutcomeTextProfile.SuccessColor)));
 				}
 				else
 				{
 					CastleAftermathPrisonerTrustRuntimeBridge.AdjustSelectedRegularTrust(SiegeCastlePrisonerTrustProfile.TreatTrustDelta, "treat_regular_prisoners");
 					InformationManager.DisplayMessage(new InformationMessage(
-						SiegeCastleActionOutcomeTextProfile.BuildCareMessage(care.AffectedCount, SiegeCastlePrisonerTrustProfile.TreatTrustDelta),
+						CastleAftermathUiText.Care(care.AffectedCount, SiegeCastlePrisonerTrustProfile.TreatTrustDelta),
 						Color.FromUint(SiegeCastleActionOutcomeTextProfile.SuccessColor)));
 				}
 				CastleAftermathSettlementRuntimeBridge.QueueAction(action, lord);
@@ -4628,7 +4628,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			{
 				CastleAftermathPrisonerTrustRuntimeBridge.AdjustLordTrust(targetHero, SiegeCastlePrisonerTrustProfile.ReceiveArmamentsTrustDelta, "receive_lord_armaments");
 				InformationManager.DisplayMessage(new InformationMessage(
-					SiegeCastleActionOutcomeTextProfile.BuildLordProcessMessage(action, targetHero?.Name?.ToString(), loot.ItemCount),
+					CastleAftermathUiText.LordProcess(action, targetHero?.Name?.ToString(), loot.ItemCount),
 					Color.FromUint(SiegeCastleActionOutcomeTextProfile.SuccessColor)));
 			}
 			else
@@ -4636,7 +4636,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				int affected = CastleAftermathRuntimeBridge.SelectedRegularPrisonerCount;
 				CastleAftermathPrisonerTrustRuntimeBridge.AdjustSelectedRegularTrust(SiegeCastlePrisonerTrustProfile.ReceiveArmamentsTrustDelta, "receive_regular_armaments");
 				InformationManager.DisplayMessage(new InformationMessage(
-					SiegeCastleActionOutcomeTextProfile.BuildArmamentMessage(affected, loot.ItemCount, loot.StackKinds, loot.Gold, lord: false),
+					CastleAftermathUiText.Armaments(affected, loot.ItemCount, loot.StackKinds, loot.Gold),
 					Color.FromUint(SiegeCastleActionOutcomeTextProfile.SuccessColor)));
 			}
 			CastleAftermathSettlementRuntimeBridge.QueueAction(action, lord);
@@ -4685,7 +4685,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		if (allocation.Count <= 0)
 		{
 			InformationManager.DisplayMessage(new InformationMessage(
-				"【城堡处置】当前没有未分配的普通战俘；若要推翻旧安排，请明确说反悔、全部重来或推翻之前安排。",
+				CastleAftermathUiText.NoUnassigned,
 				Color.FromUint(SiegeCastleActionOutcomeTextProfile.WarningColor)));
 			return false;
 		}
@@ -4700,7 +4700,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			if (stageable < allocation.Count)
 			{
 				InformationManager.DisplayMessage(new InformationMessage(
-					SiegeCastlePrisonerDispositionProfile.BuildRecruitCapacityTrimMessage(allocation.Count, stageable, freeSlots),
+					CastleAftermathUiText.RecruitmentCapacity(allocation.Count, stageable, freeSlots),
 					Color.FromUint(SiegeCastleActionOutcomeTextProfile.WarningColor)));
 				GcczDiagnosticLog.Log("CastleOutcome", "recruit capacity trim action=" + action
 					+ " requested=" + allocation.Count + " stageable=" + stageable + " freeSlots=" + freeSlots);
@@ -4746,8 +4746,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 					CastleAftermathDispositionSessionBridge.InitialRegularPrisonerCount);
 			}
 			InformationManager.DisplayMessage(new InformationMessage(
-				"【城堡处置】编队1已开始实际攻击指定的 " + result.AffectedCount
-					+ " 名战俘；只有现场死亡者才会从名册扣除。",
+				CastleAftermathUiText.SlaughterStarted(result.AffectedCount),
 				Color.FromUint(SiegeCastleActionOutcomeTextProfile.DangerColor)));
 			RecordInterventionMemory("城堡普通战俘处置命令",
 				"玩家指定现场屠戮 " + result.AffectedCount + " 名普通战俘（"
@@ -4780,8 +4779,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			+ " 人未分配，所有暂定组在离场前仍留在场景和俘虏名册。"
 			+ (resetPlan ? "玩家本轮明确推翻了先前对幸存者的安排。" : string.Empty));
 		InformationManager.DisplayMessage(new InformationMessage(
-			"【城堡处置】已暂定“" + SiegeCastleRegularDispositionStagingProfile.Describe(action)
-				+ "” " + stagedCount + " 人；未分配 " + unassigned + " 人。离场时才执行。",
+			CastleAftermathUiText.Staged(SiegeCastleRegularDispositionStagingProfile.Describe(action), stagedCount, unassigned),
 			Color.FromUint(SiegeCastleActionOutcomeTextProfile.SuccessColor)));
 		RegisterCastleSoldierConcern(
 			action,
@@ -4849,10 +4847,8 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				Logger.Log("CastleAftermath", "Deferred castle group affected nobody. Action=" + action
 					+ ", Requested=" + allocation.Roster.TotalManCount + ", Reason=" + result.ReasonCode);
 				InformationManager.DisplayMessage(new InformationMessage(
-					"【城堡处置】离场结算失败：分组“" + SiegeCastleRegularDispositionStagingProfile.Describe(action)
-					+ "”（" + allocation.Roster.TotalManCount + " 人）无人生效，原因："
-					+ SiegeCastlePrisonerDispositionProfile.DescribeDeferredFailureReason(result.ReasonCode)
-					+ "。这些战俘继续保持俘虏身份。",
+					CastleAftermathUiText.DeferredFailed(SiegeCastleRegularDispositionStagingProfile.Describe(action),
+						allocation.Roster.TotalManCount, SiegeCastlePrisonerDispositionProfile.DescribeDeferredFailureReason(result.ReasonCode)),
 					Color.FromUint(SiegeCastleActionOutcomeTextProfile.WarningColor)));
 				continue;
 			}
@@ -4876,8 +4872,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				&& result.AffectedCount < allocation.Roster.TotalManCount)
 			{
 				InformationManager.DisplayMessage(new InformationMessage(
-					"【城堡处置】收编仅部分执行：计划 " + allocation.Roster.TotalManCount
-					+ " 人，实际入队 " + result.AffectedCount + " 人（主队编制已满）；其余继续保持俘虏身份。",
+					CastleAftermathUiText.RecruitmentPartial(allocation.Roster.TotalManCount, result.AffectedCount),
 					Color.FromUint(SiegeCastleActionOutcomeTextProfile.WarningColor)));
 			}
 			RecordInterventionMemory(
@@ -4936,7 +4931,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				"城堡贩卖领主",
 				conciseOutcome + "；该领主已经通过原版赎卖链解除俘虏并离开现场。");
 			InformationManager.DisplayMessage(new InformationMessage(
-				SiegeCastleActionOutcomeTextProfile.BuildLordSaleMessage(lordName, result.Gold),
+				CastleAftermathUiText.LordSale(lordName, result.Gold),
 				Color.FromUint(SiegeCastleActionOutcomeTextProfile.SuccessColor)));
 			string outcome = "hero=" + (targetHero.StringId ?? "N/A")
 				+ ", gold=" + result.Gold + ", expectedGold=" + result.ExpectedGold
@@ -4960,7 +4955,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			{
 				CastleAftermathDispositionSessionBridge.UnmarkApplied(action, role, targetAgent, targetHero);
 				InformationManager.DisplayMessage(new InformationMessage(
-					SiegeCastleActionOutcomeTextProfile.BuildLordExecutionFailedMessage(targetHero.Name?.ToString()),
+					CastleAftermathUiText.ExecutionFailed(targetHero.Name?.ToString()),
 					Color.FromUint(SiegeCastleActionOutcomeTextProfile.WarningColor)));
 				Logger.Log("CastleAftermath", "Queue castle lord execution failed. Role=" + role
 					+ ", Agent=" + targetAgent.Index + ", Hero=" + (targetHero.StringId ?? "N/A")
@@ -4968,7 +4963,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				return false;
 			}
 			InformationManager.DisplayMessage(new InformationMessage(
-				SiegeCastleActionOutcomeTextProfile.BuildLordExecutionQueuedMessage(targetHero.Name?.ToString()),
+				CastleAftermathUiText.ExecutionQueued(targetHero.Name?.ToString()),
 				Color.FromUint(SiegeCastleActionOutcomeTextProfile.DangerColor)));
 			TriggerCastleActionWitnessReactions(action, 1, targetAgent.Index);
 			return true;
@@ -5007,7 +5002,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			{
 				CastleAftermathDispositionSessionBridge.UnmarkApplied(action, role, targetAgent, targetHero);
 				InformationManager.DisplayMessage(new InformationMessage(
-					SiegeCastleActionOutcomeTextProfile.BuildLordRecruitmentMessage(branch, targetHero.Name?.ToString(), result.StatusText),
+					CastleAftermathUiText.LordRecruitment(branch, targetHero.Name?.ToString(), result.StatusText),
 					Color.FromUint(SiegeCastleActionOutcomeTextProfile.WarningColor)));
 				return false;
 			}
@@ -5022,7 +5017,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			CastleAftermathDispositionSessionBridge.RecordLordOutcome(conciseOutcome);
 			RecordInterventionMemory("城堡收编领主", conciseOutcome + "。" + result.StatusText);
 			InformationManager.DisplayMessage(new InformationMessage(
-				SiegeCastleActionOutcomeTextProfile.BuildLordRecruitmentMessage(branch, lordName, result.StatusText),
+				CastleAftermathUiText.LordRecruitment(branch, lordName, result.StatusText),
 				Color.FromUint(SiegeCastleActionOutcomeTextProfile.SuccessColor)));
 			string outcome = "hero=" + (targetHero.StringId ?? "N/A")
 				+ ", branch=" + branch + ", released=" + result.TargetReleased
@@ -5063,7 +5058,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 		{
 			CastleAftermathDispositionSessionBridge.UnmarkApplied(action, role, targetAgent, targetHero);
 			InformationManager.DisplayMessage(new InformationMessage(
-				"【城堡决斗】未能布置同场决斗，俘虏处置状态未改变。",
+				CastleAftermathUiText.DuelFailed,
 				Color.FromUint(SiegeCastleActionOutcomeTextProfile.WarningColor)));
 			Logger.Log("CastleAftermath", "Start castle captive-lord duel failed. Hero="
 				+ (targetHero.StringId ?? "N/A") + ", Agent=" + targetAgent.Index
@@ -5094,7 +5089,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 			"城堡处决领主",
 			conciseOutcome + sceneResult + "；原版角色死亡、关系与家族后果已经立即结算。");
 		InformationManager.DisplayMessage(new InformationMessage(
-			SiegeCastleActionOutcomeTextProfile.BuildLordExecutionCompletedMessage(
+			CastleAftermathUiText.ExecutionCompleted(
 				lordName,
 				sceneDeathApplied),
 			Color.FromUint(SiegeCastleActionOutcomeTextProfile.DangerColor)));
@@ -5316,7 +5311,7 @@ public partial class SiegeAiInterventionBehavior : CampaignBehaviorBase
 				|| _castleSlaughteredRegularPrisoners % 10 == 0)
 			{
 				InformationManager.DisplayMessage(new InformationMessage(
-					SiegeCastleActionOutcomeTextProfile.BuildSlaughterKillMessage(_castleSlaughteredRegularPrisoners, remaining),
+					CastleAftermathUiText.SlaughterKills(_castleSlaughteredRegularPrisoners, remaining),
 					Color.FromUint(SiegeCastleActionOutcomeTextProfile.DangerColor)));
 			}
 			string log = "realKill=" + _castleSlaughteredRegularPrisoners

@@ -1,0 +1,13 @@
+namespace TaleWorlds.Localization
+{
+    internal sealed class TextObject
+    {
+        private readonly string _value;
+        internal TextObject(string value) { _value = value; }
+        public override string ToString()
+        {
+            global::Probe.Read();
+            return _value.Substring(_value.IndexOf('}') + 1);
+        }
+    }
+}
