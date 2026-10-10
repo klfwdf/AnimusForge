@@ -567,14 +567,14 @@ public sealed partial class CourierDeliveryBehavior
 			}
 			int retryChoice = 0;
 			// 此窗口仅用于选择重试或放弃；完整接口错误改由左下角消息和日志承载。
-			NonBlockingErrorReport.Show("信使回信生成失败", "信使回信正文生成失败：\n\n" + (error ?? "未知错误"));
+			NonBlockingErrorReport.Show(CourierFailureUiText.ReplyFailedTitle, CourierFailureUiText.ReplyFailedDetail(error));
 			InformationManager.ShowInquiry(new InquiryData(
-				"信使回信生成失败",
+				CourierFailureUiText.ReplyFailedTitle,
 				LlmRetryPrompt.BuildRetryDescription("信使回信正文生成", error),
 				isAffirmativeOptionShown: true,
 				isNegativeOptionShown: true,
-				"重试",
-				"放弃",
+				CourierFailureUiText.Retry,
+				CourierFailureUiText.Abort,
 				delegate
 				{
 					if (Interlocked.CompareExchange(ref retryChoice, 1, 0) != 0) return;
@@ -622,7 +622,7 @@ public sealed partial class CourierDeliveryBehavior
 		session.ReplyPostprocessedText = string.Empty;
 		Log("detached courier reply stopped session=" + sessionId + " error=" + (errorCode ?? ""));
 		FailCourierReplyGenerationOnMainThread(sessionId, runtimeGeneration, "reply_detached_stopped");
-		NonBlockingErrorReport.Show("信使回信已停止", "本次回信未能安全完成，系统不会自动重试可能已生效的动作。请查看日志并核对实际结果。");
+		NonBlockingErrorReport.Show(CourierFailureUiText.ReplyStoppedTitle, CourierFailureUiText.ReplyStoppedDetail);
 	}
 
 	private void FailCourierReplyGenerationOnMainThread(string sessionId, long runtimeGeneration, string reason)
@@ -811,14 +811,14 @@ public sealed partial class CourierDeliveryBehavior
 				return false;
 			}
 			// 此窗口仅用于选择重试或放弃；完整接口错误改由左下角消息和日志承载。
-			NonBlockingErrorReport.Show("信使来信生成失败", "信使来信正文生成失败：\n\n" + (error ?? "未知错误"));
+			NonBlockingErrorReport.Show(CourierFailureUiText.LetterFailedTitle, CourierFailureUiText.LetterFailedDetail(error));
 			InformationManager.ShowInquiry(new InquiryData(
-				"信使来信生成失败",
+				CourierFailureUiText.LetterFailedTitle,
 				LlmRetryPrompt.BuildRetryDescription("信使来信正文生成", error),
 				isAffirmativeOptionShown: true,
 				isNegativeOptionShown: true,
-				"重试",
-				"放弃",
+				CourierFailureUiText.Retry,
+				CourierFailureUiText.Abort,
 				delegate
 				{
 					CourierSession retrySession = IsCourierInboundRequestCurrent(request) ? request.SourceRun.Session : null;
