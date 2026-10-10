@@ -49,6 +49,8 @@ def main() -> int:
             raise AssertionError(f"duplicate IDs across loader resources: {sorted(duplicate)}")
         all_ids.update(en)
         for key in en:
+            if re.search(r"[\u3400-\u4dbf\u4e00-\u9fff]", en[key]):
+                raise AssertionError(f"Chinese text in English localization resource: {english}:{key}")
             if key.startswith("AF_MEMORY_UI_") and ("\\n" in en[key] or "\\n" in zh[key]):
                 raise AssertionError(f"literal newline escape in XML text: {key}; use &#10;")
             if sorted(VAR.findall(en[key])) != sorted(VAR.findall(zh[key])):

@@ -1095,10 +1095,10 @@ Produces a very large log and is intended for developers only." />
   <string id="AF_TERMINAL_UI_AllowNpcNobleGatheringPlayerInvitations_Group" text="18. Noble gatherings" />
   <string id="AF_TERMINAL_UI_AutoGenerateWeeklyReports_Title" text="Auto Generate Weekly Reports" />
   <string id="AF_TERMINAL_UI_AutoGenerateWeeklyReports_Hint" text="Enable or disable this feature." />
-  <string id="AF_TERMINAL_UI_AutoGenerateWeeklyReports_Group" text="Weekly reports / bulletins//周报" />
+  <string id="AF_TERMINAL_UI_AutoGenerateWeeklyReports_Group" text="Weekly reports / bulletins/Weekly report" />
   <string id="AF_TERMINAL_UI_AutoGenerateWorldBulletins_Title" text="Auto Generate World Bulletins" />
   <string id="AF_TERMINAL_UI_AutoGenerateWorldBulletins_Hint" text="Enable or disable this feature." />
-  <string id="AF_TERMINAL_UI_AutoGenerateWorldBulletins_Group" text="Weekly reports / bulletins//快报" />
+  <string id="AF_TERMINAL_UI_AutoGenerateWorldBulletins_Group" text="Weekly reports / bulletins/Bulletin" />
   <string id="AF_TERMINAL_UI_ClearGcczDebugLog_Title" text="Clear GCCZ Debug Log" />
   <string id="AF_TERMINAL_UI_ClearGcczDebugLog_Hint" text="Open the editor or run this action." />
   <string id="AF_TERMINAL_UI_ClearGcczDebugLog_Group" text="Siege and post-battle limits (Siege &amp; NPC Limits)" />
@@ -1182,10 +1182,10 @@ Produces a very large log and is intended for developers only." />
   <string id="AF_TERMINAL_UI_EditPolicyPrompts_Group" text="16. Policy system" />
   <string id="AF_TERMINAL_UI_EditWeeklyReportWritingRequirements_Title" text="Edit Weekly Report Writing Requirements" />
   <string id="AF_TERMINAL_UI_EditWeeklyReportWritingRequirements_Hint" text="Open the editor or run this action." />
-  <string id="AF_TERMINAL_UI_EditWeeklyReportWritingRequirements_Group" text="Weekly reports / bulletins//周报" />
+  <string id="AF_TERMINAL_UI_EditWeeklyReportWritingRequirements_Group" text="Weekly reports / bulletins/Weekly report" />
   <string id="AF_TERMINAL_UI_EditWorldBulletinWritingRequirements_Title" text="Edit World Bulletin Writing Requirements" />
   <string id="AF_TERMINAL_UI_EditWorldBulletinWritingRequirements_Hint" text="Open the editor or run this action." />
-  <string id="AF_TERMINAL_UI_EditWorldBulletinWritingRequirements_Group" text="Weekly reports / bulletins//快报" />
+  <string id="AF_TERMINAL_UI_EditWorldBulletinWritingRequirements_Group" text="Weekly reports / bulletins/Bulletin" />
   <string id="AF_TERMINAL_UI_EditWorldDiplomacyPrompt_Title" text="Edit World Diplomacy Prompt" />
   <string id="AF_TERMINAL_UI_EditWorldDiplomacyPrompt_Hint" text="Open the editor or run this action." />
   <string id="AF_TERMINAL_UI_EditWorldDiplomacyPrompt_Group" text="17. AI diplomacy (testing)/4. Declarations and scribe" />
@@ -1509,7 +1509,7 @@ Produces a very large log and is intended for developers only." />
   <string id="AF_TERMINAL_UI_UseDetailedSceneSpeechPrompt_Group" text="9. Prompt extensions" />
   <string id="AF_TERMINAL_UI_WeeklyReportLengthPreset_Title" text="Weekly Report Length Preset" />
   <string id="AF_TERMINAL_UI_WeeklyReportLengthPreset_Hint" text="Configure Weekly Report Length Preset." />
-  <string id="AF_TERMINAL_UI_WeeklyReportLengthPreset_Group" text="Weekly reports / bulletins//周报" />
+  <string id="AF_TERMINAL_UI_WeeklyReportLengthPreset_Group" text="Weekly reports / bulletins/Weekly report" />
   <string id="AF_TERMINAL_UI_WeeklyReportPopupBodyFontSize_Title" text="Weekly Report Popup Body Font Size" />
   <string id="AF_TERMINAL_UI_WeeklyReportPopupBodyFontSize_Hint" text="Configure Weekly Report Popup Body Font Size." />
   <string id="AF_TERMINAL_UI_WeeklyReportPopupBodyFontSize_Group" text="Weekly reports / bulletins" />
@@ -1521,7 +1521,7 @@ Produces a very large log and is intended for developers only." />
   <string id="AF_TERMINAL_UI_WeeklyReportReadingXpSkillCap_Group" text="Weekly reports / bulletins" />
   <string id="AF_TERMINAL_UI_WeeklyReportRequestsPerMinute_Title" text="Weekly Report Requests Per Minute" />
   <string id="AF_TERMINAL_UI_WeeklyReportRequestsPerMinute_Hint" text="Configure Weekly Report Requests Per Minute." />
-  <string id="AF_TERMINAL_UI_WeeklyReportRequestsPerMinute_Group" text="Weekly reports / bulletins//周报" />
+  <string id="AF_TERMINAL_UI_WeeklyReportRequestsPerMinute_Group" text="Weekly reports / bulletins/Weekly report" />
   <string id="AF_TERMINAL_UI_WorldDiplomacyActivityDropdown_Title" text="World Diplomacy Activity Dropdown" />
   <string id="AF_TERMINAL_UI_WorldDiplomacyActivityDropdown_Hint" text="Choose a value from the list." />
   <string id="AF_TERMINAL_UI_WorldDiplomacyActivityDropdown_Group" text="17. AI diplomacy (testing)/2. Event pacing" />
