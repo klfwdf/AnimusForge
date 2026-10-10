@@ -17059,6 +17059,16 @@
       "owner": "AF.Module.Kingdom",
       "source": "content/modules/AF.Module.Kingdom/ModuleData/Languages/CNs/afkingdom_ui_strings-zh-CN.xml",
       "target": "ModuleData/Languages/CNs/afkingdom_ui_strings-zh-CN.xml"
+    },
+    {
+      "owner": "AF.Module.Weekly",
+      "source": "content/modules/AF.Module.Weekly/ModuleData/Languages/afweekly_ui_strings.xml",
+      "target": "ModuleData/Languages/afweekly_ui_strings.xml"
+    },
+    {
+      "owner": "AF.Module.Weekly",
+      "source": "content/modules/AF.Module.Weekly/ModuleData/Languages/CNs/afweekly_ui_strings-zh-CN.xml",
+      "target": "ModuleData/Languages/CNs/afweekly_ui_strings-zh-CN.xml"
     }
   ]
 }
