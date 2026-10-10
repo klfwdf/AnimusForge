@@ -1,14 +1,17 @@
 # C / D / E 外部并行接力计划
 
-阶段：计划已建立，等待用户交给三个外部 Agent。基线 `43360e691`，main。
+阶段：计划已建立，等待用户交给三个外部 Agent。调整基线 `33a9ba44f`，main。
 最新目标：N 网完整英文发行；两个ZIP名区分CN/EN，包内原文件名保持；中文原版完整保留。
 三个包是本轮新分工，不是历史第二轮B/C。旧合并接力已被本计划替代。
+用户最新指定：世界书已交 B，C/D/E 不再接世界书；旧 E 英文资产计划停止作为执行入口。
 
 | 包 | 工作 | 独占生产范围 | 接力 |
 | --- | --- | --- | --- |
 | C | 政策效果正文、历史与结果显示 | PolicySystem源码、afpol资源及政策专项测试 | [C文档](2026-10-10-localization-package-c-policy.md) |
 | D | 外交内政面板、内战动态显示与结果通知 | Diplomacy、Kingdom/CivilWar源码、afdip/afkingdom资源及专项测试 | [D文档](2026-10-10-localization-package-d-diplomacy-civilwar.md) |
-| E | 缺失英文世界书、Prompt和默认内容资产 | 平行英文JSON资产、英文资产对应清单及资产专项验证工具 | [E文档](2026-10-10-localization-package-e-english-assets.md) |
+| E | 经济、RP制造、任务交付与结果通知 | Economy/Issue源码、afeconomy/afconv资源及本包专项测试 | [E文档](2026-10-10-localization-package-e-economy-issue.md) |
+
+B 独占世界书资产及其对应清单；主线保留共享集成、错误UI、Memory、默认Prompt/协议外置与双包装配。
 
 ## 共同规则
 
@@ -21,7 +24,8 @@
 - 不改一键脚本、Bootstrap、程序集、存档类型/键、模型协议；不重写共享事实。
   原事实若兼有UI用途，新增独立显示投影，保留完整信息和变量。
 - 各包只能写独占路径。共享注册、content-map、主台账/HANDOFF、af_ui_strings、
-  UI/Errors、MCM/Terminal、Memory、WorldMap、Economy/Issue与打包由主线负责。
+  UI/Errors、MCM/Terminal、Memory、WorldMap与打包由主线负责。
+  Economy/Issue交E；世界书交B。默认Prompt平行资产与内嵌默认内容由主线协调，C/D/E不写。
   跨边界只发送精确符号与窄补丁建议，主线接线；不随意抢文件。
 - 源码运行时中文外置是最终目标；当前切片完成不代表全仓清零。
   禁止把中文转Unicode逃逸、删原信息、隐藏错误、改标签制造“0中文”。
@@ -47,7 +51,7 @@
   1个中文JSON非法导致仅14可解析验证；814无可验证英文对应。不能说英文世界书全套完成。
 - 另外三套世界书未英化：权游1431、低配519、战锤345个含中文JSON；
   与标准814共3109个待英文对应文件，文件数不是待翻译字符串数。
-- 主线保留：Memory复审收口、共享错误UI、经济/Issue遗漏、固定诊断/协议抽取、
+- 主线保留：Memory复审收口、共享错误UI、跨包接线、固定诊断/协议抽取、
   shared DLL内嵌默认内容与CN/EN装配/最终验收。三个外部包不能替代这些任务。
 
 验证入口：资源契约 `tests/content/J15ContentContractTests/LocalizationResourceContractTests.py`；

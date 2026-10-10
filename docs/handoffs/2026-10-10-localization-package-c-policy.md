@@ -12,7 +12,7 @@
   与 `CNs/afpol_ui_strings-zh-CN.xml`；中英资源仅此一对。
 - 政策专项测试，重点 `tests/bridges/Policy/PolicyEffectModule.ContractTests/`。
 - 独立进度/交付：`docs/handoffs/2026-10-10-localization-package-c-policy-delivery.md`。
-- 禁止写 `content/modules/PolicySystem/CustomPrompts/**`；那是E的英文资产范围。
+- 禁止写 `content/modules/PolicySystem/CustomPrompts/**`；默认Prompt资产由主线协调。
   不改PolicyEffectPromptService等LLM规则内容或跨模块接口；发现此类中文登记主线。
 
 ## 优先级
