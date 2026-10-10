@@ -71,6 +71,8 @@ UI词法快照`mainline-after-20261010.json`为较早`6e6e2fa1a`工作树：1246
 
 ## 用户转交“B报告”的固定界面包验收（2026-10-10）
 
+主线另补`CourierLetterReplyPopup.Show(senderName, bodyText, onClose)`两处中文默认文案，复用已登记`AF_CONV_UI_Courier_ReplyTitle/Wrote`；正文/回调/关闭参数原样转交。现仓库真实调用使用其他重载，此项补齐公开短重载的固定显示边界，不夸称修复了已观察到的游戏泄漏。既有1.3/1.4各1348次会话资源解析与diff检查PASS，产品编译/实机未跑。
+
 用户转交报告附件`c619e6f8-e543-413f-914b-d512744894d5/已粘贴的文本.txt`，内容对应原任务卡C的固定界面范围；为避免混淆，按下列提交和内容接收，不把它计作世界书/英文JSON包交付。
 
 - `41a82ad2a`：18对Duel/Terminal/Weekly资源键。Duel源码由主线`6e6e2fa1a`独立接通；回滚资源前须协调该依赖。
