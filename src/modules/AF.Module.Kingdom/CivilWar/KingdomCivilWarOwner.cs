@@ -860,7 +860,11 @@ internal sealed partial class KingdomCivilWarOwner
 
 	// Joining the opposition means joining the speaker's faction, or the only pre-war faction if the speaker has none and the choice is unambiguous.
 	internal bool TryJoinPlayer(Kingdom kingdom, Hero speaker, KingdomCivilWarSide side, out string message)
+		=> TryJoinPlayer(kingdom, speaker, side, out message, out _);
+
+	internal bool TryJoinPlayer(Kingdom kingdom, Hero speaker, KingdomCivilWarSide side, out string message, out string displayMessage)
 	{
+		displayMessage = "";
 		var state = Find(kingdom);
 		var faction = FactionOfClan(state, speaker?.Clan);
 		if (side == KingdomCivilWarSide.Opposition && !IsPreWar(faction))
@@ -873,12 +877,17 @@ internal sealed partial class KingdomCivilWarOwner
 		var result = Execute(new CivilWarActionRequest { OperationId = Guid.NewGuid().ToString("N"), KingdomId = kingdom?.StringId ?? "",
 			FactionId = faction?.Id ?? "", Action = side == KingdomCivilWarSide.Crown ? CivilWarAction.JoinCrown : CivilWarAction.JoinOpposition }, Clan.PlayerClan);
 		message = result.Message;
+		displayMessage = CivilWarUiText.ResultNotice(result);
 		return result.Status == CivilWarActionStatus.Applied;
 	}
 
 	internal bool TryRecruitClan(Hero recruiter, Clan target, Kingdom kingdom, out string message)
+		=> TryRecruitClan(recruiter, target, kingdom, out message, out _);
+
+	internal bool TryRecruitClan(Hero recruiter, Clan target, Kingdom kingdom, out string message, out string displayMessage)
 	{
 		message = "";
+		displayMessage = "";
 		KingdomCivilWarKingdomState state = kingdom == null ? null : GetOrCreate(kingdom, CivilWarWorld.CurrentWeek());
 		// One shared precondition check: the dialogue tag filter (ApplicableDialogueActions) uses the same method, so they cannot drift apart.
 		string block = RecruitBlockReason(recruiter, target, kingdom, state);
@@ -909,6 +918,7 @@ internal sealed partial class KingdomCivilWarOwner
 		record.LastRecruitWeek = week;
 		SaveSummary(state);
 		PublishPoliticalResult(kingdom, state, FactionOfClan(state, target), target, "recruit:" + target.StringId + ":" + CivilWarWorld.CurrentDay(), message, displayText: display);
+		displayMessage = display;
 		NotifyPoliticalChange(kingdom, "membership");
 		Revision++;
 		return true;
@@ -917,18 +927,27 @@ internal sealed partial class KingdomCivilWarOwner
 	// Dialogue LEAVE tags: the speaker's own clan (SELF) or the player's clan (PLAYER) steps out of its current side.
 	// Goes through Execute/Quote, so the same relation loss, 7-day exit lock and war lock as the panel apply.
 	internal bool TryLeaveClan(Kingdom kingdom, Clan clan, out string message)
+		=> TryLeaveClan(kingdom, clan, out message, out _);
+
+	internal bool TryLeaveClan(Kingdom kingdom, Clan clan, out string message, out string displayMessage)
 	{
 		message = "";
+		displayMessage = "";
 		if (kingdom == null || clan == null) { message = "当前对象无法退出阵营。"; return false; }
 		var result = Execute(new CivilWarActionRequest { OperationId = Guid.NewGuid().ToString("N"), KingdomId = kingdom.StringId, Action = CivilWarAction.Leave }, clan);
 		message = result.Message;
+		displayMessage = CivilWarUiText.ResultNotice(result);
 		return result.Status == CivilWarActionStatus.Applied;
 	}
 
 	// Only the player's own faction can be detonated, through its leader.
 	internal bool TryDetonate(Hero speaker, Kingdom kingdom, out string message)
+		=> TryDetonate(speaker, kingdom, out message, out _);
+
+	internal bool TryDetonate(Hero speaker, Kingdom kingdom, out string message, out string displayMessage)
 	{
 		message = "";
+		displayMessage = "";
 		KingdomCivilWarKingdomState state = Find(kingdom);
 		KingdomCivilWarFactionState faction = speaker?.Clan == null ? null : FactionOfClan(state, speaker.Clan);
 		if (kingdom == null || faction == null || !IsPreWar(faction) || faction.LeaderClanId != speaker.Clan.StringId || PlayerKingdomRebellionImmunity.ShouldProtectKingdom(kingdom)
@@ -937,6 +956,7 @@ internal sealed partial class KingdomCivilWarOwner
 		var result = Execute(new CivilWarActionRequest { OperationId = Guid.NewGuid().ToString("N"), KingdomId = kingdom.StringId,
 			FactionId = faction.Id, Action = CivilWarAction.Detonate }, Clan.PlayerClan, true);
 		message = result.Message;
+		displayMessage = CivilWarUiText.ResultNotice(result);
 		return result.Status == CivilWarActionStatus.AwaitingKingdom;
 	}
 
