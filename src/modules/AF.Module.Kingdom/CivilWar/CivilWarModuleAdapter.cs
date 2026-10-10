@@ -119,22 +119,31 @@ internal sealed class CivilWarModuleAdapter : ICivilWarModulePort
 	public bool IsClanProtected(Clan clan) => _owner.IsClanProtected(clan);
 
 	public bool TryApplyTag(Hero speaker, string tag, out string message)
+		=> TryApplyTag(speaker, tag, out message, out _);
+
+	public bool TryApplyTag(Hero speaker, string tag, out string message, out string displayMessage)
 	{
 		message = "";
+		displayMessage = "";
 		if (!DuelSettings.IsCivilWarFactionsEnabled()) return false;
 		Match match = TagPattern.Match((tag ?? "").Trim());
 		if (!match.Success || speaker == null) return false;
 		Kingdom kingdom = speaker.Clan?.Kingdom ?? Clan.PlayerClan?.Kingdom;
 		string action = match.Groups[1].Value ?? "";
-		if (action.StartsWith("JOIN:CROWN", StringComparison.OrdinalIgnoreCase)) return _owner.TryJoinPlayer(kingdom, speaker, KingdomCivilWarSide.Crown, out message);
-		if (action.StartsWith("JOIN:OPPOSITION", StringComparison.OrdinalIgnoreCase)) return _owner.TryJoinPlayer(kingdom, speaker, KingdomCivilWarSide.Opposition, out message);
-		if (action.Equals("RECRUIT", StringComparison.OrdinalIgnoreCase)) return _owner.TryRecruitClan(Hero.MainHero, speaker.Clan, kingdom, out message);
-		if (action.Equals("LEAVE:SELF", StringComparison.OrdinalIgnoreCase)) return speaker != Hero.MainHero && speaker.Clan?.Leader == speaker && _owner.TryLeaveClan(kingdom, speaker.Clan, out message);
-		if (action.Equals("LEAVE:PLAYER", StringComparison.OrdinalIgnoreCase)) return _owner.TryLeaveClan(Clan.PlayerClan?.Kingdom, Clan.PlayerClan, out message);
-		if (action.Equals("DETONATE", StringComparison.OrdinalIgnoreCase)) return _owner.TryDetonate(speaker, kingdom, out message);
+		if (action.StartsWith("JOIN:CROWN", StringComparison.OrdinalIgnoreCase)) return _owner.TryJoinPlayer(kingdom, speaker, KingdomCivilWarSide.Crown, out message, out displayMessage);
+		if (action.StartsWith("JOIN:OPPOSITION", StringComparison.OrdinalIgnoreCase)) return _owner.TryJoinPlayer(kingdom, speaker, KingdomCivilWarSide.Opposition, out message, out displayMessage);
+		if (action.Equals("RECRUIT", StringComparison.OrdinalIgnoreCase)) return _owner.TryRecruitClan(Hero.MainHero, speaker.Clan, kingdom, out message, out displayMessage);
+		if (action.Equals("LEAVE:SELF", StringComparison.OrdinalIgnoreCase)) return speaker != Hero.MainHero && speaker.Clan?.Leader == speaker && _owner.TryLeaveClan(kingdom, speaker.Clan, out message, out displayMessage);
+		if (action.Equals("LEAVE:PLAYER", StringComparison.OrdinalIgnoreCase)) return _owner.TryLeaveClan(Clan.PlayerClan?.Kingdom, Clan.PlayerClan, out message, out displayMessage);
+		if (action.Equals("DETONATE", StringComparison.OrdinalIgnoreCase)) return _owner.TryDetonate(speaker, kingdom, out message, out displayMessage);
 		// Ultimatums are always addressed to the player's own kingdom, whoever the player is talking to.
 		if (action.Equals("ANSWER:ACCEPT", StringComparison.OrdinalIgnoreCase) || action.Equals("ANSWER:REFUSE", StringComparison.OrdinalIgnoreCase))
-			return _owner.TryAnswerPlayerUltimatum(Clan.PlayerClan?.Kingdom, speaker, action.EndsWith("ACCEPT", StringComparison.OrdinalIgnoreCase), out message);
+		{
+			bool applied = _owner.TryAnswerPlayerUltimatum(Clan.PlayerClan?.Kingdom, speaker, action.EndsWith("ACCEPT", StringComparison.OrdinalIgnoreCase), out message);
+			// This pre-existing entry already returns its localized outcome. Preserve its fact semantics.
+			displayMessage = message;
+			return applied;
+		}
 		return false;
 	}
 

@@ -215,6 +215,8 @@ internal interface ICivilWarModulePort
 	// True while a clan of a settled civil war is shielded from vanilla discontinuation of landless independent clans.
 	bool IsClanProtected(Clan clan);
 	bool TryApplyTag(Hero speaker, string tag, out string message);
+	// One execution produces the unchanged fact and an independent player-facing projection.
+	bool TryApplyTag(Hero speaker, string tag, out string message, out string displayMessage);
 	void NotifyRebelKingdomCreated(string factionId, Kingdom rebelKingdom, int week);
 	// Host asks before naming/executing a queued civil-war rebellion; false means the faction moved on.
 	bool IsRebellionRequestActive(string factionId);

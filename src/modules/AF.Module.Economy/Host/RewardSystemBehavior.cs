@@ -16206,11 +16206,11 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 			responseText = Regex.Replace(responseText, "\\[A:CIVIL_FACTION:[^\\]]+\\]", match =>
 				{
 					string civilWarStatus = "";
-					if (receiver == Hero.MainHero && giver != Hero.MainHero && TeamModuleServices.CivilWar.TryApplyTag(giver, match.Value, out civilWarStatus) && !string.IsNullOrWhiteSpace(civilWarStatus))
+					if (receiver == Hero.MainHero && giver != Hero.MainHero && TeamModuleServices.CivilWar.TryApplyTag(giver, match.Value, out civilWarStatus, out string civilWarDisplay) && !string.IsNullOrWhiteSpace(civilWarStatus))
 					{
 						giverFacts.Add(civilWarStatus);
 						receiverFacts.Add(civilWarStatus);
-						InformationManager.DisplayMessage(new InformationMessage(EconomyUiTexts.CivilWarFaction(civilWarStatus), Color.FromUint(4278242559u)));
+						InformationManager.DisplayMessage(new InformationMessage(EconomyUiTexts.CivilWarFaction(string.IsNullOrEmpty(civilWarDisplay) ? civilWarStatus : civilWarDisplay), Color.FromUint(4278242559u)));
 					}
 					return string.Empty;
 				}, RegexOptions.IgnoreCase);
