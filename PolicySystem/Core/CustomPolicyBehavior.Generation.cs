@@ -2197,7 +2197,7 @@ public sealed partial class CustomPolicyBehavior
 			if (!TryBuildModuleConstrainedPolicyTargetDirectory(
 				request,
 				routingQuery,
-				routing.Details.Select(selection => selection.Module).ToArray(),
+				routing.Candidates.Select(selection => selection.Module).ToArray(),
 				out string targetDirectoryError))
 			{
 				result.FailureStage = "政策目标解析";
@@ -2205,6 +2205,8 @@ public sealed partial class CustomPolicyBehavior
 				return result;
 			}
 			PolicyTargetHandleDirectory targetDirectory = EnsurePlayerPolicyTargetHandleDirectory(request);
+			PolicyEffectDetailSelector.ApplyTargetCapabilities(routing, targetDirectory);
+			request.SelectedEffectModuleIds = routing.Details.Select(selection => selection.Module.Id).ToList();
 			string detailContract = request.SelectedEffectModuleIds.Count == 0
 				? string.Empty
 				: PolicyEffectModuleCatalog.BuildPayloadPromptRules(

@@ -3895,9 +3895,11 @@ public sealed partial class NpcRulerPolicyBehavior
 		target.EffectTargetDirectory = BuildNpcPolicyEffectTargetDirectory(
 			target,
 			Math.Max(0, context?.Day ?? 0),
-			routing.Details.Select(selection => selection.Module).ToArray(),
+			routing.Candidates.Select(selection => selection.Module).ToArray(),
 			draft.PolicyName,
 			draft.PolicyContent);
+		PolicyEffectDetailSelector.ApplyTargetCapabilities(routing, target.EffectTargetDirectory);
+		context.DetailedModuleIds = routing.Details.Select(selection => selection.Module.Id).ToList();
 		if ((target.EffectTargetDirectory?.Capabilities?.Count ?? 0) == 0)
 		{
 			throw new InvalidOperationException("NPC policy effect target directory has no executable module-target capability.");

@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using AnimusForge.PolicyEffects;
+using AnimusForge.PolicyTargets;
 
 namespace PolicyEffectModule.ContractTests;
 
@@ -35,6 +36,61 @@ internal static partial class Program
 		Check(!queries.Any(q => q == "数值意图：无直接数值意图"),
 			"The literal no-numeric-intent sentinel must not consume an embedding or distort numeric retrieval.");
 		TestNpcRetrievalRequestSnapshot();
+		TestProductionDetailCoverageAndTargets(modules);
+		IReadOnlyList<PolicyEffectRecallQuery> typed = PolicyEffectRecallQueryBuilder.Build("混合条款",
+			"本政策不增加税收而是每日给领主发放300第纳尔；不得劫掠村庄；降低部队上限10人", "", "", modules);
+		Check(typed.Any(q => q.Source == PolicyEffectRecallQuerySource.OriginalClause && q.IsExplicitExclusion && q.Text.Contains("税收"))
+			&& typed.Any(q => q.Source == PolicyEffectRecallQuerySource.OriginalClause && !q.IsExplicitExclusion && q.Text.Contains("300第纳尔"))
+			&& typed.Any(q => q.Source == PolicyEffectRecallQuerySource.OriginalClause && !q.IsExplicitExclusion && q.Text.Contains("不得劫掠"))
+			&& typed.Any(q => q.Source == PolicyEffectRecallQuerySource.OriginalClause && !q.IsExplicitExclusion && q.Text.Contains("降低部队上限")),
+			"Explicit unchanged clauses may be deprioritized, but valid prohibitions, decreases and adversative positive measures must survive.");
+		queries = PolicyEffectModuleRouter.BuildPostAssessmentQueries("有界查询",
+			string.Join("；", Enumerable.Range(0, 30).Select(i => "每日粮食增加" + i)), "影响概述", "每日5点", modules);
+		Check(queries.Count == 12 && queries.Distinct().Count() == 12 && queries.Last().StartsWith("数值意图："),
+			"Original windows and supplements must share the twelve-query budget without duplicate embeddings.");
+		PolicyEffectModuleRoutingResult none = PolicyEffectModuleRouter.RouteAfterAssessment("关闭", "增加粮食", "", "",
+			PolicyEffectRetrievalContext.PlayerKingdom, Array.Empty<string>(), 30,
+			new AnimusForge.PolicyTextEmbeddingSession(_ => throw new InvalidOperationException("Embedding must not run for an empty frozen allowlist."), "empty"));
+		Check(none.Candidates.Count == 0 && none.Details.Count == 0 && none.EffectiveDetailLimit == 8,
+			"Disabled modules cannot be filled back in, and persisted detail values above eight must remain clamped.");
+	}
+
+	private static void TestProductionDetailCoverageAndTargets(IPolicyEffectModule[] modules)
+	{
+		IPolicyEffectModule food = RequirePolicyEffectModule("foodPerDay"), tax = RequirePolicyEffectModule("taxIncomePct"), training = RequirePolicyEffectModule("soldierTroopXp");
+		PolicyEffectModuleIntentRecall[] recalls =
+		{
+			BuildIntentRecall(0, true, "综合措施", (food, .99f), (tax, .8f), (training, .7f)),
+			BuildIntentRecall(1, false, "增加粮食储备", (food, .9f), (tax, .4f), (training, .3f)),
+			BuildIntentRecall(2, false, "调整领地税收", (tax, .8f), (food, .7f), (training, .3f)),
+			BuildIntentRecall(3, false, "安排军事训练", (training, .75f), (food, .6f), (tax, .4f)),
+			BuildIntentRecall(4, false, "影响概述：粮食供给", (food, .999f), (tax, .9f), (training, .8f)),
+			BuildIntentRecall(5, false, "不改变税收", (tax, 1f), (food, .7f), (training, .2f))
+		};
+		for (int i = 1; i <= 3; i++) recalls[i].QuerySource = PolicyEffectRecallQuerySource.OriginalClause;
+		recalls[4].QuerySource = PolicyEffectRecallQuerySource.Assessment;
+		recalls[5].QuerySource = PolicyEffectRecallQuerySource.OriginalClause;
+		recalls[5].IsExplicitExclusion = true;
+		IReadOnlyList<PolicyEffectModuleSelection> candidates = PolicyEffectModuleRouter.MergeCandidates(recalls, modules, "粮食税收军事训练", out _, out _);
+		IReadOnlyList<PolicyEffectModuleSelection> priority = PolicyEffectDetailSelector.Rank(candidates, recalls);
+		Check(priority.Take(3).Select(s => s.Module.Id).SequenceEqual(new[] { food.Id, tax.Id, training.Id }),
+			"Each positive original measure must be covered before repeated assessment and excluded-clause votes.");
+		Check(priority.Count == candidates.Count && priority.All(candidates.Contains),
+			"Detail ranking cannot synthesize modules outside the actual semantic/cue candidate union.");
+		PolicyEffectModuleRoutingResult routing = new PolicyEffectModuleRoutingResult
+		{
+			Candidates = candidates, DetailPriority = priority, Details = priority.Take(2).ToArray(), EffectiveDetailLimit = 2
+		};
+		PolicyTargetHandleDirectory directory = new PolicyTargetHandleDirectory();
+		directory.Targets["K0"] = new PolicyTargetHandleDirectoryEntry { Kind = "kingdom" };
+		directory.Targets["UNREFERENCED"] = new PolicyTargetHandleDirectoryEntry { Kind = "hero" };
+		foreach (string id in new[] { tax.Id, training.Id, "heroGold" })
+			directory.Capabilities[id] = new PolicyEffectCapabilityDirectoryEntry { AllowedTargetHandles = new List<string> { "K0" } };
+		PolicyEffectDetailSelector.ApplyTargetCapabilities(routing, directory);
+		Check(routing.Details.Select(s => s.Module.Id).SequenceEqual(new[] { tax.Id, training.Id })
+			&& directory.Capabilities.Keys.OrderBy(x => x).SequenceEqual(new[] { tax.Id, training.Id }.OrderBy(x => x))
+			&& directory.Targets.Keys.SequenceEqual(new[] { "K0" }),
+			"Target-ineligible hits must be replaced only by eligible ONNX candidates; unselected capabilities/handles cannot reach the prompt.");
 	}
 
 	private static void TestNpcRetrievalRequestSnapshot()
@@ -90,6 +146,9 @@ internal static partial class Program
 		string root = FindRepositoryRoot(AppDomain.CurrentDomain.BaseDirectory);
 		string fixture = Path.Combine(root, "tests", "bridges", "Policy", "PolicyEffectModule.ContractTests", "TestData", "policy_effect_production_retrieval.jsonl");
 		JObject[] cases = File.ReadAllLines(fixture).Where(line => !string.IsNullOrWhiteSpace(line)).Select(JObject.Parse).ToArray();
+		float[] probeVector = PolicyEffectModuleRouter.GetQueryEmbedding("政策效果检索验证");
+		Console.WriteLine("PRODUCTION_ONNX_META cases=" + cases.Length + " embeddingDimension=" + probeVector.Length
+			+ " assembly=" + typeof(PolicyEffectModuleRouter).Assembly.Location);
 		foreach (string id in ExpectedPromptVisibleModuleIds)
 		{
 			Check(new[] { "direct", "paraphrase", "adjacent", "negation", "scope" }.All(family =>
@@ -126,6 +185,22 @@ internal static partial class Program
 			}.ToString(Formatting.None));
 			if (!passed) failures.Add((string)c["id"]);
 		}
+		int embeddingCalls = 0;
+		try
+		{
+			PolicyEffectModuleRouter.RouteAfterAssessment("失败关闭", "增加粮食；调整税收", "", "", PolicyEffectRetrievalContext.PlayerKingdom,
+				ExpectedPromptVisibleModuleIds, 6, new AnimusForge.PolicyTextEmbeddingSession(_ =>
+				{
+					if (++embeddingCalls == 2) throw new InvalidOperationException("injected embedding failure");
+					return PolicyEffectModuleRouter.GetQueryEmbedding("增加粮食");
+				}, "failure-test"));
+			Check(false, "A secondary production embedding failure must not return a partial/fallback candidate set.");
+		}
+		catch (InvalidOperationException ex)
+		{
+			Check(ex.Message.Contains("injected embedding failure") && embeddingCalls == 2, "Production recall must fail closed on the actual secondary embedding failure.");
+		}
 		Check(failures.Count == 0, "Production ONNX matrix failures: " + string.Join(",", failures));
+		TestPolicyEffectMultiIntentOnnxBaselineContracts();
 	}
 }
