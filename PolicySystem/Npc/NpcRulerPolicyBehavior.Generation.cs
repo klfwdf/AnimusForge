@@ -1974,7 +1974,8 @@ public sealed partial class NpcRulerPolicyBehavior
 			ChainName = context.ChainName ?? string.Empty
 		};
 		ShowSuggestedPolicyGenerationRetry(retry,
-			"统治者政策拟定、解析或提交前安全校验失败，政策尚未进入议程。详细信息已写入日志。");
+			PolicyUiTexts.Get("AFPOL_UI_NpcRulerPolicyRetryReasonGenerationFailed",
+				"Drafting, parsing, or the pre-submission safety check failed, so the policy has not entered the agenda. Details have been written to the log."));
 	}
 
 	private void ShowSuggestedPolicyGenerationRetry(SuggestedPolicyRetryRequest retry, string visibleReason)
@@ -1983,22 +1984,25 @@ public sealed partial class NpcRulerPolicyBehavior
 		{
 			return;
 		}
-		string body = "阶段：统治者政策拟定\n原因：" + FirstNonEmpty(visibleReason, "政策拟定失败。")
-			+ "\n原请求编号：" + Limit(retry.PreviousBatchId, 80)
-			+ "\n\n可点击下方“手动重试”重新提交原建议，或点击右上角 X 关闭。"
-			+ "\n本次没有发布政策，也没有应用任何效果。";
+		string stageText = PolicyUiTexts.Get("AFPOL_UI_NpcRulerPolicyStage", "NPC Ruler Policy Drafting");
+		string reasonText = FirstNonEmpty(visibleReason, PolicyUiTexts.Get("AFPOL_UI_NpcRulerPolicyRetryDefaultReason", "Policy drafting failed."));
+		string body = PolicyUiTexts.Format("AFPOL_UI_NpcRulerPolicyRetryBody",
+				"Stage: {STAGE}\nReason: {REASON}\nOriginal request ID: {REQUEST}\n\nClick \"Retry Manually\" below to resubmit the original proposal, or click the X in the upper right to close.\nNo policy was published and no effect was applied this time.",
+				"STAGE", stageText, "REASON", reasonText, "REQUEST", Limit(retry.PreviousBatchId, 80));
 		Action retryAction = delegate { RetrySuggestedPolicyGeneration(retry); };
-		if (CustomPolicyResultPopup.ShowRetry("统治者政策拟定失败", body, "手动重试", retryAction))
+		string retryTitle = PolicyUiTexts.Get("AFPOL_UI_NpcRulerPolicyRetryTitle", "NPC Ruler Policy Drafting Failed");
+		string retryButton = PolicyUiTexts.Get("AFPOL_UI_RetryManually", "Retry Manually");
+		if (CustomPolicyResultPopup.ShowRetry(retryTitle, body, retryButton, retryAction))
 		{
 			return;
 		}
 		InformationManager.ShowInquiry(new InquiryData(
-			"统治者政策拟定失败",
+			retryTitle,
 			body,
 			isAffirmativeOptionShown: true,
 			isNegativeOptionShown: true,
-			"手动重试",
-			"关闭",
+			retryButton,
+			PolicyUiTexts.Get("AFPOL_UI_Close", "Close"),
 			retryAction,
 			null),
 			pauseGameActiveState: true);
@@ -2016,7 +2020,9 @@ public sealed partial class NpcRulerPolicyBehavior
 			|| (!string.IsNullOrWhiteSpace(retry.ExpectedRulerHeroId)
 				&& !string.Equals(ruler.StringId ?? string.Empty, retry.ExpectedRulerHeroId, StringComparison.OrdinalIgnoreCase)))
 		{
-			ShowSuggestedPolicyGenerationRetry(retry, "目标王国或接受建议的统治者已经变化，当前不能重新提交。");
+			ShowSuggestedPolicyGenerationRetry(retry,
+				PolicyUiTexts.Get("AFPOL_UI_NpcRulerPolicyRetryReasonTargetChanged",
+					"The target kingdom or the ruler who accepted the proposal has changed; it cannot be resubmitted right now."));
 			return;
 		}
 		if (TryStartSuggestedPolicyInternal(
@@ -2033,7 +2039,9 @@ public sealed partial class NpcRulerPolicyBehavior
 			return;
 		}
 		ShowSuggestedPolicyGenerationRetry(retry,
-			string.IsNullOrWhiteSpace(failureReason) ? "当前无法重新提交政策建议。" : failureReason.Trim());
+			string.IsNullOrWhiteSpace(failureReason)
+				? PolicyUiTexts.Get("AFPOL_UI_NpcRulerPolicyRetryReasonUnavailable", "The policy proposal cannot be resubmitted right now.")
+				: failureReason.Trim());
 	}
 
 	private static void CopyApiResultToPolicyResult(NpcPolicyGenerationResult result, NpcPolicyApiCallResult apiResult, bool accumulateAttempts)

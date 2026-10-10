@@ -5,7 +5,7 @@
   </tags>
   <strings>
     <string id="AFPOL_UI_BalanceDescription" text="每日按原版＋政策的净变化结算：正数最多加到总量上限；负数照常扣除，超额旧存量不削减。" />
-    <string id="AFPOL_UI_BalanceFoodRule" text="玩家和 NPC 全部适用。默认仅开启城市／城堡粮仓容量1000，其余六项默认关闭；粮仓不叠加城堡、建筑加成。\n繁荣度耗粮由 MCM“取消繁荣度耗粮”独立开关控制，默认关闭并保留原版；与本窗口各项开关无关。驻军耗粮、围城、供粮和政策粮食变化保留。" />
+    <string id="AFPOL_UI_BalanceFoodRule" text="玩家和 NPC 全部适用。默认仅开启城市／城堡粮仓容量1000，其余六项默认关闭；粮仓不叠加城堡、建筑加成。&#10;繁荣度耗粮由 MCM“取消繁荣度耗粮”独立开关控制，默认关闭并保留原版；与本窗口各项开关无关。驻军耗粮、围城、供粮和政策粮食变化保留。" />
     <string id="AFPOL_UI_BalanceInitialStatus" text="未开启的预填数值不生效。保存后应用；取消或 Esc 丢弃编辑；恢复默认后需保存。" />
     <string id="AFPOL_UI_BalanceIntegerRange" text="请输入 {MIN}–{MAX} 之间的整数。" />
     <string id="AFPOL_UI_BalanceOpenFailed" text="无法打开总量上限设置：{ERROR}" />
@@ -345,5 +345,39 @@
     <string id="AFPOL_UI_SuzerainTargetPrefix" text="宗主国：{SUZERAIN}&#10;发布对象：{TARGET}&#10;&#10;" />
     <string id="AFPOL_UI_PolicyImpactEffects" text="政策影响效果" />
     <string id="AFPOL_UI_PolicyDerivedEvent" text="政策衍生事件" />
-  </strings>
+      <string id="AFPOL_UI_NpcRulerPolicyStage" text="统治者政策拟定" />
+    <string id="AFPOL_UI_NpcRulerPolicyRetryTitle" text="统治者政策拟定失败" />
+    <string id="AFPOL_UI_NpcRulerPolicyRetryBody" text="阶段：{STAGE}&#10;原因：{REASON}&#10;原请求编号：{REQUEST}&#10;&#10;可点击下方“手动重试”重新提交原建议，或点击右上角 X 关闭。&#10;本次没有发布政策，也没有应用任何效果。" />
+    <string id="AFPOL_UI_NpcRulerPolicyRetryDefaultReason" text="政策拟定失败。" />
+    <string id="AFPOL_UI_NpcRulerPolicyRetryReasonGenerationFailed" text="统治者政策拟定、解析或提交前安全校验失败，政策尚未进入议程。详细信息已写入日志。" />
+    <string id="AFPOL_UI_NpcRulerPolicyRetryReasonTargetChanged" text="目标王国或接受建议的统治者已经变化，当前不能重新提交。" />
+    <string id="AFPOL_UI_NpcRulerPolicyRetryReasonUnavailable" text="当前无法重新提交政策建议。" />
+    <string id="AFPOL_UI_FreezeSettingsFailedPrefix" text="无法冻结本次政策评议配置：" />
+    <string id="AFPOL_UI_RetryOriginalRequestUnavailable" text="原政策请求已不可用，无法重试。" />
+    <string id="AFPOL_UI_EmptyPolicyRequest" text="政策请求为空。" />
+    <string id="AFPOL_UI_NoPolicyContentRecorded" text="未记录政策正文。" />
+    <string id="AFPOL_UI_RuntimeStatusInlineLabel" text="运行状态：" />
+    <string id="AFPOL_UI_LocalPublishFiefPrefix" text="发布地：" />
+    <string id="AFPOL_UI_NoRemainingTargets" text="无剩余目标" />
+    <string id="AFPOL_UI_TargetOverflowSuffix" text="，另{COUNT}处" />
+    <string id="AFPOL_UI_LocalRenewalHistoryNone" text="延长效果历史：无" />
+    <string id="AFPOL_UI_LocalRenewalHistoryTitle" text="延长效果历史：&#10;" />
+    <string id="AFPOL_UI_LocalRenewalHistoryEntry" text="- {DATE}：增加 {DAYS} 天" />
+    <string id="AFPOL_UI_UnnamedLocalPolicy" text="未命名地方政策" />
+    <string id="AFPOL_UI_LocalRecordCostLine" text="启动所需 {REQUIRED}；启动实付 {PAID}；每日维护 {DAILY}；累计维护 {TOTAL}；效果比例 {SCALE}" />
+    <string id="AFPOL_UI_LocalPolicyStatusPrefix" text="政策状态：" />
+    <string id="AFPOL_UI_LocalEffectStatusPrefix" text="效果状态：" />
+    <string id="AFPOL_UI_LocalRenewalCountPrefix" text="延长次数：" />
+    <string id="AFPOL_UI_CannotReReviewNow" text="该政策当前不能重新评议。" />
+    <string id="AFPOL_UI_ReReviewLineageInvalid" text="重新评议谱系信息无效。" />
+    <string id="AFPOL_UI_RecordCostAiGoldOnly" text="智能评估消耗：启动所需 {REQUIRED}；启动实付 {PAID}；每日维护 {DAILY}；累计维护 {TOTAL}；全部效果 {SCALE}" />
+    <string id="AFPOL_UI_RecordCostAiMixed" text="智能评估消耗：完整需 {REQUIRED}；已支付 {PAID}；经济/民生 {GOLD_SCALE}，政治/秩序 {INFLUENCE_SCALE}" />
+    <string id="AFPOL_UI_RecordCostPaid" text="已支付：{COST}" />
+    <string id="AFPOL_UI_RecordCostFixedLine" text="启动所需 {REQUIRED}；启动实付 {PAID}；每日维护 {DAILY}；累计维护 {TOTAL}" />
+    <string id="AFPOL_UI_CostGoldAmount" text="{AMOUNT} 第纳尔" />
+    <string id="AFPOL_UI_CostGoldNone" text="不消耗第纳尔" />
+    <string id="AFPOL_UI_CostInfluenceAmount" text="{AMOUNT} 影响力" />
+    <string id="AFPOL_UI_CostGoldAndInfluenceNone" text="不消耗第纳尔或影响力" />
+    <string id="AFPOL_UI_CostGoldAndInfluenceAmount" text="{GOLD} 第纳尔、{INFLUENCE} 影响力" />
+</strings>
 </base>
