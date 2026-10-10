@@ -112,8 +112,10 @@ internal static class WeeklyEditorProjection
 			{
 				text3 = BuildWeeklyReportBrowserDefaultTitle(port, text, text2, x.WeekIndex);
 			}
-			if (WeeklyReportArchivePolicy.IsRecent(x.EventId))
-				text3 = (x.ScopeKingdomId == WeeklyReportArchivePolicy.OtherKingdomId ? T("AF_UI_WeeklyProjection_OtherRecent", "Other recent news") : T("AF_UI_WeeklyProjection_KingdomRecent", "{KINGDOM} recent news", ("KINGDOM", port.ResolveKingdomDisplay(x.ScopeKingdomId)))) + " · " + x.CreatedDate;
+			bool recent = WeeklyReportArchivePolicy.IsRecent(x.EventId);
+			string date = recent ? BuildRecentDateForDisplay(port, x) : port.FormatNewsDate != null && x.CreatedDay >= 0 ? port.FormatNewsDate(x.CreatedDay) : (!string.IsNullOrWhiteSpace(x.CreatedDate) ? x.CreatedDate.Trim() : T("AF_UI_Timeline_UnknownDate", "Unknown date"));
+			if (recent)
+				text3 = (x.ScopeKingdomId == WeeklyReportArchivePolicy.OtherKingdomId ? T("AF_UI_WeeklyProjection_OtherRecent", "Other recent news") : T("AF_UI_WeeklyProjection_KingdomRecent", "{KINGDOM} recent news", ("KINGDOM", port.ResolveKingdomDisplay(x.ScopeKingdomId)))) + " · " + date;
 			string body = WeeklyReportArchivePolicy.BodyWithRegionalNews(x).Trim();
 			return new WeeklyReportBrowserEntryData
 			{
@@ -123,12 +125,29 @@ internal static class WeeklyEditorProjection
 				WeekIndex = Math.Max(0, x.WeekIndex),
 				Title = text3,
 				BodyText = body.Length == 0 ? T("AF_UI_WeeklyProjection_EmptyBody", "This weekly-report issue has no body text yet.") : body,
-				CreatedDate = port.FormatNewsDate != null && x.CreatedDay >= 0 ? port.FormatNewsDate(x.CreatedDay) : (!string.IsNullOrWhiteSpace(x.CreatedDate) ? x.CreatedDate.Trim() : T("AF_UI_Timeline_UnknownDate", "Unknown date")),
+				CreatedDate = date,
 				CreatedDay = Math.Max(0, x.CreatedDay),
 				TagText = (x.TagText ?? "").Trim(),
 				HasFullReport = !string.IsNullOrWhiteSpace(x.Summary)
 			};
 		}).ToList();
+	}
+
+	internal static string BuildRecentDateForDisplay(WeeklyEditorDisplayPort port, EventRecordEntry entry)
+	{
+		// A recent archive may span several days. Missing provenance keeps its stored range intact.
+		var materials = entry?.Materials?.Where(material => material != null).ToList();
+		if (port.FormatNewsDate != null && materials != null && materials.Count > 0
+			&& materials.All(material => material.ActionDay.HasValue && material.ActionDay.Value >= 0
+				&& (material.Label ?? "").IndexOf(" — ", StringComparison.Ordinal) < 0))
+		{
+			int firstDay = materials.Min(material => material.ActionDay.Value);
+			int lastDay = materials.Max(material => material.ActionDay.Value);
+			string first = port.FormatNewsDate(firstDay);
+			string last = firstDay == lastDay ? first : port.FormatNewsDate(lastDay);
+			return firstDay == lastDay ? first : first + " — " + last;
+		}
+		return !string.IsNullOrWhiteSpace(entry?.CreatedDate) ? entry.CreatedDate.Trim() : T("AF_UI_Timeline_UnknownDate", "Unknown date");
 	}
 
 	internal static string BuildWeeklyReportBrowserDefaultTitle(WeeklyEditorDisplayPort port, string eventKind, string scopeKingdomId, int weekIndex)
