@@ -836,7 +836,7 @@ public sealed class AnimusForgeTerminalPopupVM : ViewModel
 				Id = entry.Id,
 				Title = BuildTagCatalogEntryTitle(entry),
 				Hint = BuildTagCatalogEntryHint(entry),
-				SearchTerms = (entry.Description ?? "") + " " + string.Join(" ", entry.Sources),
+				SearchTerms = TagCatalogUiText.SearchTerms(entry),
 				OnExecute = () => ShowDetails(new TextObject("{=AF_UI_Terminal_TagDetails}Tag details").ToString(), BuildTagCatalogEntryDetailText(entry))
 			});
 		}
@@ -887,7 +887,7 @@ public sealed class AnimusForgeTerminalPopupVM : ViewModel
 		DiagnosticsStatusText = status ?? new TextObject("{=AF_UI_Terminal_DiagnosticsOnline2}Sentinel status: online").ToString();
 		DiagnosticsDetailText = string.IsNullOrWhiteSpace(detail) ? new TextObject("{=AF_UI_Terminal_NoFatal}No fatal error stack has been recorded this session.").ToString() : detail;
 		HasLatestErrorToAnalyze = canAnalyze;
-		BreadcrumbText = "Terminal / " + _selectedTab + " / " + new TextObject("{=AF_UI_Terminal_DiagnosticsTitle}System error analysis and diagnostics").ToString();
+		BreadcrumbText = new TextObject("{=AF_UI_Terminal_BreadcrumbRoot}Terminal").ToString() + " / " + LocalizeTab(_selectedTab) + " / " + new TextObject("{=AF_UI_Terminal_DiagnosticsTitle}System error analysis and diagnostics").ToString();
 		SetViewMode(TerminalViewMode.Diagnostics);
 	}
 
@@ -956,7 +956,7 @@ public sealed class AnimusForgeTerminalPopupVM : ViewModel
 		{
 			return new TextObject("{=AF_UI_Terminal_Tag}Tag").ToString();
 		}
-		return "[" + (entry.Category ?? "标签") + "] " + (entry.Tag ?? "");
+		return "[" + TagCatalogUiText.Category(entry.Category) + "] " + TagCatalogUiText.Tag(entry.Tag);
 	}
 
 	private static string BuildTagCatalogEntryHint(AnimusForgeTagCatalogEntry entry)
@@ -965,8 +965,8 @@ public sealed class AnimusForgeTerminalPopupVM : ViewModel
 		{
 			return "";
 		}
-		string description = CompactOneLine(entry.Description);
-		string source = (entry.Sources != null && entry.Sources.Count > 0) ? entry.Sources[0] : "";
+		string description = CompactOneLine(TagCatalogUiText.Description(entry.Description));
+		string source = (entry.Sources != null && entry.Sources.Count > 0) ? TagCatalogUiText.Source(entry.Sources[0]) : "";
 		string text = "";
 		if (!string.IsNullOrWhiteSpace(description))
 		{
@@ -983,13 +983,13 @@ public sealed class AnimusForgeTerminalPopupVM : ViewModel
 	private static string BuildTagCatalogEntryDetailText(AnimusForgeTagCatalogEntry entry)
 	{
 		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.AppendLine(new TextObject("{=AF_UI_Terminal_TagLabel}Tag:").ToString() + " " + (entry.Tag ?? ""));
-		stringBuilder.AppendLine(new TextObject("{=AF_UI_Terminal_CategoryLabel}Category:").ToString() + " " + (entry.Category ?? new TextObject("{=AF_UI_Terminal_Tag}Tag").ToString()));
+		stringBuilder.AppendLine(new TextObject("{=AF_UI_Terminal_TagLabel}Tag:").ToString() + " " + TagCatalogUiText.Tag(entry.Tag));
+		stringBuilder.AppendLine(new TextObject("{=AF_UI_Terminal_CategoryLabel}Category:").ToString() + " " + TagCatalogUiText.Category(entry.Category));
 		if (!string.IsNullOrWhiteSpace(entry.Description))
 		{
 			stringBuilder.AppendLine();
 			stringBuilder.AppendLine(new TextObject("{=AF_UI_Terminal_DescriptionLabel}Description:").ToString());
-			stringBuilder.AppendLine(entry.Description.Trim());
+			stringBuilder.AppendLine(TagCatalogUiText.Description(entry.Description));
 		}
 		if (entry.Sources != null && entry.Sources.Count > 0)
 		{
@@ -997,7 +997,7 @@ public sealed class AnimusForgeTerminalPopupVM : ViewModel
 			stringBuilder.AppendLine(new TextObject("{=AF_UI_Terminal_SourcesLabel}Sources:").ToString());
 			foreach (string source in entry.Sources)
 			{
-				stringBuilder.AppendLine(source);
+				stringBuilder.AppendLine(TagCatalogUiText.Source(source));
 			}
 		}
 		return stringBuilder.ToString().TrimEnd();

@@ -72,13 +72,13 @@ internal static class AnimusForgeTagCatalog
 			snapshot ??= BuildSnapshot(forceRefresh: true);
 			if (snapshot == null || snapshot.Entries.Count <= 0)
 			{
-				error = "当前没有可导出的标签。";
+				error = TagCatalogUiText.ExportEmpty;
 				return false;
 			}
 			string moduleRoot = ResolveExportModuleRoot(snapshot);
 			if (string.IsNullOrWhiteSpace(moduleRoot) || !Directory.Exists(moduleRoot))
 			{
-				error = "没有找到可写入的 AnimusForge 模块目录。";
+				error = TagCatalogUiText.ExportRootMissing;
 				return false;
 			}
 			string timestamp = DateTime.Now.ToString("yyyyMMdd_HHmmss", CultureInfo.InvariantCulture);
@@ -90,7 +90,7 @@ internal static class AnimusForgeTagCatalog
 			}
 			if (File.Exists(candidate))
 			{
-				error = "导出文件名冲突过多，请稍后再试。";
+				error = TagCatalogUiText.ExportNameConflict;
 				return false;
 			}
 			File.WriteAllText(candidate, BuildExportText(snapshot, moduleRoot), new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
@@ -618,42 +618,42 @@ internal static class AnimusForgeTagCatalog
 		StringBuilder stringBuilder = new StringBuilder();
 		int bodyCount = snapshot.Entries.Count((AnimusForgeTagCatalogEntry x) => (x.Category ?? "").StartsWith("正文", StringComparison.Ordinal));
 		int postprocessCount = snapshot.Entries.Count((AnimusForgeTagCatalogEntry x) => (x.Category ?? "").StartsWith("后处理", StringComparison.Ordinal));
-		stringBuilder.AppendLine("AnimusForge 标签列表");
-		stringBuilder.AppendLine("导出时间：" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture));
-		stringBuilder.AppendLine("模块目录：" + (moduleRoot ?? ""));
-		stringBuilder.AppendLine("标签总数：" + snapshot.Entries.Count.ToString(CultureInfo.InvariantCulture));
-		stringBuilder.AppendLine("正文/历史：" + bodyCount.ToString(CultureInfo.InvariantCulture));
-		stringBuilder.AppendLine("后处理：" + postprocessCount.ToString(CultureInfo.InvariantCulture));
-		stringBuilder.AppendLine("扫描文件：" + snapshot.ScannedFileCount.ToString(CultureInfo.InvariantCulture));
+		stringBuilder.AppendLine(TagCatalogUiText.ExportTitle);
+		stringBuilder.AppendLine(TagCatalogUiText.ExportTime(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture)));
+		stringBuilder.AppendLine(TagCatalogUiText.ExportRoot(moduleRoot ?? ""));
+		stringBuilder.AppendLine(TagCatalogUiText.ExportTotal(snapshot.Entries.Count.ToString(CultureInfo.InvariantCulture)));
+		stringBuilder.AppendLine(TagCatalogUiText.ExportBody(bodyCount.ToString(CultureInfo.InvariantCulture)));
+		stringBuilder.AppendLine(TagCatalogUiText.ExportPostprocess(postprocessCount.ToString(CultureInfo.InvariantCulture)));
+		stringBuilder.AppendLine(TagCatalogUiText.ExportFiles(snapshot.ScannedFileCount.ToString(CultureInfo.InvariantCulture)));
 		if (snapshot.SourceRoots.Count > 0)
 		{
 			stringBuilder.AppendLine();
-			stringBuilder.AppendLine("扫描来源：");
+			stringBuilder.AppendLine(TagCatalogUiText.ExportSources);
 			foreach (string root in snapshot.SourceRoots)
 			{
 				stringBuilder.AppendLine("- " + root);
 			}
 		}
 		stringBuilder.AppendLine();
-		stringBuilder.AppendLine("说明：此文件由游戏内 U 键 AnimusForge 终端的一键导出生成。列表来自当前模块文件、当前程序集字符串和内置运行时规则。");
+		stringBuilder.AppendLine(TagCatalogUiText.ExportExplanation);
 		foreach (IGrouping<string, AnimusForgeTagCatalogEntry> group in snapshot.Entries.GroupBy((AnimusForgeTagCatalogEntry x) => string.IsNullOrWhiteSpace(x.Category) ? "标签" : x.Category).OrderBy((IGrouping<string, AnimusForgeTagCatalogEntry> x) => CategoryOrder(x.Key)).ThenBy((IGrouping<string, AnimusForgeTagCatalogEntry> x) => x.Key, StringComparer.OrdinalIgnoreCase))
 		{
 			stringBuilder.AppendLine();
-			stringBuilder.AppendLine("==== " + group.Key + " ====");
+			stringBuilder.AppendLine("==== " + TagCatalogUiText.Category(group.Key) + " ====");
 			foreach (AnimusForgeTagCatalogEntry entry in group.OrderBy((AnimusForgeTagCatalogEntry x) => x.Tag, StringComparer.OrdinalIgnoreCase))
 			{
 				stringBuilder.AppendLine();
-				stringBuilder.AppendLine(entry.Tag ?? "");
+				stringBuilder.AppendLine(TagCatalogUiText.Tag(entry.Tag));
 				if (!string.IsNullOrWhiteSpace(entry.Description))
 				{
-					stringBuilder.AppendLine("说明：" + entry.Description.Trim());
+					stringBuilder.AppendLine(TagCatalogUiText.DescriptionLabel + " " + TagCatalogUiText.Description(entry.Description));
 				}
 				if (entry.Sources.Count > 0)
 				{
-					stringBuilder.AppendLine("来源：");
+					stringBuilder.AppendLine(TagCatalogUiText.SourcesLabel);
 					foreach (string source in entry.Sources)
 					{
-						stringBuilder.AppendLine("- " + source);
+						stringBuilder.AppendLine("- " + TagCatalogUiText.Source(source));
 					}
 				}
 			}

@@ -3201,5 +3201,33 @@ Choose how to proceed:" />
   <string id="AF_UI_Scene_SummonStartedAcrossLocations" text="{SPEAKER} went to summon {TARGET} for you." />
   <string id="AF_UI_Browser_InvalidUrl" text="Invalid link. Only HTTP or HTTPS pages can be opened." />
   <string id="AF_UI_Browser_StartFailed" text="The default browser could not start, and no local browser could be launched from the registry or common installation paths. Install or configure Chrome, Edge, Firefox, or another browser and try again. Reason: {REASON}" />
+  <string id="AF_UI_TagCatalog_CategoryBody" text="Body text" />
+  <string id="AF_UI_TagCatalog_CategoryHistory" text="Body/history" />
+  <string id="AF_UI_TagCatalog_CategoryFacts" text="Body/facts" />
+  <string id="AF_UI_TagCatalog_CategoryPostprocess" text="Postprocessing" />
+  <string id="AF_UI_TagCatalog_CategoryRules" text="Postprocessing/rule table" />
+  <string id="AF_UI_TagCatalog_CategoryRelay" text="Postprocessing/relay" />
+  <string id="AF_UI_TagCatalog_CategoryGccz" text="Postprocessing/GCCZ" />
+  <string id="AF_UI_TagCatalog_CategoryVillage" text="Postprocessing/GCCZ villages" />
+  <string id="AF_UI_TagCatalog_NaturalLanguage" text="Body text (natural language)" />
+  <string id="AF_UI_TagCatalog_DescriptionBody" text="This is not an action tag. Text other than action tags in the tag-test input is displayed as NPC-visible body text or written to history." />
+  <string id="AF_UI_TagCatalog_DescriptionContent" text="Internal body-text delimiter. Players normally do not enter this as an action tag." />
+  <string id="AF_UI_TagCatalog_DescriptionPlayerFact" text="Player-action fact marker informing the LLM of player actions that have actually occurred." />
+  <string id="AF_UI_TagCatalog_DescriptionNpcFact" text="NPC-action fact marker informing the LLM of NPC actions that have actually occurred." />
+  <string id="AF_UI_TagCatalog_DescriptionVillage" text="Triggered only by an explicit player command in an authorized ordinary village scene: {ACTION}" />
+  <string id="AF_UI_TagCatalog_SourceBuiltIn" text="Built-in documentation" />
+  <string id="AF_UI_TagCatalog_SourceAssembly" text="Assembly: {SOURCE}" />
+  <string id="AF_UI_TagCatalog_ExportEmpty" text="There are no tags to export." />
+  <string id="AF_UI_TagCatalog_ExportRootMissing" text="No writable AnimusForge module directory was found." />
+  <string id="AF_UI_TagCatalog_ExportNameConflict" text="Too many export filename conflicts. Try again later." />
+  <string id="AF_UI_TagCatalog_ExportTitle" text="AnimusForge tag catalog" />
+  <string id="AF_UI_TagCatalog_ExportTime" text="Exported at: {VALUE}" />
+  <string id="AF_UI_TagCatalog_ExportRoot" text="Module directory: {VALUE}" />
+  <string id="AF_UI_TagCatalog_ExportTotal" text="Total tags: {VALUE}" />
+  <string id="AF_UI_TagCatalog_ExportBody" text="Body/history: {VALUE}" />
+  <string id="AF_UI_TagCatalog_ExportPostprocess" text="Postprocessing: {VALUE}" />
+  <string id="AF_UI_TagCatalog_ExportFiles" text="Scanned files: {VALUE}" />
+  <string id="AF_UI_TagCatalog_ExportSources" text="Scan sources:" />
+  <string id="AF_UI_TagCatalog_ExportExplanation" text="This file was exported from the in-game AnimusForge terminal (U key). The catalog is extracted from current module files, current assembly strings, and built-in runtime rules." />
 </strings>
 </base>
