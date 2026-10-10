@@ -37,7 +37,7 @@ check('if (string.IsNullOrWhiteSpace(reply) && LlmApiCompat.IsReasoningOnlyToken
       'retry eligibility unchanged')
 for name in ('af_runtime_strings.xml','CNs/af_runtime_strings-zh-CN.xml'):
     values={n.get('id'):n.get('text') for n in ET.parse(ROOT/'content/foundation/AF.Foundation.Localization/ModuleData/Languages'/name).getroot().iter('string')}
-    check(len(values)==20,name+' has all snapshot keys')
+    check(sum(key.startswith('AF_RUNTIME_ApiTest_') for key in values)==20,name+' has all API-test snapshot keys')
     for stage in ('Main','Preprocess','Postprocess','Event','Ambient'):
         check('AF_RUNTIME_ApiTest_Stage_'+stage in values,name+' stage '+stage)
     check(values['AF_RUNTIME_ApiTest_PostprocessPrompt'].count('[ACTION:MOOD:NEUTRAL]')==1,

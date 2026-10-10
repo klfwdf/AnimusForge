@@ -17101,6 +17101,18 @@
       "source": "content/modules/AnimusForge.XihaiAction/ModuleData/SceneActionVocabulary.xml",
       "target": "ModuleData/SceneActionVocabulary.xml",
       "logicalName": "AnimusForge.Defaults.SceneActionVocabulary.xml"
+    },
+    {
+      "owner": "AnimusForge.XihaiAction",
+      "source": "content/modules/AnimusForge.XihaiAction/ModuleData/Languages/afscene_catalog_strings.xml",
+      "target": "ModuleData/Languages/afscene_catalog_strings.xml",
+      "logicalName": "AnimusForge.SceneActions.Catalog.en.xml"
+    },
+    {
+      "owner": "AnimusForge.XihaiAction",
+      "source": "content/modules/AnimusForge.XihaiAction/ModuleData/Languages/CNs/afscene_catalog_strings-zh-CN.xml",
+      "target": "ModuleData/Languages/CNs/afscene_catalog_strings-zh-CN.xml",
+      "logicalName": "AnimusForge.SceneActions.Catalog.zh-CN.xml"
     }
   ]
 }

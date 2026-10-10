@@ -101,8 +101,8 @@ namespace AnimusForge.SceneActions.Core
                 {
                     NewAction(
                         Command,
-                        "发号施令",
-                        "实际挥臂、抬手或摆出手势向群体发号施令；口头命令和单纯指向不算该动作。",
+                        SceneActionCatalogText.Get("command", true).Name,
+                        SceneActionCatalogText.Get("command", true).Description,
                         new[]
                         {
                             "发号施令", "下令手势", "挥臂下令", "command",
@@ -129,20 +129,12 @@ namespace AnimusForge.SceneActions.Core
                             "command", "order", "ordered",
                             "command gesture", "issue order gesture"
                         },
-                        new[]
-                        {
-                            "他挥臂向整支队伍发号施令。",
-                            "她抬手向众人作出明确的下令手势。"
-                        },
-                        new[]
-                        {
-                            "他只是说：‘前进。’", "他伸手指向门口。",
-                            "她命令别人服从，但没有做手势。"
-                        }),
+                        SceneActionCatalogText.Get("command", true).Positive,
+                        SceneActionCatalogText.Get("command", true).Negative),
                     NewAction(
                         FollowMe,
-                        "招手跟上",
-                        "实际向同伴或队伍招手示意跟上、跟随或向前；友好问候和对敌勾手叫阵不算该动作。",
+                        SceneActionCatalogText.Get("follow_me", true).Name,
+                        SceneActionCatalogText.Get("follow_me", true).Description,
                         new[]
                         {
                             "招手示意跟上", "跟上手势", "follow_me",
@@ -162,20 +154,12 @@ namespace AnimusForge.SceneActions.Core
                             "跟上手势", "招手跟上", "跟我来", "跟上",
                             "follow me", "follow me gesture", "beckon to follow"
                         },
-                        new[]
-                        {
-                            "他朝同伴招手示意跟上。",
-                            "她挥手示意众人跟上。"
-                        },
-                        new[]
-                        {
-                            "他说：‘跟我来。’", "他向朋友挥手问好。",
-                            "她朝对手勾手挑衅。"
-                        }),
+                        SceneActionCatalogText.Get("follow_me", true).Positive,
+                        SceneActionCatalogText.Get("follow_me", true).Negative),
                     NewAction(
                         CutThroat,
-                        "割喉手势",
-                        "实际用手指横划喉前作出割喉威胁手势；口头威胁和真实持刀割喉或攻击都不算该手势。",
+                        SceneActionCatalogText.Get("cut_throat", true).Name,
+                        SceneActionCatalogText.Get("cut_throat", true).Description,
                         new[]
                         {
                             "割喉手势", "抹脖子手势", "cut_throat",
@@ -199,16 +183,8 @@ namespace AnimusForge.SceneActions.Core
                             "割喉手势", "抹脖子手势", "划喉手势", "割断你的喉咙",
                             "割喉", "抹脖子", "cut throat", "cut throat gesture", "slit your throat"
                         },
-                        new[]
-                        {
-                            "他冷冷地用手指从喉前划过。",
-                            "她做出割喉手势。"
-                        },
-                        new[]
-                        {
-                            "他说：‘我要割断你的喉咙。’", "他只是挥拳恐吓。",
-                            "她拔刀真的砍向对方喉咙。"
-                        })
+                        SceneActionCatalogText.Get("cut_throat", true).Positive,
+                        SceneActionCatalogText.Get("cut_throat", true).Negative)
                 })
                 .ToArray());
 
@@ -491,6 +467,9 @@ namespace AnimusForge.SceneActions.Core
             return false;
         }
         public static string BuildClassifierDefinitionBlock(IEnumerable<string> allowedIntentKeys)
+            => BuildClassifierDefinitionBlock(allowedIntentKeys, true);
+
+        public static string BuildClassifierDefinitionBlock(IEnumerable<string> allowedIntentKeys, bool useChinese)
         {
             HashSet<string> allowed = new HashSet<string>(
                 allowedIntentKeys ?? Enumerable.Empty<string>(),
@@ -498,10 +477,7 @@ namespace AnimusForge.SceneActions.Core
             return string.Join("\n", Entries
                 .Where(entry => allowed.Contains(entry.IntentKey))
                 .Select(entry =>
-                    entry.IntentKey + "（" + entry.DisplayNameZhCn + "）：" +
-                    entry.SemanticDescriptionZhCn +
-                    " 正例：" + string.Join("；", entry.PositiveExamples) +
-                    " 反例：" + string.Join("；", entry.NegativeExamples)));
+                    SceneActionCatalogText.FormatEntry(entry.IntentKey, useChinese, true)));
         }
 
         public static void ValidateCatalog(SceneActionCatalog catalog)

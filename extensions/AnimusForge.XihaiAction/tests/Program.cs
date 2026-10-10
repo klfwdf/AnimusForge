@@ -8,8 +8,45 @@ internal static class Program
     private static int _passed;
     private static int _failed;
 
+    private static void TestBilingualSceneActionCatalog()
+    {
+        string[] keys = SceneActionFrameworkV4.LogicalActions.Select(entry => entry.IntentKey).ToArray();
+        string english = SceneActionFrameworkV4.BuildClassifierDefinitionBlock(keys, false);
+        string chinese = SceneActionFrameworkV4.BuildClassifierDefinitionBlock(keys, true);
+        True(english.Split('\n').Length == 27);
+        True(chinese == SceneActionFrameworkV4.BuildClassifierDefinitionBlock(keys));
+        True(!english.Any(character => character >= '\u3400' && character <= '\u9fff'));
+        foreach (SceneActionContractEntryV4 entry in SceneActionFrameworkV4.LogicalActions)
+        {
+            True(english.Contains(entry.IntentKey + " ("));
+            string legacyLine = entry.IntentKey + "（" + entry.DisplayNameZhCn + "）：" +
+                entry.SemanticDescriptionZhCn + " 正例：" + string.Join("；", entry.PositiveExamples) +
+                " 反例：" + string.Join("；", entry.NegativeExamples);
+            True(chinese.Split('\n').Contains(legacyLine));
+        }
+        string one = NpcReplyDirectiveTagV1.BuildCatalogText(new[] { "kneel", "not_an_action" }, false);
+        True(one.StartsWith("kneel (Kneel):", StringComparison.Ordinal));
+        True(!one.Contains('\n') && !one.Contains("not_an_action"));
+        True(NpcReplyDirectiveTagV1.BuildCatalogText(Array.Empty<string>(), false) == string.Empty);
+        foreach (bool useChinese in new[] { false, true })
+        {
+            var prompts = new SceneActionClassifierPrompts(useChinese);
+            True(prompts.SystemPromptPreamble.Contains("PLAY_ACTION <key>"));
+            True(prompts.SystemPromptPreamble.Contains("implicitEmotionIntentKeys"));
+            True(prompts.ConsentSystemPrompt.Contains("ACCEPT") && prompts.ConsentSystemPrompt.Contains("UNCLEAR"));
+            True(prompts.BattleSpeechTriggerSystemPrompt.Contains("ORDINARY_SCENE"));
+            True(prompts.BattleSpeechPlanSystemPromptPreamble.Contains("allowAdvance=false"));
+            True(prompts.BattleSpeechPlanSystemPromptPreamble.Contains("REPLIES NONE"));
+            if (!useChinese)
+                True(!(prompts.SystemPromptPreamble + prompts.ConsentSystemPrompt +
+                    prompts.BattleSpeechTriggerSystemPrompt + prompts.BattleSpeechPlanSystemPromptPreamble)
+                    .Any(character => character >= '\u3400' && character <= '\u9fff'));
+        }
+    }
+
     private static int Main()
     {
+        Run("Scene action prompt catalog is bilingual and preserves frozen keys", TestBilingualSceneActionCatalog);
         Run("Battle speech V1 parses explicit player and NPC session commands",
             TestBattleSpeechCommandProtocol);
         Run("Battle speech V1 does not capture ordinary combat dialogue",

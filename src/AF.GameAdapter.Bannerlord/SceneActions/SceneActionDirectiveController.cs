@@ -105,7 +105,10 @@ internal static class SceneActionDirectiveController
 		{
 			return new List<PostprocessRuleEntry>();
 		}
-		string catalog = NpcReplyDirectiveTagV1.BuildCatalogText(offeredKeys);
+        bool useChinese = string.Equals(
+            ConversationUiLocalization.Text("AF_RUNTIME_SceneActions_Language", "en"),
+            "zh-CN", StringComparison.Ordinal);
+        string catalog = NpcReplyDirectiveTagV1.BuildCatalogText(offeredKeys, useChinese);
 		return (AIConfigHandler.SceneActionPostprocessRules ?? new List<PostprocessRuleEntry>())
 			.Where(rule => string.Equals((rule?.Tag ?? "").Trim(), NpcReplyDirectiveTagV1.RuleTemplateTag, StringComparison.Ordinal))
 			.Select(rule => new PostprocessRuleEntry
