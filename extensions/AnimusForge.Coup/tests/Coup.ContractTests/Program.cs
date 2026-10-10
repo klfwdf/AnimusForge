@@ -286,12 +286,12 @@ internal static class Program
         session.Troops.Add(new CoupTroopRecord { Id = "ally_k", CharacterId = "s", SourcePartyId = "p", Role = CoupTroopRole.Ally, Killed = true, Removed = true });
         session.Troops.Add(new CoupTroopRecord { Id = "guard_w", CharacterId = "s", SourcePartyId = "p", Role = CoupTroopRole.HallGuard, Wounded = true, Removed = true });
         string report = CoupOutcomeReport.BuildPlayerVictory(session, "王国", "新王", "城镇", "玩家家族", "旧王", false);
-        Assert(report.Contains("当前统治者：新王") && report.Contains("城镇当前归属：玩家家族"), "report uses current authoritative names");
-        Assert(report.Contains("本次选择不扣押") && report.Contains("突击队：阵亡 1，负伤 0") && report.Contains("守军：阵亡 0，负伤 1"), "release and recorded casualties shown");
-        Assert(report.Contains("是否实际起兵以之后的战役结果为准") && !report.Contains("叛乱已经发生"), "queue receipt never claims actual rebellion");
+        Assert(report.Contains("Current ruler: 新王") && report.Contains("Town owner: 玩家家族"), "report uses current authoritative names");
+        Assert(report.Contains("chose not to capture") && report.Contains("Assault party: 1 killed, 0 wounded") && report.Contains("Defenders: 0 killed, 1 wounded"), "release and recorded casualties shown");
+        Assert(report.Contains("whether a rebellion actually begins depends on later campaign results") && !report.Contains("rebellion has already happened"), "queue receipt never claims actual rebellion");
         session.Disposition = CoupKingDisposition.Capture;
-        Assert(CoupOutcomeReport.BuildPlayerVictory(session, "k", "r", "t", "o", "king", true).Contains("当前仍由你的部队保管"), "actual held king shown");
-        Assert(CoupOutcomeReport.BuildPlayerVictory(session, "k", "r", "t", "o", "king", false).Contains("目前已不在你的部队保管"), "later escape does not invent continuing custody");
+        Assert(CoupOutcomeReport.BuildPlayerVictory(session, "k", "r", "t", "o", "king", true).Contains("still held by your party"), "actual held king shown");
+        Assert(CoupOutcomeReport.BuildPlayerVictory(session, "k", "r", "t", "o", "king", false).Contains("no longer held by your party"), "later escape does not invent continuing custody");
         session.FactsCommitted = false;
         bool refused = false;
         try { CoupOutcomeReport.BuildPlayerVictory(session, "k", "r", "t", "o", "king", true); }
@@ -325,18 +325,18 @@ internal static class Program
         string Report(bool success, bool captured = false, bool war = true) =>
             CoupOutcomeReport.Build(session, "玩家领主", "德泰尔", "加伦", "瓦兰迪亚", success, captured, war);
         string unentered = Report(false);
-        Assert(unentered.Contains("未记录到实际进场") && !unentered.Contains("进入城镇街道"), "pre-scene failure does not invent a battle");
+        Assert(unentered.Contains("no actual scene entry was recorded") && !unentered.Contains("entered the town street"), "pre-scene failure does not invent a battle");
         session.SceneEntered = true;
         string street = Report(false);
-        Assert(street.Contains("瓦兰迪亚的加伦针对国王德泰尔") && street.Contains("突击队共2人"), "report names place, realm, ruler and assault size");
-        Assert(street.Contains("进入城镇街道") && !street.Contains("突破大厅入口") && !street.Contains("攻入领主大厅"), "street-only result reports only observed progress");
-        Assert(street.Contains("政变失败") && street.Contains("脱离原王国并与之开战"), "failed result includes confirmed consequences");
-        Assert(!Report(false, false, false).Contains("与之开战"), "no war claimed when original kingdom no longer at war");
+        Assert(street.Contains("瓦兰迪亚") && street.Contains("加伦") && street.Contains("德泰尔") && street.Contains("2 assault troops"), "report names place, realm, ruler and assault size");
+        Assert(street.Contains("entered the town street") && !street.Contains("breached the hall entrance") && !street.Contains("into the lord's hall"), "street-only result reports only observed progress");
+        Assert(street.Contains("The coup failed") && street.Contains("went to war with it"), "failed result includes confirmed consequences");
+        Assert(!Report(false, false, false).Contains("went to war with it"), "no war claimed when original kingdom no longer at war");
         session.GateBreached = true;
-        Assert(Report(false).Contains("突破大厅入口") && !Report(false).Contains("攻入领主大厅"), "breaching gate alone does not invent hall combat");
+        Assert(Report(false).Contains("breached the hall entrance") && !Report(false).Contains("into the lord's hall"), "breaching gate alone does not invent hall combat");
         session.HallEntered = true;
         string hall = Report(false);
-        Assert(hall.Contains("率1名突击队员攻入领主大厅") && !hall.Contains("制服国王"), "hall failure does not invent king subdued");
+        Assert(hall.Contains("led 1 assault troops into the lord's hall") && !hall.Contains("subdued the ruler"), "hall failure does not invent king subdued");
         session.KingSubdued = true;
         session.CasualtiesCommitted = session.RulingClanCommitted = session.TownCommitted = session.CustodyCommitted = true;
         Assert(CoupOutcomeReport.CanReport(session, true), "fully confirmed victory may publish");
@@ -344,9 +344,9 @@ internal static class Program
         Assert(!CoupOutcomeReport.CanReport(session, true), "incomplete custody blocks victory report");
         session.CustodyCommitted = true;
         string victory = Report(true, true);
-        Assert(victory.Contains("制服国王") && victory.Contains("取得瓦兰迪亚王位并接管加伦") && victory.Contains("旧王被扣押"), "victory report includes exact outcome and custody");
-        Assert(Report(true).Contains("选择不扣押旧王"), "non-capture disposition is described without inventing a release action");
-        Assert(victory.Contains("突击队阵亡1、负伤0；守军阵亡0、负伤1"), "counts come from actual session casualties, not total defender reserve");
+        Assert(victory.Contains("subdued the ruler") && victory.Contains("took the throne of 瓦兰迪亚 and seized 加伦") && victory.Contains("former ruler was captured"), "victory report includes exact outcome and custody");
+        Assert(Report(true).Contains("chose not to capture the former ruler"), "non-capture disposition is described without inventing a release action");
+        Assert(victory.Contains("Recorded casualties: assault party 1 killed, 0 wounded; defenders 0 killed, 1 wounded"), "counts come from actual session casualties, not total defender reserve");
         session.DefectionCommitted = true;
         Assert(!CoupOutcomeReport.CanReport(session, false), "failure before withdrawal cannot publish final outcome");
         session.WithdrawalCommitted = true;
@@ -366,9 +366,9 @@ internal static class Program
             "dedicated coup fact is selectable as headline with its full identity and narrative");
         Assert(!ReferenceEquals(selection.Major, fact) && !ReferenceEquals(selection.Major.KingdomIds, fact.KingdomIds),
             "coup headline uses the host's detached publication snapshot");
-        Assert(WorldBulletinPolicy.BuildTemplate(selection).Major.Contains(victory), "offline fallback preserves place, process and outcome");
+        Assert(WorldBulletinPolicy.BuildTemplate(selection).Major.Contains(victory.TrimEnd('.')), "offline fallback preserves place, process and outcome");
         Assert(WorldBulletinPolicy.BuildUserPrompt("天下", "某日", selection, null).Contains(victory), "LLM receives full untruncated coup narrative");
-        Assert(WorldBulletinPolicy.BuildNpcDetailBlock(WorldBulletinPolicy.NpcKingdomHeader, "瓦兰迪亚", "vlandia", new[] { fact }, 5).Contains(victory), "NPC bulletin knowledge receives the same full facts");
+        Assert(WorldBulletinPolicy.BuildNpcDetailBlock(WorldBulletinPolicy.NpcKingdomHeader, "瓦兰迪亚", "vlandia", new[] { fact }, 5).Contains(victory.TrimEnd('.')), "NPC bulletin knowledge receives the same full facts");
         Assert(WorldBulletinPolicy.TitleForKind("coup_success") == "政变夺位" && WorldBulletinPolicy.TitleForKind("coup_failure") == "政变失败", "dedicated fallback titles distinguish final outcomes");
     }
 }

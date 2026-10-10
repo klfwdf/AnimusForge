@@ -50,5 +50,89 @@
     <string id="AF_COUP_UI_HALL_BREAKTHROUGH" text="【宣权篡位】大厅入口已突破，后续街道增援已停止；已在场敌兵仍会战斗。抵达门口按 F 攻入大厅。" />
     <string id="AF_COUP_UI_HALL_SELECTION_PROMPT" text="【宣权篡位】大厅入口已突破，按 F 选择突入大厅的士兵。" />
     <string id="AF_COUP_UI_KING_SUBDUED" text="【宣权篡位】国王已被制服，大厅已控制。请确认旧王处置，之后离场结算。" />
+    <string id="AF_COUP_UI_SAVE_INVALID" text="政变存档状态异常，已保留原记录并停用新政变，请查看日志。" />
+    <string id="AF_COUP_UI_MENU_ARMED_COUP" text="宣权篡位" />
+    <string id="AF_COUP_UI_MENU_RETRY_WAR" text="重试政变内战登记" />
+    <string id="AF_COUP_UI_MENU_ENTER_STREET" text="率领政变突击队攻入城镇" />
+    <string id="AF_COUP_UI_MENU_ENTER_HALL" text="率领政变突击队攻入领主大厅" />
+    <string id="AF_COUP_UI_MENU_VICTORY_REPORT" text="查看政变登基战报" />
+    <string id="AF_COUP_UI_MENU_RESUME" text="重试政变结算" />
+    <string id="AF_COUP_UI_BEGIN_TOOLTIP" text="按篡位 MCM 的人数要求挑选突击队，攻取大厅并夺取王位；另留 1 名健康士兵接应。失败将带地叛离并开战。" />
+    <string id="AF_COUP_UI_ENTER_TOOLTIP" text="按本次已选名单进场；倒地或撤退将判定政变失败。" />
+    <string id="AF_COUP_UI_NO_PENDING_ENTRY" text="当前没有等待进场的政变突击队。" />
+    <string id="AF_COUP_UI_SCENE_INTERFACE_UNAVAILABLE" text="政变场景接口未就绪，请检查日志。" />
+    <string id="AF_COUP_UI_ENCOUNTER_CHANGED" text="当前城镇遭遇已改变，无法进入政变场景。" />
+    <string id="AF_COUP_UI_BLOCKING_TOWN_FLOW" text="当前还有城镇冲突或战后处置待完成。" />
+    <string id="AF_COUP_UI_SCENE_MISSING" text="政变目标场景不存在。" />
+    <string id="AF_COUP_UI_SCENE_OPEN_FAILED" text="政变场景未能打开。" />
+    <string id="AF_COUP_UI_DISABLED" text="宣权篡位已关闭。" />
+    <string id="AF_COUP_UI_SAVE_RECORD_INVALID" text="政变存档记录异常，请先处理日志中的错误。" />
+    <string id="AF_COUP_UI_MISSION_PROTECTION_UNAVAILABLE" text="政变场景兼容保护未能注册，请检查日志与游戏版本。" />
+    <string id="AF_COUP_UI_SEAM_UNAVAILABLE" text="当前 AF 版本的政变接缝不可用，请检查日志。" />
+    <string id="AF_COUP_UI_PENDING_FEEDBACK" text="还有一场政变或登基战报尚未确认。" />
+    <string id="AF_COUP_UI_ELIGIBLE_LEADER_ONLY" text="仅本国正式封臣的家族族长能够发动政变。" />
+    <string id="AF_COUP_UI_OWN_TOWN_REQUIRED" text="必须位于本国城镇。" />
+    <string id="AF_COUP_UI_PLAYER_CANNOT_FIGHT" text="玩家当前无法参战。" />
+    <string id="AF_COUP_UI_RULER_MUST_BE_HERE" text="本国现任国王必须身在这座城镇且未被俘。" />
+    <string id="AF_COUP_UI_BLOCKING_BATTLE" text="围城、战斗或特殊任务进行中，无法发动政变。" />
+    <string id="AF_COUP_UI_PENDING_CONFLICT" text="当前还有城镇冲突或战后处置待完成。" />
+    <string id="AF_COUP_UI_LEAVE_ARMY" text="请先离开军团，再带自己的部队发动政变。" />
+    <string id="AF_COUP_UI_BEGIN_TITLE" text="宣权篡位" />
+    <string id="AF_COUP_UI_BEGIN_BODY" text="目标：{RULER}\n地点：{TOWN}\n发动条件：家族等级至少 {TIER} 级，影响力至少 {INFLUENCE}（只检查、不扣除；0 表示不限制）。\n必须实际选中至少 {MIN_TROOPS} 名健康普通士兵，并另留 1 人接应。\n突击队：街道最多 {STREET_LIMIT} 人，大厅最多 {HALL_LIMIT} 人（不含玩家）。至少留一名士兵接应。\n守卫：门口最多 {GATE_LIMIT} 人，大厅最多 {HALL_GUARD_LIMIT} 人（不含国王），以实际兵源为准。\n增援：每波最多 {WAVE_SIZE} 人，间隔 {WAVE_INTERVAL} 秒，同时最多 {MAX_WAVES} 波存活。\n本次参数已固定。正式进场后，倒地或撤退都会导致家族带地叛离并与原王国开战。" />
+    <string id="AF_COUP_UI_BEGIN_CONFIRM" text="挑选突击队" />
+    <string id="AF_COUP_UI_CANCEL" text="取消" />
+    <string id="AF_COUP_UI_INSUFFICIENT_TROOPS" text="没有足够的健康士兵满足突击队与接应要求。政变已取消。" />
+    <string id="AF_COUP_UI_STREET_SELECTION_TITLE" text="政变突击队" />
+    <string id="AF_COUP_UI_SELECTION_INVALID" text="选兵已失效，必须实际选中至少 {MINIMUM} 名健康普通士兵，并保留一名健康士兵接应。" />
+    <string id="AF_COUP_UI_ROSTER_CHANGED" text="部队名册已变化，请重新选择。" />
+    <string id="AF_COUP_UI_STREET_REGISTERED" text="突击队已登记。点击城镇菜单的“率领政变突击队攻入城镇”进场。" />
+    <string id="AF_COUP_UI_CONTEXT_CHANGED" text="国王、玩家或城镇状态已改变，政变不能继续。" />
+    <string id="AF_COUP_UI_ADMISSION_UNAVAILABLE" text="政变发动条件记录不可用。" />
+    <string id="AF_COUP_UI_NO_ASSAULT_TROOPS" text="突击队已无可参战士兵，撤出政变。" />
+    <string id="AF_COUP_UI_COMBAT_INTERRUPTED" text="主动撤退或战斗被中断。" />
+    <string id="AF_COUP_UI_RESOLUTION_PENDING_PREFIX" text="政变结算尚未完成：" />
+    <string id="AF_COUP_UI_SUSPENDED_PREFIX" text="政变暂时中止：" />
+    <string id="AF_COUP_UI_POLITICAL_CHANGES_RETAINED" text=" 已发生的战役变化已保留；可在城镇菜单重试剩余结算。" />
+    <string id="AF_COUP_UI_CASUALTIES_RETAINED" text=" 已有伤亡保留，未授予胜利或叛离惩罚。" />
+    <string id="AF_COUP_UI_REPORT_NOT_OPENED" text="登基结果已经结算，战报暂未打开。可在目标城镇点击“查看政变登基战报”重试。" />
+    <string id="AF_COUP_UI_HALL_SELECTION_TITLE" text="攻入领主大厅" />
+    <string id="AF_COUP_UI_HALL_SELECTION_LIMIT" text="大厅选兵超过本次政变人数上限。" />
+    <string id="AF_COUP_UI_HALL_ROSTER_MISMATCH" text="大厅选兵名册不一致。" />
+    <string id="AF_COUP_UI_HALL_SELECTION_ABANDONED" text="放弃攻入大厅。" />
+    <string id="AF_COUP_UI_HALL_REGISTERED" text="已选定突入大厅的士兵。点击城镇菜单的“率领政变突击队攻入领主大厅”进场。" />
+    <string id="AF_COUP_UI_HALL_SELECTION_CANCELLED" text="放弃攻入领主大厅，撤出政变。" />
+    <string id="AF_COUP_UI_RELEASE_RULER" text="逼其退位并释放" />
+    <string id="AF_COUP_UI_CAPTURE_RULER" text="扣押旧王" />
+    <string id="AF_COUP_UI_CAPTURE_EXCLUDES_FAMILY" text="扣押将排除旧王家族的本次叛乱资格。" />
+    <string id="AF_COUP_UI_CAPTURE_UNAVAILABLE" text="当前版本拘押保护不可用，只能释放旧王。" />
+    <string id="AF_COUP_UI_FORMER_RULER_FALLBACK" text="旧王" />
+    <string id="AF_COUP_UI_DISPOSITION_TITLE" text="政变胜利：处置旧王" />
+    <string id="AF_COUP_UI_DISPOSITION_BODY" text="国王 {NAME} 已被制服，大厅已控制。\n请选择旧王处置；确认后离场，随后结算王位及本城归属。\n释放后，旧王家族可能参与叛乱；扣押会排除其家族的本次叛乱资格。" />
+    <string id="AF_COUP_UI_DISPOSITION_CONFIRM" text="确认处置并离场" />
+    <string id="AF_COUP_UI_DECIDE_LATER" text="稍后决定" />
+    <string id="AF_COUP_UI_DISPOSITION_NOT_CONFIRMED" text="旧王处置尚未确认；仍留在大厅，按退出战斗键或使用出口可再次选择。" />
+    <string id="AF_COUP_UI_LEAVE_NOT_READY" text="胜利离场入口尚未就绪。" />
+    <string id="AF_COUP_UI_DISPOSITION_LEAVE_FAILED" text="处置已确认，但离场尚未完成：{DETAIL}" />
+    <string id="AF_COUP_UI_POLITICAL_SETTLEMENT_COMPLETE" text="政治结算已完成，即将展示登基动画与战报。" />
+    <string id="AF_COUP_UI_CORONATION_UNAVAILABLE" text="原版登基动画暂不可用，已保留登基结果，继续展示战报。" />
+    <string id="AF_COUP_UI_VICTORY_TITLE" text="宣权篡位成功" />
+    <string id="AF_COUP_UI_CONFIRM_RETURN_TOWN" text="确认并返回城镇" />
+    <string id="AF_COUP_UI_FAILURE_COMMITTED" text="政变失败，留守部队已接应撤出。你的家族保留原有领地，脱离旧王国并开战。" />
+    <string id="AF_COUP_UI_VICTORY_REPORT" text="政变夺位已经完成。\n\n王国：{KINGDOM}\n当前统治者：{RULER}\n接管城镇：{TOWN}\n城镇当前归属：{OWNER}\n旧王处置：{KING}{CUSTODY}\n\n已记录伤亡：\n突击队：阵亡 {ALLY_KILLED}，负伤 {ALLY_WOUNDED}\n守军：阵亡 {DEF_KILLED}，负伤 {DEF_WOUNDED}\n\n后续局势：已完成本次政变的叛乱资格评估与请求登记；是否实际起兵以之后的战役结果为准。" />
+    <string id="AF_COUP_UI_FORMER_RULER_HELD" text="已被扣押，当前仍由你的部队保管。" />
+    <string id="AF_COUP_UI_FORMER_RULER_NOT_HELD" text="已执行扣押；目前已不在你的部队保管。" />
+    <string id="AF_COUP_UI_FORMER_RULER_RELEASED" text="已被迫退位，本次选择不扣押。" />
+    <string id="AF_COUP_UI_REPORT_INTRO" text="{PLAYER}在{KINGDOM}的{TOWN}针对国王{KING}发动武装政变，突击队共{ALLIES}人。" />
+    <string id="AF_COUP_UI_REPORT_PROCESS_LABEL" text="过程：" />
+    <string id="AF_COUP_UI_REPORT_NO_ENTRY" text="已集结突击队，未记录到实际进场。" />
+    <string id="AF_COUP_UI_REPORT_STREET" text="进入城镇街道" />
+    <string id="AF_COUP_UI_REPORT_GATE" text="突破大厅入口" />
+    <string id="AF_COUP_UI_REPORT_HALL" text="率{ALLIES}名突击队员攻入领主大厅" />
+    <string id="AF_COUP_UI_REPORT_SUBDUED" text="制服国王" />
+    <string id="AF_COUP_UI_REPORT_RESULT_LABEL" text="结果：" />
+    <string id="AF_COUP_UI_REPORT_SUCCESS_CAPTURED" text="政变成功，{PLAYER}取得{KINGDOM}王位并接管{TOWN}，旧王被扣押。" />
+    <string id="AF_COUP_UI_REPORT_SUCCESS_RELEASED" text="政变成功，{PLAYER}取得{KINGDOM}王位并接管{TOWN}，选择不扣押旧王。" />
+    <string id="AF_COUP_UI_REPORT_FAILURE" text="政变失败，未夺取王位，家族带原有领地脱离原王国并与之开战。" />
+    <string id="AF_COUP_UI_REPORT_CASUALTIES" text="已记录伤亡：突击队阵亡{ALLY_KILLED}、负伤{ALLY_WOUNDED}；守军阵亡{DEF_KILLED}、负伤{DEF_WOUNDED}。" />
   </strings>
 </base>
