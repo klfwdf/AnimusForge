@@ -3120,5 +3120,8 @@ HeroNPC 个性/背景、旧对话历史、压缩记忆、赊账/欠款、未命�
   <string id="AF_CONV_UI_Courier_InboundAborted" text="信使来信处理失败，信使已安全终止，未交付信件。" />
   <string id="AF_CONV_UI_Courier_ReplyFailedDetail" text="信使回信正文生成失败：&#10;&#10;{DETAIL}" />
   <string id="AF_CONV_UI_Courier_LetterFailedDetail" text="信使来信正文生成失败：&#10;&#10;{DETAIL}" />
+  <string id="AF_UI_Loyalty_KingdomStability" text="王国稳定度与王室直辖地" />
+  <string id="AF_UI_Castle_RepairLabor" text="战俘修缮城堡" />
+  <string id="AF_NOTIFY_Coup_GarrisonDefeated" text="【宣权篡位】本场守军已被击溃。继续完成政变目标；大厅胜利后确认旧王处置，离场查看登基动画与战报。" />
   </strings>
 </base>

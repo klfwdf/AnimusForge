@@ -3089,5 +3089,8 @@ Choose how to proceed:" />
   <string id="AF_CONV_UI_Courier_InboundAborted" text="Courier letter processing failed. The courier was safely stopped and the letter was not delivered." />
   <string id="AF_CONV_UI_Courier_ReplyFailedDetail" text="Courier reply generation failed:&#10;&#10;{DETAIL}" />
   <string id="AF_CONV_UI_Courier_LetterFailedDetail" text="Courier letter generation failed:&#10;&#10;{DETAIL}" />
+  <string id="AF_UI_Loyalty_KingdomStability" text="Kingdom stability and royal domains" />
+  <string id="AF_UI_Castle_RepairLabor" text="Prisoner castle repairs" />
+  <string id="AF_NOTIFY_Coup_GarrisonDefeated" text="[Usurpation] The garrison has been defeated. Continue the coup objectives; after victory in the hall, confirm the former ruler's fate, then leave to view the coronation and battle report." />
   </strings>
 </base>
