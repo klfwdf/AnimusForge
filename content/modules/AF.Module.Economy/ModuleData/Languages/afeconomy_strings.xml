@@ -50,6 +50,9 @@
     <string id="AF_ECO_UI_OtherParty" text="the other party" />
     <string id="AF_ECO_UI_OriginalSettlement" text="the original settlement" />
     <string id="AF_ECO_UI_MerchantAt" text="the {MARKET} merchant" />
+    <string id="AF_ECO_UI_MarketVillage" text="village" />
+    <string id="AF_ECO_UI_MarketTown" text="town" />
+    <string id="AF_ECO_UI_RecruitmentIntercepted" text="[Join intercepted] The native conversation had already handled this action; the stale action was blocked." />
     <string id="AF_ECO_UI_TrustChanged" text="[Trust change] {GIVER} increased your personal trust by {PERSONAL}{PUBLIC}" />
     <string id="AF_ECO_UI_PublicTrustGain" text=", public trust +{VALUE}" />
     <string id="AF_ECO_UI_MarketTrustChanged" text="[Market trust change] {MARKET} increased your market trust by {PERSONAL}{PUBLIC}" />

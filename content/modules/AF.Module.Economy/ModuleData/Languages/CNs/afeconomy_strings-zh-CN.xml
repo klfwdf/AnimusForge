@@ -50,6 +50,9 @@
     <string id="AF_ECO_UI_OtherParty" text="对方部队" />
     <string id="AF_ECO_UI_OriginalSettlement" text="原定居点" />
     <string id="AF_ECO_UI_MerchantAt" text="这座{MARKET}的商人" />
+    <string id="AF_ECO_UI_MarketVillage" text="村庄" />
+    <string id="AF_ECO_UI_MarketTown" text="城镇" />
+    <string id="AF_ECO_UI_RecruitmentIntercepted" text="【加入队伍】已拦截过期动作：原版对话已先处理。" />
     <string id="AF_ECO_UI_TrustChanged" text="【信任变化】{GIVER} 使你的个人信任 +{PERSONAL}{PUBLIC}" />
     <string id="AF_ECO_UI_PublicTrustGain" text="，公共信任 +{VALUE}" />
     <string id="AF_ECO_UI_MarketTrustChanged" text="【市场信任变化】{MARKET} 使你的市场信任 +{PERSONAL}{PUBLIC}" />
