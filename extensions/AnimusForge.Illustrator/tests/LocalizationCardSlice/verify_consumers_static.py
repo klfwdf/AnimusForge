@@ -1,6 +1,7 @@
 """Read-only closure of gallery/weekly status sinks; no compiler or game API."""
 from pathlib import Path
 import subprocess
+from verify_bulletin_static import restore_preloader
 
 ROOT = Path(__file__).resolve().parents[4]
 BASELINE = "488957016f7765b7fcf3f4da7f69b4f3d546c21f"
@@ -22,7 +23,8 @@ edits = {
         ("DiskImageCacheManager.CachedDisplayStatus(cached, cacheOptions?.StyleFingerprint)", "IllustrationStatusUiText.Cached(cached, cacheOptions?.StyleFingerprint, checkStyle: true)", 1),
         ("_sink.StatusText = update.Saved.DisplayStatusText;", "_sink.StatusText = IllustrationStatusUiText.Cached(update.Saved);", 1),
         ("result.Saved?.DisplayStatusText ?? IllustratorUiText.WeeklyComplete", "result.Saved != null ? IllustrationStatusUiText.Cached(result.Saved) : IllustratorUiText.WeeklyComplete", 1),
-        ('status?.Invoke(direction.StatusText + " · " + IllustratorUiText.WeeklyDrawing)', 'status?.Invoke((bulletin ? direction.StatusText : IllustrationStatusUiText.Direction(direction)) + " · " + IllustratorUiText.WeeklyDrawing)', 1),
+        ('status?.Invoke(direction.StatusText + " · " + IllustratorUiText.WeeklyDrawing)', 'status?.Invoke(IllustrationStatusUiText.Direction(direction) + " · " + IllustratorUiText.WeeklyDrawing)', 1),
+        ('_sink.StatusText = job.Status;', '_sink.StatusText = IllustrationStatusUiText.Bulletin(job);', 1),
     ],
 }
 
@@ -41,12 +43,15 @@ for relative, replacements in edits.items():
     else:
         direction_line = next(line for line in source.splitlines() if "IllustrationStatusUiText.Direction(" in line)
         assert "IllustratorRuntime.Post(() =>" in direction_line
-        assert "bulletin ? direction.StatusText" in direction_line, "Bulletin raw status changed"
-        assert "_sink.StatusText = job.Status;" in source, "Preloader state transformed"
+        assert "bulletin ? direction.StatusText" not in direction_line, "Bulletin UI bypasses projection"
+        assert "_sink.StatusText = IllustrationStatusUiText.Bulletin(job);" in source
         assert "directorStatusText: direction.StatusText" in source, "Saved metadata transformed"
 
 for relative in ["Core/BulletinIllustrationPreloader.cs", "Engine/DiskImageCacheManager.cs", "Core/IllustrationDirection.cs"]:
     path = PREFIX + relative
-    assert (ROOT / path).read_text(encoding="utf-8-sig") == old(path), "Producer edit: " + relative
+    source = (ROOT / path).read_text(encoding="utf-8-sig")
+    if relative == "Core/BulletinIllustrationPreloader.cs":
+        source = restore_preloader(source)
+    assert source == old(path), "Producer behavior/metadata edit: " + relative
 
-print("PASS 7 gallery/weekly status sinks; exact inverse; raw bulletin status and metadata retained; direction resolves in existing Post; no compiler/API run")
+print("PASS 8 gallery/weekly status sinks; exact inverse; raw producer status/lifecycle and metadata retained; direction resolves in existing Post; no compiler/API run")
