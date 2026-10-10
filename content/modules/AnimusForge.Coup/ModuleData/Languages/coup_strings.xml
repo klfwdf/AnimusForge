@@ -134,5 +134,10 @@
     <string id="AF_COUP_UI_REPORT_SUCCESS_RELEASED" text="The coup succeeded: {PLAYER} took the throne of {KINGDOM} and seized {TOWN}; you chose not to capture the former ruler." />
     <string id="AF_COUP_UI_REPORT_FAILURE" text="The coup failed; the throne was not taken. The clan left the former kingdom with its existing land and went to war with it." />
     <string id="AF_COUP_UI_REPORT_CASUALTIES" text="Recorded casualties: assault party {ALLY_KILLED} killed, {ALLY_WOUNDED} wounded; defenders {DEF_KILLED} killed, {DEF_WOUNDED} wounded." />
+    <string id="AF_COUP_UI_SELECTION_PARTY_REQUIRED" text="Troop selection requires a valid player party." />
+    <string id="AF_COUP_UI_SELECTION_DETACHED_ROSTER_REQUIRED" text="Troop selection requires a separate temporary roster." />
+    <string id="AF_COUP_UI_AVAILABLE_SOLDIERS" text="Available soldiers" />
+    <string id="AF_COUP_UI_SELECTION_PARTY_NAME" text="{TITLE} ({MINIMUM} to {LIMIT} soldiers)" />
+    <string id="AF_COUP_UI_SELECTION_COUNT_HINT" text="Select {MINIMUM} to {LIMIT} soldiers." />
   </strings>
 </base>
