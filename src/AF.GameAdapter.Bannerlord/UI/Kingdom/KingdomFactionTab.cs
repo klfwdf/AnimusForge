@@ -428,7 +428,9 @@ public sealed partial class KingdomFactionPanelVM : ViewModel
 	{
 		TagText = KingdomFactionUiText.T("AF_DIP_UI_Faction_NoFaction", "No faction formed"); TagColor = Color.ConvertStringToColor(LedgerColor);
 		HeaderMeta = KingdomFactionUiText.F("AF_DIP_UI_Faction_StabilityMeta", "Stability {TIER}  ·  grievance and stability are calculated separately", ("TIER", _panel.StabilityTier));
-		HeaderTitle = _panel.StageText == "尚无派系成形" ? KingdomFactionUiText.T("AF_DIP_UI_Faction_NoOppositionFormed", "No opposition faction has formed in the kingdom") : _panel.StageText;
+		// Driven by the panel's stable flag, not by comparing the localized StageText, so the dedicated
+		// title survives any language.
+		HeaderTitle = _panel.NoFactionFormed ? KingdomFactionUiText.T("AF_DIP_UI_Faction_NoOppositionFormed", "No opposition faction has formed in the kingdom") : _panel.StageText;
 		float gap = _panel.Threshold - _panel.TopGrievance;
 		HeaderNote = string.IsNullOrEmpty(_panel.TopGrievanceClan) ? KingdomFactionUiText.T("AF_DIP_UI_Faction_NoEligibleVassal", "No formal vassal clan can form a faction.")
 			: gap > 0 ? KingdomFactionUiText.F("AF_DIP_UI_Faction_FormationPending", "Highest clan grievance is {GRIEVANCE}; formation threshold is {THRESHOLD}. A probability check runs at most once every seven days.", ("GRIEVANCE", _panel.TopGrievance.ToString("0.0")), ("THRESHOLD", _panel.Threshold))

@@ -47,6 +47,12 @@ internal sealed class CivilWarActionResult
 	public CivilWarActionStatus Status;
 	public string Message = "";
 	public string FactionId = "";
+	// Transient display projection for the result notification. Set only where the concrete outcome is
+	// known, so the UI never has to guess from Status. Never persisted: the saved receipt keeps Message,
+	// which history, AFEF and weekly material continue to consume unchanged.
+	public string MessageProjectionKey = "";
+	public string MessageProjectionArg = "";
+	public string MessageProjectionArg2 = "";
 }
 internal sealed class CivilWarFoundingOption
 {
@@ -141,6 +147,9 @@ internal sealed class CivilWarPanelKingdom
 	public string EmptyText = "";
 	public string Name = "";
 	public string StageText = "";
+	// Stable display state for the no-faction ledger title. The UI must not compare StageText, which is
+	// a localized string; this flag carries the same fact independently of language.
+	public bool NoFactionFormed;
 	public int Stability;
 	public string StabilityTier = "";
 	public CivilWarPanelRole Role;

@@ -286,7 +286,7 @@ public sealed partial class KingdomFactionPanelVM
 		{
 			if (!_open || generation != _generation) return;
 			var result = TeamModuleServices.CivilWar.Execute(r);
-			InformationManager.DisplayMessage(new InformationMessage(result.Message));
+			InformationManager.DisplayMessage(new InformationMessage(CivilWarUiText.ResultNotice(result)));
 			if (_open && generation == _generation) Refresh();
 		}, null));
 	}

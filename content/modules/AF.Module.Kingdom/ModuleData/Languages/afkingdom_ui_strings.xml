@@ -7,5 +7,33 @@
     <string id="AF_KINGDOM_CW_Role_Crown" text="Crown faction" />
     <string id="AF_KINGDOM_CW_Role_Middle" text="Uncommitted" />
     <string id="AF_KINGDOM_CW_World_UnknownKingdom" text="some kingdom" />
+    <string id="AF_KINGDOM_CW_Panel_TargetCurrentPolicy" text="the current policy" />
+    <string id="AF_KINGDOM_CW_Panel_FactionName" text="{LEADER}'s {TAG}" />
+    <string id="AF_KINGDOM_CW_CampCrown" text="the crown camp" />
+    <string id="AF_KINGDOM_CW_Notice_AlreadyInCamp" text="Already in this camp; no need to join again." />
+    <string id="AF_KINGDOM_CW_Notice_Joined" text="{A} joins {B}." />
+    <string id="AF_KINGDOM_CW_Notice_LeftCamp" text="{A} leaves the camp and stays uncommitted for seven days." />
+    <string id="AF_KINGDOM_CW_Notice_Founded" text="{A} founds a faction, demand: {B}." />
+    <string id="AF_KINGDOM_CW_Notice_DissolvedOwn" text="You dissolved your own faction: −10 relation with the other member clans. Grievance and any existing kingdom cooldown are kept." />
+    <string id="AF_KINGDOM_CW_Notice_LeaderRefusedRising" text="The leader refused the proposal to rise; it can be proposed again in seven days." />
+    <string id="AF_KINGDOM_CW_Notice_RisingAccepted" text="The order to rise was accepted; waiting for the rebels to found their kingdom." />
+    <string id="AF_KINGDOM_CW_Notice_Suppressed" text="The crown imposes political suppression on the {A}." />
+    <string id="AF_KINGDOM_CW_Notice_RulingClanReplaced" text="The ruling clan changed; the original offer is void." />
+    <string id="AF_KINGDOM_CW_Notice_DissolveSentToPlayer" text="The dissolution order has been delivered; the player has three days to respond." />
+    <string id="AF_KINGDOM_CW_Notice_OfferSentToPlayer" text="The compensation offer has been delivered; the player has three days to respond." />
+    <string id="AF_KINGDOM_CW_Notice_Conceded" text="The king honors the {A} in full: {B}" />
+    <string id="AF_KINGDOM_CW_Notice_WarEligibilityChanged" text="War eligibility changed; the original dissolution order is void and the faction is kept." />
+    <string id="AF_KINGDOM_CW_Notice_DissolveOrderExpired" text="The dissolution order expired; the faction is kept, and a player leader must decide on rebellion manually." />
+    <string id="AF_KINGDOM_CW_Notice_FactionDefied" text="The faction defied the order and enters the rebellion process." />
+    <string id="AF_KINGDOM_CW_Notice_OfferRefused" text="The faction refused the compensation; no resources were deducted." />
+    <string id="AF_KINGDOM_CW_Notice_PayerCannotPay" text="The paying side can no longer pay; the agreement is void." />
+    <string id="AF_KINGDOM_CW_Notice_ObeyedDissolve" text="The faction obeys the dissolution order; grievance is kept." />
+    <string id="AF_KINGDOM_CW_Notice_AcceptedOffer" text="The faction accepted the compensation, withdrew the demand, and dissolved." />
+    <string id="AF_KINGDOM_CW_Notice_ConcessionPending" text="The concession is not yet honored; the faction is kept: {A}" />
+    <string id="AF_KINGDOM_CW_Notice_ReceiptNoIdentity" text="The operation is missing its identity." />
+    <string id="AF_KINGDOM_CW_Notice_ReceiptIdentityConflict" text="Operation identity conflict." />
+    <string id="AF_KINGDOM_CW_Notice_ReceiptInterrupted" text="A previous operation was interrupted; its state is kept for review and cannot be executed again." />
+    <string id="AF_KINGDOM_CW_Notice_RetrySafeSteps" text="The agreement is not complete; safe confirmed steps will be retried: {A}" />
+    <string id="AF_KINGDOM_CW_Notice_IncompleteReview" text="The operation was not fully confirmed; the faction is kept for review: {A}" />
 </strings>
 </base>

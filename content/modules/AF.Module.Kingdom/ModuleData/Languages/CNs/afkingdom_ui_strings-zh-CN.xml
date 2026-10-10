@@ -7,5 +7,33 @@
     <string id="AF_KINGDOM_CW_Role_Crown" text="王室阵营" />
     <string id="AF_KINGDOM_CW_Role_Middle" text="未表态" />
     <string id="AF_KINGDOM_CW_World_UnknownKingdom" text="某王国" />
+    <string id="AF_KINGDOM_CW_Panel_TargetCurrentPolicy" text="现行政策" />
+    <string id="AF_KINGDOM_CW_Panel_FactionName" text="{LEADER}为首的{TAG}" />
+    <string id="AF_KINGDOM_CW_CampCrown" text="王室阵营" />
+    <string id="AF_KINGDOM_CW_Notice_AlreadyInCamp" text="已在当前阵营，无需重复加入。" />
+    <string id="AF_KINGDOM_CW_Notice_Joined" text="{A}加入{B}。" />
+    <string id="AF_KINGDOM_CW_Notice_LeftCamp" text="{A}退出阵营，七天内保持中立。" />
+    <string id="AF_KINGDOM_CW_Notice_Founded" text="{A}建立派系，诉求：{B}。" />
+    <string id="AF_KINGDOM_CW_Notice_DissolvedOwn" text="你解散了自己的派系，与其他成员家族关系−10；不满与已有王国冷却保留。" />
+    <string id="AF_KINGDOM_CW_Notice_LeaderRefusedRising" text="领袖拒绝起兵建议，七天后可再提议。" />
+    <string id="AF_KINGDOM_CW_Notice_RisingAccepted" text="起兵命令已受理，等待叛军建国。" />
+    <string id="AF_KINGDOM_CW_Notice_Suppressed" text="王室对{A}实施政治压制。" />
+    <string id="AF_KINGDOM_CW_Notice_RulingClanReplaced" text="统治家族已更换，原提议失效。" />
+    <string id="AF_KINGDOM_CW_Notice_DissolveSentToPlayer" text="解散命令已送达，等待玩家三日内回应。" />
+    <string id="AF_KINGDOM_CW_Notice_OfferSentToPlayer" text="补偿提议已送达，等待玩家三日内回应。" />
+    <string id="AF_KINGDOM_CW_Notice_Conceded" text="国王完整兑现{A}的诉求：{B}" />
+    <string id="AF_KINGDOM_CW_Notice_WarEligibilityChanged" text="战争资格已变化，原解散命令失效，派系保留。" />
+    <string id="AF_KINGDOM_CW_Notice_DissolveOrderExpired" text="解散令超时，派系保留；玩家领袖须手动决定起兵。" />
+    <string id="AF_KINGDOM_CW_Notice_FactionDefied" text="派系抗命，进入起兵流程。" />
+    <string id="AF_KINGDOM_CW_Notice_OfferRefused" text="派系拒绝补偿，未扣除资源。" />
+    <string id="AF_KINGDOM_CW_Notice_PayerCannotPay" text="补偿方已无法支付，协议失效。" />
+    <string id="AF_KINGDOM_CW_Notice_ObeyedDissolve" text="派系服从解散命令，不满仍然保留。" />
+    <string id="AF_KINGDOM_CW_Notice_AcceptedOffer" text="派系接受补偿并撤回诉求，组织解散。" />
+    <string id="AF_KINGDOM_CW_Notice_ConcessionPending" text="妥协尚未兑现，派系保留：{A}" />
+    <string id="AF_KINGDOM_CW_Notice_ReceiptNoIdentity" text="操作缺少身份。" />
+    <string id="AF_KINGDOM_CW_Notice_ReceiptIdentityConflict" text="操作身份冲突。" />
+    <string id="AF_KINGDOM_CW_Notice_ReceiptInterrupted" text="先前操作中断，保留状态待核查，不能重复执行。" />
+    <string id="AF_KINGDOM_CW_Notice_RetrySafeSteps" text="协议尚未完成，将重试已确认安全的步骤：{A}" />
+    <string id="AF_KINGDOM_CW_Notice_IncompleteReview" text="操作未完整确认，保留派系等待核查：{A}" />
 </strings>
 </base>

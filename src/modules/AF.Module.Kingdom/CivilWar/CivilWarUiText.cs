@@ -95,6 +95,60 @@ internal static class CivilWarUiText
     internal static string Stance(string id, string fallback)
         => T("AF_KINGDOM_CW_Stance_" + (id ?? "unknown"), fallback);
 
+    // Display projection for a demand. The catalog keeps its own Chinese rule text for stored facts,
+    // LLM material and matching; only the panel and menus render this localized form.
+    internal static string DemandDisplayText(CivilWarDemandDef demand, string target)
+        => DemandText(demand, target);
+
+    // Display projection for one founding menu entry. Falls back to the caller-supplied raw text when
+    // the demand is unknown, so a future catalog entry still shows something truthful.
+    internal static string FoundingOptionText(CivilWarDemandDef demand, string target, string rawText)
+        => demand == null ? (rawText ?? "") : DemandText(demand, target);
+
+    // Renders the projection key recorded where the outcome was decided. Returns the raw Message when the
+    // result carries no key: an outcome this build does not describe, or a receipt replayed from an older
+    // save, must show its real stored text rather than an invented summary.
+    internal static string ResultNotice(CivilWarActionResult result)
+    {
+        string raw = result?.Message ?? "";
+        string key = result?.MessageProjectionKey ?? "";
+        if (string.IsNullOrEmpty(key)) return raw;
+        string id = "AF_KINGDOM_CW_Notice_" + key;
+        string fallback = NoticeFallback(key);
+        if (fallback == null) return raw;
+        return T(id, fallback, ("A", result.MessageProjectionArg ?? ""), ("B", result.MessageProjectionArg2 ?? ""));
+    }
+
+    private static string NoticeFallback(string key) => key switch
+    {
+        "AlreadyInCamp" => "Already in this camp; no need to join again.",
+        "Joined" => "{A} joins {B}.",
+        "LeftCamp" => "{A} leaves the camp and stays uncommitted for seven days.",
+        "Founded" => "{A} founds a faction, demand: {B}.",
+        "DissolvedOwn" => "You dissolved your own faction: −10 relation with the other member clans. Grievance and any existing kingdom cooldown are kept.",
+        "LeaderRefusedRising" => "The leader refused the proposal to rise; it can be proposed again in seven days.",
+        "RisingAccepted" => "The order to rise was accepted; waiting for the rebels to found their kingdom.",
+        "Suppressed" => "The crown imposes political suppression on the {A}.",
+        "RulingClanReplaced" => "The ruling clan changed; the original offer is void.",
+        "DissolveSentToPlayer" => "The dissolution order has been delivered; the player has three days to respond.",
+        "OfferSentToPlayer" => "The compensation offer has been delivered; the player has three days to respond.",
+        "Conceded" => "The king honors the {A} in full: {B}",
+        "WarEligibilityChanged" => "War eligibility changed; the original dissolution order is void and the faction is kept.",
+        "DissolveOrderExpired" => "The dissolution order expired; the faction is kept, and a player leader must decide on rebellion manually.",
+        "FactionDefied" => "The faction defied the order and enters the rebellion process.",
+        "OfferRefused" => "The faction refused the compensation; no resources were deducted.",
+        "PayerCannotPay" => "The paying side can no longer pay; the agreement is void.",
+        "ObeyedDissolve" => "The faction obeys the dissolution order; grievance is kept.",
+        "AcceptedOffer" => "The faction accepted the compensation, withdrew the demand, and dissolved.",
+        "ConcessionPending" => "The concession is not yet honored; the faction is kept: {A}",
+        "ReceiptNoIdentity" => "The operation is missing its identity.",
+        "ReceiptIdentityConflict" => "Operation identity conflict.",
+        "ReceiptInterrupted" => "A previous operation was interrupted; its state is kept for review and cannot be executed again.",
+        "RetrySafeSteps" => "The agreement is not complete; safe confirmed steps will be retried: {A}",
+        "IncompleteReview" => "The operation was not fully confirmed; the faction is kept for review: {A}",
+        _ => null
+    };
+
     internal static string StabilityTier(int value)
         => value switch
         {
