@@ -1,8 +1,8 @@
 # 当前交接：政策效果检索两片重构（2026-10-10，OFFLINE_VERIFIED_WITH_BASELINE_FAILURES）
 
-- 用户明确要求“两片全做，重构”，暂停后已恢复；实际工作区 `E:/AnimusForge-klfwdf` / `main`。检查点 `a8bedb1a`，接线修复 `04409b29`，查询/详情 owner 重构 `c3505292`。不是恢复已回滚的“所有模块全部注入”方案；ONNX 候选筛选、默认6/最大8详情、12效果腿/6机制及来源/目标/执行/存档边界保留。
+- 用户明确要求“两片全做，重构”，暂停后已恢复；实际工作区 `E:/AnimusForge-klfwdf`。原本地 `main` 保留，干净交付分支 `delivery/policy-bounded-retrieval-20261010` 从远端安全基线创建；接线修复 `b7809f99`，查询/详情 owner 重构 `a1a4aa21`，与原已验源码树完全一致。不是恢复已回滚的“所有模块全部注入”方案；ONNX 候选筛选、默认6/最大8详情、12效果腿/6机制及来源/目标/执行/存档边界保留。
 - 修复生产独立条款丢失、长文尾部稀释、NPC提交时MCM/详情冻结及候选数量合同；详情优先覆盖原文措施，目标不合法时只从合法 ONNX 候选补位。18模块的224案例通过真实ONNX在两版最终DLL验证，修前同矩阵21例失败；原统一脚本双API/Bootstrap/双Coup门禁通过。
-- 两项扩展合同在修前和修后均失败：提示词/缓存/日志路径，及Management绕过统一日志入口；本轮未借检索重构改动这些独立问题。未真实LLM、实机、旧档或全仓验收；未Stage、部署、打包、推送。历史本地回滚链不构成推送授权。
+- 两项扩展合同在修前和修后均失败：提示词/缓存/日志路径，及Management绕过统一日志入口；本轮未借检索重构改动这些独立问题。未真实LLM、实机、旧档或全仓验收；未Stage、部署、打包。用户本轮追加授权推送 `origin/main`，仅发布本包，排除原本地回滚/交接历史；实际远端ref以本地 `publication-receipt.json`核验。
 - [唯一主台账、验证/风险/回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#policy-effect-bounded-retrieval-20261010)；[源码owner与消费者](docs/architecture/af-framework-code-scope.md#policy-effect-bounded-retrieval-20261010)。本地证据 `artifacts/policy-retrieval-refactor-20261010/verification-receipt.json`。
 
 # 历史交接：快报独立自动发布开关接线（2026-10-10，OFFLINE_VERIFIED_NOT_DEPLOYED）
