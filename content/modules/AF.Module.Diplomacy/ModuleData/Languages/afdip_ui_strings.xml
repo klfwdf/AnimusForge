@@ -1062,5 +1062,7 @@
     <string id="AF_KINGDOM_CW_Outcome_RebelsCoerce" text="Rebels force concessions" />
     <string id="AF_KINGDOM_CW_Outcome_RebelsSecede" text="Rebels secede" />
     <string id="AF_KINGDOM_CW_Outcome_RebelsUsurp" text="Rebels take the throne" />
+    <string id="AF_DIP_UI_Notice_ThirdPartyReceived" text="Third-party diplomacy: {TITLE}. The news has reached your kingdom; read the full text in the kingdom bulletin." />
+    <string id="AF_DIP_UI_Notice_PlayerCourtDelivery" text="Your declaration has reached {RECEIVER}." />
 </strings>
 </base>

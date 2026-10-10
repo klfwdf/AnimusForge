@@ -28,8 +28,12 @@ public sealed partial class WorldDiplomacyBehavior
             if (notice.ShowOnMap)
                 MBInformationManager.AddNotice(new WorldDiplomacyMapNotification(notice.DocumentId, notice.Title, notice.Description));
             else
+            {
+                var text = new TaleWorlds.Localization.TextObject("{=AF_DIP_UI_Notice_ThirdPartyReceived}Third-party diplomacy: {TITLE}. The news has reached your kingdom; read the full text in the kingdom bulletin.");
+                text.SetTextVariable("TITLE", notice.Title ?? "");
                 InformationManager.DisplayMessage(new InformationMessage(
-                    "【第三方外交消息】" + notice.Title + "。消息已传至本国，可在王国公告中查看全文。", Colors.Yellow));
+                    text.ToString(), Colors.Yellow));
+            }
         }
         public void Log(string text) => WorldDiplomacyBehavior.Log(text);
     }
