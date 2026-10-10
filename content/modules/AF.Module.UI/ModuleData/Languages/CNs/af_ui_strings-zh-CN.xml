@@ -3149,8 +3149,56 @@ HeroNPC 个性/背景、旧对话历史、压缩记忆、赊账/欠款、未命�
   <string id="AF_CASTLE_UI_EXECUTION_COMPLETED_NO_SCENE" text="【城堡处置】{LORD} 已由玩家确认处刑；场景倒地表现未成功，死亡结算仍已登记；原版角色死亡已经持久化，关系与家族后果由原版战役系统结算。" />
   <string id="AF_CASTLE_UI_CAPACITY_NONE" text="【城堡处置】主队当前没有可用于收编的空余编制（空余 {FREE}，已被此前收编组占用），本次收编未暂存；可先释放编制或改用其他处置。" />
   <string id="AF_CASTLE_UI_CAPACITY_TRIM" text="【城堡处置】主队空余编制不足，本次收编由 {REQUESTED} 人调整为 {STAGED} 人；其余战俘保持未分配，可另行处置。" />
+  <string id="AF_CASTLE_UI_LETTER_SENDER" text="一名家族成员" />
+  <string id="AF_CASTLE_UI_LETTER_RECIPIENT" text="族长" />
+  <string id="AF_CASTLE_UI_LORD_SALE_FAILED" text="【城堡处置】未能贩卖 {LORD}；未结算金币或最终处置。{REASON}" />
+  <string id="AF_CASTLE_UI_ACTION_RELEASE" text="释放普通战俘" />
+  <string id="AF_CASTLE_UI_ACTION_SELL" text="按原版酒馆价格贩卖普通战俘" />
+  <string id="AF_CASTLE_UI_ACTION_RECRUIT_VOLUNTARY" text="自愿收编普通战俘" />
+  <string id="AF_CASTLE_UI_ACTION_RECRUIT_FORCED" text="强制收编普通战俘" />
+  <string id="AF_CASTLE_UI_ACTION_LABOR_VOLUNTARY" text="自愿劳役服刑" />
+  <string id="AF_CASTLE_UI_ACTION_LABOR_FORCED" text="强制劳役服刑" />
+  <string id="AF_CASTLE_UI_ACTION_REPAIR_VOLUNTARY" text="自愿劳役修缮城堡" />
+  <string id="AF_CASTLE_UI_ACTION_REPAIR_FORCED" text="强制劳役修缮城堡" />
+  <string id="AF_CASTLE_UI_ACTION_INSTRUCTOR_VOLUNTARY" text="自愿担任教官" />
+  <string id="AF_CASTLE_UI_ACTION_INSTRUCTOR_FORCED" text="强制担任教官" />
+  <string id="AF_CASTLE_UI_ACTION_SLAUGHTER" text="现场屠戮普通战俘" />
+  <string id="AF_CASTLE_UI_ACTION_UNKNOWN" text="未指定处置" />
+  <string id="AF_CASTLE_UI_BRANCH_KINGDOM" text="族长率全族加入玩家统治的王国" />
+  <string id="AF_CASTLE_UI_BRANCH_AUDIENCE" text="族长请求玩家引见本国统治者" />
+  <string id="AF_CASTLE_UI_BRANCH_CLAIM" text="族长表达拥立独立玩家为王的政治意向" />
+  <string id="AF_CASTLE_UI_BRANCH_LETTER" text="非族长写信引见本族族长" />
+  <string id="AF_CASTLE_UI_BRANCH_COMPANION" text="非族长背叛原家族并成为玩家同伴" />
+  <string id="AF_CASTLE_UI_BRANCH_UNKNOWN" text="尚未明确领主收编分支" />
+  <string id="AF_CASTLE_UI_DEFERRED_CAPACITY" text="主队编制已满" />
+  <string id="AF_CASTLE_UI_DEFERRED_ROSTER" text="俘虏或部队名册不可用" />
+  <string id="AF_CASTLE_UI_DEFERRED_NO_MATCH" text="名册中已无该分组可处理的普通战俘" />
+  <string id="AF_CASTLE_UI_DEFERRED_NO_SELLABLE" text="名册中已无该分组可出售的普通战俘" />
+  <string id="AF_CASTLE_UI_DEFERRED_UNSUPPORTED" text="该暂存处置当前不受离场结算支持" />
+  <string id="AF_CASTLE_UI_DEFERRED_EXCEPTION" text="结算执行时发生异常，详情已写入日志" />
+  <string id="AF_CASTLE_UI_DEFERRED_OTHER" text="结算未生效，详情已写入日志" />
+  <string id="AF_CASTLE_UI_SALE_ROSTER" text="主队俘虏名册当前不可用。" />
+  <string id="AF_CASTLE_UI_SALE_INVALID" text="目标已死亡或不具备可赎卖身份。" />
+  <string id="AF_CASTLE_UI_SALE_NOT_SELECTED" text="目标不再是本次带入且由玩家主队扣押的领主。" />
+  <string id="AF_CASTLE_UI_SALE_LOCKED" text="该领主被原版任务或名册锁定，酒馆同样不能赎卖。" />
+  <string id="AF_CASTLE_UI_SALE_MODEL" text="原版赎金计价模型当前不可用。" />
+  <string id="AF_CASTLE_UI_SALE_NOT_RELEASED" text="原版赎卖动作未能解除该领主的俘虏状态。" />
+  <string id="AF_CASTLE_UI_SALE_UNAVAILABLE" text="目标当前不可赎卖。" />
+  <string id="AF_CASTLE_UI_SALE_OTHER" text="原版赎卖动作失败，详情已写入日志。" />
+  <string id="AF_CASTLE_UI_STATUS_INVALID" text="目标领主无效或已经无法处置。" />
+  <string id="AF_CASTLE_UI_STATUS_NOT_SELECTED" text="该领主不在本次带入城堡处置的俘虏名单中。" />
+  <string id="AF_CASTLE_UI_STATUS_UNKNOWN" text="领主收编分支尚未明确。" />
+  <string id="AF_CASTLE_UI_STATUS_REWARD_UNAVAILABLE" text="AF奖励系统当前不可用。" />
+  <string id="AF_CASTLE_UI_STATUS_NO_LEADER" text="未找到可接收引见信的在世族长。" />
+  <string id="AF_CASTLE_UI_STATUS_NO_ID" text="领主或族长缺少稳定角色标识。" />
+  <string id="AF_CASTLE_UI_STATUS_AUDIENCE" text="请求玩家将自己带去面见玩家所属王国的统治者；家族归属和俘虏状态暂未改变。" />
+  <string id="AF_CASTLE_UI_STATUS_CLAIM" text="表达了支持玩家称王的政治意向；不会在玩家尚无王国时凭空创建国家或转移家族。" />
+  <string id="AF_CASTLE_UI_STATUS_KINGDOM_CLEANUP" text="{STATUS} 政治转投已经完成，但俘虏或场景清理未完全完成，详情已写入日志。" />
+  <string id="AF_CASTLE_UI_STATUS_COMPANION_CLEANUP" text="{STATUS} 同伴加入已经完成，但场景清理未完全完成，详情已写入日志。" />
+  <string id="AF_CASTLE_UI_STATUS_EXCEPTION" text="执行领主收编分支时发生异常：{ERROR}" />
+  <string id="AF_CASTLE_UI_STATUS_LETTER_QUEUED" text="引见信已写好，将在 {DAYS} 天后直接送达族长 {RECIPIENT}；不会生成AF信使部队，当前领主仍保持俘虏身份。" />
   <string id="AF_UI_KingdomRebellion_ReasonTargetChanged" text="目标王国或家族状态已变化" />
   <string id="AF_UI_KingdomRebellion_ReasonPlayerImmune" text="玩家王国稳定度叛乱免疫" />
   <string id="AF_UI_KingdomRebellion_ReasonNamingSkipped" text="跳过了叛乱建国命名" />
-  </strings>
+</strings>
 </base>

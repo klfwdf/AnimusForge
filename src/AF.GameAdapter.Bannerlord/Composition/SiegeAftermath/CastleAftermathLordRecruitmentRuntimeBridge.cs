@@ -195,7 +195,7 @@ internal static class CastleAftermathLordRecruitmentRuntimeBridge
 						locationText: location,
 						won: true);
 					InformationManager.DisplayMessage(new InformationMessage(
-						CastleAftermathUiText.LetterDelivered(senderName, recipientName),
+						CastleAftermathUiText.LetterDelivered(sender.Name?.ToString(), recipient.Name?.ToString()),
 						Color.FromUint(SuccessColor)));
 					Logger.Log("CastleAftermath", "Delivered castle lord introduction letter. Sender=" + senderId
 						+ ", Recipient=" + recipientId + ", DueDay=" + dueDay);

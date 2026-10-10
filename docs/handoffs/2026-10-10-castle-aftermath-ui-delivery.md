@@ -30,15 +30,29 @@ These are static checks, not compiler acceptance, localization runtime acceptanc
 - Slaughter death notice retains the existing first/every-tenth-kill gate (`SiegeAiInterventionBehavior.cs:5310-5315`). No per-frame localization parsing was added.
 - Recruitment `result.StatusText` is still passed into `RecordInterventionMemory` (`:5018`) and the original outcome logger (`:5024`), while only `InformationMessage` uses the helper (`:5005,:5020`).
 
+## Dynamic display projection update
+
+The follow-up dynamic projection adds 48 keys (71 total in `CastleAftermathUiText`):
+
+- Every `SiegeCastleActionKind` disposition is projected from its enum value at the notification boundary; the shared profile's Chinese `Describe` remains unchanged.
+- Every `SiegeCastleLordRecruitmentBranch` is projected from its enum value; branch selection and matching terms remain unchanged.
+- Deferred reason codes are projected for the five known constants, `removed_for_*`, `exception:*`, and unknown fallback. The reason code itself is unchanged in the action result and logs.
+- Lord-sale failure reason codes are projected for the seven known codes plus empty/unknown fallback; `BuildLordSaleFailedMessage` is no longer used for the player notification.
+- Recruitment status uses exact bridge-produced fixed messages, queued-letter format, cleanup suffixes, the existing `EconomyUiTexts.FactionIdentityStatusForDisplay` for clan-join statuses, and `SocialUiLocalization.RecruitmentStatusForDisplay` for companion/other forms. Complex fief/transition tails and unknown status text remain authoritative through existing fallback behavior.
+- Null letter sender/recipient display fallbacks are localized without changing the saved sender/recipient IDs or letter body.
+
+`tests/content/J15ContentContractTests/CastleAftermathDynamicLocalizationContractTests.py` passed: 71 key fallbacks, 48 new dynamic keys, 21 notification consumers, enum/reason/status producer coverage, and unchanged source outside notification blocks. The English fallback source remains `CastleAftermathUiText.cs`; Chinese additions are in `docs/handoffs/2026-10-10-castle-aftermath-dynamic-ui-keys.json` for mainline XML registration.
+
+The dynamic key table now contains 48 complete `id/en/zh` rows under `strings`. Each `en` value is verified against the actual helper fallback; no row overlaps the original 23-key table, and no changes to those original keys are included. The follow-up static test pins its source comparison to `c8b6c652ebeaf43e0f503298ec3a76f9b60505f1`, not the moving HEAD. This delivery-format update changes no production C# or XML.
+
 ## Explicit residual Chinese
 
 This slice is fixed-wrapper localization, not a no-Chinese runtime guarantee:
 
-- Staging/deferred notifications keep `SiegeCastleRegularDispositionStagingProfile.Describe(action)` as `{ACTION}`. The profile is also a fact/Prompt producer; unchanged.
-- Deferred failure uses `SiegeCastlePrisonerDispositionProfile.DescribeDeferredFailureReason(result.ReasonCode)` as `{REASON}`. Original reason code and its description remain.
-- Lord recruitment keeps `SiegeCastleLordRecruitmentBranchProfile.Describe(branch)` as `{BRANCH}` and original trimmed `result.StatusText` as `{STATUS}`. The latter is shared with facts/logs/political memory and cannot be translated in place.
-- Names already prepared for shared facts (`senderName`, `recipientName`, `lordName`) keep original Chinese null fallbacks. Helper only provides its own localized captured-lord fallback when it directly receives null/blank; it does not reinterpret existing name values.
-- Lord-sale failure remains the original `SiegeCastleActionOutcomeTextProfile.BuildLordSaleFailedMessage` (`SiegeAiInterventionBehavior.cs:4914`), which contains Chinese reason descriptions in a private profile helper. No substring extraction or duplicated reason mapping was introduced.
+- Complex fief/transition tails in successful clan-join `STATUS` values are passed through the existing Economy display projector; any unrecognized tail remains raw. This preserves facts/logs and avoids guessing translations for generated summaries.
+- Unknown `STATUS` or unrecognized detail fragments are retained through existing display fallback. Unknown reason codes and action/branch enum values use the same generic display semantics as the original profiles; their underlying codes/values remain in the result/log/Prompt channels, not inserted into the notification.
+- Names from game objects remain original display names; only null/blank helper fallbacks are localized.
+- Shared profile wording, Chinese role comparisons, Prompt witness text, stored facts, raw errors and reason codes remain unchanged. Other non-castle siege notifications remain outside this slice.
 - Other non-castle siege notifications from external profiles/presentation data remain outside this slice. All Chinese role comparisons, Prompt witness text, stored facts, raw errors and reason codes remain unchanged.
 
 ## NOT-RUN and rollback
