@@ -3,6 +3,7 @@
 import json
 import re
 import subprocess
+import xml.etree.ElementTree as ET
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[3]
@@ -33,6 +34,20 @@ def main():
             assert len(current) == 23, "Expected exactly 23 original keys"
         assert not set(zh) & set(current), "Repeated key across handoff tables"
         zh.update(current)
+    # Later execution-status paths are checked against the native language resources,
+    # while the original 71-key delivery tables remain historical evidence.
+    execution_keys = {
+        "AF_CASTLE_UI_EXECUTION_CANCELLED",
+        "AF_CASTLE_UI_EXECUTION_PERSISTENCE_FAILED",
+        "AF_CASTLE_UI_EXECUTION_FINALIZATION_PENDING",
+        "AF_CASTLE_UI_EXECUTION_CONFIRMATION_PENDING",
+    }
+    language_root = ROOT / "content/modules/AF.Module.UI/ModuleData/Languages"
+    english = {s.attrib["id"]: s.attrib["text"] for s in ET.parse(language_root / "af_ui_strings.xml").findall(".//string")}
+    chinese = {s.attrib["id"]: s.attrib["text"] for s in ET.parse(language_root / "CNs/af_ui_strings-zh-CN.xml").findall(".//string")}
+    for key in execution_keys:
+        assert key in en and key in chinese and en[key] == english[key], key
+        zh[key] = chinese[key]
     assert en.keys() == zh.keys(), f"Key mismatch: {set(en) ^ set(zh)}"
     for key in en:
         assert sorted(re.findall(r"\{[A-Z]+\}", en[key])) == sorted(re.findall(r"\{[A-Z]+\}", zh[key])), key
@@ -66,6 +81,34 @@ def main():
         assert direct == sum(block.count("CastleAftermathUiText.") for block in notice.findall(current)), filename
         calls += direct
     assert not re.search(r"\b(SyncData|Logger|Task|OnTick)\b", HELPER)
+    execution_path = DIRECTORY / "CastleAftermathLordExecutionRuntimeBridge.cs"
+    execution = execution_path.read_text(encoding="utf-8-sig").replace("\r\n", "\n")
+    execution_baseline = subprocess.check_output(["git", "show", "d650b5e8c:" + execution_path.relative_to(ROOT).as_posix()], cwd=ROOT).decode("utf-8-sig").replace("\r\n", "\n")
+    for new, old, count in (
+        ("ExecutionFinalizationPending", "BuildLordExecutionFinalizationPendingMessage", 2),
+        ("ExecutionConfirmationPending", "BuildLordExecutionConfirmationPendingMessage", 1),
+        ("ExecutionCancelled", "BuildLordExecutionCancelledMessage", 1),
+        ("ExecutionPersistenceFailed", "BuildLordExecutionPersistenceFailedMessage", 1),
+        ("ExecutionFailed", "BuildLordExecutionFailedMessage", 1),
+    ):
+        needle = "CastleAftermathUiText." + new + "("
+        assert execution.count(needle) == count, new
+        execution = execution.replace(needle, "SiegeCastleActionOutcomeTextProfile." + old + "(")
+    assert execution == execution_baseline, "Execution mutation, cancellation, logs or persistence changed outside the display projection"
+    selection_path = ROOT / "src/bridges/Siege/Host/CastleAftermathRuntimeBridge.cs"
+    selection = selection_path.read_text(encoding="utf-8-sig").replace("\r\n", "\n")
+    selection_baseline = subprocess.check_output(["git", "show", "d650b5e8c:" + selection_path.relative_to(ROOT).as_posix()], cwd=ROOT).decode("utf-8-sig").replace("\r\n", "\n")
+    profile = (ROOT / "AnimusForge.SiegeAftermathIntervention/SiegeCastleRosterSelectionProfile.cs").read_text(encoding="utf-8-sig")
+    for key, old in (
+        ("AF_CASTLE_UI_ROSTER_AVAILABLE", "AvailableRosterTitle"),
+        ("AF_CASTLE_UI_ROSTER_SELECTED", "SelectedRosterTitle"),
+        ("AF_CASTLE_UI_ROSTER_HEADER", "ScreenHeader"),
+    ):
+        assert chinese[key] == re.search(r'const string ' + old + r' = "([^"]+)";', profile).group(1), key
+        needle = 'new TextObject("{=' + key + '}' + english[key] + '")'
+        assert selection.count(needle) == 1, key
+        selection = selection.replace(needle, "new TextObject(SiegeCastleRosterSelectionProfile." + old + ")")
+    assert selection == selection_baseline, "Roster selection rules, limits or callbacks changed outside the three titles"
     print(f"PASS castle projection keys={len(en)} new={len(en)-23}; notification consumers={calls}; enum/reason/status producer coverage; unchanged facts/logs/persistence outside notices")
 
 
