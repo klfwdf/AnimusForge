@@ -3,7 +3,7 @@ import argparse,re,subprocess,sys
 ROOT=Path(__file__).resolve().parents[3];HERE=Path(__file__).resolve().parent
 sys.path.insert(0,str(ROOT/'tests'))
 from output_isolation import minimal_test_environment
-parser=argparse.ArgumentParser();parser.add_argument('--run-root',required=True);parser.add_argument('--api',choices=['1.3','1.4'],default='1.3');args=parser.parse_args()
+parser=argparse.ArgumentParser();parser.add_argument('--run-root',required=True);parser.add_argument('--api',choices=['1.3','1.4'],default='1.3');parser.add_argument('--prepare-only',action='store_true');args=parser.parse_args()
 out=Path(args.run_root).resolve();out.relative_to(ROOT);out.mkdir(parents=True,exist_ok=True)
 import importlib.util
 spec=importlib.util.spec_from_file_location('extract',ROOT/'tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py');extract=importlib.util.module_from_spec(spec);spec.loader.exec_module(extract)
@@ -122,7 +122,7 @@ harness += '\nnamespace AnimusForge { '+extract.declaration(state_source,'intern
 army_narrative_source=(ROOT/'src/AF.GameAdapter.Bannerlord/Prompt/PersonaIdentityPromptCaptureAdapter.cs').read_text(encoding='utf-8-sig')
 harness=harness.replace('@@C_SIEGE_START@@',extract.declaration(army_narrative_source,'internal static string BuildSiegeStartNarrative('))
 notice_format_source=(ROOT/'src/AF.GameAdapter.Bannerlord/UI/Editors/WeeklyEditorProjection.cs').read_text(encoding='utf-8-sig')
-harness += '\nnamespace AnimusForge {using static AnimusForge.MyBehavior; '+extract.declaration(notice_format_source,'internal class WeeklyEditorDisplayPort')+' internal static class WeeklyEditorProjection { '+extract.declaration(notice_format_source,'internal static string BuildWeeklyReportBrowserDefaultTitle(')+' } }\n'
+harness += '\nnamespace AnimusForge {using static AnimusForge.MyBehavior; using static AnimusForge.EventEditorUiText; '+extract.declaration(notice_format_source,'internal class WeeklyEditorDisplayPort')+' internal static class WeeklyEditorProjection { '+extract.declaration(notice_format_source,'internal static string BuildWeeklyReportBrowserDefaultTitle(')+' } }\n'
 notice_dto_source=(ROOT/'src/AF.GameAdapter.Bannerlord/UI/Weekly/AnimusForgeWeeklyReportMapNotification.cs').read_text(encoding='utf-8-sig')
 harness += '\nnamespace AnimusForge {using TaleWorlds.Core;using TaleWorlds.Localization; '+extract.declaration(notice_dto_source,'internal sealed class AnimusForgeWeeklyReportMapNotification : InformationData')+' '+extract.declaration(notice_dto_source,'internal sealed class AnimusForgeWeeklyReportMapNotificationItemVM : MapNotificationItemBaseVM')+' }\n'
 weekly_material_order=(ROOT/'src/modules/AF.Module.Weekly/Materials/WeeklyPromptMaterialOwner.MaterialCopies.cs').read_text(encoding='utf-8-sig')
@@ -178,6 +178,8 @@ paths += ['src/AF.GameAdapter.Bannerlord/Persistence/'+name+'.cs' for name in ['
 paths += ['src/modules/AF.Module.Persona/Profiles/PersonaProfileStateOwner.cs','src/modules/AF.Module.Economy/Presentation/ShownResourceRecordOwner.cs']
 paths.append('src/modules/AF.Module.Economy/Negotiation/ScenePrepaidTransferRecordOwner.cs')
 paths.append('src/modules/AF.Module.Weekly/Records/WeeklyEventRecordStateOwner.cs')
+paths += ['src/AF.GameAdapter.Bannerlord/UI/Editors/EventEditorUiText.cs','src/AF.GameAdapter.Bannerlord/UI/Editors/WeeklyReportUiText.cs','tests/modules/AF.Module.Weekly/EditorLifecycleTests/TextObjectFixture.cs']
+paths.append('src/AF.GameAdapter.Bannerlord/Records/WeeklyDiagnosticPreviewProjection.cs')
 paths.append('src/AF.GameAdapter.Bannerlord/Memory/SceneDeferredHistoryFactOwner.cs')
 paths += ['src/modules/AF.Module.Memory/History/SceneRevisitStateOwner.cs','src/AF.GameAdapter.Bannerlord/Persistence/CampaignSceneRevisitPersistenceAdapter.cs']
 paths.append('src/AF.GameAdapter.Bannerlord/Memory/SceneRevisitRecordGameAdapter.cs')
@@ -273,7 +275,16 @@ legacy=json.loads((ROOT/'artifacts/j17-host-implementation-20261004/a/weekzero-o
 harness=harness.replace('@@LEGACY_WEEKZERO@@','\n'.join(legacy[n].replace('private Task<bool>','internal Task<bool>') for n in ['ComputeWeekZeroShortSummarySourceHash','BuildWeekZeroPromptText','ApplyWeekZeroShortSummaryOnMainThreadAsync']))
 (out/'Program.cs').write_text(harness,encoding='utf-8')
 reference=ROOT/'local/dotnet/8.0.425/sdk/8.0.425/Newtonsoft.Json.dll'
-(out/'Tests.csproj').write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><ImplicitUsings>enable</ImplicitUsings><NoWarn>CS0649</NoWarn><DefineConstants>'+('BANNERLORD_1_4_OR_GREATER' if args.api=='1.4' else '')+'</DefineConstants></PropertyGroup><ItemGroup>'+''.join('<Compile Include="'+str(ROOT/p)+'"/>' for p in paths)+'<Reference Include="Newtonsoft.Json"><HintPath>'+str(reference)+'</HintPath></Reference></ItemGroup></Project>',encoding='utf-8')
+resources=''
+for module,filename in [('AF.Module.UI','af_ui_strings'),('AF.Module.Weekly','afweekly_ui_strings')]:
+ for chinese in [False,True]:
+  relative='content/modules/'+module+'/ModuleData/Languages/'+('CNs/'+filename+'-zh-CN.xml' if chinese else filename+'.xml')
+  name=('ui' if module=='AF.Module.UI' else 'weekly')+('-zh.xml' if chinese else '-en.xml')
+  resources+='<Content Include="'+str(ROOT/relative)+'" Link="'+name+'" CopyToOutputDirectory="PreserveNewest"/>'
+(out/'Tests.csproj').write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><ImplicitUsings>enable</ImplicitUsings><NoWarn>CS0649</NoWarn><DefineConstants>'+('BANNERLORD_1_4_OR_GREATER' if args.api=='1.4' else '')+'</DefineConstants></PropertyGroup><ItemGroup>'+''.join('<Compile Include="'+str(ROOT/p)+'"/>' for p in paths)+resources+'<Reference Include="Newtonsoft.Json"><HintPath>'+str(reference)+'</HintPath></Reference></ItemGroup></Project>',encoding='utf-8')
 (out/'NuGet.Config').write_text('<configuration><packageSources><clear/></packageSources></configuration>')
+if args.prepare_only:
+ print('PREPARED',out,'(C# compilation and replay NOT-RUN)')
+ raise SystemExit(0)
 dotnet=ROOT/'local/dotnet/8.0.425/dotnet.exe';result=subprocess.run([str(dotnet),'run','--project',str(out/'Tests.csproj'),'-c','Release'],cwd=out,env=minimal_test_environment(dotnet,out),capture_output=True,text=True,encoding='utf-8',errors='replace',timeout=90)
 (out/'run.log').write_text(result.stdout+result.stderr,encoding='utf-8');print(result.stdout+result.stderr,end='');raise SystemExit(result.returncode)

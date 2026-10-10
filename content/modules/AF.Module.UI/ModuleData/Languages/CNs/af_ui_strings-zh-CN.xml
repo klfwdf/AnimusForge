@@ -3064,5 +3064,39 @@ HeroNPC 个性/背景、旧对话历史、压缩记忆、赊账/欠款、未命�
   <string id="AF_UI_ErrorAnalysis_RequestFailure" text="前处理 API 请求失败：{CODE}" />
   <string id="AF_UI_ErrorAnalysis_EmptyReply" text="前处理 API 已响应，但没有解析出可用的模型回复。" />
   <string id="AF_UI_ErrorAnalysis_Timeout" text="前处理 API 分析超过 60 秒，已取消本次请求。" />
+  <string id="AF_UI_WeeklyProjection_InvalidGroup" text="无效分组" />
+  <string id="AF_UI_WeeklyProjection_MaterialCounts" text="{SOURCE} / {PROMPT} 条素材" />
+  <string id="AF_UI_WeeklyProjection_OtherRecent" text="其他近况" />
+  <string id="AF_UI_WeeklyProjection_KingdomRecent" text="{KINGDOM}近况" />
+  <string id="AF_UI_WeeklyProjection_EmptyBody" text="当前这期周报还没有正文。" />
+  <string id="AF_UI_WeeklyProjection_Kingdom" text="王国" />
+  <string id="AF_UI_WeeklyProjection_KingdomWeekly" text="{KINGDOM}周报" />
+  <string id="AF_UI_WeeklyProjection_GenerationTarget" text="生成对象" />
+  <string id="AF_UI_WeeklyProjection_AssociatedKingdom" text="关联王国" />
+  <string id="AF_UI_WeeklyProjection_OutputMode" text="输出模式" />
+  <string id="AF_UI_WeeklyProjection_LengthProfile" text="篇幅档位" />
+  <string id="AF_UI_WeeklyProjection_SystemPrompt" text="【System Prompt】" />
+  <string id="AF_UI_WeeklyProjection_UserPrompt" text="【User Prompt】" />
+  <string id="AF_UI_WeeklyProjection_BatchWeek" text="批次周数" />
+  <string id="AF_UI_WeeklyProjection_MaterialRange" text="取材区间" />
+  <string id="AF_UI_WeeklyProjection_BatchBlocks" text="批次块数" />
+  <string id="AF_UI_WeeklyProjection_BatchMode" text="批次模式" />
+  <string id="AF_UI_WeeklyProjection_BatchTargets" text="批次对象" />
+  <string id="AF_UI_WeeklyProjection_InvalidMaterial" text="无效素材" />
+  <string id="AF_UI_WeeklyProjection_ActionDay" text="[第{DAY}日] " />
+  <string id="AF_UI_WeeklyProjection_UnknownLord" text="某领主" />
+  <string id="AF_UI_WeeklyProjection_NoPreview" text="无预览" />
+  <string id="AF_UI_WeeklyProjection_MaterialAggregate" text="周报聚合素材" />
+  <string id="AF_UI_WeeklyProjection_MaterialWorldOpening" text="世界开局概要" />
+  <string id="AF_UI_WeeklyProjection_MaterialKingdomOpening" text="王国开局概要" />
+  <string id="AF_UI_WeeklyProjection_MaterialRuler" text="当前统治者" />
+  <string id="AF_UI_WeeklyProjection_MaterialRecentAction" text="NPC近期行动" />
+  <string id="AF_UI_WeeklyProjection_MaterialMajorAction" text="NPC重大行动" />
+  <string id="AF_UI_WeeklyProjection_MaterialRawText" text="原始文本素材" />
+  <string id="AF_UI_WeeklyProjection_MaterialUnclassified" text="未分类素材" />
+  <string id="AF_UI_WeeklyProjection_Profile1" text="第一档（200-400字）" />
+  <string id="AF_UI_WeeklyProjection_Profile2" text="第二档（200-800字）" />
+  <string id="AF_UI_WeeklyProjection_Profile3" text="第三档（200-1200字）" />
+  <string id="AF_UI_WeeklyProjection_Profile4" text="第四档（200-1500字）" />
   </strings>
 </base>

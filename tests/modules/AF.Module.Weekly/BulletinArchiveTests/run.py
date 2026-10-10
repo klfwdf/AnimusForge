@@ -5,8 +5,8 @@ import xml.etree.ElementTree as ET
 ROOT=Path(__file__).resolve().parents[4]; HERE=Path(__file__).parent
 sys.path.insert(0,str(ROOT/"tests"))
 from output_isolation import new_run_root, resolve_dotnet, minimal_test_environment
-parser=argparse.ArgumentParser();parser.add_argument("--out",type=Path,required=True);args=parser.parse_args()
-out=new_run_root(ROOT,"bulletin-archive",args.out);dotnet=resolve_dotnet(ROOT)
+parser=argparse.ArgumentParser();parser.add_argument("--out",type=Path,required=True);parser.add_argument("--prepare-only",action="store_true");args=parser.parse_args()
+out=new_run_root(ROOT,"bulletin-archive",args.out);dotnet=ROOT/"local/dotnet/8.0.425/dotnet.exe" if args.prepare_only else resolve_dotnet(ROOT)
 spec=importlib.util.spec_from_file_location("extract",ROOT/"tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py");extract=importlib.util.module_from_spec(spec);spec.loader.exec_module(extract)
 sys.path.insert(0,str(ROOT/"tests/modules/AF.Module.Memory/MemorySummaryMainThreadBoundaryTests"))
 from business_owner_fixture_support import enable_expression_declarations
@@ -23,7 +23,7 @@ assert "day, WeeklyReportArchivePolicy.CaptureKingdomIds(selection), notify: fal
 presentation=read("src/modules/AF.Module.Weekly/Generation/WorldBulletinStateOwner.Presentation.cs")
 timeline=read("src/AF.GameAdapter.Bannerlord/UI/WorldTimeline/WorldMessageTimelineUi.cs")
 # Exact declarations and exact contiguous production methods, no body substitutions.
-generated="using System;using System.IO;using System.Linq;using System.Collections.Generic;using System.Globalization;using System.Text;using System.Threading.Tasks;using Newtonsoft.Json;using TaleWorlds.CampaignSystem;using TaleWorlds.Core;using TaleWorlds.Library;using AnimusForge.Refactor.Contracts;using static AnimusForge.MyBehavior;namespace AnimusForge {public partial class MyBehavior {"
+generated="using System;using System.IO;using System.Linq;using System.Collections.Generic;using System.Globalization;using System.Text;using System.Threading.Tasks;using Newtonsoft.Json;using TaleWorlds.CampaignSystem;using TaleWorlds.Core;using TaleWorlds.Library;using TaleWorlds.Localization;using AnimusForge.Refactor.Contracts;using static AnimusForge.MyBehavior;using static AnimusForge.EventEditorUiText;namespace AnimusForge {public partial class MyBehavior {"
 generated+=spans(host,["internal sealed class EventRecordEntry","internal sealed class ApiCallResult","public sealed class WeeklyPromptSnapshot","public sealed class WorldWeeklyReportHistoryEntry","public sealed class WeeklyReportBrowserEntryData","public sealed class WeeklyReportBrowserCountryData"])+extract.declaration(records,"internal sealed class EventImportPayload")+"}"
 # Persistence adapter binds this production data-only authority; no extra record dictionary.
 weekly_state=read("src/modules/AF.Module.Weekly/Records/WeeklyEventRecordStateOwner.cs")
@@ -71,6 +71,8 @@ paths.append("src/AF.GameAdapter.Bannerlord/UI/Weekly/TerminalWeeklyReportBrowse
 paths.append("src/modules/AF.Module.Diplomacy/Persistence/WorldDiplomacyPropagationRecords.cs")
 paths.append("src/AF.GameAdapter.Bannerlord/Prompt/WorldBulletinNpcPromptCaptureAdapter.cs")
 paths.append("src/AF.Contracts/Internal/WorldDiplomacyPresentationContracts.cs")
+paths.append("src/AF.GameAdapter.Bannerlord/UI/Editors/EventEditorUiText.cs")
+paths.append("src/AF.GameAdapter.Bannerlord/Records/WeeklyDiagnosticPreviewProjection.cs")
 for path in paths:read(path)
 ui=ET.fromstring(read("content/modules/AF.Module.UI/GUI/Prefabs/AnimusForgeTerminalPopup.xml"))
 period=next(node for node in ui.iter() if node.attrib.get("Text")=="@WeekText")
@@ -83,13 +85,25 @@ assert open_button.attrib.get("DoNotPassEventsToChildren")=="true"
 assert any(node.attrib.get("Text")=="@PreviewText" for node in ui.iter()), "Card preview missing"
 print("PASS existing XML period width, country select and report body bindings (not rendering)")
 newtonsoft=dotnet.parent/"sdk/8.0.425/Containers/tasks/net8.0/Newtonsoft.Json.dll"
-if not newtonsoft.is_file():raise RuntimeError("Missing local Newtonsoft.Json reference")
+if not args.prepare_only and not newtonsoft.is_file():raise RuntimeError("Missing local Newtonsoft.Json reference")
 links="".join('<Compile Include="'+str(ROOT/path)+'"/>' for path in paths)
+links+='<Compile Include="'+str(ROOT/'tests/modules/AF.Module.Weekly/EditorLifecycleTests/TextObjectFixture.cs')+'"/>'
+read('tests/modules/AF.Module.Weekly/EditorLifecycleTests/TextObjectFixture.cs')
 links+="".join('<Compile Include="'+str(HERE/name)+'"/>' for name in ["Stubs.cs","Program.cs"])
-(out/"Proof.csproj").write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><ImplicitUsings>enable</ImplicitUsings><NoWarn>CS0649</NoWarn></PropertyGroup><ItemGroup>'+links+'<Reference Include="Newtonsoft.Json"><HintPath>'+str(newtonsoft)+'</HintPath></Reference></ItemGroup></Project>',encoding="utf-8")
+resources=""
+for module,filename in [("AF.Module.UI","af_ui_strings"),("AF.Module.Weekly","afweekly_ui_strings")]:
+ for chinese in [False,True]:
+  relative='content/modules/'+module+'/ModuleData/Languages/'+('CNs/'+filename+'-zh-CN.xml' if chinese else filename+'.xml')
+  name=('ui' if module=='AF.Module.UI' else 'weekly')+('-zh.xml' if chinese else '-en.xml')
+  read(relative)
+  resources+='<Content Include="'+str(ROOT/relative)+'" Link="'+name+'" CopyToOutputDirectory="PreserveNewest"/>'
+(out/"Proof.csproj").write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><ImplicitUsings>enable</ImplicitUsings><NoWarn>CS0649</NoWarn></PropertyGroup><ItemGroup>'+links+resources+'<Reference Include="Newtonsoft.Json"><HintPath>'+str(newtonsoft)+'</HintPath></Reference></ItemGroup></Project>',encoding="utf-8")
 (out/"NuGet.Config").write_text('<configuration><packageSources><clear/></packageSources></configuration>',encoding="utf-8")
 for name in ["Program.cs","Stubs.cs","run.py"]:read(str((HERE/name).relative_to(ROOT)).replace("\\","/"))
 (out/"source-manifest.json").write_text(json.dumps(manifest,indent=2),encoding="utf-8")
+if args.prepare_only:
+ print("PREPARED",out,"(C# compilation and replay NOT-RUN)")
+ raise SystemExit(0)
 result=subprocess.run([str(dotnet),"run","--project",str(out/"Proof.csproj")],cwd=out,env=minimal_test_environment(dotnet,out),capture_output=True,text=True,encoding="utf-8",errors="replace")
 (out/"result.log").write_text(result.stdout+result.stderr,encoding="utf-8");print(result.stdout+result.stderr);print("OUTPUT",out)
 raise SystemExit(result.returncode)
