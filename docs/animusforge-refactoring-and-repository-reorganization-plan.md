@@ -1,6 +1,8 @@
 <a id="full-english-release-20261010"></a>
 ## 全英文发行与 CN/EN 双包（2026-10-10，ACTIVE / NOT RELEASE READY）
 
+包级口径实施：外交216对提示词已从UI XML迁到DiplomacyPromptTexts.json/.en.json，实际主机与共同契约读包内同路径缓存，界面切换不改变语料。EN内容投影保留已注册双语UI，35项无ZIP/无编译的内容映射检查通过。协议/JSON/schema与旧文本保持；新增的英文演讲强制输出语句已撤去，原局部中文输出规则仍待独立处理。其他提示词、全部世界书覆盖和嵌入资源门禁尚未收敛，不声称能完整出包。[证据](handoffs/2026-10-10-localization-mainline-integration.md#包内提示词选版与共享双语界面2026-10-11)。
+
 2026-10-11用户进一步明确最终口径：全模组中文运行时硬编码从源码移出，一套代码交付CN/EN两包，语言包差异是提示词与世界书的CN/EN内容。不能用游戏界面语言切换代替包内提示词选版。现有package_mod已含CN/EN双ZIP入口，但package_localization仍移除EN包CNs UI资源且一概拒绝中文嵌入资源，与“共享双语UI/合法兼容资源、仅提示词世界书选版”需重新对齐。前述外交PromptWorld/共同契约按UI语言解析的接线为过渡实现，不视为包级交付达成；后续改为读取包内选定提示词资源。固定MODE合同新译文当前仅在work目录，尚未据旧方向改产品代码。目标仍ACTIVE，不能通过删除识别语料、隐藏转义或放宽全部门禁制造完成；构建/正式出包尚未执行。
 
 外交上游续接：共同契约v25、内置偏好、偏好标题/约束句新增4对资源，在同步BuildCommonDiplomacySystemPrefix入口投影；原设置/迁移/公开原文API保持。静态合同、旧54值迁移契约、29资源对与既有双API各5108资源解析通过。固定MODE合同与外部事实片段仍未译，编译/实机仍未跑。[证据](handoffs/2026-10-10-localization-mainline-integration.md#外交共同契约与内置偏好2026-10-11)。

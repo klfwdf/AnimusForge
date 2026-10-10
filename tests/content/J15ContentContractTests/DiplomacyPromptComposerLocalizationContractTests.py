@@ -11,9 +11,9 @@ sys.path.insert(0, str(ROOT / 'tools/localization'))
 from inventory_untranslated import LEX, decode, HAN
 
 prefix = 'AF_DIP_Prompt_Composer_'
-base = ROOT / 'content/modules/AF.Module.Diplomacy/ModuleData/Languages'
-en = {n.get('id'): n.get('text') for n in ET.parse(base / 'afdip_ui_strings.xml').iter('string') if n.get('id').startswith(prefix)}
-zh = {n.get('id'): n.get('text') for n in ET.parse(base / 'CNs/afdip_ui_strings-zh-CN.xml').iter('string') if n.get('id').startswith(prefix)}
+base = ROOT / 'content/modules/AF.Module.Diplomacy/ModuleData'
+en = {k: v for k, v in json.loads((base / 'DiplomacyPromptTexts.en.json').read_text(encoding='utf-8')).items() if k.startswith(prefix)}
+zh = {k: v for k, v in json.loads((base / 'DiplomacyPromptTexts.json').read_text(encoding='utf-8')).items() if k.startswith(prefix)}
 assert len(en) == 212 and en.keys() == zh.keys()
 def literal_braces(text):
     return text.replace('[[AF_JSON_OPEN]]', '{').replace('[[AF_JSON_CLOSE]]', '}')
@@ -46,8 +46,7 @@ remaining = [decode(m[0]) for m in LEX.finditer(source) if m.lastgroup == 'strin
 assert remaining == ['语义分析服务未完成评估，交由本地结构化规则给出非零评价。'], 'only raw fallback analysis reason remains'
 adapter = (ROOT / 'src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.PromptContext.cs').read_text(encoding='utf-8-sig')
 assert 'IWorldDiplomacyPromptWorld.LocalizePrompt' in adapter
-assert 'DiplomacyUiLocalization.Text(id, englishFallback)' in adapter
-assert '.Replace("[[AF_JSON_OPEN]]", "{").Replace("[[AF_JSON_CLOSE]]", "}")' in adapter
+assert 'DiplomacyPromptTexts.Get(id, englishFallback)' in adapter
 assert 'TextObject' not in source and 'Task.Run' not in source
 schema = literal_braces(en[prefix + '015']).split(': ', 1)[1]
 assert json.loads(schema)['selected_kingdom_ids'] == ['ID']

@@ -71,7 +71,7 @@ internal static class WorldDiplomacyPromptComposer
 	sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_012", "Select participants for this event once, based on the opening diplomatic declaration and the candidates' actual interests. Observer kingdoms will not be repeatedly reassessed later."));
 	sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_013", "Any kingdom explicitly addressed by the declaration must participate. Select only kingdoms that will actually intervene in these negotiations, not mere observers or commentators. The participant count is a ceiling, not a quota; use only candidate IDs."));
 	sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_014", "The event's cause does not predetermine its outcome. Participants should be able to advance currently legal alliances, alliance termination, trade, trade termination, war declarations or peace, or propose, accept, reject or counter terms."));
-	sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_015", "Output only JSON: [[AF_JSON_OPEN]]\"topic\":\"brief diplomatic issue\",\"selected_kingdom_ids\":[\"ID\"],\"reason\":\"brief reason\"[[AF_JSON_CLOSE]]"));
+	sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_015", "Output only JSON: {\"topic\":\"brief diplomatic issue\",\"selected_kingdom_ids\":[\"ID\"],\"reason\":\"brief reason\"}"));
 		return sb.ToString().TrimEnd();
 	}
 
@@ -147,7 +147,7 @@ internal static class WorldDiplomacyPromptComposer
 			+ world.LocalizePrompt("AF_DIP_Prompt_Composer_035", "|proposing kingdom=") + requiredPeaceOffer.ProposerKingdomId + "。");
 		}
 	sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_036", "If statement is currently available, it represents a structured negotiation move, not a mechanical diplomatic act. Fill in negotiation_move and actually perform that move in the body; the document will still be delivered to the next kingdom on the original route. Do not pass vague positions off as new progress."));
-	sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_037", "For annexation, tribute, garrison or full vassalage, use the propose_/accept_/reject_ actions for annexation/tributary/garrison/vassal. New offers include treaty_terms=[[AF_JSON_OPEN]]receiving_kingdom_id:receiving or overlord kingdom ID,joining_kingdom_id:joining or subject kingdom ID[[AF_JSON_CLOSE]]; make these roles explicit in the body too. Accepting an original offer must bind responding_to_offer_document_id and responding_to_offer_action_id and adopt all original terms. withdraw_offer may only stand alone to withdraw a specific, unaccepted offer made by this kingdom; it cannot reverse effects that already occurred."));
+	sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_037", "For annexation, tribute, garrison or full vassalage, use the propose_/accept_/reject_ actions for annexation/tributary/garrison/vassal. New offers include treaty_terms={receiving_kingdom_id:receiving or overlord kingdom ID,joining_kingdom_id:joining or subject kingdom ID}; make these roles explicit in the body too. Accepting an original offer must bind responding_to_offer_document_id and responding_to_offer_action_id and adopt all original terms. withdraw_offer may only stand alone to withdraw a specific, unaccepted offer made by this kingdom; it cannot reverse effects that already occurred."));
 		AppendRelayResponseSourceContext(
 			sb,
 			world,
@@ -406,7 +406,7 @@ internal static class WorldDiplomacyPromptComposer
 	{
 		StringBuilder sb = new StringBuilder();
 	sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_098", "Issuing kingdom:") + document.AuthorKingdomName + "（ID=" + document.AuthorKingdomId + "）");
-	sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_099", "For annexation, tribute, garrison and full vassalage, use the propose_/accept_/reject_ actions for annexation/tributary/garrison/vassal respectively. New offers must include treaty_terms=[[AF_JSON_OPEN]]receiving_kingdom_id:receiving or overlord kingdom ID,joining_kingdom_id:joining or subject kingdom ID[[AF_JSON_CLOSE]]. Acceptance, rejection or withdrawal must accurately bind responding_to_offer_document_id and responding_to_offer_action_id. Use withdraw_offer only to withdraw this kingdom's own unaccepted original offer. The player's text is already public; ambiguity or an invalid action must not block the declaration."));
+	sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_099", "For annexation, tribute, garrison and full vassalage, use the propose_/accept_/reject_ actions for annexation/tributary/garrison/vassal respectively. New offers must include treaty_terms={receiving_kingdom_id:receiving or overlord kingdom ID,joining_kingdom_id:joining or subject kingdom ID}. Acceptance, rejection or withdrawal must accurately bind responding_to_offer_document_id and responding_to_offer_action_id. Use withdraw_offer only to withdraw this kingdom's own unaccepted original offer. The player's text is already public; ambiguity or an invalid action must not block the declaration."));
 		string documentAuthor = world.ResolveKingdom(document.AuthorKingdomId);
 		WorldDiplomacyRound analysisRound = world.ResolveRound(document.RoundId);
 		if (document.IsPlayerAuthored) orchestration.PruneInvalidOffers(analysisRound);

@@ -1,6 +1,5 @@
 #nullable disable
 using System.Text;
-using System.Xml.Linq;
 using AnimusForge;
 using AnimusForge.Refactor.Domain;
 using Newtonsoft.Json.Linq;
@@ -97,8 +96,9 @@ internal sealed class PromptWorldFixture : IWorldDiplomacyDraftRepairWorld
     private static readonly Dictionary<string, string> ChinesePrompts = LoadPromptStrings();
     private static Dictionary<string, string> LoadPromptStrings()
     {
-        using var stream = typeof(PromptWorldFixture).Assembly.GetManifestResourceStream("DiplomacyPromptFixture.zh.xml");
-        return XDocument.Load(stream).Descendants("string").ToDictionary(x => (string)x.Attribute("id"), x => (string)x.Attribute("text"));
+        using var stream = typeof(PromptWorldFixture).Assembly.GetManifestResourceStream("DiplomacyPromptFixture.zh.json");
+        using var reader = new System.IO.StreamReader(stream);
+        return JObject.Parse(reader.ReadToEnd()).Properties().ToDictionary(x => x.Name, x => (string)x.Value);
     }
     public string LocalizePrompt(string id, string englishFallback)
         => (EnglishPrompts ? englishFallback : ChinesePrompts[id]).Replace("[[AF_JSON_OPEN]]", "{").Replace("[[AF_JSON_CLOSE]]", "}");

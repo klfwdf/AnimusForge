@@ -1,6 +1,7 @@
 """Common prompt localization without changing configuration/migration bytes."""
 from pathlib import Path
 import re
+import json
 import subprocess
 import sys
 import xml.etree.ElementTree as ET
@@ -17,9 +18,9 @@ def constant(s, name):
     expression = re.search(r'private const string ' + name + r'\s*=\s*([\s\S]*?);\s*\n', s)[1]
     return ''.join(decode(m[0]) for m in LEX.finditer(expression) if m.lastgroup == 'string')
 
-base = ROOT / 'content/modules/AF.Module.Diplomacy/ModuleData/Languages'
-en = {n.get('id'): n.get('text') for n in ET.parse(base / 'afdip_ui_strings.xml').iter('string')}
-zh = {n.get('id'): n.get('text') for n in ET.parse(base / 'CNs/afdip_ui_strings-zh-CN.xml').iter('string')}
+base = ROOT / 'content/modules/AF.Module.Diplomacy/ModuleData'
+en = json.loads((base / 'DiplomacyPromptTexts.en.json').read_text(encoding='utf-8'))
+zh = json.loads((base / 'DiplomacyPromptTexts.json').read_text(encoding='utf-8'))
 for suffix, cn, english in (
     ('CommonCore', 'DefaultWorldDiplomacyContractCore', 'EnglishWorldDiplomacyContractCore'),
     ('DefaultPreference', 'DefaultWorldDiplomacyPreference', 'EnglishWorldDiplomacyPreference'),

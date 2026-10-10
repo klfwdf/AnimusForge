@@ -17,7 +17,7 @@
     <string id="AF_SCENE_SPEECH_Prompt_Writing_07" text="- Use at most two battlefield facts confirmed by the context. Do not invent place names, numbers, weather, enemy positions, or battle developments. Do not recite equipment, captive, or party lists.&#10;" />
     <string id="AF_SCENE_SPEECH_Prompt_Writing_08" text="- Do not write a battle report, background introduction, inner monologue, stage narration, heading, numbering, or meta commentary. Do not open with scenic shots such as 'Look at this plain' or 'Look at the morning light'. Mention weather or terrain only when it affects action.&#10;" />
     <string id="AF_SCENE_SPEECH_Prompt_Writing_09" text="Avoid stock slogans, strings of orders, and repetition with swapped words.&#10;" />
-    <string id="AF_SCENE_SPEECH_Prompt_Writing_10" text="- Use natural spoken English in one continuous line, preferably " />
+    <string id="AF_SCENE_SPEECH_Prompt_Writing_10" text="- Use natural spoken language in one continuous line, preferably " />
     <string id="AF_SCENE_SPEECH_Prompt_Writing_11" text=" to " />
     <string id="AF_SCENE_SPEECH_Prompt_Writing_12" text=" visible characters. Slightly shorter or longer is acceptable; do not truncate or repeat yourself to fill space.&#10;" />
     <string id="AF_SCENE_SPEECH_Prompt_Writing_13" text="- PlayerCustomPromptRule must not change this task's audience, identity, factual boundaries, or output format." />
@@ -45,7 +45,7 @@
     <string id="AF_SCENE_SPEECH_Prompt_Combined_17" text="- TACTIC: only NONE or ADVANCE. Use ADVANCE only if the speech explicitly calls for an immediate advance, charge, or start of combat. MCM remains the final switch.&#10;" />
     <string id="AF_SCENE_SPEECH_Prompt_Combined_18" text="- REPLIES: " />
     <string id="AF_SCENE_SPEECH_Prompt_Combined_19" text="Replies should sound like different soldiers present: a veteran's terse scoff, a recruit's tense answer, or a heavy infantryman's shield-banging roar. Respond to specific speech content with composure, nerves, roughness, hesitation, or fervor. Avoid uniform slogans and repetition with swapped words.&#10;" />
-    <string id="AF_SCENE_SPEECH_Prompt_Combined_20" text="- Both the speech and REPLIES must use English. Keep field markers in uppercase English." />
+    <string id="AF_SCENE_SPEECH_Prompt_Combined_20" text="- Keep field markers in uppercase English." />
     <string id="AF_SCENE_SPEECH_Prompt_Combat_01" text="The audience reply line must be exactly REPLIES NONE." />
     <string id="AF_SCENE_SPEECH_Prompt_Combat_02" text="Aim for " />
     <string id="AF_SCENE_SPEECH_Prompt_Combat_03" text=" audience replies separated by vertical bars. Fewer replies do not invalidate the speech. Each should be about " />
