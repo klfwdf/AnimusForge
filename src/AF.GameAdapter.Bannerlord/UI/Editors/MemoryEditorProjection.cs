@@ -21,6 +21,52 @@ internal sealed class MemoryEditorDisplayPort
 
 internal static class MemoryEditorProjection
 {
+	internal static string HourRangeForDisplay(int startHour, int endHour)
+	{
+		startHour = Math.Max(0, Math.Min(23, startHour));
+		endHour = Math.Max(0, Math.Min(23, endHour));
+		return startHour == endHour
+			? MemoryEditorUiText.F("AF_MEMORY_UI_HourSingle", "{HOUR}h", "HOUR", startHour.ToString())
+			: MemoryEditorUiText.F("AF_MEMORY_UI_HourRange", "{START}-{END}h", "START", startHour.ToString(), "END", endHour.ToString());
+	}
+
+	internal static string SpeakerForDisplay(DailyMemoryLine line)
+	{
+		string speaker = (line.Speaker ?? "").Trim();
+		if (speaker.Length == 0) return line.IsAfef ? "AFEF" : new TextObject("{=AF_MEMORY_UI_Manual}Manual").ToString();
+		return string.Equals(speaker, "手动", StringComparison.OrdinalIgnoreCase)
+			? new TextObject("{=AF_MEMORY_UI_Manual}Manual").ToString() : speaker;
+	}
+
+	internal static string WeeklyMaterialTagForDisplay(MemoryEditorDisplayPort port, string tag)
+	{
+		string text = (tag ?? "").Trim();
+		switch (text.ToUpperInvariant())
+		{
+			case "[WEEKLY:ECONOMY_GIVE_GOLD]": return MemoryEditorUiText.T("AF_MEMORY_UI_TagConfirmedGold", "Confirmed gold payment");
+			case "[WEEKLY:ECONOMY_GIVE_ASSET]": return MemoryEditorUiText.T("AF_MEMORY_UI_TagConfirmedAsset", "Confirmed asset transfer");
+			case "[WEEKLY:ECONOMY_DEBT_CREATE]": return MemoryEditorUiText.T("AF_MEMORY_UI_TagConfirmedDebtCreate", "Confirmed debt creation");
+			case "[WEEKLY:ECONOMY_DEBT_RESOLVE]": return MemoryEditorUiText.T("AF_MEMORY_UI_TagConfirmedDebtResolve", "Confirmed debt repayment");
+			case "[WEEKLY:ECONOMY_SETTLEMENT_TRANSFER]": return MemoryEditorUiText.T("AF_MEMORY_UI_TagConfirmedSettlement", "Confirmed settlement asset transfer");
+			case "[ACTION:DUEL]": return MemoryEditorUiText.T("AF_MEMORY_UI_TagDuel", "Duel");
+		}
+		if (text.StartsWith("[ACTION:GIVE_ASSET:GOLD:", StringComparison.OrdinalIgnoreCase)) return MemoryEditorUiText.T("AF_MEMORY_UI_TagGold", "Gold payment");
+		if (text.StartsWith("[AD:", StringComparison.OrdinalIgnoreCase)) return MemoryEditorUiText.T("AF_MEMORY_UI_TagDebtCreate", "New debt");
+		if (text.StartsWith("[ADP:", StringComparison.OrdinalIgnoreCase)) return MemoryEditorUiText.T("AF_MEMORY_UI_TagDebtResolve", "Debt repayment");
+		if (text.StartsWith("[ATT:", StringComparison.OrdinalIgnoreCase)) return MemoryEditorUiText.T("AF_MEMORY_UI_TagTroops", "Troop transfer");
+		if (text.StartsWith("[ATP:", StringComparison.OrdinalIgnoreCase)) return MemoryEditorUiText.T("AF_MEMORY_UI_TagPrisoners", "Prisoner transfer");
+		if (text.StartsWith("[ACTION:GIVE_ASSET:", StringComparison.OrdinalIgnoreCase)) return MemoryEditorUiText.T("AF_MEMORY_UI_TagAsset", "Asset transfer");
+		if (text.StartsWith("[ACTION:KINGDOM_SERVICE:", StringComparison.OrdinalIgnoreCase)) return MemoryEditorUiText.T("AF_MEMORY_UI_TagService", "Kingdom service change");
+		if (text.StartsWith("[ACTION:MARRIAGE_FORMAL:", StringComparison.OrdinalIgnoreCase)) return MemoryEditorUiText.T("AF_MEMORY_UI_TagMarriage", "Formal marriage");
+		if (text.StartsWith("[ACTION:MARRIAGE_ELOPE:", StringComparison.OrdinalIgnoreCase)) return MemoryEditorUiText.T("AF_MEMORY_UI_TagElopement", "Marriage by elopement");
+		if (text.StartsWith("[ACTION:DIVORCE:", StringComparison.OrdinalIgnoreCase)) return MemoryEditorUiText.T("AF_MEMORY_UI_TagDivorce", "Divorce");
+		if (text.StartsWith("[ACTION:AGENDA:", StringComparison.OrdinalIgnoreCase)) return MemoryEditorUiText.T("AF_MEMORY_UI_TagAgenda", "Kingdom agenda commitment");
+		if (text.StartsWith("[ACTION:SIEGE_", StringComparison.OrdinalIgnoreCase)
+			&& !string.IsNullOrWhiteSpace(port.BuildWeeklyMemoryMaterialTagLabel(text)))
+			return MemoryEditorUiText.F("AF_MEMORY_UI_TagSiege", "Siege aftermath: {ACTION}", "ACTION", text.Substring("[ACTION:SIEGE_".Length).TrimEnd(']'));
+		return "";
+	}
+
 	private static string FormatDay(string gameDate, int gameDayIndex)
 	{
 		if (!string.IsNullOrWhiteSpace(gameDate))
@@ -100,7 +146,7 @@ internal static class MemoryEditorProjection
 		{
 			sb.AppendLine(port.BuildDailyMemoryLineForPrompt(line));
 		}
-		sb.AppendLine(BuildDevWeeklyMemoryMaterialTriggerText(port, draft.WeeklyMaterialTriggers));
+		sb.AppendLine(BuildDevWeeklyMemoryMaterialTriggerTextCore(port, draft.WeeklyMaterialTriggers, forDisplay: false));
 		return sb.ToString();
 	}
 
@@ -168,6 +214,9 @@ internal static class MemoryEditorProjection
 	}
 
 	internal static string BuildDevWeeklyMemoryMaterialTriggerText(MemoryEditorDisplayPort port, IEnumerable<WeeklyMemoryMaterialTrigger> triggers)
+		=> BuildDevWeeklyMemoryMaterialTriggerTextCore(port, triggers, forDisplay: true);
+
+	private static string BuildDevWeeklyMemoryMaterialTriggerTextCore(MemoryEditorDisplayPort port, IEnumerable<WeeklyMemoryMaterialTrigger> triggers, bool forDisplay)
 	{
 		List<WeeklyMemoryMaterialTrigger> list = port.SanitizeWeeklyMemoryMaterialTriggers(triggers);
 		if (list.Count == 0)
@@ -176,9 +225,10 @@ internal static class MemoryEditorProjection
 		}
 		string listSeparator = new TextObject("{=AF_MEMORY_UI_ListSeparator}, ").ToString();
 		StringBuilder sb = new StringBuilder();
+		Func<string, string> tagLabel = forDisplay ? tag => WeeklyMaterialTagForDisplay(port, tag) : port.BuildWeeklyMemoryMaterialTagLabel;
 		foreach (WeeklyMemoryMaterialTrigger trigger in list.Take(8))
 		{
-			List<string> labels = (trigger.Tags ?? new List<string>()).Select(port.BuildWeeklyMemoryMaterialTagLabel).Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
+			List<string> labels = (trigger.Tags ?? new List<string>()).Select(tagLabel).Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
 			sb.Append(new TextObject("{=AF_MEMORY_UI_TriggerKingdomItem}- kingdom=").ToString()).Append(trigger.FootholdKingdomId ?? "")
 				.Append(" session=").Append(trigger.SceneSessionId >= 0 ? ("scene:" + trigger.SceneSessionId) : (trigger.DialogueSessionId >= 0 ? ("dialogue:" + trigger.DialogueSessionId) : "none"))
 				.Append(" value=").Append(Math.Max(0L, trigger.EstimatedValueDenars))
@@ -205,7 +255,7 @@ internal static class MemoryEditorProjection
 			return new TextObject("{=AF_MEMORY_UI_Empty}(empty)").ToString();
 		}
 		string type = line.IsAfef ? "AFEF" : (line.IsLlmDialogue ? "LLM" : new TextObject("{=AF_MEMORY_UI_Normal}Normal").ToString());
-		string speaker = string.IsNullOrWhiteSpace(line.Speaker) ? (line.IsAfef ? "AFEF" : new TextObject("{=AF_MEMORY_UI_Manual}Manual").ToString()) : line.Speaker.Trim();
+		string speaker = SpeakerForDisplay(line);
 		return MBMath.ClampInt(line.GameHour, 0, 23) + new TextObject("{=AF_MEMORY_UI_HourSeparator}h | ").ToString() + type + " | " + speaker + " | " + port.BuildDevHistoryPreview(line.Text, 90);
 	}
 
@@ -217,7 +267,7 @@ internal static class MemoryEditorProjection
 		}
 		string date = FormatDay(line.GameDate, line.GameDayIndex);
 		string scene = string.IsNullOrWhiteSpace(line.Scene) ? new TextObject("{=AF_MEMORY_UI_UnknownScene}Unknown scene").ToString() : line.Scene.Trim();
-		string speaker = string.IsNullOrWhiteSpace(line.Speaker) ? (line.IsAfef ? "AFEF" : new TextObject("{=AF_MEMORY_UI_Manual}Manual").ToString()) : line.Speaker.Trim();
+		string speaker = SpeakerForDisplay(line);
 		string type = line.IsAfef ? "AFEF" : (line.IsLlmDialogue ? new TextObject("{=AF_MEMORY_UI_LlmDialogue}LLM dialogue").ToString() : new TextObject("{=AF_MEMORY_UI_Normal}Normal").ToString());
 		return new TextObject("{=AF_MEMORY_UI_DateLabel}Date: ").ToString() + date + " " + MBMath.ClampInt(line.GameHour, 0, 23) + new TextObject("{=AF_MEMORY_UI_HourSuffix}h").ToString() + "\n" +
 			new TextObject("{=AF_MEMORY_UI_SceneLabel}Scene: ").ToString() + scene + "\n" +
@@ -298,7 +348,7 @@ internal static class MemoryEditorProjection
 		}
 		string date = FormatDay(block.GameDate, block.GameDayIndex);
 		string title = string.IsNullOrWhiteSpace(block.RichTitle) ? new TextObject("{=AF_MEMORY_UI_Untitled}(untitled)").ToString() : block.RichTitle.Trim();
-		return displayIndex + "# " + date + " " + port.FormatMemoryHourRange(block.StartHour, block.EndHour) + " | " + port.BuildDevHistoryPreview(title, 44);
+		return displayIndex + "# " + date + " " + HourRangeForDisplay(block.StartHour, block.EndHour) + " | " + port.BuildDevHistoryPreview(title, 44);
 	}
 
 	internal static string BuildDevCompressedMemoryBlockSubtitle(MemoryEditorDisplayPort port, CompressedMemoryBlock block)
@@ -310,7 +360,7 @@ internal static class MemoryEditorProjection
 		string date = FormatDay(block.GameDate, block.GameDayIndex);
 		string title = string.IsNullOrWhiteSpace(block.RichTitle) ? new TextObject("{=AF_MEMORY_UI_Untitled}(untitled)").ToString() : block.RichTitle.Trim();
 		return new TextObject("{=AF_MEMORY_UI_IdLabel}ID: ").ToString() + GetDevCompressedMemoryBlockId(port, block) + "\n" +
-			new TextObject("{=AF_MEMORY_UI_DateLabel}Date: ").ToString() + date + " " + port.FormatMemoryHourRange(block.StartHour, block.EndHour) + "\n" +
+			new TextObject("{=AF_MEMORY_UI_DateLabel}Date: ").ToString() + date + " " + HourRangeForDisplay(block.StartHour, block.EndHour) + "\n" +
 			new TextObject("{=AF_MEMORY_UI_TitleLabel}Title: ").ToString() + title + "\n" +
 			new TextObject("{=AF_MEMORY_UI_WeeklyMaterialTriggersLabel}Weekly material triggers: ").ToString() + ((block.WeeklyMaterialTriggers?.Count).GetValueOrDefault());
 	}
@@ -365,7 +415,7 @@ internal static class MemoryEditorProjection
 		{
 			return true;
 		}
-		string haystack = (GetDevCompressedMemoryBlockId(port, block) + "\n" + (block.HeroName ?? "") + "\n" + (block.GameDate ?? "") + "\n" + (block.RichTitle ?? "") + "\n" + (block.Summary ?? "") + "\n" + string.Join("\n", block.Scenes ?? new List<string>()) + "\n" + string.Join("\n", block.AfefLines ?? new List<string>()) + "\n" + BuildDevWeeklyMemoryMaterialTriggerText(port, block.WeeklyMaterialTriggers)).ToLowerInvariant();
+		string haystack = (GetDevCompressedMemoryBlockId(port, block) + "\n" + (block.HeroName ?? "") + "\n" + (block.GameDate ?? "") + "\n" + (block.RichTitle ?? "") + "\n" + (block.Summary ?? "") + "\n" + string.Join("\n", block.Scenes ?? new List<string>()) + "\n" + string.Join("\n", block.AfefLines ?? new List<string>()) + "\n" + BuildDevWeeklyMemoryMaterialTriggerTextCore(port, block.WeeklyMaterialTriggers, forDisplay: false)).ToLowerInvariant();
 		foreach (string term in terms)
 		{
 			string text = (term ?? "").Trim().ToLowerInvariant();

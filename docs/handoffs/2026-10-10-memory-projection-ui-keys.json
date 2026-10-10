@@ -1,0 +1,24 @@
+{
+  "newKeys": [
+    {"id":"AF_MEMORY_UI_HourSingle","en":"{HOUR}h","zh":"{HOUR}时"},
+    {"id":"AF_MEMORY_UI_HourRange","en":"{START}-{END}h","zh":"{START}-{END}时"},
+    {"id":"AF_MEMORY_UI_TagConfirmedGold","en":"Confirmed gold payment","zh":"已确认的金币给付"},
+    {"id":"AF_MEMORY_UI_TagConfirmedAsset","en":"Confirmed asset transfer","zh":"已确认的资产给付"},
+    {"id":"AF_MEMORY_UI_TagConfirmedDebtCreate","en":"Confirmed debt creation","zh":"已确认的债务建立"},
+    {"id":"AF_MEMORY_UI_TagConfirmedDebtResolve","en":"Confirmed debt repayment","zh":"已确认的债务清偿"},
+    {"id":"AF_MEMORY_UI_TagConfirmedSettlement","en":"Confirmed settlement asset transfer","zh":"已确认的定居点资产转移"},
+    {"id":"AF_MEMORY_UI_TagDuel","en":"Duel","zh":"决斗"},
+    {"id":"AF_MEMORY_UI_TagGold","en":"Gold payment","zh":"给付金币"},
+    {"id":"AF_MEMORY_UI_TagDebtCreate","en":"New debt","zh":"新增债务"},
+    {"id":"AF_MEMORY_UI_TagDebtResolve","en":"Debt repayment","zh":"债务清偿"},
+    {"id":"AF_MEMORY_UI_TagTroops","en":"Troop transfer","zh":"部队转移"},
+    {"id":"AF_MEMORY_UI_TagPrisoners","en":"Prisoner transfer","zh":"俘虏转移"},
+    {"id":"AF_MEMORY_UI_TagAsset","en":"Asset transfer","zh":"给付资产"},
+    {"id":"AF_MEMORY_UI_TagService","en":"Kingdom service change","zh":"王国服役变更"},
+    {"id":"AF_MEMORY_UI_TagMarriage","en":"Formal marriage","zh":"正式婚姻"},
+    {"id":"AF_MEMORY_UI_TagElopement","en":"Marriage by elopement","zh":"私奔婚姻"},
+    {"id":"AF_MEMORY_UI_TagDivorce","en":"Divorce","zh":"离婚"},
+    {"id":"AF_MEMORY_UI_TagAgenda","en":"Kingdom agenda commitment","zh":"王国议程承诺"},
+    {"id":"AF_MEMORY_UI_TagSiege","en":"Siege aftermath: {ACTION}","zh":"攻城处置：{ACTION}"}
+  ]
+}
