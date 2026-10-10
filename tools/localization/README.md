@@ -1,5 +1,22 @@
 # 本地化盘点工具
 
+全模组源码中文硬编码（不排除 Prompt、日志、协议或已有显示投影的原值）：
+
+```powershell
+python -B tools/localization/inventory_runtime_literals.py `
+  --output artifacts/localization/runtime-literals-mainline-current.json
+```
+
+同时输出逐条 CSV、模块/文件计数和来源哈希。转义的中文也先解码再计数；
+注释、测试和历史构建物不属于产品运行时字面量。结果是词法出现位置，
+不是全部待翻译 UI 的数量，也不是编译器或实机验收。
+
+输入兼容词表的资源化与输出文案翻译分开验收。例如
+`GeneratedRpVocabulary.json` 同时保留原中文和英文别名，其 1470 个词项、
+顺序、类型和边界规则由 `EconomyVocabularyContractTests.py` 验证；它不是
+删去中文识别能力或为中文日志加扫描豁免。当前纯英文包对兼容资源的语义
+验证仍须收口，源文件残留下降不表示发行门禁已通过。
+
 尚无英文对应的盘点：
 
 ```powershell
