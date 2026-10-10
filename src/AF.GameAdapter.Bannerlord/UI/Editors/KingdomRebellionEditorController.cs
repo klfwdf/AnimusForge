@@ -352,7 +352,7 @@ internal void ShowAutomaticKingdomRebellionNamingFailurePopup(PendingAutomaticKi
 				BlockedAutomaticContext = null;
 			}
 			ReopenAfterApiConfig = false;
-			KingdomRebellionRuntimeController.NotifyCivilWarRebellionFailed(context, "跳过了叛乱建国命名");
+			KingdomRebellionRuntimeController.NotifyCivilWarRebellionFailed(context, Ui("AF_UI_KingdomRebellion_ReasonNamingSkipped", "the rebel kingdom naming was skipped"));
 			_runtime().ContinueAutomaticKingdomRebellionFlow();
 		}), pauseGameActiveState: true);
 	}

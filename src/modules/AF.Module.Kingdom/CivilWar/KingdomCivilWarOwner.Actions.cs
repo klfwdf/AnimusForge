@@ -213,7 +213,9 @@ internal sealed partial class KingdomCivilWarOwner
 			receipt.InProgress = false;
 			if (result.Status == CivilWarActionStatus.Applied)
 			{
-				PublishPoliticalResult(k, s, f, actor, r.OperationId, result.Message, affectedParticipants);
+				// Display path: every Applied result carries a projection key, so the chronicle entry renders the
+				// localized sentence while the raw receipt text keeps feeding material and facts.
+				PublishPoliticalResult(k, s, f, actor, r.OperationId, result.Message, affectedParticipants, CivilWarUiText.ResultNotice(result));
 				receipt.FactsWritten = true;
 			}
 		}
@@ -223,14 +225,17 @@ internal sealed partial class KingdomCivilWarOwner
 			receipt.InProgress = false; receipt.Status = (int)CivilWarActionStatus.PartialFailure;
 			receipt.Message = "协议尚未完成，将重试已确认安全的步骤：" + ex.Message;
 			result = new CivilWarActionResult { Status = CivilWarActionStatus.PartialFailure, Message = receipt.Message, FactionId = f?.Id ?? "" };
-			Project(result, "RetrySafeSteps", ex.Message);
+			string retryDetail = CivilWarUiText.FailureText(ex.Code, ex.Arg, ex.Arg2);
+			if (retryDetail != null) Project(result, "RetrySafeSteps", retryDetail);
 		}
 		catch (Exception ex)
 		{
 			if (f != null) { f.ResolutionNeedsReview = true; f.ResolutionError = ex.Message; }
 			receipt.Message = "操作未完整确认，保留派系等待核查：" + ex.Message;
 			result = new CivilWarActionResult { Status = CivilWarActionStatus.PartialFailure, Message = receipt.Message, FactionId = f?.Id ?? "" };
-			Project(result, "IncompleteReview", ex.Message);
+			var described = ex as CivilWarReviewRequiredException;
+			string reviewDetail = CivilWarUiText.FailureText(described?.Code ?? "", described?.Arg ?? "", described?.Arg2 ?? "");
+			if (reviewDetail != null) Project(result, "IncompleteReview", reviewDetail);
 			Logger.Log("KingdomCivilWar", receipt.Message);
 		}
 		if (f != null) f.Version++;
@@ -376,9 +381,9 @@ internal sealed partial class KingdomCivilWarOwner
 				else if (CivilWarCatalog.EffectiveWarGoal(demand) == CivilWarWarGoal.Usurp) effect = CivilWarEffectIds.UsurpThrone;
 				else CivilWarEffects.ReturnRebels(ctx, ctx.WarClans(), 0, true);
 			}
-			if (!CivilWarEffects.TryApply(effect, ctx, out string reason)) { f.ResolutionError = reason; f.ResolutionNeedsReview = !ctx.RetryableFailure; result.Status = CivilWarActionStatus.PartialFailure; result.Message = "妥协尚未兑现，派系保留：" + reason; Project(result, "ConcessionPending", reason); return result; }
+			if (!CivilWarEffects.TryApply(effect, ctx, out string reason)) { f.ResolutionError = reason; f.ResolutionNeedsReview = !ctx.RetryableFailure; result.Status = CivilWarActionStatus.PartialFailure; result.Message = "妥协尚未兑现，派系保留：" + reason; string failure = CivilWarUiText.FailureText(ctx.FailureCode, ctx.FailureArg, ctx.FailureArg2); if (failure != null) Project(result, "ConcessionPending", failure); return result; }
 			result.Message = "国王完整兑现" + FactionName(f, demand) + "的诉求：" + string.Join("；", ctx.Notes);
-			Project(result, "Conceded", CivilWarUiText.DemandTag(demand), string.Join("；", ctx.Notes));
+			Project(result, "Conceded", CivilWarUiText.DemandTag(demand), CivilWarUiText.NoteText(ctx.Notes, ctx.NoteProjections));
 			f.PendingConcessionOperationId = "";
 			FinishFaction(k, s, f, week, tuning, HostStability, 4);
 		}
@@ -435,9 +440,12 @@ internal sealed partial class KingdomCivilWarOwner
 		else { f.LeaderClanId = next.StringId; f.Version++; AddHistory(s, CivilWarWorld.CurrentWeek(), CivilWarUiText.T("AF_KINGDOM_CW_Action_LeaderSuccession", "{A} succeeds as faction leader.", ("A", CivilWarWorld.ClanName(next)))); }
 	}
 
-	private void PublishPoliticalResult(Kingdom k, KingdomCivilWarKingdomState s, KingdomCivilWarFactionState f, Clan actor, string operationId, string text, IEnumerable<Hero> affectedParticipants = null)
+	// `displayText` is an optional panel-only projection of the same result. The raw `text` stays the value
+	// that material, saved receipts and AFEF facts consume; only the chronicle entry uses the projection, and
+	// a caller without one keeps passing `text` alone.
+	private void PublishPoliticalResult(Kingdom k, KingdomCivilWarKingdomState s, KingdomCivilWarFactionState f, Clan actor, string operationId, string text, IEnumerable<Hero> affectedParticipants = null, string displayText = null)
 	{
-		AddHistory(s, CivilWarWorld.CurrentWeek(), text);
+		AddHistory(s, CivilWarWorld.CurrentWeek(), displayText ?? text);
 		MyBehavior.RecordCivilWarPoliticalResult(k, "civil_war:result:" + operationId, text, f != null || operationId.Contains(":war:"),
 			actor?.Leader, CivilWarWorld.FindClan(f?.LeaderClanId)?.Leader);
 		var heroes = new HashSet<Hero>();

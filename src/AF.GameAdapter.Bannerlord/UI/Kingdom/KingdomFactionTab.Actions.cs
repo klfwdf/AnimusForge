@@ -194,11 +194,33 @@ public sealed partial class KingdomFactionPanelVM
 	private static string Cost(CivilWarActionQuote q) => q.Gold > 0 ? L("AF_DIP_UI_CivilWar_Gold", "{AMOUNT} gold", "AMOUNT", q.Gold) : q.Influence > 0 ? L("AF_DIP_UI_CivilWar_Influence", "{AMOUNT} influence", "AMOUNT", q.Influence) : L("AF_DIP_UI_CivilWar_NoFixedCost", "No fixed cost");
 
 	// The first clause of the owner's reason fits under a button; the full text is shown on click.
+	// The owner quotes its reason in the active language, so the split must cover the clause separators of
+	// both scripts: splitting on the CJK separators alone leaves every localized English reason whole and
+	// the brief permanently generic. A CJK clause says the same thing in roughly half the glyphs, hence the
+	// two width budgets for the same button. The clause is shown verbatim - when the owner has no localized
+	// wording yet, its real text is the honest thing to show rather than an invented summary.
 	private static string Brief(CivilWarActionQuote q)
 	{
 		if (q.CooldownUntilDay > 0) return L("AF_DIP_UI_CivilWar_Cooldown", "Cooldown until day {DAY}", "DAY", q.CooldownUntilDay);
-		string first = (q.Reason ?? "").Split(new[] { '，', '。', '；' }, StringSplitOptions.RemoveEmptyEntries).FirstOrDefault()?.Trim() ?? "";
-		return first.Length == 0 || first.Length > 14 ? L("AF_DIP_UI_CivilWar_Unavailable", "Unavailable · click to view") : first;
+		string first = (q.Reason ?? "").Split(ClauseBreaks, StringSplitOptions.RemoveEmptyEntries).FirstOrDefault()?.Trim() ?? "";
+		int budget = IsMostlyCjk(first) ? 14 : 28;
+		return first.Length == 0 || first.Length > budget ? L("AF_DIP_UI_CivilWar_Unavailable", "Unavailable · click to view") : first;
+	}
+
+	// Clause separators of both scripts the owner may quote in. Sentence-final periods are deliberately
+	// absent: the owner substitutes numbers into its reasons, so splitting on '.' would cut "12.5" apart and
+	// put a misleading half-number on the button. Only this brief split reads the list; the reason the owner
+	// stores and displays in full is never rewritten.
+	private static readonly char[] ClauseBreaks = { '，', '；', '。', ',', ';' };
+
+	// True when the clause is mostly Han script, so the button budget is measured in that script's own glyph
+	// width. Costs one pass over a short string and runs only when a button is rebuilt (selection change,
+	// political state change), never per frame.
+	private static bool IsMostlyCjk(string text)
+	{
+		int han = 0;
+		for (int i = 0; i < text.Length; i++) if (text[i] >= '\u4E00' && text[i] <= '\u9FFF') han++;
+		return han * 2 >= text.Length;
 	}
 
 	private void RunAction(Act act)

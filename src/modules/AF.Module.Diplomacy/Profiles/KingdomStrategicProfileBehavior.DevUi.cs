@@ -354,7 +354,7 @@ public sealed partial class KingdomStrategicProfileBehavior
 					ok = false;
 					detail = ex.Message;
 				}
-				InformationManager.DisplayMessage(new InformationMessage((ok ? DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_ExportDone", "Export complete: ") : DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_ExportFailed", "Export failed: ")) + detail));
+				InformationManager.DisplayMessage(new InformationMessage((ok ? DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_ExportDone", "Export complete: ") : DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_ExportFailed", "Export failed: ")) + LocalizeExportDetail(detail)));
 				OpenDevMenu();
 			},
 			exportRoot,
@@ -389,7 +389,7 @@ public sealed partial class KingdomStrategicProfileBehavior
 					ok = false;
 					detail = ex.Message;
 				}
-				InformationManager.DisplayMessage(new InformationMessage((ok ? DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_ExportDone", "Export complete: ") : DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_ExportFailed", "Export failed: ")) + detail));
+				InformationManager.DisplayMessage(new InformationMessage((ok ? DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_ExportDone", "Export complete: ") : DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_ExportFailed", "Export failed: ")) + LocalizeExportDetail(detail)));
 				OpenKingdomDetail(kingdom);
 			},
 			exportRoot,
@@ -581,7 +581,7 @@ public sealed partial class KingdomStrategicProfileBehavior
 		if (!isExport)
 		{
 			foreach (var folder in PlayerExportsStore.GetImportFolders())
-				elements.Add(new InquiryElement(folder.FullPath, folder.Name + "  [" + folder.SourceLabel + "]  (" + folder.LastWriteTime.ToString("yyyy-MM-dd HH:mm") + ")", null));
+				elements.Add(new InquiryElement(folder.FullPath, folder.Name + "  [" + LocalizeImportFolderSourceLabel(folder.SourceLabel) + "]  (" + folder.LastWriteTime.ToString("yyyy-MM-dd HH:mm") + ")", null));
 		}
 		else
 		{
@@ -779,6 +779,10 @@ public sealed partial class KingdomStrategicProfileBehavior
 		}
 	}
 
+	// profile.LastGenerationError is persisted in the save file and exported to JSON, so its producer
+	// strings stay byte-identical and are only translated here, at the display boundary. Every
+	// enumerated diagnostic this pipeline can store is mapped; anything unrecognized (arbitrary
+	// exception text, new upstream wording) is returned unchanged instead of a generic English string.
 	private static string LocalizeStoredProfileError(string value)
 	{
 		string text = value ?? "";
@@ -794,12 +798,66 @@ public sealed partial class KingdomStrategicProfileBehavior
 		{
 			return DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_MissingFields", "The LLM JSON is missing national_personality or long_term_strategy.");
 		}
+		if (string.Equals(text, "国家已覆灭，已停止自动生成建国卡。", StringComparison.Ordinal))
+		{
+			return DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_GenerationKingdomEliminated", "The kingdom was eliminated, so automatic founding profile generation stopped.");
+		}
+		if (string.Equals(text, "国家对象已不存在，无法生成建国卡。", StringComparison.Ordinal))
+		{
+			return DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_GenerationKingdomMissing", "The kingdom object no longer exists, so the founding profile cannot be generated.");
+		}
+		if (string.Equals(text, "请检查 MCM 的政策 API 来源或主 API 设置。", StringComparison.Ordinal))
+		{
+			return DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_GenerationApiSettingsMissing", "Check the MCM policy API source or main API settings.");
+		}
+		if (string.Equals(text, "主 API 配置不完整，政策生成无法开始。", StringComparison.Ordinal))
+		{
+			return DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_GenerationApiMainConfigIncomplete", "The main API configuration is incomplete, so policy generation cannot start.");
+		}
+		if (string.Equals(text, "所选政策 API 配置不完整，且主 API 也不完整，政策生成无法开始。", StringComparison.Ordinal))
+		{
+			return DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_GenerationApiSelectedAndMainIncomplete", "The selected policy API configuration is incomplete and the main API is incomplete too, so policy generation cannot start.");
+		}
+		if (string.Equals(text, "API 请求失败。", StringComparison.Ordinal))
+		{
+			return DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_ApiRequestFailed", "The API request failed.");
+		}
+		if (string.Equals(text, SaveRuntimeGuard.BuildStaleRequestErrorText(), StringComparison.Ordinal))
+		{
+			return DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_StaleRequest", "Request discarded because the game was loaded again.");
+		}
 		const string parsePrefix = "LLM JSON 解析失败：";
 		if (text.StartsWith(parsePrefix, StringComparison.Ordinal))
 		{
 			return DiplomacyUiLocalization.Format("AF_DIP_UI_KingdomProfile_JsonParseFailed", "LLM JSON parsing failed: {ERROR}", ("ERROR", text.Substring(parsePrefix.Length)));
 		}
 		return value;
+	}
+
+	// Export details come from the shared export helpers and from .NET IO exceptions; only the
+	// enumerated Chinese diagnostics are translated, everything else keeps its original text.
+	private static string LocalizeExportDetail(string detail)
+	{
+		if (string.Equals(detail, "导出目录无效。", StringComparison.Ordinal))
+		{
+			return DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_ExportDirectoryInvalid", "The export directory is invalid.");
+		}
+		return detail;
+	}
+
+	// Import folder source labels are produced by PlayerExportsStore and are shared with other
+	// modules, so they are translated here for this menu only; unknown labels stay unchanged.
+	private static string LocalizeImportFolderSourceLabel(string sourceLabel)
+	{
+		if (string.Equals(sourceLabel, "模组目录", StringComparison.Ordinal))
+		{
+			return DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_ImportSourceModDirectory", "Mod directory");
+		}
+		if (string.Equals(sourceLabel, "玩家导出", StringComparison.Ordinal))
+		{
+			return DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_ImportSourcePlayerExports", "Player exports");
+		}
+		return sourceLabel;
 	}
 
 	private static string Preview(string value, int maxChars)

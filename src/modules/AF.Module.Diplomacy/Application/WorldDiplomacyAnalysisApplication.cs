@@ -27,7 +27,7 @@ internal static class WorldDiplomacyAnalysisApplication
             orchestration is WorldDiplomacyOrchestration live ? live.PlayerAnalysisOffers : null);
         var document = execution.ResolveDocument(job.DocumentId);
         if (document?.IsPlayerAuthored == true && document.AnalysisStatus == "analysis_failed")
-            execution.Notify(document.MechanicalResult);
+            execution.Notify(ProjectMechanicalResultForDisplay(document.MechanicalResult));
     }
     internal static void Suppress(IWorldDiplomacyAnalysisPort port, IWorldDiplomacyOrchestration orchestration,
         WorldDiplomacyDocument document, string reason)
@@ -70,7 +70,7 @@ internal static class WorldDiplomacyAnalysisApplication
             if (document.IsPlayerAuthored && WorldDiplomacyEnvelopeJsonRules.ReadString(json, "failure_reason") == "output_truncated")
             {
                 MarkPlayerAnalysisFailed(document, log);
-                document.MechanicalResult = "宣言已公开；模型输出因长度上限被截断，外交动作尚未执行。请提高对应API的输出上限后选择“重新解析”。";
+                document.MechanicalResult = PlayerAnalysisTruncatedResult;
                 return;
             }
             if (document.IsPlayerAuthored && json?["actions"] != null)
@@ -267,7 +267,7 @@ internal static class WorldDiplomacyAnalysisApplication
                 if (analyzedPeaceTerms != null && !WorldDiplomacyOfferContractRules.ArePeaceTermsEquivalent(analyzedPeaceTerms, offeredTerms))
                 {
                     MarkPlayerAnalysisFailed(document, log);
-                    document.MechanicalResult = "宣言已公开；解析同时给出接受原案和修改条款，外交动作未执行。可重新解析原文；修改条件应作为新提案。";
+                    document.MechanicalResult = PlayerAnalysisAcceptAndAmendResult;
                     return;
                 }
                 document.PeaceTerms = WorldDiplomacyOfferContractRules.ClonePeaceTerms(offeredTerms);
@@ -323,7 +323,7 @@ internal static class WorldDiplomacyAnalysisApplication
                     || string.IsNullOrWhiteSpace(document.TreatyTerms?.JoiningKingdomId)))
             {
                 MarkPlayerAnalysisFailed(document, log);
-                document.MechanicalResult = "宣言已公开；解析未能辨明条约双方角色，提案未执行。可重新解析原文。";
+                document.MechanicalResult = PlayerAnalysisTreatyRolesResult;
                 return;
             }
             if (WorldDiplomacyIntentVocabulary.IsFormalTreatyIntent(intent) && document.TreatyTerms != null
@@ -386,7 +386,7 @@ internal static class WorldDiplomacyAnalysisApplication
     {
         if (document == null || document.PlayerAnalysisCommitted || document.ChangedDiplomaticState) return;
         document.AnalysisStatus = "analysis_failed";
-        document.MechanicalResult = "宣言已公开；分析失败，外交动作未执行。可选择“重新解析”再次处理原文。";
+        document.MechanicalResult = PlayerAnalysisFailedResult;
         log?.Invoke("player declaration analysis failed without executing or rewriting speech document=" + document.DocumentId);
     }
 
@@ -488,12 +488,15 @@ internal static class WorldDiplomacyAnalysisApplication
 		string readableReason = DescribeRejectedPlayerMechanic(reason);
 		if (string.IsNullOrWhiteSpace(document.MechanicalResult))
 		{
-			document.MechanicalResult = "外交动作未执行：" + readableReason;
+			// Stored wording stays byte-identical: saves, history snapshots and LLM prompts read it verbatim.
+			document.MechanicalResult = MechanicNotExecutedPrefix + readableReason;
 		}
 		port.Log("published player declaration retained after mechanic rejection document=" + document.DocumentId
 			+ " intent=" + normalizedIntent + " reason=" + (reason ?? ""));
+		// The notification is a display boundary: show localized wording and pass the dynamic reason
+		// as a placeholder argument so it is never dropped.
 		port.Notify(
-			DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_DeclarePublishedMechanicRejected", "The diplomatic declaration has been published, but the diplomatic action parsed from it was not executed: ") + readableReason);
+			DiplomacyUiLocalization.Format("AF_DIP_UI_WorldDiplomacy_DeclarePublishedMechanicRejectedDetail", "The diplomatic declaration has been published, but the diplomatic action parsed from it was not executed: {REASON}", ("REASON", DescribeRejectedPlayerMechanicForDisplay(reason))));
 		WorldDiplomacyDocumentExecutionApplication.FinalizePublishedDocumentAfterAnalysis(port, orchestration,
 			document,
 			port.ResolveKingdomId(document.AuthorKingdomId),
@@ -513,28 +516,179 @@ internal static class WorldDiplomacyAnalysisApplication
 			string warReason = code.Substring(warReasonIndex + warPrefix.Length).Trim();
 			if (!string.IsNullOrWhiteSpace(warReason)) return DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_Reject_DeclareWarNotExecuted", "Declaration of war not executed: ") + warReason;
 		}
-		string detail =
-            code.Contains("source_not_available") || code.Contains("source_not_known")
-                ? DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_Reject_SourceUnavailable", "The original proposal has not reached your kingdom, has expired, or does not exist, so this reply cannot be executed.")
-            : code.Contains("trade_acceptance_changes_terms")
-                ? DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_Reject_TradeTermsChanged", "Accepting a trade proposal cannot change its duration or add clauses; issue a new proposal for different terms.")
-            : code.Contains("missing_source_offer") || code.Contains("without_exact_open_offer") || code.Contains("required_peace_offer_response_missing")
-				? DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_Reject_NoOpenOffer", "No still-valid formal proposal from the other party could be matched. Confirm their proposal declaration has arrived and is still open, or accept directly on that declaration.")
-			: code.Contains("treaty_roles_must_match_participants") || code.Contains("treaty_requires_explicit_receiving_and_joining_roles")
-				? DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_Reject_TreatyRoles", "The treaty's receiving and joining kingdoms (or suzerain and subject) must be exactly the two parties to this negotiation.")
-			: code.Contains("treaty_acceptance_cannot_change_source_roles") || code.Contains("accept_peace_changes_offer_terms")
-				? DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_Reject_AcceptChangesTerms", "Accepting a proposal cannot change its terms; issue a new proposal for different terms.")
-			: code.Contains("treaty_would_create_cycle") ? DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_Reject_TreatyCycle", "That treaty would create a cycle of vassalage.")
-			: code.Contains("subject_already_has_treaty") ? DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_Reject_SubjectHasTreaty", "The subject kingdom already has a vassalage treaty.")
-			: code.Contains("treaty_participants_not_available") ? DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_Reject_TreatyParticipantsUnavailable", "A kingdom or ruler party to the treaty is currently unavailable.")
-			: code.Contains("unsupported_extra_treaty_clause") ? DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_Reject_UnsupportedClause", "That treaty does not support extra tribute, duration, or cession clauses.")
-			: code.Contains("peace_intent_between_kingdoms_not_at_war") || code.Contains("peace_legality_guard") ? DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_Reject_NotAtWar", "The two parties are not currently at war.")
-			: code.Contains("peace_terms") ? DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_Reject_PeaceTerms", "The peace terms cannot currently be executed as written.")
-			: code.Contains("declare_war_not_legal") ? DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_Reject_DeclareWarNotLegal", "The conditions for declaring war are not currently met.")
-			: code.Contains("alliance_intent_conflicts") || code.Contains("trade_intent_conflicts") ? DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_Reject_StateConflict", "This conflicts with the two parties' current alliance or trade status.")
-			: code.Contains("final_live_legal_action_guard") || code.Contains("intent_not_in_current_legal_action_list") ? DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_Reject_NotInLegalActions", "That action is not among the diplomatic actions the two parties can currently execute.")
-			: code.Contains("no_live_target") || code.Contains("no_eligible_parties") ? DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_Reject_NoLiveTarget", "The target kingdom does not exist, has been destroyed, or has no independent diplomatic authority.")
+		string detail = TryMatchRejectedPlayerMechanic(code, out string detailKey, out string detailFallback)
+			? DiplomacyUiLocalization.Text(detailKey, detailFallback)
 			: DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_Reject_UnsupportedByState", "The current situation does not support the parsed action.");
 		return string.IsNullOrWhiteSpace(code) ? detail : detail + "（" + code + "）";
+	}
+
+	// MechanicalResult is persisted ([JsonProperty("mechanicalResult")] on the declaration and on each
+	// of its actions) and is read back verbatim by save data, history snapshots, publication and LLM
+	// prompts, so the player analysis-failure texts below keep their original wording byte-for-byte.
+	// Only the notification boundary projects them onto localized text; see
+	// ProjectMechanicalResultForDisplay.
+	internal const string PlayerAnalysisTruncatedResult = "宣言已公开；模型输出因长度上限被截断，外交动作尚未执行。请提高对应API的输出上限后选择“重新解析”。";
+	internal const string PlayerAnalysisAcceptAndAmendResult = "宣言已公开；解析同时给出接受原案和修改条款，外交动作未执行。可重新解析原文；修改条件应作为新提案。";
+	internal const string PlayerAnalysisTreatyRolesResult = "宣言已公开；解析未能辨明条约双方角色，提案未执行。可重新解析原文。";
+	internal const string PlayerAnalysisFailedResult = "宣言已公开；分析失败，外交动作未执行。可选择“重新解析”再次处理原文。";
+	internal const string MechanicNotExecutedPrefix = "外交动作未执行：";
+
+	// Display projection of a stored player analysis-failure text. Returns false for every value this
+	// class did not write, so the caller can show the real stored text instead of a generic sentence;
+	// the stored text itself is never rewritten.
+	internal static bool TryProjectMechanicalResultForDisplay(string mechanicalResult, out string display)
+	{
+		if (string.Equals(mechanicalResult, PlayerAnalysisTruncatedResult, StringComparison.Ordinal))
+		{
+			display = DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_AnalysisFailedTruncated", "The declaration has been published; the model output was cut off by the length limit, so no diplomatic action has been executed yet. Raise the output limit of the corresponding API and then choose Re-analyze.");
+			return true;
+		}
+		if (string.Equals(mechanicalResult, PlayerAnalysisAcceptAndAmendResult, StringComparison.Ordinal))
+		{
+			display = DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_AnalysisFailedAcceptAndAmend", "The declaration has been published; the analysis returned both acceptance of the original proposal and amended terms, so no diplomatic action was executed. You can re-analyze the original text; the amended terms should be submitted as a new proposal.");
+			return true;
+		}
+		if (string.Equals(mechanicalResult, PlayerAnalysisTreatyRolesResult, StringComparison.Ordinal))
+		{
+			display = DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_AnalysisFailedTreatyRoles", "The declaration has been published; the analysis could not tell the two parties' roles in the treaty apart, so the proposal was not executed. You can re-analyze the original text.");
+			return true;
+		}
+		if (string.Equals(mechanicalResult, PlayerAnalysisFailedResult, StringComparison.Ordinal))
+		{
+			display = DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_AnalysisFailed", "The declaration has been published; the analysis failed and no diplomatic action was executed. You can choose Re-analyze to process the original text again.");
+			return true;
+		}
+		display = null;
+		return false;
+	}
+
+	internal static string ProjectMechanicalResultForDisplay(string mechanicalResult)
+	{
+		return TryProjectMechanicalResultForDisplay(mechanicalResult, out string display) ? display : mechanicalResult;
+	}
+
+	// Display-only projection of a rejected published action. The stored MechanicalResult keeps
+	// DescribeRejectedPlayerMechanic's wording byte-for-byte, so the notification builds its own
+	// localized wording and passes every dynamic part as a placeholder argument. A reason this class
+	// cannot describe falls back to the raw reason text instead of a generic sentence.
+	internal static string DescribeRejectedPlayerMechanicForDisplay(string reason)
+	{
+		string code = reason ?? "";
+		const string warPrefix = "declare_war_not_legal:";
+		int warReasonIndex = code.IndexOf(warPrefix, StringComparison.Ordinal);
+		if (warReasonIndex >= 0)
+		{
+			string warReason = code.Substring(warReasonIndex + warPrefix.Length).Trim();
+			if (!string.IsNullOrWhiteSpace(warReason))
+				return DiplomacyUiLocalization.Format("AF_DIP_UI_WorldDiplomacy_Reject_DeclareWarNotExecutedDetail", "Declaration of war not executed: {REASON}", ("REASON", warReason));
+		}
+		if (TryMatchRejectedPlayerMechanic(code, out string detailKey, out string detailFallback))
+			return DiplomacyUiLocalization.Format("AF_DIP_UI_WorldDiplomacy_Reject_WithCode", "{DETAIL} ({CODE})",
+				("DETAIL", DiplomacyUiLocalization.Text(detailKey, detailFallback)), ("CODE", code));
+		// Not describable: show the real reason text. A blank reason has no text of its own, so the
+		// generic sentence stays the best wording available.
+		return string.IsNullOrWhiteSpace(code)
+			? DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_Reject_UnsupportedByState", "The current situation does not support the parsed action.")
+			: code;
+	}
+
+	// Single wording table for a rejected published action, shared by the stored wording
+	// (DescribeRejectedPlayerMechanic) and the display projection. Returns false when the reason code
+	// cannot be described; callers then decide what to show instead of getting a generic sentence.
+	private static bool TryMatchRejectedPlayerMechanic(string code, out string detailKey, out string detailFallback)
+	{
+		if (code.Contains("source_not_available") || code.Contains("source_not_known"))
+		{
+			detailKey = "AF_DIP_UI_WorldDiplomacy_Reject_SourceUnavailable";
+			detailFallback = "The original proposal has not reached your kingdom, has expired, or does not exist, so this reply cannot be executed.";
+			return true;
+		}
+		if (code.Contains("trade_acceptance_changes_terms"))
+		{
+			detailKey = "AF_DIP_UI_WorldDiplomacy_Reject_TradeTermsChanged";
+			detailFallback = "Accepting a trade proposal cannot change its duration or add clauses; issue a new proposal for different terms.";
+			return true;
+		}
+		if (code.Contains("missing_source_offer") || code.Contains("without_exact_open_offer") || code.Contains("required_peace_offer_response_missing"))
+		{
+			detailKey = "AF_DIP_UI_WorldDiplomacy_Reject_NoOpenOffer";
+			detailFallback = "No still-valid formal proposal from the other party could be matched. Confirm their proposal declaration has arrived and is still open, or accept directly on that declaration.";
+			return true;
+		}
+		if (code.Contains("treaty_roles_must_match_participants") || code.Contains("treaty_requires_explicit_receiving_and_joining_roles"))
+		{
+			detailKey = "AF_DIP_UI_WorldDiplomacy_Reject_TreatyRoles";
+			detailFallback = "The treaty's receiving and joining kingdoms (or suzerain and subject) must be exactly the two parties to this negotiation.";
+			return true;
+		}
+		if (code.Contains("treaty_acceptance_cannot_change_source_roles") || code.Contains("accept_peace_changes_offer_terms"))
+		{
+			detailKey = "AF_DIP_UI_WorldDiplomacy_Reject_AcceptChangesTerms";
+			detailFallback = "Accepting a proposal cannot change its terms; issue a new proposal for different terms.";
+			return true;
+		}
+		if (code.Contains("treaty_would_create_cycle"))
+		{
+			detailKey = "AF_DIP_UI_WorldDiplomacy_Reject_TreatyCycle";
+			detailFallback = "That treaty would create a cycle of vassalage.";
+			return true;
+		}
+		if (code.Contains("subject_already_has_treaty"))
+		{
+			detailKey = "AF_DIP_UI_WorldDiplomacy_Reject_SubjectHasTreaty";
+			detailFallback = "The subject kingdom already has a vassalage treaty.";
+			return true;
+		}
+		if (code.Contains("treaty_participants_not_available"))
+		{
+			detailKey = "AF_DIP_UI_WorldDiplomacy_Reject_TreatyParticipantsUnavailable";
+			detailFallback = "A kingdom or ruler party to the treaty is currently unavailable.";
+			return true;
+		}
+		if (code.Contains("unsupported_extra_treaty_clause"))
+		{
+			detailKey = "AF_DIP_UI_WorldDiplomacy_Reject_UnsupportedClause";
+			detailFallback = "That treaty does not support extra tribute, duration, or cession clauses.";
+			return true;
+		}
+		if (code.Contains("peace_intent_between_kingdoms_not_at_war") || code.Contains("peace_legality_guard"))
+		{
+			detailKey = "AF_DIP_UI_WorldDiplomacy_Reject_NotAtWar";
+			detailFallback = "The two parties are not currently at war.";
+			return true;
+		}
+		if (code.Contains("peace_terms"))
+		{
+			detailKey = "AF_DIP_UI_WorldDiplomacy_Reject_PeaceTerms";
+			detailFallback = "The peace terms cannot currently be executed as written.";
+			return true;
+		}
+		if (code.Contains("declare_war_not_legal"))
+		{
+			detailKey = "AF_DIP_UI_WorldDiplomacy_Reject_DeclareWarNotLegal";
+			detailFallback = "The conditions for declaring war are not currently met.";
+			return true;
+		}
+		if (code.Contains("alliance_intent_conflicts") || code.Contains("trade_intent_conflicts"))
+		{
+			detailKey = "AF_DIP_UI_WorldDiplomacy_Reject_StateConflict";
+			detailFallback = "This conflicts with the two parties' current alliance or trade status.";
+			return true;
+		}
+		if (code.Contains("final_live_legal_action_guard") || code.Contains("intent_not_in_current_legal_action_list"))
+		{
+			detailKey = "AF_DIP_UI_WorldDiplomacy_Reject_NotInLegalActions";
+			detailFallback = "That action is not among the diplomatic actions the two parties can currently execute.";
+			return true;
+		}
+		if (code.Contains("no_live_target") || code.Contains("no_eligible_parties"))
+		{
+			detailKey = "AF_DIP_UI_WorldDiplomacy_Reject_NoLiveTarget";
+			detailFallback = "The target kingdom does not exist, has been destroyed, or has no independent diplomatic authority.";
+			return true;
+		}
+		detailKey = null;
+		detailFallback = null;
+		return false;
 	}
 }

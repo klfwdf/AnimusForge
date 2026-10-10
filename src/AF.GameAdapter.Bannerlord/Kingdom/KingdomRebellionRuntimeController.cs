@@ -507,14 +507,14 @@ internal void TryStartNextAutomaticKingdomRebellionAsync()
 		}
 		if (kingdom == null || clan == null)
 		{
-			NotifyCivilWarRebellionFailed(pendingAutomaticKingdomRebellionContext, "目标王国或家族状态已变化");
+			NotifyCivilWarRebellionFailed(pendingAutomaticKingdomRebellionContext, KingdomUiText.T("AF_UI_KingdomRebellion_ReasonTargetChanged", "the target kingdom or clan changed"));
 			_pump.CompletionPopup(pendingAutomaticKingdomRebellionContext, kingdom, clan, list, false, KingdomUiText.T("AF_UI_KingdomRebellion_AutomaticTargetChanged", "This week's automatic rebellion was triggered, but the target kingdom or clan changed; execution cannot continue."));
 			return;
 		}
 		if (PlayerKingdomRebellionImmunity.ShouldProtectKingdom(kingdom))
 		{
 			Logger.Log("KingdomRebellion", "[SKIP] player kingdom stability rebellion immunity blocked queued automatic rebellion before naming. kingdom=" + MemoryEntityIdentityBannerlordAdapter.GetKingdomId(kingdom) + " clan=" + MemoryEntityIdentityBannerlordAdapter.GetClanId(clan));
-			NotifyCivilWarRebellionFailed(pendingAutomaticKingdomRebellionContext, "玩家王国稳定度叛乱免疫");
+			NotifyCivilWarRebellionFailed(pendingAutomaticKingdomRebellionContext, KingdomUiText.T("AF_UI_KingdomRebellion_ReasonPlayerImmune", "player-kingdom stability rebellion immunity is enabled"));
 			ContinueAutomaticKingdomRebellionFlow();
 			return;
 		}
@@ -685,13 +685,13 @@ internal void RetryAutomaticKingdomRebellionNamingAsync(PendingAutomaticKingdomR
 		}
 		if (kingdom == null || clan == null)
 		{
-			NotifyCivilWarRebellionFailed(context, "目标王国或家族状态已变化");
+			NotifyCivilWarRebellionFailed(context, KingdomUiText.T("AF_UI_KingdomRebellion_ReasonTargetChanged", "the target kingdom or clan changed"));
 			_pump.CompletionPopup(context, kingdom, clan, list, false, KingdomUiText.T("AF_UI_KingdomRebellion_RetryTargetChanged", "The target kingdom or clan changed before the rebellion naming retry could run."));
 			return;
 		}
 		if (PlayerKingdomRebellionImmunity.ShouldProtectKingdom(kingdom))
 		{
-			NotifyCivilWarRebellionFailed(context, "玩家王国稳定度叛乱免疫");
+			NotifyCivilWarRebellionFailed(context, KingdomUiText.T("AF_UI_KingdomRebellion_ReasonPlayerImmune", "player-kingdom stability rebellion immunity is enabled"));
 			_pump.CompletionPopup(context, kingdom, clan, list, false, KingdomUiText.F("AF_UI_KingdomRebellion_AutomaticPlayerImmune", "{KINGDOM} is ruled by the player, and MCM player-kingdom stability rebellion immunity is enabled; this automatic stability rebellion was skipped.", ("KINGDOM", MemoryEntityIdentityBannerlordAdapter.GetKingdomDisplayName(kingdom, KingdomUiText.T("AF_UI_KingdomRebellion_ThisKingdom", "this kingdom")))));
 			return;
 		}

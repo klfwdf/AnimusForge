@@ -867,16 +867,20 @@ namespace AnimusForge
 				KingdomPolicyDecision policyDecision = decision as KingdomPolicyDecision;
 				if (policyDecision != null)
 				{
-					string policyName = CleanVoteDealText(policyDecision.Policy?.Name?.ToString() ?? decision.GetGeneralTitle()?.ToString() ?? "未命名政策");
+					string policyName = CleanVoteDealText(policyDecision.Policy?.Name?.ToString() ?? decision.GetGeneralTitle()?.ToString() ?? DiplomacyUiLocalization.Text("AF_DIP_UI_Vote_UnnamedPolicy", "Unnamed policy"));
 					if (string.IsNullOrWhiteSpace(policyName))
 					{
-						policyName = "未命名政策";
+						policyName = DiplomacyUiLocalization.Text("AF_DIP_UI_Vote_UnnamedPolicy", "Unnamed policy");
 					}
-					return (IsPolicyDecisionInvertedForAgenda(policyDecision) ? "废除政策：" : "推行政策：") + policyName;
+					bool policyAbolition = IsPolicyDecisionInvertedForAgenda(policyDecision);
+					return DiplomacyUiLocalization.Format(
+						policyAbolition ? "AF_DIP_UI_Vote_AbolishPolicyTitle" : "AF_DIP_UI_Vote_EnactPolicyTitle",
+						policyAbolition ? "Abolish policy: {POLICY}" : "Enact policy: {POLICY}",
+						("POLICY", policyName));
 				}
 
 				string title = CleanVoteDealText(decision.GetGeneralTitle()?.ToString() ?? "");
-				return string.IsNullOrWhiteSpace(title) ? "未命名提案" : title;
+				return string.IsNullOrWhiteSpace(title) ? DiplomacyUiLocalization.Text("AF_DIP_UI_Vote_UnnamedProposal", "Unnamed proposal") : title;
 			}
 			catch
 			{
@@ -893,19 +897,23 @@ namespace AnimusForge
 				bool isAbolition = IsPolicyDecisionInvertedForAgenda(policyDecision);
 				if (policyOutcome.ShouldDecisionBeEnforced)
 				{
-					return isAbolition ? "赞成废除（是）" : "赞成推行（是）";
+					return isAbolition
+						? DiplomacyUiLocalization.Text("AF_DIP_UI_Vote_OutcomeFavorAbolish", "Abolish (yes)")
+						: DiplomacyUiLocalization.Text("AF_DIP_UI_Vote_OutcomeFavorEnact", "Enact (yes)");
 				}
-				return isAbolition ? "反对废除、保留政策（否）" : "反对推行、维持未生效（否）";
+				return isAbolition
+					? DiplomacyUiLocalization.Text("AF_DIP_UI_Vote_OutcomeAgainstAbolish", "Oppose abolition, keep the policy (no)")
+					: DiplomacyUiLocalization.Text("AF_DIP_UI_Vote_OutcomeAgainstEnact", "Oppose enactment, keep it not in force (no)");
 			}
 
 			try
 			{
 				string title = CleanVoteDealText(outcome?.GetDecisionTitle()?.ToString() ?? "");
-				return string.IsNullOrWhiteSpace(title) ? "未知选项" : title;
+				return string.IsNullOrWhiteSpace(title) ? DiplomacyUiLocalization.Text("AF_DIP_UI_Vote_UnknownOption", "Unknown option") : title;
 			}
 			catch
 			{
-				return "未知选项";
+				return DiplomacyUiLocalization.Text("AF_DIP_UI_Vote_UnknownOption", "Unknown option");
 			}
 		}
 
@@ -918,9 +926,13 @@ namespace AnimusForge
 				bool isAbolition = IsPolicyDecisionInvertedForAgenda(policyDecision);
 				if (policyOutcome.ShouldDecisionBeEnforced)
 				{
-					return isAbolition ? "投此项将废除该政策。" : "投此项将推行该政策。";
+					return isAbolition
+						? DiplomacyUiLocalization.Text("AF_DIP_UI_Vote_DescFavorAbolish", "This option will abolish the policy.")
+						: DiplomacyUiLocalization.Text("AF_DIP_UI_Vote_DescFavorEnact", "This option will enact the policy.");
 				}
-				return isAbolition ? "投此项将保留该政策。" : "投此项将不推行该政策。";
+				return isAbolition
+					? DiplomacyUiLocalization.Text("AF_DIP_UI_Vote_DescAgainstAbolish", "This option will keep the policy.")
+					: DiplomacyUiLocalization.Text("AF_DIP_UI_Vote_DescAgainstEnact", "This option will not enact the policy.");
 			}
 
 			try
@@ -1588,13 +1600,19 @@ namespace AnimusForge
 					if (applied)
 					{
 						DisplayBilateralDiplomacyMessage(
-							$"双向外交议程：{GetKingdomName(counterpartRecord.FirstKingdomId)}与{GetKingdomName(counterpartRecord.SecondKingdomId)}均已批准{GetBilateralDiplomacyKindText(counterpartRecord)}，协议已生效。",
+							DiplomacyUiLocalization.Format("AF_DIP_UI_Vote_BilateralEffective", "Bilateral diplomacy agenda: {FIRST} and {SECOND} both approved the {KIND}, the agreement is now in effect.",
+								("FIRST", GetKingdomName(counterpartRecord.FirstKingdomId)),
+								("SECOND", GetKingdomName(counterpartRecord.SecondKingdomId)),
+								("KIND", GetBilateralDiplomacyKindDisplayText(counterpartRecord))),
 							0x9BE564);
 					}
 					else
 					{
 						DisplayBilateralDiplomacyMessage(
-							$"双向外交议程失效：{GetKingdomName(counterpartRecord.FirstKingdomId)}与{GetKingdomName(counterpartRecord.SecondKingdomId)}的{GetBilateralDiplomacyKindText(counterpartRecord)}条件已变化，协议未生效。",
+							DiplomacyUiLocalization.Format("AF_DIP_UI_Vote_BilateralInvalid", "Bilateral diplomacy agenda lapsed: the {KIND} conditions between {FIRST} and {SECOND} have changed, the agreement did not take effect.",
+								("FIRST", GetKingdomName(counterpartRecord.FirstKingdomId)),
+								("SECOND", GetKingdomName(counterpartRecord.SecondKingdomId)),
+								("KIND", GetBilateralDiplomacyKindDisplayText(counterpartRecord))),
 							0xFFD166);
 					}
 				}
@@ -1603,7 +1621,10 @@ namespace AnimusForge
 					RecordBilateralDiplomacyMemory(counterpartRecord, decision, "rejected");
 					_bilateralDiplomacyRecords.Remove(counterpartRecord);
 					DisplayBilateralDiplomacyMessage(
-						$"双向外交议程：{GetKingdomName(counterpartRecord.SecondKingdomId)}拒绝了{GetKingdomName(counterpartRecord.FirstKingdomId)}的{GetBilateralDiplomacyKindText(counterpartRecord)}提案，外交效果未生效。",
+						DiplomacyUiLocalization.Format("AF_DIP_UI_Vote_BilateralRejected", "Bilateral diplomacy agenda: {SECOND} rejected {FIRST}'s {KIND} proposal, no diplomatic effect took place.",
+							("FIRST", GetKingdomName(counterpartRecord.FirstKingdomId)),
+							("SECOND", GetKingdomName(counterpartRecord.SecondKingdomId)),
+							("KIND", GetBilateralDiplomacyKindDisplayText(counterpartRecord))),
 						0xFF6B6B);
 					Logger.Log("VoteDeal", $"[BilateralDiplomacy] Counterpart rejected: id={counterpartRecord.RecordId} kind={counterpartRecord.Kind}.");
 				}
@@ -1621,7 +1642,7 @@ namespace AnimusForge
 				MarkBilateralDiplomacyMemoryHandled(decision);
 				RecordBilateralDiplomacyMemory(failedRecord, decision, "creation_failed");
 				Logger.Log("VoteDeal", $"[BilateralDiplomacy] Cannot create counterpart, original effect blocked. kind={kind} source={source?.StringId} target={target?.StringId}");
-				DisplayBilateralDiplomacyMessage("双向外交议程：无法创建对等复议议程，外交效果未生效。", 0xFFD166);
+				DisplayBilateralDiplomacyMessage(DiplomacyUiLocalization.Text("AF_DIP_UI_Vote_BilateralCannotCreate", "Bilateral diplomacy agenda: cannot create the reciprocal review agenda, no diplomatic effect took place."), 0xFFD166);
 				return true;
 			}
 
@@ -1633,7 +1654,10 @@ namespace AnimusForge
 				RecordBilateralDiplomacyMemory(existing, decision, "pending");
 				Logger.Log("VoteDeal", $"[BilateralDiplomacy] Duplicate first-side approval blocked while pending counterpart exists. id={existing.RecordId}");
 				DisplayBilateralDiplomacyMessage(
-					$"双向外交议程：{GetKingdomName(existing.FirstKingdomId)}与{GetKingdomName(existing.SecondKingdomId)}已有等待复议的{GetBilateralDiplomacyKindText(existing)}提案。",
+					DiplomacyUiLocalization.Format("AF_DIP_UI_Vote_BilateralPendingDuplicate", "Bilateral diplomacy agenda: {FIRST} and {SECOND} already have a {KIND} proposal awaiting reciprocal review.",
+						("FIRST", GetKingdomName(existing.FirstKingdomId)),
+						("SECOND", GetKingdomName(existing.SecondKingdomId)),
+						("KIND", GetBilateralDiplomacyKindDisplayText(existing))),
 					0xFFD166);
 				return true;
 			}
@@ -1647,14 +1671,17 @@ namespace AnimusForge
 				RecordBilateralDiplomacyMemory(record, decision, "creation_failed");
 				_bilateralDiplomacyRecords.Remove(record);
 				Logger.Log("VoteDeal", $"[BilateralDiplomacy] Counterpart creation failed, original effect blocked. id={record.RecordId} reason={creationFailureReason}");
-				DisplayBilateralDiplomacyMessage("双向外交议程：对等复议议程创建失败，外交效果未生效。", 0xFFD166);
+				DisplayBilateralDiplomacyMessage(DiplomacyUiLocalization.Text("AF_DIP_UI_Vote_BilateralCounterpartCreateFailed", "Bilateral diplomacy agenda: creating the reciprocal review agenda failed, no diplomatic effect took place."), 0xFFD166);
 				return true;
 			}
 
 			MarkBilateralDiplomacyMemoryHandled(decision);
 			RecordBilateralDiplomacyMemory(record, decision, "pending");
 			DisplayBilateralDiplomacyMessage(
-				$"双向外交议程：{source.Name}已批准{GetBilateralDiplomacyKindText(record)}提案，已提交给{target.Name}复议。",
+				DiplomacyUiLocalization.Format("AF_DIP_UI_Vote_BilateralFirstApproved", "Bilateral diplomacy agenda: {SOURCE} approved the {KIND} proposal, it has been submitted to {TARGET} for reciprocal review.",
+					("SOURCE", source.Name),
+					("TARGET", target.Name),
+					("KIND", GetBilateralDiplomacyKindDisplayText(record))),
 				0xFFD166);
 			Logger.Log("VoteDeal", $"[BilateralDiplomacy] First-side approval recorded: id={record.RecordId} kind={record.Kind} {source.StringId}->{target.StringId}.");
 			return true;
@@ -2469,7 +2496,7 @@ namespace AnimusForge
 		private static string GetKingdomName(string kingdomId)
 		{
 			Kingdom kingdom = ResolveKingdom(kingdomId);
-			return kingdom?.Name?.ToString() ?? kingdomId ?? "未知王国";
+			return kingdom?.Name?.ToString() ?? kingdomId ?? DiplomacyUiLocalization.Text("AF_DIP_UI_Vote_UnknownKingdomName", "Unknown kingdom");
 		}
 
 		private static string GetBilateralDiplomacyKindText(BilateralDiplomacyRecord record)
@@ -2477,6 +2504,11 @@ namespace AnimusForge
 			return GetBilateralDiplomacyKindText(ParseKind(record?.Kind));
 		}
 
+		/// <summary>
+		/// Raw kind text. Kept Chinese on purpose: it feeds the AFEF NPC runtime fact line
+		/// (see RecordBilateralDiplomacyMemory), which is model input rather than player UI.
+		/// Player-visible callers must use <see cref="GetBilateralDiplomacyKindDisplayText"/>.
+		/// </summary>
 		private static string GetBilateralDiplomacyKindText(BilateralDiplomacyKind kind)
 		{
 			switch (kind)
@@ -2486,6 +2518,27 @@ namespace AnimusForge
 				case BilateralDiplomacyKind.Trade: return "贸易协定";
 				default: return "外交";
 			}
+		}
+
+		/// <summary>
+		/// Localized display projection of <see cref="GetBilateralDiplomacyKindText"/>.
+		/// The original keeps its Chinese literals because it also feeds the AFEF NPC fact line,
+		/// which is a model-visible runtime fact, not player UI.
+		/// </summary>
+		private static string GetBilateralDiplomacyKindDisplayText(BilateralDiplomacyKind kind)
+		{
+			switch (kind)
+			{
+				case BilateralDiplomacyKind.Peace: return DiplomacyUiLocalization.Text("AF_DIP_UI_Vote_BilateralKindPeace", "Peace");
+				case BilateralDiplomacyKind.Alliance: return DiplomacyUiLocalization.Text("AF_DIP_UI_Vote_BilateralKindAlliance", "Alliance");
+				case BilateralDiplomacyKind.Trade: return DiplomacyUiLocalization.Text("AF_DIP_UI_Vote_BilateralKindTrade", "Trade agreement");
+				default: return DiplomacyUiLocalization.Text("AF_DIP_UI_Vote_BilateralKindDiplomacy", "Diplomacy");
+			}
+		}
+
+		private static string GetBilateralDiplomacyKindDisplayText(BilateralDiplomacyRecord record)
+		{
+			return GetBilateralDiplomacyKindDisplayText(ParseKind(record?.Kind));
 		}
 
 		private static void DisplayBilateralDiplomacyMessage(string text, uint color)
@@ -2525,18 +2578,22 @@ namespace AnimusForge
 		internal static string GetBilateralDiplomacyAgendaTitle(KingdomDecision decision)
 		{
 			if (!IsBilateralDiplomacyCounterpartAgenda(decision)) return null;
-			string title = decision?.GetGeneralTitle()?.ToString() ?? "外交提案";
-			return "对等外交复议：" + title;
+			string title = decision?.GetGeneralTitle()?.ToString();
+			if (string.IsNullOrWhiteSpace(title)) title = DiplomacyUiLocalization.Text("AF_DIP_UI_Vote_UnnamedProposal", "Unnamed proposal");
+			// These three texts are consumed both by the agenda VM (player-visible) and by the
+			// kingdom-agenda prompt blocks. Their sibling fallbacks in the same expressions are
+			// already localized, so they are localized here too and stay one single source.
+			return DiplomacyUiLocalization.Format("AF_DIP_UI_Vote_BilateralCounterpartTitle", "Bilateral diplomacy review: {TITLE}", ("TITLE", title));
 		}
 
 		internal static string GetBilateralDiplomacyAgendaProposerText(KingdomDecision decision)
 		{
-			return IsBilateralDiplomacyCounterpartAgenda(decision) ? "无" : null;
+			return IsBilateralDiplomacyCounterpartAgenda(decision) ? DiplomacyUiLocalization.Text("AF_DIP_UI_Vote_NoProposer", "None") : null;
 		}
 
 		internal static string GetBilateralDiplomacyAgendaTypeText(KingdomDecision decision)
 		{
-			return IsBilateralDiplomacyCounterpartAgenda(decision) ? "复议" : null;
+			return IsBilateralDiplomacyCounterpartAgenda(decision) ? DiplomacyUiLocalization.Text("AF_DIP_UI_Vote_BilateralCounterpartType", "Reciprocal review") : null;
 		}
 
 		// ── Tag processing ─────────────────────────────────────────────────
@@ -2599,7 +2656,7 @@ namespace AnimusForge
 
 				_activeDeals.Add(record);
 
-				string clanName = clan.Name?.ToString() ?? "未知家族";
+				string clanName = clan.Name?.ToString() ?? DiplomacyUiLocalization.Text("AF_DIP_UI_Vote_UnknownClan", "Unknown clan");
 				AnimusForgeQuickInfo.ShowForDuration(
 					DiplomacyUiLocalization.Format(
 						"AF_DIP_UI_Vote_DealPromised",
@@ -2790,7 +2847,10 @@ namespace AnimusForge
 				KingdomState kingdomState = stateManager.CreateState<KingdomState>();
 				stateManager.PushState(kingdomState, 0);
 				InformationManager.DisplayMessage(new InformationMessage(
-					$"议程《{GetSafeDecisionTitle(decision)}》期限已到，请作出最终裁决。",
+					DiplomacyUiLocalization.Format(
+						"AF_DIP_UI_Vote_RequiredDecisionDue",
+						"Agenda “{TITLE}” is due, make the final decision.",
+						("TITLE", GetSafeDecisionTitle(decision))),
 					Color.FromUint(0xFFD166)));
 				Logger.Log("VoteDeal", $"[AgendaRequiredVote] Opened required vote: decision={GetSafeDecisionTitle(decision)}");
 			}
@@ -2863,10 +2923,14 @@ namespace AnimusForge
 				if (remainingHours > 24f) continue;
 				_agendaDeadlineReminderShown.Add(decision);
 				string deadlineAction = kingdom.RulingClan == Clan.PlayerClan
-					? "届时你将进入最终投票并作出裁决。"
-					: "请及时查看议程并完成投票准备。";
+					? DiplomacyUiLocalization.Text("AF_DIP_UI_Vote_DeadlineRulerAction", "You will enter the final vote and make the decision.")
+					: DiplomacyUiLocalization.Text("AF_DIP_UI_Vote_DeadlineMemberAction", "Review the agenda and prepare to vote.");
 				InformationManager.DisplayMessage(new InformationMessage(
-					$"王国议程《{GetSafeDecisionTitle(decision)}》将在一天内结束；{deadlineAction}",
+					DiplomacyUiLocalization.Format(
+						"AF_DIP_UI_Vote_DeadlineOneDay",
+						"Kingdom agenda “{TITLE}” ends within a day; {ACTION}",
+						("TITLE", GetSafeDecisionTitle(decision)),
+						("ACTION", deadlineAction)),
 					Color.FromUint(0xFFD700)));
 				Logger.Log("VoteDeal", $"[AgendaReminder] One-day reminder shown: kingdom={kingdom.StringId}, decision={GetSafeDecisionTitle(decision)}, remainingHours={remainingHours:F1}");
 			}
@@ -2913,7 +2977,7 @@ namespace AnimusForge
 							Decision = decision,
 							DecisionKey = BuildVoteDealDecisionKey(decision, includeProposer: true),
 							DecisionBasicKey = BuildVoteDealDecisionKey(decision, includeProposer: false),
-							TypeLabel = VoteDealBehavior.GetBilateralDiplomacyAgendaTypeText(decision) ?? GetDecisionTypeLabel(decision),
+							TypeLabel = VoteDealBehavior.GetBilateralDiplomacyAgendaTypeText(decision) ?? GetDecisionTypeDisplayLabelForAgenda(decision),
 							Title = GetDecisionDisplayTitleForAgenda(decision),
 							ProposerName = CleanVoteDealText(VoteDealBehavior.GetBilateralDiplomacyAgendaProposerText(decision) ?? decision.ProposerClan?.Name?.ToString() ?? "未知"),
 							RemainingDays = decision.TriggerTime.RemainingDaysFromNow
@@ -3078,6 +3142,26 @@ namespace AnimusForge
 		if (decision is StartAllianceDecision) return "联盟";
 		if (decision is TradeAgreementDecision) return "贸易";
 		return "决议";
+	}
+
+	/// <summary>
+	/// Localized display projection of <see cref="GetDecisionTypeLabel"/>.
+	/// GetDecisionTypeLabel itself must keep its original Chinese literals because
+	/// BuildVoteDealDecisionKey embeds its result in a persisted, save-stable deal key.
+	/// This projection is only for player-visible UI (agenda chip, dossier header, info line).
+	/// </summary>
+	internal static string GetDecisionTypeDisplayLabelForAgenda(KingdomDecision decision)
+	{
+		if (decision is DeclareWarDecision) return DiplomacyUiLocalization.Text("AF_DIP_UI_Vote_TypeDeclareWar", "War");
+		if (decision is MakePeaceKingdomDecision) return DiplomacyUiLocalization.Text("AF_DIP_UI_Vote_TypeMakePeace", "Peace");
+		if (decision is KingdomPolicyDecision) return DiplomacyUiLocalization.Text("AF_DIP_UI_Vote_TypePolicy", "Policy");
+		if (decision is SettlementClaimantPreliminaryDecision) return DiplomacyUiLocalization.Text("AF_DIP_UI_Vote_TypeFief", "Fief");
+		if (decision is SettlementClaimantDecision) return DiplomacyUiLocalization.Text("AF_DIP_UI_Vote_TypeFief", "Fief");
+		if (decision is KingSelectionKingdomDecision) return DiplomacyUiLocalization.Text("AF_DIP_UI_Vote_TypeKingSelection", "King selection");
+		if (decision is ExpelClanFromKingdomDecision) return DiplomacyUiLocalization.Text("AF_DIP_UI_Vote_TypeExpelClan", "Expel clan");
+		if (decision is StartAllianceDecision) return DiplomacyUiLocalization.Text("AF_DIP_UI_Vote_TypeAlliance", "Alliance");
+		if (decision is TradeAgreementDecision) return DiplomacyUiLocalization.Text("AF_DIP_UI_Vote_TypeTrade", "Trade");
+		return DiplomacyUiLocalization.Text("AF_DIP_UI_Vote_TypeDecision", "Decision");
 	}
 
 	public static bool CanUseVoteDealPostprocess(Hero npc)
@@ -3583,7 +3667,11 @@ namespace AnimusForge
 
 				float remainingDays = decision.TriggerTime.RemainingDaysFromNow;
 				InformationManager.DisplayMessage(new InformationMessage(
-					$"提案「{decision.GetGeneralTitle()}」将在 {remainingDays:F1} 天后开始投票",
+					DiplomacyUiLocalization.Format(
+						"AF_DIP_UI_Vote_ProposalVoteSoon",
+						"Proposal “{TITLE}” will open for voting in {DAYS} days",
+						("TITLE", decision.GetGeneralTitle()?.ToString() ?? ""),
+						("DAYS", remainingDays.ToString("F1"))),
 					Color.FromUint(0xFFD700)));
 				return false;
 			}
@@ -4080,7 +4168,7 @@ namespace AnimusForge
 		{
 			_decision = decision;
 			TitleText = VoteDealBehavior.GetDecisionDisplayTitleForAgenda(decision);
-			DecisionTypeText = VoteDealBehavior.GetBilateralDiplomacyAgendaTypeText(decision) ?? GetDecisionTypeLabel(decision);
+			DecisionTypeText = VoteDealBehavior.GetBilateralDiplomacyAgendaTypeText(decision) ?? VoteDealBehavior.GetDecisionTypeDisplayLabelForAgenda(decision);
 			// The ruler decides rather than votes, so he gets the chooser's wording.
 			bool chooser = false;
 			try { chooser = decision?.DetermineChooser()?.Leader?.IsHumanPlayerCharacter == true; } catch { }

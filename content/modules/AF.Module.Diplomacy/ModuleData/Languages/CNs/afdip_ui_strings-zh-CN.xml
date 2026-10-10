@@ -979,5 +979,88 @@
     <string id="AF_DIP_UI_WorldDiplomacy_Reject_UnsupportedByState" text="当前局势不支持解析出的动作。" />
     <string id="AF_DIP_UI_WorldDiplomacy_DeclarePublishedMechanicRejected" text="外交宣言已经发布，但其中解析出的外交动作未执行：" />
     <string id="AF_DIP_UI_WorldDiplomacy_Reject_DeclareWarNotExecuted" text="宣战未执行：" />
+    <string id="AF_DIP_UI_Vote_AbolishPolicyTitle" text="废除政策：{POLICY}" />
+    <string id="AF_DIP_UI_Vote_BilateralCannotCreate" text="对等外交议程：无法建立复议议程，未产生外交效果。" />
+    <string id="AF_DIP_UI_Vote_BilateralCounterpartCreateFailed" text="对等外交议程：建立复议议程失败，未产生外交效果。" />
+    <string id="AF_DIP_UI_Vote_BilateralCounterpartTitle" text="对等外交复议：{TITLE}" />
+    <string id="AF_DIP_UI_Vote_BilateralCounterpartType" text="复议" />
+    <string id="AF_DIP_UI_Vote_BilateralEffective" text="对等外交议程：{FIRST}与{SECOND}均已通过{KIND}，协议现已生效。" />
+    <string id="AF_DIP_UI_Vote_BilateralFirstApproved" text="对等外交议程：{SOURCE}已通过{KIND}提案，现提交{TARGET}复议。" />
+    <string id="AF_DIP_UI_Vote_BilateralInvalid" text="对等外交议程失效：{FIRST}与{SECOND}之间的{KIND}条件已变化，协议未生效。" />
+    <string id="AF_DIP_UI_Vote_BilateralKindAlliance" text="同盟" />
+    <string id="AF_DIP_UI_Vote_BilateralKindDiplomacy" text="外交" />
+    <string id="AF_DIP_UI_Vote_BilateralKindPeace" text="和平" />
+    <string id="AF_DIP_UI_Vote_BilateralKindTrade" text="贸易协定" />
+    <string id="AF_DIP_UI_Vote_BilateralPendingDuplicate" text="对等外交议程：{FIRST}与{SECOND}已有待复议的{KIND}提案。" />
+    <string id="AF_DIP_UI_Vote_BilateralRejected" text="对等外交议程：{SECOND}否决了{FIRST}的{KIND}提案，未产生外交效果。" />
+    <string id="AF_DIP_UI_Vote_DeadlineMemberAction" text="请审阅议程并准备投票。" />
+    <string id="AF_DIP_UI_Vote_DeadlineOneDay" text="王国议程《{TITLE}》将在一天内结束；{ACTION}" />
+    <string id="AF_DIP_UI_Vote_DeadlineRulerAction" text="你将进入最终表决并作出裁决。" />
+    <string id="AF_DIP_UI_Vote_DescAgainstAbolish" text="该选项将保留此政策。" />
+    <string id="AF_DIP_UI_Vote_DescAgainstEnact" text="该选项将不推行此政策。" />
+    <string id="AF_DIP_UI_Vote_DescFavorAbolish" text="该选项将废除此政策。" />
+    <string id="AF_DIP_UI_Vote_DescFavorEnact" text="该选项将推行此政策。" />
+    <string id="AF_DIP_UI_Vote_EnactPolicyTitle" text="推行政策：{POLICY}" />
+    <string id="AF_DIP_UI_Vote_NoProposer" text="无" />
+    <string id="AF_DIP_UI_Vote_OutcomeAgainstAbolish" text="反对废除，保留政策（否）" />
+    <string id="AF_DIP_UI_Vote_OutcomeAgainstEnact" text="反对推行，维持未生效（否）" />
+    <string id="AF_DIP_UI_Vote_OutcomeFavorAbolish" text="废除（是）" />
+    <string id="AF_DIP_UI_Vote_OutcomeFavorEnact" text="推行（是）" />
+    <string id="AF_DIP_UI_Vote_ProposalVoteSoon" text="提案《{TITLE}》将在{DAYS}天后开启投票" />
+    <string id="AF_DIP_UI_Vote_RequiredDecisionDue" text="议程《{TITLE}》期限已到，请作出最终裁决。" />
+    <string id="AF_DIP_UI_Vote_TypeAlliance" text="同盟" />
+    <string id="AF_DIP_UI_Vote_TypeDecision" text="决议" />
+    <string id="AF_DIP_UI_Vote_TypeDeclareWar" text="宣战" />
+    <string id="AF_DIP_UI_Vote_TypeExpelClan" text="驱逐家族" />
+    <string id="AF_DIP_UI_Vote_TypeFief" text="封地" />
+    <string id="AF_DIP_UI_Vote_TypeKingSelection" text="王选" />
+    <string id="AF_DIP_UI_Vote_TypeMakePeace" text="和平" />
+    <string id="AF_DIP_UI_Vote_TypePolicy" text="政策" />
+    <string id="AF_DIP_UI_Vote_TypeTrade" text="贸易" />
+    <string id="AF_DIP_UI_Vote_UnknownClan" text="未知家族" />
+    <string id="AF_DIP_UI_Vote_UnknownKingdomName" text="未知王国" />
+    <string id="AF_DIP_UI_Vote_UnknownOption" text="未知选项" />
+    <string id="AF_DIP_UI_Vote_UnnamedPolicy" text="未命名政策" />
+    <string id="AF_DIP_UI_Vote_UnnamedProposal" text="未命名提案" />
+    <string id="AF_DIP_UI_WorldDiplomacy_AnalysisFailedTruncated" text="宣言已公开；模型输出因长度上限被截断，外交动作尚未执行。请提高对应API的输出上限后选择“重新解析”。" />
+    <string id="AF_DIP_UI_WorldDiplomacy_AnalysisFailedAcceptAndAmend" text="宣言已公开；解析同时给出接受原案和修改条款，外交动作未执行。可重新解析原文；修改条件应作为新提案。" />
+    <string id="AF_DIP_UI_WorldDiplomacy_AnalysisFailedTreatyRoles" text="宣言已公开；解析未能辨明条约双方角色，提案未执行。可重新解析原文。" />
+    <string id="AF_DIP_UI_WorldDiplomacy_AnalysisFailed" text="宣言已公开；分析失败，外交动作未执行。可选择“重新解析”再次处理原文。" />
+    <string id="AF_DIP_UI_WorldDiplomacy_DeclarePublishedMechanicRejectedDetail" text="外交宣言已经发布，但其中解析出的外交动作未执行：{REASON}" />
+    <string id="AF_DIP_UI_WorldDiplomacy_Reject_WithCode" text="{DETAIL}（{CODE}）" />
+    <string id="AF_DIP_UI_WorldDiplomacy_Reject_DeclareWarNotExecutedDetail" text="宣战未执行：{REASON}" />
+    <string id="AF_DIP_UI_KingdomProfile_GenerationKingdomEliminated" text="国家已覆灭，已停止自动生成建国卡。" />
+    <string id="AF_DIP_UI_KingdomProfile_GenerationKingdomMissing" text="国家对象已不存在，无法生成建国卡。" />
+    <string id="AF_DIP_UI_KingdomProfile_GenerationApiSettingsMissing" text="请检查 MCM 的政策 API 来源或主 API 设置。" />
+    <string id="AF_DIP_UI_KingdomProfile_GenerationApiMainConfigIncomplete" text="主 API 配置不完整，政策生成无法开始。" />
+    <string id="AF_DIP_UI_KingdomProfile_GenerationApiSelectedAndMainIncomplete" text="所选政策 API 配置不完整，且主 API 也不完整，政策生成无法开始。" />
+    <string id="AF_DIP_UI_KingdomProfile_ApiRequestFailed" text="API 请求失败。" />
+    <string id="AF_DIP_UI_KingdomProfile_StaleRequest" text="（错误：请求已因读档失效）" />
+    <string id="AF_DIP_UI_KingdomProfile_ExportDirectoryInvalid" text="导出目录无效。" />
+    <string id="AF_DIP_UI_KingdomProfile_ImportSourceModDirectory" text="模组目录" />
+    <string id="AF_DIP_UI_KingdomProfile_ImportSourcePlayerExports" text="玩家导出" />
+    <string id="AF_KINGDOM_CW_Chronicle_NoOutcome" text="{FACTION}的内战未能结算：没有可用的结局" />
+    <string id="AF_KINGDOM_CW_Chronicle_OppositionFounded" text="反对派成立：{FACTION}，诉求为{DEMAND}" />
+    <string id="AF_KINGDOM_CW_Chronicle_Outbreak" text="{FACTION}建立{REBEL}，与{KINGDOM}开战，内战爆发" />
+    <string id="AF_KINGDOM_CW_Chronicle_RecruitedCrown" text="{CLAN}加入了王室派。" />
+    <string id="AF_KINGDOM_CW_Chronicle_RecruitedFaction" text="{CLAN}加入了{FACTION}。" />
+    <string id="AF_KINGDOM_CW_Chronicle_ResolutionFailed" text="{FACTION}的内战结算失败：{REASON}" />
+    <string id="AF_KINGDOM_CW_Chronicle_SupportWithdrawn" text="{CLANS}因{SOURCE}等事件积累不满，撤回对王室的支持，转为中立" />
+    <string id="AF_KINGDOM_CW_Chronicle_WarResolved" text="{FACTION}的内战结束（{OUTCOME}）：{NOTES}" />
+    <string id="AF_KINGDOM_CW_Core_RebellionIncompleteRetained" text="起事未能完成；该派系已被保留。" />
+    <string id="AF_KINGDOM_CW_Coup_ChronicleCoup" text="政变后内战已登记：被废黜的国王及其家族不加入本次叛乱。" />
+    <string id="AF_KINGDOM_CW_Coup_ChronicleRestoration" text="复位内战已登记：只有叛军获胜才恢复旧王朝与原国名；和谈不会恢复。" />
+    <string id="AF_KINGDOM_CW_Event_ClaimSatisfied" text="派系领袖已经继位，宣权诉求已满足。" />
+    <string id="AF_KINGDOM_CW_Event_DemandChanged" text="派系调整诉求为：{DEMAND}" />
+    <string id="AF_KINGDOM_CW_Event_KingdomGoneWarEnded" text="原王国已经消亡，派系及其内战流程终止；现存家族与王国归属保持实际状态。" />
+    <string id="AF_KINGDOM_CW_Event_PeaceMade" text="双方已议和，诉求已满足。" />
+    <string id="AF_KINGDOM_CW_Event_PolicyRevoked" text="目标政策已撤销，诉求已满足。" />
+    <string id="AF_KINGDOM_CW_Event_TargetKingdomGone" text="目标王国已失效，关闭旧诉求。" />
+    <string id="AF_KINGDOM_CW_Event_WarEnded" text="战争已经结束，继续战争的旧诉求失效。" />
+    <string id="AF_KINGDOM_CW_Outcome_CrownVictory" text="王室胜利" />
+    <string id="AF_KINGDOM_CW_Outcome_Negotiated" text="谈判解决" />
+    <string id="AF_KINGDOM_CW_Outcome_RebelsCoerce" text="叛军迫使让步" />
+    <string id="AF_KINGDOM_CW_Outcome_RebelsSecede" text="叛军独立" />
+    <string id="AF_KINGDOM_CW_Outcome_RebelsUsurp" text="叛军夺取王位" />
 </strings>
 </base>

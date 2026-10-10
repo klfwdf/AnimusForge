@@ -979,5 +979,88 @@
     <string id="AF_DIP_UI_WorldDiplomacy_Reject_UnsupportedByState" text="The current situation does not support the parsed action." />
     <string id="AF_DIP_UI_WorldDiplomacy_DeclarePublishedMechanicRejected" text="The diplomatic declaration has been published, but the diplomatic action parsed from it was not executed: " />
     <string id="AF_DIP_UI_WorldDiplomacy_Reject_DeclareWarNotExecuted" text="Declaration of war not executed: " />
+    <string id="AF_DIP_UI_Vote_AbolishPolicyTitle" text="Abolish policy: {POLICY}" />
+    <string id="AF_DIP_UI_Vote_BilateralCannotCreate" text="Bilateral diplomacy agenda: cannot create the reciprocal review agenda, no diplomatic effect took place." />
+    <string id="AF_DIP_UI_Vote_BilateralCounterpartCreateFailed" text="Bilateral diplomacy agenda: creating the reciprocal review agenda failed, no diplomatic effect took place." />
+    <string id="AF_DIP_UI_Vote_BilateralCounterpartTitle" text="Bilateral diplomacy review: {TITLE}" />
+    <string id="AF_DIP_UI_Vote_BilateralCounterpartType" text="Reciprocal review" />
+    <string id="AF_DIP_UI_Vote_BilateralEffective" text="Bilateral diplomacy agenda: {FIRST} and {SECOND} both approved the {KIND}, the agreement is now in effect." />
+    <string id="AF_DIP_UI_Vote_BilateralFirstApproved" text="Bilateral diplomacy agenda: {SOURCE} approved the {KIND} proposal, it has been submitted to {TARGET} for reciprocal review." />
+    <string id="AF_DIP_UI_Vote_BilateralInvalid" text="Bilateral diplomacy agenda lapsed: the {KIND} conditions between {FIRST} and {SECOND} have changed, the agreement did not take effect." />
+    <string id="AF_DIP_UI_Vote_BilateralKindAlliance" text="Alliance" />
+    <string id="AF_DIP_UI_Vote_BilateralKindDiplomacy" text="Diplomacy" />
+    <string id="AF_DIP_UI_Vote_BilateralKindPeace" text="Peace" />
+    <string id="AF_DIP_UI_Vote_BilateralKindTrade" text="Trade agreement" />
+    <string id="AF_DIP_UI_Vote_BilateralPendingDuplicate" text="Bilateral diplomacy agenda: {FIRST} and {SECOND} already have a {KIND} proposal awaiting reciprocal review." />
+    <string id="AF_DIP_UI_Vote_BilateralRejected" text="Bilateral diplomacy agenda: {SECOND} rejected {FIRST}'s {KIND} proposal, no diplomatic effect took place." />
+    <string id="AF_DIP_UI_Vote_DeadlineMemberAction" text="Review the agenda and prepare to vote." />
+    <string id="AF_DIP_UI_Vote_DeadlineOneDay" text="Kingdom agenda “{TITLE}” ends within a day; {ACTION}" />
+    <string id="AF_DIP_UI_Vote_DeadlineRulerAction" text="You will enter the final vote and make the decision." />
+    <string id="AF_DIP_UI_Vote_DescAgainstAbolish" text="This option will keep the policy." />
+    <string id="AF_DIP_UI_Vote_DescAgainstEnact" text="This option will not enact the policy." />
+    <string id="AF_DIP_UI_Vote_DescFavorAbolish" text="This option will abolish the policy." />
+    <string id="AF_DIP_UI_Vote_DescFavorEnact" text="This option will enact the policy." />
+    <string id="AF_DIP_UI_Vote_EnactPolicyTitle" text="Enact policy: {POLICY}" />
+    <string id="AF_DIP_UI_Vote_NoProposer" text="None" />
+    <string id="AF_DIP_UI_Vote_OutcomeAgainstAbolish" text="Oppose abolition, keep the policy (no)" />
+    <string id="AF_DIP_UI_Vote_OutcomeAgainstEnact" text="Oppose enactment, keep it not in force (no)" />
+    <string id="AF_DIP_UI_Vote_OutcomeFavorAbolish" text="Abolish (yes)" />
+    <string id="AF_DIP_UI_Vote_OutcomeFavorEnact" text="Enact (yes)" />
+    <string id="AF_DIP_UI_Vote_ProposalVoteSoon" text="Proposal “{TITLE}” will open for voting in {DAYS} days" />
+    <string id="AF_DIP_UI_Vote_RequiredDecisionDue" text="Agenda “{TITLE}” is due, make the final decision." />
+    <string id="AF_DIP_UI_Vote_TypeAlliance" text="Alliance" />
+    <string id="AF_DIP_UI_Vote_TypeDecision" text="Decision" />
+    <string id="AF_DIP_UI_Vote_TypeDeclareWar" text="War" />
+    <string id="AF_DIP_UI_Vote_TypeExpelClan" text="Expel clan" />
+    <string id="AF_DIP_UI_Vote_TypeFief" text="Fief" />
+    <string id="AF_DIP_UI_Vote_TypeKingSelection" text="King selection" />
+    <string id="AF_DIP_UI_Vote_TypeMakePeace" text="Peace" />
+    <string id="AF_DIP_UI_Vote_TypePolicy" text="Policy" />
+    <string id="AF_DIP_UI_Vote_TypeTrade" text="Trade" />
+    <string id="AF_DIP_UI_Vote_UnknownClan" text="Unknown clan" />
+    <string id="AF_DIP_UI_Vote_UnknownKingdomName" text="Unknown kingdom" />
+    <string id="AF_DIP_UI_Vote_UnknownOption" text="Unknown option" />
+    <string id="AF_DIP_UI_Vote_UnnamedPolicy" text="Unnamed policy" />
+    <string id="AF_DIP_UI_Vote_UnnamedProposal" text="Unnamed proposal" />
+    <string id="AF_DIP_UI_WorldDiplomacy_AnalysisFailedTruncated" text="The declaration has been published; the model output was cut off by the length limit, so no diplomatic action has been executed yet. Raise the output limit of the corresponding API and then choose Re-analyze." />
+    <string id="AF_DIP_UI_WorldDiplomacy_AnalysisFailedAcceptAndAmend" text="The declaration has been published; the analysis returned both acceptance of the original proposal and amended terms, so no diplomatic action was executed. You can re-analyze the original text; the amended terms should be submitted as a new proposal." />
+    <string id="AF_DIP_UI_WorldDiplomacy_AnalysisFailedTreatyRoles" text="The declaration has been published; the analysis could not tell the two parties' roles in the treaty apart, so the proposal was not executed. You can re-analyze the original text." />
+    <string id="AF_DIP_UI_WorldDiplomacy_AnalysisFailed" text="The declaration has been published; the analysis failed and no diplomatic action was executed. You can choose Re-analyze to process the original text again." />
+    <string id="AF_DIP_UI_WorldDiplomacy_DeclarePublishedMechanicRejectedDetail" text="The diplomatic declaration has been published, but the diplomatic action parsed from it was not executed: {REASON}" />
+    <string id="AF_DIP_UI_WorldDiplomacy_Reject_WithCode" text="{DETAIL} ({CODE})" />
+    <string id="AF_DIP_UI_WorldDiplomacy_Reject_DeclareWarNotExecutedDetail" text="Declaration of war not executed: {REASON}" />
+    <string id="AF_DIP_UI_KingdomProfile_GenerationKingdomEliminated" text="The kingdom was eliminated, so automatic founding profile generation stopped." />
+    <string id="AF_DIP_UI_KingdomProfile_GenerationKingdomMissing" text="The kingdom object no longer exists, so the founding profile cannot be generated." />
+    <string id="AF_DIP_UI_KingdomProfile_GenerationApiSettingsMissing" text="Check the MCM policy API source or main API settings." />
+    <string id="AF_DIP_UI_KingdomProfile_GenerationApiMainConfigIncomplete" text="The main API configuration is incomplete, so policy generation cannot start." />
+    <string id="AF_DIP_UI_KingdomProfile_GenerationApiSelectedAndMainIncomplete" text="The selected policy API configuration is incomplete and the main API is incomplete too, so policy generation cannot start." />
+    <string id="AF_DIP_UI_KingdomProfile_ApiRequestFailed" text="The API request failed." />
+    <string id="AF_DIP_UI_KingdomProfile_StaleRequest" text="Request discarded because the game was loaded again." />
+    <string id="AF_DIP_UI_KingdomProfile_ExportDirectoryInvalid" text="The export directory is invalid." />
+    <string id="AF_DIP_UI_KingdomProfile_ImportSourceModDirectory" text="Mod directory" />
+    <string id="AF_DIP_UI_KingdomProfile_ImportSourcePlayerExports" text="Player exports" />
+    <string id="AF_KINGDOM_CW_Chronicle_NoOutcome" text="{FACTION}'s civil war could not be settled: no outcome was available" />
+    <string id="AF_KINGDOM_CW_Chronicle_OppositionFounded" text="An opposition faction is founded: {FACTION}, demanding {DEMAND}" />
+    <string id="AF_KINGDOM_CW_Chronicle_Outbreak" text="{FACTION} establishes {REBEL} and goes to war with {KINGDOM}; the civil war breaks out" />
+    <string id="AF_KINGDOM_CW_Chronicle_RecruitedCrown" text="{CLAN} joins the crown faction." />
+    <string id="AF_KINGDOM_CW_Chronicle_RecruitedFaction" text="{CLAN} joins {FACTION}." />
+    <string id="AF_KINGDOM_CW_Chronicle_ResolutionFailed" text="{FACTION}'s civil war could not be settled: {REASON}" />
+    <string id="AF_KINGDOM_CW_Chronicle_SupportWithdrawn" text="{CLANS} grow discontent over {SOURCE} and withdraw their support for the crown, turning neutral" />
+    <string id="AF_KINGDOM_CW_Chronicle_WarResolved" text="{FACTION}'s civil war ends ({OUTCOME}): {NOTES}" />
+    <string id="AF_KINGDOM_CW_Core_RebellionIncompleteRetained" text="The uprising did not complete; the faction has been retained." />
+    <string id="AF_KINGDOM_CW_Coup_ChronicleCoup" text="Civil war registered after the coup: the deposed king and his clan do not join this rebellion." />
+    <string id="AF_KINGDOM_CW_Coup_ChronicleRestoration" text="Restoration civil war registered: only a rebel victory restores the old dynasty and the original kingdom name; a negotiated peace will not restore them." />
+    <string id="AF_KINGDOM_CW_Event_ClaimSatisfied" text="The faction leader has already taken the throne; the claim is satisfied." />
+    <string id="AF_KINGDOM_CW_Event_DemandChanged" text="The faction changes its demand to {DEMAND}" />
+    <string id="AF_KINGDOM_CW_Event_KingdomGoneWarEnded" text="The original kingdom has been destroyed; the faction and its civil war are terminated, and the surviving clans and kingdom ownership stay as they are." />
+    <string id="AF_KINGDOM_CW_Event_PeaceMade" text="The two sides have made peace; the demand is satisfied." />
+    <string id="AF_KINGDOM_CW_Event_PolicyRevoked" text="The target policy has been repealed; the demand is satisfied." />
+    <string id="AF_KINGDOM_CW_Event_TargetKingdomGone" text="The target kingdom no longer exists; the old demand is closed." />
+    <string id="AF_KINGDOM_CW_Event_WarEnded" text="The war has ended; the old demand to keep fighting is void." />
+    <string id="AF_KINGDOM_CW_Outcome_CrownVictory" text="Crown victory" />
+    <string id="AF_KINGDOM_CW_Outcome_Negotiated" text="Negotiated settlement" />
+    <string id="AF_KINGDOM_CW_Outcome_RebelsCoerce" text="Rebels force concessions" />
+    <string id="AF_KINGDOM_CW_Outcome_RebelsSecede" text="Rebels secede" />
+    <string id="AF_KINGDOM_CW_Outcome_RebelsUsurp" text="Rebels take the throne" />
 </strings>
 </base>
