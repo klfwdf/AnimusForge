@@ -1,3 +1,18 @@
+<a id="bulletin-independent-publishing-toggle-20261010"></a>
+### 快报独立自动发布开关：实际门控与消费者
+
+产品修订 `9bba267ef93d4d43cd525cf057d2112a1bae08d0`；行为、验证与未覆盖边界集中在[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#bulletin-independent-publishing-toggle-20261010)。本地坐标/hash见 `artifacts/tests/bulletin-switch-20261010/code-map.json`，不改变下方其他交付的责任范围。
+
+| 当前源码（一基范围）/符号 | 实际责任及覆盖边界 |
+| --- | --- |
+| `src/modules/AF.Module.Weekly/Generation/WorldBulletinStateOwner.cs:459–470`；`IsWorldBulletinPublishingEnabled` | 唯一生产变更：读快报独立开关；空设置/异常回退保持，无新增扫描或轮询 |
+| 同文件 `368–397`；`OnWorldBulletinHourlyTick`；`236–271`；`CompleteWorldBulletin` | 未改的真实消费者：发起前及完成后共用门控；关闭时不发请求、不发布晚结果 |
+| `src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.WorldBulletin.cs:61`；`WorldBulletinState`端口绑定 | 未改的真实宿主接线；`PublishingEnabled=IsWorldBulletinPublishingEnabled`，不是测试专用入口 |
+| `src/AF.GameAdapter.Bannerlord/Configuration/Mcm/DuelSettings.News.cs:43–47`；`AutoGenerateWorldBulletins` | 未改的设置属性及旧开关缺省兼容；真实partial迁移专项另验 |
+| `tests/modules/AF.Module.Weekly/F4GenerationOwnerTests/Program.cs:8–46,47–104`；`TestBulletinPublishingSettings`、`TestBulletinDelayedCompletion` | 实际生产owner门控、小时请求与晚结果；设置/provider/game叶受控，不能替代实机MCM或玩家档 |
+
+124 owner /141策略/12设置为显式 .NET 10离线检查，原双API/Bootstrap/双DLL门禁通过；.NET 8引用包缺失、实机与真实provider仍未覆盖。未处理重复桥段，未部署。
+
 <a id="mcm-model-preset-continuation-20261009"></a>
 ### MCM 模型预设与快报战事修复接续
 
