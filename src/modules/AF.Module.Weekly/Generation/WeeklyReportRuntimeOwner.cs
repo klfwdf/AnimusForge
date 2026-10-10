@@ -147,6 +147,26 @@ internal DevWeeklyReportBatchPreviewEntry FindLatestWeeklyReportBatchDevPreview(
 		return (list.Count == 0) ? ("未命名周报批次[" + text + "]") : ("批次[" + text + "]：" + string.Join(" | ", list));
 	}
 
+	// UI projection of the batch/group labels above. The verbatim labels keep feeding the prompt-exchange
+	// log and retry notices (WeeklyGenerationAttemptOwner.LogExchange / Logger.Log), so they must stay
+	// source-stable; only the editor display goes through this projection. A prepared DisplayLabel is a
+	// caller-supplied value with no reliable semantic key, so it falls back to its verbatim text.
+	internal static string BuildWeeklyReportBatchDisplayLabelForUi(WeeklyReportBatchRequest batch)
+	{
+		string preparedLabel = (batch?.DisplayLabel ?? "").Trim();
+		if (!string.IsNullOrWhiteSpace(preparedLabel))
+		{
+			return preparedLabel;
+		}
+		List<string> list = (batch?.Groups ?? new List<WeeklyEventMaterialPreviewGroup>()).Select(BuildWeeklyReportGroupDisplayLabelForUi).Where((string x) => !string.IsNullOrWhiteSpace(x)).ToList();
+		string text = ((batch?.OutputMode ?? WeeklyReportOutputMode.FullReport) == WeeklyReportOutputMode.TitleShortTagsOnly)
+			? Ui("AF_WEEKLY_OutputModeShort", "Short")
+			: Ui("AF_WEEKLY_OutputModeFull", "Full");
+		return (list.Count == 0)
+			? Ui("AF_WEEKLY_UnnamedBatch", "Unnamed weekly-report batch [{MODE}]", ("MODE", text))
+			: Ui("AF_WEEKLY_BatchLabel", "Batch [{MODE}]: {GROUPS}", ("MODE", text), ("GROUPS", string.Join(" | ", list)));
+	}
+
 	internal void CaptureWeeklyReportBatchDevPreview(WeeklyReportBatchRequest batch, WeeklyReportBatchRequestResult result)
 	{
 		if (batch == null || result == null)
@@ -240,6 +260,7 @@ internal DevWeeklyReportBatchPreviewEntry FindLatestWeeklyReportBatchDevPreview(
 			CapturedRecordStates = capturedRecordStates,
 			SourceSnapshot = sourceSnapshot,
 			FailedGroupTitle = BuildWeeklyReportGroupDisplayLabel(failedGroup),
+			FailedGroupTitleForUi = BuildWeeklyReportGroupDisplayLabelForUi(failedGroup),
 			FailedReason = (requestResult?.FailureReason ?? "").Trim(),
 			AttemptsUsed = requestResult?.AttemptsUsed ?? 0,
 			IsRateLimit = requestResult?.IsRateLimit ?? false,
@@ -922,6 +943,23 @@ internal static string BuildWeeklyReportGroupDisplayLabel(WeeklyEventMaterialPre
 		}
 		return string.Equals((group.GroupKind ?? "").Trim(), "world", StringComparison.OrdinalIgnoreCase) ? "世界周报" : "王国周报";
 	}
+// UI projection. group.Title is authored material/model text and is returned unchanged; only the
+// synthesized placeholder (null group / missing title) is localized for the editor display.
+internal static string BuildWeeklyReportGroupDisplayLabelForUi(WeeklyEventMaterialPreviewGroup group)
+{
+	if (group == null)
+	{
+		return Ui("AF_WEEKLY_UnnamedGroup", "Unnamed group");
+	}
+	string text = (group.Title ?? "").Trim();
+	if (!string.IsNullOrWhiteSpace(text))
+	{
+		return text;
+	}
+	return string.Equals((group.GroupKind ?? "").Trim(), "world", StringComparison.OrdinalIgnoreCase)
+		? Ui("AF_WEEKLY_WorldWeeklyReport", "World weekly report")
+		: Ui("AF_WEEKLY_KingdomWeeklyReport", "Kingdom weekly report");
+}
 internal static string BuildWeeklyReportEventId(string eventKind, int weekIndex, string scopeKingdomId)
 	{
 		return "weekly_report:" + (eventKind ?? "").Trim().ToLowerInvariant() + ":" + Math.Max(0, weekIndex) + ":" + ((scopeKingdomId ?? "").Trim());

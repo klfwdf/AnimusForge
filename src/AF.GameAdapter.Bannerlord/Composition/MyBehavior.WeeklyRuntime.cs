@@ -75,6 +75,8 @@ private static bool IsWeeklyReportCommitWinner(EventRecordEntry entry, WeeklyEve
 private static WeeklyReportRequestResult BuildWeeklyReportFailedRequest(PendingWeeklyReportCommitContext context, WeeklyEventMaterialPreviewGroup failedGroup) => WeeklyReportRuntimeOwner.BuildWeeklyReportFailedRequest(context, failedGroup);
 private static string BuildWeeklyReportBatchPreviewKey(WeeklyReportBatchRequest batch) => WeeklyReportRuntimeOwner.BuildWeeklyReportBatchPreviewKey(batch);
 private static string BuildWeeklyReportGroupDisplayLabel(WeeklyEventMaterialPreviewGroup group) => WeeklyReportRuntimeOwner.BuildWeeklyReportGroupDisplayLabel(group);
+private static string BuildWeeklyReportBatchDisplayLabelForUi(WeeklyReportBatchRequest batch) => WeeklyReportRuntimeOwner.BuildWeeklyReportBatchDisplayLabelForUi(batch);
+private static string BuildWeeklyReportGroupDisplayLabelForUi(WeeklyEventMaterialPreviewGroup group) => WeeklyReportRuntimeOwner.BuildWeeklyReportGroupDisplayLabelForUi(group);
 private static string BuildWeeklyReportEventId(string eventKind, int weekIndex, string scopeKingdomId) => WeeklyReportRuntimeOwner.BuildWeeklyReportEventId(eventKind, weekIndex, scopeKingdomId);
 private EventRecordEntry FindWeeklyReportRecordById(string eventId) => WeeklyRuntime.FindWeeklyReportRecordById(eventId);
 }

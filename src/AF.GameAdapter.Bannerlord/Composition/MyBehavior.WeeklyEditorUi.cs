@@ -121,6 +121,8 @@ public partial class MyBehavior
   GetCurrentGameDayIndexSafe = GetCurrentGameDayIndexSafe,
   EnsureWeekZeroOpeningSummaryEvents = EnsureWeekZeroOpeningSummaryEvents,
   BuildWeeklyReportBatchDisplayLabel = BuildWeeklyReportBatchDisplayLabel,
+  BuildWeeklyReportBatchDisplayLabelForUi = BuildWeeklyReportBatchDisplayLabelForUi,
+  BuildWeeklyReportGroupDisplayLabelForUi = BuildWeeklyReportGroupDisplayLabelForUi,
  });
  private WeeklyReportEditorController WeeklyEditor
  {

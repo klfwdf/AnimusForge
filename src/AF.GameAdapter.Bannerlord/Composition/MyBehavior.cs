@@ -924,6 +924,10 @@ internal struct PatienceSnapshot
 
 		public string FailedGroupTitle;
 
+		// Transient UI projection of FailedGroupTitle. FailedGroupTitle keeps its verbatim value (it is
+		// not persisted); the failure/retry reach-outs show this field and fall back when it is empty.
+		public string FailedGroupTitleForUi;
+
 		public string FailedReason;
 
 		public int AttemptsUsed;

@@ -56,6 +56,8 @@ namespace AnimusForge { public partial class MyBehavior {
 
 		public string FailedGroupTitle;
 
+		public string FailedGroupTitleForUi;
+
 		public string FailedReason;
 
 		public int AttemptsUsed;
