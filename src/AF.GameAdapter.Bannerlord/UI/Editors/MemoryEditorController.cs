@@ -495,7 +495,7 @@ internal sealed class MemoryEditorController
 		{
 			DailyMemoryLine line = lines[i];
 			string type = line.IsAfef ? "AFEF" : (line.IsLlmDialogue ? "LLM" : MemoryEditorUiText.T("AF_MEMORY_UI_Normal", "Normal"));
-			string speaker = string.IsNullOrWhiteSpace(line.Speaker) ? (line.IsAfef ? "AFEF" : "手动") : line.Speaker.Trim();
+			string speaker = string.IsNullOrWhiteSpace(line.Speaker) ? (line.IsAfef ? "AFEF" : MemoryEditorUiText.T("AF_MEMORY_UI_Manual", "Manual")) : line.Speaker.Trim();
 			string scene = string.IsNullOrWhiteSpace(line.Scene) ? MemoryEditorUiText.T("AF_MEMORY_UI_UnknownScene", "Unknown scene") : _port.BuildDevHistoryPreview(line.Scene, 42);
 			string title = (i + 1) + ". " + MBMath.ClampInt(line.GameHour, 0, 23) + MemoryEditorUiText.T("AF_MEMORY_UI_HourSeparator", "h | ") + type + " | " + speaker + " | " + scene;
 			string detail = string.IsNullOrWhiteSpace(line.Text) ? MemoryEditorUiText.T("AF_MEMORY_UI_Empty", "(empty)") : _port.BuildDevHistoryPreview(line.Text, 260);
