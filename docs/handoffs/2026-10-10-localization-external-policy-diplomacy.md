@@ -1,5 +1,8 @@
 # 外部接力：政策效果与外交内战全英文显示
 
+状态：已被用户随后要求的[三个独立 C/D/E 包](2026-10-10-localization-cde-plan.md)
+替代。下文保留调查证据，不再作为整包写权限；Policy归C，Diplomacy/CivilWar归D，资产归E。
+
 阶段：待接力。工作区 F:/AnimusForge-main，分支以实际 Git 为准。
 调查基线 `e1d625e1bb8c77cb3e90ef0751df2170c2e09e3a`；并发 HEAD 会推进。
 本文件由主线按用户最新目标整理，历史报告仅作证据，不是独立授权来源。
