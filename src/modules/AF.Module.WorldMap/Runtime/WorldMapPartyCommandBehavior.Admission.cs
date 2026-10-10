@@ -268,7 +268,7 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 					|| notification.IndexOf("invalid", StringComparison.OrdinalIgnoreCase) >= 0
 					|| notification.IndexOf("cannot", StringComparison.OrdinalIgnoreCase) >= 0
 					|| notification.IndexOf("not initialized", StringComparison.OrdinalIgnoreCase) >= 0;
-				InformationManager.DisplayMessage(new InformationMessage(notification, failure ? new Color(1f, 0.45f, 0.25f) : new Color(0.4f, 1f, 0.4f)));
+				InformationManager.DisplayMessage(new InformationMessage(CommandMessageForDisplay(notification), failure ? new Color(1f, 0.45f, 0.25f) : new Color(0.4f, 1f, 0.4f)));
 			}
 		}
 		return result;

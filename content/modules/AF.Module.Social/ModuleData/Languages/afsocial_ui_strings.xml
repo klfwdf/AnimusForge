@@ -52,6 +52,42 @@
     <string id="AF_SOCIAL_UI_MarriageBridePriceConsumed" text=" The previously prepaid bride price of {AMOUNT} denars was consumed." />
     <string id="AF_SOCIAL_UI_MarriageBridePricePaid" text=" The other clan leader paid the player a bride price of {AMOUNT} denars." />
     <string id="AF_SOCIAL_UI_MarriageBridePriceRefunded" text=" A bride price of {AMOUNT} denars was refunded." />
+    <string id="AF_SOCIAL_UI_RecruitmentFollowSuffix" text=" and is now following you in the scene" />
+    <string id="AF_SOCIAL_UI_RecruitmentMissingCompanionHero" text="No target hero is available to become a player companion." />
+    <string id="AF_SOCIAL_UI_RecruitmentClanSuccessionIncomplete" text="Clan leader succession for {CLAN} is incomplete; recruiting the active ruler was prevented." />
+    <string id="AF_SOCIAL_UI_RecruitmentCopyAppearanceFailed" text="Failed to copy current NPC appearance ({ERROR}); promotion cancelled." />
+    <string id="AF_SOCIAL_UI_RecruitmentCopyEquipmentFailed" text="Failed to copy current NPC equipment ({ERROR}); promotion cancelled." />
+    <string id="AF_SOCIAL_UI_RecruitmentBecameCompanion" text="{NAME} has become a player companion and joined the party{SUMMARY}." />
+    <string id="AF_SOCIAL_UI_RecruitmentBecameClanMember" text="{NAME} has become a player-clan member and joined the party{SUMMARY}." />
+    <string id="AF_SOCIAL_UI_RecruitmentRetainedIdentity" text="{NAME} retained {ROLE} status and joined the party{SUMMARY}." />
+    <string id="AF_SOCIAL_UI_RoleSpouse" text="spouse" />
+    <string id="AF_SOCIAL_UI_RoleClanMember" text="player-clan member" />
+    <string id="AF_SOCIAL_UI_SummarySeparator" text="; " />
+    <string id="AF_SOCIAL_UI_SummaryOpen" text=" (" />
+    <string id="AF_SOCIAL_UI_SummaryClose" text=")" />
+    <string id="AF_SOCIAL_UI_NoteGovernorRemoved" text="removed as governor of {TOWN}" />
+    <string id="AF_SOCIAL_UI_NoteClanLeaderSuccession" text="{HERO} succeeded as leader of {CLAN}" />
+    <string id="AF_SOCIAL_UI_NoteClanDestroyedNoHeir" text="{CLAN} had no heirs and was disbanded" />
+    <string id="AF_SOCIAL_UI_NotePartyMergedNoExtras" text="{PARTY} merged into player party with no extra troops or prisoners" />
+    <string id="AF_SOCIAL_UI_NotePartyTransferred" text="{COUNT} from {PARTY} transferred to player party" />
+    <string id="AF_SOCIAL_UI_RecruitmentException" text="Exception: {ERROR}" />
+    <string id="AF_SOCIAL_UI_RecruitmentJoinClanException" text="Join player clan exception: {ERROR}" />
+    <string id="AF_SOCIAL_UI_RecruitmentBecomeCompanionException" text="Become player companion exception: {ERROR}" />
+    <string id="AF_SOCIAL_UI_MarriageReasonMissingDivorcePair" text="The divorce pair could not be found." />
+    <string id="AF_SOCIAL_UI_MarriageReasonMissingTargetClanLeader" text="The target clan leader could not be found." />
+    <string id="AF_SOCIAL_UI_MarriageReasonPlayerCandidateNotClan" text="The player-side marriage candidate must belong to the player's clan." />
+    <string id="AF_SOCIAL_UI_MarriageReasonPlayerNotEligible" text="The player-side marriage candidate does not meet basic marriage requirements." />
+    <string id="AF_SOCIAL_UI_MarriageReasonTargetNotEligible" text="The target marriage candidate does not meet basic marriage requirements." />
+    <string id="AF_SOCIAL_UI_MarriageReasonAgeGapExceeded" text="The age gap between both parties exceeds the allowed limit." />
+    <string id="AF_SOCIAL_UI_MarriageReasonAgeGapUnverified" text="Could not verify whether the age gap meets marriage requirements." />
+    <string id="AF_SOCIAL_UI_MarriageReasonMissingElopeTarget" text="The target partner could not be found." />
+    <string id="AF_SOCIAL_UI_MarriageReasonMissingDivorcePlayerCandidate" text="The player-clan divorce candidate could not be found." />
+    <string id="AF_SOCIAL_UI_MarriageReasonMissingDivorceTarget" text="The target divorce partner could not be found." />
+    <string id="AF_SOCIAL_UI_MarriageReasonMissingClans" text="Clan information for both parties could not be found." />
+    <string id="AF_SOCIAL_UI_MarriageReasonNoPlayerEligibleMembers" text="The player clan currently has no eligible members for marriage." />
+    <string id="AF_SOCIAL_UI_MarriageReasonMultiFailed" text="Polygamy execution failed: {DETAIL}" />
+    <string id="AF_SOCIAL_UI_MarriageReasonActionFailed" text="MarriageAction execution failed: {DETAIL}" />
+    <string id="AF_SOCIAL_UI_MarriageReasonDissolveException" text="Error dissolving marriage: {DETAIL}" />
   </strings>
 </base>
 

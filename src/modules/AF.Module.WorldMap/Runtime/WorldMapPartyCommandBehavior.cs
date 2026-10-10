@@ -6108,7 +6108,7 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		}
 		catch (Exception ex)
 		{
-			message = WorldMapUiText.GovernorCreationFailed(ex.Message);
+			message = WorldMapUiText.GovernorCreationFailed(CommandMessageForDisplay(ex.Message));
 			Log("create governor expedition failed hero=" + (hero?.StringId ?? "") + " error=" + ex);
 			RollbackGovernorExpeditionCreation(hero, origin, garrison, garrisonSnapshot, createdParty, transferRecords, "create_failed");
 			return false;
@@ -8081,7 +8081,8 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		}
 		try
 		{
-			InformationManager.DisplayMessage(new InformationMessage(message.Trim(), GetCommandMessageColor(tone)));
+			string displayMessage = CommandMessageForDisplay(message);
+			InformationManager.DisplayMessage(new InformationMessage(displayMessage.Trim(), GetCommandMessageColor(tone)));
 		}
 		catch
 		{
@@ -8112,15 +8113,374 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		{
 			return CommandMessageTone.Neutral;
 		}
-		if (ContainsAny(text, "失败", "无法", "未能", "失效", "取消", "时限已到", "被击退", "没有", "不能", "不可"))
+		if (ContainsAny(text, "失败", "无法", "未能", "失效", "取消", "时限已到", "被击退", "没有", "不能", "不可", "failed", "cannot", "invalid", "incomplete", "error"))
 		{
 			return CommandMessageTone.Failure;
 		}
-		if (ContainsAny(text, "正在", "开始", "发起", "等待", "继续执行", "结果尚未分出", "已记录", "已打开", "准备"))
+		if (ContainsAny(text, "正在", "开始", "发起", "等待", "继续执行", "结果尚未分出", "已记录", "已打开", "准备", "heading", "tracking", "patrolling", "underway", "waiting"))
 		{
 			return CommandMessageTone.Progress;
 		}
 		return CommandMessageTone.Success;
+	}
+
+	internal static string CommandMessageForDisplay(string message)
+	{
+		if (string.IsNullOrWhiteSpace(message))
+		{
+			return message ?? string.Empty;
+		}
+
+		string text = message.Trim();
+
+		Match match = Regex.Match(text, @"^(?<hero>.+)无法创建同伴部队：(?<detail>.*)$");
+		if (match.Success)
+		{
+			string localizedDetail = CommandMessageForDisplay(match.Groups["detail"].Value);
+			return WorldMapUiText.Result("AF_WM_DisplayCompanionCreateFailed", "{HERO} cannot create companion party: {DETAIL}",
+				("HERO", match.Groups["hero"].Value), ("DETAIL", localizedDetail));
+		}
+
+		match = Regex.Match(text, @"^(?<hero>.+)创建同伴部队后无法接续后续大地图命令：(?<detail>.*)$");
+		if (match.Success)
+		{
+			string localizedDetail = CommandMessageForDisplay(match.Groups["detail"].Value);
+			return WorldMapUiText.Result("AF_WM_DisplayCompanionFollowUpFailed", "{HERO} cannot continue follow-up world-map commands after creating companion party: {DETAIL}",
+				("HERO", match.Groups["hero"].Value), ("DETAIL", localizedDetail));
+		}
+
+		match = Regex.Match(text, @"^(?<hero>.+)创建同伴部队失败：(?<detail>.*)$");
+		if (match.Success)
+		{
+			string localizedDetail = CommandMessageForDisplay(match.Groups["detail"].Value);
+			return WorldMapUiText.Result("AF_WM_DisplayCompanionCreateException", "{HERO} failed to create companion party: {DETAIL}",
+				("HERO", match.Groups["hero"].Value), ("DETAIL", localizedDetail));
+		}
+
+		match = Regex.Match(text, @"^(?<hero>.+)无法组建总督远征队：(?<detail>.*)$");
+		if (match.Success)
+		{
+			string localizedDetail = CommandMessageForDisplay(match.Groups["detail"].Value);
+			return WorldMapUiText.Result("AF_WM_DisplayGovernorExpeditionFailed", "{HERO} cannot form governor expedition: {DETAIL}",
+				("HERO", match.Groups["hero"].Value), ("DETAIL", localizedDetail));
+		}
+
+		match = Regex.Match(text, @"^建队后无法接续命令：(?<detail>.*)$");
+		if (match.Success)
+		{
+			string localizedDetail = CommandMessageForDisplay(match.Groups["detail"].Value);
+			return WorldMapUiText.Result("AF_WM_DisplayFollowUpCommandsFailed", "Cannot continue follow-up commands after party creation: {DETAIL}",
+				("DETAIL", localizedDetail));
+		}
+
+		match = Regex.Match(text, @"^(?<hero>.+)已卸任(?<settlement>.+)总督并从驻军抽调(?<count>\d+)名健康士兵，临时远征队开始执行命令。$");
+		if (match.Success)
+		{
+			return WorldMapUiText.Result("AF_WM_DisplayGovernorExpeditionDeparted", "{HERO} stepped down as governor of {SETTLEMENT}, drafted {COUNT} troops, and began the expedition.",
+				("HERO", match.Groups["hero"].Value), ("SETTLEMENT", match.Groups["settlement"].Value), ("COUNT", match.Groups["count"].Value));
+		}
+
+		match = Regex.Match(text, @"^(?<actor>.+)的大地图命令队列已经结束（(?<reason>[^）]+)），(?<tail>.+)$");
+		if (match.Success)
+		{
+			string localizedReason = LocalizeQueueEndReason(match.Groups["reason"].Value);
+			string localizedTail = LocalizeQueueEndTail(match.Groups["tail"].Value);
+			return WorldMapUiText.Result("AF_WM_DisplayQueueEndedWithTail", "{ACTOR}'s world-map command queue has ended ({REASON}), {TAIL}",
+				("ACTOR", match.Groups["actor"].Value), ("REASON", localizedReason), ("TAIL", localizedTail));
+		}
+
+		match = Regex.Match(text, @"^(?<actor>.+)的大地图命令队列已经结束（(?<reason>[^）]+)）。$");
+		if (match.Success)
+		{
+			string localizedReason = LocalizeQueueEndReason(match.Groups["reason"].Value);
+			return WorldMapUiText.Result("AF_WM_DisplayQueueEnded", "{ACTOR}'s world-map command queue has ended ({REASON}).",
+				("ACTOR", match.Groups["actor"].Value), ("REASON", localizedReason));
+		}
+
+		match = Regex.Match(text, @"^(?<actor>.+)清剿(?<target>.+)(?<outcome>成功|失败|未完成)：(?<detail>.*)$");
+		if (match.Success)
+		{
+			string outcomeStr = match.Groups["outcome"].Value;
+			string localizedOutcome = outcomeStr == "成功"
+				? WorldMapUiText.Result("AF_WM_DisplayOutcomeSucceeded", "succeeded")
+				: outcomeStr == "失败"
+					? WorldMapUiText.Result("AF_WM_DisplayOutcomeFailed", "failed")
+					: WorldMapUiText.Result("AF_WM_DisplayOutcomeIncomplete", "incomplete");
+			string localizedDetail = LocalizeAttackDetail(match.Groups["detail"].Value);
+			return WorldMapUiText.Result("AF_WM_DisplayHideoutOutcome", "{ACTOR} hideout clear against {TARGET} {OUTCOME}: {DETAIL}",
+				("ACTOR", match.Groups["actor"].Value), ("TARGET", match.Groups["target"].Value), ("OUTCOME", localizedOutcome), ("DETAIL", localizedDetail));
+		}
+
+		match = Regex.Match(text, @"^(?<actor>.+)成功烧掠(?<target>.+)：(?<detail>.*)$");
+		if (match.Success)
+		{
+			string localizedDetail = LocalizeAttackDetail(match.Groups["detail"].Value);
+			return WorldMapUiText.Result("AF_WM_DisplayRaidSuccess", "{ACTOR} successfully raided {TARGET}: {DETAIL}",
+				("ACTOR", match.Groups["actor"].Value), ("TARGET", match.Groups["target"].Value), ("DETAIL", localizedDetail));
+		}
+
+		match = Regex.Match(text, @"^(?<actor>.+)烧掠(?<target>.+)失败：(?<detail>.*)$");
+		if (match.Success)
+		{
+			string localizedDetail = LocalizeAttackDetail(match.Groups["detail"].Value);
+			return WorldMapUiText.Result("AF_WM_DisplayRaidFailed", "{ACTOR} raid on {TARGET} failed: {DETAIL}",
+				("ACTOR", match.Groups["actor"].Value), ("TARGET", match.Groups["target"].Value), ("DETAIL", localizedDetail));
+		}
+
+		match = Regex.Match(text, @"^(?<actor>.+)对(?<target>.+)的烧掠未能完成：(?<detail>.*)$");
+		if (match.Success)
+		{
+			string localizedDetail = LocalizeAttackDetail(match.Groups["detail"].Value);
+			return WorldMapUiText.Result("AF_WM_DisplayRaidIncomplete", "{ACTOR}'s raid on {TARGET} was incomplete: {DETAIL}",
+				("ACTOR", match.Groups["actor"].Value), ("TARGET", match.Groups["target"].Value), ("DETAIL", localizedDetail));
+		}
+
+		match = Regex.Match(text, @"^(?<actor>.+)围攻(?<target>.+)成功：(?<detail>.*)$");
+		if (match.Success)
+		{
+			string localizedDetail = LocalizeAttackDetail(match.Groups["detail"].Value);
+			return WorldMapUiText.Result("AF_WM_DisplaySiegeSuccess", "{ACTOR} successfully besieged {TARGET}: {DETAIL}",
+				("ACTOR", match.Groups["actor"].Value), ("TARGET", match.Groups["target"].Value), ("DETAIL", localizedDetail));
+		}
+
+		match = Regex.Match(text, @"^(?<actor>.+)围攻(?<target>.+)失败：(?<detail>.*)$");
+		if (match.Success)
+		{
+			string localizedDetail = LocalizeAttackDetail(match.Groups["detail"].Value);
+			return WorldMapUiText.Result("AF_WM_DisplaySiegeFailed", "{ACTOR} siege of {TARGET} failed: {DETAIL}",
+				("ACTOR", match.Groups["actor"].Value), ("TARGET", match.Groups["target"].Value), ("DETAIL", localizedDetail));
+		}
+
+		match = Regex.Match(text, @"^(?<actor>.+)对(?<target>.+)的围攻未能完成：(?<detail>.*)$");
+		if (match.Success)
+		{
+			string localizedDetail = LocalizeAttackDetail(match.Groups["detail"].Value);
+			return WorldMapUiText.Result("AF_WM_DisplaySiegeIncomplete", "{ACTOR}'s siege of {TARGET} was incomplete: {DETAIL}",
+				("ACTOR", match.Groups["actor"].Value), ("TARGET", match.Groups["target"].Value), ("DETAIL", localizedDetail));
+		}
+
+		match = Regex.Match(text, @"^(?<actor>.+)对(?<target>.+)的攻击成功：(?<detail>.*)$");
+		if (match.Success)
+		{
+			string localizedDetail = LocalizeAttackDetail(match.Groups["detail"].Value);
+			return WorldMapUiText.Result("AF_WM_DisplayAttackSuccess", "{ACTOR}'s attack on {TARGET} succeeded: {DETAIL}",
+				("ACTOR", match.Groups["actor"].Value), ("TARGET", match.Groups["target"].Value), ("DETAIL", localizedDetail));
+		}
+
+		match = Regex.Match(text, @"^(?<actor>.+)对(?<target>.+)的攻击失败：(?<detail>.*)$");
+		if (match.Success)
+		{
+			string localizedDetail = LocalizeAttackDetail(match.Groups["detail"].Value);
+			return WorldMapUiText.Result("AF_WM_DisplayAttackFailed", "{ACTOR}'s attack on {TARGET} failed: {DETAIL}",
+				("ACTOR", match.Groups["actor"].Value), ("TARGET", match.Groups["target"].Value), ("DETAIL", localizedDetail));
+		}
+
+		match = Regex.Match(text, @"^(?<actor>.+)对(?<target>.+)的攻击未能完成：(?<detail>.*)$");
+		if (match.Success)
+		{
+			string localizedDetail = LocalizeAttackDetail(match.Groups["detail"].Value);
+			return WorldMapUiText.Result("AF_WM_DisplayAttackIncomplete", "{ACTOR}'s attack on {TARGET} was incomplete: {DETAIL}",
+				("ACTOR", match.Groups["actor"].Value), ("TARGET", match.Groups["target"].Value), ("DETAIL", localizedDetail));
+		}
+
+		match = Regex.Match(text, @"^(?<hero>.+)当前躲在(?<shelter>.+)内，(?<actor>.+)正在城外等待其离开，以继续攻击命令。$");
+		if (match.Success)
+		{
+			return WorldMapUiText.Result("AF_WM_DisplayWaitingHeroShelter", "{HERO} is inside {SHELTER}; {ACTOR} is waiting outside for departure to attack.",
+				("HERO", match.Groups["hero"].Value), ("SHELTER", match.Groups["shelter"].Value), ("ACTOR", match.Groups["actor"].Value));
+		}
+
+		match = Regex.Match(text, @"^(?<party>.+)当前在(?<shelter>.+)内，(?<actor>.+)正在外侧等待其离开，以继续攻击命令。$");
+		if (match.Success)
+		{
+			return WorldMapUiText.Result("AF_WM_DisplayWaitingPartyShelter", "{PARTY} is inside {SHELTER}; {ACTOR} is waiting outside for departure to attack.",
+				("PARTY", match.Groups["party"].Value), ("SHELTER", match.Groups["shelter"].Value), ("ACTOR", match.Groups["actor"].Value));
+		}
+
+		match = Regex.Match(text, @"^(?<actor>.+)已经开始烧掠(?<settlement>.+)，结果尚未分出。$");
+		if (match.Success)
+		{
+			return WorldMapUiText.Result("AF_WM_DisplayRaidStartedUnderway", "{ACTOR} began raiding {SETTLEMENT}; battle underway.",
+				("ACTOR", match.Groups["actor"].Value), ("SETTLEMENT", match.Groups["settlement"].Value));
+		}
+
+		match = Regex.Match(text, @"^(?<actor>.+)已经开始围攻(?<settlement>.+)，结果尚未分出。$");
+		if (match.Success)
+		{
+			return WorldMapUiText.Result("AF_WM_DisplaySiegeStartedUnderway", "{ACTOR} began besieging {SETTLEMENT}; siege underway.",
+				("ACTOR", match.Groups["actor"].Value), ("SETTLEMENT", match.Groups["settlement"].Value));
+		}
+
+		match = Regex.Match(text, @"^(?<actor>.+)已经对(?<target>.+)的部队发起攻击，结果尚未分出。$");
+		if (match.Success)
+		{
+			return WorldMapUiText.Result("AF_WM_DisplayAttackHeroStartedUnderway", "{ACTOR} attacked {TARGET}'s party; battle underway.",
+				("ACTOR", match.Groups["actor"].Value), ("TARGET", match.Groups["target"].Value));
+		}
+
+		match = Regex.Match(text, @"^(?<actor>.+)已经对(?<target>.+)发起攻击，结果尚未分出。$");
+		if (match.Success)
+		{
+			return WorldMapUiText.Result("AF_WM_DisplayAttackPartyStartedUnderway", "{ACTOR} attacked {TARGET}; battle underway.",
+				("ACTOR", match.Groups["actor"].Value), ("TARGET", match.Groups["target"].Value));
+		}
+
+		match = Regex.Match(text, @"^(?<actor>.+)已经抵达(?<settlement>.+)并开始停留。$");
+		if (match.Success)
+		{
+			return WorldMapUiText.Result("AF_WM_DisplayArrivedSettlementHolding", "{ACTOR} arrived at {SETTLEMENT} and is holding position.",
+				("ACTOR", match.Groups["actor"].Value), ("SETTLEMENT", match.Groups["settlement"].Value));
+		}
+
+		match = Regex.Match(text, @"^(?<actor>.+)已经抵达(?<settlement>.+)附近并开始巡逻。$");
+		if (match.Success)
+		{
+			return WorldMapUiText.Result("AF_WM_DisplayArrivedSettlementPatrolling", "{ACTOR} arrived near {SETTLEMENT} and began patrolling.",
+				("ACTOR", match.Groups["actor"].Value), ("SETTLEMENT", match.Groups["settlement"].Value));
+		}
+
+		match = Regex.Match(text, @"^(?<actor>.+)已经追上并开始跟随(?<target>.+)。$");
+		if (match.Success)
+		{
+			return WorldMapUiText.Result("AF_WM_DisplayFollowStartedUnderway", "{ACTOR} caught up and is following {TARGET}.",
+				("ACTOR", match.Groups["actor"].Value), ("TARGET", match.Groups["target"].Value));
+		}
+
+		match = Regex.Match(text, @"^(?<actor>.+)已经随(?<target>.+)加入对(?<settlement>.+)的围攻。$");
+		if (match.Success)
+		{
+			return WorldMapUiText.Result("AF_WM_DisplayFollowJoinedSiege", "{ACTOR} accompanied {TARGET} and joined the siege of {SETTLEMENT}.",
+				("ACTOR", match.Groups["actor"].Value), ("TARGET", match.Groups["target"].Value), ("SETTLEMENT", match.Groups["settlement"].Value));
+		}
+
+		match = Regex.Match(text, @"^(?<actor>.+)放弃(?<reason>.+)，改为执行新的大地图命令。$");
+		if (match.Success)
+		{
+			return WorldMapUiText.Result("AF_WM_DisplayAbandonedForNewCommand", "{ACTOR} abandoned {REASON} and switched to the new world-map command.",
+				("ACTOR", match.Groups["actor"].Value), ("REASON", LocalizePreemptReason(match.Groups["reason"].Value)));
+		}
+
+		match = Regex.Match(text, @"^(?<hero>.+)已结束对(?<settlement>.+)的攻击。$");
+		if (match.Success)
+		{
+			return WorldMapUiText.Result("AF_WM_DisplaySettlementAttackFinished", "{HERO} ended the assault on {SETTLEMENT}.",
+				("HERO", match.Groups["hero"].Value), ("SETTLEMENT", match.Groups["settlement"].Value));
+		}
+
+		string localizedDirect = LocalizeAttackDetail(text);
+		if (localizedDirect != text)
+		{
+			return localizedDirect;
+		}
+
+		return text;
+	}
+
+	private static string LocalizeAttackDetail(string detail)
+	{
+		string d = (detail ?? "").Trim();
+		if (d.EndsWith("。")) d = d.Substring(0, d.Length - 1).Trim();
+
+		if (d == "玩家家族不存在，无法执行叛乱攻击")
+			return WorldMapUiText.Result("AF_WM_RebellionNoPlayerClan", "Player clan does not exist; cannot execute rebellion attack.");
+		if (d == "只有玩家家族的同伴独立部队可以代表玩家执行叛乱攻击")
+			return WorldMapUiText.Result("AF_WM_RebellionOnlyPlayerCompanion", "Only independent companion parties of the player clan can execute rebellion attacks on the player's behalf.");
+		if (d == "执行者当前没有可控制的独立同伴部队，无法执行叛乱攻击")
+			return WorldMapUiText.Result("AF_WM_RebellionNoControllableParty", "The executor does not currently lead a controllable independent companion party; cannot execute rebellion attack.");
+		if (d == "执行者部队不属于玩家家族，无法触发玩家家族叛乱")
+			return WorldMapUiText.Result("AF_WM_RebellionNotPlayerClanParty", "The executing party does not belong to the player clan; cannot trigger player clan rebellion.");
+		if (d == "玩家家族当前不属于任何王国，不需要也无法执行带城叛乱")
+			return WorldMapUiText.Result("AF_WM_RebellionPlayerNotInKingdom", "The player clan does not belong to any kingdom; kingdom rebellion is unnecessary and cannot be executed.");
+		if (d == "目标不属于玩家当前王国，不能作为带城叛乱攻击的触发目标")
+			return WorldMapUiText.Result("AF_WM_RebellionTargetNotSameKingdom", "Target does not belong to the player's current kingdom and cannot trigger a rebellion attack.");
+		if (d == "玩家当前王国已经灭亡，无法执行带城叛乱")
+			return WorldMapUiText.Result("AF_WM_RebellionKingdomEliminated", "The player's kingdom has been eliminated; cannot execute kingdom rebellion.");
+		if (d == "玩家家族当前是雇佣兵关系，不能执行带城叛乱")
+			return WorldMapUiText.Result("AF_WM_RebellionMercenaryCannotRebel", "The player clan is currently under mercenary service and cannot execute kingdom rebellion.");
+		if (d == "玩家家族是当前王国统治家族，不能对自己的王国执行带城叛乱")
+			return WorldMapUiText.Result("AF_WM_RebellionRulingClanCannotRebel", "The player clan is the ruling clan and cannot execute rebellion against its own kingdom.");
+		if (d == "目标属于玩家家族，不能通过叛乱攻击自己的家族部队")
+			return WorldMapUiText.Result("AF_WM_RebellionTargetIsPlayerClanHero", "Target belongs to the player clan; cannot attack own clan forces through rebellion.");
+		if (d == "目标部队属于玩家家族，不能通过叛乱攻击自己的家族部队")
+			return WorldMapUiText.Result("AF_WM_RebellionTargetIsPlayerClanParty", "Target party belongs to the player clan; cannot attack own clan forces through rebellion.");
+		if (d == "目标定居点属于玩家家族，不能通过叛乱攻击自己的封地")
+			return WorldMapUiText.Result("AF_WM_RebellionTargetIsPlayerSettlement", "Target settlement belongs to the player clan; cannot attack own fiefs through rebellion.");
+
+		if (d == "目标和执行者位于同一支部队，无法发起攻击")
+			return WorldMapUiText.Result("AF_WM_AttackTargetSameParty", "Target and executor are in the same party; cannot initiate attack.");
+		if (d == "目标部队和执行者是同一支部队，无法发起攻击")
+			return WorldMapUiText.Result("AF_WM_AttackPartySameParty", "Target party and executor party are the same party; cannot initiate attack.");
+		if (d == "目标已经被击败、死亡或被俘")
+			return WorldMapUiText.Result("AF_WM_AttackTargetDefeatedDeadOrCaptured", "Target was defeated, killed, or captured.");
+		if (d == "目标已经死亡、被俘或失效")
+			return WorldMapUiText.Result("AF_WM_AttackTargetDeadCapturedOrInvalid", "Target is dead, captured, or invalid.");
+		if (d == "目标部队已经被击溃或解散")
+			return WorldMapUiText.Result("AF_WM_AttackTargetPartyDefeatedOrDisbanded", "Target party was defeated or disbanded.");
+		if (d == "目标当前没有可攻击的部队")
+			return WorldMapUiText.Result("AF_WM_AttackTargetNoAttackableParty", "Target has no attackable party.");
+		if (d == "目标部队已经失效或不在大地图上")
+			return WorldMapUiText.Result("AF_WM_AttackTargetPartyInvalidOrMissing", "Target party is invalid or no longer on the world map.");
+		if (d == "围城部队已经不再与执行者敌对，未继续攻击，也未重新宣战")
+			return WorldMapUiText.Result("AF_WM_AttackBesiegerNoLongerHostile", "The besieging party is no longer hostile; attack discontinued.");
+		if (d == "目标定居点已经失效或不是可攻击目标")
+			return WorldMapUiText.Result("AF_WM_AttackSettlementInvalid", "Target settlement is invalid or not an attackable target.");
+		if (d == "目标已经不可攻击")
+			return WorldMapUiText.Result("AF_WM_AttackTargetUnavailable", "Target is no longer attackable.");
+		if (d == "执行者已经失去可控制部队或被俘，命令失败")
+			return WorldMapUiText.Result("AF_WM_AttackActorLostPartyOrCaptured", "Executor lost controllable party or was captured; command failed.");
+		if (d == "目标已被达成")
+			return WorldMapUiText.Result("AF_WM_ResultTargetAchieved", "Target objective was achieved.");
+		if (d == "原版事件判定为失败")
+			return WorldMapUiText.Result("AF_WM_ResultNativeFailed", "Native event determined failure.");
+		if (d == "没有取得明确结果")
+			return WorldMapUiText.Result("AF_WM_ResultNoClearOutcome", "No definitive outcome was reached.");
+		if (d == "追踪目标未能接战，命令时限已到")
+			return WorldMapUiText.Result("AF_WM_TimeoutTrackExpired", "Time limit expired before tracking target could engage in battle.");
+		if (d == "攻击未能接战，命令时限已到")
+			return WorldMapUiText.Result("AF_WM_TimeoutAttackExpired", "Time limit expired before attack could engage in battle.");
+
+		Match match = Regex.Match(d, @"^(?<target>.+)仍在(?<shelter>.+)内，命令时限已到，未能接战$");
+		if (match.Success)
+		{
+			return WorldMapUiText.Result("AF_WM_TimeoutTargetInShelter", "{TARGET} remained inside {SHELTER}; time limit expired before battle could begin.",
+				("TARGET", match.Groups["target"].Value), ("SHELTER", match.Groups["shelter"].Value));
+		}
+
+		match = Regex.Match(d, @"^(?<settlement>.+)已经被占领$");
+		if (match.Success)
+		{
+			return WorldMapUiText.Result("AF_WM_ResultSettlementCaptured", "{SETTLEMENT} was captured.",
+				("SETTLEMENT", match.Groups["settlement"].Value));
+		}
+
+		if (d == "村庄已被洗劫")
+			return WorldMapUiText.Result("AF_WM_ResultVillageRaided", "The village was raided.");
+
+		return detail;
+	}
+
+	private static string LocalizeQueueEndReason(string reason)
+	{
+		string r = (reason ?? "").Trim();
+		if (r == "所有命令执行完毕") return WorldMapUiText.Result("AF_WM_ReasonQueueDone", "all commands completed");
+		if (r == "回队合并条件已失效") return WorldMapUiText.Result("AF_WM_ReasonMergeInvalid", "merge conditions no longer met");
+		if (r == "回队资产转入失败") return WorldMapUiText.Result("AF_WM_ReasonMergeTransferFailed", "troop transfer failed");
+		if (r == "原独立部队无法安全解散") return WorldMapUiText.Result("AF_WM_ReasonMergeDestroyFailed", "temporary party could not be safely disbanded");
+		if (r == "命令时限已到") return WorldMapUiText.Result("AF_WM_ReasonTimeout", "time limit expired");
+		if (r == "执行者失效") return WorldMapUiText.Result("AF_WM_ReasonActorInvalid", "executor invalid");
+		if (r == "目标失效或不可执行") return WorldMapUiText.Result("AF_WM_ReasonTargetInvalid", "target invalid or inexecutable");
+		if (r == "命令无效") return WorldMapUiText.Result("AF_WM_ReasonCommandInvalid", "command invalid");
+		return reason;
+	}
+
+	private static string LocalizeQueueEndTail(string tail)
+	{
+		string t = (tail ?? "").Trim();
+		if (t.EndsWith("。")) t = t.Substring(0, t.Length - 1).Trim();
+		if (t == "临时总督远征队开始返驻地交还兵员") return WorldMapUiText.Result("AF_WM_TailGovernorReturning", "governor expedition returning to return garrison troops.");
+		if (t == "临时总督远征已按当前游戏状态结束或交还原版 AI") return WorldMapUiText.Result("AF_WM_TailGovernorEnded", "governor expedition ended or returned to native AI.");
+		if (t == "回归原版行动状态") return WorldMapUiText.Result("AF_WM_TailNativeResumed", "resuming native behavior.");
+		return tail;
 	}
 
 	private static bool ContainsAny(string text, params string[] needles)

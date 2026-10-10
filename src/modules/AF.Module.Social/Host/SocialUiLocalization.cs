@@ -1,5 +1,6 @@
 using TaleWorlds.Localization;
 using System;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
 namespace AnimusForge;
@@ -72,7 +73,8 @@ internal static class SocialUiLocalization
 
 		if (prefixId == null)
 		{
-			return status;
+			string direct = TranslateRecruitmentDetail(status);
+			return direct != status ? direct : status;
 		}
 
 		string translatedDetail = TranslateRecruitmentDetail(detail);
@@ -108,16 +110,35 @@ internal static class SocialUiLocalization
 
 	private static string TranslateMarriageReason(string reason)
 	{
+		if (string.IsNullOrWhiteSpace(reason)) return string.Empty;
 		if (reason == "未找到婚配双方。") return Text("AF_SOCIAL_UI_MarriageReasonMissingPair", "The marriage pair could not be found.");
+		if (reason == "未找到离婚双方。") return Text("AF_SOCIAL_UI_MarriageReasonMissingDivorcePair", "The divorce pair could not be found.");
 		if (reason == "不能和自己结婚。" || reason == "不能让同一人与自己结婚。") return Text("AF_SOCIAL_UI_MarriageReasonSelf", "A character cannot marry themselves.");
 		if (reason == "双方已经存在有效婚姻记录。") return Text("AF_SOCIAL_UI_MarriageReasonAlreadyMarried", "The pair already has an active marriage record.");
 		if (reason == "正规联姻要求双方来自不同家族。") return Text("AF_SOCIAL_UI_MarriageReasonSameClan", "A formal marriage requires two different clans.");
 		if (reason == "未找到对方婚配对象。" || reason == "未找到对方婚配对象（targetHeroId）。") return Text("AF_SOCIAL_UI_MarriageReasonMissingTarget", "The target marriage partner could not be found.");
+		if (reason == "未找到目标对象（targetHeroId）。") return Text("AF_SOCIAL_UI_MarriageReasonMissingElopeTarget", "The target partner could not be found.");
+		if (reason == "未找到对方家族族长。") return Text("AF_SOCIAL_UI_MarriageReasonMissingTargetClanLeader", "The target clan leader could not be found.");
+		if (reason == "玩家方婚配人选必须来自玩家家族。") return Text("AF_SOCIAL_UI_MarriageReasonPlayerCandidateNotClan", "The player-side marriage candidate must belong to the player's clan.");
+		if (reason == "玩家方婚配人选当前不满足基础婚配条件。" || reason == "玩家方婚配人选不满足基础婚配条件。") return Text("AF_SOCIAL_UI_MarriageReasonPlayerNotEligible", "The player-side marriage candidate does not meet basic marriage requirements.");
+		if (reason == "对方婚配人选当前不满足基础婚配条件。" || reason == "对方婚配人选不满足基础婚配条件。") return Text("AF_SOCIAL_UI_MarriageReasonTargetNotEligible", "The target marriage candidate does not meet basic marriage requirements.");
+		if (reason == "双方年龄差超过当前设置允许范围。") return Text("AF_SOCIAL_UI_MarriageReasonAgeGapExceeded", "The age gap between both parties exceeds the allowed limit.");
+		if (reason == "无法确认双方年龄差是否满足婚配条件。") return Text("AF_SOCIAL_UI_MarriageReasonAgeGapUnverified", "Could not verify whether the age gap meets marriage requirements.");
 		if (reason == "未找到玩家家族婚配人选（playerClanHeroId）。") return Text("AF_SOCIAL_UI_MarriageReasonMissingPlayerCandidate", "The player-clan marriage candidate could not be found.");
+		if (reason == "未找到玩家家族离婚对象（playerClanHeroId）。") return Text("AF_SOCIAL_UI_MarriageReasonMissingDivorcePlayerCandidate", "The player-clan divorce candidate could not be found.");
+		if (reason == "未找到对方离婚对象（targetHeroId）。") return Text("AF_SOCIAL_UI_MarriageReasonMissingDivorceTarget", "The target divorce partner could not be found.");
 		if (reason == "目标没有家族，无法走家族联姻流程。") return Text("AF_SOCIAL_UI_MarriageReasonTargetNoClan", "The target has no clan and cannot use the clan marriage flow.");
 		if (reason == "未找到有效婚姻记录。") return Text("AF_SOCIAL_UI_MarriageReasonNoRecord", "No active marriage record was found.");
 		if (reason == "双方当前并非彼此配偶。") return Text("AF_SOCIAL_UI_MarriageReasonNotSpouses", "The pair are not currently spouses.");
 		if (reason == "未找到玩家英雄。") return Text("AF_SOCIAL_UI_MarriageReasonMissingPlayer", "The player hero could not be found.");
+		if (reason == "未找到双方家族信息。") return Text("AF_SOCIAL_UI_MarriageReasonMissingClans", "Clan information for both parties could not be found.");
+		if (reason == "玩家家族当前没有符合基础条件的可婚配成员。") return Text("AF_SOCIAL_UI_MarriageReasonNoPlayerEligibleMembers", "The player clan currently has no eligible members for marriage.");
+		if (reason.StartsWith("多配偶执行失败，", StringComparison.Ordinal))
+			return Format("AF_SOCIAL_UI_MarriageReasonMultiFailed", "Polygamy execution failed: {DETAIL}", ("DETAIL", reason.Substring("多配偶执行失败，".Length)));
+		if (reason.StartsWith("执行 MarriageAction 失败，", StringComparison.Ordinal))
+			return Format("AF_SOCIAL_UI_MarriageReasonActionFailed", "MarriageAction execution failed: {DETAIL}", ("DETAIL", reason.Substring("执行 MarriageAction 失败，".Length)));
+		if (reason.StartsWith("解除配偶关系时异常，", StringComparison.Ordinal))
+			return Format("AF_SOCIAL_UI_MarriageReasonDissolveException", "Error dissolving marriage: {DETAIL}", ("DETAIL", reason.Substring("解除配偶关系时异常，".Length)));
 		return reason;
 	}
 
@@ -135,13 +156,25 @@ internal static class SocialUiLocalization
 
 	private static string TranslateRecruitmentDetail(string detail)
 	{
+		if (string.IsNullOrWhiteSpace(detail))
+			return string.Empty;
+
+		if (detail.StartsWith("（异常）：", StringComparison.Ordinal))
+			return Format("AF_SOCIAL_UI_RecruitmentException", "Exception: {ERROR}", ("ERROR", detail.Substring("（异常）：".Length)));
+		if (detail.StartsWith("（加入玩家家族异常）：", StringComparison.Ordinal))
+			return Format("AF_SOCIAL_UI_RecruitmentJoinClanException", "Join player clan exception: {ERROR}", ("ERROR", detail.Substring("（加入玩家家族异常）：".Length)));
+		if (detail.StartsWith("（成为玩家同伴异常）：", StringComparison.Ordinal))
+			return Format("AF_SOCIAL_UI_RecruitmentBecomeCompanionException", "Become player companion exception: {ERROR}", ("ERROR", detail.Substring("（成为玩家同伴异常）：".Length)));
+
 		if (detail == "缺少要加入玩家家族的目标英雄。")
 			return Text("AF_SOCIAL_UI_RecruitmentMissingClanHero", "No target hero is available to join the player's clan.");
+		if (detail == "缺少要成为玩家同伴的目标英雄。")
+			return Text("AF_SOCIAL_UI_RecruitmentMissingCompanionHero", "No target hero is available to become a player companion.");
 		if (detail == "目标本来就是玩家本人。")
 			return Text("AF_SOCIAL_UI_RecruitmentAlreadyPlayer", "The target is already the player.");
-		if (detail == "玩家家族或玩家队伍不可用。")
+		if (detail == "玩家家族或玩家队伍不可用。" || detail == "玩家队伍或玩家家族不可用。")
 			return Text("AF_SOCIAL_UI_RecruitmentPlayerPartyUnavailable", "The player's clan or party is unavailable.");
-		if (detail == "缺少要加入队伍的非英雄NPC。")
+		if (detail == "缺少要加入队伍的非英雄NPC。" || detail == "缺少要加入队伍的非英雄 NPC。")
 			return Text("AF_SOCIAL_UI_RecruitmentMissingNonHero", "No non-hero NPC is available to join the party.");
 		if (detail == "目标是英雄，应走英雄入队链路。")
 			return Text("AF_SOCIAL_UI_RecruitmentTargetIsHero", "The target is a hero and must use the hero recruitment path.");
@@ -161,10 +194,18 @@ internal static class SocialUiLocalization
 			return Text("AF_SOCIAL_UI_RecruitmentLordJoinFailed", "The target hero could not be made a player-clan member or assigned to the main party.");
 		if (detail == "目标英雄未能完成同伴身份或玩家主队归属更新。")
 			return Text("AF_SOCIAL_UI_RecruitmentCompanionJoinFailed", "The target hero could not be made a companion or assigned to the main party.");
-		if (detail == "复制当前 NPC 外观失败（" || detail == "复制当前 NPC 装备失败（")
-			return detail;
 
-		Match match = Regex.Match(detail, "^(?<name>.+) 已经是玩家同伴并在玩家队伍中。$");
+		Match match = Regex.Match(detail, "^(?<clan>.+) 的族长继承未完成，已阻止将现任族长直接拉入队伍。$");
+		if (match.Success)
+			return Format("AF_SOCIAL_UI_RecruitmentClanSuccessionIncomplete", "Clan leader succession for {CLAN} is incomplete; recruiting the active ruler was prevented.", ("CLAN", match.Groups["clan"].Value));
+		match = Regex.Match(detail, "^复制当前 NPC 外观失败（(?<error>.*)），已取消升格。$");
+		if (match.Success)
+			return Format("AF_SOCIAL_UI_RecruitmentCopyAppearanceFailed", "Failed to copy current NPC appearance ({ERROR}); promotion cancelled.", ("ERROR", match.Groups["error"].Value));
+		match = Regex.Match(detail, "^复制当前 NPC 装备失败（(?<error>.*)），已取消升格。$");
+		if (match.Success)
+			return Format("AF_SOCIAL_UI_RecruitmentCopyEquipmentFailed", "Failed to copy current NPC equipment ({ERROR}); promotion cancelled.", ("ERROR", match.Groups["error"].Value));
+
+		match = Regex.Match(detail, "^(?<name>.+) 已经是玩家同伴并在玩家队伍中。$");
 		if (match.Success)
 			return Format("AF_SOCIAL_UI_RecruitmentAlreadyCompanion", "{NAME} is already a player companion in the main party.", ("NAME", match.Groups["name"].Value));
 		match = Regex.Match(detail, "^(?<name>.+) 已经是玩家家族成员并在玩家队伍中。$");
@@ -178,10 +219,80 @@ internal static class SocialUiLocalization
 			return Format("AF_SOCIAL_UI_RecruitmentTavernSoldiers", "{COUNT} {NAME} mercenaries joined the player's party as regular troops.", ("COUNT", match.Groups["count"].Value), ("NAME", match.Groups["name"].Value));
 		match = Regex.Match(detail, "^(?<name>.+) 已升格为玩家同伴“(?<hero>.+)”，并加入玩家队伍(?<follow>，当前场景中已开始跟随玩家)?。$");
 		if (match.Success)
-			return Format("AF_SOCIAL_UI_RecruitmentPromotedCompanion", "{NAME} was promoted to player companion \"{HERO}\" and joined the player's party{FOLLOW}.", ("NAME", match.Groups["name"].Value), ("HERO", match.Groups["hero"].Value), ("FOLLOW", match.Groups["follow"].Success ? " and is now following you in the scene" : ""));
+			return Format("AF_SOCIAL_UI_RecruitmentPromotedCompanion", "{NAME} was promoted to player companion \"{HERO}\" and joined the player's party{FOLLOW}.", ("NAME", match.Groups["name"].Value), ("HERO", match.Groups["hero"].Value), ("FOLLOW", match.Groups["follow"].Success ? Text("AF_SOCIAL_UI_RecruitmentFollowSuffix", " and is now following you in the scene") : ""));
 		match = Regex.Match(detail, "^(?<name>.+) 已升格为玩家家族 Hero“(?<hero>.+)”，并加入玩家队伍(?<follow>，当前场景中已开始跟随玩家)?。$");
 		if (match.Success)
-			return Format("AF_SOCIAL_UI_RecruitmentPromotedLord", "{NAME} was promoted to player-clan hero \"{HERO}\" and joined the player's party{FOLLOW}.", ("NAME", match.Groups["name"].Value), ("HERO", match.Groups["hero"].Value), ("FOLLOW", match.Groups["follow"].Success ? " and is now following you in the scene" : ""));
+			return Format("AF_SOCIAL_UI_RecruitmentPromotedLord", "{NAME} was promoted to player-clan hero \"{HERO}\" and joined the player's party{FOLLOW}.", ("NAME", match.Groups["name"].Value), ("HERO", match.Groups["hero"].Value), ("FOLLOW", match.Groups["follow"].Success ? Text("AF_SOCIAL_UI_RecruitmentFollowSuffix", " and is now following you in the scene") : ""));
+
+		match = Regex.Match(detail, "^(?<name>.+) 已成为玩家同伴，并加入玩家队伍(?<summary>（.+）)?。$");
+		if (match.Success)
+			return Format("AF_SOCIAL_UI_RecruitmentBecameCompanion", "{NAME} has become a player companion and joined the party{SUMMARY}.", ("NAME", match.Groups["name"].Value), ("SUMMARY", TranslateRecruitmentTransitionSummary(match.Groups["summary"].Value)));
+		match = Regex.Match(detail, "^(?<name>.+) 已成为玩家家族成员，并加入玩家队伍(?<summary>（.+）)?。$");
+		if (match.Success)
+			return Format("AF_SOCIAL_UI_RecruitmentBecameClanMember", "{NAME} has become a player-clan member and joined the party{SUMMARY}.", ("NAME", match.Groups["name"].Value), ("SUMMARY", TranslateRecruitmentTransitionSummary(match.Groups["summary"].Value)));
+		match = Regex.Match(detail, "^(?<name>.+) 已保留(?<role>配偶|玩家家族成员)身份，并加入玩家队伍(?<summary>（.+）)?。$");
+		if (match.Success)
+		{
+			string role = match.Groups["role"].Value == "配偶" ? Text("AF_SOCIAL_UI_RoleSpouse", "spouse") : Text("AF_SOCIAL_UI_RoleClanMember", "player-clan member");
+			return Format("AF_SOCIAL_UI_RecruitmentRetainedIdentity", "{NAME} retained {ROLE} status and joined the party{SUMMARY}.", ("NAME", match.Groups["name"].Value), ("ROLE", role), ("SUMMARY", TranslateRecruitmentTransitionSummary(match.Groups["summary"].Value)));
+		}
+
 		return detail;
+	}
+
+	private static string TranslateRecruitmentTransitionSummary(string rawSummary)
+	{
+		if (string.IsNullOrWhiteSpace(rawSummary))
+			return string.Empty;
+		string inner = rawSummary.Trim();
+		if (inner.StartsWith("（") && inner.EndsWith("）"))
+			inner = inner.Substring(1, inner.Length - 2);
+		else if (inner.StartsWith("(") && inner.EndsWith(")"))
+			inner = inner.Substring(1, inner.Length - 2);
+
+		string[] parts = inner.Split(new char[] { '；', ';' }, StringSplitOptions.RemoveEmptyEntries);
+		List<string> translatedParts = new List<string>();
+		foreach (string part in parts)
+		{
+			string p = part.Trim();
+			Match m = Regex.Match(p, "^已解除其在 (?<town>.+) 的总督职位$");
+			if (m.Success)
+			{
+				translatedParts.Add(Format("AF_SOCIAL_UI_NoteGovernorRemoved", "removed as governor of {TOWN}", ("TOWN", m.Groups["town"].Value)));
+				continue;
+			}
+			m = Regex.Match(p, "^(?<clan>.+) 已由 (?<hero>.+) 接任族长$");
+			if (m.Success)
+			{
+				translatedParts.Add(Format("AF_SOCIAL_UI_NoteClanLeaderSuccession", "{HERO} succeeded as leader of {CLAN}", ("HERO", m.Groups["hero"].Value), ("CLAN", m.Groups["clan"].Value)));
+				continue;
+			}
+			if (p.EndsWith("无可用继承人，已按原版族长死亡逻辑销毁原家族"))
+			{
+				string clan = p.Substring(0, p.Length - "无可用继承人，已按原版族长死亡逻辑销毁原家族".Length).Trim();
+				translatedParts.Add(Format("AF_SOCIAL_UI_NoteClanDestroyedNoHeir", "{CLAN} had no heirs and was disbanded", ("CLAN", clan)));
+				continue;
+			}
+			m = Regex.Match(p, "^(?<party>.+)已随目标英雄归并至玩家主队，没有额外成员或俘虏$");
+			if (m.Success)
+			{
+				translatedParts.Add(Format("AF_SOCIAL_UI_NotePartyMergedNoExtras", "{PARTY} merged into player party with no extra troops or prisoners", ("PARTY", m.Groups["party"].Value)));
+				continue;
+			}
+			m = Regex.Match(p, "^(?<party>.+)中的 (?<count>.+)已一并转入玩家主队$");
+			if (m.Success)
+			{
+				translatedParts.Add(Format("AF_SOCIAL_UI_NotePartyTransferred", "{COUNT} from {PARTY} transferred to player party", ("COUNT", m.Groups["count"].Value), ("PARTY", m.Groups["party"].Value)));
+				continue;
+			}
+			translatedParts.Add(p);
+		}
+		if (translatedParts.Count == 0)
+			return string.Empty;
+
+		string separator = Text("AF_SOCIAL_UI_SummarySeparator", "; ");
+		string open = Text("AF_SOCIAL_UI_SummaryOpen", " (");
+		string close = Text("AF_SOCIAL_UI_SummaryClose", ")");
+		return open + string.Join(separator, translatedParts) + close;
 	}
 }

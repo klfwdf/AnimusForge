@@ -52,5 +52,41 @@
     <string id="AF_SOCIAL_UI_MarriageBridePriceConsumed" text=" 已核销你先前主动交付给族长的彩礼 {AMOUNT} 第纳尔。" />
     <string id="AF_SOCIAL_UI_MarriageBridePricePaid" text=" 对方族长已向玩家支付彩礼 {AMOUNT} 第纳尔。" />
     <string id="AF_SOCIAL_UI_MarriageBridePriceRefunded" text=" 已返还彩礼 {AMOUNT} 第纳尔。" />
+    <string id="AF_SOCIAL_UI_RecruitmentFollowSuffix" text="，当前场景中已开始跟随玩家" />
+    <string id="AF_SOCIAL_UI_RecruitmentMissingCompanionHero" text="缺少要成为玩家同伴的目标英雄。" />
+    <string id="AF_SOCIAL_UI_RecruitmentClanSuccessionIncomplete" text="{CLAN} 的族长继承未完成，已阻止将现任族长直接拉入队伍。" />
+    <string id="AF_SOCIAL_UI_RecruitmentCopyAppearanceFailed" text="复制当前 NPC 外观失败（{ERROR}），已取消升格。" />
+    <string id="AF_SOCIAL_UI_RecruitmentCopyEquipmentFailed" text="复制当前 NPC 装备失败（{ERROR}），已取消升格。" />
+    <string id="AF_SOCIAL_UI_RecruitmentBecameCompanion" text="{NAME} 已成为玩家同伴，并加入玩家队伍{SUMMARY}。" />
+    <string id="AF_SOCIAL_UI_RecruitmentBecameClanMember" text="{NAME} 已成为玩家家族成员，并加入玩家队伍{SUMMARY}。" />
+    <string id="AF_SOCIAL_UI_RecruitmentRetainedIdentity" text="{NAME} 已保留{ROLE}身份，并加入玩家队伍{SUMMARY}。" />
+    <string id="AF_SOCIAL_UI_RoleSpouse" text="配偶" />
+    <string id="AF_SOCIAL_UI_RoleClanMember" text="玩家家族成员" />
+    <string id="AF_SOCIAL_UI_SummarySeparator" text="；" />
+    <string id="AF_SOCIAL_UI_SummaryOpen" text="（" />
+    <string id="AF_SOCIAL_UI_SummaryClose" text="）" />
+    <string id="AF_SOCIAL_UI_NoteGovernorRemoved" text="已解除其在 {TOWN} 的总督职位" />
+    <string id="AF_SOCIAL_UI_NoteClanLeaderSuccession" text="{CLAN} 已由 {HERO} 接任族长" />
+    <string id="AF_SOCIAL_UI_NoteClanDestroyedNoHeir" text="{CLAN} 无可用继承人，已按原版族长死亡逻辑销毁原家族" />
+    <string id="AF_SOCIAL_UI_NotePartyMergedNoExtras" text="{PARTY}已随目标英雄归并至玩家主队，没有额外成员或俘虏" />
+    <string id="AF_SOCIAL_UI_NotePartyTransferred" text="{PARTY}中的 {COUNT}已一并转入玩家主队" />
+    <string id="AF_SOCIAL_UI_RecruitmentException" text="异常：{ERROR}" />
+    <string id="AF_SOCIAL_UI_RecruitmentJoinClanException" text="加入玩家家族异常：{ERROR}" />
+    <string id="AF_SOCIAL_UI_RecruitmentBecomeCompanionException" text="成为玩家同伴异常：{ERROR}" />
+    <string id="AF_SOCIAL_UI_MarriageReasonMissingDivorcePair" text="未找到离婚双方。" />
+    <string id="AF_SOCIAL_UI_MarriageReasonMissingTargetClanLeader" text="未找到对方家族族长。" />
+    <string id="AF_SOCIAL_UI_MarriageReasonPlayerCandidateNotClan" text="玩家方婚配人选必须来自玩家家族。" />
+    <string id="AF_SOCIAL_UI_MarriageReasonPlayerNotEligible" text="玩家方婚配人选不满足基础婚配条件。" />
+    <string id="AF_SOCIAL_UI_MarriageReasonTargetNotEligible" text="对方婚配人选不满足基础婚配条件。" />
+    <string id="AF_SOCIAL_UI_MarriageReasonAgeGapExceeded" text="双方年龄差超过当前设置允许范围。" />
+    <string id="AF_SOCIAL_UI_MarriageReasonAgeGapUnverified" text="无法确认双方年龄差是否满足婚配条件。" />
+    <string id="AF_SOCIAL_UI_MarriageReasonMissingElopeTarget" text="未找到目标对象。" />
+    <string id="AF_SOCIAL_UI_MarriageReasonMissingDivorcePlayerCandidate" text="未找到玩家家族离婚对象。" />
+    <string id="AF_SOCIAL_UI_MarriageReasonMissingDivorceTarget" text="未找到对方离婚对象。" />
+    <string id="AF_SOCIAL_UI_MarriageReasonMissingClans" text="未找到双方家族信息。" />
+    <string id="AF_SOCIAL_UI_MarriageReasonNoPlayerEligibleMembers" text="玩家家族当前没有符合基础条件的可婚配成员。" />
+    <string id="AF_SOCIAL_UI_MarriageReasonMultiFailed" text="多配偶执行失败，{DETAIL}" />
+    <string id="AF_SOCIAL_UI_MarriageReasonActionFailed" text="执行 MarriageAction 失败，{DETAIL}" />
+    <string id="AF_SOCIAL_UI_MarriageReasonDissolveException" text="解除配偶关系时异常，{DETAIL}" />
   </strings>
 </base>
