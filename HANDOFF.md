@@ -1,5 +1,6 @@
 # 当前交接：全英文发行与 CN/EN 双包（2026-10-10，ACTIVE / NOT RELEASE READY）
 
+- 主线失败显示 `dfae5984d`：11入口/17对键，原诊断与dispatcher保持，静态/26对资源/既有双API DLL各12628次UI解析PASS；盘点7确认UI、1220待审（含6个重新登记的原诊断）。当前编译/实机仍NOT-RUN，下一片为玩家百科知名度标签与刷新去重。[切片证据](docs/handoffs/2026-10-10-localization-llm-failure-display.md)，[唯一主台账](docs/animusforge-refactoring-and-repository-reorganization-plan.md#full-english-release-20261010)。
 - 最新用户目标替代早期仅 UI 的范围：全部默认运行时文本与内容英文可用，完整保留中文原版；ZIP 名区分 `_CN` / `_EN`，包内原文件名、单模块及双 API 实现身份不变。
 - B/C 以仓库内第二轮交付报告为准；主线补 Weekly 注册 `7341afe55`。25 对资源契约通过，现有 1.3/1.4 本地化 DLL 各 39,992 次解析通过；不是当前产品编译/实机验收。
 - 最新外部分工：用户已把世界书交B；[C政策](docs/handoffs/2026-10-10-localization-package-c-policy.md)、[D外交/内战](docs/handoffs/2026-10-10-localization-package-d-diplomacy-civilwar.md)、[E经济/任务](docs/handoffs/2026-10-10-localization-package-e-economy-issue.md)等待交接。旧E世界书计划已替代；主线负责共享错误UI、Memory集成、Prompt/协议外置与双包验收，详见[总计划](docs/handoffs/2026-10-10-localization-cde-plan.md)。既有中文共享事实不得直接替换为英文。
