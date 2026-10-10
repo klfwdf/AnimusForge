@@ -45,14 +45,14 @@ internal static class WorldDiplomacyPlayerApplication
     {
         if (command == null || orchestration == null || command.Generation != world.Player.Generation) return "";
         if (!command.IsReply) return SubmitPlayerDocument(world, command.Body, orchestration);
-        // Resolve the original identities at submission; never retain a record in a UI callback.
+        // Resolve advisory context at submission, without requiring its old round
+        // to exist or treating the button as a separate response mechanism.
         WorldDiplomacyDocument source = world.ResolveDocument(command.SourceDocumentId);
-        WorldDiplomacyRound round = world.ResolveRound(command.RoundId);
-        if (source == null || round == null || !string.Equals(source.RoundId, round.RoundId, StringComparison.Ordinal)) return "";
-        return SubmitPlayerReply(world, command.Body, source, round, orchestration);
+        if (source == null) return "原公文已不可用，请重新打开撰写界面。";
+        return SubmitPlayerDocument(world, command.Body, orchestration, source);
     }
     internal static string SubmitPlayerDocument(IWorldDiplomacyPlayerWorld world, string body,
-        IWorldDiplomacyOrchestration orchestration)
+        IWorldDiplomacyOrchestration orchestration, WorldDiplomacyDocument sourceDocument = null)
     {
         string cleanBody = WorldDiplomacyTextRules.NormalizeBody(body);
         if (string.IsNullOrWhiteSpace(cleanBody))
@@ -76,6 +76,7 @@ internal static class WorldDiplomacyPlayerApplication
             isResponse: false,
             exchangeId: round?.RoundId ?? "");
         document.RoundId = round?.RoundId ?? "";
+        document.SourceDocumentId = sourceDocument?.DocumentId ?? "";
         WorldDiplomacyResultSettlementSlot playerSettlementSlot = round?.ResultSettlementPending == true
             ? WorldDiplomacyRoundLifecycleRules.SelectWaitingPlayerSettlementSlot(
                 round.ResultSettlementSlots, round.ResultSettlementCurrentSlotId, playerKingdom)
@@ -94,46 +95,5 @@ internal static class WorldDiplomacyPlayerApplication
         orchestration.PublishPlayerAuthoredDocumentImmediately(document);
         orchestration.EnqueueAnalysisJob(document, priority: 100);
         return "外交宣言已经公开发布；系统正在后台解析其对象、诉求与外交动作。";
-    }
-    internal static string SubmitPlayerReply(IWorldDiplomacyPlayerWorld world, string body,
-        WorldDiplomacyDocument sourceDocument, WorldDiplomacyRound round,
-        IWorldDiplomacyOrchestration orchestration)
-    {
-        WorldDiplomacyPlayerContext context = world.Player;
-        string cleanBody = WorldDiplomacyTextRules.NormalizeBody(body);
-        if (string.IsNullOrWhiteSpace(cleanBody)) return "外交回应正文不能为空。";
-        if (!context.IsRuler) return "你当前不再是王国统治者，外交回应没有发布。";
-        string player = context.KingdomId;
-        string target = world.KingdomExists(sourceDocument.AuthorKingdomId) ? sourceDocument.AuthorKingdomId : null;
-        if (player == null || target == null) return "";
-        if (!WorldDiplomacyRoundLifecycleRules.IsActiveRoundState(round.State))
-        {
-            string previousRoundId = round.RoundId;
-            round = orchestration.EnsureActiveRound(player, target, isPlayerInsertion: true);
-            if (round != null) round.ExternalOpeningContext = "玩家回应独立成案；原事件=" + previousRoundId
-                + "；背景公文=" + sourceDocument.DocumentId + "。原事件已结束，旧提案不因此恢复有效。";
-        }
-        if (round == null) return "外交回应暂未发布：无法建立交涉回合。";
-        WorldDiplomacyDocument response = orchestration.CreateDocument(
-            player,
-            target,
-            "外交回应",
-            cleanBody,
-            "player_response",
-            isPlayerAuthored: true,
-            isResponse: true,
-            exchangeId: round.RoundId);
-        response.RoundId = round.RoundId;
-        response.SourceDocumentId = sourceDocument.DocumentId;
-        response.AutomaticReplyDepth = Math.Max(1, sourceDocument.AutomaticReplyDepth + 1);
-        round.RootDocumentId = WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(round.RootDocumentId, response.DocumentId);
-        orchestration.AddDocument(response);
-        WorldDiplomacyRoundParticipant participant = WorldDiplomacyStructureRules.EnsureRoundParticipant(round, player, "active", mandatoryReply: false);
-        participant.MandatoryReplyPending = false;
-        participant.LastTriggeredDocumentId = sourceDocument.DocumentId;
-        round.LastActivityDay = world.CurrentDay();
-        orchestration.PublishPlayerAuthoredDocumentImmediately(response);
-        orchestration.EnqueueAnalysisJob(response, priority: 100);
-        return "外交回应已经公开发布；系统正在后台解析其诉求与外交动作。";
     }
 }

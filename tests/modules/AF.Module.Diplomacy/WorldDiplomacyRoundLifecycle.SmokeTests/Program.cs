@@ -144,6 +144,7 @@ internal static class Program
         LlmDispatchApplicationReplay.Run();
         CompletionApplicationReplay.Run();
         Dpl090PresentationReplay.Run();
+        ReplyShortcutReplay.Run();
         ProactiveDiscussionApplicationReplay.Run();
         Dpl080PromptReplay.Run();
         VerifyReconcileAfterLoadDecisionTable();
@@ -295,6 +296,7 @@ RunRepairCorrectionAndJobDecisionTests();
         AnalysisApplicationReplay.Run();
         PlayerSemanticReplay.Run();
         PeaceAdmissionReplay.Run();
+        PeaceProposalReplay.Run();
         PersistenceSyncReplay.Run();
         VerifySourceBoundary();
         Console.WriteLine($"World diplomacy round lifecycle smoke tests passed: {Test.Assertions} assertions.");

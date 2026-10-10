@@ -1952,39 +1952,39 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 	[SettingPropertyGroup("7. 火山引擎 TTS（专用）")]
 	public bool EnableTtsSpeech { get; set; } = true;
 
-	[SettingPropertyBool("启用火山专用模式", Order = 1, RequireRestart = false, HintText = "开启后，TTS 请求将走火山 V1 HTTP 非流式原生协议（Authorization: Bearer;token + app/user/audio/request 结构）。")]
+	[SettingPropertyBool("启用火山专用模式", Order = 1, RequireRestart = false, HintText = "按 API 地址选择 V1 或 V3 HTTP 单向流式接口；均收齐音频后播放，旧配置不自动迁移。")]
 	[SettingPropertyGroup("7. 火山引擎 TTS（专用）")]
 	public bool TtsVolcDedicatedEnabled { get; set; } = false;
 
-	[SettingPropertyText("火山专用 API 地址", -1, true, "", Order = 2, RequireRestart = false, HintText = "V1 非流式地址: https://openspeech.bytedance.com/api/v1/tts")]
+	[SettingPropertyText("火山专用 API 地址", -1, true, "", Order = 2, RequireRestart = false, HintText = "V1: https://openspeech.bytedance.com/api/v1/tts；V3: https://openspeech.bytedance.com/api/v3/tts/unidirectional（非 SSE/WS）。")]
 	[SettingPropertyGroup("7. 火山引擎 TTS（专用）")]
 	public string TtsVolcDedicatedApiUrl { get; set; } = "https://openspeech.bytedance.com/api/v1/tts";
 
-	[SettingPropertyText("火山专用 Token (Authorization Bearer)", -1, true, "", Order = 3, RequireRestart = false, HintText = "请求头将按文档写入：Authorization: Bearer;{token}")]
+	[SettingPropertyText("火山专用 Token / API Key", -1, true, "", Order = 3, RequireRestart = false, HintText = "V1 填旧 Token（Bearer;token）；V3 填新控制台 API Key（X-Api-Key），不可直接复用旧 Token。")]
 	[SettingPropertyGroup("7. 火山引擎 TTS（专用）")]
 	public string TtsVolcDedicatedApiKey { get; set; } = "";
 
-	[SettingPropertyText("火山专用 AppID", -1, true, "", Order = 4, RequireRestart = false, HintText = "即 V1 请求体 app.appid。")]
+	[SettingPropertyText("火山专用 AppID", -1, true, "", Order = 4, RequireRestart = false, HintText = "V1 必填 app.appid；V3 API Key 模式不使用，可留空；切换协议不会清除旧值。")]
 	[SettingPropertyGroup("7. 火山引擎 TTS（专用）")]
 	public string TtsVolcDedicatedAppKey { get; set; } = "";
 
-	[SettingPropertyText("火山专用 Resource ID", -1, true, "", Order = 5, RequireRestart = false, HintText = "写入请求头 X-Api-Resource-Id。\n可填：seed-tts-1.0 / seed-tts-1.0-concurr / seed-tts-2.0 / seed-icl-1.0 / seed-icl-1.0-concurr / seed-icl-2.0")]
+	[SettingPropertyText("火山专用 Resource ID", -1, true, "", Order = 5, RequireRestart = false, HintText = "写入请求头 X-Api-Resource-Id。\n须匹配已开通资源与音色；2.0 合成音色使用 V3。可填：seed-tts-1.0 / seed-tts-1.0-concurr / seed-tts-2.0 / seed-icl-1.0 / seed-icl-1.0-concurr / seed-icl-2.0")]
 	[SettingPropertyGroup("7. 火山引擎 TTS（专用）")]
 	public string TtsVolcDedicatedResourceId { get; set; } = "";
 
-	[SettingPropertyText("火山专用 voice_type", -1, true, "", Order = 6, RequireRestart = false, HintText = "示例: zh_male_M392_conversation_wvae_bigtts")]
+	[SettingPropertyText("火山专用音色 ID", -1, true, "", Order = 6, RequireRestart = false, HintText = "V1 对应 voice_type，V3 对应 speaker；必须与 Resource ID 和账号授权匹配，旧音色不自动替换。")]
 	[SettingPropertyGroup("7. 火山引擎 TTS（专用）")]
 	public string TtsVolcDedicatedSpeaker { get; set; } = "";
 
-	[SettingPropertyText("火山专用 extra_param(JSON对象)", -1, true, "", Order = 7, RequireRestart = false, HintText = "将原样写入 request.extra_param（字符串）。示例：{\"disable_markdown_filter\":true}")]
+	[SettingPropertyText("火山专用附加参数(JSON对象)", -1, true, "", Order = 7, RequireRestart = false, HintText = "V1 写入 request.extra_param，V3 写入 req_params.additions，均为 JSON 字符串。使用对应接口支持的参数。")]
 	[SettingPropertyGroup("7. 火山引擎 TTS（专用）")]
 	public string TtsVolcDedicatedAdditionsJson { get; set; } = "{}";
 
-	[SettingPropertyText("火山专用音频格式", -1, true, "", Order = 8, RequireRestart = false, HintText = "V1 encoding，当前播放器仅支持 wav 或 pcm。")]
+	[SettingPropertyText("火山专用音频格式", -1, true, "", Order = 8, RequireRestart = false, HintText = "仅支持 wav 或 pcm；V1 原样请求，V3 固定收 PCM 后按本项封装，保持现有播放器。")]
 	[SettingPropertyGroup("7. 火山引擎 TTS（专用）")]
 	public string TtsVolcDedicatedAudioFormat { get; set; } = "wav";
 
-	[SettingPropertyInteger("火山专用采样率", 8000, 24000, "0", Order = 9, RequireRestart = false, HintText = "V1 rate 建议填 8000 / 16000 / 24000。")]
+	[SettingPropertyInteger("火山专用采样率", 8000, 24000, "0", Order = 9, RequireRestart = false, HintText = "建议 8000 / 16000 / 24000；V3 也支持 22050。V3 不接受任意整数采样率。")]
 	[SettingPropertyGroup("7. 火山引擎 TTS（专用）")]
 	public int TtsVolcDedicatedSampleRate { get; set; } = 24000;
 
@@ -1996,7 +1996,7 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 	[SettingPropertyGroup("7. 火山引擎 TTS（专用）")]
 	public bool TtsSceneUseWinmmAudible { get; set; } = true;
 
-	[SettingPropertyFloatingInteger("火山专用语速", 0.1f, 2f, "0.00", Order = 12, RequireRestart = false, HintText = "V1 speed_ratio，范围 [0.1, 2.0]。")]
+	[SettingPropertyFloatingInteger("火山专用语速", 0.1f, 2f, "0.00", Order = 12, RequireRestart = false, HintText = "V1 0.1–2.0 倍；V3 0.5–2.0 倍（1.0 为原速）。切换到 V3 时过低值会提示错误，不自动改写。")]
 	[SettingPropertyGroup("7. 火山引擎 TTS（专用）")]
 	public float TtsVolcDedicatedSpeed { get; set; } = 1f;
 
@@ -2004,7 +2004,7 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 	[SettingPropertyGroup("7. 火山引擎 TTS（专用）")]
 	public float TtsLipSyncSoundEventVolume { get; set; } = 0f;
 
-	[SettingPropertyButton("测试语音", -1, true, "", Content = "播放测试", Order = 14, RequireRestart = false, HintText = "使用火山 V1 原生参数测试固定文本「为您服务，旅行者！」")]
+	[SettingPropertyButton("测试语音", -1, true, "", Content = "播放测试", Order = 14, RequireRestart = false, HintText = "按当前 API 地址和凭据测试固定文本「为您服务，旅行者！」；真实合成可能计费。")]
 	[SettingPropertyGroup("7. 火山引擎 TTS（专用）")]
 	public Action TestTtsVolcDedicatedVoice { get; set; }
 
@@ -6714,7 +6714,11 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 				{
 					InformationManager.DisplayMessage(new InformationMessage("[TTS] 请先填写火山专用 API 地址。", Color.FromUint(4294901760u)));
 				}
-				else if (string.IsNullOrWhiteSpace(runtimeSettings.TtsVolcDedicatedAppKey))
+				else if (VolcTtsGateway.GetVersion(runtimeSettings.TtsVolcDedicatedApiUrl) == 0)
+				{
+					InformationManager.DisplayMessage(new InformationMessage("[TTS] " + VolcTtsGateway.DescribeError("tts_endpoint_unsupported"), Color.FromUint(4294901760u)));
+				}
+				else if (VolcTtsGateway.GetVersion(runtimeSettings.TtsVolcDedicatedApiUrl) == 1 && string.IsNullOrWhiteSpace(runtimeSettings.TtsVolcDedicatedAppKey))
 				{
 					InformationManager.DisplayMessage(new InformationMessage("[TTS] 请先填写火山专用 AppID。", Color.FromUint(4294901760u)));
 				}
@@ -6724,8 +6728,14 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 				}
 				else
 				{
-					InformationManager.DisplayMessage(new InformationMessage(string.Format("[TTS] 火山V1测试中... (API={0}, 场景通道={1}, 主语音音量={2:F2}, 语速={3:F2}, 口型链路音量={4:F2})", runtimeSettings.TtsVolcDedicatedApiUrl, runtimeSettings.TtsSceneUseWinmmAudible ? "winmm" : "口型链路", runtimeSettings.TtsVolcDedicatedVolume, runtimeSettings.TtsVolcDedicatedSpeed, runtimeSettings.TtsLipSyncSoundEventVolume), Color.FromUint(4294967040u)));
-					instance.SpeakTestAsync("为您服务，旅行者！", runtimeSettings.TtsVolcDedicatedSpeed);
+					if (instance.SpeakTestAsync("为您服务，旅行者！", runtimeSettings.TtsVolcDedicatedSpeed, TtsTestFeedback.ReportFailure))
+					{
+						InformationManager.DisplayMessage(new InformationMessage(string.Format("[TTS] 火山 V{0} 测试中... (场景通道={1}, 主语音音量={2:F2}, 语速={3:F2}, 口型链路音量={4:F2})", VolcTtsGateway.GetVersion(runtimeSettings.TtsVolcDedicatedApiUrl), runtimeSettings.TtsSceneUseWinmmAudible ? "winmm" : "口型链路", runtimeSettings.TtsVolcDedicatedVolume, runtimeSettings.TtsVolcDedicatedSpeed, runtimeSettings.TtsLipSyncSoundEventVolume), Color.FromUint(4294967040u)));
+					}
+					else
+					{
+						InformationManager.DisplayMessage(new InformationMessage("[TTS] 测试语音未入队：队列已满或引擎已停止，请稍后再试。", Color.FromUint(4294901760u)));
+					}
 				}
 			}
 			catch (Exception ex)

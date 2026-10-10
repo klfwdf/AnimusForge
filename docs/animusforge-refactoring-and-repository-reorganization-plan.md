@@ -18,6 +18,71 @@
 
 详细命令、输出和候选绑定集中在本地 `artifacts/tests/bulletin-switch-20261010/receipt.json`、`code-map.json`及其关联目录；核实的一基源码范围与实际消费者见[代码导航](architecture/af-framework-code-scope.md#bulletin-independent-publishing-toggle-20261010)。用户授权推送 `origin/main`，真实远端ref以同目录 `publication-receipt.json` 核验，不以本地commit或dry-run代替推送成功。未 Stage/部署/打包/启动游戏，实机开关、玩家配置/存档、真实模型仍未验。源码回滚使用产品 `9bba267e` 的 focused inverse，保留其他历史；没有游戏安装改动需要恢复。
 
+<a id="peace-proposal-admission-20261010"></a>
+## 玩家和平提案误拒绝修复（2026-10-10，OFFLINE_VERIFIED / LIVE_PENDING）
+
+- 用户授权修复 Logs (10).zip 中已解析却未执行的和平提案，并防止同类接线错误再现；不包含推送、部署、打包或修改玩家存档。工作区 E:/Mount-Blade-Bannerlord-AnimusForge-mod-main/main，基线 `75317d47cbb6b4830e64670805107455174d98d0`，开始时工作树干净。
+- 故障证据：03:41:07 解析返回 actions[0]=propose_peace、empire_s、零贡金/零期限/无割地；和平校验入口未传 SourceActionId，却使用已有提案身份检查，导致在条款检查之前误拒绝。保留已有声明传播、来源身份校验、按顺序执行和重复完成防护。
+- 范围/退出门：分离新提案条款校验与已有提案身份校验，接通逐动作预检和执行重验；明确显示具体条款拒绝原因；原日志、旧平面格式、多动作先后/不同条款、非法条件、重复完成回放通过；原统一双API/Bootstrap/Coup门禁通过。仅在分析完成和动作执行时运行，不加Tick扫描/反射/轮询，不改变存档键或动作身份。
+- 产品提交 `b28bb5d40`，检查点 `1a7afc5cb`；代码 owner 为 `WorldDiplomacyPeaceAdmissionApplication`、`WorldDiplomacyOrchestration.TryGetPlayerWorldStateIntentViolation` 和统一 `WorldDiplomacyDocumentExecutionApplication`，测试消费者为 `PeaceProposalReplay`。
+- 修复：新增提案直接校验当前动作的 `PeaceTerms`；只有接受已有提案才解析 `SourceDocumentId + SourceActionId`。逐动作执行前和实际效果前都重验条款；多动作按各自 ActionId/条款登记；拒绝消息带具体原因。未绕过战争、领地、统治者或贡金期限规则。
+- 验证：`WorldDiplomacyRoundLifecycle.SmokeTests` **4,209 assertions PASS**；同一故障回放在基线代码于 `artifacts/peace-proposal-admission-20261010/lifecycle-baseline.log` 复现失败，候选在 `lifecycle-final.log` 通过；官方 `build_single_module.ps1` 双实现 + Bootstrap + 双 Coup seam gate PASS（`build.log`）。保留既有编译警告。
+- 性能：只在分析完成/动作登记/动作执行边界运行，按当前有界动作列表处理；不新增 Tick 扫描、反射、轮询或后台游戏对象访问。未验证真实 Campaign、真实 LLM、实机 UI、旧存档和部署；未 Stage/部署/打包/推送。
+- [产品符号/一基范围/真实消费者](architecture/af-framework-code-scope.md#peace-proposal-admission-20261010)。旧拒绝宣言不自动重放；安装修复后需重新提交倡议。回滚只对 `b28bb5d40` 做 focused inverse。期间其他作者的回应入口publication文档提交保持不变。
+- 用户后续明确授权将本修复推送到 `origin/main`；推送前 fetch 确认远端 `c81c27b39` 为本地祖先，待发布仅本修复/回归及记录。推送结果以实际远端 ref 和 `artifacts/peace-proposal-admission-20261010/publication-receipt.json` 核验；本授权不包含部署或打包。
+
+<a id="diplomacy-reply-shortcut-20261010"></a>
+## 外交回应按钮与公告提交统一（2026-10-10，OFFLINE_VERIFIED / LIVE_PENDING）
+
+- 用户授权：送给玩家王国的外交公文保留回应入口，唯一玩家资格是本国统治者，封臣无权回应；按钮只是携带原公文上下文的撰写快捷入口，与王国公告使用同一发布/分析流程，不因按钮预先绑定原交涉或另开自动回应链。开发阶段无推送、部署、打包授权；用户随后明确要求“将这个修复推送吧”，仅增加本修复推送授权。
+- 发布核对：fetch后 `origin/main=bdf51ff48`，与本地无分叉，待推送原四个提交仅含本包代码、测试与文档，未包含日志/artifacts或其他本地专用文件。普通推送到 `https://github.com/klfwdf/AnimusForge.git` 的 `refs/heads/main`；实际成功/最终SHA以本地 `publication-receipt.json` 与远端ref核对，历史未推送记录描述的是开发完成时状态，不授权游戏部署。
+- 工作区 E:/Mount-Blade-Bannerlord-AnimusForge-mod-main，main，基线 bdf51ff4848050a1ff964b6e5cafaaea0373e76a，开始时工作树干净。保持右侧相关公文/左下角第三方消息筛选，外交动作和原案有效性由既有分析执行校验。
+- 检查点 `d5c35331c`，产品 `d612425e9`。`Detail.CanReply` 只检查 `player.IsRuler`，不再依赖强制待回应标记、回合状态/参与者或国家独立性。打开快捷入口保留 owner/generation 与原公文存在检查，提交重新检查君主资格；这些是失效界面/输入防护，不增加交涉资格限制。
+- 删除独立 `SubmitPlayerReply` 分支，两入口共用 `SubmitPlayerDocument` 的立即公开、一次分析及公告原有暂存回合；按钮只增加 `SourceDocumentId`。不预设原作者为动作目标、不增加自动回应深度、不提前清除原回应义务、不直接加入原交涉。分析 prompt 携带来源ID/原文及“仅作背景、以玩家正文为准”，实际归属/原案有效性继续由既有分析、语义绑定和动作执行决定；既有旧字段/存档键/程序集身份保持。
+- 性能：仅在打开公文/提交/构造分析请求时运行，不新增 Tick 扫描、轮询、反射或队列；保留既有缓存和分析调度。
+- 验证：真实生产 owner/application 回放 **4,170 PASS**，含君主/封臣、独立/臣属、进行中/结束/缺失旧回合、过期UI回合ID、两入口单篇公开/单次分析、原状态不被按钮结算、背景与正文语义边界；相关旧过期提案执行拒绝回放保持通过。最终 Debug **1.3.15.110062 / 1.4.6.115628 + Bootstrap**、双 Coup seam gate 全通过，各实现348既有警告/0错误。5处源码坐标记录提交/working-tree双模式通过。[代码范围与消费者](architecture/af-framework-code-scope.md#diplomacy-reply-shortcut-20261010)。
+- 保留失败：`WorldDiplomacyIntentBoundary.SmokeTests` 在当前候选和基线原测试/原受影响源均于同一 MODE=ANALYZE 枚举提取断言失败（actual=cancel_trade），标 PREEXISTING_FAIL，不调整枚举/oracle制造通过。首次默认构建误选 ignored artifacts 内1.5/.NET8快照的 System.*；本次用进程级 `DirectoryBuildTargetsPath` 临时指定现有net472引用并移除 CandidateAssemblyFiles 搜索，原统一脚本成功。只在本地证据目录保存验证targets，未改一键脚本、默认构建或全局环境。
+- 证据：`artifacts/diplomacy-reply-shortcut-20261010/receipt.json`（源码与三DLL SHA）、`lifecycle-final.log`、`build-final.log`、`intent-boundary.log`/`intent-baseline.log`、`code-map.json`；原失败日志保持。未实机点击、未真实AI调用、未验玩家存档/全仓、未Stage/部署/打包/推送。人工验收为君主打开截图对应提案有回应、封臣无回应，撰写新条件/接受/无关话题与公告同样只发布一篇；过期原案不能被点击恢复。回滚仅 focused inverse 产品 `d612425e9`。
+
+<a id="tts-test-feedback-20261010"></a>
+## 测试语音失败回执修补（2026-10-10，OFFLINE_VERIFIED / LIVE_PENDING）
+
+- 用户授权修补上一轮确认的“测试中后不显示失败原因”，按原方式核验后发布 main，不扩大功能。基线 `34276f57`，检查点 `78a995c`，产品 `77ca7886`；实际工作区 `G:/AFMOD/AF-FIX-PERSONA-20261009`。远端结果以 publication 收据/实际 main ref 为准。
+- 根因：测试请求未注册 Scene owner，已有场景失败订阅会拒绝该请求。现在测试 job 直接携带独立失败回执，共用原终态/取消守卫；不添加长期全局订阅、不伪装 Scene 请求。失败只排入专用 UI 队列，现有 application tick 每帧最多消费一条，空队列无分配；主线程显示前重验取消，避免 Stop 后迟到提示。队列满或引擎停止时立即显示“未入队”，不再误报“测试中”。
+- 保留原双参数 SpeakTestAsync 签名/测试 bypass；正常对话、V1/V3 协议、音色映射、音频播放/嘴型、存档与 Scene 消费者未改。删除旧按钮不判断入队结果的调用及仅日志提示丢弃路径；不加成功提示、重试、AI 分析或新设置。
+- 工程师自审：最终 diff/直接调用链、取消竞态、重复回执、主线程边界和常规对话隔离检查通过；清理搜索、diff --check 通过。[一基源码职责](architecture/af-framework-code-scope.md#tts-test-feedback-20261010)。
+- 验证：真实 TtsEngine/路由/按钮 delegate/TtsTestFeedback 源码回放 **61 PASS**（旧 51 项保留 + 10 项新回执行为），UI stub 拒绝后台线程直接显示；覆盖 V1/V3 失败、成功不误报、普通对话不串提示、队满、Stop 前后、重复点击/终态、回执抛异常不影响下一条。**8/8 mutation** 由行为断言拒绝。最终 Debug **1.3/1.4 + Bootstrap** 与双 Coup 门禁通过，两个主体各有 350 个既有警告、0 错误。
+- 玩家视角：修前红例为 V3 0.1 倍速被拒绝但仅显示测试中；修后同类失败经应用 tick 显示具体错误。已验证的是源码回放，**未进行游戏内点击/声音实测、付费请求、部署或全仓测试**。人工只需保存 V3 0.1 语速并点击测试，确认红色原因可见，再改回 1.0；正常声音和按取消不误报仍需实机确认。
+- 证据 `artifacts/tts-test-feedback-20261010/receipt.json`、`lifetime.log`、`mutations.log`、`build.log`；前次只读复现 `artifacts/tts-v3-review-20261010/`。回滚仅逆向 `77ca7886`，不覆盖其他成员提交。之前 V3 升级记录保持其历史状态，本条仅补齐测试回执缺口。
+
+<a id="volc-tts-v3-compat-20261010"></a>
+## 火山 TTS V3 兼容升级（2026-10-10，OFFLINE_VERIFIED / LIVE_PENDING）
+
+- 最新授权：沿原 TTS 玩法升级，完成差异审查/测试后发布 `main`；不部署游戏、不调用付费 API。本条只覆盖 TTS，其他任务和既有发布记录保留。实际工作区 `G:/AFMOD/AF-FIX-PERSONA-20261009`，起点 `83ba3879`，检查点 `7502b99d`，产品 `1b2fd919`，清理后最终源码 `0fe97a1a`。本条中的发布是授权/待执行动作，是否成功以远端 main ref 与本地 publication 收据为准。
+- 原行为：只支持 V1 `/api/v1/tts`、AppID + Token；碰到 V3 URL 直接拒绝；完整音频生成后按原 winmm / 场景口型通道播放。
+- 新行为：URL 明确选择协议，新增 `/api/v3/tts/unidirectional` 的新控制台 `X-Api-Key` 鉴权。一次请求、不做 V3→V1 回退或自动重试。V3 分块 JSON 按完整 JSON 对象解析，不按网络块/单行截断；完整 HTTP 响应后才返回音频，错误/取消/截断均不发布部分音频。云端固定请求 PCM；WAV 设置只在本地封装一次 RIFF，仍由原 `ParseAudioData` 解码。
+- 保留：全部设置键和默认值、旧 Token/AppID、音色映射和用户文件、存档、语音开关、队列/线程、Scene/Native 消费者、暂停/取消、声音/口型通道与原固定嘴型生成。V1 原请求体/头与自定义代理重定向行为保留；不自动替换资源/音色。V3 使用独立禁重定向 HttpClient，避免 API Key 随跳转发送。新增逻辑只在每次后台合成时执行，无新 Tick/轮询/外部进程。
+- 有意区别：V3 AppID 可空，旧 Token 不能直接当新 API Key；语速 0.5–2.0 倍映射到 `speech_rate`，超界报错而非修改旧值；V1 仍 0.1–2.0。V3 支持文档规定采样率；界面保留原 8000–24000 区间。30 秒覆盖接收完整响应，AF 客户端额外限制文本 64 KiB / 传输 32 MiB / PCM 16 MiB；这些不是火山配额。日志只写错误码、安全 LogID、文本长度，不写凭据/台词。旧无效 V3 拒绝分支和 V1-only 文案已替换，未保留新加但无人调用的单客户端构造器。
+- 依据：[火山官方 HTTP 单向流式文档](https://docs.volcengine.com/docs/DoubaoVoice/unidirectional-streaming-text-to-speech-http?lang=zh)；[字节官方请求样例](https://github.com/bytedance/agentkit-samples/blob/main/skills/byted-text-to-speech/scripts/text_to_speech.py)。接收 `code=0` 与 `20000000`；不把 SSE 样例的 `data:` 包装带入 HTTP Chunked 解析，也不凭空要求 `[DONE]`。正常 HTTP EOF 可完成；服务端若以合法 HTTP 截短语义而不返回错误，客户端不能单凭音频证明台词完整。
+- 一基源码职责、直接消费者与未覆盖边界见[代码地图](architecture/af-framework-code-scope.md#volc-tts-v3-compat-20261010)。证据：`artifacts/tts-v3-20261010/receipt.json`、`verify-final.ps1`、`build-final.log`、`replay-final.log`、`lifetime-final.log`、`mutations.log`。
+
+验证与顺序审查：
+
+| 检查 | 结果 / 边界 |
+| --- | --- |
+| 实际 1.4 候选 DLL + loopback HTTP | 7 组旧 V1 契约、29 项 V3 全通过；包含 UTF-8/JSON 分片、元数据帧、PCM/WAV、真实生产 WAV 解析器、鉴权头、参数映射、错误后丢弃部分音频、截断 HTTP、取消、30 秒 body 超时、大小上限与生产客户端 302 禁跳转；无真实火山调用 |
+| 当前完整 TtsEngine + 实际路由 + 测试按钮 delegate | 51 PASS；原 43 项均保留，新增 6 项按钮开关/配置检查、2 项 V3 接通/失败后队列恢复。网络/游戏/UI 为 fixture；Scene/Native 的 12 个消费方法/类型直接取当前 owner，方法体未改写 |
+| 定向负控 | 8/8 mutation 被行为断言拒绝，非编译失败充数；覆盖网络 token、发布时序、锁、取消、重复 terminal 与 Scene epoch |
+| 原统一构建脚本 | 最终 `0fe97a1a` Debug 双实现 1.3/1.4 + Bootstrap 成功，双 Coup seam gate 通过。存在既有编译警告，不声称全仓无警告 |
+| 工程师自审 | 对照 `83ba3879` 审查最终 diff/直接调用链；排除 UI 条件链落空与新旧客户端混用，保留旧 V1 正常/代理语义；无 VoiceMapper、Scene 消费者、存档、LLM/玩法代码变更；聚焦旧符号/冲突标记检查与 diff --check 通过 |
+| 玩家视角 | 实际按钮源码回放：关总开关、关专用模式、空 URL、错误 V3 协议、V1 缺 AppID 均不入队；V3 不填 AppID 能入队。语速/格式/资源失败经原请求失败事件回退，后台继续下一条。不是实机点击/音质/嘴型验收 |
+
+限制与后续：旧 `test_wiring.py` 仍依赖历史全仓 projection（绑定 WarStats 与本任务无关修改）；本轮未改历史 oracle 或弱化断言，也未把它计入通过。生命周期 runner 改为当前 TTS owner 的直接抽取并记录 hash。未执行真实凭据/额度/音色许可、.NET Framework 网络实机、真实声音/嘴型、存读档、全仓/Release 回归；未覆盖游戏。
+
+人工验收：先不改旧设置播放 V1；再填 V3 完整 URL + 新控制台 API Key + 已授权且匹配的 Resource ID/音色，AppID 可留空，语速先用 1.0/采样率 24000，保存后点测试；进入 Native 对话和场景喊话，分别验证两条发声路径、打断/切场景不会播出旧语音。切回 V1 时重新填其 Token/AppID，设置不会自动缓存两套凭据。测试有计费可能，须玩家自行确认。
+
+回滚仅对 `0fe97a1a`、`1b2fd919` 作逆向提交（按逆序），保留其他作者提交；不使用 hard reset。产物完整 SHA256 见本地 receipt，禁止拿源码通过冒充已安装版本。
+
 <a id="mcm-model-preset-continuation-20261009"></a>
 ## MCM 模型预设与快报战事修复接续（2026-10-09，DEPLOYED_MANAGED_FILES_VERIFIED / LIVE_PENDING）
 
