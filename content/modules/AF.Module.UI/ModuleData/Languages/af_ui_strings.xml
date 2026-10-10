@@ -2915,6 +2915,20 @@ Choose how to proceed:" />
   <string id="AF_MCM_Marriage_MaxAgeGap_Hint" text="Filters the family marriage candidate list. Default: 25." />
   <string id="AF_MCM_Marriage_OppositeGender" text="Opposite-gender-only marriage list (legacy compatibility)" />
   <string id="AF_MCM_Marriage_OppositeGender_Hint" text="Kept for legacy configuration compatibility; the current marriage system allows same-gender marriage. Default: off." />
+  <string id="AF_MCM_Prompt_Group" text="9. Prompt extensions" />
+  <string id="AF_MCM_Editor_Rebellion_Hint" text="Open the long-text editor to save the complete system prompt used to name newly founded kingdoms after rebellions. The built-in default may be shortened or rewritten." />
+  <string id="AF_MCM_Common_OpenManager" text="Open manager" />
+  <string id="AF_MCM_Policy_Group" text="16. Policy system" />
+  <string id="AF_MCM_Policy_EditPrompts_Title" text="Policy prompt manager" />
+  <string id="AF_MCM_Policy_EditPrompts_Hint" text="Edit player AI drafting, player-policy evaluation, NPC ruler policy, and the interpretation and evaluation requirements for currently available policy effects in one place." />
+  <string id="AF_MCM_Policy_ManageEffects_Title" text="Policy effect module manager" />
+  <string id="AF_MCM_Policy_ManageEffects_Hint" text="Choose which effect modules can be retrieved for player, local, NPC ruler, and vassal policies. Changes apply only to policies started after saving." />
+  <string id="AF_MCM_Policy_SettlementBalance_Title" text="Policy-related settlement caps" />
+  <string id="AF_MCM_Policy_AdjustLimits" text="Adjust caps and capacity" />
+  <string id="AF_MCM_Policy_SettlementBalance_Hint" text="Open a separate window to set town/castle prosperity, village hearths, town/castle/village militia, and shared town/castle granary capacity. Applies to all player and NPC settlements; no policy publication is required.\nThese are total caps, not daily gains. Each day uses the native plus policy net change: positive growth stops at the cap, while zero or negative change is unrestricted. Example: with a cap of 10000, 9999 plus 100 reaches 10000; an existing 12000 is not reduced, positive growth pauses, and negative change proceeds normally.\nOnly granary capacity is enabled by default; town and castle final capacity is 1000, without castle or building bonuses. The other six options are disabled by default. Prosperity food consumption is controlled separately by the Disable prosperity food consumption switch and remains native by default.\nEach option can be toggled independently and supports integer sliders and numeric input. Changes apply after saving; Cancel or Esc discards edits; restoring defaults still requires saving." />
+  <string id="AF_MCM_Policy_RecentActive_Title" text="Recent active domestic policies referenced by AI" />
+  <string id="AF_MCM_Policy_RecentActive_Hint" text="When evaluating player policies or generating NPC policies, the maximum number of the kingdom's latest active policies AI may reference. Reads newest to oldest regardless of publisher; default: 2. Used to detect duplicates, conflicts, and continuation; it is not a cap on policies that can take effect and does not change existing effects. 0 disables this reference set; fewer policies are not padded; ordinary dialogue is unaffected." />
+  <string id="AF_MCM_Policy_RelatedActive_Title" text="Related active world policies referenced by AI" />
+  <string id="AF_MCM_Policy_RelatedActive_Hint" text="In addition to the latest domestic policies above, the maximum number of active policies related to the current policy that AI may reference when evaluating player policies or generating NPC policies. Candidates come from all kingdoms, including the player's, and exclude policies already selected above; the most related are chosen with no minimum similarity threshold. Default: 3, so both sets reference at most 2 plus 3 = 5 policies; this is not a cap on policies that can take effect. 0 disables this set; insufficient candidates are not padded; ordinary dialogue and existing effects are unaffected." />
   </strings>
 </base>
-
