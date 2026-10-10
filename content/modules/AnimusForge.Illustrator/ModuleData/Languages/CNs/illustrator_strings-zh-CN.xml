@@ -271,5 +271,47 @@
   <string id="AF_ILL_UI_CARD_NOT_SAVED_OR_DISPLAYED" text="未能保存或显示图片" />
   <string id="AF_ILL_UI_SCENE_PROBE_LOADING" text="正在重建附近环境并采集完整全景..." />
   <string id="AF_ILL_UI_SCENE_PROBE_DISPLAY_FAILED" text="未能显示导出的预览" />
+    <string id="AF_ILL_UI_STATUS_CHRONICLE" text="纪事画卷" />
+    <string id="AF_ILL_UI_STATUS_THEME" text="主题：{THEME}" />
+    <string id="AF_ILL_UI_STATUS_STYLE_CHANGED" text="画风设置已更改；点击重新绘制后应用新画风。" />
+    <string id="AF_ILL_UI_STATUS_DIRECTOR_DISABLED" text="导演已关闭" />
+    <string id="AF_ILL_UI_STATUS_DIRECTOR_UNCONFIGURED" text="导演接口未配置" />
+    <string id="AF_ILL_UI_STATUS_DIRECTOR_CONSTRAINT" text="导演正文违反人物或装备约束" />
+    <string id="AF_ILL_UI_STATUS_DIRECTOR_NARRATIVE" text="导演正文未转成画面描述" />
+    <string id="AF_ILL_UI_STATUS_DIRECTOR_STRUCTURE" text="导演正文结构或构图不合要求" />
+    <string id="AF_ILL_UI_STATUS_DIRECTOR_EMPTY" text="导演正文缺少画面描述" />
+    <string id="AF_ILL_UI_STATUS_DIRECTOR_UNAVAILABLE" text="导演正文不可用" />
+    <string id="AF_ILL_UI_STATUS_VISION_PREFIX" text="导演不支持识图；" />
+    <string id="AF_ILL_UI_STATUS_LOCAL_FALLBACK" text="{REASON}，已使用本地构图" />
+    <string id="AF_ILL_UI_STATUS_SCENE_TERRAIN" text="野外对话：按地形事实构图（不截图）" />
+    <string id="AF_ILL_UI_STATUS_SCENE_DISABLED_SCREENSHOT" text="场景全景已关闭：使用当前画面截图" />
+    <string id="AF_ILL_UI_STATUS_SCENE_DISABLED_FACTS" text="场景全景已关闭：按文字事实构图" />
+    <string id="AF_ILL_UI_STATUS_SCENE_PANORAMA" text="任务场景：附近30米全景参考可用" />
+    <string id="AF_ILL_UI_STATUS_SCENE_PANORAMA_NO_SCREENSHOT" text="任务场景：附近30米全景参考可用；当前位置截图未取得" />
+    <string id="AF_ILL_UI_STATUS_SCENE_BUDGET" text="环境物件超过{LIMIT}个预算，已跳过环境采集，继续绘制" />
+    <string id="AF_ILL_UI_STATUS_DIRECTOR_FAILED" text="{REASON}，已停止生图" />
+    <string id="AF_ILL_UI_STATUS_DIRECTOR_TRUNCATED" text="导演输出截断，已停止生图" />
+    <string id="AF_ILL_UI_STATUS_DIRECTOR_TEXT_ONLY" text="导演不支持识图，已使用文字构思" />
+    <string id="AF_ILL_UI_STATUS_DIRECTOR_VALIDATED" text="导演正文已校验（接口未返回结束标记）" />
+    <string id="AF_ILL_UI_STATUS_DIRECTOR_COMPLETE" text="导演构思完成" />
+    <string id="AF_ILL_UI_GALLERY_PREVIEW_UNAVAILABLE" text="图片不存在或无法解码，请刷新画廊。" />
+    <string id="AF_ILL_UI_GALLERY_REDRAW_LOADING" text="正在基于所选画卷重绘，可关闭画廊等待。" />
+    <string id="AF_ILL_UI_GALLERY_REDRAW_COMPLETE" text="重绘完成，已保存新画卷。" />
+    <string id="AF_ILL_UI_GALLERY_CONVERSION_UNAVAILABLE" text="画卷或当前战役已失效，请重新打开画廊。" />
+    <string id="AF_ILL_UI_GALLERY_CONVERSION_SOURCE_MISSING" text="原画文件已不存在，未创建物品。" />
+    <string id="AF_ILL_UI_GALLERY_CONVERSION_DESCRIPTION_REQUIRED" text="请填写画卷介绍，NPC 展示时需要读取这段内容。" />
+    <string id="AF_ILL_UI_GALLERY_CONVERSION_CREATE_FAILED" text="未能创建画卷物品，背包未增加物品。" />
+    <string id="AF_ILL_UI_GALLERY_CONVERSION_DESCRIPTION_FAILED" text="画卷介绍保存失败：{ERROR}" />
+    <string id="AF_ILL_UI_GALLERY_CONVERSION_ALREADY_OWNED" text="背包中已有{ITEM}，已更新介绍，未重复添加。" />
+    <string id="AF_ILL_UI_GALLERY_CONVERSION_DELIVERED" text="已将{ITEM}放入背包；可通过对话中的“展示物品”向 NPC 展示。" />
+    <string id="AF_ILL_UI_GALLERY_CONVERSION_DELIVERY_FAILED" text="画卷未能放入背包，请检查背包后再试。" />
+    <string id="AF_ILL_UI_GALLERY_CONVERSION_DEFAULT_TITLE" text="卡拉迪亚纪事" />
+    <string id="AF_ILL_UI_GALLERY_CONVERSION_ITEM_NAME" text="《{TITLE}》画卷" />
+    <string id="AF_ILL_UI_PHOTO_AIM" text="Enter 回车截取第 {COUNT} 张 · Esc 取消" />
+    <string id="AF_ILL_UI_PHOTO_DECISION" text="已截取 {COUNT} 张，是否开始生成？" />
+    <string id="AF_ILL_UI_PHOTO_STOPPED" text="已中止本次取景" />
+    <string id="AF_ILL_UI_PHOTO_GENERATE" text="生成" />
+    <string id="AF_ILL_UI_PHOTO_CONTINUE" text="继续截取" />
+    <string id="AF_ILL_UI_PHOTO_RESTART" text="重新截取" />
   </strings>
 </base>

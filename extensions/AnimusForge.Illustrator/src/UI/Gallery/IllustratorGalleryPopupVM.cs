@@ -395,7 +395,7 @@ namespace AnimusForge.Illustrator.UI.Gallery
                 string spriteName = "Gallery_" + selected.Item.Key + "_" + (++_previewCounter);
                 SelectedTitle = selected.Title;
                 SelectedDate = selected.DateText;
-                SelectedTheme = selected.Item.DisplayStatusText;
+                SelectedTheme = IllustrationStatusUiText.Cached(selected.Item);
                 StatusText = IllustratorUiText.GalleryLoading;
                 _previewLoader.Select(selected.Item.FilePath, prepared =>
                 {
@@ -408,7 +408,7 @@ namespace AnimusForge.Illustrator.UI.Gallery
                     }
                     _loadedPreviewSpriteName = spriteName;
                     SelectedSpriteName = spriteName;
-                    StatusText = selected.Item.DisplayStatusText;
+                    StatusText = IllustrationStatusUiText.Cached(selected.Item);
                 }, error =>
                 {
                     HasSelection = false;

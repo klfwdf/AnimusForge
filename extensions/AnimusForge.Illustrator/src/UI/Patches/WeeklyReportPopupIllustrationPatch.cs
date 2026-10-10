@@ -439,7 +439,7 @@ namespace AnimusForge.Illustrator.UI.Patches
                     _sink.IsLoading = false;
                     if (error != null || cached == null || !Publish(cached, cached.Prompt))
                         _sink.StatusText = IllustratorUiText.WeeklyLoadFailed;
-                    else _sink.StatusText = cached.DisplayStatusText;
+                    else _sink.StatusText = IllustrationStatusUiText.Cached(cached);
                 }))
             {
                 _sink.IsLoading = false;
@@ -465,7 +465,7 @@ namespace AnimusForge.Illustrator.UI.Patches
                     if (error == null && cached != null && Publish(cached, cached.Prompt))
                     {
                         Debug.Print("[Illustrator] Weekly overlay attached: cached=true");
-                        _sink.StatusText = DiskImageCacheManager.CachedDisplayStatus(cached, cacheOptions?.StyleFingerprint);
+                        _sink.StatusText = IllustrationStatusUiText.Cached(cached, cacheOptions?.StyleFingerprint, checkStyle: true);
                         _sink.IsLoading = false;
                     }
                     else if (autoGenerate)
@@ -575,7 +575,7 @@ namespace AnimusForge.Illustrator.UI.Patches
             _joinedGeneration = null;
             if (ReferenceEquals(update.Source, _scope)) return;
             _sink.IsLoading = false;
-            if (update.Saved != null && Publish(update.Saved, update.Saved.Prompt)) _sink.StatusText = update.Saved.DisplayStatusText;
+            if (update.Saved != null && Publish(update.Saved, update.Saved.Prompt)) _sink.StatusText = IllustrationStatusUiText.Cached(update.Saved);
             else _sink.StatusText = IllustratorUiText.WeeklyRedrawFailed(update.Error ?? IllustratorUiText.WeeklyLoadFailed);
         }
 
@@ -606,7 +606,7 @@ namespace AnimusForge.Illustrator.UI.Patches
                 {
                     if (!ReferenceEquals(owner, _scope) || _sink == null) return;
                     if (result.Result?.Success == true && Publish(result.Saved, result.Prompt, result.Result.ImageBytes))
-                        _sink.StatusText = result.Saved?.DisplayStatusText ?? IllustratorUiText.WeeklyComplete;
+                        _sink.StatusText = result.Saved != null ? IllustrationStatusUiText.Cached(result.Saved) : IllustratorUiText.WeeklyComplete;
                     else { _sink.IsLoading = false; _sink.StatusText = IllustratorUiText.WeeklyRedrawFailed(result.Result?.ErrorMessage ?? IllustratorUiText.WeeklyNotSaved); }
                 }, error => { if (ReferenceEquals(owner, _scope) && _sink != null) { _sink.IsLoading = false; _sink.StatusText = error; } },
                 status => { if (ReferenceEquals(owner, _scope) && _sink != null) _sink.StatusText = status; }, playerRedrawPrompt);
@@ -684,7 +684,7 @@ namespace AnimusForge.Illustrator.UI.Patches
 
                 var direction = await VisualDirectorEngine.CreateDirectionAsync(promptPlan, refs, options, token).ConfigureAwait(false);
                 string prompt = direction.Prompt;
-                IllustratorRuntime.Post(() => { if (generationScope.IsCurrent && !token.IsCancellationRequested) status?.Invoke(direction.StatusText + " · " + IllustratorUiText.WeeklyDrawing); });
+                IllustratorRuntime.Post(() => { if (generationScope.IsCurrent && !token.IsCancellationRequested) status?.Invoke((bulletin ? direction.StatusText : IllustrationStatusUiText.Direction(direction)) + " · " + IllustratorUiText.WeeklyDrawing); });
                 var genRefs = options?.EnableReferenceImageForGeneration == false ? null : (System.Collections.Generic.IReadOnlyList<IllustrationReferenceImage>)refs;
                 var result = await UniversalOpenAiImageClient.GenerateImageAsync(prompt, genRefs, options, token).ConfigureAwait(false);
                 string effectivePrompt = string.IsNullOrWhiteSpace(result.ResolvedPrompt) ? prompt : result.ResolvedPrompt;
