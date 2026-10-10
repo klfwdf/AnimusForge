@@ -3267,5 +3267,23 @@ HeroNPC 个性/背景、旧对话历史、压缩记忆、赊账/欠款、未命�
   <string id="AF_UI_TagCatalog_ExportFiles" text="扫描文件：{VALUE}" />
   <string id="AF_UI_TagCatalog_ExportSources" text="扫描来源：" />
   <string id="AF_UI_TagCatalog_ExportExplanation" text="此文件由游戏内 U 键 AnimusForge 终端的一键导出生成。列表来自当前模块文件、当前程序集字符串和内置运行时规则。" />
+  <string id="AF_UI_Duel_StakeGold" text="{AMOUNT} 第纳尔" />
+  <string id="AF_UI_Duel_StakeItem" text="{ITEM} x{AMOUNT}" />
+  <string id="AF_UI_Duel_StakeSeparator" text="，" />
+  <string id="AF_UI_Duel_StakeNone" text="（无）" />
+  <string id="AF_UI_Duel_StakeDebtIdSuffix" text="（债务 ID：{DEBT_ID}）" />
+  <string id="AF_UI_Duel_StakeDueSuffix" text="，{DUE}" />
+  <string id="AF_UI_Duel_StakeNoteSuffix" text="，备注：{NOTE}" />
+  <string id="AF_UI_Duel_StakeDebtResult" text="你在决斗中输给了{NPC}，现在欠{NPC} {STAKE}{DEBT_ID}（决斗赌注）{DUE}{NOTE}。" />
+  <string id="AF_UI_Duel_RenownLoserClan" text="败者家族" />
+  <string id="AF_UI_Duel_RenownWinnerClan" text="胜者家族" />
+  <string id="AF_UI_Duel_RenownSettlement" text="{LOSER_CLAN}失去 {AMOUNT} 声望（剩余 {LOSER_AFTER}）；{WINNER_CLAN}获得 {AMOUNT} 声望（现为 {WINNER_AFTER}）。" />
+  <string id="AF_UI_Duel_StakeNotSettled" text="{NPC} 尚未结清赌注。" />
+  <string id="AF_UI_Duel_StakePaidPartially" text="你在决斗中击败了{NPC}，并从{NPC}处获得 {PAID}（决斗赌注），但对方无法支付剩余的 {UNPAID}。" />
+  <string id="AF_UI_Duel_StakePaid" text="你在决斗中击败了{NPC}，并从{NPC}处获得 {PAID}（决斗赌注）。" />
+  <string id="AF_UI_Duel_StakeUnpaid" text="你在决斗中击败了{NPC}，但{NPC}无法支付 {UNPAID} 赌注。" />
+  <string id="AF_UI_Terminal_HotkeySet" text="快捷键 {TITLE} 已设置为 [{KEY}]。" />
+  <string id="AF_UI_Weekly_Browser_PageStatus" text="第 {CURRENT} / {TOTAL} 页" />
+  <string id="AF_UI_Weekly_Notice_Current" text="本期周报" />
 </strings>
 </base>

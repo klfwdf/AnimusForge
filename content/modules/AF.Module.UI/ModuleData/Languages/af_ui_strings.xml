@@ -3236,5 +3236,23 @@ Choose how to proceed:" />
   <string id="AF_UI_TagCatalog_ExportFiles" text="Scanned files: {VALUE}" />
   <string id="AF_UI_TagCatalog_ExportSources" text="Scan sources:" />
   <string id="AF_UI_TagCatalog_ExportExplanation" text="This file was exported from the in-game AnimusForge terminal (U key). The catalog is extracted from current module files, current assembly strings, and built-in runtime rules." />
+  <string id="AF_UI_Duel_StakeGold" text="{AMOUNT} denars" />
+  <string id="AF_UI_Duel_StakeItem" text="{ITEM} x{AMOUNT}" />
+  <string id="AF_UI_Duel_StakeSeparator" text=", " />
+  <string id="AF_UI_Duel_StakeNone" text="(none)" />
+  <string id="AF_UI_Duel_StakeDebtIdSuffix" text=" (Debt ID: {DEBT_ID})" />
+  <string id="AF_UI_Duel_StakeDueSuffix" text=", {DUE}" />
+  <string id="AF_UI_Duel_StakeNoteSuffix" text=", Note: {NOTE}" />
+  <string id="AF_UI_Duel_StakeDebtResult" text="You lost the duel to {NPC} and now owe {NPC} {STAKE}{DEBT_ID} (duel wager){DUE}{NOTE}." />
+  <string id="AF_UI_Duel_RenownLoserClan" text="The loser's clan" />
+  <string id="AF_UI_Duel_RenownWinnerClan" text="The winner's clan" />
+  <string id="AF_UI_Duel_RenownSettlement" text="{LOSER_CLAN} lost {AMOUNT} renown ({LOSER_AFTER} remaining); {WINNER_CLAN} gained {AMOUNT} renown (now {WINNER_AFTER})." />
+  <string id="AF_UI_Duel_StakeNotSettled" text="{NPC} has not settled the wager." />
+  <string id="AF_UI_Duel_StakePaidPartially" text="You defeated {NPC} in the duel and received {PAID} from {NPC} (duel wager), but they could not pay the remaining {UNPAID}." />
+  <string id="AF_UI_Duel_StakePaid" text="You defeated {NPC} in the duel and received {PAID} from {NPC} (duel wager)." />
+  <string id="AF_UI_Duel_StakeUnpaid" text="You defeated {NPC} in the duel, but {NPC} could not pay the wager of {UNPAID}." />
+  <string id="AF_UI_Terminal_HotkeySet" text="Hotkey {TITLE} set to [{KEY}]." />
+  <string id="AF_UI_Weekly_Browser_PageStatus" text="Page {CURRENT} / {TOTAL}" />
+  <string id="AF_UI_Weekly_Notice_Current" text="current weekly report" />
 </strings>
 </base>
