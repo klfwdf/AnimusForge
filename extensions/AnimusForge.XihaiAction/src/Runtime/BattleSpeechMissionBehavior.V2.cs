@@ -165,7 +165,8 @@ namespace AnimusForge.XihaiAction
                     speechText,
                     replyCount,
                     settings?.AudienceReplyMinimumChars ?? 8,
-                    settings?.AudienceReplyMaximumChars ?? 24)
+                    settings?.AudienceReplyMaximumChars ?? 24,
+                    session.UseChineseText)
                 .ToArray();
             if (settings == null || !settings.SemanticClassifierEnabled ||
                 !SceneActionsRuntimeHost.TryGetBattleSpeechClassifier(
@@ -195,7 +196,8 @@ namespace AnimusForge.XihaiAction
                 AllowAdvance = false,
                 AudienceReplyCount = replyCount,
                 AudienceReplyMinimumChars = settings.AudienceReplyMinimumChars,
-                AudienceReplyMaximumChars = settings.AudienceReplyMaximumChars
+                AudienceReplyMaximumChars = settings.AudienceReplyMaximumChars,
+                UseChineseText = session.UseChineseText
             };
             _ = RunPlanClassificationAsync(
                 classifier,
@@ -288,7 +290,8 @@ namespace AnimusForge.XihaiAction
                         BattleSpeechRuntimeHost.StageSettings.AudienceReplyMinimumChars,
                         BattleSpeechRuntimeHost.StageSettings.AudienceReplyMaximumChars,
                         out BattleSpeechPlanDecisionV2 decision,
-                        out parseError) &&
+                        out parseError,
+                        session.UseChineseText) &&
                     ProgramUsesOnly(decision.ActionProgram, plan.AllowedIntentKeys))
                 {
                     if (decision.ActionProgram != null)

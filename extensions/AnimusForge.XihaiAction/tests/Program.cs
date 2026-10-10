@@ -44,8 +44,48 @@ internal static class Program
         }
     }
 
+    private static void TestBilingualBattleSpeech()
+    {
+        const string speech = "Soldiers, hold the gate and protect the people beside you!";
+        string english = BattleSpeechFrameworkV2.NormalizeNpcSpeechReply(speech, 6, 160, null, out string reason, false);
+        True(english == speech && reason == null);
+        BattleSpeechFrameworkV2.NormalizeNpcSpeechReply(speech, 6, 160, out string legacyReason);
+        True(legacyReason == "non_chinese");
+        foreach (string invalid in new[] { "", "PLAY_ACTION kneel", "My lord, I await your orders.", "As an AI assistant, here is the speech.", "[ACTION:MOOD:NEUTRAL]" })
+        {
+            string fallback = BattleSpeechFrameworkV2.NormalizeNpcSpeechReply(invalid, 6, 160, null, out string rejection, false);
+            True(rejection != null && fallback.Length >= 6 && fallback.Length <= 160);
+            True(!fallback.Any(c => c >= '\u3400' && c <= '\u9fff'));
+        }
+        const string thirdPerson = "Lord Garios leads our charge. Hold the line!";
+        True(BattleSpeechFrameworkV2.NormalizeNpcSpeechReply(thirdPerson, 6, 160, null, out reason, false) == thirdPerson && reason == null);
+        const string plan = "ACTIONS NONE\nTACTIC NONE\nREPLIES Hold the line!|Ready here!";
+        True(BattleSpeechFrameworkV2.TryParsePlanClassifierOutput(plan, 1, 80, out _, out _, false));
+        True(!BattleSpeechFrameworkV2.TryParsePlanClassifierOutput(plan, 1, 80, out _, out _));
+        foreach (string invalidReply in new[] { "PLAY_ACTION kneel", "[ACTION:MOOD:NEUTRAL]", "<tag>", "*cheers*" })
+            True(!BattleSpeechFrameworkV2.TryParsePlanClassifierOutput("ACTIONS NONE\nTACTIC NONE\nREPLIES " + invalidReply, 1, 80, out _, out _, false));
+        foreach (string reply in BattleSpeechFrameworkV2.BuildFallbackAudienceReplies(speech, 12, 60, 80, false))
+            True(reply.Length >= 60 && reply.Length <= 80 && !reply.Any(c => c >= '\u3400' && c <= '\u9fff'));
+        True(BattleSpeechFrameworkV2.GetLocalFallbackSpeechVariants(false).Count == 6);
+        var facts = new BattleSpeechBattlefieldFactsV1(80, 90, 1, 2, true, false, "野战", "部署阶段", "Vlandia", "Vlandia", "Vlandia", new[] { "Sturgia" });
+        True(BattleSpeechFrameworkV2.ContainsDisallowedPoliticalSlogan("For Sturgia!", facts));
+        True(!BattleSpeechFrameworkV2.ContainsDisallowedPoliticalSlogan("Watch for Sturgia!", facts));
+        True(!BattleSpeechFrameworkV2.ContainsDisallowedPoliticalSlogan("For Vlandia!", facts));
+        string combined = BattleSpeechFrameworkV2.BuildCombinedNpcSpeechPromptInstruction(6, 160, new[] { "kneel" }, 2, 8, 24, new[] { speech }, 1, facts, false);
+        True(combined.Contains("Both the speech and REPLIES must use English"));
+        True(combined.Contains("SPEECH_BEGIN") && combined.Contains("PLAY_PROGRAM <program>") && combined.Contains("TACTIC ADVANCE"));
+        True(!combined.Any(c => c >= '\u3400' && c <= '\u9fff'));
+        string combat = BattleSpeechFrameworkV2.BuildCombatNpcSpeechPromptInstruction(6, 160, 2, 8, 24, null, 0, facts, false);
+        True(!combat.Contains("ACTIONS NONE") && !combat.Contains("TACTIC ADVANCE"));
+        True(!combat.Any(c => c >= '\u3400' && c <= '\u9fff'));
+        string response = "SPEECH_BEGIN\n" + speech + "\nSPEECH_END\nACTIONS NONE\nTACTIC NONE\nREPLIES Hold the line!|Ready here!";
+        True(BattleSpeechFrameworkV2.TryParseCombinedNpcSpeechOutput(response, 6, 160, new[] { "kneel" }, 2, 1, 80, out _, out _, false));
+        True(!BattleSpeechFrameworkV2.TryParseCombinedNpcSpeechOutput(response.Replace("ACTIONS NONE", "ACTIONS PLAY_ACTION act_attack"), 6, 160, new[] { "kneel" }, 2, 1, 80, out _, out _, false));
+    }
+
     private static int Main()
     {
+        Run("Battle speech uses an explicit language without weakening closed protocols", TestBilingualBattleSpeech);
         Run("Scene action prompt catalog is bilingual and preserves frozen keys", TestBilingualSceneActionCatalog);
         Run("Battle speech V1 parses explicit player and NPC session commands",
             TestBattleSpeechCommandProtocol);

@@ -1016,7 +1016,8 @@ namespace AnimusForge.XihaiAction
                             prompt.AudienceReplyMinimumChars,
                             prompt.AudienceReplyMaximumChars,
                             out combined,
-                            out string combinedError)
+                            out string combinedError,
+                            prompt.UseChineseText)
                         : BattleSpeechFrameworkV2.TryParseCombinedNpcSpeechOutput(
                             response,
                             prompt.MinimumChars,
@@ -1026,14 +1027,17 @@ namespace AnimusForge.XihaiAction
                             prompt.AudienceReplyMinimumChars,
                             prompt.AudienceReplyMaximumChars,
                             out combined,
-                            out combinedError);
+                            out combinedError,
+                            prompt.UseChineseText);
                     if (!parsed)
                     {
                         string safeBody = BattleSpeechFrameworkV2.NormalizeNpcSpeechReply(
                             BattleSpeechFrameworkV2.ExtractSpeechBodyForFallback(response),
                             prompt.MinimumChars,
                             prompt.MaximumChars,
-                            out string fallbackReason);
+                            null,
+                            out string fallbackReason,
+                            prompt.UseChineseText);
                         combined = new BattleSpeechCombinedNpcResponseV2(
                             safeBody,
                             new BattleSpeechPlanDecisionV2(
@@ -1043,7 +1047,8 @@ namespace AnimusForge.XihaiAction
                                     safeBody,
                                     prompt.AudienceReplyCount,
                                     prompt.AudienceReplyMinimumChars,
-                                    prompt.AudienceReplyMaximumChars)));
+                                    prompt.AudienceReplyMaximumChars,
+                                    prompt.UseChineseText)));
                         SceneActionsLog.Warning(
                             "BATTLE_SPEECH_INPUT",
                             (prompt.CombatSpeechMode
@@ -1060,7 +1065,8 @@ namespace AnimusForge.XihaiAction
                         prompt.AudienceReplyMinimumChars,
                         prompt.AudienceReplyMaximumChars,
                         out bool politicalSpeechReplaced,
-                        out int politicalRepliesReplaced);
+                        out int politicalRepliesReplaced,
+                        prompt.UseChineseText);
                     if (politicalSpeechReplaced || politicalRepliesReplaced > 0)
                     {
                         SceneActionsLog.Warning(

@@ -28,4 +28,5 @@
   <LanguageFile xml_path="afnpcaction_editor_strings.xml" />
   <LanguageFile xml_path="af_runtime_strings.xml" />
   <LanguageFile xml_path="afscene_catalog_strings.xml" />
+  <LanguageFile xml_path="afscene_speech_strings.xml" />
 </LanguageData>

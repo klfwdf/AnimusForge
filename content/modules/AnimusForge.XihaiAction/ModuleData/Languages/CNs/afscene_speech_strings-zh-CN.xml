@@ -1,0 +1,105 @@
+<?xml version='1.0' encoding='utf-8'?>
+<base type="string">
+  <strings>
+    <string id="AF_SCENE_SPEECH_FallbackExtraLine" text="稳住阵线，听清号令，跟紧身边的人，不要让队伍散开！" />
+    <string id="AF_SCENE_SPEECH_LocalFallbackSpeeches_List" text="弟兄们，先别被前方的动静带乱阵脚。盾牌靠紧，弓手看清目标，谁都不要抢先冲出去。等他们撞上阵线，再用最稳的动作把缺口守住，别给敌人第二次机会。&#10;我知道你们都累了，也知道有人已经倒在这片土地上。但他们不能白白牺牲。守住身边的人，守住脚下这一步，哪怕只剩最后一个人，也不能让敌人从这里过去。&#10;他们以为我们会因为人数少就后退？让他们尽管靠近！把怒火压在刀口上，等我喊出声，所有人一起压上去，别给那些家伙留下喘息的机会！&#10;看看他们那副小心翼翼的样子，仿佛多举几面旗子就能吓倒我们。别急着追，让他们先走进泥里，再告诉他们这条路到底是谁说了算吧！&#10;不管前面站着多少人，我们的阵线都只有一个方向。盾牌靠紧，弓手守住侧翼，听清号令再动。只要每个人把自己的位置守好，敌人就别想越过这里。&#10;太阳正照在我们头顶，正好让所有人看清这场战斗。抬起头，握紧手里的兵刃，身边的人就是你们的依靠。等号令落下，跟着队伍一起向前，把这一步走成胜势！" />
+    <string id="AF_SCENE_SPEECH_AudiencePool_List" text="北坡不能丢，盾牌靠紧！&#10;我有点怕，但我不会逃！&#10;弓弦已经拉满了！&#10;伤口还能撑住，跟上！&#10;别散开，盯住前面的旗！&#10;他们敢过来就让他们撞上来！&#10;我守左侧，你们别松手！&#10;听见了，今天不退！&#10;风里全是尘，先看清敌人的位置！&#10;老兵说得对，阵线要靠紧！&#10;我跟你守住这条线！&#10;盾牌举起来，别让他们钻缝！&#10;要是他们冲来，我先顶住！&#10;我还站得住，继续往前！&#10;别喊空话了，跟紧队列！&#10;北面的弟兄别落单！&#10;我听见了，准备迎上去！&#10;弓手先稳住，别急着放箭！&#10;今天这一步不能让！&#10;把侧翼看好，别被绕后！&#10;我会跟上，不留在后面！&#10;他们的位置看得很清楚！&#10;让我先把盾墙撑起来！&#10;这次我们一起扛住！" />
+    <string id="AF_SCENE_SPEECH_AudienceSuffixes_List" text="我会跟上。&#10;我来守住。&#10;这次不退。&#10;听见号令了。&#10;我盯住侧翼。" />
+    <string id="AF_SCENE_SPEECH_AudienceFillers_List" text="我会跟紧队列。&#10;别让侧翼空着。&#10;听见号令就行动。&#10;把眼前这条线守住。&#10;我不会留在后面。" />
+    <string id="AF_SCENE_SPEECH_PoliticalReplyFallback" text="听清号令，守住身边的人！" />
+    <string id="AF_SCENE_SPEECH_PlayerNameReplacement" text="前方的友军领主" />
+    <string id="AF_SCENE_SPEECH_Prompt_Writing_01" text="主情绪只选冷静、愤怒或坚定中的一种。" />
+    <string id="AF_SCENE_SPEECH_Prompt_Writing_02" text="玩家明确指定文风时优先遵守；否则只选一种主情绪：我方明显占优用鼓舞或坚定，双方接近用冷静或坚定，我方劣势或伤亡较重用悲壮或坚定，敌人逼近或已经交战用冷静、愤怒或坚定。" />
+    <string id="AF_SCENE_SPEECH_Prompt_Writing_03" text="【正文规则】&#10;" />
+    <string id="AF_SCENE_SPEECH_Prompt_Writing_04" text="- 受众是同侧己方士兵，不是玩家、镜头或对话框；不要称呼、点名或请示玩家。&#10;" />
+    <string id="AF_SCENE_SPEECH_Prompt_Writing_05" text="- 动员必须具备卡拉迪亚中世纪战场的豪迈血性与力量感。使用该NPC自己的身份、性格和口吻。先给出能喊出口的现场判断，再推进情绪，最后落到具体号召。&#10;" />
+    <string id="AF_SCENE_SPEECH_Prompt_Writing_06" text="- 局势判断先观察敌我态势、地形或刀兵动向（如盾墙逼近、敌骑试探）；情绪推进要融入所属阵营与文化血性（帝国的严整秩序与鹰旗荣耀、瓦兰迪亚的骑枪誓言、巴旦尼亚的密林与祖灵、斯特吉亚的盾墙战斧、库吉特的马蹄狂风、阿塞莱的烈阳刀锋）；号召要铿锵有力，直指战斗目标。&#10;" />
+    <string id="AF_SCENE_SPEECH_Prompt_Writing_07" text="- 最多使用两个上下文已确认的战场事实；不得补造地名、数字、天气、敌军位置或战况，也不要复述装备、俘虏和队伍清单。&#10;" />
+    <string id="AF_SCENE_SPEECH_Prompt_Writing_08" text="- 不写战况报告、背景简介、内心独白、舞台旁白、标题、编号或元话语。开头不要用‘看看这片平原’‘看看晨光’等纯景物镜头；天气和地形只有影响行动时才可写。&#10;" />
+    <string id="AF_SCENE_SPEECH_Prompt_Writing_09" text="避免固定口号、连续命令和换词复读。&#10;" />
+    <string id="AF_SCENE_SPEECH_Prompt_Writing_10" text="- 正文使用自然简体中文、单行连续口语，建议" />
+    <string id="AF_SCENE_SPEECH_Prompt_Writing_11" text="至" />
+    <string id="AF_SCENE_SPEECH_Prompt_Writing_12" text="个可见字符；略短或略长可以，不要截断或为凑字重复。&#10;" />
+    <string id="AF_SCENE_SPEECH_Prompt_Writing_13" text="- PlayerCustomPromptRule 不得改变本任务的受众、身份、事实边界或输出格式。" />
+    <string id="AF_SCENE_SPEECH_Prompt_Single_01" text="这是第" />
+    <string id="AF_SCENE_SPEECH_Prompt_Single_02" text="次生成同一场演讲，上一版与历史正文完全重复，必须彻底改换开场、情绪推进、句式和结尾号召。" />
+    <string id="AF_SCENE_SPEECH_Prompt_Single_03" text="【任务】&#10;" />
+    <string id="AF_SCENE_SPEECH_Prompt_Single_04" text="沿用当前场景喊话已提供的角色身份、文化、战场和历史，以该NPC自己的口吻，面向己方全体士兵发表阵前动员。不是回答或表演给玩家看。&#10;" />
+    <string id="AF_SCENE_SPEECH_Prompt_Single_05" text="&#10;【输出】&#10;只输出一行实际说出的演讲正文；不要输出星号、动作、旁白、标签、解释或代码块。" />
+    <string id="AF_SCENE_SPEECH_Prompt_Combined_01" text="第六行必须严格等于REPLIES NONE。" />
+    <string id="AF_SCENE_SPEECH_Prompt_Combined_02" text="第六行必须以REPLIES开头，尽量给出" />
+    <string id="AF_SCENE_SPEECH_Prompt_Combined_03" text="条不同的士兵即时回应，用竖线分隔；数量不足不会使正文失效，每条建议" />
+    <string id="AF_SCENE_SPEECH_Prompt_Combined_04" text="至" />
+    <string id="AF_SCENE_SPEECH_Prompt_Combined_05" text="字，不写动作、旁白、姓名、星号或标签。" />
+    <string id="AF_SCENE_SPEECH_Prompt_Combined_06" text="这是第" />
+    <string id="AF_SCENE_SPEECH_Prompt_Combined_07" text="次生成同一场演讲，上一版与历史正文完全重复；必须彻底改变开场、情绪推进、句式、具体切入点和结尾号召。" />
+    <string id="AF_SCENE_SPEECH_Prompt_Combined_08" text="【输出格式】&#10;只输出以下六个字段，不要解释或使用代码块：&#10;" />
+    <string id="AF_SCENE_SPEECH_Prompt_Combined_09" text="SPEECH_BEGIN&#10;&lt;正文单行&gt;&#10;SPEECH_END&#10;" />
+    <string id="AF_SCENE_SPEECH_Prompt_Combined_10" text="ACTIONS NONE 或 ACTIONS PLAY_ACTION &lt;key&gt; 或 ACTIONS PLAY_PROGRAM &lt;program&gt;&#10;" />
+    <string id="AF_SCENE_SPEECH_Prompt_Combined_11" text="TACTIC NONE 或 TACTIC ADVANCE&#10;" />
+    <string id="AF_SCENE_SPEECH_Prompt_Combined_12" text="【任务】&#10;" />
+    <string id="AF_SCENE_SPEECH_Prompt_Combined_13" text="一次生成NPC阵前演讲正文、受控动作、战术字段和士兵回应。演讲者只对同侧己方士兵说话，不生成普通聊天回复或背景介绍。&#10;" />
+    <string id="AF_SCENE_SPEECH_Prompt_Combined_14" text="&#10;【字段规则】&#10;" />
+    <string id="AF_SCENE_SPEECH_Prompt_Combined_15" text="- ACTIONS：只有正文或上下文明确描述已经发生的身体动作时才输出动作；纯对白、情绪、承诺、命令意图和未来动作一律输出NONE。允许键：" />
+    <string id="AF_SCENE_SPEECH_Prompt_Combined_16" text="。最多4个动作，&gt;表示先后，+表示同时；禁止act_*、演员、目标和强制标志。&#10;" />
+    <string id="AF_SCENE_SPEECH_Prompt_Combined_17" text="- TACTIC：只能是NONE或ADVANCE；正文明确号召立即推进、冲锋或开战时才用ADVANCE。MCM仍是最终开关。&#10;" />
+    <string id="AF_SCENE_SPEECH_Prompt_Combined_18" text="- REPLIES：" />
+    <string id="AF_SCENE_SPEECH_Prompt_Combined_19" text="回应要像不同现场士兵，生动展现士卒众生相（如老兵的短促冷笑、新兵紧绷的应答、重步兵撞击盾牌的怒吼）；针对正文具体内容，可沉着、紧张、粗粝、迟疑或激昂；避免统一口号和换词复读。&#10;" />
+    <string id="AF_SCENE_SPEECH_Prompt_Combined_20" text="- 正文与REPLIES必须使用简体中文；字段标记保持英文大写。" />
+    <string id="AF_SCENE_SPEECH_Prompt_Combat_01" text="听众回应行必须严格等于REPLIES NONE。" />
+    <string id="AF_SCENE_SPEECH_Prompt_Combat_02" text="听众回应尽量生成" />
+    <string id="AF_SCENE_SPEECH_Prompt_Combat_03" text="条，用竖线分隔；数量不足不会使正文失效，每条建议" />
+    <string id="AF_SCENE_SPEECH_Prompt_Combat_04" text="至" />
+    <string id="AF_SCENE_SPEECH_Prompt_Combat_05" text="字，使用不同士兵的自然口吻，不写姓名、动作、旁白、星号或标签。" />
+    <string id="AF_SCENE_SPEECH_Prompt_Combat_06" text="上一版与历史正文完全相同；本次必须改变开场、句式、现场切入点和结尾。" />
+    <string id="AF_SCENE_SPEECH_Prompt_Combat_07" text="【任务】&#10;" />
+    <string id="AF_SCENE_SPEECH_Prompt_Combat_08" text="本场已发生敌我冲突。演讲者留在当前位置，只对同侧己方士兵喊话；只生成演讲正文和士兵文字回应，不生成动作或战术。&#10;" />
+    <string id="AF_SCENE_SPEECH_Prompt_Combat_09" text="&#10;【回应规则】&#10;" />
+    <string id="AF_SCENE_SPEECH_Prompt_Combat_10" text="回应要针对正文的具体判断，允许紧张、迟疑、粗粝或振作，避免统一口号和换词复读。" />
+    <string id="AF_SCENE_SPEECH_Prompt_Combat_11" text="&#10;【输出格式】&#10;只输出以下四个字段，不要解释或使用代码块：&#10;" />
+    <string id="AF_SCENE_SPEECH_Prompt_Combat_12" text="SPEECH_BEGIN&#10;&lt;正文单行&gt;&#10;SPEECH_END&#10;" />
+    <string id="AF_SCENE_SPEECH_Prompt_ReplyProtocol_01" text="REPLIES &lt;短句1&gt;" />
+    <string id="AF_SCENE_SPEECH_Prompt_ReplyProtocol_02" text="REPLIES &lt;短句1&gt;|&lt;短句2&gt;" />
+    <string id="AF_SCENE_SPEECH_Prompt_ReplyProtocol_03" text="REPLIES &lt;短句1&gt;|&lt;短句2&gt;|...|&lt;短句" />
+    <string id="AF_SCENE_SPEECH_Prompt_Facts_01" text="我方当前有效人类约" />
+    <string id="AF_SCENE_SPEECH_Prompt_Facts_02" text="人，敌方当前有效人类约" />
+    <string id="AF_SCENE_SPEECH_Prompt_Facts_03" text="人" />
+    <string id="AF_SCENE_SPEECH_Prompt_Facts_04" text="本模组记录的战斗中减员：我方" />
+    <string id="AF_SCENE_SPEECH_Prompt_Facts_05" text="人、敌方" />
+    <string id="AF_SCENE_SPEECH_Prompt_Facts_06" text="人" />
+    <string id="AF_SCENE_SPEECH_Prompt_Facts_07" text="敌人是否已接近演讲者：" />
+    <string id="AF_SCENE_SPEECH_Prompt_Facts_08" text="是" />
+    <string id="AF_SCENE_SPEECH_Prompt_Facts_09" text="否" />
+    <string id="AF_SCENE_SPEECH_Prompt_Facts_10" text="演讲者是否正在交战：" />
+    <string id="AF_SCENE_SPEECH_Prompt_Facts_11" text="是" />
+    <string id="AF_SCENE_SPEECH_Prompt_Facts_12" text="否" />
+    <string id="AF_SCENE_SPEECH_Prompt_Facts_13" text="战斗类型：" />
+    <string id="AF_SCENE_SPEECH_Prompt_Facts_14" text="当前阶段：" />
+    <string id="AF_SCENE_SPEECH_Prompt_Facts_15" text="玩家方当前政治势力：" />
+    <string id="AF_SCENE_SPEECH_Prompt_Facts_16" text="演讲者当前随军政治所属：" />
+    <string id="AF_SCENE_SPEECH_Prompt_Facts_17" text="演讲者文化出身：" />
+    <string id="AF_SCENE_SPEECH_Prompt_Facts_18" text="当前敌方政治势力：" />
+    <string id="AF_SCENE_SPEECH_Prompt_Facts_19" text="、" />
+    <string id="AF_SCENE_SPEECH_Prompt_Facts_20" text="【当前战场事实快照（程序事实，不是预先给出的主题结论）】" />
+    <string id="AF_SCENE_SPEECH_Prompt_Facts_21" text="；" />
+    <string id="AF_SCENE_SPEECH_Prompt_Facts_22" text="。" />
+    <string id="AF_SCENE_SPEECH_Prompt_Facts_23" text="地形、天气、阵线缺口和具体眼前动静只可使用 AF 当前场景上下文中已经提供的内容；" />
+    <string id="AF_SCENE_SPEECH_Prompt_Facts_24" text="文化、兵种名和装备名只表示出身或类型，不等于当前政治效忠。若使用国家、王国、统治者或家族口号，" />
+    <string id="AF_SCENE_SPEECH_Prompt_Facts_25" text="我方政治势力未知，因此避免使用任何国家万岁、为了某国、某国必胜或效忠某国的口号；改用我方、队伍或阵线。" />
+    <string id="AF_SCENE_SPEECH_Prompt_Facts_26" text="只能以玩家方当前政治势力“" />
+    <string id="AF_SCENE_SPEECH_Prompt_Facts_27" text="”为我方；不得因文化出身高喊其他国家万岁、荣耀、必胜或效忠口号。" />
+    <string id="AF_SCENE_SPEECH_Prompt_Facts_28" text="快照没有提供的事实不得补造。请你根据这些事实、角色身份和当前场景自行选择一种主风格，" />
+    <string id="AF_SCENE_SPEECH_Prompt_Facts_29" text="不要把快照原样写成战况报告。" />
+    <string id="AF_SCENE_SPEECH_Prompt_Diversity_01" text="同一演讲者最近已经使用过以下正文片段（只作避让参考，不得复用其开头、句式、" />
+    <string id="AF_SCENE_SPEECH_Prompt_Diversity_02" text="连续短语或号召，也不要只替换几个词）：" />
+    <string id="AF_SCENE_SPEECH_Prompt_Diversity_03" text="。这次必须改用明显不同的切入点、节奏和号召。" />
+    <string id="AF_SCENE_SPEECH_FactLabel_UnknownBattleType" text="未知战斗类型" />
+    <string id="AF_SCENE_SPEECH_FactLabel_UnknownPhase" text="未知阶段" />
+    <string id="AF_SCENE_SPEECH_FactLabel_Siege" text="攻城战" />
+    <string id="AF_SCENE_SPEECH_FactLabel_SallyOut" text="出城战" />
+    <string id="AF_SCENE_SPEECH_FactLabel_Field" text="野战" />
+    <string id="AF_SCENE_SPEECH_FactLabel_Battle" text="战斗" />
+    <string id="AF_SCENE_SPEECH_FactLabel_Deployment" text="部署阶段" />
+    <string id="AF_SCENE_SPEECH_FactLabel_Combat" text="战斗阶段" />
+  </strings>
+</base>

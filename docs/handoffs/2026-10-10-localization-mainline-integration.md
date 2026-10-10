@@ -101,3 +101,12 @@ UI词法快照`mainline-after-20261010.json`为较早`6e6e2fa1a`工作树：1246
 - 用户再次显式调用typesafe-ai并要求持续联动做决策。本会话后续按有证据的具体问题持续调用Jev；不是无限循环/无限API预算，也不把Jev置信度当编译验收。
 - `work/localization-decisions-20261010-02`：live docs与网关OpenAPI经curl读取（web读取不可用）；先offline PASS，再一次4个Choice真实请求，model=jev、underlying_version_pinned=false。结果：B追加日期显示0.99；只接受已证明日期格式1.00；演讲语言采用显式主线程快照1.00；主线优先修英文接收/兜底1.00。3580输入/234输出tokens，返回cost=0.002148（币种未推断），needs_review=false。
 - 新发现：BattleSpeechFrameworkV2.NormalizeNpcSpeechReply及听众解析有ContainsChinese门槛；听众英文池的FitFallbackAudienceReply仍附加中文填充和中文标点。下一主线处理显式语言传递与英文正文/兜底，保留动作白名单、内容安全和政治归属检查。
+
+## 阵前演讲显式语言链路（2026-10-10）
+
+- 在`BattleSpeechMissionBehavior`创建会话时捕获当前语言，传入reply claim、不可变prompt snapshot及计划分类请求。三个NPC提示词入口、联合/交战协议解析、正文归一化、政治归属检查、听众回应与兜底均接收同一语言；工作线程不查询游戏语言。旧Core方法签名保留中文兼容入口，旧听众池入口保留原按文本识别方式；真实运行时使用显式参数。
+- 新增`afscene_speech_strings`100对键：85段原提示词片段、8个战场类型/阶段标签、6篇兜底演讲、听众/后缀/填充池及其他兜底。`BattleSpeechText`按语言只读一次嵌入资源并缓存列表。CN原片段与既有CN/EN听众池保持；English提示词要求English，英文兜底不再补中文填充/标点，未知外来事实标签继续保留。
+- 英文正文/REPLIES不再被无汉字门槛直接拒绝；保留旧中文模式。新增英文元话语、对玩家称呼、纯控制协议检测；听众不能包含方括号标签。政治归属检查增加已知英文口号，`For <enemy>!`须出现在分句开头，避免把`Watch for <enemy>!`当效忠。未改行动/战术白名单、MCM执行门禁或任务代次判断。
+- 验证：`BattleSpeechBilingualContractTests.py`131静态/模拟、场景目录494、词表110、资源29对PASS；既有1.3/1.4各400次演讲资源解析PASS。迁移脚本核对85段中文/原兜底池完全一致；相对`08aa81d3c`，动作/战术解析前缀与五组安全方法不变。CN资源SHA256 `2d562e62ff0b05a30a28ce38b1cdb4327378a5ab4bce81f5d2d2386bc548cee6`。Core测试新增中英归一化、协议拒绝、第三人称称呼、敌我口号、显式英文长填充、完整提示词/联合输出用例，但未编译运行。
+- Jev持续复核：`work/localization-decisions-20261010-03`先offline后一次8个Choice，全部preserved，confidence 0.88–1.00；2755输入/374输出，返回cost=0.001653，底层版本未固定。此为译文语义辅助，不是编译、LLM真实生成或游戏验收。
+- 全量新扫描（`08aa81d3c`含本片工作树）1829源文件、19600中文位置、585含中文文件、13794去重值，无扫描中变化。全模组任务仍ACTIVE，识别语料/其他模块Prompt、日志、事实与剩余显示仍待处理；编译/压力回放/真实LLM/实机/正式包全部未获本片验证。

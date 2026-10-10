@@ -1,6 +1,8 @@
 <a id="full-english-release-20261010"></a>
 ## 全英文发行与 CN/EN 双包（2026-10-10，ACTIVE / NOT RELEASE READY）
 
+最新主线：阵前演讲使用会话语言快照，接通英文提示词、正文/听众校验与兜底，100对新资源；静态/模拟131、场景目录494、资源29对及既有双API各400资源解析PASS。Jev8项语义复核通过；当前C#编译/实机仍未跑。全量源码19600中文位置/585文件，任务未完成。[证据](handoffs/2026-10-10-localization-mainline-integration.md#阵前演讲显式语言链路2026-10-10)。B2日期显示小包任务卡已生成，主线避开其写入范围。
+
 固定资产显示4处正则改为执行前捕获名称、带context投影，156静态/模拟检查及业务方法/facts逐段等价PASS；当前产品/转移回放未验证。[证据](handoffs/2026-10-10-localization-mainline-integration.md#固定资产显示参数明确化2026-10-10)。
 
 追加历史设置识别语料外置：54原值/236源码中文字面量，保持旧配置ordinal迁移判断；117静态合同+现有专项通过，编译迁移回放未跑。[证据](handoffs/2026-10-10-localization-mainline-integration.md#历史设置提示词识别语料外置2026-10-10)。

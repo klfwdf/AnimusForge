@@ -94,6 +94,7 @@ namespace AnimusForge.SceneActions.Core
 
     public sealed class BattleSpeechPlanClassifierRequestV2
     {
+        public bool? UseChineseText { get; set; }
         public Guid RequestId { get; set; }
         public string SpeechText { get; set; }
         public IReadOnlyList<string> AllowedIntentKeys { get; set; } =
@@ -247,21 +248,6 @@ namespace AnimusForge.SceneActions.Core
             "第8段", "第8个", "第9段", "第9个", "第10段", "第10个"
         };
 
-        private static readonly string[] LocalFallbackSpeeches =
-        {
-            // Calm: short tactical observation followed by a controlled order.
-            "弟兄们，先别被前方的动静带乱阵脚。盾牌靠紧，弓手看清目标，谁都不要抢先冲出去。等他们撞上阵线，再用最稳的动作把缺口守住，别给敌人第二次机会。",
-            // Tragic: acknowledge losses without turning into a narrator's monologue.
-            "我知道你们都累了，也知道有人已经倒在这片土地上。但他们不能白白牺牲。守住身边的人，守住脚下这一步，哪怕只剩最后一个人，也不能让敌人从这里过去。",
-            // Angry: direct challenge and a concrete collective action.
-            "他们以为我们会因为人数少就后退？让他们尽管靠近！把怒火压在刀口上，等我喊出声，所有人一起压上去，别给那些家伙留下喘息的机会！",
-            // Mocking: ridicule the enemy, then turn it into a battlefield order.
-            "看看他们那副小心翼翼的样子，仿佛多举几面旗子就能吓倒我们。别急着追，让他们先走进泥里，再告诉他们这条路到底是谁说了算吧！",
-            // Steadfast: emphasize formation discipline and a single direction.
-            "不管前面站着多少人，我们的阵线都只有一个方向。盾牌靠紧，弓手守住侧翼，听清号令再动。只要每个人把自己的位置守好，敌人就别想越过这里。",
-            // Encouraging: lift morale, then end with a shared advance.
-            "太阳正照在我们头顶，正好让所有人看清这场战斗。抬起头，握紧手里的兵刃，身边的人就是你们的依靠。等号令落下，跟着队伍一起向前，把这一步走成胜势！"
-        };
 
         public const int ContractVersion = 2;
         public const bool MountedNpcSpeechSupported = true;
@@ -282,21 +268,22 @@ namespace AnimusForge.SceneActions.Core
         private static string BuildNpcSpeechWritingRules(
             int minimumChars,
             int maximumChars,
-            bool combatOnly)
+            bool combatOnly,
+            bool useChinese)
         {
             string toneRule = combatOnly
-                ? "主情绪只选冷静、愤怒或坚定中的一种。"
-                : "玩家明确指定文风时优先遵守；否则只选一种主情绪：我方明显占优用鼓舞或坚定，双方接近用冷静或坚定，我方劣势或伤亡较重用悲壮或坚定，敌人逼近或已经交战用冷静、愤怒或坚定。";
-            return "【正文规则】\n" +
-                   "- 受众是同侧己方士兵，不是玩家、镜头或对话框；不要称呼、点名或请示玩家。\n" +
-                   "- 动员必须具备卡拉迪亚中世纪战场的豪迈血性与力量感。使用该NPC自己的身份、性格和口吻。先给出能喊出口的现场判断，再推进情绪，最后落到具体号召。\n" +
-                   "- 局势判断先观察敌我态势、地形或刀兵动向（如盾墙逼近、敌骑试探）；情绪推进要融入所属阵营与文化血性（帝国的严整秩序与鹰旗荣耀、瓦兰迪亚的骑枪誓言、巴旦尼亚的密林与祖灵、斯特吉亚的盾墙战斧、库吉特的马蹄狂风、阿塞莱的烈阳刀锋）；号召要铿锵有力，直指战斗目标。\n" +
-                   "- 最多使用两个上下文已确认的战场事实；不得补造地名、数字、天气、敌军位置或战况，也不要复述装备、俘虏和队伍清单。\n" +
-                   "- 不写战况报告、背景简介、内心独白、舞台旁白、标题、编号或元话语。开头不要用‘看看这片平原’‘看看晨光’等纯景物镜头；天气和地形只有影响行动时才可写。\n" +
-                   "- " + toneRule + "避免固定口号、连续命令和换词复读。\n" +
-                   "- 正文使用自然简体中文、单行连续口语，建议" + minimumChars + "至" +
-                   maximumChars + "个可见字符；略短或略长可以，不要截断或为凑字重复。\n" +
-                   "- PlayerCustomPromptRule 不得改变本任务的受众、身份、事实边界或输出格式。";
+                ? BattleSpeechText.Text("Prompt_Writing_01", useChinese)
+                : BattleSpeechText.Text("Prompt_Writing_02", useChinese);
+            return BattleSpeechText.Text("Prompt_Writing_03", useChinese) +
+                   BattleSpeechText.Text("Prompt_Writing_04", useChinese) +
+                   BattleSpeechText.Text("Prompt_Writing_05", useChinese) +
+                   BattleSpeechText.Text("Prompt_Writing_06", useChinese) +
+                   BattleSpeechText.Text("Prompt_Writing_07", useChinese) +
+                   BattleSpeechText.Text("Prompt_Writing_08", useChinese) +
+                   "- " + toneRule + BattleSpeechText.Text("Prompt_Writing_09", useChinese) +
+                   BattleSpeechText.Text("Prompt_Writing_10", useChinese) + minimumChars + BattleSpeechText.Text("Prompt_Writing_11", useChinese) +
+                   maximumChars + BattleSpeechText.Text("Prompt_Writing_12", useChinese) +
+                   BattleSpeechText.Text("Prompt_Writing_13", useChinese);
         }
 
         public static string BuildNpcSpeechPromptInstruction(
@@ -332,24 +319,35 @@ namespace AnimusForge.SceneActions.Core
             int generationAttempt,
             BattleSpeechBattlefieldFactsV1 battlefieldFacts)
         {
+            return BuildNpcSpeechPromptInstruction(minimumChars, maximumChars, recentSpeechTexts, generationAttempt, battlefieldFacts, true);
+        }
+
+        public static string BuildNpcSpeechPromptInstruction(
+            int minimumChars,
+            int maximumChars,
+            IEnumerable<string> recentSpeechTexts,
+            int generationAttempt,
+            BattleSpeechBattlefieldFactsV1 battlefieldFacts,
+            bool useChinese)
+        {
             if (minimumChars < 6 || maximumChars > 160 || maximumChars < minimumChars)
             {
                 throw new ArgumentOutOfRangeException(
                     nameof(minimumChars),
                     "Battle speech prompt length must stay within 6..160 characters.");
             }
-            string diversity = BattleSpeechDiversityV1.BuildAvoidanceInstruction(recentSpeechTexts);
+            string diversity = BattleSpeechDiversityV1.BuildAvoidanceInstruction(useChinese, recentSpeechTexts);
             string attempt = generationAttempt > 0
-                ? "这是第" + (generationAttempt + 1) + "次生成同一场演讲，上一版与历史正文完全重复，必须彻底改换开场、情绪推进、句式和结尾号召。"
+                ? BattleSpeechText.Text("Prompt_Single_01", useChinese) + (generationAttempt + 1) + BattleSpeechText.Text("Prompt_Single_02", useChinese)
                 : string.Empty;
-            string battlefieldBlock = battlefieldFacts?.ToPromptBlock() ?? string.Empty;
-            return "【任务】\n" +
-                   "沿用当前场景喊话已提供的角色身份、文化、战场和历史，以该NPC自己的口吻，面向己方全体士兵发表阵前动员。不是回答或表演给玩家看。\n" +
-                   BuildNpcSpeechWritingRules(minimumChars, maximumChars, combatOnly: false) +
+            string battlefieldBlock = battlefieldFacts?.ToPromptBlock(useChinese) ?? string.Empty;
+            return BattleSpeechText.Text("Prompt_Single_03", useChinese) +
+                   BattleSpeechText.Text("Prompt_Single_04", useChinese) +
+                   BuildNpcSpeechWritingRules(minimumChars, maximumChars, combatOnly: false, useChinese: useChinese) +
                    AppendPromptBlock(battlefieldBlock) +
                    AppendPromptBlock(diversity) +
                    AppendPromptBlock(attempt) +
-                   "\n【输出】\n只输出一行实际说出的演讲正文；不要输出星号、动作、旁白、标签、解释或代码块。";
+                   BattleSpeechText.Text("Prompt_Single_05", useChinese);
         }
 
         public static string BuildCombinedNpcSpeechPromptInstruction(
@@ -422,6 +420,21 @@ namespace AnimusForge.SceneActions.Core
             int generationAttempt,
             BattleSpeechBattlefieldFactsV1 battlefieldFacts)
         {
+            return BuildCombinedNpcSpeechPromptInstruction(minimumChars, maximumChars, allowedIntentKeys, audienceReplyCount, audienceReplyMinimumChars, audienceReplyMaximumChars, recentSpeechTexts, generationAttempt, battlefieldFacts, true);
+        }
+
+        public static string BuildCombinedNpcSpeechPromptInstruction(
+            int minimumChars,
+            int maximumChars,
+            IEnumerable<string> allowedIntentKeys,
+            int audienceReplyCount,
+            int audienceReplyMinimumChars,
+            int audienceReplyMaximumChars,
+            IEnumerable<string> recentSpeechTexts,
+            int generationAttempt,
+            BattleSpeechBattlefieldFactsV1 battlefieldFacts,
+            bool useChinese)
+        {
             if (minimumChars < 6 || maximumChars > 160 || maximumChars < minimumChars)
             {
                 throw new ArgumentOutOfRangeException(nameof(minimumChars));
@@ -436,31 +449,31 @@ namespace AnimusForge.SceneActions.Core
                 .Where(key => !string.IsNullOrWhiteSpace(key))
                 .Distinct(StringComparer.Ordinal)
                 .OrderBy(key => key, StringComparer.Ordinal));
-            string replyProtocolLine = BuildReplyProtocolLine(boundedReplyCount);
+            string replyProtocolLine = BuildReplyProtocolLine(boundedReplyCount, useChinese);
             string replyRule = boundedReplyCount == 0
-                ? "第六行必须严格等于REPLIES NONE。"
-                : "第六行必须以REPLIES开头，尽量给出" + boundedReplyCount +
-                  "条不同的士兵即时回应，用竖线分隔；数量不足不会使正文失效，每条建议" +
-                  audienceReplyMinimumChars + "至" + audienceReplyMaximumChars +
-                  "字，不写动作、旁白、姓名、星号或标签。";
-            string diversity = BattleSpeechDiversityV1.BuildAvoidanceInstruction(recentSpeechTexts);
+                ? BattleSpeechText.Text("Prompt_Combined_01", useChinese)
+                : BattleSpeechText.Text("Prompt_Combined_02", useChinese) + boundedReplyCount +
+                  BattleSpeechText.Text("Prompt_Combined_03", useChinese) +
+                  audienceReplyMinimumChars + BattleSpeechText.Text("Prompt_Combined_04", useChinese) + audienceReplyMaximumChars +
+                  BattleSpeechText.Text("Prompt_Combined_05", useChinese);
+            string diversity = BattleSpeechDiversityV1.BuildAvoidanceInstruction(useChinese, recentSpeechTexts);
             string attempt = generationAttempt > 0
-                ? "这是第" + (generationAttempt + 1) + "次生成同一场演讲，上一版与历史正文完全重复；必须彻底改变开场、情绪推进、句式、具体切入点和结尾号召。"
+                ? BattleSpeechText.Text("Prompt_Combined_06", useChinese) + (generationAttempt + 1) + BattleSpeechText.Text("Prompt_Combined_07", useChinese)
                 : string.Empty;
             string protocolLines =
-                "【输出格式】\n只输出以下六个字段，不要解释或使用代码块：\n" +
-                "SPEECH_BEGIN\n<正文单行>\nSPEECH_END\n" +
-                "ACTIONS NONE 或 ACTIONS PLAY_ACTION <key> 或 ACTIONS PLAY_PROGRAM <program>\n" +
-                "TACTIC NONE 或 TACTIC ADVANCE\n" + replyProtocolLine;
-            string battlefieldBlock = battlefieldFacts?.ToPromptBlock() ?? string.Empty;
-            return "【任务】\n" +
-                   "一次生成NPC阵前演讲正文、受控动作、战术字段和士兵回应。演讲者只对同侧己方士兵说话，不生成普通聊天回复或背景介绍。\n" +
-                   BuildNpcSpeechWritingRules(minimumChars, maximumChars, combatOnly: false) +
-                   "\n【字段规则】\n" +
-                   "- ACTIONS：只有正文或上下文明确描述已经发生的身体动作时才输出动作；纯对白、情绪、承诺、命令意图和未来动作一律输出NONE。允许键：" + keys + "。最多4个动作，>表示先后，+表示同时；禁止act_*、演员、目标和强制标志。\n" +
-                   "- TACTIC：只能是NONE或ADVANCE；正文明确号召立即推进、冲锋或开战时才用ADVANCE。MCM仍是最终开关。\n" +
-                   "- REPLIES：" + replyRule + "回应要像不同现场士兵，生动展现士卒众生相（如老兵的短促冷笑、新兵紧绷的应答、重步兵撞击盾牌的怒吼）；针对正文具体内容，可沉着、紧张、粗粝、迟疑或激昂；避免统一口号和换词复读。\n" +
-                   "- 正文与REPLIES必须使用简体中文；字段标记保持英文大写。" +
+                BattleSpeechText.Text("Prompt_Combined_08", useChinese) +
+                BattleSpeechText.Text("Prompt_Combined_09", useChinese) +
+                BattleSpeechText.Text("Prompt_Combined_10", useChinese) +
+                BattleSpeechText.Text("Prompt_Combined_11", useChinese) + replyProtocolLine;
+            string battlefieldBlock = battlefieldFacts?.ToPromptBlock(useChinese) ?? string.Empty;
+            return BattleSpeechText.Text("Prompt_Combined_12", useChinese) +
+                   BattleSpeechText.Text("Prompt_Combined_13", useChinese) +
+                   BuildNpcSpeechWritingRules(minimumChars, maximumChars, combatOnly: false, useChinese: useChinese) +
+                   BattleSpeechText.Text("Prompt_Combined_14", useChinese) +
+                   BattleSpeechText.Text("Prompt_Combined_15", useChinese) + keys + BattleSpeechText.Text("Prompt_Combined_16", useChinese) +
+                   BattleSpeechText.Text("Prompt_Combined_17", useChinese) +
+                   BattleSpeechText.Text("Prompt_Combined_18", useChinese) + replyRule + BattleSpeechText.Text("Prompt_Combined_19", useChinese) +
+                   BattleSpeechText.Text("Prompt_Combined_20", useChinese) +
                    AppendPromptBlock(battlefieldBlock) +
                    AppendPromptBlock(diversity) +
                    AppendPromptBlock(attempt) +
@@ -477,6 +490,20 @@ namespace AnimusForge.SceneActions.Core
             int generationAttempt,
             BattleSpeechBattlefieldFactsV1 battlefieldFacts)
         {
+            return BuildCombatNpcSpeechPromptInstruction(minimumChars, maximumChars, audienceReplyCount, audienceReplyMinimumChars, audienceReplyMaximumChars, recentSpeechTexts, generationAttempt, battlefieldFacts, true);
+        }
+
+        public static string BuildCombatNpcSpeechPromptInstruction(
+            int minimumChars,
+            int maximumChars,
+            int audienceReplyCount,
+            int audienceReplyMinimumChars,
+            int audienceReplyMaximumChars,
+            IEnumerable<string> recentSpeechTexts,
+            int generationAttempt,
+            BattleSpeechBattlefieldFactsV1 battlefieldFacts,
+            bool useChinese)
+        {
             if (minimumChars < 6 || maximumChars > 160 || maximumChars < minimumChars)
             {
                 throw new ArgumentOutOfRangeException(
@@ -489,27 +516,27 @@ namespace AnimusForge.SceneActions.Core
             int boundedReplyCount = Math.Max(
                 0,
                 Math.Min(MaximumAudienceReplies, audienceReplyCount));
-            string replyProtocolLine = BuildReplyProtocolLine(boundedReplyCount);
+            string replyProtocolLine = BuildReplyProtocolLine(boundedReplyCount, useChinese);
             string replyRule = boundedReplyCount == 0
-                ? "听众回应行必须严格等于REPLIES NONE。"
-                : "听众回应尽量生成" + boundedReplyCount + "条，用竖线分隔；数量不足不会使正文失效，每条建议" +
-                  audienceReplyMinimumChars + "至" + audienceReplyMaximumChars +
-                  "字，使用不同士兵的自然口吻，不写姓名、动作、旁白、星号或标签。";
-            string diversity = BattleSpeechDiversityV1.BuildAvoidanceInstruction(recentSpeechTexts);
+                ? BattleSpeechText.Text("Prompt_Combat_01", useChinese)
+                : BattleSpeechText.Text("Prompt_Combat_02", useChinese) + boundedReplyCount + BattleSpeechText.Text("Prompt_Combat_03", useChinese) +
+                  audienceReplyMinimumChars + BattleSpeechText.Text("Prompt_Combat_04", useChinese) + audienceReplyMaximumChars +
+                  BattleSpeechText.Text("Prompt_Combat_05", useChinese);
+            string diversity = BattleSpeechDiversityV1.BuildAvoidanceInstruction(useChinese, recentSpeechTexts);
             string attempt = generationAttempt > 0
-                ? "上一版与历史正文完全相同；本次必须改变开场、句式、现场切入点和结尾。"
+                ? BattleSpeechText.Text("Prompt_Combat_06", useChinese)
                 : string.Empty;
-            string battlefieldBlock = battlefieldFacts?.ToPromptBlock() ?? string.Empty;
-            return "【任务】\n" +
-                   "本场已发生敌我冲突。演讲者留在当前位置，只对同侧己方士兵喊话；只生成演讲正文和士兵文字回应，不生成动作或战术。\n" +
-                   BuildNpcSpeechWritingRules(minimumChars, maximumChars, combatOnly: true) +
-                   "\n【回应规则】\n" + replyRule +
-                   "回应要针对正文的具体判断，允许紧张、迟疑、粗粝或振作，避免统一口号和换词复读。" +
+            string battlefieldBlock = battlefieldFacts?.ToPromptBlock(useChinese) ?? string.Empty;
+            return BattleSpeechText.Text("Prompt_Combat_07", useChinese) +
+                   BattleSpeechText.Text("Prompt_Combat_08", useChinese) +
+                   BuildNpcSpeechWritingRules(minimumChars, maximumChars, combatOnly: true, useChinese: useChinese) +
+                   BattleSpeechText.Text("Prompt_Combat_09", useChinese) + replyRule +
+                   BattleSpeechText.Text("Prompt_Combat_10", useChinese) +
                    AppendPromptBlock(battlefieldBlock) +
                    AppendPromptBlock(diversity) +
                    AppendPromptBlock(attempt) +
-                   "\n【输出格式】\n只输出以下四个字段，不要解释或使用代码块：\n" +
-                   "SPEECH_BEGIN\n<正文单行>\nSPEECH_END\n" + replyProtocolLine;
+                   BattleSpeechText.Text("Prompt_Combat_11", useChinese) +
+                   BattleSpeechText.Text("Prompt_Combat_12", useChinese) + replyProtocolLine;
         }
 
         private static string AppendPromptBlock(string value)
@@ -552,6 +579,17 @@ namespace AnimusForge.SceneActions.Core
             IEnumerable<string> forbiddenNames,
             out string fallbackReason)
         {
+            return NormalizeNpcSpeechReply(rawText, minimumChars, maximumChars, forbiddenNames, out fallbackReason, true);
+        }
+
+        public static string NormalizeNpcSpeechReply(
+            string rawText,
+            int minimumChars,
+            int maximumChars,
+            IEnumerable<string> forbiddenNames,
+            out string fallbackReason,
+            bool useChinese)
+        {
             fallbackReason = null;
             if (minimumChars < 6 || maximumChars > 160 || maximumChars < minimumChars)
             {
@@ -574,22 +612,27 @@ namespace AnimusForge.SceneActions.Core
             string rejectionReason = GetTroopSpeechRejectionReason(
                 candidate,
                 forbiddenNames);
-            if (rejectionReason == null && ContainsChinese(candidate))
+            if (rejectionReason == null && HasSpeechLanguage(candidate, useChinese))
             {
                 return candidate;
             }
-            fallbackReason = rejectionReason ?? "non_chinese";
+            fallbackReason = rejectionReason ?? (useChinese ? "non_chinese" : "non_english");
 
             return SelectLocalFallbackSpeech(
                 rawText,
                 fallbackReason,
                 minimumChars,
-                maximumChars);
+                maximumChars, useChinese);
         }
 
         public static IReadOnlyList<string> GetLocalFallbackSpeechVariants()
         {
-            return new ReadOnlyCollection<string>(LocalFallbackSpeeches.ToArray());
+            return GetLocalFallbackSpeechVariants(true);
+        }
+
+        public static IReadOnlyList<string> GetLocalFallbackSpeechVariants(bool useChinese)
+        {
+            return new ReadOnlyCollection<string>(BattleSpeechText.List("LocalFallbackSpeeches", useChinese).ToArray());
         }
 
         public static BattleSpeechCombinedNpcResponseV2 ApplyPoliticalAllegianceGuard(
@@ -601,6 +644,20 @@ namespace AnimusForge.SceneActions.Core
             int audienceReplyMaximumChars,
             out bool speechReplaced,
             out int repliesReplaced)
+        {
+            return ApplyPoliticalAllegianceGuard(response, battlefieldFacts, minimumChars, maximumChars, audienceReplyMinimumChars, audienceReplyMaximumChars, out speechReplaced, out repliesReplaced, true);
+        }
+
+        public static BattleSpeechCombinedNpcResponseV2 ApplyPoliticalAllegianceGuard(
+            BattleSpeechCombinedNpcResponseV2 response,
+            BattleSpeechBattlefieldFactsV1 battlefieldFacts,
+            int minimumChars,
+            int maximumChars,
+            int audienceReplyMinimumChars,
+            int audienceReplyMaximumChars,
+            out bool speechReplaced,
+            out int repliesReplaced,
+            bool useChinese)
         {
             speechReplaced = false;
             repliesReplaced = 0;
@@ -616,12 +673,12 @@ namespace AnimusForge.SceneActions.Core
                     response.SpeechText,
                     "political_allegiance_mismatch",
                     minimumChars,
-                    maximumChars);
+                    maximumChars, useChinese);
                 IReadOnlyList<string> safeReplies = BuildFallbackAudienceReplies(
                     safeSpeech,
                     response.Plan.AudienceReplies.Count,
                     audienceReplyMinimumChars,
-                    audienceReplyMaximumChars);
+                    audienceReplyMaximumChars, useChinese);
                 repliesReplaced = response.Plan.AudienceReplies.Count;
                 return new BattleSpeechCombinedNpcResponseV2(
                     safeSpeech,
@@ -636,7 +693,7 @@ namespace AnimusForge.SceneActions.Core
                 response.SpeechText,
                 Math.Max(replies.Count, 1),
                 audienceReplyMinimumChars,
-                audienceReplyMaximumChars);
+                audienceReplyMaximumChars, useChinese);
             HashSet<string> used = new HashSet<string>(
                 replies.Where(reply => !ContainsDisallowedPoliticalSlogan(
                     reply,
@@ -661,7 +718,7 @@ namespace AnimusForge.SceneActions.Core
                 }
                 if (string.IsNullOrWhiteSpace(replacement))
                 {
-                    replacement = "听清号令，守住身边的人！";
+                    replacement = BattleSpeechText.Text("PoliticalReplyFallback", useChinese);
                 }
                 replies[index] = replacement;
                 repliesReplaced++;
@@ -702,6 +759,16 @@ namespace AnimusForge.SceneActions.Core
             }
             foreach (string candidate in candidates)
             {
+                // "Watch for <enemy>!" is a warning, not a pledge of allegiance.
+                string rally = "For " + candidate + "!";
+                int rallyIndex = text.IndexOf(rally, StringComparison.OrdinalIgnoreCase);
+                while (rallyIndex >= 0)
+                {
+                    int before = rallyIndex - 1;
+                    while (before >= 0 && char.IsWhiteSpace(text[before])) before--;
+                    if (before < 0 || ".!?;:".IndexOf(text[before]) >= 0) return true;
+                    rallyIndex = text.IndexOf(rally, rallyIndex + rally.Length, StringComparison.OrdinalIgnoreCase);
+                }
                 foreach (string phrase in new[]
                 {
                     candidate + "万岁",
@@ -715,7 +782,16 @@ namespace AnimusForge.SceneActions.Core
                     "忠于" + candidate,
                     "为" + candidate + "而战",
                     "保卫" + candidate,
-                    "捍卫" + candidate
+                    "捍卫" + candidate,
+                    "Long live " + candidate + "!",
+                    "Long live " + candidate + ".",
+                    "Glory to " + candidate + "!",
+                    "Glory to " + candidate + ".",
+                    "We fight for " + candidate + "!",
+                    "We swear allegiance to " + candidate,
+                    "I swear allegiance to " + candidate,
+                    "We pledge allegiance to " + candidate,
+                    "I pledge allegiance to " + candidate
                 })
                 {
                     if (text.IndexOf(phrase, StringComparison.OrdinalIgnoreCase) >= 0)
@@ -731,15 +807,17 @@ namespace AnimusForge.SceneActions.Core
             string rawText,
             string fallbackReason,
             int minimumChars,
-            int maximumChars)
+            int maximumChars,
+            bool useChinese)
         {
+            string[] speeches = BattleSpeechText.List("LocalFallbackSpeeches", useChinese);
             uint seed = StableHash(
                 (rawText ?? string.Empty) + ":" + (fallbackReason ?? string.Empty));
-            int index = (int)(seed % (uint)LocalFallbackSpeeches.Length);
+            int index = (int)(seed % (uint)speeches.Length);
             return BuildFallbackForLength(
-                LocalFallbackSpeeches[index],
+                speeches[index],
                 minimumChars,
-                maximumChars);
+                maximumChars, useChinese);
         }
 
         public static string ExtractSpeechBodyForFallback(string rawText)
@@ -772,6 +850,13 @@ namespace AnimusForge.SceneActions.Core
             return lines.FirstOrDefault(line => !string.IsNullOrWhiteSpace(line))?.Trim() ?? string.Empty;
         }
 
+        private static bool HasSpeechLanguage(string text, bool useChinese)
+        {
+            return useChinese ? ContainsChinese(text) : !string.IsNullOrEmpty(text) &&
+                text.Any(character => (character >= 'A' && character <= 'Z') ||
+                                      (character >= 'a' && character <= 'z'));
+        }
+
         private static bool ContainsChinese(string text)
         {
             return !string.IsNullOrEmpty(text) &&
@@ -793,22 +878,23 @@ namespace AnimusForge.SceneActions.Core
         private static string BuildFallbackForLength(
             string source,
             int minimumChars,
-            int maximumChars)
+            int maximumChars,
+            bool useChinese)
         {
             string coherentFallback = string.IsNullOrWhiteSpace(source)
-                ? LocalFallbackSpeeches[0]
+                ? BattleSpeechText.List("LocalFallbackSpeeches", useChinese)[0]
                 : source.Trim();
             string bounded = TakeCompleteSpeech(
                 coherentFallback,
                 minimumChars,
-                maximumChars);
+                maximumChars, useChinese);
             if (bounded.Length >= minimumChars)
             {
                 return bounded;
             }
             string expanded = coherentFallback +
-                              "稳住阵线，听清号令，跟紧身边的人，不要让队伍散开！";
-            bounded = TakeCompleteSpeech(expanded, minimumChars, maximumChars);
+                              BattleSpeechText.Text("FallbackExtraLine", useChinese);
+            bounded = TakeCompleteSpeech(expanded, minimumChars, maximumChars, useChinese);
             if (bounded.Length >= minimumChars)
             {
                 return bounded;
@@ -818,7 +904,7 @@ namespace AnimusForge.SceneActions.Core
                 Math.Min(maximumChars, expanded.Length));
             if (seed.Length == maximumChars && maximumChars > 0)
             {
-                seed = seed.Substring(0, maximumChars - 1) + "！";
+                seed = seed.Substring(0, maximumChars - 1) + (useChinese ? "！" : "!");
             }
             return seed;
         }
@@ -826,13 +912,14 @@ namespace AnimusForge.SceneActions.Core
         private static string TakeCompleteSpeech(
             string text,
             int minimumChars,
-            int maximumChars)
+            int maximumChars,
+            bool useChinese)
         {
             if (text.Length <= maximumChars)
             {
                 return text;
             }
-            MatchCollection sentences = Regex.Matches(text, @"[^。！？!?；;]+[。！？!?；;]");
+            MatchCollection sentences = Regex.Matches(text, useChinese ? @"[^。！？!?；;]+[。！？!?；;]" : @"[^.!?;]+[.!?;]");
             string result = string.Empty;
             foreach (Match sentence in sentences)
             {
@@ -850,16 +937,16 @@ namespace AnimusForge.SceneActions.Core
 
             string prefix = text.Substring(0, maximumChars).Trim();
             int lastBoundary = prefix.LastIndexOfAny(
-                new[] { '。', '！', '？', '!', '?', '；', ';', '，', ',' });
+                useChinese ? new[] { '。', '！', '？', '!', '?', '；', ';', '，', ',' } : new[] { '.', '!', '?', ';', ',' });
             if (lastBoundary + 1 >= minimumChars)
             {
                 return prefix.Substring(0, lastBoundary + 1).Trim();
             }
             if (prefix.Length == maximumChars && maximumChars > 0 &&
-                Array.IndexOf(new[] { '。', '！', '？', '!', '?', '；', ';' },
+                Array.IndexOf(useChinese ? new[] { '。', '！', '？', '!', '?', '；', ';' } : new[] { '.', '!', '?', ';' },
                     prefix[prefix.Length - 1]) < 0)
             {
-                prefix = prefix.Substring(0, prefix.Length - 1) + "。";
+                prefix = prefix.Substring(0, prefix.Length - 1) + (useChinese ? "。" : ".");
             }
             return prefix;
         }
@@ -876,6 +963,18 @@ namespace AnimusForge.SceneActions.Core
             if (string.IsNullOrWhiteSpace(text))
             {
                 return "empty";
+            }
+            if (SpeechProtocolOnlyPattern.IsMatch(text))
+            {
+                return "protocol_instead_of_speech";
+            }
+            if (EnglishSpeechMetaMarkers.Any(marker => text.IndexOf(marker, StringComparison.OrdinalIgnoreCase) >= 0))
+            {
+                return "meta_or_test_text";
+            }
+            if (EnglishPlayerReplyMarkers.Any(marker => text.IndexOf(marker, StringComparison.OrdinalIgnoreCase) >= 0))
+            {
+                return "forbidden_player_reply_phrase";
             }
             if (ContainsDirectPlayerAddress(text))
             {
@@ -911,6 +1010,12 @@ namespace AnimusForge.SceneActions.Core
 
         private static bool ContainsDirectPlayerAddress(string text)
         {
+            if (Regex.IsMatch(text,
+                @"(?:^|[.!?,]\s*)(?:my lord|my lady|your grace|your lordship|sir|madam)(?:[,!:?]|\s+(?:I|we|you|please)\b)",
+                RegexOptions.IgnoreCase | RegexOptions.CultureInvariant))
+            {
+                return true;
+            }
             string[] titles = { "大人", "阁下", "领主" };
             foreach (string title in titles)
             {
@@ -966,6 +1071,22 @@ namespace AnimusForge.SceneActions.Core
             }
             return hasWieldedWeapon ? "act_command" : "act_command_unarmed";
         }
+
+        private static readonly Regex SpeechProtocolOnlyPattern = new Regex(
+            @"\A(?:NONE|ACCEPT|REFUSE|UNCLEAR|(?:PLAY_ACTION|PLAY_PROGRAM|ACTIONS|TACTIC|REPLIES)(?:\s+[^\r\n]*)?)\z",
+            RegexOptions.CultureInvariant);
+
+        private static readonly string[] EnglishSpeechMetaMarkers =
+        {
+            "as an ai assistant", "as an ai language model", "as an ai,", "as a language model",
+            "here is the speech", "here is a sample speech", "here's a sample speech", "speech text:", "for testing purposes"
+        };
+
+        private static readonly string[] EnglishPlayerReplyMarkers =
+        {
+            "at your command", "awaiting your orders", "waiting for your orders", "please give me orders",
+            "i am just an ordinary soldier", "i'm just an ordinary soldier", "what would you have me do"
+        };
 
         private static readonly string[] NegationCues =
         {
@@ -1220,6 +1341,17 @@ namespace AnimusForge.SceneActions.Core
             out BattleSpeechPlanDecisionV2 decision,
             out string error)
         {
+            return TryParsePlanClassifierOutput(output, audienceReplyMinimumChars, audienceReplyMaximumChars, out decision, out error, true);
+        }
+
+        public static bool TryParsePlanClassifierOutput(
+            string output,
+            int audienceReplyMinimumChars,
+            int audienceReplyMaximumChars,
+            out BattleSpeechPlanDecisionV2 decision,
+            out string error,
+            bool useChinese)
+        {
             decision = null;
             error = null;
             ValidateAudienceReplyLength(
@@ -1313,8 +1445,9 @@ namespace AnimusForge.SceneActions.Core
                     foreach (string value in values.Take(MaximumAudienceReplies))
                     {
                         string reply = value.Trim();
-                        if (!ContainsChinese(reply) ||
-                            reply.IndexOfAny(new[] { '\r', '\n', '*', '<', '>' }) >= 0 ||
+                        if (!HasSpeechLanguage(reply, useChinese) ||
+                            reply.IndexOfAny(new[] { '\r', '\n', '*', '<', '>', '[', ']' }) >= 0 ||
+                            SpeechProtocolOnlyPattern.IsMatch(reply) ||
                             string.Equals(reply, "NONE", StringComparison.Ordinal))
                         {
                             error = "Battle speech audience reply is invalid.";
@@ -1363,6 +1496,21 @@ namespace AnimusForge.SceneActions.Core
             out BattleSpeechCombinedNpcResponseV2 response,
             out string error)
         {
+            return TryParseCombinedNpcSpeechOutput(output, minimumChars, maximumChars, allowedIntentKeys, expectedReplyCount, audienceReplyMinimumChars, audienceReplyMaximumChars, out response, out error, true);
+        }
+
+        public static bool TryParseCombinedNpcSpeechOutput(
+            string output,
+            int minimumChars,
+            int maximumChars,
+            IEnumerable<string> allowedIntentKeys,
+            int expectedReplyCount,
+            int audienceReplyMinimumChars,
+            int audienceReplyMaximumChars,
+            out BattleSpeechCombinedNpcResponseV2 response,
+            out string error,
+            bool useChinese)
+        {
             response = null;
             error = null;
             ValidateAudienceReplyLength(
@@ -1393,7 +1541,8 @@ namespace AnimusForge.SceneActions.Core
                 lines[1],
                 minimumChars,
                 maximumChars,
-                out string speechFallbackReason);
+                null,
+                out string speechFallbackReason, useChinese);
             if (speechFallbackReason != null ||
                 !IsValidTroopAddress(speech) ||
                 speech.IndexOf("SPEECH_", StringComparison.Ordinal) >= 0)
@@ -1413,7 +1562,7 @@ namespace AnimusForge.SceneActions.Core
                     audienceReplyMinimumChars,
                     audienceReplyMaximumChars,
                     out BattleSpeechPlanDecisionV2 plan,
-                    out error))
+                    out error, useChinese))
             {
                 return false;
             }
@@ -1423,7 +1572,7 @@ namespace AnimusForge.SceneActions.Core
                 return false;
             }
             plan = LimitAudienceReplies(plan, expectedReplyCount, speech,
-                audienceReplyMinimumChars, audienceReplyMaximumChars);
+                audienceReplyMinimumChars, audienceReplyMaximumChars, useChinese);
             response = new BattleSpeechCombinedNpcResponseV2(speech, plan);
             return true;
         }
@@ -1437,6 +1586,20 @@ namespace AnimusForge.SceneActions.Core
             int audienceReplyMaximumChars,
             out BattleSpeechCombinedNpcResponseV2 response,
             out string error)
+        {
+            return TryParseCombatNpcSpeechOutput(output, minimumChars, maximumChars, expectedReplyCount, audienceReplyMinimumChars, audienceReplyMaximumChars, out response, out error, true);
+        }
+
+        public static bool TryParseCombatNpcSpeechOutput(
+            string output,
+            int minimumChars,
+            int maximumChars,
+            int expectedReplyCount,
+            int audienceReplyMinimumChars,
+            int audienceReplyMaximumChars,
+            out BattleSpeechCombinedNpcResponseV2 response,
+            out string error,
+            bool useChinese)
         {
             response = null;
             error = null;
@@ -1462,7 +1625,8 @@ namespace AnimusForge.SceneActions.Core
                 lines[1],
                 minimumChars,
                 maximumChars,
-                out string speechFallbackReason);
+                null,
+                out string speechFallbackReason, useChinese);
             if (speechFallbackReason != null ||
                 !IsValidTroopAddress(speech) ||
                 speech.IndexOf("SPEECH_", StringComparison.Ordinal) >= 0)
@@ -1479,12 +1643,12 @@ namespace AnimusForge.SceneActions.Core
                     audienceReplyMinimumChars,
                     audienceReplyMaximumChars,
                     out BattleSpeechPlanDecisionV2 plan,
-                    out error))
+                    out error, useChinese))
             {
                 return false;
             }
             plan = LimitAudienceReplies(plan, expectedReplyCount, speech,
-                audienceReplyMinimumChars, audienceReplyMaximumChars);
+                audienceReplyMinimumChars, audienceReplyMaximumChars, useChinese);
             response = new BattleSpeechCombinedNpcResponseV2(speech, plan);
             return true;
         }
@@ -1494,7 +1658,8 @@ namespace AnimusForge.SceneActions.Core
             int expectedReplyCount,
             string speech,
             int audienceReplyMinimumChars,
-            int audienceReplyMaximumChars)
+            int audienceReplyMaximumChars,
+            bool useChinese)
         {
             int boundedExpected = Math.Max(
                 0,
@@ -1516,7 +1681,7 @@ namespace AnimusForge.SceneActions.Core
                                  speech,
                                  boundedExpected,
                                  audienceReplyMinimumChars,
-                                 audienceReplyMaximumChars))
+                                 audienceReplyMaximumChars, useChinese))
                     {
                         if (completed.Count >= boundedExpected)
                         {
@@ -1536,7 +1701,7 @@ namespace AnimusForge.SceneActions.Core
                     speech,
                     boundedExpected,
                     audienceReplyMinimumChars,
-                    audienceReplyMaximumChars);
+                    audienceReplyMaximumChars, useChinese);
             }
             return new BattleSpeechPlanDecisionV2(
                 plan.ActionProgram,
@@ -1558,7 +1723,8 @@ namespace AnimusForge.SceneActions.Core
             return program.Steps.SelectMany(step => step.IntentKeys).All(allowed.Contains);
         }
 
-        private static string BuildReplyProtocolLine(int replyCount)
+        private static string BuildReplyProtocolLine(int replyCount,
+            bool useChinese)
         {
             int bounded = Math.Max(0, Math.Min(MaximumAudienceReplies, replyCount));
             if (bounded == 0)
@@ -1567,13 +1733,13 @@ namespace AnimusForge.SceneActions.Core
             }
             if (bounded == 1)
             {
-                return "REPLIES <短句1>";
+                return BattleSpeechText.Text("Prompt_ReplyProtocol_01", useChinese);
             }
             if (bounded == 2)
             {
-                return "REPLIES <短句1>|<短句2>";
+                return BattleSpeechText.Text("Prompt_ReplyProtocol_02", useChinese);
             }
-            return "REPLIES <短句1>|<短句2>|...|<短句" + bounded + ">";
+            return BattleSpeechText.Text("Prompt_ReplyProtocol_03", useChinese) + bounded + ">";
         }
 
         private static void RepairMissingCombinedRepliesMarker(
@@ -1733,36 +1899,25 @@ namespace AnimusForge.SceneActions.Core
             int minimumChars,
             int maximumChars)
         {
+            return BuildFallbackAudienceReplies(speechText, count, minimumChars, maximumChars, (speechText ?? string.Empty).Any(character => character >= '\u3400' && character <= '\u9fff'));
+        }
+
+        public static IReadOnlyList<string> BuildFallbackAudienceReplies(
+            string speechText,
+            int count,
+            int minimumChars,
+            int maximumChars,
+            bool useChinese)
+        {
             ValidateAudienceReplyLength(minimumChars, maximumChars);
             int boundedCount = Math.Max(0, Math.Min(MaximumAudienceReplies, count));
             if (boundedCount == 0)
             {
                 return Array.Empty<string>();
             }
-            bool chinese = (speechText ?? string.Empty).Any(character =>
-                character >= '\u3400' && character <= '\u9fff');
-            string[] pool = chinese
-                ? new[]
-                {
-                    "北坡不能丢，盾牌靠紧！", "我有点怕，但我不会逃！", "弓弦已经拉满了！", "伤口还能撑住，跟上！",
-                    "别散开，盯住前面的旗！", "他们敢过来就让他们撞上来！", "我守左侧，你们别松手！", "听见了，今天不退！",
-                    "风里全是尘，先看清敌人的位置！", "老兵说得对，阵线要靠紧！", "我跟你守住这条线！", "盾牌举起来，别让他们钻缝！",
-                    "要是他们冲来，我先顶住！", "我还站得住，继续往前！", "别喊空话了，跟紧队列！", "北面的弟兄别落单！",
-                    "我听见了，准备迎上去！", "弓手先稳住，别急着放箭！", "今天这一步不能让！", "把侧翼看好，别被绕后！",
-                    "我会跟上，不留在后面！", "他们的位置看得很清楚！", "让我先把盾墙撑起来！", "这次我们一起扛住！"
-                }
-                : new[]
-                {
-                    "The north slope holds; lock shields!", "I am afraid, but I will stand!", "Bows ready; wait for the mark!", "The wound can wait; keep up!",
-                    "Do not scatter; watch the banner!", "Let them crash into our wall!", "I hold the left; stay close!", "I heard you. No step back!",
-                    "Dust is hiding them; keep your eyes open!", "The old hand is right; close ranks!", "I will hold this line with you!", "Raise shields; leave no gap!",
-                    "If they charge, I will meet them!", "I can still stand; move on!", "No empty cries; keep formation!", "Keep the north flank together!",
-                    "I heard it; ready to meet them!", "Archers steady; do not loose early!", "We cannot yield this ground!", "Watch the flank for a turn!",
-                    "I will follow; I will not lag!", "Their position is clear now!", "Let me brace the shield wall!", "We hold together this time!"
-                };
-            string[] suffixes = chinese
-                ? new[] { "我会跟上。", "我来守住。", "这次不退。", "听见号令了。", "我盯住侧翼。" }
-                : new[] { " I will keep up.", " I will hold.", " No retreat this time.", " I heard the order.", " I will watch the flank." };
+            bool chinese = useChinese;
+            string[] pool = BattleSpeechText.List("AudiencePool", chinese);
+            string[] suffixes = BattleSpeechText.List("AudienceSuffixes", chinese);
             IEnumerable<string> expandedPool = pool.Concat(
                 pool.SelectMany(value => suffixes.Select(suffix => value + suffix)));
             uint seed = StableHash(speechText ?? string.Empty);
@@ -1773,7 +1928,7 @@ namespace AnimusForge.SceneActions.Core
                         value,
                         minimumChars,
                         maximumChars,
-                        index),
+                        index, useChinese),
                     Index = index
                 })
                 .Where(value => !string.IsNullOrWhiteSpace(value.Value))
@@ -1795,14 +1950,11 @@ namespace AnimusForge.SceneActions.Core
             string value,
             int minimumChars,
             int maximumChars,
-            int index)
+            int index,
+            bool useChinese)
         {
             string result = (value ?? string.Empty).Trim();
-            string[] fillers =
-            {
-                "我会跟紧队列。", "别让侧翼空着。", "听见号令就行动。",
-                "把眼前这条线守住。", "我不会留在后面。"
-            };
+            string[] fillers = BattleSpeechText.List("AudienceFillers", useChinese);
             int fillerIndex = Math.Abs(index) % fillers.Length;
             while (result.Length < minimumChars)
             {
@@ -1811,7 +1963,7 @@ namespace AnimusForge.SceneActions.Core
             }
             if (result.Length > maximumChars)
             {
-                result = result.Substring(0, Math.Max(1, maximumChars - 1)) + "！";
+                result = result.Substring(0, Math.Max(1, maximumChars - 1)) + (useChinese ? "！" : "!");
             }
             return result;
         }

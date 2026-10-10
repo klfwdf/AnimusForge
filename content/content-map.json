@@ -17119,6 +17119,18 @@
       "source": "content/foundation/AF.Foundation.Localization/ModuleData/LegacySettingsPrompts.json",
       "target": "ModuleData/LegacySettingsPrompts.json",
       "logicalName": "AnimusForge.Defaults.LegacySettingsPrompts.json"
+    },
+    {
+      "owner": "AnimusForge.XihaiAction",
+      "source": "content/modules/AnimusForge.XihaiAction/ModuleData/Languages/afscene_speech_strings.xml",
+      "target": "ModuleData/Languages/afscene_speech_strings.xml",
+      "logicalName": "AnimusForge.SceneActions.Speech.en.xml"
+    },
+    {
+      "owner": "AnimusForge.XihaiAction",
+      "source": "content/modules/AnimusForge.XihaiAction/ModuleData/Languages/CNs/afscene_speech_strings-zh-CN.xml",
+      "target": "ModuleData/Languages/CNs/afscene_speech_strings-zh-CN.xml",
+      "logicalName": "AnimusForge.SceneActions.Speech.zh-CN.xml"
     }
   ]
 }

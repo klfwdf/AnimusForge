@@ -4,6 +4,11 @@ namespace AnimusForge.XihaiAction
 {
     internal static class SceneActionsText
     {
+        // Call only at an existing host-thread request/session capture boundary.
+        internal static bool UseChineseLanguage()
+            => string.Equals(new TextObject("{=AF_RUNTIME_SceneActions_Language}en").ToString(),
+                "zh-CN", System.StringComparison.Ordinal);
+
         public static TextObject Loaded()
         {
             return new TextObject("{=SAX_Loaded}AnimusForge Xihai Action loaded (v1.1 / Framework V4 + Battle Speech V2).");
