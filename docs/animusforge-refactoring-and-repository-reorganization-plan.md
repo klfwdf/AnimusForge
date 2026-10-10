@@ -1,6 +1,8 @@
 <a id="full-english-release-20261010"></a>
 ## 全英文发行与 CN/EN 双包（2026-10-10，ACTIVE / NOT RELEASE READY）
 
+追加场景动作输入外置：主模组与独立Core共用49组/721词项嵌入XML，保留中英识别及否定词顺序；从三份源码移除684个中文数组值。反向源文件等价、110项静态合同与27资源对通过；编译/实际解析回放仍待跑。[证据与未覆盖边界](handoffs/2026-10-10-localization-mainline-integration.md#场景动作输入词表切片2026-10-10)。
+
 当前接续（主线`d00e33d07`，替代下文“E未交付”和仅UI清零口径）：用户已确认目标为全模组源码中文硬编码外置及双语本地化，B/C已派发外部。主线完成内战raw/display端口、图库真实新物品名及旧名保护、债务/决斗显示接收；移除755终端显示fallback、27连接测试Prompt/日志及696经济词表中文位置，5份默认Prompt改读缓存的包内资产。各切片提交、命令结果、源码位置与未覆盖责任见[主线详细证据](handoffs/2026-10-10-localization-mainline-integration.md#已接通并验证的主线切片)。27对语言资源及专项静态合同通过；分块目录旧位置修正后当前契约PASS；未执行当前产品编译/实机/正式包。
 
 完整源码扫描`artifacts/localization/runtime-literals-mainline-current.json`（含并行工作树）为20860中文字符串/字符位置、590文件，起始22357；不是UI漏译数或完成率，Prompt/日志/协议不再从全量清单排除。PlayerCustomPromptRule源码与CN/EN资产语义不等价仍OPEN；1470词项外置保留中英识别能力，EN门禁对这类兼容数据的严格语义验证尚待接线，不声称已可发行。B/C在途文件及原Policy/HANDOFF改动保持。

@@ -90,6 +90,9 @@
     <EmbeddedResource Include="content\modules\AF.Module.Prompt\ModuleData\PreprocessPrompts.json">
       <LogicalName>AnimusForge.Defaults.PreprocessPrompts.json</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="content\modules\AnimusForge.XihaiAction\ModuleData\SceneActionVocabulary.xml">
+      <LogicalName>AnimusForge.Defaults.SceneActionVocabulary.xml</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="content\modules\AF.Module.Economy\ModuleData\GeneratedRpVocabulary.json">
       <LogicalName>AnimusForge.Defaults.GeneratedRpVocabulary.json</LogicalName>
     </EmbeddedResource>
