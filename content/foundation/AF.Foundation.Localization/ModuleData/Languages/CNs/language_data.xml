@@ -25,4 +25,5 @@
   <LanguageFile xml_path="CNs/afonboarding_ui_strings-zh-CN.xml" />
   <LanguageFile xml_path="CNs/afkingdom_ui_strings-zh-CN.xml" />
   <LanguageFile xml_path="CNs/afweekly_ui_strings-zh-CN.xml" />
+  <LanguageFile xml_path="CNs/afnpcaction_editor_strings-zh-CN.xml" />
 </LanguageData>

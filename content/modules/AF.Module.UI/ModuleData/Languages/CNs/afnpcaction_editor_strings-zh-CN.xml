@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<base>
+<base type="string">
   <tags>
     <tag language="简体中文" />
   </tags>
@@ -116,4 +116,3 @@
     <string id="AF_NPCACTION_EDITOR_KindClanLeaderChanged" text="家族族长更替事件" />
   </strings>
 </base>
-
