@@ -35,5 +35,43 @@
     <string id="AF_KINGDOM_CW_Notice_ReceiptInterrupted" text="A previous operation was interrupted; its state is kept for review and cannot be executed again." />
     <string id="AF_KINGDOM_CW_Notice_RetrySafeSteps" text="The agreement is not complete; safe confirmed steps will be retried: {A}" />
     <string id="AF_KINGDOM_CW_Notice_IncompleteReview" text="The operation was not fully confirmed; the faction is kept for review: {A}" />
+    <string id="AF_KINGDOM_UI_Interior_Stability" text="Kingdom stability" />
+    <string id="AF_KINGDOM_UI_Interior_PowerSplit" text="Kingdom power distribution" />
+    <string id="AF_KINGDOM_UI_Interior_Title" text="Interior affairs" />
+    <string id="AF_KINGDOM_UI_Interior_AgendaSection" text="Kingdom agendas" />
+    <string id="AF_KINGDOM_UI_Interior_AgendaEmpty" text="No agenda in progress" />
+    <string id="AF_KINGDOM_UI_Interior_FactionSection" text="Factions and alignments" />
+    <string id="AF_KINGDOM_UI_Interior_SelectHint" text="Select an entry on the left to view details" />
+    <string id="AF_KINGDOM_UI_Interior_AgendaNoDetail" text="No voting details for this agenda yet" />
+    <string id="AF_KINGDOM_UI_Interior_Leading" text="Leading" />
+    <string id="AF_KINGDOM_UI_Interior_FigureGrievance" text="Faction grievance" />
+    <string id="AF_KINGDOM_UI_Interior_FigurePower" text="Faction military power" />
+    <string id="AF_KINGDOM_UI_Interior_FigureRefusals" text="Refused by the king" />
+    <string id="AF_KINGDOM_UI_Interior_RecentChronicle" text="Recent chronicle" />
+    <string id="AF_KINGDOM_UI_Interior_FormationConditions" text="Formation conditions" />
+    <string id="AF_KINGDOM_UI_Interior_PrevPage" text="Previous" />
+    <string id="AF_KINGDOM_UI_Interior_NextPage" text="Next" />
+    <string id="AF_KINGDOM_UI_Interior_TableClan" text="Clan" />
+    <string id="AF_KINGDOM_UI_Interior_TableStance" text="Stance" />
+    <string id="AF_KINGDOM_UI_Interior_TableReason" text="Main grievance source" />
+    <string id="AF_KINGDOM_UI_Interior_TablePower" text="Power" />
+    <string id="AF_KINGDOM_UI_Interior_TableRelation" text="With king" />
+    <string id="AF_KINGDOM_UI_Rebellion_ClanMissing" text="The clan is missing." />
+    <string id="AF_KINGDOM_UI_Rebellion_KingdomMissing" text="The kingdom does not exist or has been eliminated." />
+    <string id="AF_KINGDOM_UI_Rebellion_PlayerClan" text="The player clan does not take part in this system's automatic rebellions." />
+    <string id="AF_KINGDOM_UI_Rebellion_NotInKingdom" text="This clan is not currently part of that kingdom." />
+    <string id="AF_KINGDOM_UI_Rebellion_RulingClan" text="The ruling clan is never a rebellion candidate." />
+    <string id="AF_KINGDOM_UI_Rebellion_ClanEliminated" text="This clan has been eliminated." />
+    <string id="AF_KINGDOM_UI_Rebellion_FactionType" text="This clan's faction type is not eligible for this rebellion logic." />
+    <string id="AF_KINGDOM_UI_Rebellion_Mercenary" text="Mercenary clans are never rebellion candidates." />
+    <string id="AF_KINGDOM_UI_Rebellion_LeaderInvalid" text="The clan leader's state is invalid." />
+    <string id="AF_KINGDOM_UI_Rebellion_LeaderPrisoner" text="The clan leader is imprisoned; a rebellion with settlements cannot start yet." />
+    <string id="AF_KINGDOM_UI_Rebellion_NoFortification" text="This clan holds no town or castle and cannot rebel with settlements." />
+    <string id="AF_KINGDOM_UI_Rebellion_RelationTooHigh" text="Relation with the king is not below {THRESHOLD}; the clan is not an automatic rebellion candidate yet." />
+    <string id="AF_KINGDOM_UI_Rebellion_LeadingClan" text="The leading clan cannot be a follower candidate." />
+    <string id="AF_KINGDOM_UI_Rebellion_NamingTimeout" text="Rebel kingdom naming request timed out ({SECONDS} seconds)." />
+    <string id="AF_KINGDOM_UI_Rebellion_NamingNameInvalid" text="The model returned an empty or invalid kingdom name, or one that duplicates an existing kingdom." />
+    <string id="AF_KINGDOM_UI_Rebellion_NamingParseFailed" text="The model reply could not be parsed into the [NAME]/[SHORT]/[LORE] format." />
+    <string id="AF_KINGDOM_UI_Rebellion_NamingFailed" text="Rebel kingdom naming failed." />
 </strings>
 </base>

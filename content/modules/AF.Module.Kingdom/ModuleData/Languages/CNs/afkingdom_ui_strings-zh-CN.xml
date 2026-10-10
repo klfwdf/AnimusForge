@@ -35,5 +35,43 @@
     <string id="AF_KINGDOM_CW_Notice_ReceiptInterrupted" text="先前操作中断，保留状态待核查，不能重复执行。" />
     <string id="AF_KINGDOM_CW_Notice_RetrySafeSteps" text="协议尚未完成，将重试已确认安全的步骤：{A}" />
     <string id="AF_KINGDOM_CW_Notice_IncompleteReview" text="操作未完整确认，保留派系等待核查：{A}" />
+    <string id="AF_KINGDOM_UI_Interior_Stability" text="王国稳定度" />
+    <string id="AF_KINGDOM_UI_Interior_PowerSplit" text="王国军力分布" />
+    <string id="AF_KINGDOM_UI_Interior_Title" text="内政事务" />
+    <string id="AF_KINGDOM_UI_Interior_AgendaSection" text="王国议程" />
+    <string id="AF_KINGDOM_UI_Interior_AgendaEmpty" text="暂无进行中的议程" />
+    <string id="AF_KINGDOM_UI_Interior_FactionSection" text="派系与阵营" />
+    <string id="AF_KINGDOM_UI_Interior_SelectHint" text="选择左侧条目查看详情" />
+    <string id="AF_KINGDOM_UI_Interior_AgendaNoDetail" text="此议程暂无投票详情" />
+    <string id="AF_KINGDOM_UI_Interior_Leading" text="领先" />
+    <string id="AF_KINGDOM_UI_Interior_FigureGrievance" text="派系不满" />
+    <string id="AF_KINGDOM_UI_Interior_FigurePower" text="派系军事实力" />
+    <string id="AF_KINGDOM_UI_Interior_FigureRefusals" text="国王已拒绝" />
+    <string id="AF_KINGDOM_UI_Interior_RecentChronicle" text="近期纪事" />
+    <string id="AF_KINGDOM_UI_Interior_FormationConditions" text="成派条件" />
+    <string id="AF_KINGDOM_UI_Interior_PrevPage" text="上一页" />
+    <string id="AF_KINGDOM_UI_Interior_NextPage" text="下一页" />
+    <string id="AF_KINGDOM_UI_Interior_TableClan" text="家族" />
+    <string id="AF_KINGDOM_UI_Interior_TableStance" text="立场" />
+    <string id="AF_KINGDOM_UI_Interior_TableReason" text="主要不满来源" />
+    <string id="AF_KINGDOM_UI_Interior_TablePower" text="军力" />
+    <string id="AF_KINGDOM_UI_Interior_TableRelation" text="与国王" />
+    <string id="AF_KINGDOM_UI_Rebellion_ClanMissing" text="家族为空。" />
+    <string id="AF_KINGDOM_UI_Rebellion_KingdomMissing" text="王国不存在或已灭亡。" />
+    <string id="AF_KINGDOM_UI_Rebellion_PlayerClan" text="玩家家族不参与该系统的自动叛乱。" />
+    <string id="AF_KINGDOM_UI_Rebellion_NotInKingdom" text="该家族当前不隶属于此王国。" />
+    <string id="AF_KINGDOM_UI_Rebellion_RulingClan" text="执政家族不会作为叛乱候选。" />
+    <string id="AF_KINGDOM_UI_Rebellion_ClanEliminated" text="该家族已灭亡。" />
+    <string id="AF_KINGDOM_UI_Rebellion_FactionType" text="该家族派系类型不适合纳入该叛乱逻辑。" />
+    <string id="AF_KINGDOM_UI_Rebellion_Mercenary" text="佣兵家族不会作为叛乱候选。" />
+    <string id="AF_KINGDOM_UI_Rebellion_LeaderInvalid" text="族长状态无效。" />
+    <string id="AF_KINGDOM_UI_Rebellion_LeaderPrisoner" text="族长当前被囚，暂不触发带城反出。" />
+    <string id="AF_KINGDOM_UI_Rebellion_NoFortification" text="该家族没有城镇或城堡，不能带城反出。" />
+    <string id="AF_KINGDOM_UI_Rebellion_RelationTooHigh" text="与国王关系未低于 {THRESHOLD}，暂不列入自动叛乱候选。" />
+    <string id="AF_KINGDOM_UI_Rebellion_LeadingClan" text="主导家族不作为跟随候选。" />
+    <string id="AF_KINGDOM_UI_Rebellion_NamingTimeout" text="叛乱命名请求超时（{SECONDS} 秒）。" />
+    <string id="AF_KINGDOM_UI_Rebellion_NamingNameInvalid" text="模型返回的国名为空、无效或与现有王国重名。" />
+    <string id="AF_KINGDOM_UI_Rebellion_NamingParseFailed" text="模型返回无法按 [NAME]/[SHORT]/[LORE] 格式解析。" />
+    <string id="AF_KINGDOM_UI_Rebellion_NamingFailed" text="叛乱命名失败。" />
 </strings>
 </base>

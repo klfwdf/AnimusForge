@@ -37,7 +37,7 @@ internal static class RebellionNamingOwner
 				var task = attempt();
 				response = Task.WhenAny(task, Task.Delay(timeoutMs)).GetAwaiter().GetResult() == task ? task.GetAwaiter().GetResult() : new RebellionNamingAttempt
 				{
-					ErrorMessage = "叛乱命名请求超时（60 秒）。"
+					ErrorMessage = CivilWarUiText.T("AF_KINGDOM_UI_Rebellion_NamingTimeout", "Rebel kingdom naming request timed out ({SECONDS} seconds).", ("SECONDS", (timeoutMs / 1000).ToString()))
 				};
 			}
 			catch (Exception ex)
@@ -68,10 +68,10 @@ internal static class RebellionNamingOwner
 						EncyclopediaText = lore,
 						AttemptsUsed = i
 					};
-				result.FailureReason = failureDetail("模型返回的国名为空、无效或与现有王国重名。", response.Content, response.ResponseBody);
+				result.FailureReason = failureDetail(CivilWarUiText.T("AF_KINGDOM_UI_Rebellion_NamingNameInvalid", "The model returned an empty or invalid kingdom name, or one that duplicates an existing kingdom."), response.Content, response.ResponseBody);
 			}
 			else
-				result.FailureReason = response?.Success == true ? failureDetail("模型返回无法按 [NAME]/[SHORT]/[LORE] 格式解析。", response.Content, response.ResponseBody) : (response?.ErrorMessage ?? "叛乱命名失败。");
+				result.FailureReason = response?.Success == true ? failureDetail(CivilWarUiText.T("AF_KINGDOM_UI_Rebellion_NamingParseFailed", "The model reply could not be parsed into the [NAME]/[SHORT]/[LORE] format."), response.Content, response.ResponseBody) : (response?.ErrorMessage ?? CivilWarUiText.T("AF_KINGDOM_UI_Rebellion_NamingFailed", "Rebel kingdom naming failed."));
 			if (i < total)
 			{
 				logRetry?.Invoke(i, total, result.FailureReason);
