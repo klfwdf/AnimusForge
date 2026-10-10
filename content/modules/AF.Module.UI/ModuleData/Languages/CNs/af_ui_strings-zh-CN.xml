@@ -2923,7 +2923,7 @@ HeroNPC 个性/背景、旧对话历史、压缩记忆、赊账/欠款、未命�
   <string id="AF_MCM_Tts_VoiceType" text="火山专用 voice_type" />
   <string id="AF_MCM_Tts_VoiceType_Hint" text="示例：zh_male_M392_conversation_wvae_bigtts" />
   <string id="AF_MCM_Tts_ExtraParam" text="火山专用 extra_param（JSON 对象）" />
-  <string id="AF_MCM_Tts_ExtraParam_Hint" text="将原样写入 request.extra_param（字符串）。示例：{&quot;disable_markdown_filter&quot;:true}" />
+  <string id="AF_MCM_Tts_ExtraParam_Hint" text="将原样写入 request.extra_param（字符串）。示例键值：disable_markdown_filter=true" />
   <string id="AF_MCM_Tts_AudioFormat" text="火山专用音频格式" />
   <string id="AF_MCM_Tts_AudioFormat_Hint" text="V1 encoding，当前播放器仅支持 wav 或 pcm。" />
   <string id="AF_MCM_Tts_SampleRate" text="火山专用采样率" />
