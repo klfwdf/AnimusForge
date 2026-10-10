@@ -104,6 +104,24 @@ internal static class CoupUiText
     internal static string Cancel => Text("AF_COUP_UI_CANCEL", "Cancel");
     internal static string InsufficientTroops => Text("AF_COUP_UI_INSUFFICIENT_TROOPS", "There are not enough healthy soldiers for the assault party and reserve. The coup was cancelled.");
     internal static string StreetSelectionTitle => Text("AF_COUP_UI_STREET_SELECTION_TITLE", "Coup Assault Party");
+    internal static string SelectionPartyRequired => Text("AF_COUP_UI_SELECTION_PARTY_REQUIRED", "Troop selection requires a valid player party.");
+    internal static string SelectionDetachedRosterRequired => Text("AF_COUP_UI_SELECTION_DETACHED_ROSTER_REQUIRED", "Troop selection requires a separate temporary roster.");
+    internal static TextObject AvailableSoldiers => new TextObject("{=AF_COUP_UI_AVAILABLE_SOLDIERS}Available soldiers");
+    internal static TextObject SelectionPartyName(string title, int minimum, int limit)
+    {
+        var text = new TextObject("{=AF_COUP_UI_SELECTION_PARTY_NAME}{TITLE} ({MINIMUM} to {LIMIT} soldiers)");
+        text.SetTextVariable("TITLE", title ?? string.Empty);
+        text.SetTextVariable("MINIMUM", minimum);
+        text.SetTextVariable("LIMIT", limit);
+        return text;
+    }
+    internal static TextObject SelectionCountHint(int minimum, int limit)
+    {
+        var text = new TextObject("{=AF_COUP_UI_SELECTION_COUNT_HINT}Select {MINIMUM} to {LIMIT} soldiers.");
+        text.SetTextVariable("MINIMUM", minimum);
+        text.SetTextVariable("LIMIT", limit);
+        return text;
+    }
     internal static string SelectionInvalid(int minimum) => Text("AF_COUP_UI_SELECTION_INVALID",
         "The troop selection is no longer valid. Select at least {MINIMUM} healthy regular soldiers and leave one healthy soldier as reserve.", ("MINIMUM", minimum));
     internal static string RosterChanged => Text("AF_COUP_UI_ROSTER_CHANGED", "The party roster changed; select again.");

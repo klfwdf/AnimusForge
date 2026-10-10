@@ -134,5 +134,10 @@
     <string id="AF_COUP_UI_REPORT_SUCCESS_RELEASED" text="政变成功，{PLAYER}取得{KINGDOM}王位并接管{TOWN}，选择不扣押旧王。" />
     <string id="AF_COUP_UI_REPORT_FAILURE" text="政变失败，未夺取王位，家族带原有领地脱离原王国并与之开战。" />
     <string id="AF_COUP_UI_REPORT_CASUALTIES" text="已记录伤亡：突击队阵亡{ALLY_KILLED}、负伤{ALLY_WOUNDED}；守军阵亡{DEF_KILLED}、负伤{DEF_WOUNDED}。" />
+    <string id="AF_COUP_UI_SELECTION_PARTY_REQUIRED" text="选兵需要有效的玩家部队。" />
+    <string id="AF_COUP_UI_SELECTION_DETACHED_ROSTER_REQUIRED" text="选兵必须使用独立临时名册。" />
+    <string id="AF_COUP_UI_AVAILABLE_SOLDIERS" text="可选士兵" />
+    <string id="AF_COUP_UI_SELECTION_PARTY_NAME" text="{TITLE}（{MINIMUM} 至 {LIMIT} 人）" />
+    <string id="AF_COUP_UI_SELECTION_COUNT_HINT" text="请选择 {MINIMUM} 至 {LIMIT} 名士兵。" />
   </strings>
 </base>
