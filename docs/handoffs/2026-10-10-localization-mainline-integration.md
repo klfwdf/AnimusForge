@@ -125,3 +125,13 @@ UI词法快照`mainline-after-20261010.json`为较早`6e6e2fa1a`工作树：1246
 - 原始 CreatedDate/CreatedDay、导入和归档生成算法不变；第0日有效。未知、自定义、混合正文保留；完整原生日历、外交年季日期及任意 Policy 日期仍未覆盖。中文历史格式识别字面量仍在 helper，本包完成展示投影，其源码语料外置仍待处理，不代表全模组完成。
 - 去除测试中重复加入的同组日期模拟，保留全部不同断言（含 CreatedDay 排序）。重跑 WeeklyProjectionLocalizationContractTests：34键、19日期案例、来源/消费者边界及原始诊断 PASS；LocalizationResourceContractTests：29对 PASS；git diff --check PASS。
 - 未新增语言键/注册，未做产品编译、DLL加载、Stage、游戏或旧档验收。接收范围仅 helper、两个消费者文件、契约测试及此记录；其他作者 dirty 保留。回滚使用本次精确提交的 focused inverse。
+
+## 经济显示匹配语料与 C 后续计划（2026-10-11）
+
+- PlayerRpForgeDisplayTexts.cs 82处、EconomyRecruitmentDetailTexts.cs 11处中文运行时字面量迁到 EconomyDisplaySources.json（92个不同值）；表内原文、正则、异常前缀逐值不变。EconomyDisplaySourceTexts 在首次使用时只读一次嵌入资源，静态表/既有 Regex 生命周期不变，少量方法内匹配改为缓存字典取值。无 Tick IO、游戏对象读取或语言查询。
+- 新增资源由 AnimusForge.csproj 与 content-map 注册，不新增语言对。所有 AF_ECO_UI 键与英文fallback保持；未知原文、空值、多行和业务生产者不变。此为兼容输入外置，不能当作新增显示翻译或经济英文全覆盖。现有纯英文包门禁仍不区分具名双语/兼容资源，本片不放宽门禁。
+- EconomyDisplaySourceContractTests 对 ebe438790 两文件完整反向源码还原通过，93引用/92值全部消费、资源唯一注册通过。既有经济词表245、固定资产156、债务34、图库30及29对资源契约 PASS，git diff --check PASS。原压力测试的显示键和入口断言核对不受影响，但C#压力套件、产品1.3/1.4编译、DLL加载、游戏未运行。
+- 最新全量快照 artifacts/localization/runtime-literals-20261011-current.json：1831文件、19215中文位置、582含中文文件、13766去重值，无 problems/changedDuringScan。修订标记 ebe438790 含本片工作树；不能与历史扫描差值直接归功于本片，也不能当作漏译率。
+- 用户要求外部 C 计划，已生成 artifacts/localization/plan-C3-issue-localization.txt：IssueRuntimePromptOwner 的任务上下文及 IssueDisplayTexts 的显示识别；保护标签、候选/拒绝规则、原始事实与未知文本。共享注册由主线集成。仅提供可转发任务卡，未向未知外部聊天发送消息，也未声称 C 开工。
+- 持续 Jev：work/localization-decisions-20261011-01 先offline后一次2 Choice，636输入/93输出tokens，返回cost 0.0003816，底层版本未固定。原始事实保留/边界投影 project=1.00；scope返回 insufficient、confidence 0.36、needs_review=true，不当作通过。主线按真实 IssueRuntimePromptOwner 的任务状态、同伴白名单及正文标签禁令确认可划分，任务卡要求开工先查消费者与线程；未让低置信判断替代人工范围审查。
+- 本片回滚通过精确提交的 focused inverse，其他作者的 Policy、人物JSON、HANDOFF dirty 不纳入。全模组目标仍 ACTIVE。

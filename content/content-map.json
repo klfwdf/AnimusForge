@@ -17137,6 +17137,12 @@
       "source": "content/foundation/AF.Foundation.Localization/ModuleData/TerminalCategories.json",
       "target": "ModuleData/TerminalCategories.json",
       "logicalName": "AnimusForge.Defaults.TerminalCategories.json"
+    },
+    {
+      "owner": "AF.Module.Economy",
+      "source": "content/modules/AF.Module.Economy/ModuleData/EconomyDisplaySources.json",
+      "target": "ModuleData/EconomyDisplaySources.json",
+      "logicalName": "AnimusForge.Defaults.EconomyDisplaySources.json"
     }
   ]
 }
