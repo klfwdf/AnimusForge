@@ -135,3 +135,14 @@ UI词法快照`mainline-after-20261010.json`为较早`6e6e2fa1a`工作树：1246
 - 用户要求外部 C 计划，已生成 artifacts/localization/plan-C3-issue-localization.txt：IssueRuntimePromptOwner 的任务上下文及 IssueDisplayTexts 的显示识别；保护标签、候选/拒绝规则、原始事实与未知文本。共享注册由主线集成。仅提供可转发任务卡，未向未知外部聊天发送消息，也未声称 C 开工。
 - 持续 Jev：work/localization-decisions-20261011-01 先offline后一次2 Choice，636输入/93输出tokens，返回cost 0.0003816，底层版本未固定。原始事实保留/边界投影 project=1.00；scope返回 insufficient、confidence 0.36、needs_review=true，不当作通过。主线按真实 IssueRuntimePromptOwner 的任务状态、同伴白名单及正文标签禁令确认可划分，任务卡要求开工先查消费者与线程；未让低置信判断替代人工范围审查。
 - 本片回滚通过精确提交的 focused inverse，其他作者的 Policy、人物JSON、HANDOFF dirty 不纳入。全模组目标仍 ACTIVE。
+
+## 外交提示词生成器整文件双语接线（2026-10-11）
+
+- 用户开启持续目标，并要求更激进、避免防御性编程。此轮从整份 WorldDiplomacyPromptComposer 进入实际英文提示词覆盖，不再只搬兼容语料。基线8adc66d61，237处文本去重为212对AF_DIP_Prompt_Composer资源，加入既有afdip_ui_strings两侧；不新建语言对、加载器或注册框架。
+- IWorldDiplomacyPromptWorld新增LocalizePrompt叶子方法，由WorldDiplomacyBehavior.PromptContext的同步PromptWorld复用DiplomacyUiLocalization解析。生成器保留条件、顺序、世界状态查询、ID/标签、原案绑定、冷却/玩家例外、和平及威慑约束，不读取游戏本地化对象。AppendPlayerContext仅补传现有world。解析频率是请求组装，不在Tick中增加全量扫描/IO。
+- 实际DLL发现JSON花括号直接进入TextObject会使整个提示词为空；变量注入花括号也会再次被解析。最终对3条含JSON/条款模板使用AF_JSON_OPEN/CLOSE文本标记，在本地化完成之后还原字面括号。没有异常吞掉/通用兜底。两版真实DLL均验证原JSON示例完整保留。
+- DiplomacyPromptComposerLocalizationContractTests：237调用/212键、两侧协议token与数值、英文fallback、中文整文件反向还原、端口接线与JSON解析PASS。只剩BuildFallbackAnalysisJson中的原始分析失败原因没有迁移，该值进入结果数据，未当显示提示词翻译。
+- LocalizationResourceContractTests PASS29对；PackageDLocalizationContractTests PASS（diplomacy1273、kingdom114，13处既有fallback漂移原样保留）；既有1.3/1.4 Localization DLL各5092次EN/CN/French/切回解析和6次真实字面JSON括号解析PASS，收据脚本work/verify_diplomacy_prompt_braces.ps1。git diff --check PASS。
+- C# PromptWorldFixture实现新接口并使用嵌入的权威中文资源保持原业务预言，新增英文参与国必选/候选限制及JSON示例断言，原中文测试未删除。该SmokeTests及产品1.3/1.4编译没有运行；实际资源DLL测试不等于新C#已加载。没有部署/打包/推送。
+- Jev work/localization-decisions-20261011-02：先offline后一次8项语义检查，均选择preserved但4项置信不足（37/99/134/137），needs_review=true，不能记作全通过；人工逐条复核条约角色、原案绑定、不可撤销既成效果及20/15威望扣除条件与原句一致。3029输入/359输出，返回cost0.0018174，底层版本未固定。
+- 未覆盖：GetCommonDiplomacyContract、WorldDiplomacyPromptContractRules共享段、TextRules返回标签、政策/战争/亲属等外部事实片段、用户或存档公文正文；这些仍可能把中文带进最终请求。下一步继续处理这些真实上游，不以本文件237处完成声称整个外交链路全英文。回滚使用本片精确提交的focused inverse，C任务模块及其他作者dirty未触碰。

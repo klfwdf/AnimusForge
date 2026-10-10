@@ -23,6 +23,10 @@ public sealed partial class WorldDiplomacyBehavior
         private readonly Dictionary<string, Kingdom> _all = new Dictionary<string, Kingdom>(StringComparer.OrdinalIgnoreCase);
         private bool _kingdomIndexInitialized;
         internal PromptWorld(WorldDiplomacyBehavior owner) => _owner = owner;
+        string IWorldDiplomacyPromptWorld.LocalizePrompt(string id, string englishFallback)
+            // Restore literal JSON braces after TextObject parsing, which also parses variable values.
+            => DiplomacyUiLocalization.Text(id, englishFallback)
+                .Replace("[[AF_JSON_OPEN]]", "{").Replace("[[AF_JSON_CLOSE]]", "}");
         private void EnsureKingdomIndex()
         {
             if (_kingdomIndexInitialized) return;
