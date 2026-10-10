@@ -760,6 +760,14 @@ COMMITTED_CONTENT_ADDITIONS = {
         "owner": "AF.Module.Onboarding", "source": "content/modules/AF.Module.Onboarding/ModuleData/Languages/CNs/afonboarding_ui_strings-zh-CN.xml",
         "sha256": "9C2920A86E518162481B81EC86A53D2826F42695955B2C864A1705FBA2CF4516", "revision": "316d917af",
     },
+    "ModuleData/Languages/afkingdom_ui_strings.xml": {
+        "owner": "AF.Module.Kingdom", "source": "content/modules/AF.Module.Kingdom/ModuleData/Languages/afkingdom_ui_strings.xml",
+        "sha256": "00000000000000000000000000000000", "revision": "360d094cb",
+    },
+    "ModuleData/Languages/CNs/afkingdom_ui_strings-zh-CN.xml": {
+        "owner": "AF.Module.Kingdom", "source": "content/modules/AF.Module.Kingdom/ModuleData/Languages/CNs/afkingdom_ui_strings-zh-CN.xml",
+        "sha256": "00000000000000000000000000000000", "revision": "360d094cb",
+    },
 }
 
 EXPECTED = {**J15A_EXPECTED, **J15B_EXPECTED, **J15C_EXPECTED, **F4A_EXPECTED, **INTEGRATION_EXPECTED, **COMMITTED_CONTENT_ADDITIONS,
