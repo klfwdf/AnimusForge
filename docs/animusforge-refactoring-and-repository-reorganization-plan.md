@@ -1,6 +1,8 @@
 <a id="full-english-release-20261010"></a>
 ## 全英文发行与 CN/EN 双包（2026-10-10，ACTIVE / NOT RELEASE READY）
 
+下一批整片集成：外交TextRules的262处原值外置、50条决策描述包选翻译及17消费者接通；Weekly Materials原918处源码归零、101提示词+2UI实际双语、888条兼容原值；Social由b412ae0d3提交，604完整token清理、88提示词+32UI实际双语、444兼容原值。主线接共享注册；三包schema/协议/英文语料、专项源码等价、29资源对通过，既有双API各Weekly36/Social568资源解析通过。未编译/游戏/正式出包；自由历史SnapshotText等不算已译。[证据](handoffs/2026-10-10-localization-mainline-integration.md#外交描述weekly素材与social整片集成2026-10-11)。
+
 并行整片收口：场景包221条语料由`115e8a1ed`交付并接入共享内容映射和EN XML选择；外交固定合同扩至118对、17处协议/匹配原值外置，WorldDiplomacyPromptContractRules.cs运行时中文归零。原216对外交提示词不变，18旧签名及真实请求/刷新/压缩/纠正接线静态验证通过；两包共同UI和XML协议映射40项通过。未编译/实机/正式出包。世界书由B负责，主线已停止其修改/修正草稿工作；C的Issue改动未纳入本片。Weekly既有显示翻译不重做，剩余计数是源码字面量而非全数漏译。[证据](handoffs/2026-10-10-localization-mainline-integration.md#并行外交合同与场景包集成2026-10-11)。
 
 包级口径实施：外交216对提示词已从UI XML迁到DiplomacyPromptTexts.json/.en.json，实际主机与共同契约读包内同路径缓存，界面切换不改变语料。EN内容投影保留已注册双语UI，35项无ZIP/无编译的内容映射检查通过。协议/JSON/schema与旧文本保持；新增的英文演讲强制输出语句已撤去，原局部中文输出规则仍待独立处理。其他提示词、全部世界书覆盖和嵌入资源门禁尚未收敛，不声称能完整出包。[证据](handoffs/2026-10-10-localization-mainline-integration.md#包内提示词选版与共享双语界面2026-10-11)。

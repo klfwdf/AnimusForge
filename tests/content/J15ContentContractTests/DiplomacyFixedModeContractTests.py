@@ -32,7 +32,7 @@ def restore(m):
     assert decode(m[2]) == en[m[1]], m[1] + ': fallback equality'
     return json.dumps(zh[m[1]], ensure_ascii=False)
 restored = re.sub(r'ContractText\(localize, "(AF_DIP_Contract_\d+)", ("(?:\\.|[^"\\])*")\)', restore, source)
-start = restored.index('\n    private static string ContractText(')
+start = restored.index('\n    internal static string ContractText(')
 end = restored.index('\n\tpublic static string StablePromptHash(', start)
 restored = restored[:start] + restored[end:]
 methods = ('AppendDiplomaticDeclarationWritingContract', 'BuildDiplomaticDeclarationModeContract',

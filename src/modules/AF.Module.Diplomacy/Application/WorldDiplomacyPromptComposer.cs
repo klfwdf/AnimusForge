@@ -27,7 +27,7 @@ internal static class WorldDiplomacyPromptComposer
         return WorldDiplomacyTextRules.BuildBilateralStateLabel(
             world.IsAtWar(authorId, targetId),
             world.IsAlly(authorId, targetId),
-            world.HasTradeAgreement(authorId, targetId));
+            world.HasTradeAgreement(authorId, targetId), world.LocalizePrompt);
     }
 
 	internal static string BuildRoundPlanSystemPrompt(IWorldDiplomacyPromptWorld world, WorldDiplomacyRound round)
@@ -706,12 +706,12 @@ internal static class WorldDiplomacyPromptComposer
 		}
 		if (!string.IsNullOrWhiteSpace(bilateralFamily)) sb.AppendLine(bilateralFamily);
 		sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_181", "Current relations=") + BilateralStateLabel(world, authorId, targetId)
-			+ world.LocalizePrompt("AF_DIP_Prompt_Composer_182", "; overall relations between the two kingdoms' nobles=") + WorldDiplomacyTextRules.DescribeRealmRelationProfile(relationProfile)
-			+ world.LocalizePrompt("AF_DIP_Prompt_Composer_183", "; rulers' personal relations=") + WorldDiplomacyTextRules.DescribeRulerRelation(relation)
-			+ world.LocalizePrompt("AF_DIP_Prompt_Composer_184", "; geography=") + (border.SharesBorder ? WorldDiplomacyTextRules.DescribeBorderRelation(border) : world.LocalizePrompt("AF_DIP_Prompt_Composer_185", "No shared border"))
-			+ world.LocalizePrompt("AF_DIP_Prompt_Composer_186", "; overall military strength=") + WorldDiplomacyTextRules.DescribeStrengthBalance(situation.AuthorStrength, situation.TargetStrength) + "。");
+			+ world.LocalizePrompt("AF_DIP_Prompt_Composer_182", "; overall relations between the two kingdoms' nobles=") + WorldDiplomacyTextRules.DescribeRealmRelationProfile(relationProfile, world.LocalizePrompt)
+			+ world.LocalizePrompt("AF_DIP_Prompt_Composer_183", "; rulers' personal relations=") + WorldDiplomacyTextRules.DescribeRulerRelation(relation, world.LocalizePrompt)
+			+ world.LocalizePrompt("AF_DIP_Prompt_Composer_184", "; geography=") + (border.SharesBorder ? WorldDiplomacyTextRules.DescribeBorderRelation(border, world.LocalizePrompt) : world.LocalizePrompt("AF_DIP_Prompt_Composer_185", "No shared border"))
+			+ world.LocalizePrompt("AF_DIP_Prompt_Composer_186", "; overall military strength=") + WorldDiplomacyTextRules.DescribeStrengthBalance(situation.AuthorStrength, situation.TargetStrength, world.LocalizePrompt) + "。");
 		sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_187", "Number of the issuing kingdom's culturally affiliated towns and castles held by the target=") + culturalFiefs.ToString(CultureInfo.InvariantCulture)
-			+ world.LocalizePrompt("AF_DIP_Prompt_Composer_188", "; border and political pressure=") + WorldDiplomacyTextRules.DescribeWarPressure(pressure) + world.LocalizePrompt("AF_DIP_Prompt_Composer_189", ". These are for the court's judgment only; do not express them as scores or thresholds."));
+			+ world.LocalizePrompt("AF_DIP_Prompt_Composer_188", "; border and political pressure=") + WorldDiplomacyTextRules.DescribeWarPressure(pressure, world.LocalizePrompt) + world.LocalizePrompt("AF_DIP_Prompt_Composer_189", ". These are for the court's judgment only; do not express them as scores or thresholds."));
 		if (!string.IsNullOrWhiteSpace(targetPolicy))
 		{
 			sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_190", "Target kingdom's policies=") + WorldDiplomacyTextRules.Limit(targetPolicy, 700));
@@ -807,10 +807,10 @@ internal static class WorldDiplomacyPromptComposer
 		int candidateReputation = world.InternationalReputation(candidateId);
 		sb.Append("- ").Append(candidateId).Append('=').Append(world.KingdomName(candidateId))
 			.Append(world.LocalizePrompt("AF_DIP_Prompt_Composer_200", "; with this kingdom=")).Append(BilateralStateLabel(world, authorId, candidateId))
-			.Append(world.LocalizePrompt("AF_DIP_Prompt_Composer_182", "; overall relations between the two kingdoms' nobles=")).Append(WorldDiplomacyTextRules.DescribeRealmRelationProfile(relationProfile))
-			.Append(world.LocalizePrompt("AF_DIP_Prompt_Composer_183", "; rulers' personal relations=")).Append(WorldDiplomacyTextRules.DescribeRulerRelation(world.RulerRelation(authorId, candidateId)))
-			.Append(world.LocalizePrompt("AF_DIP_Prompt_Composer_184", "; geography=")).Append(border.SharesBorder ? WorldDiplomacyTextRules.DescribeBorderRelation(border) : world.LocalizePrompt("AF_DIP_Prompt_Composer_185", "No shared border"))
-			.Append(world.LocalizePrompt("AF_DIP_Prompt_Composer_186", "; overall military strength=")).Append(WorldDiplomacyTextRules.DescribeStrengthBalance(strengthSituation.AuthorStrength, strengthSituation.TargetStrength))
+			.Append(world.LocalizePrompt("AF_DIP_Prompt_Composer_182", "; overall relations between the two kingdoms' nobles=")).Append(WorldDiplomacyTextRules.DescribeRealmRelationProfile(relationProfile, world.LocalizePrompt))
+			.Append(world.LocalizePrompt("AF_DIP_Prompt_Composer_183", "; rulers' personal relations=")).Append(WorldDiplomacyTextRules.DescribeRulerRelation(world.RulerRelation(authorId, candidateId), world.LocalizePrompt))
+			.Append(world.LocalizePrompt("AF_DIP_Prompt_Composer_184", "; geography=")).Append(border.SharesBorder ? WorldDiplomacyTextRules.DescribeBorderRelation(border, world.LocalizePrompt) : world.LocalizePrompt("AF_DIP_Prompt_Composer_185", "No shared border"))
+			.Append(world.LocalizePrompt("AF_DIP_Prompt_Composer_186", "; overall military strength=")).Append(WorldDiplomacyTextRules.DescribeStrengthBalance(strengthSituation.AuthorStrength, strengthSituation.TargetStrength, world.LocalizePrompt))
 			.Append(world.LocalizePrompt("AF_DIP_Prompt_Composer_206", "; national prestige=")).Append(world.NationalPrestige(candidateId).ToString(CultureInfo.InvariantCulture))
 			.Append(world.LocalizePrompt("AF_DIP_Prompt_Composer_207", "; foreign public international reputation tier=")).Append(WorldDiplomacyReputationRules.DescribeInternationalReputation(candidateReputation));
 		if (!string.IsNullOrWhiteSpace(policy)) sb.Append(world.LocalizePrompt("AF_DIP_Prompt_Composer_208", "; policy leanings=")).Append(policy);
@@ -825,17 +825,17 @@ internal static class WorldDiplomacyPromptComposer
 		WarSituationSnapshot snapshot = world.WarSituation(authorId, targetId);
 		if (snapshot?.IsAtWar != true) return "";
 		StringBuilder sb = new StringBuilder();
-		sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_209", "[War situation for the ruler's judgment only] The war has ") + WorldDiplomacyTextRules.DescribeWarDuration(snapshot.WarDays, world.DaysPerYear()) + "。");
-		sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_210", "Overall military strength of both sides=") + WorldDiplomacyTextRules.DescribeStrengthBalance(snapshot.AuthorStrength, snapshot.TargetStrength)
-			+ world.LocalizePrompt("AF_DIP_Prompt_Composer_211", "; recent course of the war=") + WorldDiplomacyTextRules.DescribeWarProgress(snapshot.AuthorProgress, snapshot.TargetProgress)
-			+ world.LocalizePrompt("AF_DIP_Prompt_Composer_212", "; issuing kingdom=") + WorldDiplomacyTextRules.DescribeOtherWarBurden(snapshot.AuthorOtherWars)
-			+ world.LocalizePrompt("AF_DIP_Prompt_Composer_213", "; target kingdom=") + WorldDiplomacyTextRules.DescribeOtherWarBurden(snapshot.TargetOtherWars) + world.LocalizePrompt("AF_DIP_Prompt_Composer_214", ". These are overall assessments. Render them only in in-world language; do not disclose scores, score differences, openness values or military strength numbers."));
+		sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_209", "[War situation for the ruler's judgment only] The war has ") + WorldDiplomacyTextRules.DescribeWarDuration(snapshot.WarDays, world.DaysPerYear(), world.LocalizePrompt) + "。");
+		sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_210", "Overall military strength of both sides=") + WorldDiplomacyTextRules.DescribeStrengthBalance(snapshot.AuthorStrength, snapshot.TargetStrength, world.LocalizePrompt)
+			+ world.LocalizePrompt("AF_DIP_Prompt_Composer_211", "; recent course of the war=") + WorldDiplomacyTextRules.DescribeWarProgress(snapshot.AuthorProgress, snapshot.TargetProgress, world.LocalizePrompt)
+			+ world.LocalizePrompt("AF_DIP_Prompt_Composer_212", "; issuing kingdom=") + WorldDiplomacyTextRules.DescribeOtherWarBurden(snapshot.AuthorOtherWars, world.LocalizePrompt)
+			+ world.LocalizePrompt("AF_DIP_Prompt_Composer_213", "; target kingdom=") + WorldDiplomacyTextRules.DescribeOtherWarBurden(snapshot.TargetOtherWars, world.LocalizePrompt) + world.LocalizePrompt("AF_DIP_Prompt_Composer_214", ". These are overall assessments. Render them only in in-world language; do not disclose scores, score differences, openness values or military strength numbers."));
 		if (includePeaceNegotiationTerms)
 		{
 			IReadOnlyList<string> targetCanCede = world.CessionCandidates(targetId, authorId, snapshot.TargetCessionScore);
 			IReadOnlyList<string> authorCanCede = world.CessionCandidates(authorId, targetId, snapshot.AuthorCessionScore);
-			sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_215", "[Peace terms: use only when peace actions are available for this document] Peace pressure on the issuing kingdom=") + WorldDiplomacyTextRules.DescribePeacePressure(snapshot.AuthorPeacePressure)
-				+ world.LocalizePrompt("AF_DIP_Prompt_Composer_216", "; peace pressure on the target kingdom=") + WorldDiplomacyTextRules.DescribePeacePressure(snapshot.TargetPeacePressure) + "。");
+			sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_215", "[Peace terms: use only when peace actions are available for this document] Peace pressure on the issuing kingdom=") + WorldDiplomacyTextRules.DescribePeacePressure(snapshot.AuthorPeacePressure, world.LocalizePrompt)
+				+ world.LocalizePrompt("AF_DIP_Prompt_Composer_216", "; peace pressure on the target kingdom=") + WorldDiplomacyTextRules.DescribePeacePressure(snapshot.TargetPeacePressure, world.LocalizePrompt) + "。");
 		sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_217", "Tribute and territorial cessions may coexist. Indicative daily tribute: if the issuing kingdom pays, approximately ") + snapshot.AuthorSuggestedTribute + world.LocalizePrompt("AF_DIP_Prompt_Composer_218", "; if the target kingdom pays, approximately ") + snapshot.TargetSuggestedTribute + world.LocalizePrompt("AF_DIP_Prompt_Composer_219", ". Negotiation is allowed, but do not exceed the legal ceilings supplied by the task."));
 		sb.AppendLine(world.LocalizePrompt("AF_DIP_Prompt_Composer_220", "Fiefs the target kingdom may currently legally offer to cede to the issuing kingdom=") + WorldDiplomacyTextRules.FormatCessionCandidates(targetCanCede) + world.LocalizePrompt("AF_DIP_Prompt_Composer_221", "; fiefs the issuing kingdom may currently legally offer to cede to the target kingdom=") + WorldDiplomacyTextRules.FormatCessionCandidates(authorCanCede) + world.LocalizePrompt("AF_DIP_Prompt_Composer_222", ". If the list is empty, do not propose or agree to territorial cessions or invent settlement names. Prioritize lost territory not yet recovered in this war. Towns appear in the list only when the war situation is severely unfavorable."));
 		}

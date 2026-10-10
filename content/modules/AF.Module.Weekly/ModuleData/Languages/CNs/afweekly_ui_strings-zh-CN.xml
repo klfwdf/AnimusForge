@@ -9,5 +9,7 @@
     <string id="AF_WEEKLY_UnnamedGroup" text="未命名分组" />
     <string id="AF_WEEKLY_WorldWeeklyReport" text="世界周报" />
     <string id="AF_WEEKLY_KingdomWeeklyReport" text="王国周报" />
+    <string id="AF_WEEKLY_EmptySection" text="本周未见明显变化。" />
+    <string id="AF_WEEKLY_LegacyUnsectionedReport" text="该期旧周报尚未按三类保存，原文如下：&#xA;&#xA;" />
   </strings>
 </base>

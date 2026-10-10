@@ -11,7 +11,7 @@ for suffix, xml_path in (('', 'Languages/CNs/afdip_ui_strings-zh-CN.xml'), ('.en
     old_xml = subprocess.check_output(['git', 'show', 'a7de67231:' + base + xml_path], cwd=ROOT)
     expected = {n.get('id'): n.get('text').replace('[[AF_JSON_OPEN]]', '{').replace('[[AF_JSON_CLOSE]]', '}')
                 for n in ET.fromstring(old_xml).iter('string') if n.get('id').startswith('AF_DIP_Prompt_')}
-    assert {k: data[k] for k in expected} == expected and set(data) == set(expected) | {'AF_DIP_Contract_' + str(i).zfill(3) for i in range(118)}, suffix + ': exact package content migration'
+    assert {k: data[k] for k in expected} == expected and set(data) == set(expected) | {'AF_DIP_Contract_' + str(i).zfill(3) for i in range(118)} | {'AF_DIP_Fact_' + str(i).zfill(3) for i in range(50)}, suffix + ': exact package content migration'
     assert not any(n.get('id').startswith('AF_DIP_Prompt_') for n in ET.parse(ROOT / base / xml_path).iter('string'))
     schema = data['AF_DIP_Prompt_Composer_015']
     assert json.loads(schema[schema.index('{'):])['selected_kingdom_ids'] == ['ID']

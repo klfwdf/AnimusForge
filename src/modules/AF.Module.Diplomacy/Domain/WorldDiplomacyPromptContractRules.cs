@@ -19,7 +19,7 @@ public static class WorldDiplomacyPromptContractRules
 	internal static readonly string DiplomacyAnalysisTaskMarker = CompatibilityContractText.Values["AF_DIP_Compatibility_005"];
 	internal static readonly string RoundPlanTaskMarker = CompatibilityContractText.Values["AF_DIP_Compatibility_006"];
 
-    private static string ContractText(Func<string, string, string> localize, string id, string englishFallback)
+    internal static string ContractText(Func<string, string, string> localize, string id, string englishFallback)
         => localize == null ? CompatibilityContractText.Values[id] : localize(id, englishFallback);
 
     // Old signatures preserve their historical text without Chinese source literals.

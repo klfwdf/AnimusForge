@@ -177,3 +177,13 @@ UI词法快照`mainline-after-20261010.json`为较早`6e6e2fa1a`工作树：1246
 - 静态发现的两个实际错误已修：自动补参数生成零参重载时出现无类型localize；Scheduling发送前重建尾部遗漏resolver。另两种任务刷新已补传resolver。旧/新回放资源同步但C#没有编译运行。不能以这些静态检查声称产品、DLL调用、旧档或游戏通过。
 - 最新全量快照runtime-literals-excluding-external-current.json：含本片工作树18765处/577文件，扫描无错误或变化；C承包两入口当前为0，Issue其他文件84处仍归主线。世界书不在源码计数里。与最初22357比较仅为硬编码净减少16.1%，不是翻译完成率。
 - 回滚：场景自有路径115e8a1ed及本次主线集成提交做focused inverse，不reset、不覆盖其他作者dirty。后续仍需模块级接线、兼容资源角色化门禁、统一编译/游戏验收；全模组目标ACTIVE。
+
+## 外交描述、Weekly素材与Social整片集成（2026-10-11）
+
+- 用户反复明确外置不等于翻译；本片分列统计。外交WorldDiplomacyTextRules.cs的262个中文字面量（含5字符）全部移出，原正则、阈值、记录/通知、历史与匹配原字节通过完整inverse验证。10个决策描述方法增加包resolver，50条中英描述经17个真实PromptComposer调用进入请求，其他原始输出不冒算英文覆盖。复用已有合同兼容缓存，无新加载器或Tick扫描。ContractText仅内部可见性放开给同域真实消费者。
+- Weekly：13个原Materials文件共918源码位置归零；888条历史/匹配原值独立嵌入，101对包内提示词接单报/批量/历史正文补写；WeeklyReportTextHelper另外2个显示兜底复用既有Weekly UI资源。原可编辑/导入SnapshotText保持原文，不能算全文英文覆盖。实际新双语是101 prompt+2UI，不是918翻译。日期和原有UI实现未重做。
+- Social子任务b412ae0d3：7文件604完整token（词法606位置）清理，444条原值兼容语料；88对包提示词接履历摘要、近期履历、婚配/门第/后处理、耐心关系等级；32新UI键是31需求名+世纪。原AFEF/存档和未知自定义文本保留。Courier中文回信外框交Conversation子任务继续，非Social已覆盖。
+- 共享注册：WeeklyMaterialCompatibility/SocialSourceTexts根嵌入与content-map；WeeklyMaterialPrompts/SocialPromptTexts按包替换同一路径，英文不作为额外目标。实际content-map约定仍要求target，采用现有资源条目格式，没有凭子任务“embedded-only”措辞发明schema。角色化EN嵌入语料门禁仍待收敛。J17显式编译的3个Weekly owner增加engine-free Raw测试seam，用net8 System.Text.Json读取同一资源，无新增NuGet；未声称测试helper等于产品helper编译验证。
+- 完成范围后统一检查：外交TextRules/FixedMode/Packaged/Composer PASS；Weekly原源码反向还原及101+2接线PASS；Social完整源码还原及88+32接线PASS；资源29对PASS；实际三包Prompt JSON结构/协议和EN无Han检查PASS。既有1.3/1.4 DLL各Weekly36、Social568次中英/French fallback/切回解析PASS。未编译产品、C#回放或J17，未Stage/ZIP/部署/push。
+- 集中git diff --check曾看到并行Conversation尚未完成写入的CR行尾，被通知该子任务收尾处理；不是本片源代码失败，不以全局在途diff作为本片通过证据。本片暂存路径单独检查，其他作者的Policy/HANDOFF/外部C/世界书不纳入。
+- 并行职责：Illustrator继续成组改生成与解析；Conversation处理三渠道/信使；Economy处理既有业务/协议原值及真实prompt。世界书B范围已停止介入；C的Issue最新提交出现于主线但尚未冒称主线完整验收。回滚使用本片精确集成提交与Social b412ae0d3的focused inverse。全模组目标仍ACTIVE。
