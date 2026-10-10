@@ -20,7 +20,9 @@ def method(source, start, end):
 
 
 def strings(path):
-    rows = ET.parse(path).findall(".//string")
+    root = ET.parse(path).getroot()
+    assert root.tag == "base" and root.get("type") == "string", f"invalid native resource root: {path}"
+    rows = root.findall("strings/string")
     result = {row.attrib["id"]: row.attrib["text"] for row in rows}
     assert len(result) == len(rows), f"duplicate IDs: {path}"
     assert all(value for value in result.values()), f"empty text: {path}"
@@ -45,6 +47,10 @@ baseline = subprocess.check_output(["git", "show", f"{BASELINE}:{UI.relative_to(
 old_method = method(baseline, "internal static string BuildDevNpcActionPreviewText(", "internal static string BuildDevNpcActionNarrative(")
 new_method = fact[fact.index("internal static string Build("):fact.rfind("}")].strip().replace("\r\n", "\n")
 assert new_method.replace("internal static string Build(", "internal static string BuildDevNpcActionPreviewText(", 1) == old_method, "fact algorithm changed during responsibility migration"
+host = (ROOT / "src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs").read_text(encoding="utf-8-sig")
+capture = next(line for line in host.splitlines() if "_campaignCharacterRecordCapture = new CampaignCharacterRecordCaptureAdapter(" in line)
+assert "entry => NpcActionMaterialPreviewProjection.Build(NpcActionEditorDisplay, entry)" in capture
+assert "NpcActionEditorProjection.BuildDevNpcActionPreviewText" not in capture, "localized UI pollutes saved Prompt materials"
 
 prompt_kinds = ROOT / "src/modules/AF.Module.Weekly/Materials/WeeklyAggregateEventLineOwner.cs"
 prompt_source = prompt_kinds.read_text(encoding="utf-8-sig")
