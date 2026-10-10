@@ -112,5 +112,37 @@
     <string id="AF_SOCIAL_UI_Notoriety_Level8" text="妇孺皆知" />
     <string id="AF_SOCIAL_UI_Notoriety_Level9" text="家喻户晓" />
     <string id="AF_SOCIAL_UI_Notoriety_Level10" text="人尽皆知" />
+    <string id="AF_SOCIAL_UI_ProactiveNeed_01" text="缺粮" />
+    <string id="AF_SOCIAL_UI_ProactiveNeed_02" text="缺钱" />
+    <string id="AF_SOCIAL_UI_ProactiveNeed_03" text="缺兵" />
+    <string id="AF_SOCIAL_UI_ProactiveNeed_04" text="俘虏过载或赎买" />
+    <string id="AF_SOCIAL_UI_ProactiveNeed_05" text="家族成员被俘" />
+    <string id="AF_SOCIAL_UI_ProactiveNeed_06" text="队伍士气低落" />
+    <string id="AF_SOCIAL_UI_ProactiveNeed_07" text="缺少坐骑" />
+    <string id="AF_SOCIAL_UI_ProactiveNeed_08" text="负重压力" />
+    <string id="AF_SOCIAL_UI_ProactiveNeed_09" text="家族财政紧张" />
+    <string id="AF_SOCIAL_UI_ProactiveNeed_10" text="家族请求效力" />
+    <string id="AF_SOCIAL_UI_ProactiveNeed_11" text="亲密互动" />
+    <string id="AF_SOCIAL_UI_ProactiveNeed_12" text="主动问候" />
+    <string id="AF_SOCIAL_UI_ProactiveNeed_13" text="讨论近来政策" />
+    <string id="AF_SOCIAL_UI_ProactiveNeed_14" text="主动交友" />
+    <string id="AF_SOCIAL_UI_ProactiveNeed_15" text="主动求爱" />
+    <string id="AF_SOCIAL_UI_ProactiveNeed_16" text="请求加入军团" />
+    <string id="AF_SOCIAL_UI_ProactiveNeed_17" text="请求剿匪" />
+    <string id="AF_SOCIAL_UI_ProactiveNeed_18" text="压制政敌" />
+    <string id="AF_SOCIAL_UI_ProactiveNeed_19" text="购买封地" />
+    <string id="AF_SOCIAL_UI_ProactiveNeed_20" text="出售边境封地" />
+    <string id="AF_SOCIAL_UI_ProactiveNeed_21" text="领地盘问" />
+    <string id="AF_SOCIAL_UI_ProactiveNeed_22" text="联姻压力" />
+    <string id="AF_SOCIAL_UI_ProactiveNeed_23" text="复仇或营救压力" />
+    <string id="AF_SOCIAL_UI_ProactiveNeed_24" text="封地治理压力" />
+    <string id="AF_SOCIAL_UI_ProactiveNeed_25" text="缺少盟友支持" />
+    <string id="AF_SOCIAL_UI_ProactiveNeed_26" text="王国缺少雇佣兵" />
+    <string id="AF_SOCIAL_UI_ProactiveNeed_27" text="王国缺少封臣" />
+    <string id="AF_SOCIAL_UI_ProactiveNeed_28" text="王国政治议程" />
+    <string id="AF_SOCIAL_UI_ProactiveNeed_29" text="支持政策" />
+    <string id="AF_SOCIAL_UI_ProactiveNeed_30" text="讨论外交局势" />
+    <string id="AF_SOCIAL_UI_ProactiveNeed_31" text="具体请求" />
+    <string id="AF_SOCIAL_UI_Century" text="{NUMBER}世纪" />
   </strings>
 </base>

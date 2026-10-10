@@ -15,16 +15,16 @@ internal static class PatienceRules
 {
 	private static readonly string[] PatienceLevelTexts = new[]
 	{
-		"枯竭",
-		"烦躁",
-		"不耐",
-		"冷淡",
-		"一般",
-		"尚可",
-		"愿听",
-		"投入",
-		"热络",
-		"兴致高"
+		SocialPromptTexts.Get("P057"),
+		SocialPromptTexts.Get("P058"),
+		SocialPromptTexts.Get("P059"),
+		SocialPromptTexts.Get("P060"),
+		SocialPromptTexts.Get("P061"),
+		SocialPromptTexts.Get("P062"),
+		SocialPromptTexts.Get("P063"),
+		SocialPromptTexts.Get("P064"),
+		SocialPromptTexts.Get("P065"),
+		SocialPromptTexts.Get("P066")
 	};
 	private static readonly Regex MoodTagRegex = new Regex(@"\[ACTION:MOOD:([^\]\r\n]+)\]", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 	private static int ClampInt(int v, int min, int max) => Math.Max(min, Math.Min(max, v));
@@ -35,7 +35,7 @@ internal static class PatienceRules
 		return ClampInt((int)Math.Round(a), 10, 80);
 	}
 
-	private static readonly string[] RelationLevelTexts = new string[10] { "死敌", "敌对", "厌恶", "疏离", "冷漠", "中立", "熟络", "友好", "亲近", "至交" };
+	private static readonly string[] RelationLevelTexts = new string[10] { SocialPromptTexts.Get("P067"), SocialPromptTexts.Get("P068"), SocialPromptTexts.Get("P069"), SocialPromptTexts.Get("P070"), SocialPromptTexts.Get("P071"), SocialPromptTexts.Get("P072"), SocialPromptTexts.Get("P073"), SocialPromptTexts.Get("P074"), SocialPromptTexts.Get("P075"), SocialPromptTexts.Get("P076") };
 
 	internal static int ToTenLevelIndexByRelation(int relation)
 	{
@@ -111,14 +111,14 @@ internal static class PatienceRules
 			case "sweet":
 				return PatienceMood.Delighted;
 			default:
-				if (!(text == "鎰夊揩"))
+				if (!(text == SocialSourceTexts.Get("S303")))
 				{
 					switch (text)
 					{
 						default:
-							if (!(text == "鐢熸皵"))
+							if (!(text == SocialSourceTexts.Get("S304")))
 							{
-								if (text == "bored" || text == "boring" || text == "鏃犺亰")
+								if (text == "bored" || text == "boring" || text == SocialSourceTexts.Get("S305"))
 								{
 									return PatienceMood.Bored;
 								}
@@ -132,7 +132,7 @@ internal static class PatienceRules
 						case "upset":
 						case "irritated":
 						case "displeased":
-						case "涓嶆偊":
+						case string _ when text == SocialSourceTexts.Get("S306"):
 							return PatienceMood.Annoyed;
 					}
 				}
@@ -143,7 +143,7 @@ internal static class PatienceRules
 			case "positive":
 			case "amused":
 			case "friendly":
-			case "鍠滄偊":
+			case string _ when text == SocialSourceTexts.Get("S307"):
 				return PatienceMood.Joy;
 		}
 	}

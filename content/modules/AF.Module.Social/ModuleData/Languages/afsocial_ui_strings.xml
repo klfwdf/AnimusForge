@@ -112,6 +112,38 @@
     <string id="AF_SOCIAL_UI_Notoriety_Level8" text="Known to young and old" />
     <string id="AF_SOCIAL_UI_Notoriety_Level9" text="A household name" />
     <string id="AF_SOCIAL_UI_Notoriety_Level10" text="Known to everyone" />
+    <string id="AF_SOCIAL_UI_ProactiveNeed_01" text="Food shortage" />
+    <string id="AF_SOCIAL_UI_ProactiveNeed_02" text="Money shortage" />
+    <string id="AF_SOCIAL_UI_ProactiveNeed_03" text="Troop shortage" />
+    <string id="AF_SOCIAL_UI_ProactiveNeed_04" text="Excess prisoners or ransom" />
+    <string id="AF_SOCIAL_UI_ProactiveNeed_05" text="Captured clan member" />
+    <string id="AF_SOCIAL_UI_ProactiveNeed_06" text="Low party morale" />
+    <string id="AF_SOCIAL_UI_ProactiveNeed_07" text="Mount shortage" />
+    <string id="AF_SOCIAL_UI_ProactiveNeed_08" text="Overburdened party" />
+    <string id="AF_SOCIAL_UI_ProactiveNeed_09" text="Clan financial strain" />
+    <string id="AF_SOCIAL_UI_ProactiveNeed_10" text="Clan seeking service" />
+    <string id="AF_SOCIAL_UI_ProactiveNeed_11" text="Intimate interaction" />
+    <string id="AF_SOCIAL_UI_ProactiveNeed_12" text="A greeting" />
+    <string id="AF_SOCIAL_UI_ProactiveNeed_13" text="Discussion of recent policy" />
+    <string id="AF_SOCIAL_UI_ProactiveNeed_14" text="Making a new friend" />
+    <string id="AF_SOCIAL_UI_ProactiveNeed_15" text="Courtship" />
+    <string id="AF_SOCIAL_UI_ProactiveNeed_16" text="Request to join an army" />
+    <string id="AF_SOCIAL_UI_ProactiveNeed_17" text="Bandit suppression" />
+    <string id="AF_SOCIAL_UI_ProactiveNeed_18" text="Opposing a political rival" />
+    <string id="AF_SOCIAL_UI_ProactiveNeed_19" text="Buying a fief" />
+    <string id="AF_SOCIAL_UI_ProactiveNeed_20" text="Selling a border fief" />
+    <string id="AF_SOCIAL_UI_ProactiveNeed_21" text="Questioning a stranger in the realm" />
+    <string id="AF_SOCIAL_UI_ProactiveNeed_22" text="Marriage-alliance pressure" />
+    <string id="AF_SOCIAL_UI_ProactiveNeed_23" text="Revenge or rescue pressure" />
+    <string id="AF_SOCIAL_UI_ProactiveNeed_24" text="Fief governance pressure" />
+    <string id="AF_SOCIAL_UI_ProactiveNeed_25" text="Lack of allied support" />
+    <string id="AF_SOCIAL_UI_ProactiveNeed_26" text="Kingdom seeking mercenaries" />
+    <string id="AF_SOCIAL_UI_ProactiveNeed_27" text="Kingdom seeking vassals" />
+    <string id="AF_SOCIAL_UI_ProactiveNeed_28" text="Kingdom political agenda" />
+    <string id="AF_SOCIAL_UI_ProactiveNeed_29" text="Support for a policy" />
+    <string id="AF_SOCIAL_UI_ProactiveNeed_30" text="Discussion of diplomacy" />
+    <string id="AF_SOCIAL_UI_ProactiveNeed_31" text="A specific request" />
+    <string id="AF_SOCIAL_UI_Century" text="Century {NUMBER}" />
   </strings>
 </base>
 
