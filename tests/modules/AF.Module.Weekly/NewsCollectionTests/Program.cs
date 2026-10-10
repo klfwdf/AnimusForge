@@ -7,8 +7,8 @@ namespace TaleWorlds.CampaignSystem { public class Campaign { public static Camp
 namespace TaleWorlds.Core { }
 namespace TaleWorlds.Library {
  public static class TWParallel { public static bool IsMainThread() => true; }
- public class InformationMessage { public InformationMessage(string text) {} }
- public static class InformationManager { public static void DisplayMessage(InformationMessage m) {} }
+ public class InformationMessage { public readonly string Text; public InformationMessage(string text) { Text=text; } }
+ public static class InformationManager { public static string Last; public static int Count; public static void DisplayMessage(InformationMessage m) { Last=m.Text; Count++; } }
 }
 namespace AnimusForge {
  internal class State {
@@ -92,6 +92,21 @@ namespace AnimusForge {
    fresh.hour+=168;fresh.TryStartRestartedWeeklyCollection();Check(fresh.starts==1,"new game first issue waits full seven days");
    var delayed=Instance=new MyBehavior{hour=245.5,_newsCollectionNewGame=true};delayed.SynchronizeNewsCollectionMode();delayed.hour=437;delayed.TryStartRestartedWeeklyCollection();
    Check(delayed.started.StartDay==10,"hourly delay across midnight retains original first material day");
+   foreach(bool chinese in new[]{false,true}) {
+    TaleWorlds.Localization.TextObject.UseLanguage(chinese);
+    var localized=Instance=new MyBehavior{_newsCollectionNewGame=true};bulletin=true;
+    localized.SynchronizeNewsCollectionMode();
+    Check(TaleWorlds.Library.InformationManager.Last==(chinese?"快报已从本次开局开始收集事件。":"Bulletins are collecting events from the start of this campaign."),"new bulletin EN/CN display");
+    int messages=TaleWorlds.Library.InformationManager.Count;
+    localized.SynchronizeNewsCollectionMode();
+    Check(TaleWorlds.Library.InformationManager.Count==messages,"unchanged mode does not publish or localize another notification");
+    bulletin=false;localized.SynchronizeNewsCollectionMode();
+    Check(TaleWorlds.Library.InformationManager.Last==(chinese?"已切换周报：从现在重新收集，累计7个游戏日后生成第一期；旧重试已取消。":"Switched to weekly reports: collection restarts now. The first issue will be generated after 7 game days; previous retries have been canceled."),"weekly switch EN/CN display");
+    bulletin=true;localized.SynchronizeNewsCollectionMode();
+    Check(TaleWorlds.Library.InformationManager.Last==(chinese?"已切换快报：从现在重新收集事件，历史档案保留。":"Switched to bulletins: event collection restarts now. Historical archives are retained."),"bulletin switch EN/CN display");
+    localized=Instance=new MyBehavior{_newsCollectionNewGame=true};bulletin=false;localized.SynchronizeNewsCollectionMode();
+    Check(TaleWorlds.Library.InformationManager.Last==(chinese?"周报已从本次开局开始收集，累计7个游戏日后生成第一期。":"Weekly reports are collecting events from the start of this campaign. The first issue will be generated after 7 game days."),"new weekly EN/CN display");
+   }
    Console.WriteLine($"PASS {n} production news-switch/scheduling/revision checks; game endpoints and persistence serializer fixture.");
   }
  }

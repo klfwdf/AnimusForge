@@ -3962,16 +3962,16 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 		AIConfigHandler.ReloadConfig();
 		AIConfigHandler.TryStartBackgroundSemanticWarmup("session_launch");
 		TryHookOverlayQuickTalkDisable();
-		starter.AddGameMenu("AnimusForge_dev_root", "{=!}开发者工具", DevRootMenuInit, GameMenu.MenuOverlayType.SettlementWithBoth);
-		starter.AddGameMenuOption("town", "AnimusForge_dev_root_entry", "【开发】数据管理", DevRootEntryCondition, DevRootEntryConsequence, isLeave: false, 99);
-		starter.AddGameMenuOption("AnimusForge_dev_root", "AnimusForge_dev_root_hero", "HeroNPC编辑（领主/流浪者/同伴）", DevRootSubOptionCondition, DevRootHeroOptionConsequence);
-		starter.AddGameMenuOption("AnimusForge_dev_root", "AnimusForge_dev_root_nonhero", "非heroNPC编辑（士兵/平民/无名/无姓NPC）", DevRootSubOptionCondition, DevRootNonHeroOptionConsequence);
-		starter.AddGameMenuOption("AnimusForge_dev_root", "AnimusForge_dev_root_knowledge", "知识编辑", DevRootSubOptionCondition, DevRootKnowledgeOptionConsequence);
-		starter.AddGameMenuOption("AnimusForge_dev_root", "AnimusForge_dev_root_event", "事件编辑", DevRootSubOptionCondition, DevRootEventOptionConsequence);
-		starter.AddGameMenuOption("AnimusForge_dev_root", "AnimusForge_dev_root_kingdom_strategic_profiles", "国家战略与性格", DevRootSubOptionCondition, DevRootKingdomStrategicProfilesOptionConsequence);
-		starter.AddGameMenuOption("AnimusForge_dev_root", "AnimusForge_dev_root_all", "全部导出/导入", DevRootSubOptionCondition, DevRootAllOptionConsequence);
-		starter.AddGameMenuOption("AnimusForge_dev_root", "AnimusForge_dev_root_voice", "声音映射管理（VoiceMapping）", DevRootSubOptionCondition, DevRootVoiceMappingOptionConsequence);
-		starter.AddGameMenuOption("AnimusForge_dev_root", "AnimusForge_dev_root_back", "返回", DevRootBackCondition, DevRootBackConsequence, isLeave: true);
+		starter.AddGameMenu("AnimusForge_dev_root", "{=AF_UI_Developer_Developer_tools}Developer tools", DevRootMenuInit, GameMenu.MenuOverlayType.SettlementWithBoth);
+		starter.AddGameMenuOption("town", "AnimusForge_dev_root_entry", "{=AF_UI_Developer_RootEntry}[Dev] Data management", DevRootEntryCondition, DevRootEntryConsequence, isLeave: false, 99);
+		starter.AddGameMenuOption("AnimusForge_dev_root", "AnimusForge_dev_root_hero", "{=AF_UI_Developer_RootHero}Hero NPC editor (lords, wanderers, companions)", DevRootSubOptionCondition, DevRootHeroOptionConsequence);
+		starter.AddGameMenuOption("AnimusForge_dev_root", "AnimusForge_dev_root_nonhero", "{=AF_UI_Developer_RootNonHero}Non-hero NPC editor (troops, civilians, unnamed NPCs)", DevRootSubOptionCondition, DevRootNonHeroOptionConsequence);
+		starter.AddGameMenuOption("AnimusForge_dev_root", "AnimusForge_dev_root_knowledge", "{=AF_UI_Developer_RootKnowledge}Knowledge editor", DevRootSubOptionCondition, DevRootKnowledgeOptionConsequence);
+		starter.AddGameMenuOption("AnimusForge_dev_root", "AnimusForge_dev_root_event", "{=AF_UI_Developer_RootEvent}Event editor", DevRootSubOptionCondition, DevRootEventOptionConsequence);
+		starter.AddGameMenuOption("AnimusForge_dev_root", "AnimusForge_dev_root_kingdom_strategic_profiles", "{=AF_UI_Developer_RootKingdomProfiles}Kingdom strategy and personality", DevRootSubOptionCondition, DevRootKingdomStrategicProfilesOptionConsequence);
+		starter.AddGameMenuOption("AnimusForge_dev_root", "AnimusForge_dev_root_all", "{=AF_UI_Developer_RootImportExport}Export / import all data", DevRootSubOptionCondition, DevRootAllOptionConsequence);
+		starter.AddGameMenuOption("AnimusForge_dev_root", "AnimusForge_dev_root_voice", "{=AF_UI_Developer_RootVoiceMapping}Voice mapping management (VoiceMapping)", DevRootSubOptionCondition, DevRootVoiceMappingOptionConsequence);
+		starter.AddGameMenuOption("AnimusForge_dev_root", "AnimusForge_dev_root_back", "{=AF_UI_Developer_Back}Back", DevRootBackCondition, DevRootBackConsequence, isLeave: true);
 	}
 
 	private void TryHookOverlayQuickTalkDisable()
@@ -4003,7 +4003,7 @@ dataStore.SyncData("_lastProcessedKingdomRebellionWeek_v1", ref _lastProcessedKi
 				Hero heroToTalkTo = e.HeroToTalkTo;
 				if (ShouldDisableSettlementOverlayQuickTalk(heroToTalkTo))
 				{
-					e.IsTalkAvailable(arg1: false, new TextObject("该交谈选项已被模组禁用，请使用造访进入场景后再互动。"));
+					e.IsTalkAvailable(arg1: false, new TextObject("{=AF_UI_QuickTalkDisabled}This conversation option is disabled by the mod. Visit the location and enter the scene to interact."));
 				}
 			}
 		}

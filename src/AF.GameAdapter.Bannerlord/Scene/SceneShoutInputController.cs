@@ -1206,7 +1206,7 @@ internal sealed class SceneShoutInputController
 			_nativeConversationInputTargetKey = ResolveCurrentNativeConversationTargetKey();
 			if (showMessage)
 			{
-				InformationManager.DisplayMessage(new InformationMessage("\u5df2\u6253\u5f00 AnimusForge \u81ea\u7531\u5bf9\u8bdd\u8f93\u5165\u6846\u3002", new Color(0.4f, 1f, 0.4f)));
+				InformationManager.DisplayMessage(new InformationMessage(new TextObject("{=AF_NOTIFY_NativeConversation_InputOpened}AnimusForge free conversation input is open.").ToString(), new Color(0.4f, 1f, 0.4f)));
 			}
 		}
 		catch

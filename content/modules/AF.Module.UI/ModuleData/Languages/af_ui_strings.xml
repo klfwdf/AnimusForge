@@ -3067,5 +3067,20 @@ Choose how to proceed:" />
   <string id="AF_UI_WeeklyProjection_Profile2" text="Tier 2 (200-800 characters)" />
   <string id="AF_UI_WeeklyProjection_Profile3" text="Tier 3 (200-1200 characters)" />
   <string id="AF_UI_WeeklyProjection_Profile4" text="Tier 4 (200-1500 characters)" />
+  <string id="AF_UI_Developer_RootEntry" text="[Dev] Data management" />
+  <string id="AF_UI_Developer_RootHero" text="Hero NPC editor (lords, wanderers, companions)" />
+  <string id="AF_UI_Developer_RootNonHero" text="Non-hero NPC editor (troops, civilians, unnamed NPCs)" />
+  <string id="AF_UI_Developer_RootKnowledge" text="Knowledge editor" />
+  <string id="AF_UI_Developer_RootEvent" text="Event editor" />
+  <string id="AF_UI_Developer_RootKingdomProfiles" text="Kingdom strategy and personality" />
+  <string id="AF_UI_Developer_RootImportExport" text="Export / import all data" />
+  <string id="AF_UI_Developer_RootVoiceMapping" text="Voice mapping management (VoiceMapping)" />
+  <string id="AF_UI_QuickTalkDisabled" text="This conversation option is disabled by the mod. Visit the location and enter the scene to interact." />
+  <string id="AF_NOTIFY_NewsCollection_NewBulletin" text="Bulletins are collecting events from the start of this campaign." />
+  <string id="AF_NOTIFY_NewsCollection_NewWeekly" text="Weekly reports are collecting events from the start of this campaign. The first issue will be generated after 7 game days." />
+  <string id="AF_NOTIFY_NewsCollection_SwitchBulletin" text="Switched to bulletins: event collection restarts now. Historical archives are retained." />
+  <string id="AF_NOTIFY_NewsCollection_SwitchWeekly" text="Switched to weekly reports: collection restarts now. The first issue will be generated after 7 game days; previous retries have been canceled." />
+  <string id="AF_NOTIFY_NativeConversation_InputOpened" text="AnimusForge free conversation input is open." />
+  <string id="AF_NOTIFY_Escort_PrisonersSpawned" text="[Noble prisoner escort] {COUNT} hero prisoners have entered the scene and joined formation 8." />
   </strings>
 </base>
