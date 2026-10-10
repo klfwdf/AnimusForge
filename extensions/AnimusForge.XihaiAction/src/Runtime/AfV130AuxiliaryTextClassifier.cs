@@ -35,6 +35,7 @@ namespace AnimusForge.XihaiAction
         private readonly IAfClassifierTransport _transport;
         private readonly bool _useChinese;
         private readonly SceneActionClassifierPrompts _prompts;
+        private readonly Lazy<SceneActionClassifierPrompts> _alternatePrompts;
         private readonly SemaphoreSlim _singleFlight = new SemaphoreSlim(1, 1);
         // Keep short speech trigger/plan calls out of the ordinary scene-action
         // and consent queue. The transport remains the AF entry point, but a
@@ -65,6 +66,7 @@ namespace AnimusForge.XihaiAction
                          throw new ArgumentNullException(nameof(transport));
             _useChinese = useChinese;
             _prompts = new SceneActionClassifierPrompts(useChinese);
+            _alternatePrompts = new Lazy<SceneActionClassifierPrompts>(() => new SceneActionClassifierPrompts(!useChinese));
         }
 
         public async Task<string> ClassifyAsync(
@@ -250,8 +252,11 @@ namespace AnimusForge.XihaiAction
                 throw new InvalidOperationException(
                     "Battle speech allow-list is outside SceneActionFrameworkV4.");
             }
-            string systemPrompt = _prompts.BattleSpeechPlanSystemPromptPreamble +
-                                  SceneActionFrameworkV4.BuildClassifierDefinitionBlock(allowed, _useChinese);
+            bool useChinese = request.UseChineseText ?? _useChinese;
+            SceneActionClassifierPrompts prompts = useChinese == _useChinese
+                ? _prompts : _alternatePrompts.Value;
+            string systemPrompt = prompts.BattleSpeechPlanSystemPromptPreamble +
+                                  SceneActionFrameworkV4.BuildClassifierDefinitionBlock(allowed, useChinese);
             string payload = JsonConvert.SerializeObject(new
             {
                 allowedIntentKeys = allowed,

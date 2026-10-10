@@ -417,7 +417,8 @@ namespace AnimusForge.XihaiAction
                 Generation = ++_nextSessionGeneration,
                 RequestedAtMissionTime = now,
                 ExpiresAtMissionTime = now + timeoutSeconds,
-                CombatSpeechMode = combatSpeechMode
+                CombatSpeechMode = combatSpeechMode,
+                UseChineseText = SceneActionsText.UseChineseLanguage()
             };
             BattleSpeechRuntimeHost.TryCancelPerformanceForNewSpeechRequest(
                 Mission,
@@ -440,7 +441,8 @@ namespace AnimusForge.XihaiAction
                             audience.Length)
                         : 0,
                     battlefieldFacts,
-                    combatSpeechMode: combatSpeechMode);
+                    combatSpeechMode: combatSpeechMode,
+                    useChineseText: _active.UseChineseText);
             }
             SceneActionsLog.Info(
                 "BATTLE_SPEECH",
@@ -821,15 +823,15 @@ namespace AnimusForge.XihaiAction
             }
 
             string battleType = Mission.IsSiegeBattle
-                ? "攻城战"
+                ? BattleSpeechText.FactLabel("Siege", true)
                 : Mission.IsSallyOutBattle
-                    ? "出城战"
+                    ? BattleSpeechText.FactLabel("SallyOut", true)
                     : Mission.IsFieldBattle
-                        ? "野战"
-                        : "战斗";
+                        ? BattleSpeechText.FactLabel("Field", true)
+                        : BattleSpeechText.FactLabel("Battle", true);
             string phaseText = phase == BattleSpeechPhaseV1.Deployment
-                ? "部署阶段"
-                : "战斗阶段";
+                ? BattleSpeechText.FactLabel("Deployment", true)
+                : BattleSpeechText.FactLabel("Combat", true);
             int friendlyRemoved = _battlefieldBaselineInitialized
                 ? Math.Max(
                     _battlefieldFriendlyRemoved,
@@ -1183,6 +1185,7 @@ namespace AnimusForge.XihaiAction
 
         private sealed class ActiveBattleSpeechSessionV1
         {
+            public bool UseChineseText;
             public Guid SessionId;
             public BattleSpeechSessionStateV1 State;
             public BattleSpeechSpeakerKindV1 SpeakerKind;

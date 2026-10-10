@@ -731,7 +731,8 @@ namespace AnimusForge.XihaiAction
             bool combinedRequest = false,
             int audienceReplyCount = 0,
             BattleSpeechBattlefieldFactsV1 battlefieldFacts = null,
-            bool combatSpeechMode = false)
+            bool combatSpeechMode = false,
+            bool useChineseText = true)
         {
             if (sessionId == Guid.Empty || mission == null || speaker == null)
             {
@@ -753,6 +754,7 @@ namespace AnimusForge.XihaiAction
                     AudienceReplyCount = Math.Max(0, audienceReplyCount),
                     BattlefieldFacts = battlefieldFacts,
                     CombatSpeechMode = combatSpeechMode,
+                    UseChineseText = useChineseText,
                     RecentSpeechTexts = GetRecentSpeechTextsUnsafe(mission, speaker.Index),
                     RegenerationAttempts = 0
                 };
@@ -861,7 +863,8 @@ namespace AnimusForge.XihaiAction
                         snapshot.AudienceReplyMaximumChars,
                         snapshot.RecentSpeechTexts,
                         snapshot.RegenerationAttempts,
-                        snapshot.BattlefieldFacts)
+                        snapshot.BattlefieldFacts,
+                        snapshot.UseChineseText)
                     : BattleSpeechFrameworkV2.BuildCombinedNpcSpeechPromptInstruction(
                         snapshot.MinimumChars,
                         snapshot.MaximumChars,
@@ -871,7 +874,8 @@ namespace AnimusForge.XihaiAction
                         snapshot.AudienceReplyMaximumChars,
                         snapshot.RecentSpeechTexts,
                         snapshot.RegenerationAttempts,
-                        snapshot.BattlefieldFacts);
+                        snapshot.BattlefieldFacts,
+                        snapshot.UseChineseText);
             }
             else
             {
@@ -880,7 +884,8 @@ namespace AnimusForge.XihaiAction
                     snapshot.MaximumChars,
                     snapshot.RecentSpeechTexts,
                     snapshot.RegenerationAttempts,
-                    snapshot.BattlefieldFacts);
+                    snapshot.BattlefieldFacts,
+                    snapshot.UseChineseText);
             }
             return true;
         }
@@ -1164,7 +1169,8 @@ namespace AnimusForge.XihaiAction
                         _replyClaim.RecentSpeechTexts?.ToArray() ?? Array.Empty<string>(),
                         _replyClaim.RegenerationAttempts,
                         _replyClaim.BattlefieldFacts,
-                        _replyClaim.CombatSpeechMode);
+                        _replyClaim.CombatSpeechMode,
+                        _replyClaim.UseChineseText);
                 }
             }
             if (!snapshot.CombinedRequest)
@@ -1389,14 +1395,16 @@ namespace AnimusForge.XihaiAction
             {
                 contentForNormalization = contentForNormalization.Replace(
                     playerName,
-                    "前方的友军领主");
+                    BattleSpeechText.PlayerNameReplacement(snapshot.UseChineseText));
                 playerNameSanitized = true;
             }
             string normalized = BattleSpeechFrameworkV2.NormalizeNpcSpeechReply(
                 contentForNormalization,
                 snapshot.MinimumChars,
                 snapshot.MaximumChars,
-                out string fallbackReason);
+                null,
+                out string fallbackReason,
+                snapshot.UseChineseText);
             if (playerNameSanitized)
             {
                 SceneActionsLog.Warning(
@@ -1439,7 +1447,8 @@ namespace AnimusForge.XihaiAction
                 claim.RecentSpeechTexts?.ToArray() ?? Array.Empty<string>(),
                 claim.RegenerationAttempts,
                 claim.BattlefieldFacts,
-                claim.CombatSpeechMode);
+                claim.CombatSpeechMode,
+                claim.UseChineseText);
         }
 
         internal static bool TryTakeDeferredNpcReply(
@@ -1530,7 +1539,8 @@ namespace AnimusForge.XihaiAction
             string[] recentSpeechTexts,
             int regenerationAttempts,
             BattleSpeechBattlefieldFactsV1 battlefieldFacts,
-            bool combatSpeechMode)
+            bool combatSpeechMode,
+            bool useChineseText = true)
         {
             SessionId = sessionId;
             Mission = mission;
@@ -1549,6 +1559,7 @@ namespace AnimusForge.XihaiAction
             RegenerationAttempts = Math.Max(0, regenerationAttempts);
             BattlefieldFacts = battlefieldFacts;
             CombatSpeechMode = combatSpeechMode;
+            UseChineseText = useChineseText;
         }
 
         public Guid SessionId { get; }
@@ -1566,6 +1577,7 @@ namespace AnimusForge.XihaiAction
         public int RegenerationAttempts { get; }
         public BattleSpeechBattlefieldFactsV1 BattlefieldFacts { get; }
         public bool CombatSpeechMode { get; }
+        public bool UseChineseText { get; }
     }
 
     internal sealed class BattleSpeechPromptScopeV2
@@ -1632,6 +1644,7 @@ namespace AnimusForge.XihaiAction
         public int AudienceReplyCount;
         public BattleSpeechBattlefieldFactsV1 BattlefieldFacts;
         public bool CombatSpeechMode;
+        public bool UseChineseText;
         public string[] RecentSpeechTexts;
         public int RegenerationAttempts;
         public BattleSpeechReplyPromptSnapshotV2 PromptSnapshot;

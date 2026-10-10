@@ -65,7 +65,10 @@ check('DtdProcessing.Prohibit' in loader and 'MaxCharactersInDocument = 1024 * 1
 worker = (RUNTIME / 'AfV130AuxiliaryTextClassifier.cs').read_text(encoding='utf-8-sig')
 check('TaleWorlds.Localization' not in worker and 'TextObject' not in worker, 'no language resolution on classifier workers')
 check(worker.count('new SceneActionClassifierPrompts(useChinese)') == 1 and worker.count('BuildClassifierDefinitionBlock(allowed') == 2, 'single immutable prompt snapshot, both classifier paths')
-check('BuildClassifierDefinitionBlock(allowed, _useChinese)' in worker and 'BuildClassifierDefinitionBlock(allowedIntentKeys, _useChinese)' in worker, 'snapshot language reaches both definitions')
+check('BuildClassifierDefinitionBlock(allowed, useChinese)' in worker and 'request.UseChineseText ?? _useChinese' in worker and
+      'BuildClassifierDefinitionBlock(allowedIntentKeys, _useChinese)' in worker, 'session/legacy snapshot language reaches both definitions')
+check('_alternatePrompts.Value' in worker and 'new Lazy<SceneActionClassifierPrompts>' in worker,
+      'alternate request language reuses a cached immutable snapshot')
 bridge = (RUNTIME / 'AfCompatV130.cs').read_text(encoding='utf-8-sig')
 check('new AfV130AuxiliaryTextClassifier(_classifierApiMethod, useChinese)' in bridge and
       'new AfV130AuxiliaryTextClassifier(configuredTransport, useChinese)' in bridge, 'both transports receive captured language')
