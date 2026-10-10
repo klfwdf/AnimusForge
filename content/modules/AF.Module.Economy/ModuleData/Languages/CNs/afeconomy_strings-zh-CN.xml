@@ -105,5 +105,90 @@
     <string id="AF_ECO_UI_PartyTransferHeroPrisonerReceived" text="已获得俘虏{NAME}" />
     <string id="AF_ECO_UI_PartyTransferPrisonerReceived" text="已获得 {AMOUNT} 名{NAME}俘虏" />
     <string id="AF_ECO_UI_PartyTransferBatchSummary" text="部队与俘虏转移汇总：尝试项{ATTEMPTED}，成功项{SUCCEEDED}，失败或不足项{FAILED}，实际转移{UNITS}人，实际指导总值约{VALUE}第纳尔。" />
+    <string id="AF_ECO_UI_TaskGiverFallback" text="委托人" />
+    <string id="AF_ECO_UI_EstimatedHits" text="预估命中项" />
+    <string id="AF_ECO_UI_ActualHits" text="实际命中项" />
+    <string id="AF_ECO_UI_SettlementTrustGain" text="{SETTLEMENT}：定居点信任 +{LOCAL}{SHARED}\n{HIT} {DIRECT}，分成 {SHARE}，合计 {TOTAL}" />
+    <string id="AF_ECO_UI_SettlementTrustCarry" text="{SETTLEMENT}：定居点信任累计 +{TOTAL}{SHARED}\n{HIT} {DIRECT}，分成 {SHARE}；不足1点" />
+    <string id="AF_ECO_UI_LetterDefaultTitle" text="信件" />
+    <string id="AF_ECO_UI_ViewLetterTitle" text="查看信件" />
+    <string id="AF_ECO_UI_PopupCloseButton" text="关闭" />
+    <string id="AF_ECO_UI_RpItemDefaultTitle" text="RP 物品" />
+    <string id="AF_ECO_UI_ViewRpItemIntroductionTitle" text="查看物品介绍" />
+    <string id="AF_ECO_UI_RpItemIntroductionPending" text="物品介绍正在生成，请稍后再查看。" />
+    <string id="AF_ECO_UI_RpItemIntroductionEmpty" text="该 RP 物品暂无介绍。" />
+    <string id="AF_ECO_UI_RpForgeFailed" text="制造失败。" />
+    <string id="AF_ECO_UI_RpForgeFailedException" text="制造失败：{ERROR}" />
+    <string id="AF_ECO_UI_RpForgeRollbackIncomplete" text="物品回滚未完全完成：{ISSUES}" />
+    <string id="AF_ECO_UI_RpForgeRollbackCleaned" text="已清理本次生成物品、记录和运行时缓存。" />
+    <string id="AF_ECO_UI_RpForgeRefundNoCharge" text="未扣除第纳尔，无需退款。" />
+    <string id="AF_ECO_UI_RpForgeRefundFull" text="已全额退款 {AMOUNT} 第纳尔。" />
+    <string id="AF_ECO_UI_FixedAssetQtyMustBeOne" text="执行失败：固定资产数量必须为 1。" />
+    <string id="AF_ECO_UI_FixedAssetTransferGiverPlayer" text="不能从玩家转出固定资产。" />
+    <string id="AF_ECO_UI_FixedAssetReceiverMustBePlayer" text="执行失败：固定资产接收方必须是玩家。" />
+    <string id="AF_ECO_UI_FixedAssetEmptyToken" text="执行失败：固定资产标识为空。" />
+    <string id="AF_ECO_UI_FixedAssetNotFound" text="执行失败：未找到目标固定资产：{TOKEN}" />
+    <string id="AF_ECO_UI_FixedAssetUnresolved" text="执行失败：无法识别的固定资产标识：{TOKEN}" />
+    <string id="AF_ECO_UI_FixedAssetActionUnsupported" text="执行失败：不支持的固定资产转移操作：{ACTION}" />
+    <string id="AF_ECO_UI_FixedAssetCastleNotAllowed" text="城堡暂不支持在对话中转让。" />
+    <string id="AF_ECO_UI_FixedAssetTownNotAllowed" text="城镇暂不支持在对话中转让。" />
+    <string id="AF_ECO_UI_FixedAssetSettlementNotAllowed" text="定居点暂不支持在对话中转让。" />
+    <string id="AF_ECO_UI_FixedAssetGiverDead" text="执行失败：转让方 {GIVER} 已不在人世。" />
+    <string id="AF_ECO_UI_FixedAssetGiverNoClan" text="执行失败：转让方 {GIVER} 没有所属家族。" />
+    <string id="AF_ECO_UI_FixedAssetPlayerNoClan" text="执行失败：玩家没有所属家族。" />
+    <string id="AF_ECO_UI_FixedAssetPlayerAlreadyOwns" text="你已拥有 {SETTLEMENT}。" />
+    <string id="AF_ECO_UI_FixedAssetGiverNotOwner" text="转让方 {GIVER} 并非 {SETTLEMENT} 的所有者（当前所有者：{OWNER}）。" />
+    <string id="AF_ECO_UI_FixedAssetGiverNotLeader" text="转让方 {GIVER} 并非家族 {CLAN} 的领袖，无法转让定居点所有权。" />
+    <string id="AF_ECO_UI_FixedAssetKingdomAtWar" text="转让方所属王国 {GIVER_KINGDOM} 与玩家王国 {PLAYER_KINGDOM} 处于交战状态。" />
+    <string id="AF_ECO_UI_FixedAssetClanAtWar" text="转让方家族 {CLAN} 与玩家王国 {KINGDOM} 处于交战状态。" />
+    <string id="AF_ECO_UI_FixedAssetPlayerClanAtWar" text="转让方王国 {KINGDOM} 与玩家家族 {CLAN} 处于交战状态。" />
+    <string id="AF_ECO_UI_FixedAssetAtWarDirect" text="转让方家族 {GIVER_CLAN} 与玩家家族 {PLAYER_CLAN} 处于交战状态。" />
+    <string id="AF_ECO_UI_FixedAssetTransferException" text="定居点转让失败：{ERROR}" />
+    <string id="AF_ECO_UI_FixedAssetTransferSuccess" text="{GIVER} 已将 {SETTLEMENT} 转让给你。" />
+    <string id="AF_ECO_UI_FixedAssetWorkshopAlreadyOwns" text="你已拥有位于 {SETTLEMENT} 的工坊：{WORKSHOP}。" />
+    <string id="AF_ECO_UI_FixedAssetWorkshopGiverNotOwner" text="转让方 {GIVER} 并非位于 {SETTLEMENT} 的工坊 {WORKSHOP} 的所有者（当前所有者：{OWNER}）。" />
+    <string id="AF_ECO_UI_FixedAssetWorkshopLimit" text="你的工坊数量已达上限（最多拥有 {LIMIT} 处）。" />
+    <string id="AF_ECO_UI_FixedAssetWorkshopTownAtWar" text="{TOWN} 属于敌对势力 {FACTION}。" />
+    <string id="AF_ECO_UI_FixedAssetWorkshopFailed" text="工坊转让失败：无法变更游戏数据中的所有者。" />
+    <string id="AF_ECO_UI_FixedAssetWorkshopSuccess" text="{GIVER} 已将位于 {SETTLEMENT} 的工坊（{WORKSHOP}）转让给你。" />
+    <string id="AF_ECO_UI_FixedAssetAlleyGiverPlayer" text="不能从玩家转出藏匿点。" />
+    <string id="AF_ECO_UI_FixedAssetAlleyAlreadyOwns" text="你已控制位于 {SETTLEMENT} 的藏匿点。" />
+    <string id="AF_ECO_UI_FixedAssetAlleyGiverNotOwner" text="转让方 {GIVER} 并非位于 {SETTLEMENT} 的藏匿点控制者（当前控制者：{OWNER}）。" />
+    <string id="AF_ECO_UI_FixedAssetAlleyTownAtWar" text="{TOWN} 属于敌对势力 {FACTION}，无法接管藏匿点。" />
+    <string id="AF_ECO_UI_FixedAssetAlleyNoTroops" text="队伍中没有适合接管 {SETTLEMENT} 藏匿点的同伴或部队。" />
+    <string id="AF_ECO_UI_FixedAssetAlleyFailed" text="藏匿点转让失败：游戏系统未能完成接管。" />
+    <string id="AF_ECO_UI_FixedAssetAlleySuccess" text="{GIVER} 已将位于 {SETTLEMENT} 的藏匿点控制权转交给你。" />
+    <string id="AF_ECO_UI_KingdomTransferGiverDead" text="执行失败：让位方 {GIVER} 已不在人世。" />
+    <string id="AF_ECO_UI_KingdomTransferGiverNoKingdom" text="执行失败：让位方 {GIVER} 没有所属王国。" />
+    <string id="AF_ECO_UI_KingdomTransferPlayerNoClan" text="执行失败：玩家没有所属家族。" />
+    <string id="AF_ECO_UI_KingdomTransferPlayerAlreadyRuling" text="执行失败：玩家已是王国 {KINGDOM} 的统治者。" />
+    <string id="AF_ECO_UI_KingdomTransferGiverNotRuler" text="执行失败：{GIVER} 并非王国 {KINGDOM} 的统治者（当前统治者：{RULER}）。" />
+    <string id="AF_ECO_UI_KingdomTransferPlayerDifferentKingdom" text="执行失败：玩家当前属于其他王国 {KINGDOM}，须先脱离原王国。" />
+    <string id="AF_ECO_UI_KingdomTransferClanAtWar" text="执行失败：玩家家族当前与王国 {KINGDOM} 处于交战状态。" />
+    <string id="AF_ECO_UI_KingdomTransferException" text="王国让位执行失败：{ERROR}" />
+    <string id="AF_ECO_UI_KingdomTransferRulerMismatch" text="王国让位验证失败：未能将王国统治者更新为玩家。" />
+    <string id="AF_ECO_UI_KingdomTransferSuccess" text="{GIVER} 已正式让位，你现在是 {KINGDOM} 的最高统治者。" />
+    <string id="AF_ECO_UI_FactionIdGiverDead" text="执行失败：目标角色 {GIVER} 已不在人世。" />
+    <string id="AF_ECO_UI_FactionIdGiverNoClan" text="执行失败：目标角色 {GIVER} 没有所属家族。" />
+    <string id="AF_ECO_UI_FactionIdGiverNotLeader" text="执行失败：目标角色 {GIVER} 并非家族 {CLAN} 的领袖，无法代表家族做出决断。" />
+    <string id="AF_ECO_UI_FactionIdUnknownAction" text="执行失败：无法识别的阵营操作 {ACTION}。" />
+    <string id="AF_ECO_UI_FactionIdPlayerNoKingdom" text="执行失败：玩家没有所属王国。" />
+    <string id="AF_ECO_UI_FactionIdTargetKingdomNotFound" text="执行失败：未找到目标王国 {KINGDOM}。" />
+    <string id="AF_ECO_UI_FactionIdPlayerAtWar" text="执行失败：家族 {CLAN} 当前与玩家王国 {KINGDOM} 处于交战状态。" />
+    <string id="AF_ECO_UI_FactionIdAlreadyInPlayerKingdom" text="家族 {CLAN} 本已属于玩家王国 {KINGDOM}。" />
+    <string id="AF_ECO_UI_FactionIdClanJoinPlayerKingdomSuccess" text="{CLAN} 已正式加入玩家王国 {KINGDOM}。" />
+    <string id="AF_ECO_UI_FactionIdTargetKingdomAtWar" text="执行失败：家族 {CLAN} 当前与目标王国 {KINGDOM} 处于交战状态。" />
+    <string id="AF_ECO_UI_FactionIdAlreadyInTargetKingdom" text="家族 {CLAN} 本已属于王国 {KINGDOM}。" />
+    <string id="AF_ECO_UI_FactionIdClanJoinKingdomSuccess" text="{CLAN} 已正式加入王国 {KINGDOM}。" />
+    <string id="AF_ECO_UI_FactionIdAlreadyMercenary" text="家族 {CLAN} 本已作为雇佣家族效力于王国 {KINGDOM}。" />
+    <string id="AF_ECO_UI_FactionIdMercenarySuccess" text="{CLAN} 已正式作为雇佣家族效力于王国 {KINGDOM}。" />
+    <string id="AF_ECO_UI_FactionIdAlreadyVassal" text="家族 {CLAN} 本已是王国 {KINGDOM} 的封臣家族。" />
+    <string id="AF_ECO_UI_FactionIdVassalSuccess" text="{CLAN} 已正式作为封臣家族加入王国 {KINGDOM}。" />
+    <string id="AF_ECO_UI_FactionIdAlreadyIndependent" text="家族 {CLAN} 本未依附任何王国，处于独立状态。" />
+    <string id="AF_ECO_UI_FactionIdIndependentSuccess" text="{CLAN} 已正式脱离原王国 {KINGDOM}，恢复独立家族身份。" />
+    <string id="AF_ECO_UI_FactionIdClanRebelGiverDead" text="执行失败：叛乱发起人 {GIVER} 已不在人世。" />
+    <string id="AF_ECO_UI_FactionIdClanRebelGiverNoClan" text="执行失败：叛乱发起人 {GIVER} 没有所属家族。" />
+    <string id="AF_ECO_UI_FactionIdClanRebelGiverNotLeader" text="执行失败：叛乱发起人 {GIVER} 并非家族 {CLAN} 的领袖，无法带领家族举旗自立。" />
+    <string id="AF_ECO_UI_FactionIdClanRebelSuccess" text="{CLAN} 已正式脱离王国 {KINGDOM}，并举旗加入内战叛变阵营。" />
   </strings>
 </base>

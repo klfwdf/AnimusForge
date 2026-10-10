@@ -1074,7 +1074,7 @@ public partial class RewardSystemBehavior
 		}
 		catch (Exception ex)
 		{
-			error = "制造失败：" + ex.GetType().Name + ": " + ex.Message;
+			error = EconomyUiTexts.PlayerRpCraftFailedWithException(ex.GetType().Name + ": " + ex.Message);
 			try
 			{
 				Logger.Log("Logic", "[PlayerRpCraft] commit_failed error=" + ex);
@@ -1181,11 +1181,11 @@ public partial class RewardSystemBehavior
 		string refundStatus = RefundPlayerRpCraftCharge(chargedPlayer, chargedAmount);
 		if (issues.Count > 0)
 		{
-			refundStatus += "\n物品回滚未完全完成：" + string.Join("；", issues);
+			refundStatus += "\n" + EconomyUiTexts.PlayerRpCraftRollbackIncomplete(string.Join("；", issues));
 		}
 		else if (hasExactGeneratedKey)
 		{
-			refundStatus += "\n已清理本次生成物品、记录和运行时缓存。";
+			refundStatus += "\n" + EconomyUiTexts.PlayerRpCraftRollbackCleaned;
 		}
 		try
 		{
@@ -1205,7 +1205,7 @@ public partial class RewardSystemBehavior
 		string normalizedStatus = (status ?? "").Trim();
 		if (string.IsNullOrWhiteSpace(message))
 		{
-			message = "制造失败。";
+			message = EconomyUiTexts.PlayerRpCraftFailedFallback;
 		}
 		return string.IsNullOrWhiteSpace(normalizedStatus)
 			? message
@@ -1217,7 +1217,7 @@ public partial class RewardSystemBehavior
 		int expected = Math.Max(0, chargedAmount);
 		if (expected <= 0)
 		{
-			return "未扣除第纳尔，无需退款。";
+			return EconomyUiTexts.PlayerRpCraftRefundNoCharge;
 		}
 		if (chargedPlayer == null)
 		{
@@ -1268,9 +1268,9 @@ public partial class RewardSystemBehavior
 			Math.Min(int.MaxValue, (long)after - before));
 		if (actual == expected)
 		{
-			return "已全额退款 "
-				+ expected.ToString(CultureInfo.InvariantCulture)
-				+ " 第纳尔。";
+			return EconomyUiTexts.PlayerRpCraftRefundFull(expected);
+
+
 		}
 		return "退款失败：应退 "
 			+ expected.ToString(CultureInfo.InvariantCulture)

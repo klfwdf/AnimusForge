@@ -13394,9 +13394,9 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 				string title = itemObject.Name?.ToString();
 				if (string.IsNullOrWhiteSpace(title))
 				{
-					title = "信件";
+					title = EconomyUiTexts.LetterDefaultTitle;
 				}
-				if (CourierLetterReplyPopup.Show("查看信件", title.Trim(), letterBody, null, "关闭"))
+				if (CourierLetterReplyPopup.Show(EconomyUiTexts.ViewLetterTitle, title.Trim(), letterBody, null, EconomyUiTexts.PopupCloseButton))
 				{
 					return false;
 				}
@@ -13404,13 +13404,13 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 			}
 			if (TryGetGeneratedRpItemIntroductionDetailForExternal(itemObject.StringId, itemObject.Id.InternalValue, out string generatedTitle, out string introduction, out bool isPending))
 			{
-				string title2 = string.IsNullOrWhiteSpace(generatedTitle) ? (itemObject.Name?.ToString() ?? "RP 物品") : generatedTitle;
+				string title2 = string.IsNullOrWhiteSpace(generatedTitle) ? (itemObject.Name?.ToString() ?? EconomyUiTexts.RpItemDefaultTitle) : generatedTitle;
 				string body = introduction;
 				if (string.IsNullOrWhiteSpace(body))
 				{
-					body = isPending ? "物品介绍正在生成，请稍后再查看。" : "该 RP 物品暂无介绍。";
+					body = isPending ? EconomyUiTexts.RpItemIntroductionPending : EconomyUiTexts.RpItemIntroductionEmpty;
 				}
-				if (CourierLetterReplyPopup.Show("查看物品介绍", title2.Trim(), body, null, "关闭"))
+				if (CourierLetterReplyPopup.Show(EconomyUiTexts.ViewRpItemIntroductionTitle, title2.Trim(), body, null, EconomyUiTexts.PopupCloseButton))
 				{
 					return false;
 				}
@@ -16190,7 +16190,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 						}
 						giverFacts.Add(statusText);
 						receiverFacts.Add(statusText);
-						InformationManager.DisplayMessage(new InformationMessage(EconomyUiTexts.Status(flag2 ? "AF_ECO_UI_KingdomTransfer" : "AF_ECO_UI_KingdomTransferFailed", flag2 ? "[Kingdom transfer] {STATUS}" : "[Kingdom transfer failed] {STATUS}", statusText), flag2 ? Color.FromUint(4278242559u) : Color.FromUint(4294936661u)));
+						InformationManager.DisplayMessage(new InformationMessage(EconomyUiTexts.Status(flag2 ? "AF_ECO_UI_KingdomTransfer" : "AF_ECO_UI_KingdomTransferFailed", flag2 ? "[Kingdom transfer] {STATUS}" : "[Kingdom transfer failed] {STATUS}", EconomyUiTexts.KingdomTransferStatusForDisplay(statusText)), flag2 ? Color.FromUint(4278242559u) : Color.FromUint(4294936661u)));
 					}
 				}
 				return string.Empty;
@@ -16230,7 +16230,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 						}
 						giverFacts.Add(statusText);
 						receiverFacts.Add(statusText);
-						InformationManager.DisplayMessage(new InformationMessage(EconomyUiTexts.Status(flag2 ? "AF_ECO_UI_FactionIdentity" : "AF_ECO_UI_FactionIdentityFailed", flag2 ? "[Faction identity] {STATUS}" : "[Faction identity failed] {STATUS}", statusText), flag2 ? Color.FromUint(4278242559u) : Color.FromUint(4294936661u)));
+						InformationManager.DisplayMessage(new InformationMessage(EconomyUiTexts.Status(flag2 ? "AF_ECO_UI_FactionIdentity" : "AF_ECO_UI_FactionIdentityFailed", flag2 ? "[Faction identity] {STATUS}" : "[Faction identity failed] {STATUS}", EconomyUiTexts.FactionIdentityStatusForDisplay(statusText)), flag2 ? Color.FromUint(4278242559u) : Color.FromUint(4294936661u)));
 					}
 				}
 				return string.Empty;
@@ -16250,7 +16250,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 						}
 						giverFacts.Add(statusText);
 						receiverFacts.Add(statusText);
-						InformationManager.DisplayMessage(new InformationMessage(EconomyUiTexts.Status(flag2 ? "AF_ECO_UI_FactionIdentity" : "AF_ECO_UI_FactionIdentityFailed", flag2 ? "[Faction identity] {STATUS}" : "[Faction identity failed] {STATUS}", statusText), flag2 ? Color.FromUint(4278242559u) : Color.FromUint(4294936661u)));
+						InformationManager.DisplayMessage(new InformationMessage(EconomyUiTexts.Status(flag2 ? "AF_ECO_UI_FactionIdentity" : "AF_ECO_UI_FactionIdentityFailed", flag2 ? "[Faction identity] {STATUS}" : "[Faction identity failed] {STATUS}", EconomyUiTexts.FactionIdentityStatusForDisplay(statusText)), flag2 ? Color.FromUint(4278242559u) : Color.FromUint(4294936661u)));
 					}
 				}
 				return string.Empty;
@@ -16270,7 +16270,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 						}
 						giverFacts.Add(statusText);
 						receiverFacts.Add(statusText);
-						InformationManager.DisplayMessage(new InformationMessage(EconomyUiTexts.Status(flag2 ? "AF_ECO_UI_FactionIdentity" : "AF_ECO_UI_FactionIdentityFailed", flag2 ? "[Faction identity] {STATUS}" : "[Faction identity failed] {STATUS}", statusText), flag2 ? Color.FromUint(4278242559u) : Color.FromUint(4294936661u)));
+						InformationManager.DisplayMessage(new InformationMessage(EconomyUiTexts.Status(flag2 ? "AF_ECO_UI_FactionIdentity" : "AF_ECO_UI_FactionIdentityFailed", flag2 ? "[Faction identity] {STATUS}" : "[Faction identity failed] {STATUS}", EconomyUiTexts.FactionIdentityStatusForDisplay(statusText)), flag2 ? Color.FromUint(4278242559u) : Color.FromUint(4294936661u)));
 					}
 				}
 				return string.Empty;
@@ -16289,7 +16289,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 						}
 						giverFacts.Add(statusText);
 						receiverFacts.Add(statusText);
-						InformationManager.DisplayMessage(new InformationMessage(EconomyUiTexts.Status(flag2 ? "AF_ECO_UI_FactionIdentity" : "AF_ECO_UI_FactionIdentityFailed", flag2 ? "[Faction identity] {STATUS}" : "[Faction identity failed] {STATUS}", statusText), flag2 ? Color.FromUint(4278242559u) : Color.FromUint(4294936661u)));
+						InformationManager.DisplayMessage(new InformationMessage(EconomyUiTexts.Status(flag2 ? "AF_ECO_UI_FactionIdentity" : "AF_ECO_UI_FactionIdentityFailed", flag2 ? "[Faction identity] {STATUS}" : "[Faction identity failed] {STATUS}", EconomyUiTexts.FactionIdentityStatusForDisplay(statusText)), flag2 ? Color.FromUint(4278242559u) : Color.FromUint(4294936661u)));
 					}
 				}
 				return string.Empty;
@@ -16343,7 +16343,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 					}
 					if (!string.IsNullOrWhiteSpace(statusText))
 					{
-						InformationManager.DisplayMessage(new InformationMessage(EconomyUiTexts.Status(flag2 ? "AF_ECO_UI_FixedAssetTransfer" : "AF_ECO_UI_FixedAssetTransferFailed", flag2 ? "[Fixed asset transfer] {STATUS}" : "[Fixed asset transfer failed] {STATUS}", statusText), flag2 ? Color.FromUint(4278242559u) : Color.FromUint(4294936661u)));
+						InformationManager.DisplayMessage(new InformationMessage(EconomyUiTexts.Status(flag2 ? "AF_ECO_UI_FixedAssetTransfer" : "AF_ECO_UI_FixedAssetTransferFailed", flag2 ? "[Fixed asset transfer] {STATUS}" : "[Fixed asset transfer failed] {STATUS}", EconomyUiTexts.FixedAssetStatusForDisplay(statusText)), flag2 ? Color.FromUint(4278242559u) : Color.FromUint(4294936661u)));
 					}
 				}
 				else
@@ -16399,7 +16399,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 							giverFacts.Add(statusText);
 							receiverFacts.Add(statusText);
 						}
-						string notificationPrefix = flag2 ? (preservePlayerFamilyIdentity ? "【加入队伍】" : (joinedAsCompanion ? "【成为同伴】" : "【加入家族】")) : "【加入队伍失败】";
+
 						InformationManager.DisplayMessage(new InformationMessage(EconomyUiTexts.JoinResult(flag2, preservePlayerFamilyIdentity, joinedAsCompanion, SocialUiLocalization.RecruitmentStatusForDisplay(statusText)), flag2 ? Color.FromUint(4278242559u) : Color.FromUint(4294936661u)));
 					}
 				}

@@ -105,5 +105,90 @@
     <string id="AF_ECO_UI_PartyTransferHeroPrisonerReceived" text="Received prisoner {NAME}" />
     <string id="AF_ECO_UI_PartyTransferPrisonerReceived" text="Received {AMOUNT} {NAME} prisoners" />
     <string id="AF_ECO_UI_PartyTransferBatchSummary" text="Party and prisoner transfer: attempted {ATTEMPTED}, succeeded {SUCCEEDED}, failed or partial {FAILED}; transferred {UNITS} units; estimated value {VALUE} denars." />
+    <string id="AF_ECO_UI_TaskGiverFallback" text="quest giver" />
+    <string id="AF_ECO_UI_EstimatedHits" text="estimated hits" />
+    <string id="AF_ECO_UI_ActualHits" text="actual hits" />
+    <string id="AF_ECO_UI_SettlementTrustGain" text="{SETTLEMENT}: settlement trust +{LOCAL}{SHARED}\n{HIT} {DIRECT}, share {SHARE}, total {TOTAL}" />
+    <string id="AF_ECO_UI_SettlementTrustCarry" text="{SETTLEMENT}: settlement trust accumulated +{TOTAL}{SHARED}\n{HIT} {DIRECT}, share {SHARE}; less than 1 point" />
+    <string id="AF_ECO_UI_LetterDefaultTitle" text="Letter" />
+    <string id="AF_ECO_UI_ViewLetterTitle" text="View Letter" />
+    <string id="AF_ECO_UI_PopupCloseButton" text="Close" />
+    <string id="AF_ECO_UI_RpItemDefaultTitle" text="RP Item" />
+    <string id="AF_ECO_UI_ViewRpItemIntroductionTitle" text="View Item Description" />
+    <string id="AF_ECO_UI_RpItemIntroductionPending" text="Item description is generating, please check back later." />
+    <string id="AF_ECO_UI_RpItemIntroductionEmpty" text="This RP item has no description yet." />
+    <string id="AF_ECO_UI_RpForgeFailed" text="Crafting failed." />
+    <string id="AF_ECO_UI_RpForgeFailedException" text="Crafting failed: {ERROR}" />
+    <string id="AF_ECO_UI_RpForgeRollbackIncomplete" text="Item rollback was not fully completed: {ISSUES}" />
+    <string id="AF_ECO_UI_RpForgeRollbackCleaned" text="Cleaned up the generated item, records, and runtime caches." />
+    <string id="AF_ECO_UI_RpForgeRefundNoCharge" text="No denars were deducted; no refund needed." />
+    <string id="AF_ECO_UI_RpForgeRefundFull" text="Fully refunded {AMOUNT} denars." />
+    <string id="AF_ECO_UI_FixedAssetQtyMustBeOne" text="Execution failed: fixed asset quantity must be 1." />
+    <string id="AF_ECO_UI_FixedAssetTransferGiverPlayer" text="You cannot transfer a fixed asset from the player." />
+    <string id="AF_ECO_UI_FixedAssetReceiverMustBePlayer" text="Execution failed: the fixed asset receiver must be the player." />
+    <string id="AF_ECO_UI_FixedAssetEmptyToken" text="Execution failed: fixed asset identifier is empty." />
+    <string id="AF_ECO_UI_FixedAssetNotFound" text="Execution failed: target fixed asset was not found: {TOKEN}" />
+    <string id="AF_ECO_UI_FixedAssetUnresolved" text="Execution failed: unrecognized fixed asset identifier: {TOKEN}" />
+    <string id="AF_ECO_UI_FixedAssetActionUnsupported" text="Execution failed: unsupported fixed asset transfer action: {ACTION}" />
+    <string id="AF_ECO_UI_FixedAssetCastleNotAllowed" text="Castle transfer is not allowed in conversation." />
+    <string id="AF_ECO_UI_FixedAssetTownNotAllowed" text="Town transfer is not allowed in conversation." />
+    <string id="AF_ECO_UI_FixedAssetSettlementNotAllowed" text="Settlement transfer is not allowed in conversation." />
+    <string id="AF_ECO_UI_FixedAssetGiverDead" text="Execution failed: transferor {GIVER} is no longer alive." />
+    <string id="AF_ECO_UI_FixedAssetGiverNoClan" text="Execution failed: transferor {GIVER} has no clan." />
+    <string id="AF_ECO_UI_FixedAssetPlayerNoClan" text="Execution failed: player has no clan." />
+    <string id="AF_ECO_UI_FixedAssetPlayerAlreadyOwns" text="You already own {SETTLEMENT}." />
+    <string id="AF_ECO_UI_FixedAssetGiverNotOwner" text="Transferor {GIVER} does not own {SETTLEMENT} (current owner: {OWNER})." />
+    <string id="AF_ECO_UI_FixedAssetGiverNotLeader" text="Transferor {GIVER} is not the leader of clan {CLAN} and cannot transfer settlement ownership." />
+    <string id="AF_ECO_UI_FixedAssetKingdomAtWar" text="Transferor kingdom {GIVER_KINGDOM} is at war with player kingdom {PLAYER_KINGDOM}." />
+    <string id="AF_ECO_UI_FixedAssetClanAtWar" text="Transferor clan {CLAN} is at war with player kingdom {KINGDOM}." />
+    <string id="AF_ECO_UI_FixedAssetPlayerClanAtWar" text="Transferor kingdom {KINGDOM} is at war with player clan {CLAN}." />
+    <string id="AF_ECO_UI_FixedAssetAtWarDirect" text="Transferor clan {GIVER_CLAN} is at war with player clan {PLAYER_CLAN}." />
+    <string id="AF_ECO_UI_FixedAssetTransferException" text="Failed to transfer settlement: {ERROR}" />
+    <string id="AF_ECO_UI_FixedAssetTransferSuccess" text="{GIVER} has transferred {SETTLEMENT} to you." />
+    <string id="AF_ECO_UI_FixedAssetWorkshopAlreadyOwns" text="You already own the workshop at {SETTLEMENT}: {WORKSHOP}." />
+    <string id="AF_ECO_UI_FixedAssetWorkshopGiverNotOwner" text="Transferor {GIVER} does not own the workshop at {SETTLEMENT}: {WORKSHOP} (current owner: {OWNER})." />
+    <string id="AF_ECO_UI_FixedAssetWorkshopLimit" text="Your workshop capacity is full (maximum {LIMIT})." />
+    <string id="AF_ECO_UI_FixedAssetWorkshopTownAtWar" text="{TOWN} belongs to hostile faction {FACTION}." />
+    <string id="AF_ECO_UI_FixedAssetWorkshopFailed" text="Workshop transfer failed: cannot change owner in game data." />
+    <string id="AF_ECO_UI_FixedAssetWorkshopSuccess" text="{GIVER} has transferred the workshop at {SETTLEMENT} ({WORKSHOP}) to you." />
+    <string id="AF_ECO_UI_FixedAssetAlleyGiverPlayer" text="Cannot transfer an alley from the player." />
+    <string id="AF_ECO_UI_FixedAssetAlleyAlreadyOwns" text="You already control the alley at {SETTLEMENT}." />
+    <string id="AF_ECO_UI_FixedAssetAlleyGiverNotOwner" text="Transferor {GIVER} does not control the alley at {SETTLEMENT} (current controller: {OWNER})." />
+    <string id="AF_ECO_UI_FixedAssetAlleyTownAtWar" text="{TOWN} belongs to hostile faction {FACTION}; you cannot take over the alley." />
+    <string id="AF_ECO_UI_FixedAssetAlleyNoTroops" text="You have no suitable companion or troop to take over the alley at {SETTLEMENT}." />
+    <string id="AF_ECO_UI_FixedAssetAlleyFailed" text="Failed to transfer alley: game system could not complete takeover." />
+    <string id="AF_ECO_UI_FixedAssetAlleySuccess" text="{GIVER} has transferred control of the alley at {SETTLEMENT} to you." />
+    <string id="AF_ECO_UI_KingdomTransferGiverDead" text="Execution failed: abdicator {GIVER} is no longer alive." />
+    <string id="AF_ECO_UI_KingdomTransferGiverNoKingdom" text="Execution failed: abdicator {GIVER} has no kingdom." />
+    <string id="AF_ECO_UI_KingdomTransferPlayerNoClan" text="Execution failed: player has no clan." />
+    <string id="AF_ECO_UI_KingdomTransferPlayerAlreadyRuling" text="Execution failed: player already rules kingdom {KINGDOM}." />
+    <string id="AF_ECO_UI_KingdomTransferGiverNotRuler" text="Execution failed: {GIVER} is not the ruler of kingdom {KINGDOM} (current ruler: {RULER})." />
+    <string id="AF_ECO_UI_KingdomTransferPlayerDifferentKingdom" text="Execution failed: player currently belongs to another kingdom {KINGDOM}; leave your kingdom first." />
+    <string id="AF_ECO_UI_KingdomTransferClanAtWar" text="Execution failed: player clan is currently at war with kingdom {KINGDOM}." />
+    <string id="AF_ECO_UI_KingdomTransferException" text="Failed to abdicate royal authority: {ERROR}" />
+    <string id="AF_ECO_UI_KingdomTransferRulerMismatch" text="Royal abdication failed: kingdom ruler was not updated to player." />
+    <string id="AF_ECO_UI_KingdomTransferSuccess" text="{GIVER} has abdicated the throne; you are now the ruler of {KINGDOM}." />
+    <string id="AF_ECO_UI_FactionIdGiverDead" text="Execution failed: target character {GIVER} is no longer alive." />
+    <string id="AF_ECO_UI_FactionIdGiverNoClan" text="Execution failed: target character {GIVER} has no clan." />
+    <string id="AF_ECO_UI_FactionIdGiverNotLeader" text="Execution failed: target character {GIVER} is not the leader of clan {CLAN} and cannot represent the clan." />
+    <string id="AF_ECO_UI_FactionIdUnknownAction" text="Execution failed: unrecognized faction action {ACTION}." />
+    <string id="AF_ECO_UI_FactionIdPlayerNoKingdom" text="Execution failed: player has no kingdom." />
+    <string id="AF_ECO_UI_FactionIdTargetKingdomNotFound" text="Execution failed: target kingdom {KINGDOM} was not found." />
+    <string id="AF_ECO_UI_FactionIdPlayerAtWar" text="Execution failed: clan {CLAN} is currently at war with player kingdom {KINGDOM}." />
+    <string id="AF_ECO_UI_FactionIdAlreadyInPlayerKingdom" text="Clan {CLAN} already belongs to player kingdom {KINGDOM}." />
+    <string id="AF_ECO_UI_FactionIdClanJoinPlayerKingdomSuccess" text="{CLAN} has formally joined player kingdom {KINGDOM}." />
+    <string id="AF_ECO_UI_FactionIdTargetKingdomAtWar" text="Execution failed: clan {CLAN} is currently at war with target kingdom {KINGDOM}." />
+    <string id="AF_ECO_UI_FactionIdAlreadyInTargetKingdom" text="Clan {CLAN} already belongs to kingdom {KINGDOM}." />
+    <string id="AF_ECO_UI_FactionIdClanJoinKingdomSuccess" text="{CLAN} has formally joined kingdom {KINGDOM}." />
+    <string id="AF_ECO_UI_FactionIdAlreadyMercenary" text="Clan {CLAN} is already a mercenary clan for kingdom {KINGDOM}." />
+    <string id="AF_ECO_UI_FactionIdMercenarySuccess" text="{CLAN} has formally entered mercenary service for kingdom {KINGDOM}." />
+    <string id="AF_ECO_UI_FactionIdAlreadyVassal" text="Clan {CLAN} is already a vassal of kingdom {KINGDOM}." />
+    <string id="AF_ECO_UI_FactionIdVassalSuccess" text="{CLAN} has formally become a vassal clan of kingdom {KINGDOM}." />
+    <string id="AF_ECO_UI_FactionIdAlreadyIndependent" text="Clan {CLAN} does not belong to any kingdom and is already independent." />
+    <string id="AF_ECO_UI_FactionIdIndependentSuccess" text="{CLAN} has formally declared independence and left former kingdom {KINGDOM}." />
+    <string id="AF_ECO_UI_FactionIdClanRebelGiverDead" text="Execution failed: rebel leader {GIVER} is no longer alive." />
+    <string id="AF_ECO_UI_FactionIdClanRebelGiverNoClan" text="Execution failed: rebel leader {GIVER} has no clan." />
+    <string id="AF_ECO_UI_FactionIdClanRebelGiverNotLeader" text="Execution failed: rebel leader {GIVER} is not the leader of clan {CLAN} and cannot lead a rebellion." />
+    <string id="AF_ECO_UI_FactionIdClanRebelSuccess" text="{CLAN} has formally broken away from kingdom {KINGDOM} and raised the banner of civil war." />
   </strings>
 </base>
