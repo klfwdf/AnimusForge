@@ -541,5 +541,16 @@
     <string id="AF_DIP_UI_Vote_OnlyClanDecides" text="仅你的家族有表决权 · 由你裁决" />
     <string id="AF_DIP_UI_Vote_NoOtherVoters" text="无其他家族参与表决" />
     <string id="AF_DIP_UI_Vote_NoCouncilTrend" text="议会尚无倾向（不含你）" />
+    <string id="AF_DIP_UI_Annexation_Processing" text="吞并暂缓：{TARGET}的并入政务正在处理中。" />
+    <string id="AF_DIP_UI_Annexation_NoClans" text="吞并中止：{TARGET}已无可宣誓效忠的有效家族。" />
+    <string id="AF_DIP_UI_Annexation_SettlementsPending" text="吞并中止：{TARGET}仍有领地未完成移交。为避免领地归属出错，旧王国暂未解散。" />
+    <string id="AF_DIP_UI_Annexation_ClansPending" text="吞并中止：{TARGET}仍有家族未完成效忠。为避免家族归属出错，旧王国暂未解散。" />
+    <string id="AF_DIP_UI_Annexation_DestroyFailed" text="吞并中止：{TARGET}所有家族已向{PLAYER}效忠，但旧王国暂未能完成解散。" />
+    <string id="AF_DIP_UI_Annexation_Completed" text="吞并完成：{TARGET}已并入{PLAYER}。{TARGET}所有家族已向{PLAYER}宣誓效忠，{TARGET}就此灭亡。" />
+    <string id="AF_DIP_UI_Annexation_NotPlayerRuler" text="吞并未成立：你必须是自己王国的国王。" />
+    <string id="AF_DIP_UI_Annexation_TargetInvalid" text="吞并未成立：目标王国不存在，或已经灭亡。" />
+    <string id="AF_DIP_UI_Annexation_SameKingdom" text="吞并未成立：不能吞并自己的王国。" />
+    <string id="AF_DIP_UI_Annexation_TargetRulerRequired" text="吞并未成立：对方无权代表目标王国放弃王权。" />
+    <string id="AF_DIP_UI_Annexation_VassalageEndedReason" text="{TARGET}已并入你的王国，旧臣属条约随之作废。" />
   </strings>
 </base>
