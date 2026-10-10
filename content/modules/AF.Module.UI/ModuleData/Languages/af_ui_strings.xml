@@ -3254,5 +3254,57 @@ Choose how to proceed:" />
   <string id="AF_UI_Terminal_HotkeySet" text="Hotkey {TITLE} set to [{KEY}]." />
   <string id="AF_UI_Weekly_Browser_PageStatus" text="Page {CURRENT} / {TOTAL}" />
   <string id="AF_UI_Weekly_Notice_Current" text="current weekly report" />
+  <string id="AF_UI_Weekly_Bulletin_ScopeWorld" text="World bulletin" />
+  <string id="AF_UI_Weekly_Bulletin_ScopeKingdom" text="Kingdom bulletin" />
+  <string id="AF_UI_Weekly_Bulletin_ScopeNamedKingdom" text="The {KINGDOM} Gazette" />
+  <string id="AF_UI_Weekly_Bulletin_Issue" text="Issue {ISSUE}" />
+  <string id="AF_UI_Weekly_Bulletin_KingdomSeparator" text=", " />
+  <string id="AF_UI_Weekly_Bulletin_InvolvedKingdoms" text="Involved: {KINGDOMS}" />
+  <string id="AF_UI_Weekly_Bulletin_MinorMessage" text="News" />
+  <string id="AF_UI_Weekly_Bulletin_CategoryDiplomacy" text="Diplomacy" />
+  <string id="AF_UI_Weekly_Bulletin_CategoryConflict" text="Conflict" />
+  <string id="AF_UI_Weekly_Bulletin_CategoryRaids" text="Raids" />
+  <string id="AF_UI_Weekly_Bulletin_CategoryTerritory" text="Territory" />
+  <string id="AF_UI_Weekly_Bulletin_CategoryObituaries" text="Obituaries" />
+  <string id="AF_UI_Weekly_Bulletin_CategoryCaptivity" text="Captivity" />
+  <string id="AF_UI_Weekly_Bulletin_CategoryStateAffairs" text="State affairs" />
+  <string id="AF_UI_Weekly_Bulletin_CategoryCurrentAffairs" text="Current affairs" />
+  <string id="AF_UI_Weekly_Bulletin_KindDefault" text="Current affairs bulletin" />
+  <string id="AF_UI_Weekly_Bulletin_KindWarDeclared" text="War breaks out" />
+  <string id="AF_UI_Weekly_Bulletin_KindDiplomaticDeclaration" text="Diplomatic declaration" />
+  <string id="AF_UI_Weekly_Bulletin_KindRulerPolicy" text="New ruler policy" />
+  <string id="AF_UI_Weekly_Bulletin_KindNobleGathering" text="Noble gathering" />
+  <string id="AF_UI_Weekly_Bulletin_KindTournamentFinished" text="Tournament results" />
+  <string id="AF_UI_Weekly_Bulletin_KindPeaceMade" text="Peace concluded" />
+  <string id="AF_UI_Weekly_Bulletin_KindSettlementSiege" text="Settlement changes hands" />
+  <string id="AF_UI_Weekly_Bulletin_KindSettlementTransfer" text="Territory transferred" />
+  <string id="AF_UI_Weekly_Bulletin_KindFiefGrant" text="Fief granted" />
+  <string id="AF_UI_Weekly_Bulletin_KindBattle" text="Battle report" />
+  <string id="AF_UI_Weekly_Bulletin_KindSallyOutBattle" text="Sally-out battle report" />
+  <string id="AF_UI_Weekly_Bulletin_KindRulerKilled" text="Ruler falls" />
+  <string id="AF_UI_Weekly_Bulletin_KindLordKilled" text="Noble falls" />
+  <string id="AF_UI_Weekly_Bulletin_KindLordCaptured" text="Noble captured" />
+  <string id="AF_UI_Weekly_Bulletin_KindKingdomDestroyed" text="Kingdom falls" />
+  <string id="AF_UI_Weekly_Bulletin_KindKingdomCreated" text="Kingdom rises" />
+  <string id="AF_UI_Weekly_Bulletin_KindKingdomRebellion" text="Kingdom rebellion" />
+  <string id="AF_UI_Weekly_Bulletin_KindCivilWar" text="Civil war begins" />
+  <string id="AF_UI_Weekly_Bulletin_KindCivilWarResolution" text="Civil war ends" />
+  <string id="AF_UI_Weekly_Bulletin_KindCivilWarPolitics" text="Faction negotiations" />
+  <string id="AF_UI_Weekly_Bulletin_KindCoupSuccess" text="Coup succeeds" />
+  <string id="AF_UI_Weekly_Bulletin_KindCoupFailure" text="Coup fails" />
+  <string id="AF_UI_Weekly_Bulletin_KindRaid" text="Village raided" />
+  <string id="AF_UI_Weekly_Bulletin_KindAllianceFormed" text="Alliance formed" />
+  <string id="AF_UI_Weekly_Bulletin_KindAllianceEnded" text="Alliance ends" />
+  <string id="AF_UI_Weekly_Bulletin_KindRulerChanged" text="New ruler" />
+  <string id="AF_UI_Weekly_Bulletin_KindRoyalMarriage" text="Royal marriage" />
+  <string id="AF_UI_Weekly_Bulletin_KindNobleMarriage" text="Noble marriage" />
+  <string id="AF_UI_Weekly_Bulletin_KindClanDefection" text="Clan defects" />
+  <string id="AF_UI_Weekly_Bulletin_KindClanDestroyed" text="Clan falls" />
+  <string id="AF_UI_Weekly_Bulletin_KindArmyGathered" text="Army gathers" />
+  <string id="AF_UI_Weekly_Bulletin_KindTownUnrest" text="Town unrest" />
+  <string id="AF_UI_Weekly_Bulletin_KindTownRebellion" text="Town rebellion" />
+  <string id="AF_UI_Weekly_Bulletin_KindKingdomAnnexed" text="Kingdom annexed" />
+  <string id="AF_UI_Weekly_Bulletin_KindVassalageEstablished" text="Vassalage established" />
+  <string id="AF_UI_Weekly_Bulletin_KindVassalageEnded" text="Vassalage ends" />
 </strings>
 </base>

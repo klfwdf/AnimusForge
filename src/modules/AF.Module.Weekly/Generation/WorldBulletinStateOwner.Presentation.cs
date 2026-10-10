@@ -1,4 +1,4 @@
-using System;using System.Collections.Generic;using System.Linq;using static AnimusForge.MyBehavior;
+using System;using System.Collections.Generic;using System.Linq;using TaleWorlds.Localization;using static AnimusForge.MyBehavior;
 namespace AnimusForge;
 internal sealed class WorldBulletinLayout
 {
@@ -81,7 +81,11 @@ internal WorldBulletinPanelData BuildWorldBulletinPanelData(EventRecordEntry ent
 		bool worldScope = string.Equals((entry.EventKind ?? "").Trim(), "world", StringComparison.OrdinalIgnoreCase);
 		string kingdomLabel = _port.ResolveKingdom(entry.ScopeKingdomId);
 		// Kingdom-scope issues only exist in saves from earlier builds.
-		string scopeLabel = worldScope ? "时事快报" : (string.IsNullOrWhiteSpace(kingdomLabel) ? "王国快报" : kingdomLabel + "快报");
+		string scopeLabel = worldScope
+			? BulletinText("AF_UI_Weekly_Bulletin_ScopeWorld", "World bulletin")
+			: string.IsNullOrWhiteSpace(kingdomLabel)
+				? BulletinText("AF_UI_Weekly_Bulletin_ScopeKingdom", "Kingdom bulletin")
+				: BulletinText("AF_UI_Weekly_Bulletin_ScopeNamedKingdom", "{KINGDOM} bulletin", "KINGDOM", kingdomLabel);
 		List<string> masthead = new List<string> { scopeLabel };
 		if (!string.IsNullOrWhiteSpace(entry.CreatedDate))
 		{
@@ -90,15 +94,17 @@ internal WorldBulletinPanelData BuildWorldBulletinPanelData(EventRecordEntry ent
 		string issue = ParseWorldBulletinIssueNumber(eventId);
 		if (issue.Length > 0)
 		{
-			masthead.Add("第" + issue + "期");
+			masthead.Add(BulletinText("AF_UI_Weekly_Bulletin_Issue", "Issue {ISSUE}", "ISSUE", issue));
 		}
 		string majorKind = layout?.MajorKind ?? "";
-		string kindLabel = WorldBulletinPolicy.TitleForKind(majorKind);
+		string kindLabel = majorKind.Length > 0 ? WorldBulletinTitleForKind(majorKind) : "";
 		WorldBulletinPanelData data = new WorldBulletinPanelData
 		{
 			EventId = eventId,
 			MastheadText = string.Join(" · ", masthead),
-			KindText = majorKind.Length > 0 ? WorldBulletinCategoryForKind(majorKind) + " · " + kindLabel : "时 事",
+			KindText = majorKind.Length > 0
+				? WorldBulletinCategoryForKind(majorKind) + " · " + kindLabel
+				: BulletinText("AF_UI_Weekly_Bulletin_CategoryCurrentAffairs", "Current affairs"),
 			HeadlineText = _port.NoticeTitle(entry),
 			MetaText = BuildWorldBulletinMetaText(entry, layout, worldScope),
 			BodyText = major,
@@ -106,11 +112,26 @@ internal WorldBulletinPanelData BuildWorldBulletinPanelData(EventRecordEntry ent
 			IllustrationBody = _port.PopupBody(entry),
 			IllustrationPlan = layout?.IllustrationPlan
 		};
+		Dictionary<string, string> minorKindLabels = null;
 		for (int i = 0; i < minorLines.Count; i++)
 		{
-			string kind = layout?.MinorKinds != null && i < layout.MinorKinds.Count ? layout.MinorKinds[i] : "";
 			// Old issues predate layouts; their minors get the neutral tag.
-			data.Minors.Add(new KeyValuePair<string, string>(kind.Length > 0 ? WorldBulletinPolicy.TitleForKind(kind) : "消息", minorLines[i]));
+			string kind = layout?.MinorKinds != null && i < layout.MinorKinds.Count ? layout.MinorKinds[i] : "";
+			string kindLabelForDisplay;
+			if (kind.Length == 0)
+			{
+				kindLabelForDisplay = BulletinText("AF_UI_Weekly_Bulletin_MinorMessage", "Message");
+			}
+			else
+			{
+				minorKindLabels ??= new Dictionary<string, string>(StringComparer.Ordinal);
+				if (!minorKindLabels.TryGetValue(kind, out kindLabelForDisplay))
+				{
+					kindLabelForDisplay = WorldBulletinTitleForKind(kind);
+					minorKindLabels.Add(kind, kindLabelForDisplay);
+				}
+			}
+			data.Minors.Add(new KeyValuePair<string, string>(kindLabelForDisplay, minorLines[i]));
 		}
 		return data;
 	}
@@ -156,8 +177,17 @@ internal static string BuildWorldBulletinMetaText(EventRecordEntry entry, WorldB
 			names.Add(resolveKingdom(entry.ScopeKingdomId));
 		}
 		string date = (entry.CreatedDate ?? "").Trim();
-		string kingdoms = names.Count > 0 ? "涉及 " + string.Join("、", names) : "";
+		string kingdoms = names.Count > 0
+			? BulletinText("AF_UI_Weekly_Bulletin_InvolvedKingdoms", "Involved: {KINGDOMS}", "KINGDOMS", string.Join(BulletinText("AF_UI_Weekly_Bulletin_KingdomSeparator", ", "), names))
+			: "";
 		return string.Join(" · ", new[] { date, kingdoms }.Where(x => x.Length > 0));
+	}
+private static string BulletinText(string id, string fallback) => new TextObject("{=" + id + "}" + fallback).ToString();
+private static string BulletinText(string id, string fallback, string variable, string value)
+	{
+		var text = new TextObject("{=" + id + "}" + fallback);
+		text.SetTextVariable(variable, value ?? string.Empty);
+		return text.ToString();
 	}
 internal static string WorldBulletinCategoryForKind(string kind)
 	{
@@ -170,23 +200,23 @@ internal static string WorldBulletinCategoryForKind(string kind)
 		case "alliance_ended":
 		case "vassalage_established":
 		case "vassalage_ended":
-			return "外 交";
+			return BulletinText("AF_UI_Weekly_Bulletin_CategoryDiplomacy", "Diplomacy");
 		case "settlement_siege":
 		case "battle":
 		case "siege_battle":
 		case "army_gathered":
-			return "战 事";
+			return BulletinText("AF_UI_Weekly_Bulletin_CategoryConflict", "Conflict");
 		case "raid":
-			return "劫 掠";
+			return BulletinText("AF_UI_Weekly_Bulletin_CategoryRaids", "Raids");
 		case "settlement_transfer":
 		case "fief_grant":
-			return "领 地";
+			return BulletinText("AF_UI_Weekly_Bulletin_CategoryTerritory", "Territory");
 		case "ruler_killed":
 		case "lord_killed":
-			return "讣 闻";
+			return BulletinText("AF_UI_Weekly_Bulletin_CategoryObituaries", "Obituaries");
 		case "ruler_captured":
 		case "lord_captured":
-			return "被 俘";
+			return BulletinText("AF_UI_Weekly_Bulletin_CategoryCaptivity", "Captivity");
 		case "kingdom_destroyed":
 		case "kingdom_created":
 		case "kingdom_rebellion":
@@ -204,9 +234,53 @@ internal static string WorldBulletinCategoryForKind(string kind)
 		case "town_unrest":
 		case "town_rebellion":
 		case "kingdom_annexed":
-			return "国 事";
+			return BulletinText("AF_UI_Weekly_Bulletin_CategoryStateAffairs", "State affairs");
 		default:
-			return "时 事";
+			return BulletinText("AF_UI_Weekly_Bulletin_CategoryCurrentAffairs", "Current affairs");
+		}
+	}
+internal static string WorldBulletinTitleForKind(string kind)
+	{
+		switch ((kind ?? "").Trim())
+		{
+		case "war_declared": return BulletinText("AF_UI_Weekly_Bulletin_KindWarDeclared", "War breaks out");
+		case "diplomatic_declaration": return BulletinText("AF_UI_Weekly_Bulletin_KindDiplomaticDeclaration", "Diplomatic declaration");
+		case "ruler_policy": return BulletinText("AF_UI_Weekly_Bulletin_KindRulerPolicy", "New ruler policy");
+		case "noble_gathering": return BulletinText("AF_UI_Weekly_Bulletin_KindNobleGathering", "Noble gathering");
+		case "tournament_finished": return BulletinText("AF_UI_Weekly_Bulletin_KindTournamentFinished", "Tournament results");
+		case "peace_made": return BulletinText("AF_UI_Weekly_Bulletin_KindPeaceMade", "Peace concluded");
+		case "settlement_siege": return BulletinText("AF_UI_Weekly_Bulletin_KindSettlementSiege", "Settlement changes hands");
+		case "settlement_transfer": return BulletinText("AF_UI_Weekly_Bulletin_KindSettlementTransfer", "Territory transferred");
+		case "fief_grant": return BulletinText("AF_UI_Weekly_Bulletin_KindFiefGrant", "Fief granted");
+		case "battle":
+		case "siege_battle": return BulletinText("AF_UI_Weekly_Bulletin_KindBattle", "Battle report");
+		case "sally_out_battle": return BulletinText("AF_UI_Weekly_Bulletin_KindSallyOutBattle", "Sally-out battle report");
+		case "ruler_killed": return BulletinText("AF_UI_Weekly_Bulletin_KindRulerKilled", "Ruler slain");
+		case "lord_killed": return BulletinText("AF_UI_Weekly_Bulletin_KindLordKilled", "Noble slain");
+		case "lord_captured": return BulletinText("AF_UI_Weekly_Bulletin_KindLordCaptured", "Noble captured");
+		case "kingdom_destroyed": return BulletinText("AF_UI_Weekly_Bulletin_KindKingdomDestroyed", "Kingdom falls");
+		case "kingdom_created": return BulletinText("AF_UI_Weekly_Bulletin_KindKingdomCreated", "Kingdom founded");
+		case "kingdom_rebellion": return BulletinText("AF_UI_Weekly_Bulletin_KindKingdomRebellion", "Kingdom rebellion");
+		case "civil_war": return BulletinText("AF_UI_Weekly_Bulletin_KindCivilWar", "Civil war erupts");
+		case "civil_war_resolution": return BulletinText("AF_UI_Weekly_Bulletin_KindCivilWarResolution", "Civil war ends");
+		case "civil_war_politics": return BulletinText("AF_UI_Weekly_Bulletin_KindCivilWarPolitics", "Faction negotiations");
+		case "coup_success": return BulletinText("AF_UI_Weekly_Bulletin_KindCoupSuccess", "Coup succeeds");
+		case "coup_failure": return BulletinText("AF_UI_Weekly_Bulletin_KindCoupFailure", "Coup fails");
+		case "raid": return BulletinText("AF_UI_Weekly_Bulletin_KindRaid", "Village raided");
+		case "alliance_formed": return BulletinText("AF_UI_Weekly_Bulletin_KindAllianceFormed", "Alliance formed");
+		case "alliance_ended": return BulletinText("AF_UI_Weekly_Bulletin_KindAllianceEnded", "Alliance ended");
+		case "ruler_changed": return BulletinText("AF_UI_Weekly_Bulletin_KindRulerChanged", "New ruler");
+		case "royal_marriage": return BulletinText("AF_UI_Weekly_Bulletin_KindRoyalMarriage", "Royal marriage");
+		case "noble_marriage": return BulletinText("AF_UI_Weekly_Bulletin_KindNobleMarriage", "Noble marriage");
+		case "clan_defection": return BulletinText("AF_UI_Weekly_Bulletin_KindClanDefection", "Clan defects");
+		case "clan_destroyed": return BulletinText("AF_UI_Weekly_Bulletin_KindClanDestroyed", "Clan destroyed");
+		case "army_gathered": return BulletinText("AF_UI_Weekly_Bulletin_KindArmyGathered", "Army assembled");
+		case "town_unrest": return BulletinText("AF_UI_Weekly_Bulletin_KindTownUnrest", "Town unrest");
+		case "town_rebellion": return BulletinText("AF_UI_Weekly_Bulletin_KindTownRebellion", "Town rebellion");
+		case "kingdom_annexed": return BulletinText("AF_UI_Weekly_Bulletin_KindKingdomAnnexed", "Kingdom annexed");
+		case "vassalage_established": return BulletinText("AF_UI_Weekly_Bulletin_KindVassalageEstablished", "Vassalage established");
+		case "vassalage_ended": return BulletinText("AF_UI_Weekly_Bulletin_KindVassalageEnded", "Vassalage ends");
+		default: return BulletinText("AF_UI_Weekly_Bulletin_KindDefault", "Current affairs bulletin");
 		}
 	}
 internal EventRecordEntry FindLatestWorldBulletinRecord()

@@ -55,6 +55,44 @@ def main() -> int:
                 raise AssertionError(f"literal newline escape in XML text: {key}; use &#10;")
             if sorted(VAR.findall(en[key])) != sorted(VAR.findall(zh[key])):
                 raise AssertionError(f"placeholder mismatch: {key}")
+    ui_en = strings(root / "content/modules/AF.Module.UI/ModuleData/Languages/af_ui_strings.xml")
+    ui_zh = strings(root / "content/modules/AF.Module.UI/ModuleData/Languages/CNs/af_ui_strings-zh-CN.xml")
+    required_ui_keys = {
+        "AF_UI_Duel_StakeGold", "AF_UI_Duel_StakeItem", "AF_UI_Duel_StakeSeparator", "AF_UI_Duel_StakeNone",
+        "AF_UI_Duel_StakeDebtIdSuffix", "AF_UI_Duel_StakeDueSuffix", "AF_UI_Duel_StakeNoteSuffix", "AF_UI_Duel_StakeDebtResult",
+        "AF_UI_Duel_RenownLoserClan", "AF_UI_Duel_RenownWinnerClan", "AF_UI_Duel_RenownSettlement", "AF_UI_Duel_StakeNotSettled",
+        "AF_UI_Duel_StakePaidPartially", "AF_UI_Duel_StakePaid", "AF_UI_Duel_StakeUnpaid", "AF_UI_Terminal_HotkeySet",
+        "AF_UI_Weekly_Browser_PageStatus", "AF_UI_Weekly_Notice_Current",
+    }
+    missing_ui_keys = required_ui_keys - (set(ui_en) & set(ui_zh))
+    if missing_ui_keys:
+        raise AssertionError(f"Required confirmed AF_UI keys missing: {sorted(missing_ui_keys)}")
+    weekly_path = root / "src/modules/AF.Module.Weekly/Generation/WorldBulletinStateOwner.Presentation.cs"
+    weekly_source = weekly_path.read_text(encoding="utf-8-sig")
+    weekly_keys = set(re.findall(r'"(AF_UI_Weekly_Bulletin_[A-Za-z0-9_]+)"', weekly_source))
+    missing_weekly_keys = weekly_keys - (set(ui_en) & set(ui_zh))
+    if missing_weekly_keys:
+        raise AssertionError(f"Weekly bulletin display keys missing: {sorted(missing_weekly_keys)}")
+    panel_source = (root / "src/modules/AF.Module.Weekly/Panel/WorldBulletinPanelVM.cs").read_text(encoding="utf-8-sig")
+    panel_prefab = (root / "content/modules/AF.Module.Weekly/GUI/Prefabs/WorldBulletinPanel.xml").read_text(encoding="utf-8-sig")
+    for field in ("MastheadText", "KindText", "HeadlineText", "MetaText"):
+        if f"{field} = Sanitize(data.{field})" not in panel_source or f'Text="@{field}"' not in panel_prefab:
+            raise AssertionError(f"World bulletin display binding missing: {field}")
+    if 'BodyText="@BodyText"' not in panel_prefab or 'Text="@TagText"' not in panel_prefab or 'Text="@Text"' not in panel_prefab:
+        raise AssertionError("World bulletin body/minor display bindings missing")
+    if 'new WorldBulletinMinorItemVM("¶ " + Sanitize(minor.Key)' not in panel_source:
+        raise AssertionError("World bulletin minor display tag no longer uses the projected key")
+    if 'MajorKind = selection.Major.Kind ?? ""' not in weekly_source or 'MinorKinds = (selection.Minors ?? new List<WorldBulletinMinor>()).Select(m => m?.Events?.FirstOrDefault()?.Kind ?? "").ToList()' not in weekly_source:
+        raise AssertionError("World bulletin internal kind IDs changed")
+    display_source = weekly_source.split("internal WorldBulletinPanelData BuildWorldBulletinPanelData", 1)[1].split("internal static void SplitWorldBulletinBody", 1)[0]
+    display_source += weekly_source.split("internal string BuildWorldBulletinMetaText", 1)[1].split("internal EventRecordEntry FindLatestWorldBulletinRecord", 1)[0]
+    if re.search(r"[\u3400-\u4dbf\u4e00-\u9fff]", display_source):
+        raise AssertionError("Fixed Chinese bulletin labels remain in the display projection")
+    if "BodyText = major" not in display_source or "HeadlineText = _port.NoticeTitle(entry)" not in display_source:
+        raise AssertionError("Raw bulletin body/headline facts changed at the display boundary")
+    world_policy = (root / "src/modules/AF.Module.Weekly/Bulletin/WorldBulletinPolicy.cs").read_text(encoding="utf-8-sig")
+    if "Title = TitleForKind(lead.Kind)" not in world_policy or "Title = TitleForKind(selection?.Major?.Kind)" not in world_policy:
+        raise AssertionError("World bulletin raw/model title projection changed")
     mapped = json.loads((root / "content/content-map.json").read_text(encoding="utf-8"))["entries"]
     registered = {path.resolve() for pair in pairs for path in pair}
     for entry in mapped:
