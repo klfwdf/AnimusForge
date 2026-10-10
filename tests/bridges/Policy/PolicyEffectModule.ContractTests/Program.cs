@@ -3173,8 +3173,9 @@ internal static partial class Program
 		PolicyEffectInstanceSaveData displayDaily = BuildSoldierTroopXpDaily("soldier-troop-xp-display-daily", 20, "clan-a");
 		displayDaily.MechanismId = displayOnce.MechanismId;
 		List<string> display = PolicyEffectSaveCodec.DescribePlayerVisibleInstances(new[] { displayOnce, displayDaily });
-		Check(display.Count == 1
-			&& display[0].Contains("士兵精锐化：下一游戏日一次 +300 XP/兵；随后每日 +20 XP/兵"),
+		Check(MatchesCompletePolicyLines(display,
+			new[] { "士兵精锐训练：次日一次 +300 经验/士兵；此后每日 +20 经验/士兵" },
+			new[] { "Soldier elite training: Once next game day +300 XP/soldier; Then daily +20 XP/soldier" }),
 			"The two hidden runtime legs must render as one player-visible soldierTroopXp Composite.");
 	}
 
@@ -4278,10 +4279,20 @@ internal static partial class Program
 		List<string> independent = PolicyEffectSaveCodec.DescribePlayerVisibleInstances(new[] { prosperity, stability });
 		Check(independent.Count == 2,
 			"Two distinct effect modules must remain two independent player-visible descriptions.");
-		Check(independent.All(text => !string.IsNullOrWhiteSpace(text) && !ContainsAsciiLetter(text))
-			&& independent.Any(text => text.Contains("繁荣变化：每日 +5"))
-			&& independent.Any(text => text.Contains("王国稳定度：下一游戏日一次 +4")),
-			"Player-visible module descriptions must use Chinese catalog labels without leaking module IDs. actual="
+		Check(MatchesCompletePolicyLines(
+			independent,
+			new[]
+			{
+				"城镇繁荣变化：每日 +5",
+				"王国稳定：次日一次 +4"
+			},
+			new[]
+			{
+				"Town prosperity change: Daily +5",
+				"Kingdom stability: Once next game day +4"
+			})
+			&& independent.All(text => !ContainsInternalPolicyIdentifier(text)),
+			"Player-visible module descriptions must use a complete Chinese or English rendering with the exact module, cadence and signed value, without leaking module IDs. actual="
 			+ string.Join(" | ", independent)
 			+ " technical=" + PolicyEffectSaveCodec.DescribeInstance(prosperity));
 
@@ -4306,10 +4317,17 @@ internal static partial class Program
 				ClanIds = new List<string> { "display-clan" }
 			});
 		List<string> composite = PolicyEffectSaveCodec.DescribePlayerVisibleInstances(new[] { influenceOnce, influenceDaily });
-		Check(composite.Count == 1
-			&& composite[0].Contains("影响力：下一游戏日一次 +3；随后每日 -0.5")
-			&& !ContainsAsciiLetter(composite[0]),
-			"Internal child modules must remain one Chinese logical-module description.");
+		Check(MatchesCompletePolicyLines(
+			composite,
+			new[]
+			{
+				"影响力：次日一次 +3；此后每日 -0.5"
+			},
+			new[]
+			{
+				"Influence: Once next game day +3; Then daily -0.5"
+			}),
+			"Internal child modules must remain one complete localized logical-module description with both nonzero legs.");
 		PolicyEffectInstanceSaveData zeroInfluenceOnce = BuildPlayerVisibleEffectInstance(
 			"display-influence-zero-once",
 			"M3",
@@ -4324,9 +4342,16 @@ internal static partial class Program
 			influenceOnce.TargetSet);
 		List<string> compositeWithoutZeroLeg = PolicyEffectSaveCodec.DescribePlayerVisibleInstances(
 			new[] { zeroInfluenceOnce, positiveInfluenceDaily });
-		Check(compositeWithoutZeroLeg.Count == 1
-			&& compositeWithoutZeroLeg[0].Contains("影响力：随后每日 +2")
-			&& compositeWithoutZeroLeg[0].IndexOf("一次 0", StringComparison.Ordinal) < 0,
+		Check(MatchesCompletePolicyLines(
+			compositeWithoutZeroLeg,
+			new[]
+			{
+				"影响力：此后每日 +2"
+			},
+			new[]
+			{
+				"Influence: Then daily +2"
+			}),
 			"Player-visible composite effects must omit meaningless zero legs. actual="
 			+ string.Join(" | ", compositeWithoutZeroLeg));
 
@@ -4336,14 +4361,20 @@ internal static partial class Program
 			"BuildPlayerVisibleEffectLines",
 			new object[] { "测试王国", new[] { prosperity, stability }, 12 },
 			3)).Select(value => value?.ToString() ?? string.Empty).ToList();
-		Check(publicationLines.Count == 2
-			&& publicationLines.Any(line => line.StartsWith("目标：1 座城镇｜", StringComparison.Ordinal)
-				&& line.IndexOf("城镇繁荣变化：每日 +5", StringComparison.Ordinal) >= 0)
-			&& publicationLines.Any(line => line.StartsWith("目标王国：测试王国｜", StringComparison.Ordinal)
-				&& line.IndexOf("王国稳定度：下一游戏日一次 +4", StringComparison.Ordinal) >= 0)
-			&& publicationLines.All(line => line.EndsWith("｜期限：持续 12 天", StringComparison.Ordinal)
-				&& !line.StartsWith("测试王国｜", StringComparison.Ordinal)
-				&& !ContainsAsciiLetter(line)),
+		// Compare the complete duration frame in either language; reject mixed-language rendering.
+		Check(MatchesCompletePolicyLines(
+			publicationLines,
+			new[]
+			{
+				"目标：1 个城镇｜城镇繁荣变化：每日 +5｜期限：持续 12 天",
+				"目标王国：测试王国｜王国稳定：次日一次 +4｜期限：持续 12 天"
+			},
+			new[]
+			{
+				"Target: 1 towns | Town prosperity change: Daily +5 | Duration: 12 days",
+				"Target kingdom: 测试王国 | Kingdom stability: Once next game day +4 | Duration: 12 days"
+			})
+			&& publicationLines.All(line => !ContainsInternalPolicyIdentifier(line)),
 			"Player publication popup must identify each effect's concrete target, cadence, sign, and duration. actual="
 			+ string.Join(" | ", publicationLines));
 
@@ -4364,10 +4395,18 @@ internal static partial class Program
 			"BuildPlayerVisibleEffectLines",
 			new object[] { "测试王国", new[] { stability, kingdomTownProjection }, 12 },
 			3)).Select(value => value?.ToString() ?? string.Empty).ToList();
-		Check(mergedKingdomProjectionLines.Count == 2
-			&& mergedKingdomProjectionLines.All(line => line.StartsWith("目标王国：测试王国｜", StringComparison.Ordinal))
-			&& mergedKingdomProjectionLines.Any(line => line.Contains("王国稳定度"))
-			&& mergedKingdomProjectionLines.Any(line => line.Contains("城镇繁荣变化")),
+		Check(MatchesCompletePolicyLines(
+			mergedKingdomProjectionLines,
+			new[]
+			{
+				"目标王国：测试王国｜王国稳定：次日一次 +4｜期限：持续 12 天",
+				"目标王国：测试王国｜城镇繁荣变化：每日 +2｜期限：持续 12 天"
+			},
+			new[]
+			{
+				"Target kingdom: 测试王国 | Kingdom stability: Once next game day +4 | Duration: 12 days",
+				"Target kingdom: 测试王国 | Town prosperity change: Daily +2 | Duration: 12 days"
+			}),
 			"Different module projections from the same bare K selector must group and display by semantic kingdom instead of expanded towns/clans. actual="
 			+ string.Join(" | ", mergedKingdomProjectionLines));
 
@@ -4386,9 +4425,17 @@ internal static partial class Program
 			"BuildPlayerVisibleEffectLines",
 			new object[] { "发布地（测试封地）", new[] { clanTroopXp }, 0 },
 			3)).Select(value => value?.ToString() ?? string.Empty).ToList();
-		Check(clanPublicationLines.Count == 1
-			&& clanPublicationLines[0].StartsWith("目标：1 个家族｜士兵精锐化：随后每日 +25 XP/兵", StringComparison.Ordinal)
-			&& clanPublicationLines[0].EndsWith("｜期限：永久", StringComparison.Ordinal),
+		// Permanent clan effects preserve their target, daily XP unit and duration in both renderings.
+		Check(MatchesCompletePolicyLines(
+			clanPublicationLines,
+			new[]
+			{
+				"目标：1 个氏族｜士兵精锐训练：此后每日 +25 经验/士兵｜期限：永久"
+			},
+			new[]
+			{
+				"Target: 1 clans | Soldier elite training: Then daily +25 XP/soldier | Duration: Permanent"
+			}),
 			"Clan-canonical effects must identify their frozen Clan target instead of the source settlement. actual="
 			+ string.Join(" | ", clanPublicationLines));
 
@@ -4423,10 +4470,18 @@ internal static partial class Program
 			"BuildPlayerVisibleEffectLines",
 			new object[] { "测试王国", new[] { explicitHeroProjection, explicitPlanProjection }, 8 },
 			3)).Select(value => value?.ToString() ?? string.Empty).ToList();
-		Check(explicitSubsetLines.Count == 2
-			&& explicitSubsetLines.Any(line => line.StartsWith("目标：1 位人物｜", StringComparison.Ordinal))
-			&& explicitSubsetLines.Any(line => line.StartsWith("目标：1 座城镇｜", StringComparison.Ordinal))
-			&& explicitSubsetLines.All(line => !line.StartsWith("目标王国：", StringComparison.Ordinal)),
+		Check(MatchesCompletePolicyLines(
+			explicitSubsetLines,
+			new[]
+			{
+				"目标：1 名人物｜人物第纳尔：次日一次 +100｜期限：持续 8 天",
+				"目标：1 个城镇｜城镇繁荣变化：每日 +1｜期限：持续 8 天"
+			},
+			new[]
+			{
+				"Target: 1 characters | Character denars: Once next game day +100 | Duration: 8 days",
+				"Target: 1 towns | Town prosperity change: Daily +1 | Duration: 8 days"
+			}),
 			"Explicit H/P subset selectors must remain concrete and must not masquerade as whole-kingdom targets. actual="
 			+ string.Join(" | ", explicitSubsetLines));
 
@@ -4489,12 +4544,28 @@ internal static partial class Program
 				10
 			},
 			3)).Select(value => value?.ToString() ?? string.Empty).ToList();
-		Check(lordTargetLines.Count == 4
-			&& lordTargetLines.Count(line => line.StartsWith("目标王国：测试王国全体领主｜", StringComparison.Ordinal)) == 2,
+		Check(MatchesCompletePolicyLines(
+			lordTargetLines,
+			new[]
+			{
+				"目标王国：测试王国 的全部领主｜影响力：此后每日 +1｜期限：持续 10 天",
+				"目标王国：测试王国 的全部领主｜影响力：此后每日 +2｜期限：持续 10 天",
+				"目标：1 个氏族｜影响力：此后每日 +3｜期限：持续 10 天",
+				"目标：1 个氏族｜影响力：此后每日 +4｜期限：持续 10 天"
+			},
+			new[]
+			{
+				"Target kingdom: all lords of 测试王国 | Influence: Then daily +1 | Duration: 10 days",
+				"Target kingdom: all lords of 测试王国 | Influence: Then daily +2 | Duration: 10 days",
+				"Target: 1 clans | Influence: Then daily +3 | Duration: 10 days",
+				"Target: 1 clans | Influence: Then daily +4 | Duration: 10 days"
+			}),
 			"Kingdom handles and role/lords selectors projected to ClanIds must retain whole-kingdom lord semantics. actual="
 			+ string.Join(" | ", lordTargetLines));
-		Check(lordTargetLines.Count(line => line.StartsWith("目标：1 个家族｜", StringComparison.Ordinal)) == 2
-			&& lordTargetLines.Count(line => line.IndexOf("全体领主", StringComparison.Ordinal) >= 0) == 2,
+		Check(lordTargetLines.Count(line => line.StartsWith("目标：1 个氏族｜", StringComparison.Ordinal)
+				|| line.StartsWith("Target: 1 clans | ", StringComparison.Ordinal)) == 2
+			&& lordTargetLines.Count(line => line.StartsWith("目标王国：测试王国 的全部领主｜", StringComparison.Ordinal)
+				|| line.StartsWith("Target kingdom: all lords of 测试王国 | ", StringComparison.Ordinal)) == 2,
 			"Explicit C/R clan selectors must remain concrete clan targets instead of collapsing to all kingdom lords. actual="
 			+ string.Join(" | ", lordTargetLines));
 		PolicyEffectInstanceSaveData actorClanExcludedKingdomProjection = BuildPlayerVisibleEffectInstance(
@@ -4528,10 +4599,18 @@ internal static partial class Program
 				10
 			},
 			3)).Select(value => value?.ToString() ?? string.Empty).ToList();
-		Check(actorClanExcludedLines.Count == 2
-			&& actorClanExcludedLines.Count(line => line.StartsWith("目标王国：测试王国｜", StringComparison.Ordinal)) == 1
-			&& actorClanExcludedLines.Count(line => line.StartsWith("目标：3 个家族｜", StringComparison.Ordinal)) == 1
-			&& actorClanExcludedLines.All(line => line.IndexOf("全体领主", StringComparison.Ordinal) < 0),
+		Check(MatchesCompletePolicyLines(
+			actorClanExcludedLines,
+			new[]
+			{
+				"目标王国：测试王国｜家族领袖关系：次日一次 +6｜期限：持续 10 天",
+				"目标：3 个氏族｜家族领袖关系：次日一次 +7｜期限：持续 10 天"
+			},
+			new[]
+			{
+				"Target kingdom: 测试王国 | Clan leader relation: Once next game day +6 | Duration: 10 days",
+				"Target: 3 clans | Clan leader relation: Once next game day +7 | Duration: 10 days"
+			}),
 			"A bare K selector must keep kingdom semantics even when a module excludes the actor clan, while role/lords remains a concrete subset. actual="
 			+ string.Join(" | ", actorClanExcludedLines));
 		PolicyEffectInstanceSaveData multiKingdomClanProjection = BuildPlayerVisibleEffectInstance(
@@ -4556,9 +4635,17 @@ internal static partial class Program
 			"BuildPlayerVisibleEffectLines",
 			new object[] { "测试王国", new[] { multiKingdomClanProjection }, 10 },
 			3)).Select(value => value?.ToString() ?? string.Empty).ToList();
-		Check(multiKingdomLines.Count == 1
-			&& multiKingdomLines[0].StartsWith("目标王国：4 个王国的全体领主｜", StringComparison.Ordinal)
-			&& multiKingdomLines[0].IndexOf("display-kingdom", StringComparison.OrdinalIgnoreCase) < 0,
+		Check(MatchesCompletePolicyLines(
+			multiKingdomLines,
+			new[]
+			{
+				"目标王国：4 个王国的全部领主｜影响力：此后每日 +5｜期限：持续 10 天"
+			},
+			new[]
+			{
+				"Target kingdom: all lords of 4 kingdoms | Influence: Then daily +5 | Duration: 10 days"
+			})
+			&& !ContainsInternalPolicyIdentifier(multiKingdomLines[0]),
 			"Multi-kingdom lord labels must remain bounded and must not enumerate internal target identifiers. actual="
 			+ string.Join(" | ", multiKingdomLines));
 
@@ -4575,11 +4662,20 @@ internal static partial class Program
 		SetProperty(recordType, record, "Effects", recordEffects);
 		string nationalHistory = (string)InvokeStatic(playerBehavior, "BuildPolicyRecordEffectSummary", new object[] { record, true }, 2);
 		string[] nationalLines = nationalHistory.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
-		Check(nationalLines.Length == 2
-			&& nationalLines.Any(line => line.StartsWith("目标：1 座城镇｜", StringComparison.Ordinal))
-			&& nationalLines.Any(line => line.StartsWith("目标王国：测试王国｜", StringComparison.Ordinal))
-			&& nationalLines.All(line => !ContainsAsciiLetter(line)),
-			"Player national-policy history must keep logical modules on independent Chinese lines. actual=" + nationalHistory);
+		Check(MatchesCompletePolicyLines(
+			nationalLines,
+			new[]
+			{
+				"目标：1 个城镇｜城镇繁荣变化：每日 +5｜期限：持续 12 天｜状态：剩余 12/12 天。",
+				"目标王国：测试王国｜王国稳定：次日一次 +4｜期限：持续 12 天｜状态：剩余 12/12 天。"
+			},
+			new[]
+			{
+				"Target: 1 towns | Town prosperity change: Daily +5 | Duration: 12 days | Status: Remaining 12/12 days.",
+				"Target kingdom: 测试王国 | Kingdom stability: Once next game day +4 | Duration: 12 days | Status: Remaining 12/12 days."
+			})
+			&& nationalLines.All(line => !ContainsInternalPolicyIdentifier(line)),
+			"Player national-policy history must keep logical modules on independent lines, must keep the concrete target and remaining period, and must render the active game language (Chinese resource text or English fallback) without internal identifiers. actual=" + nationalHistory);
 
 		Type localRecordType = SutType("AnimusForge.CustomPolicyBehavior+LocalPolicyRecordSaveData");
 		Type localEffectType = SutType("AnimusForge.CustomPolicyBehavior+LocalPolicyEffectRecordSaveData");
@@ -4593,11 +4689,20 @@ internal static partial class Program
 		SetProperty(localRecordType, localRecord, "Effects", localEffects);
 		string localHistory = (string)InvokeStatic(playerBehavior, "BuildLocalPolicyEffectText", new[] { localRecord }, 1);
 		string[] localLines = localHistory.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
-		Check(localLines.Length == 2
-			&& localLines.Any(line => line.StartsWith("目标：1 座城镇｜", StringComparison.Ordinal))
-			&& localLines.Any(line => line.StartsWith("目标王国：测试封地｜", StringComparison.Ordinal))
-			&& localLines.All(line => !ContainsAsciiLetter(line)),
-			"Player local-policy history must keep logical modules on independent Chinese lines. actual=" + localHistory);
+		Check(MatchesCompletePolicyLines(
+			localLines,
+			new[]
+			{
+				"目标：1 个城镇｜城镇繁荣变化：每日 +5",
+				"目标王国：测试封地｜王国稳定：次日一次 +4"
+			},
+			new[]
+			{
+				"Target: 1 towns | Town prosperity change: Daily +5",
+				"Target kingdom: 测试封地 | Kingdom stability: Once next game day +4"
+			})
+			&& localLines.All(line => !ContainsInternalPolicyIdentifier(line)),
+			"Player local-policy history must keep logical modules on independent lines with their concrete target and own numeric value, rendered in the active game language (Chinese resource text or English fallback) without internal identifiers. actual=" + localHistory);
 
 		Type npcEffectType = SutType("AnimusForge.NpcRulerPolicyEffectDto");
 		object npcEffect = Activator.CreateInstance(npcEffectType);
@@ -4612,12 +4717,14 @@ internal static partial class Program
 			new object[] { npcEffects },
 			1);
 		string[] npcLines = npcPublication.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
-		Check(npcLines.Length == 2
-			&& npcLines.Any(line => line.StartsWith("目标：1 座城镇｜", StringComparison.Ordinal))
-			&& npcLines.Any(line => line.StartsWith("目标王国：测试王国｜", StringComparison.Ordinal))
-			&& npcLines.All(line => !line.StartsWith("【测试王国】", StringComparison.Ordinal)
-				&& !ContainsAsciiLetter(line)),
-			"Non-player ruler policy publication must use the same concrete-target display path as player policies. actual=" + npcPublication);
+		Check(npcLines.OrderBy(line => line, StringComparer.Ordinal).SequenceEqual(
+			new[]
+			{
+				"目标：1 座城镇｜城镇繁荣变化：每日 +5｜期限：持续 12 天",
+				"目标王国：测试王国｜王国稳定度：下一游戏日一次 +4｜期限：持续 12 天"
+			}.OrderBy(line => line, StringComparer.Ordinal), StringComparer.Ordinal)
+			&& npcLines.All(line => !ContainsInternalPolicyIdentifier(line)),
+			"NPC BuildEffectSummary is a raw fact/history producer: its pre-localization Chinese target, cadence, values and duration must stay byte-identical, without a bracketed kingdom header or internal identifiers. actual=" + npcPublication);
 
 		string canonicalNpcKingdomHandle = Convert.ToString(InvokeStatic(
 			SutType("AnimusForge.NpcRulerPolicyBehavior"),
@@ -4663,11 +4770,56 @@ internal static partial class Program
 		};
 	}
 
+	/// <summary>
+	/// Compare the complete line multiset in one language. Sorting permits target-group order
+	/// changes, while exact equality retains counts, repeated legs, units, cadence and punctuation.
+	/// Expected text is explicit and independent of production formatters; mixed languages fail.
+	/// </summary>
+	private static bool MatchesCompletePolicyLines(IEnumerable<string> actual, string[] chineseLines, string[] englishLines)
+	{
+		string[] lines = (actual ?? Enumerable.Empty<string>()).OrderBy(line => line, StringComparer.Ordinal).ToArray();
+		return lines.SequenceEqual(chineseLines.OrderBy(line => line, StringComparer.Ordinal), StringComparer.Ordinal)
+			|| lines.SequenceEqual(englishLines.OrderBy(line => line, StringComparer.Ordinal), StringComparer.Ordinal);
+	}
+
+	private static bool MatchesCompletePolicyText(string actual, string chineseText, string englishText)
+	{
+		return string.Equals(actual, chineseText, StringComparison.Ordinal)
+			|| string.Equals(actual, englishText, StringComparison.Ordinal);
+	}
+
 	private static bool ContainsAsciiLetter(string text)
 	{
 		return (text ?? string.Empty).Any(character =>
 			(character >= 'A' && character <= 'Z')
 			|| (character >= 'a' && character <= 'z'));
+	}
+
+	/// <summary>
+	/// Player-visible policy text resolves its localized segments through the active game language,
+	/// so the same display key renders either the Chinese resource text or its English fallback.
+	/// A bilingual display contract accepts either rendering instead of pinning one language.
+	/// </summary>
+	private static bool MatchesEitherLanguagePolicyText(string text, string chineseText, string englishText)
+	{
+		string value = text ?? string.Empty;
+		return value.IndexOf(chineseText, StringComparison.Ordinal) >= 0
+			|| value.IndexOf(englishText, StringComparison.Ordinal) >= 0;
+	}
+
+	/// <summary>
+	/// Internal module ids, canonical selector handles and target ids must never reach
+	/// player-visible text, in the Chinese resource text or in the English fallback.
+	/// </summary>
+	private static bool ContainsInternalPolicyIdentifier(string text)
+	{
+		string value = text ?? string.Empty;
+		return value.IndexOf("display-", StringComparison.OrdinalIgnoreCase) >= 0
+			|| value.IndexOf("prosperityPerDay", StringComparison.OrdinalIgnoreCase) >= 0
+			|| value.IndexOf("kingdomStability", StringComparison.OrdinalIgnoreCase) >= 0
+			|| value.IndexOf("clanInfluence", StringComparison.OrdinalIgnoreCase) >= 0
+			|| value.IndexOf("ModuleId", StringComparison.Ordinal) >= 0
+			|| value.IndexOf("InstanceId", StringComparison.Ordinal) >= 0;
 	}
 
 	private static void TestMobilePartyAiSafetyPatchContracts()
@@ -9091,6 +9243,23 @@ internal static partial class Program
 		Check(!(bool)InvokeStatic(builderType, "TryParseResult", changedNameArgs, 4)
 			&& (changedNameArgs[3] as string)?.Contains("政策名") == true,
 			"Player auto-draft must reject changes to a non-empty player-specified policy name.");
+		string autoDraftErrorDisplay = (string)InvokeStatic(
+			SutType("AnimusForge.LocalPolicyComposePopupVM"),
+			"MapPlayerPolicyAutoDraftErrorToDisplay",
+			new object[] { "AI编写修改了玩家已指定的政策名。" },
+			1);
+		Check(MatchesEitherLanguagePolicyText(
+			autoDraftErrorDisplay,
+			"AI编写修改了玩家已指定的政策名。",
+			"AI drafting changed the policy name specified by the player."),
+			"Auto-draft parse errors must retain their raw contract value and localize only when shown in the compose UI.");
+		string unknownAutoDraftError = "模型生成的动态错误";
+		Check((string)InvokeStatic(
+			SutType("AnimusForge.LocalPolicyComposePopupVM"),
+			"MapPlayerPolicyAutoDraftErrorToDisplay",
+			new object[] { unknownAutoDraftError },
+			1) == unknownAutoDraftError,
+			"Unknown auto-draft diagnostics must pass through without a guessed translation.");
 
 		SetProperty(requestType, request, "ExistingPolicyName", "");
 		foreach (string forbiddenOutput in new[]
@@ -14231,8 +14400,35 @@ internal static partial class Program
 		}
 		foreach (string status in new[] { "active", "pending", "expiry_vote_pending", "rejected", "unknown", "" })
 			Check(!(bool)InvokeStatic(behavior, "CanDeletePolicyHistoryState", new object[] { status, false, false }, 3), "Non-terminal or unknown state must fail closed: " + status);
-		Check((string)InvokeStatic(behavior, "GetPolicyHistoryStatusText", new object[] { "pending" }, 1) == "待表决", "A pending policy must not be presented as ended.");
-		Check((string)InvokeStatic(behavior, "GetPolicyHistoryStatusText", new object[] { "unknown" }, 1) == "状态未确认", "Unknown status must not be invented as a lifecycle terminal state.");
+		Check(MatchesCompletePolicyText((string)InvokeStatic(behavior, "GetPolicyHistoryStatusText", new object[] { "pending" }, 1), "待投票", "Awaiting vote"), "A pending policy must not be presented as ended.");
+		Check(MatchesCompletePolicyText((string)InvokeStatic(behavior, "GetPolicyHistoryStatusText", new object[] { "unknown" }, 1), "状态未确认", "Status unconfirmed"), "Unknown status must not be invented as a lifecycle terminal state.");
+		string eligibilityDisplay = (string)InvokeStatic(behavior, "MapPlayerPolicyEligibilityReasonToDisplay", new object[] { "你尚未加入任何王国，不能提交全国政策。" }, 1);
+		Check(MatchesEitherLanguagePolicyText(eligibilityDisplay, "你尚未加入任何王国，不能提交全国政策。", "Join a kingdom before publishing a kingdom policy."),
+			"Eligibility diagnostics must retain their saved/internal Chinese identity while the player-facing projection follows the active UI language.");
+		string costEligibilityDisplay = (string)InvokeStatic(behavior, "MapPlayerPolicyEligibilityReasonToDisplay", new object[] { "发布政策需要 123 第纳尔。" }, 1);
+		Check(MatchesEitherLanguagePolicyText(costEligibilityDisplay, "发布政策需要 123 第纳尔。", "Publishing this policy requires 123 denars."),
+			"Dynamic eligibility cost must preserve its amount in the localized display projection.");
+		Type runtimeOptionsType = behavior.GetNestedType("PolicyRuntimeOptions", All);
+		object runtimeOptions = Activator.CreateInstance(runtimeOptionsType, nonPublic: true);
+		SetField(runtimeOptionsType, runtimeOptions, "GoldCost", 123);
+		string readyStatus = (string)InvokeStatic(behavior, "BuildReadyStatus", new[] { runtimeOptions }, 1);
+		Check(MatchesEitherLanguagePolicyText(
+				readyStatus,
+				"填写政策名和政策内容后即可发布。智能服务完成评议且成功落地时扣除：123 第纳尔。无冷却限制，可连续发布。",
+				"Fill in a policy name and content to publish. The configured cost is deducted after evaluation succeeds and the policy takes effect: 123 denars. There is no cooldown, so policies can be published consecutively."),
+			"Policy compose readiness text and its cost unit must follow the active UI language.");
+		string failureDisplay = (string)InvokeStatic(behavior, "BuildPolicyFailurePopupText", new object[] { "历史政策语义召回失败。", null }, 2);
+		Check(MatchesEitherLanguagePolicyText(failureDisplay, "历史政策语义召回失败。", "Policy history retrieval failed."),
+			"Known policy failure reasons must be localized only at the retry-popup display boundary.");
+		string apiConfigFailure = (string)InvokeStatic(behavior, "MapPlayerPolicyFailureReasonToDisplay", new object[] { "主 API 配置不完整，政策生成无法开始。" }, 1);
+		Check(MatchesEitherLanguagePolicyText(apiConfigFailure, "主 API 配置不完整，政策生成无法开始。", "The main API configuration is incomplete, so policy generation cannot start."),
+			"Fixed API setup failures must be localized before they are shown in policy UI.");
+		string narrativeFallback = (string)InvokeStatic(behavior, "MapPlayerPolicyNarrativeFallbackToDisplay", new object[] { "各地民众已经听闻这项新政策，但反馈尚不明朗。" }, 1);
+		Check(MatchesEitherLanguagePolicyText(narrativeFallback, "各地民众已经听闻这项新政策，但反馈尚不明朗。", "The public has heard of the new policy, but feedback is not yet clear."),
+			"Fixed persisted narrative fallbacks must be projected for display without rewriting their stored source values.");
+		string authoredNarrative = "模型撰写的政策反馈";
+		Check((string)InvokeStatic(behavior, "MapPlayerPolicyNarrativeFallbackToDisplay", new object[] { authoredNarrative }, 1) == authoredNarrative,
+			"Unknown or model-authored narrative text must pass through without guessed translation.");
 		string key = (string)InvokeStatic(behavior, "BuildPolicyHistoryKey", new object[] { "player_local", "record:1" }, 2);
 		Check(key == "player_local:record:1", "Deletion identity must preserve the full record ID.");
 		Check(key != (string)InvokeStatic(behavior, "BuildPolicyHistoryKey", new object[] { "npc", "record:1" }, 2), "Different policy sources must never share deletion identity.");
@@ -14283,10 +14479,18 @@ internal static partial class Program
 		object declaration = JsonConvert.DeserializeObject("{\"Status\":\"active\",\"EffectStatus\":\"expired\",\"Effects\":[{\"IsEnded\":true}]}", localType);
 		InvokeStatic(behavior, "NormalizeLocalPolicyRecord", new[] { declaration }, 1);
 		Check((string)Property(localType, declaration, "Status") == "active", "An empty declaration shell is not proof of natural expiry.");
-		Check((string)InvokeStatic(behavior, "BuildLocalPolicyRemainingText", new[] { declaration }, 1) == "无持续数值效果", "A declaration must not show a misleading zero-day countdown.");
+		Check(MatchesEitherLanguagePolicyText(
+				(string)InvokeStatic(behavior, "BuildLocalPolicyRemainingText", new[] { declaration }, 1),
+				"无持续数值效果",
+				"No continuous numeric effects"),
+			"A declaration must not show a misleading zero-day countdown.");
 		object permanentEnded = JsonConvert.DeserializeObject("{\"Status\":\"abolished\",\"IsPermanentEffect\":true}", localType);
 		InvokeStatic(behavior, "NormalizeLocalPolicyRecord", new[] { permanentEnded }, 1);
-		Check((string)InvokeStatic(behavior, "BuildLocalPolicyRemainingText", new[] { permanentEnded }, 1) == "持续效果已结束", "An abolished permanent effect must not be displayed as running forever.");
+		Check(MatchesEitherLanguagePolicyText(
+				(string)InvokeStatic(behavior, "BuildLocalPolicyRemainingText", new[] { permanentEnded }, 1),
+				"持续效果已结束",
+				"Continuous effects ended"),
+			"An abolished permanent effect must not be displayed as running forever.");
 		object lost = JsonConvert.DeserializeObject("{\"OriginalTargetFiefIds\":[\"old\",\"lost\"],\"TargetFiefIds\":[\"old\"]}", localType);
 		Check(Items(InvokeStatic(behavior, "GetLocalPolicyRenewalTargetIds", new[] { lost }, 1)).Cast<string>().SequenceEqual(new[] { "old", "lost" }), "Renewal must recover original targets, not only the surviving target list.");
 		List<PolicyEffectInstanceSaveData> manual = new List<PolicyEffectInstanceSaveData> {

@@ -60,6 +60,7 @@ internal sealed class SettlementBalanceRowVM : ViewModel
 {
 	private readonly SettlementBalanceDefinition _definition;
 	private readonly Action _changed;
+	private readonly string _unitText;
 	private bool _enabled;
 	private int _value;
 	private string _text;
@@ -67,6 +68,10 @@ internal sealed class SettlementBalanceRowVM : ViewModel
 	{
 		_definition = definition;
 		_changed = changed;
+		_unitText = PolicyUiTexts.Format("AFPOL_UI_BalanceUnitRange", "{UNIT}; range {MIN}–{MAX}",
+			"UNIT", definition.Unit,
+			"MIN", definition.Minimum.ToString(CultureInfo.InvariantCulture),
+			"MAX", definition.Maximum.ToString(CultureInfo.InvariantCulture));
 		_enabled = limit.Enabled;
 		_value = limit.Value;
 		_text = limit.Value.ToString(CultureInfo.InvariantCulture);
@@ -75,7 +80,7 @@ internal sealed class SettlementBalanceRowVM : ViewModel
 	internal bool IsValid => string.IsNullOrEmpty(ValidationError);
 	internal string ValidationError { get; private set; }
 	[DataSourceProperty] public string NameText => _definition.Name;
-	[DataSourceProperty] public string UnitText => _definition.Unit + "；范围 " + MinValue + "–" + MaxValue;
+	[DataSourceProperty] public string UnitText => _unitText;
 	[DataSourceProperty] public int MinValue => _definition.Minimum;
 	[DataSourceProperty] public int MaxValue => _definition.Maximum;
 	[DataSourceProperty] public bool Enabled

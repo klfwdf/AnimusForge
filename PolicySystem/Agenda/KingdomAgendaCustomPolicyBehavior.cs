@@ -199,7 +199,11 @@ public static class KingdomAgendaCustomPolicyBehavior
 			}
 			try
 			{
-				InformationManager.DisplayMessage(new InformationMessage("统治者已接受建议，AF 正在拟定；完成后将直接提交目标王国议程，无需再次确认。", Colors.Green));
+				InformationManager.DisplayMessage(new InformationMessage(
+					PolicyUiTexts.Get(
+						"AFPOL_UI_AgendaRulerAcceptedDrafting",
+						"The ruler accepted the proposal; AnimusForge is drafting it and will submit it directly to the target kingdom's agenda once ready, with no further confirmation required."),
+					Colors.Green));
 			}
 			catch (Exception ex)
 			{

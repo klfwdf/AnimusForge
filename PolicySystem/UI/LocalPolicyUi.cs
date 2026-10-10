@@ -384,13 +384,49 @@ internal sealed class LocalPolicyComposePopupVM : ViewModel
 		if (result?.Success != true)
 		{
 			RefreshCanPublish();
-			StatusText = string.IsNullOrWhiteSpace(result?.Error) ? PolicyUiTexts.Get("AFPOL_UI_AiDraftFailed", "AI drafting failed; the original input was kept.") : result.Error;
+			StatusText = string.IsNullOrWhiteSpace(result?.Error)
+				? PolicyUiTexts.Get("AFPOL_UI_AiDraftFailed", "AI drafting failed; the original input was kept.")
+				: MapPlayerPolicyAutoDraftErrorToDisplay(result.Error);
 			return;
 		}
 		PolicyName = result.PolicyName ?? "";
 		PolicyContent = result.PolicyContent ?? "";
 		RefreshCanPublish();
 		StatusText = PolicyUiTexts.Get("AFPOL_UI_AiDraftCompleted", "AI draft filled the form; review and edit it before publishing.");
+	}
+
+	private static string MapPlayerPolicyAutoDraftErrorToDisplay(string error)
+	{
+		switch ((error ?? string.Empty).Trim())
+		{
+			case "缺少政策描述。":
+			case "请先填写政策标题或政策内容。":
+				return PolicyUiTexts.Get("AFPOL_UI_FillTitleOrContent", "Enter a policy title or content first.");
+			case "上一份政策仍在评议，暂时不能使用AI编写。":
+				return PolicyUiTexts.Get("AFPOL_UI_AiDraftBlockedDuringEvaluation", "AI drafting is unavailable while a policy evaluation is running.");
+			case "已有一份内容正在AI编写，请稍候。":
+				return PolicyUiTexts.Get("AFPOL_UI_AiDraftAlreadyRunning", "Another policy draft is already in progress; please wait.");
+			case "AI服务配置不可用，请检查模型、密钥与连接设置。":
+				return PolicyUiTexts.Get("AFPOL_UI_AiDraftServiceUnavailable", "AI drafting is unavailable; check the model, API key, and connection settings.");
+			case "AI编写没有返回有效的结构化结果。":
+				return PolicyUiTexts.Get("AFPOL_UI_AiDraftEmptyResult", "AI drafting returned no valid structured result.");
+			case "AI编写返回的结构化结果无法解析。":
+				return PolicyUiTexts.Get("AFPOL_UI_AiDraftUnparseableResult", "The structured result from AI drafting could not be parsed.");
+			case "AI编写只能返回政策名和政策正文两个字段。":
+				return PolicyUiTexts.Get("AFPOL_UI_AiDraftFieldsOnly", "AI drafting must return only the policy name and policy content fields.");
+			case "AI编写返回的政策名和政策正文必须是文本。":
+				return PolicyUiTexts.Get("AFPOL_UI_AiDraftFieldsMustBeText", "The policy name and policy content returned by AI drafting must be text.");
+			case "AI编写返回了空的政策名或政策正文。":
+				return PolicyUiTexts.Get("AFPOL_UI_AiDraftEmptyFields", "AI drafting returned an empty policy name or policy content.");
+			case "AI编写修改了玩家已指定的政策名。":
+				return PolicyUiTexts.Get("AFPOL_UI_AiDraftChangedPolicyName", "AI drafting changed the policy name specified by the player.");
+			case "AI编写请求失败，请检查连接设置并查看日志。":
+				return PolicyUiTexts.Get("AFPOL_UI_AiDraftRequestFailed", "The AI drafting request failed; check the connection settings and see the log.");
+			case "政策草案请求已因读档失效。":
+				return PolicyUiTexts.Get("AFPOL_UI_AiDraftDiscardedAfterLoad", "The policy draft was discarded after loading a save.");
+			default:
+				return error ?? string.Empty;
+		}
 	}
 
 	public void ExecutePublish()

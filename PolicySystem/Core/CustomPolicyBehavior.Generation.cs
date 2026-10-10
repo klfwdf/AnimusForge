@@ -54,7 +54,7 @@ public sealed partial class CustomPolicyBehavior
 		PolicyEligibility eligibility = EvaluateLocalPolicyEligibility(options, hasOwnedFief: true);
 		if (!eligibility.CanPublish)
 		{
-			InformationManager.ShowInquiry(new InquiryData(PolicyUiTexts.Get("AFPOL_UI_LocalPolicyCannotPublishTitle", "Local Policy Cannot Be Published"), eligibility.Reason + PolicyUiTexts.Get("AFPOL_UI_LocalPolicyCannotPublishSuffix", "\n\nEvaluation is complete, but no fees were deducted, the policy did not take effect, and no record was created."), true, false, PolicyUiTexts.Get("AFPOL_UI_Acknowledge", "Got it"), "", null, null), pauseGameActiveState: true);
+			InformationManager.ShowInquiry(new InquiryData(PolicyUiTexts.Get("AFPOL_UI_LocalPolicyCannotPublishTitle", "Local Policy Cannot Be Published"), MapPlayerPolicyEligibilityReasonToDisplay(eligibility.Reason) + PolicyUiTexts.Get("AFPOL_UI_LocalPolicyCannotPublishSuffix", "\n\nEvaluation is complete, but no fees were deducted, the policy did not take effect, and no record was created."), true, false, PolicyUiTexts.Get("AFPOL_UI_Acknowledge", "Got it"), "", null, null), pauseGameActiveState: true);
 			return;
 		}
 		if (!TryPrepareLocalPolicyCostForApplication(request, result.MainAssessment, out string costError))
@@ -866,7 +866,7 @@ public sealed partial class CustomPolicyBehavior
 		{
 			InformationManager.ShowInquiry(new InquiryData(
 				PolicyUiTexts.Get("AFPOL_UI_VassalPolicyPublishFailedTitle", "Vassal Policy Publication Failed"),
-				BuildPolicyFailurePopupText(message ?? PolicyUiTexts.Get("AFPOL_UI_PolicySubmissionFailed", "Policy submission failed."), null),
+				BuildPolicyFailurePopupText(message ?? "政策提交失败。", null),
 				true,
 				false,
 				PolicyUiTexts.Get("AFPOL_UI_Acknowledge", "Got it"),
@@ -2597,14 +2597,114 @@ public sealed partial class CustomPolicyBehavior
 
 	private static string BuildPolicyFailurePopupText(string reason, PolicyGenerationResult result)
 	{
-		string detail = string.IsNullOrWhiteSpace(reason) ? "政策评议失败。" : reason.Trim();
+		if (string.IsNullOrWhiteSpace(reason))
+		{
+			return PolicyUiTexts.Get("AFPOL_UI_PlayerPolicyRetryDefaultReason", "Policy evaluation failed.");
+		}
+		string detail = reason.Trim();
+		if (TryMapPlayerPolicyFailureReasonToDisplay(detail, out string displayText))
+		{
+			return displayText;
+		}
 		string detailWithoutIntentLegIds = Regex.Replace(detail, @"\bI\d{1,2}L\d{1,2}\b", string.Empty);
 		if (detail.IndexOf("【模型回复（完整）】", StringComparison.Ordinal) >= 0
 			|| Regex.IsMatch(detailWithoutIntentLegIds, "[A-Za-z]"))
 		{
-			return "政策评议或效果处理返回了无效的技术数据。详细信息已写入日志。";
+			return PolicyUiTexts.Get("AFPOL_UI_PlayerPolicyInvalidTechnicalData", "Policy evaluation or effect processing returned invalid technical data. Details have been written to the log.");
 		}
 		return detail;
+	}
+
+	private static bool TryMapPlayerPolicyFailureReasonToDisplay(string reason, out string displayText)
+	{
+		string normalized = (reason ?? string.Empty).Trim();
+		displayText = MapPlayerPolicyEligibilityReasonToDisplay(normalized);
+		if (!string.Equals(displayText, normalized, StringComparison.Ordinal))
+		{
+			return true;
+		}
+		switch (normalized)
+		{
+			case "政策评议失败。":
+				displayText = PolicyUiTexts.Get("AFPOL_UI_PlayerPolicyRetryDefaultReason", "Policy evaluation failed.");
+				return true;
+			case "重新校验并提交原政策时发生异常，详细技术信息已写入日志。":
+				displayText = PolicyUiTexts.Get("AFPOL_UI_PlayerPolicyRetrySubmitFailed", "An exception occurred while re-validating and submitting the original policy; technical details have been written to the log.");
+				return true;
+			case "政策消耗评估无效。":
+				displayText = PolicyUiTexts.Get("AFPOL_UI_PlayerPolicyCostInvalid", "Policy cost assessment was invalid.");
+				return true;
+			case "政策评议完成后的落地处理失败，详细技术信息已写入日志。":
+				displayText = PolicyUiTexts.Get("AFPOL_UI_PlayerPolicyLandingFailed", "Post-evaluation application failed; technical details have been written to the log.");
+				return true;
+			case "政策提交失败。":
+				displayText = PolicyUiTexts.Get("AFPOL_UI_PolicySubmissionFailed", "Policy submission failed.");
+				return true;
+			case "模型返回的政策效果联动来源或去向不完整，系统已安全拒绝。":
+				displayText = PolicyUiTexts.Get("AFPOL_UI_EffectFailIncompleteLinkedMechanism", "The policy effect returned by the model has an incomplete linked-mechanism source or destination; the system rejected it safely.");
+				return true;
+			case "模型返回了未知或未授权的政策效果目标句柄，系统已安全拒绝。":
+				displayText = PolicyUiTexts.Get("AFPOL_UI_EffectFailUnknownTargetHandle", "The model returned an unknown or unauthorized policy effect target handle; the system rejected it safely.");
+				return true;
+			case "模型返回的政策效果能力与目标句柄组合不兼容，系统已安全拒绝。":
+				displayText = PolicyUiTexts.Get("AFPOL_UI_EffectFailIncompatiblePair", "The policy effect capability and target handle combination returned by the model is incompatible; the system rejected it safely.");
+				return true;
+			case "模型返回的跨国政策效果遗漏了发布王国一侧，系统已安全拒绝。":
+				displayText = PolicyUiTexts.Get("AFPOL_UI_EffectFailMissingIssuerKingdom", "The cross-kingdom policy effect returned by the model omits the issuing kingdom side; the system rejected it safely.");
+				return true;
+			case "模型返回的政策效果缺少必需字段或字段类型不正确，系统已安全拒绝。":
+				displayText = PolicyUiTexts.Get("AFPOL_UI_EffectFailInvalidStructure", "The policy effect returned by the model is missing required fields or has incorrect field types; the system rejected it safely.");
+				return true;
+			case "模型返回的政策效果方案未通过结构与安全校验，系统已安全拒绝。":
+				displayText = PolicyUiTexts.Get("AFPOL_UI_EffectFailGeneric", "The policy effect plan returned by the model failed structural and safety validation; the system rejected it safely.");
+				return true;
+			case "政策请求为空。":
+				displayText = PolicyUiTexts.Get("AFPOL_UI_PlayerPolicyErrorRequestEmpty", "Policy request is empty.");
+				return true;
+			case "冻结的政策 API 配置不可用。":
+				displayText = PolicyUiTexts.Get("AFPOL_UI_PlayerPolicyErrorApiConfigUnavailable", "The frozen policy API configuration is unavailable.");
+				return true;
+			case "请检查 MCM 的政策 API 来源或主 API 设置。":
+				displayText = PolicyUiTexts.Get("AFPOL_UI_PlayerPolicyErrorCheckApiSettings", "Check the policy API source or main API settings in MCM.");
+				return true;
+			case "主 API 配置不完整，政策生成无法开始。":
+				displayText = PolicyUiTexts.Get("AFPOL_UI_PlayerPolicyErrorMainApiIncomplete", "The main API configuration is incomplete, so policy generation cannot start.");
+				return true;
+			case "所选政策 API 配置不完整，且主 API 也不完整，政策生成无法开始。":
+				displayText = PolicyUiTexts.Get("AFPOL_UI_PlayerPolicyErrorSelectedAndMainApiIncomplete", "The selected policy API and main API configurations are both incomplete, so policy generation cannot start.");
+				return true;
+			case "历史政策语义召回失败。":
+				displayText = PolicyUiTexts.Get("AFPOL_UI_PlayerPolicyErrorHistoryRecall", "Policy history retrieval failed.");
+				return true;
+			case "政策主评判未返回可解析的结构化结果。":
+				displayText = PolicyUiTexts.Get("AFPOL_UI_PlayerPolicyErrorMainParse", "The policy evaluator did not return a parseable structured result.");
+				return true;
+			case "政策主评议没有返回有效的正整数持续天数。":
+				displayText = PolicyUiTexts.Get("AFPOL_UI_PlayerPolicyErrorDuration", "Policy review did not return a valid positive-integer duration.");
+				return true;
+			case "政策主评议没有返回三个合法且不全为零的意识形态权重，允许范围为 -1 到 1。":
+				displayText = PolicyUiTexts.Get("AFPOL_UI_PlayerPolicyErrorPoliticalWeights", "Policy review did not return three valid ideological weights that are not all zero; each must be between -1 and 1.");
+				return true;
+			case "效果模块语义召回失败。":
+				displayText = PolicyUiTexts.Get("AFPOL_UI_PlayerPolicyErrorEffectModuleRecall", "Policy effect module retrieval failed.");
+				return true;
+			case "政策评议超过 3 分钟，网络请求已取消。请检查网络与智能服务状态后重试。":
+				displayText = PolicyUiTexts.Get("AFPOL_UI_PlayerPolicyErrorTimeout", "Policy review timed out after three minutes and the network request was cancelled. Check your connection and AI service status, then retry.");
+				return true;
+			case "政策评议请求发生异常，详细技术信息已写入日志。":
+				displayText = PolicyUiTexts.Get("AFPOL_UI_PlayerPolicyErrorException", "An exception occurred during policy review; technical details were written to the log.");
+				return true;
+			default:
+				displayText = normalized;
+				return false;
+		}
+	}
+
+	private static string MapPlayerPolicyFailureReasonToDisplay(string reason)
+	{
+		return TryMapPlayerPolicyFailureReasonToDisplay(reason, out string displayText)
+			? displayText
+			: reason ?? string.Empty;
 	}
 
 	private static string BuildPlayerPolicyEffectFailureSummary(PlayerPolicyEffectValidationErrorKind errorKind)
@@ -2651,39 +2751,79 @@ public sealed partial class CustomPolicyBehavior
 		return allowance;
 	}
 
+	/// <summary>
+	/// Display-only projection for the internal policy generation failure-stage identities.
+	/// Producers keep writing the internal stage names because they are also written to the log;
+	/// only this player-visible projection is localized. Unknown or model-authored stages pass
+	/// through verbatim instead of being guessed at.
+	/// </summary>
+	private static string MapPlayerPolicyFailureStageToDisplay(string stage)
+	{
+		string normalized = (stage ?? string.Empty).Trim();
+		if (normalized.Length == 0)
+		{
+			return PolicyUiTexts.Get("AFPOL_UI_PlayerPolicyStageDefault", "Policy Evaluation");
+		}
+		switch (normalized)
+		{
+			case "冻结生成快照":
+				return PolicyUiTexts.Get("AFPOL_UI_PlayerPolicyStageFreezeSnapshot", "Freeze Generation Snapshot");
+			case "历史政策召回":
+				return PolicyUiTexts.Get("AFPOL_UI_PlayerPolicyStageHistoryRecall", "Historical Policy Recall");
+			case "第一次通用评议解析":
+				return PolicyUiTexts.Get("AFPOL_UI_PlayerPolicyStageFirstParse", "First General Review Parsing");
+			case "第一次通用评议校验":
+				return PolicyUiTexts.Get("AFPOL_UI_PlayerPolicyStageFirstValidation", "First General Review Validation");
+			case "效果模块召回":
+				return PolicyUiTexts.Get("AFPOL_UI_PlayerPolicyStageEffectModuleRecall", "Effect Module Recall");
+			case "政策目标解析":
+				return PolicyUiTexts.Get("AFPOL_UI_PlayerPolicyStageTargetParsing", "Policy Target Parsing");
+			case "效果方案校验":
+				return PolicyUiTexts.Get("AFPOL_UI_PlayerPolicyStageEffectPlanValidation", "Effect Plan Validation");
+			case "API 请求":
+				return PolicyUiTexts.Get("AFPOL_UI_PlayerPolicyStageApiRequest", "API Request");
+			case "API 请求或本地处理":
+				return PolicyUiTexts.Get("AFPOL_UI_PlayerPolicyStageApiOrLocal", "API Request or Local Processing");
+			case "手动重试提交":
+				return PolicyUiTexts.Get("AFPOL_UI_PlayerPolicyStageManualRetrySubmit", "Manual Retry Submission");
+			default:
+				return normalized;
+		}
+	}
+
 	private static string BuildPolicyGenerationFailurePopupText(PolicyDraftRequest request, PolicyGenerationResult result)
 	{
 		string requestId = (request?.RequestId ?? string.Empty).Trim();
 		if (requestId.Length == 0 || requestId.Length > 80
 			|| requestId.Any(character => !char.IsLetterOrDigit(character) && character != '-' && character != '_' && character != ':'))
 		{
-			requestId = "不可用";
+			requestId = PolicyUiTexts.Get("AFPOL_UI_PlayerPolicyRequestIdUnavailable", "Unavailable");
 		}
-		return "阶段：" + FirstNonEmpty(result?.FailureStage, "政策评议")
-			+ "\n原因：" + BuildPolicyFailurePopupText(result?.Error, result)
-			+ "\n请求编号：" + requestId
-			+ "\n\n可点击下方“手动重试”重新提交原政策，或点击右上角 X 关闭。"
-			+ "\n未扣除费用，也未应用任何效果。";
+		return PolicyUiTexts.Format("AFPOL_UI_PlayerPolicyRetryBody",
+			"Stage: {STAGE}\nReason: {REASON}\nRequest ID: {REQUEST}\n\nClick \"Retry Manually\" below to resubmit the original policy, or click the X in the upper right to close.\nNo fees were deducted and no effects were applied this time.",
+			"STAGE", MapPlayerPolicyFailureStageToDisplay(result?.FailureStage),
+			"REASON", BuildPolicyFailurePopupText(result?.Error, result),
+			"REQUEST", requestId);
 	}
 
 	private void ShowPolicyGenerationRetryPopup(PolicyDraftRequest request, PolicyGenerationResult result)
 	{
 		string body = BuildPolicyGenerationFailurePopupText(request, result);
 		Action retry = delegate { RetryPolicyGenerationFromFailurePopup(request); };
-		if (CustomPolicyResultPopup.ShowRetry("政策评议失败", body, "手动重试", retry))
+			if (CustomPolicyResultPopup.ShowRetry(PolicyUiTexts.Get("AFPOL_UI_PlayerPolicyRetryTitle", "Policy Evaluation Failed"), body, PolicyUiTexts.Get("AFPOL_UI_RetryManually", "Retry Manually"), retry))
 		{
 			return;
 		}
-		InformationManager.ShowInquiry(new InquiryData(
-			"政策评议失败",
-			body,
-			isAffirmativeOptionShown: true,
-			isNegativeOptionShown: true,
-			"手动重试",
-			"关闭",
-			retry,
-			null),
-			pauseGameActiveState: true);
+			InformationManager.ShowInquiry(new InquiryData(
+				PolicyUiTexts.Get("AFPOL_UI_PlayerPolicyRetryTitle", "Policy Evaluation Failed"),
+				body,
+				isAffirmativeOptionShown: true,
+				isNegativeOptionShown: true,
+				PolicyUiTexts.Get("AFPOL_UI_RetryManually", "Retry Manually"),
+				PolicyUiTexts.Get("AFPOL_UI_Close", "Close"),
+				retry,
+				null),
+				pauseGameActiveState: true);
 	}
 
 	private void CompletePolicyGeneration(PolicyDraftRequest request, PolicyGenerationResult result)
@@ -2718,7 +2858,7 @@ public sealed partial class CustomPolicyBehavior
 					ErrorKind = "NullResult"
 				});
 				PolicyDebugLog("policy-complete", BuildPolicyRequestLogPrefix(request) + " parsedEffects=0 appliedEffects=0 costDeducted=false status=null_result");
-				InformationManager.ShowInquiry(new InquiryData("政策评议失败", "政策评议没有返回结果，未扣除费用。", true, false, "知道了", "", null, null), pauseGameActiveState: true);
+					InformationManager.ShowInquiry(new InquiryData(PolicyUiTexts.Get("AFPOL_UI_PlayerPolicyRetryTitle", "Policy Evaluation Failed"), PolicyUiTexts.Get("AFPOL_UI_PlayerPolicyNoResult", "Policy evaluation returned no result; no fees were deducted."), true, false, PolicyUiTexts.Get("AFPOL_UI_Acknowledge", "Got it"), "", null, null), pauseGameActiveState: true);
 				return;
 			}
 			if (!string.IsNullOrWhiteSpace(result.Error))
@@ -2768,7 +2908,7 @@ public sealed partial class CustomPolicyBehavior
 					+ " useAiEvaluatedCost=" + request.UseAiEvaluatedCost.ToString(CultureInfo.InvariantCulture)
 					+ " error=" + (costError ?? ""),
 					SafeSerializeForDebug(result.MainAssessment));
-				InformationManager.ShowInquiry(new InquiryData("政策评议失败", BuildPolicyFailurePopupText(costError ?? "政策消耗评估无效。", result) + "\n\n未扣除费用，也未应用效果。", true, false, "知道了", "", null, null), pauseGameActiveState: true);
+					InformationManager.ShowInquiry(new InquiryData(PolicyUiTexts.Get("AFPOL_UI_PlayerPolicyRetryTitle", "Policy Evaluation Failed"), BuildPolicyFailurePopupText(costError ?? "政策消耗评估无效。", result) + PolicyUiTexts.Get("AFPOL_UI_PlayerPolicyNoFeesNoEffectsSuffix", "\n\nNo fees were deducted and no effects were applied."), true, false, PolicyUiTexts.Get("AFPOL_UI_Acknowledge", "Got it"), "", null, null), pauseGameActiveState: true);
 				return;
 			}
 			result.Postprocess = BuildPostprocessResultFromMainAssessment(request, result.MainAssessment);
@@ -2782,7 +2922,7 @@ public sealed partial class CustomPolicyBehavior
 				PolicyDebugLog("policy-complete", BuildPolicyRequestLogPrefix(request)
 					+ " parsedEffects=" + CountParsedPolicyEffects(result).ToString(CultureInfo.InvariantCulture)
 					+ " appliedEffects=0 costDeducted=false status=eligibility_changed reason=" + (eligibility.Reason ?? ""));
-				InformationManager.ShowInquiry(new InquiryData("政策无法发布", BuildPolicyFailurePopupText(eligibility.Reason, result) + "\n\n政策评议已经完成，但发布条件已变化，因此未扣除费用，也未应用效果。", true, false, "知道了", "", null, null), pauseGameActiveState: true);
+					InformationManager.ShowInquiry(new InquiryData(PolicyUiTexts.Get("AFPOL_UI_PlayerPolicyCannotPublishTitle", "Policy Cannot Be Published"), BuildPolicyFailurePopupText(eligibility.Reason, result) + PolicyUiTexts.Get("AFPOL_UI_PlayerPolicyConditionsChangedAfterEval", "\n\nEvaluation is complete, but publication conditions changed, so no fees were deducted and no effects were applied."), true, false, PolicyUiTexts.Get("AFPOL_UI_Acknowledge", "Got it"), "", null, null), pauseGameActiveState: true);
 				return;
 			}
 			PolicyApplicationResult application = ApplyPolicyEffects(request, result.Postprocess);
@@ -2829,7 +2969,7 @@ public sealed partial class CustomPolicyBehavior
 				PolicyName = request.PolicyName ?? "",
 				PolicyContent = request.PolicyContent ?? "",
 				LogEntryDescription = FirstNonEmpty(result.MainAssessment?.PolicyContentDigest, request.PolicyContent),
-				SecondaryEffects = BuildPolicyEffectSummary(application)
+				SecondaryEffects = BuildRawPolicyEffectSummary(application)
 					+ "\n" + BuildPlayerPolicyGoldCostSummary(request),
 				AuthoritarianWeight = authoritarianWeight,
 				OligarchicWeight = oligarchicWeight,
@@ -2861,7 +3001,7 @@ public sealed partial class CustomPolicyBehavior
 			PolicyDebugLog("complete-exception", BuildPolicyRequestLogPrefix(request), ex.ToString());
 			PolicyDebugLog("policy-complete", BuildPolicyRequestLogPrefix(request) + " parsedEffects=0 appliedEffects=0 costDeducted=false status=exception");
 			Log("complete policy failed: " + ex);
-			InformationManager.ShowInquiry(new InquiryData("政策发布失败", BuildPolicyFailurePopupText("政策评议完成后的落地处理失败，详细技术信息已写入日志。", result) + "\n\n未确认成功时不应重复点击；请查看日志。", true, false, "知道了", "", null, null), pauseGameActiveState: true);
+				InformationManager.ShowInquiry(new InquiryData(PolicyUiTexts.Get("AFPOL_UI_PlayerPolicyPublishFailedTitle", "Policy Publication Failed"), BuildPolicyFailurePopupText("政策评议完成后的落地处理失败，详细技术信息已写入日志。", result) + PolicyUiTexts.Get("AFPOL_UI_PlayerPolicyDoNotRepeatClick", "\n\nDo not click repeatedly unless success is confirmed; please check the log."), true, false, PolicyUiTexts.Get("AFPOL_UI_Acknowledge", "Got it"), "", null, null), pauseGameActiveState: true);
 		}
 	}
 
@@ -2891,12 +3031,12 @@ public sealed partial class CustomPolicyBehavior
 				PolicyDebugLog("policy-agenda-submit-rejected", BuildPolicyRecordLogPrefix(request, recordId)
 					+ " costDeducted=false status=eligibility_changed reason=" + (eligibility.Reason ?? string.Empty));
 				InformationManager.ShowInquiry(new InquiryData(
-					"政策无法提交",
+					PolicyUiTexts.Get("AFPOL_UI_PlayerPolicyCannotSubmitTitle", "Policy Cannot Be Submitted"),
 					BuildPolicyFailurePopupText(eligibility.Reason, result)
-						+ "\n\n确认前发布条件已变化，因此未扣除费用，也未应用效果。",
+						+ PolicyUiTexts.Get("AFPOL_UI_PlayerPolicyConditionsChangedBeforeConfirm", "\n\nPublication conditions changed before confirmation, so no fees were deducted and no effects were applied."),
 					true,
 					false,
-					"知道了",
+					PolicyUiTexts.Get("AFPOL_UI_Acknowledge", "Got it"),
 					string.Empty,
 					null,
 					null),
@@ -2907,15 +3047,17 @@ public sealed partial class CustomPolicyBehavior
 			{
 				throw new InvalidOperationException("政策提交 AF 议程失败：" + agendaError);
 			}
-			string impactText = "政策《" + (request?.PolicyName ?? string.Empty) + "》已提交 AF 王国议程。议程通过前不会扣除政策成本，也不会产生数值效果。\n"
-				+ BuildPlayerPolicyGoldCostSummary(request);
+			string impactText = PolicyUiTexts.Format("AFPOL_UI_PlayerPolicySubmittedToAgendaBody",
+				"Policy \"{NAME}\" has been submitted to the AF kingdom agenda. Policy costs are not deducted and no numeric effects occur until the agenda passes.\n{COST}",
+				"NAME", request?.PolicyName ?? string.Empty,
+				"COST", BuildPlayerPolicyGoldCostSummaryForDisplay(request));
 			PolicyDebugLog("complete-agenda-submitted", BuildPolicyRecordLogPrefix(request, recordId)
 				+ " costDeducted=false status=pending", impactText);
 			PolicyDebugLog("policy-complete", BuildPolicyRecordLogPrefix(request, recordId)
 				+ " parsedEffects=" + CountParsedPolicyEffects(result).ToString(CultureInfo.InvariantCulture)
 				+ " appliedEffects=" + (application?.AppliedEffectCount ?? 0).ToString(CultureInfo.InvariantCulture)
 				+ " costDeducted=false status=agenda_pending");
-			InformationManager.ShowInquiry(new InquiryData("政策已提交议程", impactText, true, false, "知道了", string.Empty, null, null), pauseGameActiveState: true);
+				InformationManager.ShowInquiry(new InquiryData(PolicyUiTexts.Get("AFPOL_UI_PlayerPolicySubmittedToAgendaTitle", "Policy Submitted to Agenda"), impactText, true, false, PolicyUiTexts.Get("AFPOL_UI_Acknowledge", "Got it"), string.Empty, null, null), pauseGameActiveState: true);
 			Log("policy agenda submitted " + BuildPolicyRecordLogPrefix(request, recordId)
 				+ " effects=" + (application?.AppliedEffectCount ?? 0).ToString(CultureInfo.InvariantCulture));
 		}
@@ -2923,11 +3065,11 @@ public sealed partial class CustomPolicyBehavior
 		{
 			PolicyDebugLog("policy-agenda-submit-failed", BuildPolicyRecordLogPrefix(request, recordId), ex.ToString());
 			InformationManager.ShowInquiry(new InquiryData(
-				"政策提交失败",
-				"政策未能提交议程，详细技术信息已写入日志。\n\n未扣除费用，也未应用效果。",
+				PolicyUiTexts.Get("AFPOL_UI_PlayerPolicyAgendaSubmitFailedTitle", "Policy Submission Failed"),
+				PolicyUiTexts.Get("AFPOL_UI_PlayerPolicyAgendaSubmitFailedBody", "The policy could not be submitted to the agenda; technical details have been written to the log.\n\nNo fees were deducted and no effects were applied."),
 				true,
 				false,
-				"知道了",
+				PolicyUiTexts.Get("AFPOL_UI_Acknowledge", "Got it"),
 				string.Empty,
 				null,
 				null),
@@ -2969,9 +3111,15 @@ public sealed partial class CustomPolicyBehavior
 	{
 		if (options?.UseAiEvaluatedCost == true)
 		{
-			return "填写政策名和政策内容后即可发布。智能服务会评估完整执行所需第纳尔；若第纳尔不足，将为你保留 " + AiPolicyGoldReserve.ToString(CultureInfo.InvariantCulture) + " 第纳尔，并按实际投入比例折算全部效果。";
+			return PolicyUiTexts.Format(
+				"AFPOL_UI_PolicyReadyAiCostStatus",
+				"Fill in a policy name and content to publish. The intelligence service will estimate the denars required for full execution; if your funds are insufficient, {RESERVE} denars will be reserved for you and all effects will be scaled to your actual investment.",
+				"RESERVE", AiPolicyGoldReserve.ToString(CultureInfo.InvariantCulture));
 		}
-		return "填写政策名和政策内容后即可发布。智能服务完成评议且成功落地时扣除：" + FormatCostText(options) + "。无冷却限制，可连续发布。";
+		return PolicyUiTexts.Format(
+			"AFPOL_UI_PolicyReadyFixedCostStatus",
+			"Fill in a policy name and content to publish. The configured cost is deducted after evaluation succeeds and the policy takes effect: {COST}. There is no cooldown, so policies can be published consecutively.",
+			"COST", FormatCostTextForDisplay(options));
 	}
 
 	private static string FormatCostText(PolicyRuntimeOptions options)
@@ -3016,6 +3164,77 @@ public sealed partial class CustomPolicyBehavior
 			return goldCost.ToString(CultureInfo.InvariantCulture) + " 第纳尔";
 		}
 		return FormatNumber(influenceCost) + " 影响力";
+	}
+
+	private static string FormatCostTextForDisplay(PolicyRuntimeOptions options)
+	{
+		options ??= BuildPolicyRuntimeOptions();
+		return FormatGoldCostTextForDisplay(options.GoldCost);
+	}
+
+	private static string FormatGoldCostTextForDisplay(int goldCost)
+	{
+		return goldCost > 0
+			? PolicyUiTexts.Format("AFPOL_UI_CostGoldAmount", "{AMOUNT} denars", "AMOUNT", goldCost.ToString(CultureInfo.InvariantCulture))
+			: PolicyUiTexts.Get("AFPOL_UI_CostGoldNone", "No denars");
+	}
+
+	private static string MapPlayerPolicyEligibilityReasonToDisplay(string reason)
+	{
+		string normalized = (reason ?? string.Empty).Trim();
+		switch (normalized)
+		{
+			case "上一份政策仍在等待评议。":
+				return PolicyUiTexts.Get("AFPOL_UI_PreviousPolicyPending", "The previous policy is still awaiting evaluation; please wait.");
+			case "你尚未加入任何王国，不能提交全国政策。":
+				return PolicyUiTexts.Get("AFPOL_UI_PolicyRequiresKingdom", "Join a kingdom before publishing a kingdom policy.");
+			case "只有王国统治者才能提交全国政策；拥有城镇或城堡的非统治者请使用地方政策。":
+				return PolicyUiTexts.Get("AFPOL_UI_OnlyKingdomRulerCanPublish", "Only a kingdom ruler can publish national policies; non-rulers who own a town or castle should use local policies.");
+			case "玩家家族当前没有城镇或城堡，不能发布地方政策。":
+				return PolicyUiTexts.Get("AFPOL_UI_NoOwnedFiefsWarning", "The player clan currently owns no towns or castles; cannot publish.");
+		}
+		if (TryMapPolicyGoldCostEligibilityReason(
+			normalized,
+			"发布政策需要 ",
+			"AFPOL_UI_KingdomPolicyCostRequired",
+			"Publishing this policy requires {AMOUNT} denars.",
+			out string kingdomCostReason))
+		{
+			return kingdomCostReason;
+		}
+		if (TryMapPolicyGoldCostEligibilityReason(
+			normalized,
+			"发布地方政策需要 ",
+			"AFPOL_UI_LocalPolicyCostRequired",
+			"Publishing this local policy requires {AMOUNT} denars.",
+			out string localCostReason))
+		{
+			return localCostReason;
+		}
+		return normalized;
+	}
+
+	private static bool TryMapPolicyGoldCostEligibilityReason(
+		string reason,
+		string prefix,
+		string key,
+		string fallback,
+		out string displayText)
+	{
+		displayText = string.Empty;
+		const string suffix = " 第纳尔。";
+		if (!reason.StartsWith(prefix, StringComparison.Ordinal)
+			|| !reason.EndsWith(suffix, StringComparison.Ordinal))
+		{
+			return false;
+		}
+		string amountText = reason.Substring(prefix.Length, reason.Length - prefix.Length - suffix.Length);
+		if (!int.TryParse(amountText, NumberStyles.None, CultureInfo.InvariantCulture, out int amount))
+		{
+			return false;
+		}
+		displayText = PolicyUiTexts.Format(key, fallback, "AMOUNT", amount.ToString(CultureInfo.InvariantCulture));
+		return true;
 	}
 
 	private PolicyEligibility EvaluateEligibility(PolicyDraftRequest request)
@@ -5120,9 +5339,12 @@ public sealed partial class CustomPolicyBehavior
 		{
 			return "";
 		}
-		return BuildPlayerPolicyGoldCostSummary(request)
-			+ "（已为你保留 " + AiPolicyGoldReserve.ToString(CultureInfo.InvariantCulture) + " 第纳尔）。"
-			+ "全部政策效果按 " + FormatPercent(request.GoldEffectScale) + " 生效。";
+		return BuildPlayerPolicyGoldCostSummaryForDisplay(request)
+			+ PolicyUiTexts.Format(
+				"AFPOL_UI_PlayerPolicyAiCostSettlementScale",
+				" (with {RESERVE} denars reserved for you). All policy effects apply at {SCALE}.",
+				"RESERVE", AiPolicyGoldReserve.ToString(CultureInfo.InvariantCulture),
+				"SCALE", FormatPercent(request.GoldEffectScale));
 	}
 
 	private static string BuildPlayerPolicyGoldCostSummary(PolicyDraftRequest request)
@@ -5134,6 +5356,24 @@ public sealed partial class CustomPolicyBehavior
 			+ "；启动实付：" + FormatGoldCostText(Math.Max(0, request?.GoldCost ?? 0))
 			+ "；每日维护：" + FormatGoldCostText(Math.Max(0, request?.DailyMaintenanceGoldCost ?? 0))
 			+ "；累计维护：" + FormatGoldCostText(Math.Max(0, request?.TotalMaintenancePaidGold ?? 0));
+	}
+
+	private static string BuildPlayerPolicyGoldCostSummaryForDisplay(PolicyDraftRequest request)
+	{
+		if (request == null)
+		{
+			return string.Empty;
+		}
+		int startupRequired = request.UseAiEvaluatedCost
+			? Math.Max(0, request.RequiredGoldCost)
+			: Math.Max(0, request.GoldCost);
+		return PolicyUiTexts.Format(
+			"AFPOL_UI_PlayerPolicyGoldCostSummary",
+			"Startup required: {REQUIRED}; startup paid: {PAID}; daily maintenance: {DAILY}; cumulative maintenance: {TOTAL}",
+			"REQUIRED", FormatGoldCostTextForDisplay(startupRequired),
+			"PAID", FormatGoldCostTextForDisplay(Math.Max(0, request.GoldCost)),
+			"DAILY", FormatGoldCostTextForDisplay(Math.Max(0, request.DailyMaintenanceGoldCost)),
+			"TOTAL", FormatGoldCostTextForDisplay(Math.Max(0, request.TotalMaintenancePaidGold)));
 	}
 
 	private bool RecordSuccessfulPolicy(PolicyDraftRequest request, PolicyGenerationResult generationResult, string feedback, PolicyApplicationResult application, string recordId)
@@ -5153,8 +5393,8 @@ public sealed partial class CustomPolicyBehavior
 				PolicyName = LimitDisplayChars(request.PolicyName ?? "未命名政策", MaxPolicyNameChars),
 				PolicyContentSummary = LimitDisplayChars(request.PolicyContent ?? "", MaxPolicyRecordContentChars),
 				PublicFeedbackSummary = LimitDisplayChars(CleanPolicyDisplayText(feedback ?? ""), MaxPolicyRecordFeedbackChars),
-				ImpactSummary = LimitDisplayChars(CleanPolicyDisplayText(generationResult?.Postprocess?.ImpactSummary ?? BuildPolicyEffectSummary(application)), MaxPolicyRecordImpactChars),
-				ImpactEffectsSummary = LimitDisplayChars(BuildPolicyEffectSummary(application), MaxPolicyRecordImpactChars),
+				ImpactSummary = LimitDisplayChars(CleanPolicyDisplayText(generationResult?.Postprocess?.ImpactSummary ?? BuildRawPolicyEffectSummary(application)), MaxPolicyRecordImpactChars),
+				ImpactEffectsSummary = LimitDisplayChars(BuildRawPolicyEffectSummary(application), MaxPolicyRecordImpactChars),
 				PlayerKingdomId = request.PlayerKingdomId ?? "",
 				PlayerKingdomName = request.PlayerKingdomName ?? "",
 				UseAiEvaluatedCost = request.UseAiEvaluatedCost,
@@ -5200,7 +5440,7 @@ public sealed partial class CustomPolicyBehavior
 					});
 				}
 			}
-			record.ImpactEffectsSummary = LimitDisplayChars(BuildPolicyRecordEffectSummary(record), MaxPolicyRecordImpactChars);
+			record.ImpactEffectsSummary = LimitDisplayChars(BuildRawPolicyRecordEffectSummary(record), MaxPolicyRecordImpactChars);
 			_policyRecordHistory[record.RecordId] = JsonConvert.SerializeObject(record);
 			TrimPolicyRecordHistory();
 			if (!RegisterUnifiedPlayerPolicy(request, generationResult, feedback, application, record.RecordId, record.CreatedUtcTicks))
@@ -5228,7 +5468,7 @@ public sealed partial class CustomPolicyBehavior
 			string impactSummary = LimitDisplayChars(CleanPolicyDisplayText((generationResult?.Postprocess?.ImpactSummary ?? "").Trim()), 120);
 			if (string.IsNullOrWhiteSpace(impactSummary))
 			{
-				impactSummary = LimitDisplayChars(BuildPolicyEffectSummary(application), 160);
+				impactSummary = LimitDisplayChars(BuildRawPolicyEffectSummary(application), 160);
 			}
 			string kingdomName = string.IsNullOrWhiteSpace(request.PlayerKingdomName) ? "玩家王国" : request.PlayerKingdomName.Trim();
 			string policyName = LimitDisplayChars(request.PolicyName ?? "未命名政策", MaxPolicyNameChars);
@@ -5283,7 +5523,7 @@ public sealed partial class CustomPolicyBehavior
 
 	private static string BuildPolicyMajorHistoryText(string kingdomName, string policyName, string policySummary, string impactSummary, PolicyApplicationResult application)
 	{
-		string effectSummary = string.IsNullOrWhiteSpace(impactSummary) ? BuildPolicyEffectSummary(application) : impactSummary.Trim();
+		string effectSummary = string.IsNullOrWhiteSpace(impactSummary) ? BuildRawPolicyEffectSummary(application) : impactSummary.Trim();
 		string text = "发布自定义政策《" + (policyName ?? "未命名政策").Trim() + "》";
 		if (!string.IsNullOrWhiteSpace(kingdomName))
 		{
@@ -5306,7 +5546,7 @@ public sealed partial class CustomPolicyBehavior
 		{
 			return "";
 		}
-		List<string> values = PolicyEffectSaveCodec.DescribePlayerVisibleInstances(effect.ModuleEffects);
+		List<string> values = PolicyEffectSaveCodec.DescribeRawPlayerVisibleInstances(effect.ModuleEffects);
 		string text = (values.Count <= 0 ? "无持续数值变化" : string.Join("，", values))
 			+ (effect.IsPermanentEffect
 				? "；永久生效"
@@ -5448,7 +5688,7 @@ public sealed partial class CustomPolicyBehavior
 				PolicyName = FirstNonEmpty(policy.PolicyName, history?.PolicyName),
 				PolicyContent = FirstNonEmpty(policy.PolicyContent, history?.PolicyContentSummary),
 				ImpactSummary = FirstNonEmpty(history?.ImpactEffectsSummary, history?.ImpactSummary, policy.SecondaryEffects),
-				DiplomacyImpactSummary = LimitDisplayChars(BuildPolicyRecordEffectSummary(history, includeRemainingDays: false), MaxPolicyRecordImpactChars),
+				DiplomacyImpactSummary = LimitDisplayChars(BuildRawPolicyRecordEffectSummary(history, includeRemainingDays: false), MaxPolicyRecordImpactChars),
 				DiplomacyRevisionKey = string.Join(";", (history?.Effects ?? new List<PolicyRecordEffectSaveData>())
 					.Where(effect => effect != null).Select(effect => effect.EffectId + ":" + effect.TotalDurationDays.ToString(CultureInfo.InvariantCulture))
 					.OrderBy(value => value, StringComparer.Ordinal)),
@@ -5467,7 +5707,7 @@ public sealed partial class CustomPolicyBehavior
 				AddPolicyHistoryId(entry.TargetKingdomIds, effect?.KingdomId);
 				AddPolicyHistoryEffectSummaries(
 					entry,
-					PolicyEffectSaveCodec.DescribePlayerVisibleInstances(effect?.ModuleEffects),
+					PolicyEffectSaveCodec.DescribeRawPlayerVisibleInstances(effect?.ModuleEffects),
 					FirstNonEmpty(effect?.TargetLabel, effect?.KingdomName, effect?.KingdomId));
 				foreach (PolicyEffectInstanceSaveData instance in effect?.ModuleEffects ?? new List<PolicyEffectInstanceSaveData>())
 				{
@@ -5523,7 +5763,7 @@ public sealed partial class CustomPolicyBehavior
 				AddPolicyHistoryId(entry.TargetKingdomIds, effect?.TargetKingdomId);
 				AddPolicyHistoryEffectSummaries(
 					entry,
-					PolicyEffectSaveCodec.DescribePlayerVisibleInstances(effect?.ModuleEffects),
+					PolicyEffectSaveCodec.DescribeRawPlayerVisibleInstances(effect?.ModuleEffects),
 					FirstNonEmpty(effect?.TargetLabel, effect?.TargetKingdomName, effect?.TargetKingdomId));
 				foreach (string clanId in effect?.TargetClanIds ?? new List<string>())
 				{
