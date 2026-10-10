@@ -117,3 +117,11 @@ UI词法快照`mainline-after-20261010.json`为较早`6e6e2fa1a`工作树：1246
 - 另发现并修正RerankerDeviceDropdown为空时的中文CPU默认显示，复用`AF_MCM_Option_DeviceCpu`。除此显示补漏，两份消费者反向展开后与`192390cbb`完全一致（字符串转义标准化）；设置ID、getter/setter/invoker、范围、排序、状态、页签顺序保持。
 - `TerminalCategoryContractTests.py`21检查、TerminalSettingsFallback2552检查/259定义、TerminalTagDisplay原全文件逆向断言与资源29对PASS。旧Tag测试新增精确逆向展开分类语料步骤，未删去原输入/生命周期/搜索/路由断言。注册表当前中文字面量词法扫描为0；不是全终端或全模组清零。当前C#编译、MCM/终端实机、正式包未跑。
 - 发行门禁检查确认：`package_localization.ps1`仍先拒绝源码中文，再拒绝所有含中文嵌入资源。这会同时阻断有效双语表和兼容识别语料；本片未改放行规则，未来需具名资源身份/内容与用途验证，不能按目录整体豁免或取消DLL用户字符串检查。
+
+## C 日期显示小包接收（2026-10-11）
+
+- 用户明确纠正日期包实际交付者为C；覆盖前文任务卡B/B2的归属称谓，历史文件名保留。
+- 基线 adcb385fc：核对共享 WeeklyReportArchivePolicy.ProjectDateForDisplay 的35行新增及三处消费者，接收既有工作树实现，不重做或回滚 helper。快报 masthead/meta 与周报列表投影已知日序及完整范围；阅读页复用 DateText。仅展示时解析日期，不新增 Tick 扫描、IO 或游戏对象读取。
+- 原始 CreatedDate/CreatedDay、导入和归档生成算法不变；第0日有效。未知、自定义、混合正文保留；完整原生日历、外交年季日期及任意 Policy 日期仍未覆盖。中文历史格式识别字面量仍在 helper，本包完成展示投影，其源码语料外置仍待处理，不代表全模组完成。
+- 去除测试中重复加入的同组日期模拟，保留全部不同断言（含 CreatedDay 排序）。重跑 WeeklyProjectionLocalizationContractTests：34键、19日期案例、来源/消费者边界及原始诊断 PASS；LocalizationResourceContractTests：29对 PASS；git diff --check PASS。
+- 未新增语言键/注册，未做产品编译、DLL加载、Stage、游戏或旧档验收。接收范围仅 helper、两个消费者文件、契约测试及此记录；其他作者 dirty 保留。回滚使用本次精确提交的 focused inverse。

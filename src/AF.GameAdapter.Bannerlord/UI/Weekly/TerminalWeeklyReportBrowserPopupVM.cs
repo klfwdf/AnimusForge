@@ -810,7 +810,7 @@ public sealed class TerminalWeeklyReportEntryItemVM : ViewModel
 	{
 		TitleText = (entry?.Title ?? "").Trim();
 		WeekText = string.IsNullOrWhiteSpace(entry?.KindLabelText) ? WeeklyReportArchivePolicy.PeriodLabel(entry?.EventId, entry?.WeekIndex ?? 0) : entry.KindLabelText.Trim();
-		DateText = (entry?.CreatedDate ?? "").Trim();
+		DateText = WeeklyReportArchivePolicy.ProjectDateForDisplay(entry?.CreatedDate);
 		PlainBodyText = FormatDisplayBodyText(entry?.BodyText);
 		BodyText = PlainBodyText;
 		EntryKind = entry?.ArchiveKind ?? WeeklyReportArchivePolicy.EntryKind(entry?.EventId);

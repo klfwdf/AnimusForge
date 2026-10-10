@@ -87,10 +87,7 @@ internal WorldBulletinPanelData BuildWorldBulletinPanelData(EventRecordEntry ent
 				? BulletinText("AF_UI_Weekly_Bulletin_ScopeKingdom", "Kingdom bulletin")
 				: BulletinText("AF_UI_Weekly_Bulletin_ScopeNamedKingdom", "{KINGDOM} bulletin", "KINGDOM", kingdomLabel);
 		List<string> masthead = new List<string> { scopeLabel };
-		if (!string.IsNullOrWhiteSpace(entry.CreatedDate))
-		{
-			masthead.Add(entry.CreatedDate.Trim());
-		}
+		masthead.Add(WeeklyReportArchivePolicy.ProjectDateForDisplay(entry?.CreatedDate));
 		string issue = ParseWorldBulletinIssueNumber(eventId);
 		if (issue.Length > 0)
 		{
@@ -176,7 +173,7 @@ internal static string BuildWorldBulletinMetaText(EventRecordEntry entry, WorldB
 		{
 			names.Add(resolveKingdom(entry.ScopeKingdomId));
 		}
-		string date = (entry.CreatedDate ?? "").Trim();
+		string date = WeeklyReportArchivePolicy.ProjectDateForDisplay(entry?.CreatedDate);
 		string kingdoms = names.Count > 0
 			? BulletinText("AF_UI_Weekly_Bulletin_InvolvedKingdoms", "Involved: {KINGDOMS}", "KINGDOMS", string.Join(BulletinText("AF_UI_Weekly_Bulletin_KingdomSeparator", ", "), names))
 			: "";
