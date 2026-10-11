@@ -1,3 +1,9 @@
+# 当前交接：自定义提示词恢复模组内读写（2026-10-11，OFFLINE_VERIFIED / LIVE_PENDING）
+
+- 当前工作区 `E:/AnimusForge-klfwdf` / `delivery/policy-bounded-retrieval-20261010`；检查点 `e5fc3069`，部署保护 `ebb29ac5`，提示词/配置产品 `45c63066`。恢复当前模组单目录、缺失初始化与逐类清空保存，保留当前文案/新功能、字段身份、严格 UTF-8/大小/reparse/坏原件/原子写及一秒/五秒缓存；已有 CustomPrompts 安装时全部保护，仅补缺失。C 盘旧内容保留不迁移且不再生效，日志、缓存、PlayerExports 不变。
+- 原双 API/Bootstrap/双 Coup 门禁通过；两版实际 DLL 存储专项各100、人物29、快报提示词12、上限配置59及原版程序集适配各97 PASS，合成部署保留/补齐/重复/回滚和 Stage 默认 SHA 通过。原警告及无关完整快报/日志路径失败单独保留；不是全仓或实机验收，没有 Stage/部署/打包/推送。
+- [唯一主台账：证据、风险与 focused inverse](docs/animusforge-refactoring-and-repository-reorganization-plan.md#module-custom-prompts-20261011)；[已验证源码地图](docs/architecture/af-framework-code-scope.md#module-custom-prompts-20261011)。总收据 `artifacts/tests/module-prompts-20261011/verification-receipt.json`。后续等待明确授权的游戏内编辑、保存、退出重启回读；保护部署意味着新默认不会覆盖已有 JSON。
+
 # 当前交接：会面护卫复用真实士兵（2026-10-11，OFFLINE_VERIFIED / LIVE_PENDING）
 
 - 检查点 `de1c9bcc`，产品 `30e70d37`；每侧最多一名护卫，只缓存原版已分配的同队同部队 `PartyGroupAgentOrigin` 士兵，不额外生成、不改 Origin/名单。保留会面、和平退出、偷袭转战及正常伤亡；初始化重试0.5秒、最多5秒，无兵/超时允许无护卫。
