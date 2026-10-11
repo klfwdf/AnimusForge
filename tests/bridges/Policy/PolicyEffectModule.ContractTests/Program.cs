@@ -116,6 +116,12 @@ internal static partial class Program
 			ConfigureOnnxRuntimeSearchPath();
 			LoadAssemblies(args);
 			ConfigureOnnxModuleRootOverride(args);
+			if (args.Any(value => value == "--module-runtime-storage-only"))
+			{
+				TestModuleRuntimeStorageContracts();
+				Console.WriteLine("PASS moduleRuntimeStorageAssertions=" + _assertionCount);
+				return 0;
+			}
 			if (args.Any(value => value == "--module-prompt-storage-only"))
 			{
 				TestModulePromptStorageContracts();
@@ -9341,14 +9347,14 @@ internal static partial class Program
 		PolicyEffectPromptService.SetStorageDirectoryOverrideForContractTests(tempRoot);
 		try
 		{
-		string dataRoot = (string)InvokeStatic(SutType("AnimusForge.AnimusForgeDataPaths"), "GetCurrentRoot", Array.Empty<object>(), 0);
+		string dataRoot = AnimusForgeModulePaths.GetCurrentModuleRoot();
 		string ordinaryDirectory = (string)InvokeStatic(settingsType, "GetCustomPromptTextStoreDirectory", Array.Empty<object>(), 0);
 		Check(string.Equals(ordinaryDirectory, Path.Combine(AnimusForgeModulePaths.GetCurrentModuleRoot(), "CustomPrompts"), StringComparison.OrdinalIgnoreCase),
 			"Production editable prompts must use the current module directory, not user data or CWD.");
 		string cachePath = (string)InvokeStatic(settingsType, "GetModelDropdownCachePath", Array.Empty<object>(), 0);
 		Check(string.Equals(AnimusForgeModulePaths.GetLogsDirectory(), Path.Combine(dataRoot, "Logs"), StringComparison.OrdinalIgnoreCase)
-			&& string.Equals(cachePath, Path.Combine(dataRoot, "Cache", "ModelDropdownCache.json"), StringComparison.OrdinalIgnoreCase),
-			"Independent existing log/cache user-data contract (not changed by prompt restoration).");
+			&& string.Equals(cachePath, Path.Combine(dataRoot, "Logs", "ModelDropdownCache.json"), StringComparison.OrdinalIgnoreCase),
+			"Log and model cache share the installed module Logs contract.");
 
 			string legacyPlayerPath = Path.Combine(tempRoot, "CustomPolicyEvaluatorPrompt.json");
 			string legacyNpcPath = Path.Combine(tempRoot, "NpcRulerPolicyPrompt.json");
