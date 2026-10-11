@@ -114,7 +114,6 @@ internal static class PolicyEffectPromptService
 	private static PromptSnapshot _snapshot;
 	private static long _nextRefreshTimestamp;
 	private static string _storageDirectoryOverride;
-	private static string _packagedStorageDirectoryOverrideForContractTests;
 
 	internal static string GetAutoDraftPrompt()
 	{
@@ -155,11 +154,12 @@ internal static class PolicyEffectPromptService
 		{
 			string directory = RequireStorageDirectory();
 			string prompt = NormalizeAutoDraftPrompt(input);
+			if (prompt.Length == 0) prompt = DefaultAutoDraftPrompt;
 			lock (Sync)
 			{
 				Directory.CreateDirectory(directory);
 				string path = Path.Combine(directory, AutoDraftPromptFileName);
-				JObject document = new JObject();
+				JObject document = new JObject { ["Version"] = CurrentVersion, ["Text"] = DefaultAutoDraftPrompt };
 				if (File.Exists(path))
 				{
 					if (!TryReadJsonObject(path, out JObject existing) || !IsSupportedVersion(existing, path))
@@ -169,20 +169,8 @@ internal static class PolicyEffectPromptService
 					document = (JObject)existing.DeepClone();
 				}
 				document["Version"] = CurrentVersion;
-				if (prompt.Length == 0)
-				{
-					document.Remove("Text");
-					if (document.Properties().Count() == 1)
-					{
-						if (File.Exists(path)) File.Delete(path);
-					}
-					else WriteJsonAtomically(path, document);
-				}
-				else
-				{
-					document["Text"] = prompt;
-					WriteJsonAtomically(path, document);
-				}
+				document["Text"] = prompt;
+				WriteJsonAtomically(path, document);
 				_snapshot = RefreshSnapshotUnlocked(null, directory);
 				DelayRefreshUnlocked();
 			}
@@ -204,12 +192,13 @@ internal static class PolicyEffectPromptService
 		{
 			string directory = RequireStorageDirectory();
 			string prompt = NormalizeCommonEvaluationPrompt(input);
+			if (prompt.Length == 0) prompt = DefaultCommonEvaluationPrompt;
 			lock (Sync)
 			{
 				string effectsDirectory = GetEffectsDirectory(directory);
 				Directory.CreateDirectory(effectsDirectory);
 				string path = Path.Combine(effectsDirectory, CommonEffectPromptFileName);
-				JObject document = new JObject();
+				JObject document = CreateDefaultCommonDocument();
 				if (File.Exists(path))
 				{
 					if (!TryReadJsonObject(path, out JObject existing) || !IsSupportedVersion(existing, path))
@@ -219,20 +208,8 @@ internal static class PolicyEffectPromptService
 					document = (JObject)existing.DeepClone();
 				}
 				document["Version"] = CurrentVersion;
-				if (prompt.Length == 0)
-				{
-					document.Remove("CommonEvaluationPrompt");
-					if (document.Properties().Count() == 1)
-					{
-						if (File.Exists(path)) File.Delete(path);
-					}
-					else WriteJsonAtomically(path, document);
-				}
-				else
-				{
-					document["CommonEvaluationPrompt"] = prompt;
-					WriteJsonAtomically(path, document);
-				}
+				document["CommonEvaluationPrompt"] = prompt;
+				WriteJsonAtomically(path, document);
 				_snapshot = RefreshSnapshotUnlocked(null, directory);
 				DelayRefreshUnlocked();
 			}
@@ -265,12 +242,15 @@ internal static class PolicyEffectPromptService
 		{
 			string directory = RequireStorageDirectory();
 			string prompt = NormalizePrompt(input);
+			if (prompt.Length == 0)
+				prompt = kind == PolicyEffectPromptKind.Understanding
+					? module.Descriptor.EditableUnderstandingPrompt : module.Descriptor.EditableEvaluationPrompt;
 			lock (Sync)
 			{
 				string effectsDirectory = GetEffectsDirectory(directory);
 				Directory.CreateDirectory(effectsDirectory);
 				string path = GetModulePromptPath(effectsDirectory, module.Id);
-				JObject document = new JObject();
+				JObject document = CreateDefaultModuleDocument(module);
 				if (File.Exists(path))
 				{
 					if (!TryReadModuleDocument(path, module, out JObject existing, out _, out _))
@@ -284,20 +264,8 @@ internal static class PolicyEffectPromptService
 				string fieldName = kind == PolicyEffectPromptKind.Understanding
 					? "UnderstandingPrompt"
 					: "EvaluationPrompt";
-				if (prompt.Length == 0)
-				{
-					document.Remove(fieldName);
-					if (document.Properties().Count() == 2)
-					{
-						if (File.Exists(path)) File.Delete(path);
-					}
-					else WriteJsonAtomically(path, document);
-				}
-				else
-				{
-					document[fieldName] = prompt;
-					WriteJsonAtomically(path, document);
-				}
+				document[fieldName] = prompt;
+				WriteJsonAtomically(path, document);
 				_snapshot = RefreshSnapshotUnlocked(null, directory);
 				DelayRefreshUnlocked();
 			}
@@ -320,7 +288,7 @@ internal static class PolicyEffectPromptService
 			string directory = RequireStorageDirectory();
 			lock (Sync)
 			{
-				Directory.CreateDirectory(directory);
+				EnsureStorageFilesUnlocked(directory);
 				InvalidateUnlocked();
 			}
 			return true;
@@ -332,6 +300,41 @@ internal static class PolicyEffectPromptService
 				"初始化政策提示词文件失败: " + ex.Message);
 			return false;
 		}
+	}
+
+	private static JObject CreateDefaultCommonDocument()
+	{
+		return new JObject { ["Version"] = CurrentVersion, ["CommonEvaluationPrompt"] = DefaultCommonEvaluationPrompt };
+	}
+
+	private static JObject CreateDefaultModuleDocument(IPolicyEffectModule module)
+	{
+		return new JObject
+		{
+			["Version"] = CurrentVersion, ["ModuleId"] = module.Id,
+			["UnderstandingPrompt"] = module.Descriptor.EditableUnderstandingPrompt,
+			["EvaluationPrompt"] = module.Descriptor.EditableEvaluationPrompt
+		};
+	}
+
+	private static void EnsureStorageFilesUnlocked(string directory)
+	{
+		AnimusForgeModulePaths.ValidateCustomPromptPath(directory);
+		Directory.CreateDirectory(directory);
+		WriteJsonIfMissing(Path.Combine(directory, AutoDraftPromptFileName),
+			new JObject { ["Version"] = CurrentVersion, ["Text"] = DefaultAutoDraftPrompt });
+		string effectsDirectory = GetEffectsDirectory(directory);
+		WriteJsonIfMissing(Path.Combine(effectsDirectory, CommonEffectPromptFileName), CreateDefaultCommonDocument());
+		foreach (IPolicyEffectModule module in PolicyEffectModuleCatalog.Modules)
+		{
+			if (module?.Descriptor?.PromptVisible == true)
+				WriteJsonIfMissing(GetModulePromptPath(effectsDirectory, module.Id), CreateDefaultModuleDocument(module));
+		}
+	}
+
+	private static void WriteJsonIfMissing(string path, JObject document)
+	{
+		if (!File.Exists(path)) WriteJsonAtomically(path, document, replaceExisting: false);
 	}
 
 	internal static void SetStorageDirectoryOverrideForContractTests(string directory)
@@ -365,6 +368,11 @@ internal static class PolicyEffectPromptService
 			try
 			{
 				string directory = GetStorageDirectory();
+				if (_snapshot == null)
+				{
+					try { EnsureStorageFilesUnlocked(directory); }
+					catch (Exception ex) { WarnOnce("initialize:" + ex.GetType().FullName, "政策提示词缺失文件初始化失败，已有文件仍单独读取: " + ex.GetType().Name); }
+				}
 				_snapshot = RefreshSnapshotUnlocked(_snapshot, directory);
 			}
 			catch (Exception ex)
@@ -385,24 +393,12 @@ internal static class PolicyEffectPromptService
 		{
 			return result;
 		}
-		string packagedDirectory = GetPackagedStorageDirectory();
 
 		string autoPath = Path.Combine(directory, AutoDraftPromptFileName);
-		string packagedAutoPath = string.IsNullOrWhiteSpace(packagedDirectory)
-			? string.Empty : Path.Combine(packagedDirectory, AutoDraftPromptFileName);
-		long autoFingerprint = unchecked(FileFingerprint(autoPath) * 31L + FileFingerprint(packagedAutoPath));
+		long autoFingerprint = FileFingerprint(autoPath);
 		if (existing == null || autoFingerprint != result.AutoDraftFingerprint)
 		{
 			result.AutoDraftPrompt = DefaultAutoDraftPrompt;
-			if (TryReadJsonObject(packagedAutoPath, out JObject packagedAutoDocument)
-				&& IsSupportedVersion(packagedAutoDocument, packagedAutoPath))
-			{
-				string autoPrompt = NormalizeAutoDraftPrompt(ReadPromptValue(packagedAutoDocument, "Text", packagedAutoPath, "auto-default"));
-				if (autoPrompt.Length > 0)
-				{
-					result.AutoDraftPrompt = autoPrompt;
-				}
-			}
 			if (TryReadJsonObject(autoPath, out JObject autoDocument)
 				&& IsSupportedVersion(autoDocument, autoPath))
 			{
@@ -413,19 +409,11 @@ internal static class PolicyEffectPromptService
 		}
 
 		string effectsDirectory = GetEffectsDirectory(directory);
-		string packagedEffectsDirectory = string.IsNullOrWhiteSpace(packagedDirectory)
-			? string.Empty : GetEffectsDirectory(packagedDirectory);
 		string commonPath = Path.Combine(effectsDirectory, CommonEffectPromptFileName);
-		string packagedCommonPath = string.IsNullOrWhiteSpace(packagedEffectsDirectory)
-			? string.Empty : Path.Combine(packagedEffectsDirectory, CommonEffectPromptFileName);
-		long commonFingerprint = unchecked(FileFingerprint(commonPath) * 31L + FileFingerprint(packagedCommonPath));
+		long commonFingerprint = FileFingerprint(commonPath);
 		if (existing == null || commonFingerprint != result.CommonEvaluationFingerprint)
 		{
 			result.CommonEvaluationPrompt = DefaultCommonEvaluationPrompt;
-			if (TryReadCommonDocument(packagedCommonPath, out _, out string packagedCommonPrompt))
-			{
-				result.CommonEvaluationPrompt = packagedCommonPrompt;
-			}
 			if (TryReadCommonDocument(commonPath, out _, out string commonPrompt))
 			{
 				result.CommonEvaluationPrompt = commonPrompt;
@@ -439,9 +427,7 @@ internal static class PolicyEffectPromptService
 				continue;
 			}
 			string modulePath = GetModulePromptPath(effectsDirectory, module.Id);
-			string packagedModulePath = string.IsNullOrWhiteSpace(packagedEffectsDirectory)
-				? string.Empty : GetModulePromptPath(packagedEffectsDirectory, module.Id);
-			long moduleFingerprint = unchecked(FileFingerprint(modulePath) * 31L + FileFingerprint(packagedModulePath));
+			long moduleFingerprint = FileFingerprint(modulePath);
 			if (existing != null
 				&& result.FingerprintByModuleId.TryGetValue(module.Id, out long previousFingerprint)
 				&& moduleFingerprint == previousFingerprint)
@@ -453,11 +439,6 @@ internal static class PolicyEffectPromptService
 			result.FingerprintByModuleId[module.Id] = moduleFingerprint;
 			string understanding = module.Descriptor.EditableUnderstandingPrompt;
 			string evaluation = module.Descriptor.EditableEvaluationPrompt;
-			if (TryReadModuleDocument(packagedModulePath, module, out _, out string packagedUnderstanding, out string packagedEvaluation))
-			{
-				if (packagedUnderstanding.Length > 0) understanding = packagedUnderstanding;
-				if (packagedEvaluation.Length > 0) evaluation = packagedEvaluation;
-			}
 			if (TryReadModuleDocument(modulePath, module, out _, out string overriddenUnderstanding, out string overriddenEvaluation))
 			{
 				if (overriddenUnderstanding.Length > 0) understanding = overriddenUnderstanding;
@@ -526,6 +507,7 @@ internal static class PolicyEffectPromptService
 			{
 				return false;
 			}
+			AnimusForgeModulePaths.ValidateCustomPromptPath(path);
 			if ((File.GetAttributes(path) & FileAttributes.ReparsePoint) != 0)
 			{
 				WarnOnce("reparse:" + Path.GetFileName(path),
@@ -539,7 +521,7 @@ internal static class PolicyEffectPromptService
 					"政策提示词文件过大，已回退对应默认内容。");
 				return false;
 			}
-			document = JObject.Parse(File.ReadAllText(path, StrictUtf8));
+			document = JObject.Parse(StrictUtf8.GetString(File.ReadAllBytes(path)).TrimStart('\uFEFF'));
 			return true;
 		}
 		catch (Exception ex)
@@ -577,8 +559,9 @@ internal static class PolicyEffectPromptService
 		return NormalizePrompt(token.Value<string>());
 	}
 
-	private static void WriteJsonAtomically(string path, JObject document)
+	private static void WriteJsonAtomically(string path, JObject document, bool replaceExisting = true)
 	{
+		AnimusForgeModulePaths.ValidateCustomPromptPath(path);
 		string directory = Path.GetDirectoryName(path);
 		if (string.IsNullOrWhiteSpace(directory))
 		{
@@ -596,9 +579,12 @@ internal static class PolicyEffectPromptService
 				writer.Flush();
 				stream.Flush(flushToDisk: true);
 			}
+			if (new FileInfo(tempPath).Length > MaxJsonBytes) throw new InvalidOperationException("政策提示词 JSON 超过大小限制，原件未覆盖。");
 			JObject.Parse(File.ReadAllText(tempPath, StrictUtf8));
+			AnimusForgeModulePaths.ValidateCustomPromptPath(path);
 			if (File.Exists(path))
 			{
+				if (!replaceExisting) return;
 				File.Replace(tempPath, path, null);
 			}
 			else
@@ -656,21 +642,8 @@ internal static class PolicyEffectPromptService
 		{
 			throw new InvalidOperationException("无法定位政策提示词文件夹。");
 		}
-		if (string.IsNullOrWhiteSpace(_storageDirectoryOverride))
-		{
-			AnimusForgeDataPaths.EnsureWritableRoot(AnimusForgeDataPaths.GetCurrentRoot());
-		}
+		AnimusForgeModulePaths.ValidateCustomPromptPath(directory);
 		return directory;
-	}
-
-	internal static void SetPackagedStorageDirectoryOverrideForContractTests(string directory)
-	{
-		lock (Sync)
-		{
-			_packagedStorageDirectoryOverrideForContractTests = string.IsNullOrWhiteSpace(directory)
-				? null : Path.GetFullPath(directory);
-			InvalidateUnlocked();
-		}
 	}
 
 	private static string GetStorageDirectory()
@@ -678,17 +651,6 @@ internal static class PolicyEffectPromptService
 		return !string.IsNullOrWhiteSpace(_storageDirectoryOverride)
 			? _storageDirectoryOverride
 			: DuelSettings.GetCustomPromptTextStoreDirectoryForPolicyPrompts();
-	}
-
-	private static string GetPackagedStorageDirectory()
-	{
-		if (!string.IsNullOrWhiteSpace(_packagedStorageDirectoryOverrideForContractTests))
-		{
-			return _packagedStorageDirectoryOverrideForContractTests;
-		}
-		return !string.IsNullOrWhiteSpace(_storageDirectoryOverride)
-			? string.Empty
-			: DuelSettings.GetPackagedCustomPromptTextStoreDirectoryForPolicyPrompts();
 	}
 
 	private static string GetEffectsDirectory(string policyDirectory)

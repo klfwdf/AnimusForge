@@ -81,9 +81,10 @@ internal sealed class SettlementBalanceSettingsStore
 		_snapshot = SettlementBalanceSnapshot.Default;
 		try
 		{
+			AnimusForgeModulePaths.ValidateCustomPromptPath(path);
 			if (!File.Exists(path)) return;
 			if (new FileInfo(path).Length > 65536) throw new FormatException("总量上限配置文件过大。");
-			if (!SettlementBalanceSettings.TryDecode(File.ReadAllText(path, new UTF8Encoding(false, true)), out var loaded, out string error))
+			if (!SettlementBalanceSettings.TryDecode(new UTF8Encoding(false, true).GetString(File.ReadAllBytes(path)).TrimStart('\uFEFF'), out var loaded, out string error))
 				throw new FormatException(error);
 			_snapshot = loaded;
 		}
@@ -98,6 +99,13 @@ internal sealed class SettlementBalanceSettingsStore
 		string temp = _path + ".tmp-" + Guid.NewGuid().ToString("N");
 		try
 		{
+			AnimusForgeModulePaths.ValidateCustomPromptPath(_path);
+			if (File.Exists(_path))
+			{
+				if (new FileInfo(_path).Length > 65536) throw new FormatException("总量上限配置文件过大，原件未覆盖。");
+				if (!SettlementBalanceSettings.TryDecode(new UTF8Encoding(false, true).GetString(File.ReadAllBytes(_path)).TrimStart('\uFEFF'), out _, out error))
+					throw new FormatException("已有总量上限配置无效，原件未覆盖：" + error);
+			}
 			Directory.CreateDirectory(Path.GetDirectoryName(_path));
 			using (var stream = new FileStream(temp, FileMode.CreateNew, FileAccess.Write, FileShare.None))
 			using (var writer = new StreamWriter(stream, new UTF8Encoding(false), 4096, leaveOpen: true))
@@ -107,6 +115,7 @@ internal sealed class SettlementBalanceSettingsStore
 				stream.Flush(flushToDisk: true);
 			}
 			if (!SettlementBalanceSettings.TryDecode(File.ReadAllText(temp), out _, out error)) return false;
+			AnimusForgeModulePaths.ValidateCustomPromptPath(_path);
 			if (File.Exists(_path)) File.Replace(temp, _path, null);
 			else File.Move(temp, _path);
 			Volatile.Write(ref _snapshot, snapshot);

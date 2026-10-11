@@ -6,6 +6,7 @@
     <Nullable>disable</Nullable>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="../../../../src/AF.Persistence/AnimusForgeModulePaths.cs" Link="Production/AnimusForgeModulePaths.cs" />
     <Compile Include="../../../../PolicySystem/Balance/SettlementBalanceRules.cs" Link="Production/SettlementBalanceRules.cs" />
     <Compile Include="../../../../PolicySystem/Balance/SettlementBalanceSettings.cs" Link="Production/SettlementBalanceSettings.cs" />
     <Reference Include="Newtonsoft.Json"><HintPath>../../../../_deps_auto/Newtonsoft.Json.dll</HintPath></Reference>
