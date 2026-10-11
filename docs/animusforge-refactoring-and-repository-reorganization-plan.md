@@ -6,7 +6,7 @@
 - 退出门：生产普通/政策提示词与配套配置路径及空值 red/green、缺失初始化和坏文件/只读/reparse 保护、合成部署保留/补齐/重复与回滚、原双 API/Bootstrap/双 Coup gate；无关基线失败单列。用户另行批准仅清理本工作区 `bin/Debug/single_module_artifacts` 与 `obj/single_module/Debug` 两个构建产物目录。性能保持普通一秒/政策五秒节流，保存立即失效，不新增 Tick 扫描。
 
 <a id="refactor-wiring-debug-20261011"></a>
-## 最新源码接线排查（2026-10-11，ONE_FIX_OFFLINE_VERIFIED / AUDIT_INCOMPLETE）
+## 最新源码接线排查（2026-10-11，TWO_FIXES_OFFLINE_VERIFIED / AUDIT_INCOMPLETE）
 
 - 用户要求排查重构后的漏接，先拉取远端再继续；当前工作区 `E:/AnimusForge-klfwdf`，分支 `delivery/policy-bounded-retrieval-20261010`，基线 `14ce14ae974a45e5b129d99effa1bd4e2942bab8`，开工 tracked clean。只在本地修复可复现问题；不推送、部署、Stage、打包或启用历史孤儿补丁。
 - 已用完整当前 `DiplomacyBehavior` 类、实际 CLR ModuleInitializer 与受控 Harmony/game/logging 叶复现：第一次补丁安装失败后 `s_globalPatchesApplied` 仍为 true；真实 `RegisterEvents` 再次调用却不重试，外交上下文 postfix 没有接通。证据 `artifacts/tests/diplomacy-patch-debug-20261011/run-79f94a98dfef4fb99529f66ed248ef7e/run.log`，exit1。尚未证明用户实机故障由此触发，也不将其归因于本次远端提交。
@@ -22,17 +22,22 @@
 - 原命令 exit0 / `Build Result : success (dual coup seam gates passed)`；1.3.15.110062 / 1.4.6.115628 两实现各 348 warning / 0 error，Bootstrap/probe 各 0 warning / 0 error；两实际最终 DLL 各 `PASS registration smoke`、memory assertions=20。最终 1.3 SHA `e71f254ec8b5b8b9a23caed91f9bd3d345a65b55f272dca82e0f1a81f8b97f1f`，1.4 SHA `101b439b9d4d281ef408f201ce104ec04d2e83d75a56bcefa9473e07fa4bea73`；marker/API/Flavor/PDB/双 gate 哈希绑定与构建输入未变检查通过，八源码锚点再次双模式 PASS。完整调用、日志和复验收据 `artifacts/tests/wiring-official-build-approved-20261014/run-67f8aaa489454742b0c109d8ee0bc9e3/{invocation.json,run.log,verified-receipt.json}`。
 - 本次结果补齐原脚本顶层验证，并接续首次未获清理回复的状态；首次隔离验证及其失败证据不删除、不改绿。只完成获准构建验证，未改产品或构建脚本、未 Stage/部署/推送/打包，实机和全仓接线边界不变。
 
-### 续查：世界外交多补丁注册（ACTIVE）
+### 续查：世界外交多补丁注册（OFFLINE_VERIFIED / LIVE_PENDING）
 
-- 用户继续 Debug；从干净 `6f57e9a46568b75d741b5c5a00219bd4fe3a4dbe` 接续，不重复拉取或覆盖游戏。沿真实 StartupPatchComposition → DiplomacyModuleServices → WorldDiplomacyBehavior 注册与战役 RegisterEvents 检查，完整未改注册/事件/日志方法的受控复现中 6 个目标仅成功 5 个，总完成标记却为 true；真实战役注册与显式重试均仍为 6 次尝试，缺失的共享记忆 postfix 永久不补。证据 `artifacts/tests/world-diplomacy-patch-repro/run-7034d4ff0a85465889efc03a5f2d130b/run.log`，exit1；这是受控 Harmony/game/logger 叶的离线接线复现，不是用户实机故障归因。
-- 当前有限切片只修本 owner 的多 hook 完成状态、已成功目标去重和既有战役注册的失败项补装；不启用新补丁、不改外交业务/三渠道默认入口/存档/外部 API/精灵 owner。频率仅启动与战役 RegisterEvents；缓存只存少量固定 MethodBase 元数据，不持有 Hero/Agent，不增加 Tick/全世界扫描/后台读取。
-- 退出门：完整真实注册/事件方法的 red/green、每个目标与构造/缺失成员/日志失败、部分成功不得重复、原九个事件顺序保持；既有直接外交回归及原统一双API/Bootstrap/双Coup构建、源码锚点/diff检查。继续沿用仅清理两个具名构建产物目录的授权，不 Stage/部署/推送；历史 inverse/适配器夹具失败不刷新改绿。
+- 用户继续 Debug；从干净 `6f57e9a46568b75d741b5c5a00219bd4fe3a4dbe` 接续，检查点 `8b00cb1a`，产品 `aba208e82aadd0f54e75ac125863f9e29dbb140c`。沿真实 StartupPatchComposition → DiplomacyModuleServices → DiplomacyModule → DiplomacyModuleComposition → WorldDiplomacyBehavior 注册与战役 RegisterEvents 检查，完整未改注册/事件/日志方法的受控复现中 6 个目标仅成功 5 个，总完成标记却为 true；真实战役注册与显式重试均仍为 6 次尝试，缺失的共享记忆 postfix 永久不补。证据 `artifacts/tests/world-diplomacy-patch-repro/run-7034d4ff0a85465889efc03a5f2d130b/run.log`，exit1；不是用户实机故障归因。
+- 修复仅归本 owner：成功返回的 Harmony.Patch 才将目标加入进程级 HashSet，缺失目标/类型或安装异常保留未完成状态；全部本 owner 目标完成后才发布总标记。真实 RegisterEvents 在原九个事件监听之后补失败项，已成功目标不重复安装；补装构造异常不阻断事件注册。缺失 VM/成员不再输出整组成功日志。不新增 hook、不改外交业务/三渠道默认入口/存档/外部 API/精灵 owner。
+- 频率仅启动与战役 RegisterEvents；正常完成后 bool fastpath，不在 Tick 重试。缓存只存少量固定 MethodBase 元数据，不持有 Hero/Agent，不增加全世界扫描、后台读取或存档数据。
+- 新 runner 直接抽取完整未改的生产 RegisterHarmonyPatches/RegisterEvents/Log/去重 helper 与状态字段，游戏/Harmony/logger/sprite 叶受控，非整 World 类或真实游戏。修前 18 场景 / 66 已通过检查 / 14 失败，red `artifacts/tests/world-diplomacy-patch-registration/run-7f5f59232c5e49ee83f8ddb71aa044b9`；修后同断言最终 18 场景 / 315 检查 / 0 失败，green `run-844f63b5c4b74e0681a86c75598cd47d`。覆盖每个受控目标、构造失败、迟到 VM/成员、反复失败、日志异常、九事件顺序/owner、部分成功去重；测试显式 .NET 10，默认 net8 未验。
+- 既有完整直接外交类/真实 CLR ModuleInitializer 18 检查再跑 PASS：`artifacts/tests/diplomacy-patch-regression-continuation/run-08f8e094f33b42479e0cef1f6035610e`。历史 inverse/适配器夹具失败不刷新改绿；12 源码锚点在产品修订/working-tree 均 PASS，定位与真实消费者见[同一代码范围图](architecture/af-framework-code-scope.md#refactor-wiring-debug-20261011)。
+- 原统一脚本完整入口 Debug exit0；仅清理已批准的两个具名产物目录，预检祖先/目标树无 reparse。1.3.15.110062 / 1.4.6.115628 两实现各 348 warning / 0 error，Bootstrap/probe 各 0 warning / 0 error；两实际 DLL 的 Coup registration smoke 与 memory assertions=20 均 PASS。最终 1.3 SHA `afbe43f65c6fe98906369c6495480deff4572bb0b5d8aee5ad7591018fc6cc8d`，1.4 SHA `7310d688424f4660170e62abe19438dce17c4029c63e654ad386e15857ab935e`；marker/API/flavor/PDB/门禁哈希复核通过，9 个候选产物另存本地证据目录，不部署。
+- 构建源为 `de1c9bcc18c260986e71c05b107789c9aab1c63b` 加当时工作树候选，已包含另一任务的配置/路径/部署脚本 WIP；1926 个已跟踪相关源码/脚本输入哈希在构建前后未变，World owner 哈希与最终专项一致。不将组合构建冒称干净产品提交 `aba208e8` 单独重建或其他任务专项验收，后续并行编辑不在本次收据覆盖内。总证据 `artifacts/tests/world-diplomacy-unified-build/run-ecc750db9c3244a1b41b12f589642aa2/{invocation.json,run.log,verified-receipt.json,product-commit.json,code-map.json}`；产品提交仅本 owner 与两个新测试文件，其他作者源码/测试/台账改动保留。
+- 本有限包离线退出门完成，未 Stage/部署/推送/打包、实机、玩家存档或全仓验收。精灵 owner 内部安装/异常吞咽仍未由本包修复，测试只覆盖其外层抛错时不重复本 owner hook；不承诺所有外交/UI 接线已正确。
 
 ### 保留的排查边界与失败
 
 - 当前适配器 runner 在实际断言前因生成夹具缺 `WorldBulletinParticipant` 报 CS0246；证据 `artifacts/tests/wiring-adapter-current-20261011/run-f27a5b5bd67e4c3b8a466792127a04e7/wrapper.log`。J17 历史 inverse gate 的 `Unreviewed J17 current owner: WarStats/AfWarStatsBehavior.cs` 仍失败；没有刷新 hash、删断言或把测试漂移认作生产断线。
-- 三个历史 Harmony 声明候选（外交 DeclareWar/MakePeace 与 Vassalage NewLogEntryAdded）仍未找到直接安装入口，但已有历史 R07 登记，不在本轮擅自启用；不据此宣布当前三项功能缺失。`WorldDiplomacyBehavior.RegisterHarmonyPatches :203–272` 的多 hook 预置完成标记仍是待复现风险，部分成功后的去重责任不同，未照搬单 hook 修复。
-- 实机、用户原故障、真实模型、玩家存档和全仓接线未验。不能宣称重构引入了已确认问题，也不宣称“全部接好了”。当前切片回退只用产品 `8097f599` 的 focused inverse；不 hard reset、不改写历史、不回滚其他作者。
+- 三个历史 Harmony 声明候选（外交 DeclareWar/MakePeace 与 Vassalage NewLogEntryAdded）仍未找到直接安装入口，但已有历史 R07 登记，不在本轮擅自启用；不据此宣布当前三项功能缺失。前切片登记的 WorldDiplomacy 多 hook 预置完成风险已由上方续查复现、修复并替代该待复现状态；部分成功去重没有照搬单 hook 修复。
+- 实机、用户原故障、真实模型、玩家存档和全仓接线未验。不能宣称重构引入了已确认问题，也不宣称“全部接好了”。各切片回退仅针对对应产品 `8097f599` 或 `aba208e8` 做 focused inverse；不 hard reset、不改写历史、不回滚其他作者。
 
 <a id="policy-effect-bounded-retrieval-20261010"></a>
 ## 政策效果检索两片重构（2026-10-10，OFFLINE_VERIFIED_WITH_BASELINE_FAILURES）

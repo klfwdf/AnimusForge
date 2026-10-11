@@ -11,6 +11,18 @@
 | `src/AF.GameAdapter.Bannerlord/Composition/SceneExternalPromptCaptureAdapter.cs:59–68`；`src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.PromptPreparation.cs:177–181`（未改） | Scene/Native 共享捕获与 Courier 仍调用同一 BuildShoutPromptContextForExternal；这里只核对消费者坐标，不将其当成三渠道完整验收 |
 | `tests/modules/AF.Module.Diplomacy/DiplomacyPatchRegistrationTests/Program.cs:33–79`；Main | 链接完整生产类和实际 CLR ModuleInitializer，18 项失败恢复/成功去重检查；Harmony、game 和 logging 叶受控，默认 net8 未验，本机显式 net10 |
 
+#### 续查：世界外交多 hook 部分失败恢复
+
+产品 `aba208e82aadd0f54e75ac125863f9e29dbb140c`；12 锚点 `artifacts/tests/world-diplomacy-unified-build/run-ecc750db9c3244a1b41b12f589642aa2/code-map.json` 双模式通过。详细 red/green、组合工作树构建身份和未覆盖责任仍归上述唯一主台账，不将锚点或 Coup gate 当成实机外交验收。
+
+| 一基范围 / 符号 | owner、实际消费者与覆盖边界 |
+| --- | --- |
+| `src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.cs:103,212–302,304–310`；RegisterHarmonyPatches / ApplyHarmonyPatchOnce | 按成功目标缓存，缺失/失败不发布全完成；只在启动/战役注册补失败项，成功不重复。少量 MethodBase 元数据，无 Tick/全表扫描 |
+| 同文件 `158–179`；RegisterEvents | 原九监听和 owner 身份保持；监听后补装，构造失败隔离。非重排生命周期/新后台重试 |
+| 同文件 `995–1029`；Patch_BuildSharedDiplomacyMemory_Postfix（未改） | 仍向共享 prompt Extras 追加 DiplomacyConversationBridge 记忆；只修安装接线，不改变三渠道记忆内容或执行语义 |
+| `src/AF.GameAdapter.Bannerlord/Composition/StartupPatchComposition.cs:510` → `src/bridges/Diplomacy/DiplomacyModuleServices.cs:12` → `src/modules/AF.Module.Diplomacy/Adapters/DiplomacyModule.cs:21` → `DiplomacyModuleComposition.cs:14`（均未改） | 真实启动安装消费者；战役 `CampaignComposition.cs:47` → Services.Register → Composition.Register `:9–13` 添加真实 World owner，不擅自启用历史孤儿补丁 |
+| `tests/modules/AF.Module.Diplomacy/WorldDiplomacyPatchRegistrationTests/run.py:17–69`；`Program.cs:54–116` | 完整真实注册/事件/日志/helper 声明回放，18 场景/315 检查；记录型叶受控、非完整 World 类/真实 Harmony。精灵 owner 内部实现、外交机制/玩家档和实机未验 |
+
 <a id="tts-agent-plan-20261011"></a>
 ### Agent Plan：HTTP TTS 路由与实际消费者
 
