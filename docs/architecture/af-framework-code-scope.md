@@ -1,3 +1,16 @@
+<a id="refactor-wiring-debug-20261011"></a>
+### 最新源码接线排查：外交补丁注册失败恢复
+
+产品 `8097f59924705e8e2de2d2ba85f2cf716371dfba`；本地八锚点 `artifacts/tests/wiring-debug-final-20261011/run-21bf27f91e3e40b0b0949206f142f686/code-map.json` 在产品修订与 working-tree 均通过。详细 red/green、双实现/Bootstrap/双 Coup 证据、原 gate 失败及未覆盖责任集中在[唯一主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#refactor-wiring-debug-20261011)，本条不替代其他产品验收。
+
+| 一基范围 / 符号 | owner、消费者与覆盖边界 |
+| --- | --- |
+| `src/modules/AF.Module.Diplomacy/Direct/DiplomacyBehavior.cs:30–33,35–52,54–59`；ModuleInit / ApplyGlobalPatchesOnce / RegisterEvents | 唯一生产改动：安装成功后才设完成标记；首次安装失败保留战役注册重试，成功日志失败不重复安装。无 Tick/全量扫描/新生命周期入口 |
+| 同文件 `75–90`；Patch_BuildDiplomacyContext_Postfix（未改） | 既有共享 prompt 追加外交上下文；规则内容与执行语义保留，受控注册回归不证明真实 Harmony 或实机 prompt 成功 |
+| `src/modules/AF.Module.Diplomacy/Adapters/DiplomacyModuleComposition.cs:12`（未改） | 战役装配仍添加真实 DiplomacyBehavior，进而调用 RegisterEvents，不为修复启用历史孤儿补丁 |
+| `src/AF.GameAdapter.Bannerlord/Composition/SceneExternalPromptCaptureAdapter.cs:59–68`；`src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.PromptPreparation.cs:177–181`（未改） | Scene/Native 共享捕获与 Courier 仍调用同一 BuildShoutPromptContextForExternal；这里只核对消费者坐标，不将其当成三渠道完整验收 |
+| `tests/modules/AF.Module.Diplomacy/DiplomacyPatchRegistrationTests/Program.cs:33–79`；Main | 链接完整生产类和实际 CLR ModuleInitializer，18 项失败恢复/成功去重检查；Harmony、game 和 logging 叶受控，默认 net8 未验，本机显式 net10 |
+
 <a id="tts-agent-plan-20261011"></a>
 ### Agent Plan：HTTP TTS 路由与实际消费者
 
