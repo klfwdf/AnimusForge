@@ -45,7 +45,7 @@ internal sealed partial class WorldDiplomacyOrchestration
          || IsPlayerDiplomacyDocument(ResolveDocument(job.SourceDocumentId))
          || WorldDiplomacyPlayerApplication.InvolvesPlayer(null, ResolveRound(job.RoundId), _host.IsPlayerAffiliatedParty));
     private bool IsDirectPlayerSchedulingJob(WorldDiplomacyJob job) => job != null &&
-        (IsPlayerDiplomacyJob(job)
+        (IsOralDeclarationJob(job) || IsPlayerDiplomacyJob(job)
          || ((job.Kind == "analyze" || job.Kind == "round_plan") && ResolveDocument(job.DocumentId)?.IsPlayerAuthored == true)
          || (job.Kind == "generate" && (ResolveRound(job.RoundId)?.PlayerResponses?.Any(x => x != null
              && x.Status == "pending" && x.KingdomId == job.AuthorKingdomId

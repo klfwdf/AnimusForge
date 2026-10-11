@@ -74,7 +74,7 @@ internal sealed partial class WorldDiplomacyOrchestration
     internal string BuildOralArrangementContext(string rulerId, string actor)
     {
         if (!DialogueRulerIsCurrent(actor, rulerId) || _host.IsPlayerParty(actor)) return "";
-        var body = new StringBuilder("【口头外交与正式宣言】\n明确答应才构成发文约定；口头同意先转为你的正式宣言。新事项或修改条款开独立回合；回应原案必须绑定宣言及动作。玩家宣言只能由玩家亲自发布。\n");
+        var body = new StringBuilder("【口头外交与正式宣言】\n明确答应才构成发文约定；口头同意先转为你的正式宣言。新事项或修改条款开独立回合；回应原案必须绑定宣言及动作。已与玩家国王明确谈妥的双边协议由你的宣言发布时兑现，无需玩家再发接受宣言；第三国未同意的事项仍是提案。玩家宣言只能由玩家亲自发布。内部约定ID、状态、技术原因和系统回执不得写进你的台词。\n");
         body.AppendLine("你代表的王国ID=" + actor + "；玩家所属王国ID=" + _host.PlayerKingdomId());
         var offers = GetLiveRounds().Where(IsLiveRound).SelectMany(x => x.PendingOffers ?? new List<WorldDiplomacyRoundOffer>())
             .Where(x => x != null && x.Status == "open" && x.TargetKingdomId == actor && DialogueDocumentKnown(actor, x.SourceDocumentId)).ToList();
@@ -202,6 +202,11 @@ internal sealed partial class WorldDiplomacyOrchestration
             Action = request.Action, Move = request.Move, Terms = WorldDiplomacyDialogueTerms.From(request.Terms),
             RoundId = round.RoundId, SourceDocumentId = source?.DocumentId ?? "", SourceActionId = source?.ActionId ?? "",
             CreatedDay = _host.CurrentDay(), Status = "accepted" };
+        if (request.Move == DialogueDiplomaticMove.NewMatter && _host.IsPlayerParty(request.TargetKingdomId)
+            && DialogueHost?.IsPlayerRuler(_host.PartyRulerId(request.TargetKingdomId)) == true
+            && request.Origin != null && !string.IsNullOrWhiteSpace(request.Origin.PlayerText)
+            && !string.IsNullOrWhiteSpace(request.Origin.NpcText))
+            arrangement.ConfirmedPlayerRulerId = _host.PartyRulerId(request.TargetKingdomId);
         Storage.DialogueArrangements.Add(arrangement);
         if (previous != null) SupersedeDialogueArrangement(previous, arrangement, request.RevisionReason);
         RecordDialogueArrangementFact(arrangement, "consent", "我已明确答应就" + _host.PartyNameOrEmpty(ResolveDialogueParty(request.TargetKingdomId))
@@ -215,6 +220,8 @@ internal sealed partial class WorldDiplomacyOrchestration
         var item = Storage.DialogueArrangements?.FirstOrDefault(x => x.ArrangementId == arrangementId && x.Version == version);
         if (!CanInvalidateDialogueArrangement(item)) return;
         item.Status = "cancelled"; item.Reason = reason ?? "cancelled";
+        foreach (var job in Storage.Jobs.Where(x => x.DialogueArrangementId == item.ArrangementId
+            && x.DialogueArrangementVersion == item.Version).ToList()) RemoveJob(job.JobId);
         var cancelledDocument = ResolveDocument(item.DocumentId);
         if (cancelledDocument != null)
         {
@@ -239,7 +246,8 @@ internal sealed partial class WorldDiplomacyOrchestration
             if (!HasCurrentDiplomaticRulerMemorySnapshot(ResolveDialogueParty(item.ActorKingdomId), item.RulerId))
                 CancelUnpublishedCommitmentWork(item.ArrangementId, item.Version, "original_ruler_no_longer_authorized");
         foreach (var item in (Storage.DialogueArrangements ?? new List<WorldDiplomacyDialogueArrangement>())
-            .Where(x => x.Status == "accepted" || (x.Status == "deferred" && !x.ExplicitlyDeferred)).Take(4).ToList()) PublishDialogueArrangement(item);
+            .Where(x => (x.Status == "accepted" || (x.Status == "deferred" && !x.ExplicitlyDeferred))
+                && x.GenerationRetryAfterDay <= _host.CurrentDay()).Take(4).ToList()) PublishDialogueArrangement(item);
         foreach (var item in Storage.DialogueArrangements ?? Enumerable.Empty<WorldDiplomacyDialogueArrangement>())
         {
             if (item.Status != "published") continue;
@@ -283,59 +291,15 @@ internal sealed partial class WorldDiplomacyOrchestration
 
     private void PublishDialogueArrangementCore(WorldDiplomacyDialogueArrangement item)
     {
-        if (!IsCurrentDialoguePublicationWork(item)) return;
-        var actor = ResolveDialogueParty(item.ActorKingdomId); var target = ResolveDialogueParty(item.TargetKingdomId);
-        if (!HasCurrentDiplomaticRulerMemorySnapshot(actor, item.RulerId))
-        { CancelUnpublishedCommitmentWork(item.ArrangementId, item.Version, "original_ruler_no_longer_authorized"); return; }
-        var round = ResolveRound(item.RoundId);
-        if (!IsLiveRound(round)) { CancelUnpublishedCommitmentWork(item.ArrangementId, item.Version, "round_closed_before_publication"); return; }
-        string intent = DialogueIntent(item.Action);
-        bool response = item.Move == DialogueDiplomaticMove.AcceptProposal || item.Move == DialogueDiplomaticMove.RejectProposal;
-        if (response)
-        {
-            var batch = QueryAnswerableProposals(item.RulerId, item.ActorKingdomId, item.TargetKingdomId, item.Action,
-                new DialogueProposalReference(item.RoundId, item.SourceDocumentId, item.SourceActionId));
-            if (batch.Proposals.Count != 1 || !batch.Proposals[0].IsOpen || !batch.Proposals[0].IsKnownByRuler
-                || !batch.Proposals[0].IsCurrentlyExecutable)
-            { CancelUnpublishedCommitmentWork(item.ArrangementId, item.Version, "original_proposal_no_longer_executable"); return; }
-            intent = ProposalIntentToResponseIntent(intent, item.Move == DialogueDiplomaticMove.AcceptProposal);
-        }
-        if (TryGetDiplomaticStateViolation(intent, actor, target, out string block)
-            || !ValidateFormalTreatyTerms(intent, item.Terms.ToTerms(), actor, target, out block))
-        { CancelUnpublishedCommitmentWork(item.ArrangementId, item.Version, block); return; }
-        // Terms are already consented to. Rendering a formal declaration is
-        // deterministic: no second model can silently rewrite the agreement.
-        var document = ResolveDocument(item.DocumentId);
-        if (document == null)
-        {
-            document = CreateDocument(actor, target, "外交约定正式宣言", BuildDialogueDeclarationBody(item, intent),
-                "dialogue_commitment", false, response, round.RoundId);
-            item.DocumentId = document.DocumentId;
-            document.DialogueArrangementId = item.ArrangementId; document.DialogueArrangementVersion = item.Version;
-            document.Intent = intent; document.Commitment = DefaultCommitmentForIntent(intent);
-            document.TreatyTerms = item.Terms; document.PeaceTerms = item.Terms.ToPeaceTerms();
-            document.RequiresResponse = IsProposalIntent(intent); document.AnalysisStatus = "success";
-            document.RespondingToOfferDocumentId = item.SourceDocumentId;
-            document.RespondingToOfferActionId = item.SourceActionId; document.SourceDocumentId = item.SourceDocumentId;
-            AddDocument(document); round.RootDocumentId = FirstNonEmpty(round.RootDocumentId, document.DocumentId);
-        }
-        if (document.IsReadyForPublication) { item.Status = "published"; return; }
-        try
-        {
-            ProcessAnalyzedDocument(document, document.Intent, document.Commitment, document.RequiresResponse, "firm", 1f);
-            item.Status = document.IsReadyForPublication ? (document.ChangedDiplomaticState ? "executed" : "published") : "cancelled";
-            item.Reason = document.MechanicalResult ?? document.AnalysisStatus;
-            if (item.Status == "cancelled") RecordDialogueArrangementFact(item, "publication_failed", "此前外交发文未能完成，原因：" + item.Reason);
-            else DeliverDialogueDeclarationToCounterparty(document, target);
-        }
-        catch (Exception ex)
-        {
-            // A published artifact is never replayed to retry a memory or
-            // propagation write. Those have their existing recoverable owners.
-            item.Status = document.IsReadyForPublication ? "published" : "deferred";
-            item.Reason = Limit(ex.Message, 180); _host.Log("dialogue publication " + item.Status + " id=" + item.ArrangementId);
-            if (item.Status == "deferred") RecordDialogueArrangementFact(item, "technical_delay", "此前外交发文暂因技术故障延期，尚未发布。原因：" + item.Reason);
-        }
+        if (!TryValidateOralDeclarationWork(item, out _)) return;
+        if (Storage.Jobs.Any(x => x.DialogueArrangementId == item.ArrangementId
+            && x.DialogueArrangementVersion == item.Version)) return;
+        var job = new WorldDiplomacyJob { JobId = _host.NewId("oral_declaration"), Kind = "generate",
+            AuthorKingdomId = item.ActorKingdomId, TargetKingdomId = item.TargetKingdomId,
+            RoundId = item.RoundId, ExchangeId = item.RoundId, SourceDocumentId = item.SourceDocumentId,
+            DialogueArrangementId = item.ArrangementId, DialogueArrangementVersion = item.Version,
+            IsResponse = item.IsWithdrawal || item.Move != DialogueDiplomaticMove.NewMatter, Priority = 95, CreatedDay = _host.CurrentDay() };
+        if (RebuildOralDeclarationJob(job)) EnqueueJob(job);
     }
 
     // The counterparty negotiated this face to face, so its court knows the declaration at once instead of
@@ -353,31 +317,6 @@ internal sealed partial class WorldDiplomacyOrchestration
             () => _host.IsPlayerAffiliatedParty(target), () => ProcessCourtArrival(target, document));
         InvalidateDialogueIndex();
         _host.Log("dialogue declaration delivered to counterparty document=" + document.DocumentId + " receiver=" + target);
-    }
-
-    private string BuildDialogueDeclarationBody(WorldDiplomacyDialogueArrangement item, string intent)
-    {
-        string actor = _host.PartyNameOrEmpty(ResolveDialogueParty(item.ActorKingdomId)), target = _host.PartyNameOrEmpty(ResolveDialogueParty(item.TargetKingdomId));
-        string act = item.Action switch { DialogueDiplomaticAction.Peace => "停战与和平", DialogueDiplomaticAction.Alliance => "缔结同盟",
-            DialogueDiplomaticAction.Trade => "缔结贸易协定", DialogueDiplomaticAction.DeclareWar => "宣战",
-            DialogueDiplomaticAction.BreakAlliance => "解除同盟", DialogueDiplomaticAction.CancelTrade => "终止贸易协定",
-            DialogueDiplomaticAction.Annexation => "王国并入", DialogueDiplomaticAction.Tributary => "朝贡臣属条约",
-            DialogueDiplomaticAction.Garrison => "驻军臣属条约", _ => "完全臣属条约" };
-        var body = new StringBuilder(actor + "统治者正式向" + target + "宣布：");
-        body.Append(intent.StartsWith("accept_") ? "我方接受" : intent.StartsWith("reject_") ? "我方拒绝" : IsProposalIntent(intent) ? "我方提出" : "我方决定");
-        body.Append(act + "。");
-        if (item.Move != DialogueDiplomaticMove.NewMatter) body.Append("贵国原案所列全部条款，本次答复依该原案作出。");
-        body.Append(DescribeDialogueTerms(item.Terms.ToTerms()));
-        if (item.Action == DialogueDiplomaticAction.Annexation)
-            body.Append("并入国放弃独立王权，全部家族及其原有领地归入接收国，原王国解散。");
-        else if (item.Action == DialogueDiplomaticAction.Tributary)
-            body.Append("臣属国保留外交和军事自主，按既有朝贡规则纳贡，宗主国承担庇护义务。");
-        else if (item.Action == DialogueDiplomaticAction.Garrison)
-            body.Append("臣属国接受宗主军事号令并履行共同战争义务，保留条约允许的外交表达与独立度规则。");
-        else if (item.Action == DialogueDiplomaticAction.Vassal)
-            body.Append("臣属国外交和军事由宗主控制，并按既有完全臣属规则履行贡赋义务。");
-        if (IsProposalIntent(intent)) body.Append("以上为正式提案，须由对方通过正式宣言接受后生效。");
-        return body.ToString();
     }
 
     private string DescribeDialogueTerms(DialogueDiplomaticTerms terms)

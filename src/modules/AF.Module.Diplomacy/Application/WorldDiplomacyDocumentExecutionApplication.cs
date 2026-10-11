@@ -330,6 +330,7 @@ internal static class WorldDiplomacyDocumentExecutionApplication
             }
 			string proposalIntent = WorldDiplomacyIntentVocabulary.ResponseIntentToProposalIntent(intent);
 			if (!command.IsPlayerAuthored && !string.IsNullOrWhiteSpace(proposalIntent)
+				&& !(orchestration is WorldDiplomacyOrchestration oralOwner && oralOwner.HasConfirmedOralPlayerAgreement(document))
 				&& !WorldDiplomacyRoundLifecycleRules.HasOpenProposalForDocument(document, author, target, proposalIntent, port.ResolveRound))
 			{
 				orchestration.SuppressInvalidDocumentBeforePropagation(document, "offer_ownership_guard");

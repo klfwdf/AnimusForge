@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using AnimusForge.DiplomacyDialogue;
 
 using AnimusForge.Refactor.Domain;
 using static AnimusForge.Refactor.Domain.WorldDiplomacyIntentVocabulary;
@@ -13,7 +14,7 @@ namespace AnimusForge;
 
 internal sealed partial class WorldDiplomacyOrchestration
 {
-    internal string ControlOralDiplomaticCommitment(string rulerId, string actorId, string payload)
+    internal string ControlOralDiplomaticCommitment(string rulerId, string actorId, string payload, DialogueInteractionOrigin capturedOrigin = null)
     {
         var owner = this;
         if (owner == null || !_host.WorldDiplomacyEnabled() || !DialogueRulerIsCurrent(actorId, rulerId) || _host.IsPlayerParty(actorId)) return "";
@@ -35,22 +36,22 @@ internal sealed partial class WorldDiplomacyOrchestration
             var round = owner.ResolveRound(item.RoundId);
             var offer = round?.PendingOffers?.FirstOrDefault(x => x.SourceDocumentId == item.DocumentId && x.Status == "open");
             if (source == null || offer == null) return "原案已生效、关闭或不可撤回，不能撤销已经发生的外交行动。";
-            var document = owner.CreateDocument(actorId, ResolveDialogueParty(item.TargetKingdomId), "撤回外交提案",
-                source.AuthorKingdomName + "王庭正式宣布撤回此前向" + source.TargetKingdomName + "提出的" + IntentLabel(source.Intent)
-                + "。对方尚未正式接受，原提案自此不再开放。", "dialogue_commitment", false, true, round.RoundId);
-            document.Intent = "withdraw_offer"; document.Commitment = "binding";
-            document.RespondingToOfferDocumentId = source.DocumentId; document.RespondingToOfferActionId = offer.SourceActionId;
-            document.SourceDocumentId = source.DocumentId; document.AnalysisStatus = "success";
-            owner.AddDocument(document);
-            owner.ProcessAnalyzedDocument(document, document.Intent, document.Commitment, false, "firm", 1f);
-            if (offer.Status != "withdrawn") return "撤回宣言未完成，原案仍以当前实际状态为准。";
-            item.Status = "withdrawn"; item.Reason = reason;
+            QueueOralWithdrawal(item, source, offer, reason, capturedOrigin);
+            item.Reason = reason;
         }
         else if (item.Status == "accepted" || item.Status == "deferred")
         {
             if (state == "cancelled") owner.CancelUnpublishedCommitmentWork(id, item.Version, reason);
-            else if (state == "deferred") { item.Status = "deferred"; item.Reason = reason; item.ExplicitlyDeferred = true; }
-            else if (state == "accepted") { item.Status = "accepted"; item.Reason = reason; item.ExplicitlyDeferred = false; owner.PublishDialogueArrangement(item); }
+            else if (state == "deferred")
+            {
+                item.Status = "deferred"; item.Reason = reason; item.ExplicitlyDeferred = true;
+                foreach (var job in Storage.Jobs.Where(x => x.DialogueArrangementId == item.ArrangementId).ToList()) RemoveJob(job.JobId);
+            }
+            else if (state == "accepted")
+            {
+                item.Status = "accepted"; item.Reason = reason; item.ExplicitlyDeferred = false;
+                item.GenerationRetryAfterDay = -1; owner.PublishDialogueArrangement(item);
+            }
             else return "约定处置未提交：状态无效。";
         }
         else return "该约定已有正式结果，不能通过私人谈话回滚。";

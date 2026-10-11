@@ -140,6 +140,7 @@
   </ItemGroup>
 <ItemGroup><Compile Include="../../../../src/modules/AF.Module.Diplomacy/Domain/WorldDiplomacyEventRules.cs" /><Compile Include="../../../../src/modules/AF.Module.Diplomacy/Domain/WorldDiplomacyGeographyRules.cs" /><Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyNativeDecisionApplication.cs" /><Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyBattleApplication.cs" /><Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyGeographyApplication.cs" /></ItemGroup><ItemGroup><Compile Include="../../../../src/AF.Contracts/Internal/WorldDiplomacyDocumentReadCommandContracts.cs" /></ItemGroup><ItemGroup>
     <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.Dialogue.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.OralGeneration.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.DialogueControl.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.DialogueIndex.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.DialogueMemory.cs" />

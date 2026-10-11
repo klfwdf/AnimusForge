@@ -20,7 +20,7 @@ public sealed partial class WorldDiplomacyBehavior
     public static string ControlOralDiplomaticCommitment(Hero npc, string payload)
     {
         return Campaign.Current?.GetCampaignBehavior<WorldDiplomacyBehavior>()?._orchestration
-            .ControlOralDiplomaticCommitment(npc?.StringId, npc?.Clan?.Kingdom?.StringId, payload) ?? "";
+            .ControlOralDiplomaticCommitment(npc?.StringId, npc?.Clan?.Kingdom?.StringId, payload, DiplomacyDialogueSourceScope.Current) ?? "";
     }
     public static string BuildOralArrangementContext(Hero npc)
     {
