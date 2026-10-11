@@ -1,8 +1,8 @@
-# 当前交接：最新源码接线 debug（2026-10-11，ONE_FIX_OFFLINE_VERIFIED / AUDIT_INCOMPLETE）
+# 当前交接：最新源码接线 debug（2026-10-11，TWO_FIXES_OFFLINE_VERIFIED / AUDIT_INCOMPLETE）
 
-- 按用户要求先快进拉取 `origin/main` 至 `14ce14ae`，保留当前 `delivery/policy-bounded-retrieval-20261010` 分支。检查点 `492ca267`；本地产品 `8097f599` 修外交补丁首次安装失败却永久跳过战役重试的问题，成功安装仍去重。尚未证明用户实机故障由此触发，未擅自启用历史孤儿补丁。
-- 18 项完整生产类注册回归及八源码锚点通过。首次隔离验证后，用户追加允许仅清理两个指定构建产物目录；未改的原统一脚本完整入口复验 exit0，双实现/Bootstrap/双 Coup gate 通过，两实现各 348 warning / 0 error。构建/源码/产物绑定证据归同一台账；历史 J17 gate/适配器夹具失败如实保留。未推送、Stage、部署、实机/玩家存档/全仓验收，不称全部接线修完。
-- [唯一主台账：复现、修复、失败证据与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#refactor-wiring-debug-20261011)；[本轮源码与消费者](docs/architecture/af-framework-code-scope.md#refactor-wiring-debug-20261011)。本地总收据 `artifacts/tests/wiring-debug-final-20261011/run-21bf27f91e3e40b0b0949206f142f686/receipt.json`。本条仅接续当前 debug，以下产品与部署历史保留。
+- 按用户要求先快进拉取 `origin/main` 至 `14ce14ae`，保留当前分支。直接外交产品 `8097f599` 保留；续查检查点 `8b00cb1a`、产品 `aba208e8` 修世界外交多 hook 部分失败却永久标完成的问题：战役注册补失败项，成功目标去重，九监听顺序不变。尚未证明用户实机故障由此触发，未启用历史孤儿补丁。
+- 世界外交完整实际注册/事件声明回放 18 场景/315 检查、直接外交完整类18检查和12源码锚点双模式通过。原统一脚本双实现/Bootstrap/双 Coup gate exit0，两实现各348 warning/0 error；仅清理两个已批准目录。构建绑定当时含另一任务 WIP 的组合工作树，非干净产品提交单独重建或其他任务专项验收；产物与完整收据另存，其他作者改动未纳入本轮提交。
+- [唯一主台账：两处复现、修复、失败与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#refactor-wiring-debug-20261011)；[源码与消费者](docs/architecture/af-framework-code-scope.md#refactor-wiring-debug-20261011)。本轮证据 `artifacts/tests/world-diplomacy-unified-build/run-ecc750db9c3244a1b41b12f589642aa2/verified-receipt.json`。未推送、Stage、部署、打包或实机/玩家存档/全仓验收；精灵独立 owner 与历史 gate 风险保留，不称全部接线修完。
 
 # 当前交接：Agent Plan HTTP TTS 兼容（2026-10-11，DEPLOYED_MANAGED_FILES_VERIFIED / LIVE_PENDING）
 
