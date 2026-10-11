@@ -1,7 +1,22 @@
+<a id="module-runtime-storage-20261011"></a>
+### 缓存、导出、终端设置与恢复备份：恢复模组/Modules 目录
+
+运行时 `2f8edb1f`、编辑器 `bfcdb4da`、部署 `60c9439751a2bfc6298faa3c5e885d77b5493a14`，导入边界 `ad39448de802442171fbc981aa7fe2dbed1c5fc3`；20锚点 `artifacts/tests/module-runtime-20261011/code-map.json` 在记录提交和 working-tree 均通过。本段替代此前缓存“每实例只加载一次”、AppData/双来源与模组不可编辑合同；其他业务/存档和提示词职责不扩大。详见[唯一主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#module-runtime-storage-20261011)。
+
+| 一基范围 / 符号 | 实际 owner、消费者与覆盖边界 |
+| --- | --- |
+| `src/AF.Persistence/AnimusForgeDataPaths.cs:12–22,25–38,46–57`；ResolveRoot / FindModuleRoot / ValidatePath | 复用纯内部助手校验当前模组及固定子目录；游戏根仍由原 ModulePaths 选定，编辑器仅启动父链定位；无环境变量、AppData或CWD存储回退，不新增公开 API |
+| `src/AF.Persistence/PlayerExportsStore.cs:21–29,47–75,78–84,119–143,193–213`；GetModuleRootPath / GetImportFolders / BeginExportPackage / ResolveImportFolderPath / ReadJson | 开局数据库菜单、开发者导入/导出、王国档案仍消费唯一 owner；单来源目录，列举/最新选择跳过reparse包，JSON读取验证祖先及文件；绝对选择不得越出模组 PlayerExports；旧包候选/并发校验/恢复事务仍为未改的 PlayerExportsPackageExport，Recovery与活动包分离 |
+| `src/AF.GameAdapter.Bannerlord/Configuration/Mcm/DuelSettings.cs:5243–5297,5299–5345,5348–5363`；EnsureModelDropdownCacheHydrated / PersistModelDropdownCacheSnapshot / GetModelDropdownCachePath / ReadModelDropdownCacheSnapshot | 五模型既有 MCM getter 检查单文件时间；较新mtime才解码/合并，读取失败保留当前选项。保存同目录候选，严格UTF-8、坏原件拒绝覆盖；无新增Tick/全量扫描，预设与模型名绑定由原逻辑保留 |
+| `src/modules/AF.Module.UI/Settings/AnimusForgeTerminalSettings.cs:103–106,109–121,124–181`；GetSettingsPath / TryLoadSettingsFile / TrySaveSettingsFile / Save | 原终端热键、地图按钮及开关读写模组 ModuleData；旧两bool类型/字段不变，防锁死与保存失败内存回退保留；实际 DLL 冷加载、坏原件、只读文件/目录夹具，不代表Gauntlet实机 |
+| `tools/PlayerExportsEditor/src/PlayerExportsEditor.Core/PlayerExportsService.cs:11–29,79–91,214–253,436–456`；FindDefaultPlayerExportsRoot / LoadPackage / ValidateEditablePlayerExportsRoot / BuildPackageInfo；`JsonFileStore.cs:19–26,56–101`；ReadUtf8 / SaveUtf8WithBackup / CreateBackup | 独立编辑器共享纯路径合同，不加载AF/TaleWorlds；模组包可编辑，旧用户根/越界/reparse拒绝；原JSON备份和软删除保持，读取/候选/备份路径防reparse。WinForms编译与合成九步通过，真实界面未启动 |
+| `scripts/build/deploy_module.ps1:536–696`；Invoke-ManagedStageDeployment | 安装事务内时间合并，仅Stage文件；保留额外包、已有提示词/终端，排除Logs/Recovery；Modules本地备份、哈希/mtime重验、原子替换、字节与时间回滚及中断阻断。源码/Stage不反向同步，真实安装/ZIP未运行 |
+| `tools/af2_migrate.py:605–619`；main | argparse后、读取LOCALAPPDATA之前退役所有四类激活/清点入口；保留历史函数和证据，没有执行迁移 |
+
 <a id="module-custom-prompts-20261011"></a>
 ### 自定义提示词：恢复模组内单目录合同
 
-产品 `45c630666d160e48d54c360557f053e1e762b15f`，部署保护 `ebb29ac5`；16 锚点 `artifacts/tests/module-prompts-20261011/code-map.json` 已验证记录提交与 working-tree。详细 red/green、组合候选、原失败和未覆盖责任见[唯一主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#module-custom-prompts-20261011)，不替代实机验收。
+产品 `45c630666d160e48d54c360557f053e1e762b15f`，部署保护 `ebb29ac5`；16 锚点 `artifacts/tests/module-prompts-20261011/code-map.json` 已验证当时记录提交与 working-tree。下表的缓存/导出不变边界及部署坐标已由[本轮恢复](#module-runtime-storage-20261011)替代，提示词行为仍保持。详细 red/green、组合候选、原失败和未覆盖责任见[唯一主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#module-custom-prompts-20261011)，不替代实机验收。
 
 | 一基范围 / 符号 | owner、消费者与覆盖边界 |
 | --- | --- |
