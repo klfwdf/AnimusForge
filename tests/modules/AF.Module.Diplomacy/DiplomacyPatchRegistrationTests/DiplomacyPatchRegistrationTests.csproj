@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <DiplomacyPatchTestFramework Condition="'$(DiplomacyPatchTestFramework)' == ''">net8.0</DiplomacyPatchTestFramework>
+    <TargetFramework>$(DiplomacyPatchTestFramework)</TargetFramework>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+    <NuGetAudit>false</NuGetAudit>
+    <DefaultItemExcludes>$(DefaultItemExcludes);$(MSBuildProjectDirectory)\bin\**;$(MSBuildProjectDirectory)\obj\**</DefaultItemExcludes>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Direct/DiplomacyBehavior.cs" Link="Production/DiplomacyBehavior.cs" />
+  </ItemGroup>
+</Project>
