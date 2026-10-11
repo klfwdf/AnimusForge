@@ -3,6 +3,7 @@
 - 用户已授权实施；`E:/Mount-Blade-Bannerlord-AnimusForge-mod-main` / `main`，检查点 `140d48924`、产品 `f8ac6c267`。共享消费层不再输出外交系统回执；承诺与撤回进入原 AI 宣言队列，使用交谈素材与锁定动作/条款，失败延期而不生成模板。玩家国王已谈妥双边协议发布兑现，第三国未同意仍按正常提案；旧记录不推定同意。
 - 口头外交专项141、完整外交回放4209、存档分块回放通过；Release 双 API / Bootstrap / 双 Coup 门禁通过，20源码锚点双模式通过。既存 civil-war 分块目录 owner 失配仍 FAIL，已保存基线证据。真实 provider、三渠道 UI/TTS、旧玩家存档未验，未部署、打包或推送。
 - [唯一主台账：证据及边界](docs/animusforge-refactoring-and-repository-reorganization-plan.md#oral-diplomacy-declaration-20261012)；[已核源码地图](docs/architecture/af-framework-code-scope.md#oral-diplomacy-declaration-20261012)。本地总收据 `artifacts/oral-diplomacy-declaration-20261012/verification-receipt.json`；并行设计访谈及其他作者改动保留，本交接不授权其产品实施。
+- 用户后续明确授权推送，`origin/main` 已普通快进至 `46653396f`；仅追加发布记录提交，不改变已验证产品。发布详情归上述台账，最终远端核验归本地 `push-receipt.json`。这条替代上方“未推送”状态；未提交设计文档仍留本地，实机/部署/打包未执行。
 
 # 历史交接：工作区完整安全发布（2026-10-11）
 

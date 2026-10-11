@@ -23,6 +23,11 @@
 - 如需回滚，只为产品提交 `f8ac6c267` 创建 focused inverse，并重新运行受影响回放与双构建；检查点和其他作者提交保留，不 hard reset 或重写历史。本轮尚未进行实机安装，因此没有游戏目录回滚操作。
 - **NOT-RUN**：真实 provider 的写作质量、完整三渠道 UI/TTS 实机、玩家旧 `.sav`、Stage/部署/打包/推送。本地回放能验证接线和所列状态，不承诺模型每次都写出优质文章，也不代表 Bannerlord 所有补丁版本通过实机验收。
 
+### 后续授权推送（2026-10-12，PUSHED）
+
+- 用户随后明确要求推送远端；核实 `main` 与 `origin` 为 `https://github.com/klfwdf/AnimusForge.git`。通过 Windows 已启用的本机代理执行单次 Git 命令，不修改持久网络配置；fetch 后远端为 `474322488`，0 behind / 4 ahead，整个待推送历史仅包含本包检查点、保留最新远端的合并、产品及验证文档，无本地 evidence、构建产物或私有交接文件，净差异空白检查通过。
+- 已普通快进推送 `474322488..46653396f` 至 `origin/main`，push exit0；本条替代上方本轮结束时“推送 NOT-RUN”的状态，其他实机/部署/打包边界不变。未提交的玩家外交设计文档保持本地，未暂存、覆盖或纳入本次发布。随后仅补充本条和 HANDOFF 发布记录；最终远端 SHA 与命令结果保存在本地 `artifacts/oral-diplomacy-declaration-20261012/push-receipt.json`，不上传该收据。
+
 <a id="workspace-safe-publication-20261011"></a>
 ## 2026-10-11 工作区完整安全发布（用户明确授权）
 
