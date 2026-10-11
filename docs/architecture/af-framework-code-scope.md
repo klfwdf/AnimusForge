@@ -1,3 +1,21 @@
+<a id="oral-diplomacy-declaration-20261012"></a>
+### 口头外交：AI 正式宣言、已合意执行与可见输出
+
+产品修订 `f8ac6c267f73839aa81f4bd666635d2c5fa93e7d`；本地 `artifacts/oral-diplomacy-declaration-20261012/code-map.json` 的20锚点在记录修订与 working-tree 两模式 PASS。以下是一基源码范围及真实调用责任；详细证据、既存目录校验失败与实机边界统一归[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#oral-diplomacy-declaration-20261012)。本轮不新增公开 API 或独立 DLL。
+
+| 源码范围 / 符号 | owner、消费者及验证边界 |
+| --- | --- |
+| `src/modules/AF.Module.Diplomacy/Application/DiplomacyOralTagApplication.cs:34–65`；Process | 共享外交标签消费层执行合法标签但删除系统回执，畸形/缺人物/模块不可用/异常不泄露代码；原 NPC 台词保留。通过原 bridge 消费：`Adapters/DiplomacyConversationModuleAdapter.cs:37–42` ProcessDiplomacyTags |
+| `src/modules/AF.Module.Conversation/Channels/Native/NativeConversationGameEffectsRuntime.cs:136–138`；`src/modules/AF.Module.Conversation/Channels/Scene/SceneSpeechEffectController.cs:174–176`；`src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.DomainCommit.cs:82–84` | 三渠道现有消费入口，未单独改变可见历史/TTS规则；共享输出回放通过，真实 UI/TTS 未验 |
+| `src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.Dialogue.cs:169–222,292–304`；SubmitDialogueWork / PublishDialogueArrangementCore | 记录本次玩家/NPC交谈与玩家国王身份，约定版本绑定原 generate 队列；旧记录无确认字段继续正常提案；不立即发布固定模板 |
+| `src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.OralGeneration.cs:42–83,115–158,170–249`；TryValidateOralDeclarationWork / RebuildOralDeclarationJob / CommitOralDeclaration | 国家/统治者/版本/来源/条款重验，复用普通写作合同和配置篇幅，以对话及固定动作拟文；AI改约、短稿、技术正文、坏 JSON 不发布，最早次日重试。网络与游戏叶为离线夹具，不代表真实生成质量 |
+| 同文件 `:241–253,253–267,266–285`；HasConfirmedOralPlayerAgreement / ExecuteConfirmedOralPlayerAgreement / QueueOralWithdrawal | scoped 玩家已合意发布即执行，复用原效果 owner，未归档输入不制造玩家公文；重复/已发布不重放。撤回同样由AI拟文，只撤原开放提案，原案被接受后迟到稿不得撤回 |
+| `src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.DialogueControl.cs:17–64`；ControlOralDiplomaticCommitment；`src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.DialogueAdapter.cs:23` | 显式延期/取消清旧队列、撤回绑定原提案及来源；GameAdapter继续沿现有 scope 提供真实交谈材料 |
+| `src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyOrchestration.Dispatch.cs:48–77`；AdmitCompletion；`WorldDiplomacyOrchestration.Treaties.cs:77–116`；ValidateFormalTreatyDeclaration；`WorldDiplomacyDocumentExecutionApplication.cs:333–335` | 沿既有请求 attempt / generation / 回合 revision / 签名门禁；仅有确认且绑定本篇的玩家协议免原公文 offer 要求，权限与条款检查仍由原 owner 执行；第三国不获得旁路 |
+| `tests/modules/AF.Module.Diplomacy/WorldDiplomacyRoundLifecycle.SmokeTests/OralDeclarationReplay.cs:183–207,226–250`；RunWithdrawal / RunYieldedCompletion | 原案撤回及被接受保护、真实 completion dispatcher 强制异步 yield 后条款/取消/存档变化回放；141专项与4209外交回归不替代 provider、游戏对象和旧玩家sav验收 |
+
+可选 JSON 字段只扩充既有约定/工作记录，严格存档分块 owner、旧键/类型/枚举不变。运行在交谈提交、送出、完成与既有日维护边界，每日维护上限4项及原队列预算/lease保留，无新增 Tick 序列化、轮询或全世界扫描。
+
 <a id="module-runtime-storage-20261011"></a>
 ### 缓存、导出、终端设置与恢复备份：恢复模组/Modules 目录
 
