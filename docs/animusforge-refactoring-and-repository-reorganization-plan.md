@@ -5,6 +5,139 @@
 - 有限范围：共享外交标签消费、口头约定拟文/提交/执行及对应三渠道规则、持久化兼容和离线回放。复用外交请求队列、API、预算、正文篇幅及真实效果端口；不改变构建入口，不部署、打包、推送，不调用收费服务。
 - 退出门：回执不进入可见回复/语音/人物历史；异步拟文确实使用对话素材与锁定条款、禁止模板假成功；已谈妥双边协议只执行一次，第三国提案保持；取消/改约/换国王/读档/迟到结果/失败可恢复边界；受影响专项及官方 1.3/1.4 + Bootstrap 门禁。实机与真实 provider 分层标记 NOT-RUN。
 
+<a id="workspace-safe-publication-20261011"></a>
+## 2026-10-11 工作区完整安全发布（用户明确授权）
+
+- 核实工作区 `E:/AnimusForge-klfwdf` / `delivery/policy-bounded-retrieval-20261010`，原HEAD `8d521ec595e7fd2b9e767ce86393a5da6145ac11`，无未提交/未跟踪的非忽略文件。fetch 后 `origin/main` 仍为 `14ce14ae974a45e5b129d99effa1bd4e2942bab8`，0 behind / 25 ahead；不需要合并，按用户要求直接普通快进推送，不force、不rebase/reset。
+- 发布原工作区全部净变化，41文件；会面护卫 `30e70d37`、模组内提示词 `45c63066`、缓存/导出/终端设置 `2f8edb1f`、编辑器 `bfcdb4da`、部署 `60c94397` 与导入reparse保护 `ad39448d` 均保留。两项外交补丁及其四测试按用户此前要求已inverse，净产品与远端一致，不重复恢复。其他分支/外部工作树不是此次发布对象。
+- 检查25提交全历史的47变更路径，不含明确私有交接 `docs/handoffs/2026-09-11-native-history-snapshot-team-handoff.md`、ignored本地证据、玩家数据或DLL/ZIP/存档；新增行凭据模式扫描无信号（不是完整安全审计），`git diff --check origin/main HEAD` exit0。原checkpoint、inverse和文档行尾修复历史保持，不为美化发布改写历史。
+- 产品/测试/构建相关文件与最终已验证源码 `ad39448d` 完全一致；重新核对既有双API/Bootstrap三产物SHA全部一致，20源码地图锚点 recorded-revision / working-tree 两模式PASS。复用[目录恢复最终离线验收](#module-runtime-storage-20261011)、[提示词专项](#module-custom-prompts-20261011)和[会面护卫专项](#meeting-real-troop-escort-20261011)，没有重新声称全仓测试通过。J15 3365/3364计数基线失败、旧124文件Release Stage缺输入仍保留；实机/游戏UI/玩家存档未验。
+- 仅新增本条发布范围与根HANDOFF摘要；源码、默认资源和构建流程不变。发布前再次核对远端与dirty；普通推送失败或远端推进时停止当前推送并重新诊断，不强行覆盖。实际发布SHA/远端ref及命令结果保存在本地 `artifacts/publication/workspace-sync-20261011-*/receipt.json`，证据不提交。不部署、Stage、打包或写游戏/C盘玩家数据。
+
+<a id="module-runtime-storage-20261011"></a>
+## 缓存、导出、终端设置和部署备份恢复旧目录（2026-10-11，OFFLINE_VERIFIED / LIVE_PENDING）
+
+### 授权、旧行为与退出门
+
+- 用户明确批准完整实施方案；本轮仅工作区，不Stage、部署、打包、推送或实机。实际根 `E:/AnimusForge-klfwdf`，分支 `delivery/policy-bounded-retrieval-20261010`；开工干净基线 `3ced67ccbf8adc88de937c57859b71479828523b`，检查点 `2053aff9`。按验证切片提交：运行时/CLI `2f8edb1f`，编辑器 `bfcdb4da`，安装事务 `60c9439751a2bfc6298faa3c5e885d77b5493a14`；导入reparse边界收尾 `ad39448d`。没有整体回滚、改公开方法签名、存档键、JSON字段/版本或其他作者功能。
+- 8月30日 `b1ce1d2b` / `d4cb1467` 的模型缓存位于模组Logs、PlayerExports由模组持有，旧安装合并按mtime较新优先/同时间已有模组优先；9月5日 `38f07a9d` 的终端设置首次实现使用模组ModuleData。新增导出恢复事务学习旧目录归属，但保留现有候选/并发检测/哈希备份/失败回滚；不恢复旧整目录镜像或反向同步源码。
+- **本条明确替代**[先前提示词任务](#module-custom-prompts-20261011)“缓存、PlayerExports路径不变”的范围及历史AppData/双来源/模组不可编辑合同。已恢复的提示词、模组ONNX、常规日志不变；旧TTS临时目录、Bootstrap日志回退及浏览器安装查找不属于AF用户数据层，本轮不改。真实C盘旧AF文件不读取、不迁移、不删除；这四项忽略 `ANIMUSFORGE_DATA_ROOT`。
+- 退出门为真实DLL路径/刷新/保存/重实例化回读/失败保护，既有PlayerExports与编辑器回放，合成Modules安装合并及回滚/中断，原统一双API/Bootstrap/双Coup门禁与源码坐标。仅允许原明确批准的两个构建清理目录：`E:/AnimusForge-klfwdf/bin/Debug/single_module_artifacts`、`E:/AnimusForge-klfwdf/obj/single_module/Debug`；每次预检路径及reparse，没有扩大清理范围。
+
+### 最终目录与运行责任
+
+| 数据 | 当前合同 |
+| --- | --- |
+| 模型下拉缓存 | 当前模组 `Logs/ModelDropdownCache.json`；移除加载一次永久返回，沿旧mtime门判断；仅既有MCM模型访问入口检查单文件，较新时重读/合并，失败保留当前选项。保存同目录候选校验后原子替换，严格UTF-8及坏原件保护，无新增Tick或全目录扫描 |
+| 游戏及独立编辑器PlayerExports | 当前模组 `PlayerExports`，只列举这一来源；旧C盘包不出现在列表，显式选择也不能越出此根。原游戏候选包事务/并发修改检测和编辑器备份/软删除保留。编辑器启动父链定位合法模组，失败提示手选，不以工作目录/AppData作为存储回退 |
+| 终端开关 | 当前模组 `ModuleData/TerminalSettings.json`；原两个bool类型/字段及缺省值、防锁死、坏原件保护、失败恢复内存旧值保留。严格UTF-8并验证所有祖先/候选/目标路径 |
+| 导出恢复备份 | 当前模组 `Recovery`，与活动PlayerExports分离，不参与导入列表 |
+| 部署恢复备份 | 实际 `Modules/.AnimusForge.Recovery/deploy`，不依赖LOCALAPPDATA，不在活动模组或Stage内；旧C盘记录不读、不用来解锁新事务 |
+
+复用内部 `AnimusForgeDataPaths` 纯路径校验/组合助手，游戏实际模组由既有 `AnimusForgeModulePaths` 选定，编辑器不引用TaleWorlds/AF程序集；删除用户层惰性根和覆盖环境选择，无法定位/不安全/不可写明确失败。迁移CLI在argparse后、读取LOCALAPPDATA前拒绝四类入口；历史函数和证据保留，没有执行迁移。真实owner、消费者与一基范围集中在[本轮代码范围图](architecture/af-framework-code-scope.md#module-runtime-storage-20261011)。
+
+安装仍沿现有逐文件事务：PlayerExports仅在目标计划中按mtime合并，较新默认可以覆盖较旧同名玩家文件，同时间已有文件优先，缺失补齐，额外文件不删；保存获胜源时间并在激活前重验源/目标时间和哈希。备份记录旧/新时间，回滚恢复字节及mtime，含同字节仅时间变化；再次并发变化拒绝自动回滚而不伪报成功。已有CustomPrompts和终端设置全部保护，只安装缺失；Logs/缓存/运行Recovery即使出现在合成Stage也不受管。正式Stage/ZIP策略不变：只包含干净默认及四套世界书，不从玩家目录反向合并。
+
+### Red / green、构建与实际证据
+
+- 总证据目录 `artifacts/tests/module-runtime-20261011/`，总收据 `verification-receipt.json`。先写新合同：旧实际DLL在 `red-3f52d135dcdd45c3ba81e128af154ef5` 失败于用户层根仍支配缓存；旧编辑器 `editor-red-0cb4ee930b7c49a29f08adcda45145ae` 默认仍走用户层；旧部署 `artifacts/j15-content/module-storage-red-20261011` 在LOCALAPPDATA缺失时失败。缓存保护补测 `cache-safety-red-b251817b7652492cacc6d55df65960ac` 实际失败于保存覆盖损坏原件；编辑器显式旧用户包读取 `editor-edge-red-627e13c2761241dc9233d630608fea1d` 未拒绝，同一断言修后通过。这些不是把编译失败当语义red。
+- 初次完整组合证据 `final-verification-6fd4a70557d649c082ec6a2a364dc8b9` 保留。收尾在真实DLL补测发现reparse子包仍出现在导入列表，并可由通用JSON读入穿过链接；`import-reparse-red-016b109a50754df2b031d9fc6e135a71`同断言实际失败。只增加菜单/最新选择的reparse过滤和读取路径校验，未改格式或明确文件导入方法签名；最终 `runtime-guard-final-receipt.json` 绑定：1.3/1.4实际DLL各 **69** 运行时存储、**100** 原提示词专项PASS；覆盖模拟C盘同名包/环境忽略、缺失、保存/冷回读、缓存mtime重载、非法UTF-8/null/坏JSON、只读文件/目录ACL、reparse、模组缺失、备份归属与失败原件隔离。实际DLL在.NET10宿主运行，不是完整Campaign/实机。
+- 收尾再验 `import-guard-pure-e9185be3d5744b0694ac04bd44b5a4e4`，同目录临时net10工程链接现有生产源码：纯路径/原子包/终端/ONNX合同 **63 PASS**，两种API编译分支PlayerExports **159 PASS**，保留四套世界书、原五域导入、候选包导出和原onboarding终端语义。只有游戏对象/域保存叶由原夹具控制，不伪称真实世界对象或档案重放；既有onboarding的pending/domain-failure终端解锁BASELINE输出仍保留。原ModelPresetTests入口真实MCM转换器/Harmony回放 **47/47**，`artifacts/tests/model-presets/run-e172663a254f43b7b40b93ef8a756122`；主机路径/logger为隔离叶，非渲染MCM。
+- 编辑器 `editor-final-2ff56dbc5c604dd692201e93367a4180` 的安装库、路径、无效根、连续12份独立旧字节备份、完整九步创建/编辑/回读/备份恢复/软删除PASS；WinForms和Core编译0 warning/0 error，未启动UI。最终扩展权限/reparse模块合同 `editor-guard-b8acbb592d314de588f63f6676c01fd2` 再次PASS、编译0 warning/0 error。初次扩展捕获遗漏IOException以及Windows API测试警告仅修夹具，原拒绝断言不削弱；所有合成包和TEMP在工作区，旧用户根为假哨兵。
+- 现有ManagedDeploy与PlayerExports合同在 `deploy-suite-0d892e76f7e340f4a3f81112be8dfbbb` PASS：12保护文件、5类提示词、缺失初始化、重复、故障回滚、中断阻断及FeatureBridges已知默认/未知手改/坏JSON不变。新ModuleStorageDeploy在最终验证目录PASS：默认较新/玩家较新/同时间/缺失/额外、终端保护、LOCALAPPDATA缺失和非法值、字节与时间/同字节时间回滚、Recovery目录ACL/reparse和中断拒绝；所有部署目标为工作区合成Modules。Stage合并前后默认哈希断言保留，未运行真实Stage。四世界书 **3139** 文件黄金Git blob合同通过；`content`/源码模组相对开工基线无差异，没有玩家内容混入默认。
+- 原 `scripts/build/build_single_module.ps1` 最终Debug双API、Bootstrap与双Coup registration/memory gate **exit0**；证据 `final-guard-build-d5d7f80d917b4e8596e0d7f4c9234303/{invocation.json,build.log,receipt.json,products}`，引用 **v1.3.15.110062 / v1.4.6.115628**，两实现各 **348 warning/0 error**、Bootstrap/probe各0 warning/0 error。仅进程 `DefaultItemExcludes=**/artifacts/**;**/obj/**;**/bin/**` 防旧测试框架候选污染，未改构建入口/项目/门禁；未传Stage或Deploy。源码输入前后及提交后SHA匹配，真实输出marker/双gate/复制验证DLL SHA一致：1.3 `5f3decd8d9c57bfc901e53b81b8afb5edd11f6d134e3b78e2a33057087d610d9`，1.4 `bc50ba21e826aa4a8ca41a6a33a33df94acf3f9e94066a5d86fb2bda3e43c926`，Bootstrap `799bf22ba59c3f5acf67156ff60bd75babbf910978ce8ac270f9b45c7f6c3e9b`。
+- **20源码锚点** `code-map.json` 在 `ad39448d` 记录提交和working-tree均PASS，只验证本包定位，不宣称全仓838个历史锚点已更新。未知field/type/save身份与未改业务仍由原owner承担；不以离线通过声称全仓覆盖率或零bug。
+
+### 保留失败、风险与后续
+
+- 完整J15原入口 `j15-full-93a3d2d163ea4d6191d6bd99ce9a6f07/run.log` 在 `content map entry count` 失败：实际 **3365**、旧期望 **3364**。用开工 `3ced67cc` 原测试函数与未改map再执行，同一断言失败；`j15-baseline-proof.json` 记录原测试/map一致，不更新计数凑PASS。相关黄金世界书、目标事务和内容脚本断言独立执行，不能据此声称J15完整通过。
+- 原net8 PlayerExports入口缺8.0.30引用包NU1100，命令行TargetFramework覆盖也有NETSDK1005，日志保留在 `pure-0f73a06eba66444fbca712b01074e25b`；未安装全局SDK，用工作区临时net10项目复用原生产/测试断言。旧PlayerExports runner缺生产CompressedMemoryExportBundleReader引用，读真实helper后只补测试链接；原业务断言保留。测试工程首轮自定义obj输出造成重复Assembly特性，只修进程排除obj/bin，不改产品结构。
+- 旧FullStageManagedDeploy要求124文件的Release Stage；本轮该输入不存在且未授权创建产品Stage，**NOT-RUN**，未弱化124/故障点/手工恢复断言。新合成事务覆盖所需失败/中断规则，但不冒称全量安装Stage验收。前期隔离SDK首跑输出含开发证书安装提示，是否新建证书未核实；后续显式关闭自动开发证书生成，未再进行系统证书操作。
+- 模组及Modules必须可写，失败不借C盘规避；旧C盘修改不再生效，使用模组现有数据或默认值。时间合并允许较新默认替换较旧玩家同名世界书，这是用户明确选择，已验证可恢复备份；CustomPrompts/终端保护意味着新默认不会覆盖已有文件。日志/缓存/恢复文件不打包，旧恢复记录不参与新部署。
+- 后续需单独授权游戏内编辑、保存、退出重启回读及真实部署/编辑器UI；本轮未操作游戏、真实C盘AF内容、真实存档或网络模型，没有推送/打包/全局安装。回滚先inverse收尾 `ad39448d`，再按部署 `60c94397`、编辑器 `bfcdb4da`、运行时 `2f8edb1f` 做focused inverse（协调共享路径依赖），禁止hard reset或借回滚改其他作者/外部数据；检查点只作定位。
+
+<a id="meeting-real-troop-escort-20261011"></a>
+## 会面护卫复用真实士兵（2026-10-11，OFFLINE_VERIFIED / LIVE_PENDING）
+
+- 用户明确批准最小修复：双方各最多一名护卫，只复用原版已分配的真实非英雄士兵，不再额外生成或改写 Origin；保留会面、和平退出、偷袭转战和原版伤亡。不改公开 API、配置、存档或原版伤害/死亡入口，不 Stage、部署、打包或推送。
+- 工作区 `E:/AnimusForge-klfwdf`，分支 `delivery/policy-bounded-retrieval-20261010`，开工基线 `e5fc3069ed6dd92d114388414c724e6c0f539172`。政策提示词、配置/路径、部署脚本、世界外交及其测试存在其他作者 WIP，全部保留，不纳入本任务提交。
+- 退出门：实际生产选人/安置方法的旧实现 red 与修后 green、兵员/Origin 唯一性及伤亡夹具、初始化有限重试/转战停止、既有对话转战回归、未改统一脚本的 Debug 双 API/Bootstrap/双 Coup gate。只允许清理 `E:/AnimusForge-klfwdf/bin/Debug/single_module_artifacts` 与 `E:/AnimusForge-klfwdf/obj/single_module/Debug`；真实游戏/玩家存档复验待后续授权。
+- 本地检查点 `de1c9bcc`；产品及回归 `30e70d3704256b0a53b205b08133634c51045f71`，仅一个生产文件与三个专项测试文件。真实 owner `MeetingBattleLockMissionBehavior` 仍由原会面入口添加；合法候选限定存活非英雄人类、对应 Team/Party、原 `PartyGroupAgentOrigin` 与一致 Troop，保留 Agent/Origin 身份。每侧一次线性选人，16 米内最近合法士兵优先，远处按既有骑兵/兵阶/等级优先级；缓存后不重选。领主安置后 0.5 秒节流重试、最长 5 秒；无健康士兵结束该侧，超时单次日志并允许无护卫，初始化结束或转战停止选人。仅初始化短窗口扫描，不排序、不新增 Tick 入口、名单写入或反射。
+- 删除额外生成链及其独占私有 helper；伤害、死亡、敌对转换、原版伤亡结算未修改，既有站位/武器/暂停/转战释放继续使用。8 个伤亡/转战释放/站位方法提取原文与修前逐一相同。已核一基行号、实际消费者与覆盖边界见[本轮代码地图](architecture/af-framework-code-scope.md#meeting-real-troop-escort-20261011)，不在此复制源码表。
+- 先建立旧实现 red：最初 5 PASS/23 FAIL，`artifacts/tests/meeting-escort-roster/run-797862c1325948efbe7150c88bb55865`（exit1）保留修前源码；完整扩展的相同夹具再放旧源码为 5 PASS/33 FAIL，`run-389c63fe9e844cfd9e98c332ce915331`（exit1）。远处真实士兵触发补生成，单兵种最后一个名额死亡后再处理原实体受伤复现 `IndexOutOfRangeException: fixture roster index -1`。初次夹具 CS0534 编译问题另存 `run-d36cb025c4044f17887afa1b7abf9d63`，不作为语义 red。
+- 修后专项命令 `python -B tests/AF.GameAdapter.Bannerlord/MeetingEscortRosterRegressionTests/run.py --native-api 1.3 --baseline-source artifacts/tests/meeting-escort-roster/run-797862c1325948efbe7150c88bb55865/baseline.cs.txt`，1.4 同参切换。最终原版 1.3/1.4 Origin 方法提取夹具各 **38 PASS/0 FAIL，exit0**；接线及8方法不变断言通过。证据分别 `run-cb39e6d222d242838a5e61c6a6e0b6b5`、`run-ae49e8ce99d84946baf871eef5e6a081`（同 `artifacts/tests/meeting-escort-roster/`）。覆盖双方、单兵种1/2人伤亡、错误来源、英雄/坐骑/临时演员、优先级、延迟生成、无兵、超时、缓存/重复初始化及转战停试；编译有假对象未赋值 CS0649 警告。
+- 既有会面生命周期原入口因缺 .NET 8.0.30 targeting packs 报 NU1100（exit1，`artifacts/tests/encounter-lifecycle-boundary/run-92f45212e73b4e299a8c110800a490cb`）；命令行 TargetFramework 覆盖仍出现 NETSDK1005，失败记录保留。仅在新临时项目改用已安装 net10.0、保持原生产与测试 C# /断言不变后，**183 会面边界断言、67 原版对话转战生命周期检查均 exit0**；证据 `artifacts/tests/meeting-escort-adjacent-net10/run-6f3d91eedf364a3c8fb32c4e03e7bfbe/receipt.json`。未修改既有测试项目或用弱化断言遮蔽失败。
+- 原统一脚本 `scripts/build/build_single_module.ps1`，Debug，显式游戏根 `D:/steam/steamapps/common/Mount & Blade II Bannerlord`、既有 `.tmp/build_check/1.3` / `1.4`、游戏模组 runtime 目录与 Harmony 路径；完整实参见构建 invocation。脚本重新验证引用为 **v1.3.15.110062 / v1.4.6.115628**。第一次子进程缺 PATHEXT、Get-Command dotnet 失败（exit1，清理前）；第二次根项目将 artifacts 内 net8 SDK DLL 作为 CandidateAssemblyFiles，导致 HashSet/Regex 类型转发循环（305 warning/1864 error，exit1）。全部日志保留在 `artifacts/tests/meeting-escort-official-build/run-4abfb1fefe0b40b081f7a246c7ef1682` / `run-00723c0a030249f2868a21718d62766f`。
+- 经实际 ResolveReferences 定位，只在构建子进程设置 PATHEXT 与 `DefaultItemExcludes=artifacts\**`，将框架引用恢复为本机 net472 targeting pack；1780 项生产 Compile 清单完全不变，仅排除5391项 artifacts None 候选，不清理额外目录、不修改项目/脚本。诊断证据 `artifacts/tests/meeting-escort-reference-diagnostic/run-fae691056df14c17a694757bc0ea767c`、`meeting-escort-reference-exclusion/run-ece6bf67ef8d43f59e421e83a95b78d1`；该直接诊断未通过1.3身份门禁，不当成正式构建。最终原统一脚本 **exit0，1.3/1.4 各348 warning/0 error，Bootstrap/Probe 各0 warning/0 error，双 Coup gate Passed**。警告类别 CS8632、CS0105、CS0162；计数与既有成功记录相同，非零警告交付。
+- 正式构建证据 `artifacts/tests/meeting-escort-official-build/run-7cf761c9a0de475299b68a5293ee0efd/{invocation.json,run.log,receipt.json}`；原脚本/项目及本任务生产源前后 SHA 不变。程序集身份仍为双 `AnimusForge` 与 `AnimusForge.Bootstrap`：1.3 DLL SHA `afac4b88e3c6ce36b3720c8133fc1c77e28e8ae351b5c8e6a155b5320afaeabe`，1.4 `d628b75dd9e03dbebc245e1cd78e1e0b6861589459a875f56f3f64799060a492`，Bootstrap `1c4f4e5b391da64a171ff3e23f7b44687081b5218560b7bef3e5ee74459ff599`。DLL/PDB/marker 已另存证据目录 `products/`，marker SHA/Api/AssemblyName/双门禁一致；源码文本与产品提交核对相同。构建是保留其他任务 WIP 的组合工作树，不宣称干净产品提交单独重建或其他任务验收。
+- 离线退出门已完成；Mission/场景、原版 spawn 边缘、supplier/roster 是小型替身，原版 Origin 的 SetKilled/SetWounded 原文确实执行，但不代表完整引擎事件顺序或玩家档。Coup managed 门禁也不等于实机。**本次崩溃会面/偷袭、和平退出及1.3/1.4实机复验 NOT-RUN**，待后续单独授权；未 Stage、部署、打包、启动游戏或推送。回滚仅定向 inverse 产品 `30e70d37`，不 hard reset、重写历史或回退其他作者；所有失败证据与原私有记录保留本地。
+
+<a id="module-custom-prompts-20261011"></a>
+## 自定义提示词恢复模组内读写（2026-10-11，OFFLINE_VERIFIED / LIVE_PENDING）
+
+- **范围与取舍**：用户批准完整方案，以 `d4cb1467` / `b1ce1d2b` 的单目录、缺失初始化和逐类空值行为为参照，不整体回滚。开工基线 `8b00cb1a892f967b0431a7e4b2e9ef1d4374c382`，工作区 `E:/AnimusForge-klfwdf`，分支 `delivery/policy-bounded-retrieval-20261010`，检查点 `e5fc3069`；部署保护切片 `ebb29ac5`，提示词/配置与测试切片 `45c630666d160e48d54c360557f053e1e762b15f`。本条明确替代 `528031c5` 的提示词双层读取/删除覆盖语义，不替代日志、模型缓存、PlayerExports 合同。
+- **实现**：复用 ModulePaths 定位当前合法模组，所有提示词及政策检索/总量上限配置读写 `CustomPrompts`、`Policy`、`Policy/Effects`；找不到目录、不可写或 reparse 明确失败，不回退 C 盘或 CWD。只补缺失 JSON；兼容模组内旧独立/aggregate 格式，坏原件不修复、不隔离搬走。普通提示词清空保留空 Text；NPC 统治者、代笔、共同/模块政策提示词按原规则写默认值；玩家评议空偏好及新增快报/人物等既有空值语义保留。保留字段/版本身份与未知政策字段，不新增公开 API、存档键或存储系统。
+- **安全与性能**：实际反例证明 File.ReadAllText 自动 BOM 检测可接受 UTF-16，以及组合政策 JSON 可在保存后超过读入上限；改为严格 UTF-8 字节解码（兼容 UTF-8 BOM），写候选大小检查后才原子替换。配套配置保存前校验已有原件，拒绝损坏/非法编码/超限替换；本包不截断既有坏文件或玩家数据。普通一秒/政策五秒指纹节流保留，保存立即失效；缺失初始化失败不隐藏可读原件，坏文件逐类隔离。初始化与保存为有限文件操作，未增加 Tick 扫描或后台游戏对象访问。
+- **部署保护**：仅 `CustomPrompts/` 已有普通文件跳过受管替换，涵盖旧默认、自定义效果、两类配置及坏文件；缺失文件仍安装，路径/reparse 预检和其他受管文件备份/原子激活/回滚不变。Stage 只读干净默认，不从目标反向合并玩家文件；真实 Stage/ZIP 未执行。新版本默认文案不会自动覆盖已有 JSON，是已确认取舍。
+
+### 已执行验证与绑定证据
+
+- `artifacts/tests/module-prompts-20261011/run-564d778e4aae4195a2650a31aa9e054b/runtime-red-bound.log`：旧 DLL 在普通空文本仍应保留 JSON 的新断言失败。新增 UTF-16 反例 `runtime-1.4-484041abac84413e9852a22e9858e16f`、组合序列化超限反例 `runtime-1.4-ed3f0572f660493f91e53ab898427a81` 均为实际断言 red，不是编译错误。最终同一现有 ContractTests 的单目录入口在 1.3 / 1.4 各 **100** 检查 PASS：模组生效/模拟 C 盘同名文件无效、缺失初始化、空值/冷回读/刷新节流/即时失效、坏原件/只读文件和目录 ACL/reparse/定位失败、配套配置实际路径与保存。最终 run `runtime-1.3-2696caa2278a41218ab7852bcfd75b27` / `runtime-1.4-60ddfd2d3c04448086a3045e5262516e`，复制 DLL SHA 与原构建候选完全一致；宿主为 .NET 10，非 live Campaign。
+- 复用人物设置/知识夹具 **29**、快报提示词专项 **12**、生产链接总量上限规则/配置 **59** PASS；人物空值 mutation 在真实断言失败。总量上限 RuntimeTests 对两版原版程序集的原生 .NET Framework 执行各 **97** PASS（没有 live Campaign/Gauntlet）；先前 .NET 10 执行因旧 Harmony 使用 BinaryFormatter 报 PlatformNotSupportedException，未把该失败改绿或削弱断言。测试入口显式支持 net10，默认 net8 仍保留，未改产品构建入口。
+- 合成受管部署：修前 `artifacts/j15-content/prompt-red-a707e5589f404d458ffbbdabcadff541/red.log` 失败；最终 `artifacts/j15-content/prompt-final-3aeb22caa3ba43acabf8a25397cca75f/result.log` PASS，保留 **5** 类提示词/配置与全部 **12** 保护文件，补齐 **1** 文件，重复无变化、故障回滚/中断恢复/FeatureBridges/worldbook 原合同不变，Stage 默认 SHA 不变。所有夹具均在工作区，没有操作真实 C 盘提示词或游戏目录。
+- 原 `scripts/build/build_single_module.ps1` 最终 Debug 双实现、Bootstrap、双 Coup registration/memory gate **exit0**；引用 `v1.3.15.110062` / `v1.4.6.115628`，两实现各 **348 warning / 0 error**，Bootstrap/probe 0 warning / 0 error。只清理用户精确批准的 `bin/Debug/single_module_artifacts`、`obj/single_module/Debug`，预检无 reparse，未传 Stage/Deploy。先前一次构建被另一任务新测试缓存的 net8 System.Core/System.dll 污染，实际 ReferencePath 证据 `reference-diagnostic.json`；最终仅进程内 DefaultItemExcludes 排除 artifacts，没有改一键脚本/项目配置、删别人缓存或削弱门禁。
+- 最终构建证据 `build-final-9d469d888c4c43dfb91b5b39b316138a/{invocation.json,build.log,receipt.json,candidate}`；源码输入前后不变，提交后全部输入字节再对齐。1.3 DLL SHA `4a7abee1e16390e0284ccfc95ee2863c599786913fec7ecbadbff93b4050a707`，1.4 `e8ca2c9b7bbdf003d5915c9a2ac4cb8dc36a26e750cb9ce98081d81552421a22`。构建包含已保留的世界外交/会面作者修改，不冒称只含本包的孤立候选。总收据 `artifacts/tests/module-prompts-20261011/verification-receipt.json`，16 源码锚点 `code-map.json` 在记录提交和 working-tree 均 PASS；导航见[代码范围图](architecture/af-framework-code-scope.md#module-custom-prompts-20261011)。
+
+### 保留的失败、风险与接续
+
+- 完整快报夹具仍在未改的 foreign notice/lower-left information manager 断言失败，`weekly-1c0af474c5e743b3a9285adbadb573f2/result.log`；本包提示词断言均已到达且通过，另设专项复用同一批断言，不删除完整测试。原政策总合同的独立日志/缓存路径基线失败继续保留，本轮未运行带递归清理的完整套件，不称全仓通过。C 盘旧提示词/两类政策配置保留、不迁移、不再生效；仅当前模组已有内容或当前默认生效。
+- 本有限包离线退出门完成，未 Stage、部署、打包、推送、收费 API、玩家存档或实机验证。后续获准后验游戏内编辑/打开文件夹/保存、退出重启回读；离线冷回读不替代实机重启验收。回滚只对 `45c63066` / `ebb29ac5` 做 focused inverse，不 hard reset、不改历史、不回滚其他作者。
+
+<a id="refactor-wiring-debug-20261011"></a>
+## 最新源码接线排查（2026-10-11，ROLLED_BACK / ROOT_CAUSE_UNCONFIRMED）
+
+### 用户要求：精准回退两项补丁修复（ROLLED_BACK / ROOT_CAUSE_UNCONFIRMED）
+
+- 用户明确否定仅靠重试作为根因修复，并要求精准回退。基线 `fd3e4a592d609748753aafe1c33cc6aef481eb47`、开工 clean，检查点 `63854a8c`。仅正常 inverse 产品 `aba208e8` → `a6bf41a69b0a30f194e9e97fe16c9e189abcb101`、`8097f599` → `ca994df8029bdf46d1976b5e114067931a9f01b3`；两处生产修改和四个新增 tracked 测试文件均已撤销。远端拉取、会面护卫、提示词/配置/部署保护与其他作者提交全部保留，未 reset 或改写历史。
+- 原前两项回归通过只证明受控安装失败后的恢复行为，不证明安装为何失败或玩家所述功能断线的根因；既有红绿与构建证据转为历史，不再作为当前修复候选。停止本轮补救式修改，不擅自扩大成新功能或继续重试方案。
+- 两处当前源码 blob 分别与 `8097f599^`、`aba208e8^` 完全相同；全 tracked tree 对照回退前仅六个获准产品/测试路径和本轮三份接续文档变化，其他源码、配置、部署脚本及测试不变。回退后八源码锚点在 `ca994df8029bdf46d1976b5e114067931a9f01b3` / working-tree 双模式 PASS，覆盖与行号见[同一代码范围图](architecture/af-framework-code-scope.md#refactor-wiring-debug-20261011)。四个撤销测试不再执行，不以它们给当前源码报绿。
+- 原未改统一构建脚本在回退后 clean 源码 `ca994df8029bdf46d1976b5e114067931a9f01b3` 完整执行，Debug 双实现 v1.3.15.110062 / v1.4.6.115628 各348 warning / 0 error，Bootstrap/probe 各0 warning / 0 error；双实际 DLL 的 Coup registration smoke 与 memory assertions=20 均 PASS。沿用仅清理两具名构建产物目录的授权，祖先/目标无 reparse；只进程排除已确认会污染框架引用的 artifacts None 候选，不改项目或构建脚本。完整调用/源哈希/marker/PDB/门禁与另存9候选产物证据 `artifacts/tests/diplomacy-rollback-unified-build/run-0abbbed18a5846a8be8f9af914603014/verified-receipt.json`。
+- 精准回退收据及八坐标图 `artifacts/tests/diplomacy-requested-rollback/run-638fa65c868549f5a47fea1a6c895e81/{intent.json,inverse-commits.json,code-map.json,final-receipt.json}`。旧调查证据保留；未推送、Stage、部署、打包、启动游戏或实机/玩家存档验收。当前源码不含两项重试修复，但游戏安装未改，根因仍未确认。
+
+### 历史两项修复与验证（不再作为当前候选）
+
+
+- 用户要求排查重构后的漏接，先拉取远端再继续；当前工作区 `E:/AnimusForge-klfwdf`，分支 `delivery/policy-bounded-retrieval-20261010`，基线 `14ce14ae974a45e5b129d99effa1bd4e2942bab8`，开工 tracked clean。只在本地修复可复现问题；不推送、部署、Stage、打包或启用历史孤儿补丁。
+- 已用完整当前 `DiplomacyBehavior` 类、实际 CLR ModuleInitializer 与受控 Harmony/game/logging 叶复现：第一次补丁安装失败后 `s_globalPatchesApplied` 仍为 true；真实 `RegisterEvents` 再次调用却不重试，外交上下文 postfix 没有接通。证据 `artifacts/tests/diplomacy-patch-debug-20261011/run-79f94a98dfef4fb99529f66ed248ef7e/run.log`，exit1。尚未证明用户实机故障由此触发，也不将其归因于本次远端提交。
+- 检查点 `492ca267`，修复与回归产品 `8097f59924705e8e2de2d2ba85f2cf716371dfba`。只把 `src/modules/AF.Module.Diplomacy/Direct/DiplomacyBehavior.cs:35–52 / ApplyGlobalPatchesOnce` 的完成标记移到成功的 Harmony.Patch 之后；`ModuleInit :30–33` 和 `RegisterEvents :54–59` 仍走同一真实安装入口。保留外交规则、三渠道调用、存档、注册时机和默认入口。频率仅模块初始化/战役 RegisterEvents，不新增 Tick、后台任务或全表扫描。消费者及八源码锚点见[本轮代码地图](architecture/af-framework-code-scope.md#refactor-wiring-debug-20261011)。
+- 18 项真实完整类/CLR ModuleInitializer 注册生命周期回归通过：首次构造/安装失败可重试、多次失败、真实 RegisterEvents 发布 owner、成功去重、成功后日志异常不重复安装。修前同测试在 `failed startup must not claim installed` 失败；red `artifacts/tests/diplomacy-patch-regression-20261011/run-fd92ad6cee1846ccaec6b3fa28173d9f`，最终 green `run-2eca3cee938f48f3b69f928b0e340458`。当前主机只有 .NET 10 SDK，测试项目显式用 `DiplomacyPatchTestFramework=net10.0`；默认 net8.0 未验证。Harmony/game/logging 叶受控，不冒称真实游戏补丁故障复现。
+- 首次验证尚未获默认构建目录清理回复，因此当时**未执行原脚本顶层清理或修改脚本**；后续获准的完整入口复验见下。首次从原脚本解析并调用未改的构建/引用/Flavor/PDB 校验函数，预先确认输出路径在本工作区且不存在，全新隔离输出下 1.3.15.110062 / 1.4.6.115628 两实现各 348 warning / 0 error，Bootstrap 0 warning / 0 error。证据 `artifacts/tests/wiring-dual-build-20261011/run-997ade7aeb8044b28639612c44d918b0`：该次整体 exit1 是随后 probe 把旧 obj 纳入编译，不能把整次命令报为成功。
+- 查明 probe 原 obj 污染后仅单次命令排除该生成目录，核实仍编译原 10 个 probe 源文件，构建 0 warning / 0 error；首次 gate 因 DLL 目录的复制游戏依赖来源不在 pinned allowlist 而拒绝，保留失败。再将同 SHA 的 DLL/PDB/marker 复制到全新仅候选目录（替代原脚本删除多余产物，不删除任何文件），原双 Coup gate 在新 evidence root exit0，两版各 `PASS registration smoke` / memory assertions=20。最终证据 `artifacts/tests/wiring-coup-isolated-20261011/run-a4bae5a7390f43e9a399489b7a3dc68b`；两 DLL SHA 分别 `541a3b24ef7f206de4576c16aa3ec45033e4f0f4211270eb473b8d3e953ff1c0` / `34dd62f8067fb48f0fc07eb3556b89a3684785e4b2e108dc595ecab54d4c6f51`。这不是一键构建顶层/Stage/部署验收。
+- 当前桥元数据检查 `bridgeBindings=16 wired=12 declaredOnly=4 configEnabled=12 sourceFiles=33` PASS，仅源码元数据；八源码锚点在产品修订/working-tree 均 PASS，diff check PASS。总收据 `artifacts/tests/wiring-debug-final-20261011/run-21bf27f91e3e40b0b0949206f142f686/receipt.json`。本切片离线退出门完成；本次远端拉取和已确认修复均仅本地，不推送/覆盖游戏。
+
+### 追加授权：原统一构建完整入口复验
+
+- 用户随后明确允许仅清理 `E:/AnimusForge-klfwdf/bin/Debug/single_module_artifacts` 和 `E:/AnimusForge-klfwdf/obj/single_module/Debug`。执行前核实绝对目标/祖先均在本工作区，目标树无 reparse point；没有扩大清理范围。源 `6edd50b5a93b615b114f234bfc8d774bac2d1c8e`，仍为产品 `8097f599`，运行未改的 `scripts/build/build_single_module.ps1` 完整入口，无 Stage/Deploy 参数，SDK profile/cache 与公开离线依赖保留在新本地证据目录。
+- 原命令 exit0 / `Build Result : success (dual coup seam gates passed)`；1.3.15.110062 / 1.4.6.115628 两实现各 348 warning / 0 error，Bootstrap/probe 各 0 warning / 0 error；两实际最终 DLL 各 `PASS registration smoke`、memory assertions=20。最终 1.3 SHA `e71f254ec8b5b8b9a23caed91f9bd3d345a65b55f272dca82e0f1a81f8b97f1f`，1.4 SHA `101b439b9d4d281ef408f201ce104ec04d2e83d75a56bcefa9473e07fa4bea73`；marker/API/Flavor/PDB/双 gate 哈希绑定与构建输入未变检查通过，八源码锚点再次双模式 PASS。完整调用、日志和复验收据 `artifacts/tests/wiring-official-build-approved-20261014/run-67f8aaa489454742b0c109d8ee0bc9e3/{invocation.json,run.log,verified-receipt.json}`。
+- 本次结果补齐原脚本顶层验证，并接续首次未获清理回复的状态；首次隔离验证及其失败证据不删除、不改绿。只完成获准构建验证，未改产品或构建脚本、未 Stage/部署/推送/打包，实机和全仓接线边界不变。
+
+### 历史续查：世界外交多补丁注册（原 OFFLINE_VERIFIED，现已回退）
+
+- 用户继续 Debug；从干净 `6f57e9a46568b75d741b5c5a00219bd4fe3a4dbe` 接续，检查点 `8b00cb1a`，产品 `aba208e82aadd0f54e75ac125863f9e29dbb140c`。沿真实 StartupPatchComposition → DiplomacyModuleServices → DiplomacyModule → DiplomacyModuleComposition → WorldDiplomacyBehavior 注册与战役 RegisterEvents 检查，完整未改注册/事件/日志方法的受控复现中 6 个目标仅成功 5 个，总完成标记却为 true；真实战役注册与显式重试均仍为 6 次尝试，缺失的共享记忆 postfix 永久不补。证据 `artifacts/tests/world-diplomacy-patch-repro/run-7034d4ff0a85465889efc03a5f2d130b/run.log`，exit1；不是用户实机故障归因。
+- 修复仅归本 owner：成功返回的 Harmony.Patch 才将目标加入进程级 HashSet，缺失目标/类型或安装异常保留未完成状态；全部本 owner 目标完成后才发布总标记。真实 RegisterEvents 在原九个事件监听之后补失败项，已成功目标不重复安装；补装构造异常不阻断事件注册。缺失 VM/成员不再输出整组成功日志。不新增 hook、不改外交业务/三渠道默认入口/存档/外部 API/精灵 owner。
+- 频率仅启动与战役 RegisterEvents；正常完成后 bool fastpath，不在 Tick 重试。缓存只存少量固定 MethodBase 元数据，不持有 Hero/Agent，不增加全世界扫描、后台读取或存档数据。
+- 新 runner 直接抽取完整未改的生产 RegisterHarmonyPatches/RegisterEvents/Log/去重 helper 与状态字段，游戏/Harmony/logger/sprite 叶受控，非整 World 类或真实游戏。修前 18 场景 / 66 已通过检查 / 14 失败，red `artifacts/tests/world-diplomacy-patch-registration/run-7f5f59232c5e49ee83f8ddb71aa044b9`；修后同断言最终 18 场景 / 315 检查 / 0 失败，green `run-844f63b5c4b74e0681a86c75598cd47d`。覆盖每个受控目标、构造失败、迟到 VM/成员、反复失败、日志异常、九事件顺序/owner、部分成功去重；测试显式 .NET 10，默认 net8 未验。
+- 既有完整直接外交类/真实 CLR ModuleInitializer 18 检查再跑 PASS：`artifacts/tests/diplomacy-patch-regression-continuation/run-08f8e094f33b42479e0cef1f6035610e`。历史 inverse/适配器夹具失败不刷新改绿；12 源码锚点在产品修订/working-tree 均 PASS，定位与真实消费者见[同一代码范围图](architecture/af-framework-code-scope.md#refactor-wiring-debug-20261011)。
+- 原统一脚本完整入口 Debug exit0；仅清理已批准的两个具名产物目录，预检祖先/目标树无 reparse。1.3.15.110062 / 1.4.6.115628 两实现各 348 warning / 0 error，Bootstrap/probe 各 0 warning / 0 error；两实际 DLL 的 Coup registration smoke 与 memory assertions=20 均 PASS。最终 1.3 SHA `afbe43f65c6fe98906369c6495480deff4572bb0b5d8aee5ad7591018fc6cc8d`，1.4 SHA `7310d688424f4660170e62abe19438dce17c4029c63e654ad386e15857ab935e`；marker/API/flavor/PDB/门禁哈希复核通过，9 个候选产物另存本地证据目录，不部署。
+- 构建源为 `de1c9bcc18c260986e71c05b107789c9aab1c63b` 加当时工作树候选，已包含另一任务的配置/路径/部署脚本 WIP；1926 个已跟踪相关源码/脚本输入哈希在构建前后未变，World owner 哈希与最终专项一致。不将组合构建冒称干净产品提交 `aba208e8` 单独重建或其他任务专项验收，后续并行编辑不在本次收据覆盖内。总证据 `artifacts/tests/world-diplomacy-unified-build/run-ecc750db9c3244a1b41b12f589642aa2/{invocation.json,run.log,verified-receipt.json,product-commit.json,code-map.json}`；产品提交仅本 owner 与两个新测试文件，其他作者源码/测试/台账改动保留。
+- 本有限包离线退出门完成，未 Stage/部署/推送/打包、实机、玩家存档或全仓验收。精灵 owner 内部安装/异常吞咽仍未由本包修复，测试只覆盖其外层抛错时不重复本 owner hook；不承诺所有外交/UI 接线已正确。
+
+### 保留的排查边界与失败
+
+- 当前适配器 runner 在实际断言前因生成夹具缺 `WorldBulletinParticipant` 报 CS0246；证据 `artifacts/tests/wiring-adapter-current-20261011/run-f27a5b5bd67e4c3b8a466792127a04e7/wrapper.log`。J17 历史 inverse gate 的 `Unreviewed J17 current owner: WarStats/AfWarStatsBehavior.cs` 仍失败；没有刷新 hash、删断言或把测试漂移认作生产断线。
+- 三个历史 Harmony 声明候选（外交 DeclareWar/MakePeace 与 Vassalage NewLogEntryAdded）仍未找到直接安装入口，但已有历史 R07 登记，不在本轮擅自启用；不据此宣布当前三项功能缺失。前切片登记的 WorldDiplomacy 多 hook 预置完成风险已由上方续查复现、修复并替代该待复现状态；部分成功去重没有照搬单 hook 修复。
+- 实机、用户原故障、真实模型、玩家存档和全仓接线未验。不能宣称重构引入了已确认问题，也不宣称“全部接好了”。各切片回退仅针对对应产品 `8097f599` 或 `aba208e8` 做 focused inverse；不 hard reset、不改写历史、不回滚其他作者。
+
 <a id="policy-effect-bounded-retrieval-20261010"></a>
 ## 政策效果检索两片重构（2026-10-10，OFFLINE_VERIFIED_WITH_BASELINE_FAILURES）
 

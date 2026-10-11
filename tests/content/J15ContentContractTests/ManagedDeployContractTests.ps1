@@ -34,6 +34,18 @@ foreach ($name in @('a.txt', 'b.txt')) {
     [System.IO.File]::WriteAllText((Join-Path $stage $name), "new-$name")
     [System.IO.File]::WriteAllText((Join-Path $target $name), "old-$name")
 }
+$promptNames = @('ordinary.json', 'Policy\Effects\effect.json', 'Policy\broken.json',
+    'Policy\PolicyEffectModuleRetrievalSettings.json', 'Policy\SettlementBalanceSettings.json')
+foreach ($name in $promptNames) {
+    $relative = Join-Path 'CustomPrompts' $name
+    $stagePath = Join-Path $stage $relative
+    $targetPath = Join-Path $target $relative
+    New-Item -ItemType Directory -Path (Split-Path -Parent $stagePath),(Split-Path -Parent $targetPath) -Force | Out-Null
+    [System.IO.File]::WriteAllText($stagePath, '{"Version":1,"Text":"NEW_DEFAULT"}')
+    [System.IO.File]::WriteAllText($targetPath, "existing-$name")
+}
+$missingPrompt = Join-Path 'CustomPrompts' 'Policy\new.json'
+[System.IO.File]::WriteAllText((Join-Path $stage $missingPrompt), '{"Version":1,"Text":"MISSING_DEFAULT"}')
 $unmanaged = @(
     (Join-Path $target 'PlayerExports\synthetic.txt'),
     (Join-Path $target 'CustomPrompts\synthetic.json'),
@@ -42,21 +54,33 @@ $unmanaged = @(
     (Join-Path $target 'bin\Win64_Shipping_Client\unknown.dll'),
     (Join-Path $modules 'AnimusForge_1_3_x\PlayerExports\synthetic.txt'),
     (Join-Path $modules 'AnimusForge_1_4_5\PlayerExports\synthetic.txt')
-)
+) + @($promptNames | ForEach-Object { Join-Path $target (Join-Path 'CustomPrompts' $_) })
 foreach ($path in $unmanaged) {
     New-Item -ItemType Directory -Path (Split-Path -Parent $path) -Force | Out-Null
     [System.IO.File]::WriteAllText($path, 'private-synthetic')
 }
+# Include an old default, custom effect, broken JSON and both companion settings.
+$originalPrompts = @('{"Version":1,"Text":"OLD_DEFAULT"}', '{"Version":1,"ModuleId":"effect","EvaluationPrompt":"CUSTOM"}',
+    '{broken', '{"Version":1,"Modules":{}}', '{"Version":1,"Limits":{}}')
+for ($index = 0; $index -lt $promptNames.Count; $index++) {
+    [System.IO.File]::WriteAllText((Join-Path $target (Join-Path 'CustomPrompts' $promptNames[$index])), $originalPrompts[$index])
+}
+$unmanagedHashes = @{}
+foreach ($path in $unmanaged) { $unmanagedHashes[$path] = (Get-FileHash -LiteralPath $path -Algorithm SHA256).Hash }
+$stagePromptHashes = @{}
+foreach ($file in Get-ChildItem -LiteralPath (Join-Path $stage 'CustomPrompts') -File -Recurse) {
+    $stagePromptHashes[$file.FullName] = (Get-FileHash -LiteralPath $file.FullName -Algorithm SHA256).Hash
+}
 function Assert-UnmanagedUnchanged {
     foreach ($path in $unmanaged) {
-        if ([System.IO.File]::ReadAllText($path) -ne 'private-synthetic') { throw 'Unmanaged file changed.' }
+        if ((Get-FileHash -LiteralPath $path -Algorithm SHA256).Hash -ne $unmanagedHashes[$path]) { throw 'Unmanaged file changed.' }
     }
 }
 $script:failAtSecond = $true
 
 function Get-FileSha256 {
     param([string]$LiteralPath)
-    $active = Join-Path $env:LOCALAPPDATA 'AnimusForge\Recovery\deploy'
+    $active = Join-Path $modules '.AnimusForge.Recovery\deploy'
     if ($script:failAtSecond -and $LiteralPath -eq (Join-Path $stage 'b.txt') -and
         @(Get-ChildItem -LiteralPath $active -Recurse -Filter 'activating' -File -ErrorAction SilentlyContinue).Count -gt 0) {
         $script:failAtSecond = $false
@@ -73,7 +97,8 @@ foreach ($name in @('a.txt', 'b.txt')) {
     if ([System.IO.File]::ReadAllText((Join-Path $target $name)) -ne "old-$name") { throw 'Rollback did not restore managed bytes.' }
 }
 Assert-UnmanagedUnchanged
-$recovery = Join-Path $local 'AnimusForge\Recovery\deploy'
+if (Test-Path -LiteralPath (Join-Path $target $missingPrompt)) { throw 'Rollback left a newly installed prompt.' }
+$recovery = Join-Path $modules '.AnimusForge.Recovery\deploy'
 $failed = @(Get-ChildItem -LiteralPath $recovery -Directory)
 if ($failed.Count -ne 1 -or -not (Test-Path -LiteralPath (Join-Path $failed[0].FullName 'rolled-back'))) {
     throw 'Failed deployment lacks a rolled-back recovery record.'
@@ -86,6 +111,9 @@ foreach ($name in @('a.txt', 'b.txt')) {
 }
 
 Invoke-ManagedStageDeployment -StageModuleDir $stage -TargetModuleDir $target -ModulesDir $modules
+if ([System.IO.File]::ReadAllText((Join-Path $target $missingPrompt)) -ne '{"Version":1,"Text":"MISSING_DEFAULT"}') {
+    throw 'Missing module prompt was not installed.'
+}
 foreach ($name in @('a.txt', 'b.txt')) {
     if ([System.IO.File]::ReadAllText((Join-Path $target $name)) -ne "new-$name") { throw 'Managed file was not installed.' }
 }
@@ -162,6 +190,8 @@ $builtinTarget = Join-Path $target $builtinRelative
 New-Item -ItemType Directory -Path (Split-Path -Parent $builtinStage),(Split-Path -Parent $builtinTarget) -Force | Out-Null
 [System.IO.File]::WriteAllText($builtinStage, 'new-default-worldbook')
 [System.IO.File]::WriteAllText($builtinTarget, 'player-modified-worldbook')
+[System.IO.File]::SetLastWriteTimeUtc($builtinStage, [datetime]::new(2025,1,1,0,0,0,[DateTimeKind]::Utc))
+[System.IO.File]::SetLastWriteTimeUtc($builtinTarget, [datetime]::new(2020,1,1,0,0,0,[DateTimeKind]::Utc))
 Invoke-ManagedStageDeployment -StageModuleDir $stage -TargetModuleDir $target -ModulesDir $modules
 if ([System.IO.File]::ReadAllText($builtinTarget) -ne 'new-default-worldbook') {
     throw 'Ordinary overwrite was blocked for a built-in worldbook.'
@@ -177,4 +207,7 @@ catch {
     if (-not $_.Exception.Message.Contains('interrupted deployment')) { throw }
 }
 Assert-UnmanagedUnchanged
-Write-Output 'managedDeployContract rollback=1 recovery=1 success=1 noop=1 interruption=1 unmanaged=7 worldbookOverwrite=1 featureBridges=known-old,new-install,hand-edit,bad-json PASS'
+foreach ($path in $stagePromptHashes.Keys) {
+    if ((Get-FileHash -LiteralPath $path -Algorithm SHA256).Hash -ne $stagePromptHashes[$path]) { throw 'Deployment mixed player content into Stage defaults.' }
+}
+Write-Output 'managedDeployContract rollback=1 recovery=1 success=1 noop=1 interruption=1 unmanaged=12 promptPreserve=5 promptInstall=1 stageDefaultsUnchanged=1 worldbookOverwrite=1 featureBridges=known-old,new-install,hand-edit,bad-json PASS'

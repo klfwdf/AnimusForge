@@ -538,20 +538,12 @@ function Invoke-ManagedStageDeployment {
 
     Assert-FeatureBridgesDeploymentBaseline -StageModuleDir $StageModuleDir -TargetModuleDir $TargetModuleDir -ModulesDir $ModulesDir
 
-    $localAppData = [Environment]::GetEnvironmentVariable('LOCALAPPDATA')
-    if ([string]::IsNullOrWhiteSpace($localAppData) -or -not [System.IO.Path]::IsPathRooted($localAppData)) {
-        throw 'LOCALAPPDATA must be an absolute user-data root for deployment recovery.'
-    }
-    $localAppData = Get-FullPathSafe -Path $localAppData
-    if (-not (Test-Path -LiteralPath $localAppData -PathType Container)) {
-        throw 'LOCALAPPDATA is not an existing directory.'
-    }
-    Assert-NoReparseAncestors -Path $localAppData
-    $recoveryRoot = Join-Path $localAppData 'AnimusForge\Recovery\deploy'
-    $recoveryParent = $localAppData
-    foreach ($part in @('AnimusForge', 'Recovery', 'deploy')) {
-        $recoveryParent = Join-Path $recoveryParent $part
-        Assert-NotReparsePoint -Path $recoveryParent
+    $modulesRoot = Get-FullPathSafe -Path $ModulesDir
+    Assert-NoReparseAncestors -Path $modulesRoot
+    $recoveryRoot = Join-Path $modulesRoot '.AnimusForge.Recovery\deploy'
+    Assert-DeploymentPath -Path $recoveryRoot -Root $modulesRoot
+    foreach ($part in @('.AnimusForge.Recovery', '.AnimusForge.Recovery\deploy')) {
+        $recoveryParent = Join-Path $modulesRoot $part
         if ((Test-Path -LiteralPath $recoveryParent) -and -not (Test-Path -LiteralPath $recoveryParent -PathType Container)) {
             throw 'Deployment recovery path is not a directory.'
         }
@@ -582,10 +574,21 @@ function Invoke-ManagedStageDeployment {
         if ((Test-Path -LiteralPath $target) -and -not (Test-Path -LiteralPath $target -PathType Leaf)) {
             throw 'A managed target path is not a regular file.'
         }
+        # Player-owned runtime files are never managed resources, even if present in Stage.
+        if ($relative.StartsWith('Logs\', [System.StringComparison]::OrdinalIgnoreCase) -or
+            $relative.StartsWith('Recovery\', [System.StringComparison]::OrdinalIgnoreCase)) { continue }
+        if (($relative.StartsWith('CustomPrompts\', [System.StringComparison]::OrdinalIgnoreCase) -or
+             $relative.Equals('ModuleData\TerminalSettings.json', [System.StringComparison]::OrdinalIgnoreCase)) -and
+            (Test-Path -LiteralPath $target -PathType Leaf)) { continue }
+        $isExport = $relative.StartsWith('PlayerExports\', [System.StringComparison]::OrdinalIgnoreCase)
+        $newTicks = [System.IO.File]::GetLastWriteTimeUtc($source.FullName).Ticks
+        $oldTicks = if (Test-Path -LiteralPath $target -PathType Leaf) { [System.IO.File]::GetLastWriteTimeUtc($target).Ticks } else { 0L }
+        # Aug-30 merge: newer wins, installed module wins ties. Unlisted files stay untouched.
+        if ($isExport -and $oldTicks -ge $newTicks -and (Test-Path -LiteralPath $target -PathType Leaf)) { continue }
         $newHash = Get-FileSha256 -LiteralPath $source.FullName
         $oldHash = if (Test-Path -LiteralPath $target -PathType Leaf) { Get-FileSha256 -LiteralPath $target } else { '' }
-        if ($newHash -ne $oldHash) {
-            $planned.Add([PSCustomObject]@{ Relative = $relative; Source = $source.FullName; Target = $target; OldHash = $oldHash; NewHash = $newHash })
+        if ($newHash -ne $oldHash -or ($isExport -and $oldTicks -ne $newTicks)) {
+            $planned.Add([PSCustomObject]@{ Relative = $relative; Source = $source.FullName; Target = $target; OldHash = $oldHash; NewHash = $newHash; OldTicks = $oldTicks; NewTicks = $newTicks; IsExport = $isExport })
         }
     }
     if ($planned.Count -eq 0) {
@@ -599,7 +602,7 @@ function Invoke-ManagedStageDeployment {
     $record = [ordered]@{
         schemaVersion = 1
         target = $TargetModuleDir
-        files = @($planned | ForEach-Object { [ordered]@{ relative = $_.Relative; oldSha256 = $_.OldHash; newSha256 = $_.NewHash } })
+        files = @($planned | ForEach-Object { [ordered]@{ relative = $_.Relative; oldSha256 = $_.OldHash; newSha256 = $_.NewHash; oldLastWriteUtcTicks = $_.OldTicks; newLastWriteUtcTicks = $_.NewTicks } })
     }
     $manifest = Join-Path $recoveryDir 'manifest.json'
     [System.IO.File]::WriteAllText($manifest, ($record | ConvertTo-Json -Depth 5), [System.Text.UTF8Encoding]::new($false))
@@ -621,8 +624,8 @@ function Invoke-ManagedStageDeployment {
         foreach ($item in $planned) {
             Assert-DeploymentPath -Path $item.Target -Root $ModulesDir
             $currentHash = if (Test-Path -LiteralPath $item.Target -PathType Leaf) { Get-FileSha256 -LiteralPath $item.Target } else { '' }
-            if ($currentHash -ne $item.OldHash) { throw 'Managed target changed during deployment.' }
-            if ((Get-FileSha256 -LiteralPath $item.Source) -ne $item.NewHash) { throw 'Stage changed during deployment.' }
+            if ($currentHash -ne $item.OldHash -or ($item.OldHash -and $item.IsExport -and [System.IO.File]::GetLastWriteTimeUtc($item.Target).Ticks -ne $item.OldTicks)) { throw 'Managed target changed during deployment.' }
+            if ((Get-FileSha256 -LiteralPath $item.Source) -ne $item.NewHash -or ($item.IsExport -and [System.IO.File]::GetLastWriteTimeUtc($item.Source).Ticks -ne $item.NewTicks)) { throw 'Stage changed during deployment.' }
             $parent = Split-Path -Parent $item.Target
             New-Item -ItemType Directory -Path $parent -Force | Out-Null
             Assert-DeploymentPath -Path $item.Target -Root $ModulesDir
@@ -634,6 +637,7 @@ function Invoke-ManagedStageDeployment {
                 $touched.Add($item)
                 if ($item.OldHash) { [System.IO.File]::Replace($candidate, $item.Target, $replaceBackup) }
                 else { [System.IO.File]::Move($candidate, $item.Target) }
+                if ($item.IsExport) { [System.IO.File]::SetLastWriteTimeUtc($item.Target, [datetime]::new($item.NewTicks, [DateTimeKind]::Utc)) }
                 if ((Get-FileSha256 -LiteralPath $item.Target) -ne $item.NewHash) { throw 'Managed target hash mismatch after replacement.' }
             }
             finally {
@@ -651,7 +655,16 @@ function Invoke-ManagedStageDeployment {
             try {
                 Assert-DeploymentPath -Path $item.Target -Root $ModulesDir
                 $currentHash = if (Test-Path -LiteralPath $item.Target -PathType Leaf) { Get-FileSha256 -LiteralPath $item.Target } else { '' }
-                if ($currentHash -eq $item.OldHash) { continue }
+                if ($currentHash -eq $item.OldHash) {
+                    if ($item.OldHash -and $item.IsExport) {
+                        $currentTicks = [System.IO.File]::GetLastWriteTimeUtc($item.Target).Ticks
+                        if ($currentTicks -ne $item.OldTicks -and $currentTicks -ne $item.NewTicks) { throw 'Target timestamp changed again; automatic rollback refused.' }
+                        if ($currentTicks -ne $item.OldTicks) {
+                            [System.IO.File]::SetLastWriteTimeUtc($item.Target, [datetime]::new($item.OldTicks, [DateTimeKind]::Utc))
+                        }
+                    }
+                    continue
+                }
                 if ($currentHash -ne $item.NewHash) { throw 'Target changed again; automatic rollback refused.' }
                 if ($item.OldHash) {
                     $backup = Join-Path (Join-Path $recoveryDir 'files') $item.Relative
@@ -667,8 +680,9 @@ function Invoke-ManagedStageDeployment {
                     }
                 }
                 else { [System.IO.File]::Delete($item.Target) }
+                if ($item.OldHash) { [System.IO.File]::SetLastWriteTimeUtc($item.Target, [datetime]::new($item.OldTicks, [DateTimeKind]::Utc)) }
                 $restoredHash = if (Test-Path -LiteralPath $item.Target -PathType Leaf) { Get-FileSha256 -LiteralPath $item.Target } else { '' }
-                if ($restoredHash -ne $item.OldHash) { throw 'Rollback hash mismatch.' }
+                if ($restoredHash -ne $item.OldHash -or ($item.OldHash -and [System.IO.File]::GetLastWriteTimeUtc($item.Target).Ticks -ne $item.OldTicks)) { throw 'Rollback hash or timestamp mismatch.' }
             }
             catch { $rollbackErrors.Add($_.Exception.Message) }
         }

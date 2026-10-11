@@ -12,7 +12,7 @@ namespace AnimusForge;
 /// Owner of the PlayerExports folder layout used by the dev import/export flows in MyBehavior,
 /// ModOnboardingBehavior and KingdomStrategicProfileBehavior. It only knows paths and JSON files;
 /// menus, inquiries and the per-scope export/import bodies stay with their hosts.
-/// Module root = nearest ancestor of this assembly that contains SubModule.xml (same DLL as SubModule).
+	/// Module root is selected by AnimusForgeModulePaths and validated by the shared path contract.
 /// </summary>
 internal static class PlayerExportsStore
 {
@@ -20,36 +20,12 @@ internal static class PlayerExportsStore
 
 	internal static string GetModuleRootPath()
 	{
-		try
-		{
-			string location = typeof(PlayerExportsStore).Assembly.Location;
-			string text = (string.IsNullOrEmpty(location) ? "" : Path.GetDirectoryName(Path.GetFullPath(location)));
-			DirectoryInfo directoryInfo = (string.IsNullOrEmpty(text) ? null : new DirectoryInfo(text));
-			while (directoryInfo != null && directoryInfo.Exists)
-			{
-				if (File.Exists(Path.Combine(directoryInfo.FullName, "SubModule.xml")))
-				{
-					return directoryInfo.FullName;
-				}
-				directoryInfo = directoryInfo.Parent;
-			}
-		}
-		catch
-		{
-		}
-		try
-		{
-			return Path.GetFullPath(Directory.GetCurrentDirectory());
-		}
-		catch
-		{
-			return "";
-		}
+		return AnimusForgeDataPaths.ResolveRoot(AnimusForgeModulePaths.GetCurrentModuleRoot());
 	}
 
 	internal static string GetPlayerExportsRootPath()
 	{
-		return AnimusForgeDataPaths.GetPlayerExportsDirectory(AnimusForgeDataPaths.GetCurrentRoot());
+		return AnimusForgeDataPaths.GetPlayerExportsDirectory(GetModuleRootPath());
 	}
 
 	internal sealed class ImportFolder
@@ -70,31 +46,28 @@ internal static class PlayerExportsStore
 
 	internal static IReadOnlyList<ImportFolder> GetImportFolders()
 	{
-		string userRoot = null;
-		try { userRoot = GetPlayerExportsRootPath(); }
-		catch { /* An unavailable user root must not hide the installed library. */ }
-		return GetImportFolders(GetModuleRootPath(), userRoot);
+		return GetImportFolders(GetModuleRootPath(), null);
 	}
 
-	// Menu-time only: inspect immediate package directories, never their contents.
+	// Menu-time only: inspect immediate module packages. The legacy userRoot argument is ignored.
 	internal static IReadOnlyList<ImportFolder> GetImportFolders(string moduleRoot, string userRoot)
 	{
 		var folders = new List<ImportFolder>();
-		var roots = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-		AddImportFolders(folders, roots, Path.Combine(moduleRoot, FolderName), "模组目录");
-		AddImportFolders(folders, roots, userRoot, "玩家导出");
+		string root = Path.Combine(moduleRoot, FolderName);
+		AnimusForgeDataPaths.ValidatePath(root);
+		AddImportFolders(folders, root, "模组目录");
 		return folders;
 	}
 
-	private static void AddImportFolders(List<ImportFolder> folders, HashSet<string> roots, string root, string sourceLabel)
+	private static void AddImportFolders(List<ImportFolder> folders, string root, string sourceLabel)
 	{
 		if (string.IsNullOrWhiteSpace(root)) return;
 		try
 		{
 			string fullRoot = Path.GetFullPath(root).TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
-			if (!roots.Add(fullRoot) || !Directory.Exists(fullRoot)) return;
+			if (!Directory.Exists(fullRoot)) return;
 			foreach (DirectoryInfo directory in new DirectoryInfo(fullRoot).GetDirectories()
-				.Where(d => !d.Name.StartsWith(".", StringComparison.Ordinal))
+				.Where(d => !d.Name.StartsWith(".", StringComparison.Ordinal) && (d.Attributes & FileAttributes.ReparsePoint) == 0)
 				.OrderByDescending(d => d.LastWriteTimeUtc))
 				folders.Add(new ImportFolder(directory, sourceLabel));
 		}
@@ -104,8 +77,10 @@ internal static class PlayerExportsStore
 
 	internal static PlayerExportsPackageExport BeginExportPackage(string root, string folderName)
 	{
+		if (!string.Equals(Path.GetFullPath(root).TrimEnd(Path.DirectorySeparatorChar), GetPlayerExportsRootPath(), StringComparison.OrdinalIgnoreCase))
+			throw new InvalidOperationException("Exports must be published under the current module's PlayerExports.");
 		return PlayerExportsPackageExport.Begin(root, folderName,
-			AnimusForgeDataPaths.GetRecoveryDirectory(AnimusForgeDataPaths.GetCurrentRoot()));
+			AnimusForgeDataPaths.GetRecoveryDirectory(GetModuleRootPath()));
 	}
 
 	/// <summary>Invalid file-name chars → '_', trimmed, trailing dots removed; empty input stays empty.</summary>
@@ -140,10 +115,7 @@ internal static class PlayerExportsStore
 		return text;
 	}
 
-	/// <summary>
-	/// Absolute selection stays exact; names prefer the installed library, then user exports.
-	/// Blank input still means the latest user export, never a built-in worldbook.
-	/// </summary>
+	/// <summary>Names and blank/latest selections use only the installed module.</summary>
 	internal static string ResolveImportFolderPath(string folderName)
 	{
 		return ResolveImportFolderPath(folderName, GetModuleRootPath(), null);
@@ -151,19 +123,23 @@ internal static class PlayerExportsStore
 
 	internal static string ResolveImportFolderPath(string folderName, string moduleRoot, string playerExportsRootPath)
 	{
+		string root = Path.GetFullPath(Path.Combine(moduleRoot, FolderName));
+		AnimusForgeDataPaths.ValidatePath(root);
 		string text = (folderName ?? "").Trim();
 		if (!string.IsNullOrEmpty(text) && Path.IsPathRooted(text))
-			return Path.GetFullPath(text);
-		if (text == "." || text == "..")
+		{
+			string selected = Path.GetFullPath(text);
+			if (!selected.StartsWith(root + Path.DirectorySeparatorChar, StringComparison.OrdinalIgnoreCase))
+				throw new ArgumentException("Import package must be under the current module's PlayerExports.", nameof(folderName));
+			AnimusForgeDataPaths.ValidatePath(selected);
+			return selected;
+		}
+		if (text == "." || text == ".." || text.IndexOf(Path.DirectorySeparatorChar) >= 0 || text.IndexOf(Path.AltDirectorySeparatorChar) >= 0)
 			throw new ArgumentException("Invalid import folder name.", nameof(folderName));
 		string name = SanitizeFolderName(text);
-		if (!string.IsNullOrEmpty(name))
-		{
-			string installed = Path.Combine(moduleRoot, FolderName, name);
-			if (Directory.Exists(installed)) return Path.GetFullPath(installed);
-		}
-		string userRoot = playerExportsRootPath ?? GetPlayerExportsRootPath();
-		return string.IsNullOrEmpty(name) ? FindLatestExportFolder(userRoot) : Path.Combine(userRoot, name);
+		string path = string.IsNullOrEmpty(name) ? FindLatestExportFolder(root) : Path.Combine(root, name);
+		if (path != null) AnimusForgeDataPaths.ValidatePath(path);
+		return path;
 	}
 
 	internal static string FindLatestExportFolder(string root)
@@ -176,7 +152,7 @@ internal static class PlayerExportsStore
 			}
 			DirectoryInfo directoryInfo = new DirectoryInfo(root);
 			return (from d in directoryInfo.GetDirectories()
-				where !d.Name.StartsWith(".", StringComparison.Ordinal)
+				where !d.Name.StartsWith(".", StringComparison.Ordinal) && (d.Attributes & FileAttributes.ReparsePoint) == 0
 				orderby d.LastWriteTimeUtc descending
 				select d).FirstOrDefault()?.FullName;
 		}
@@ -218,6 +194,7 @@ internal static class PlayerExportsStore
 	{
 		try
 		{
+			AnimusForgeDataPaths.ValidatePath(path);
 			if (!File.Exists(path))
 			{
 				return null;

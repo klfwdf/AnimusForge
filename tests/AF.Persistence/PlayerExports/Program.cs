@@ -14,6 +14,9 @@ internal static class Program
 
     private static void Main()
     {
+        AnimusForgeModulePaths.Root = Path.Combine(Environment.GetEnvironmentVariable("AF_PLAYER_EXPORTS_TEST_TEMP"), "runtime", "AnimusForge");
+        Directory.CreateDirectory(Path.Combine(AnimusForgeModulePaths.Root, "ModuleData"));
+        File.WriteAllText(Path.Combine(AnimusForgeModulePaths.Root, "SubModule.xml"), "<Module />");
         NpcFileNames();
         ImportSources();
         InstalledWorldbooks();
@@ -28,7 +31,7 @@ internal static class Program
         heroes.Clear();
         heroes.Add(new TaleWorlds.CampaignSystem.Hero { StringId="h1", Name="Alice" });
         heroes.Add(new TaleWorlds.CampaignSystem.Hero { StringId="h2", Name="Bob" });
-        string dir = Path.Combine(Environment.GetEnvironmentVariable("AF_PLAYER_EXPORTS_TEST_TEMP"), "persona-format");
+        string dir = Path.Combine(PlayerExportsStore.GetPlayerExportsRootPath(), "persona-format");
         Directory.CreateDirectory(dir);
         string personas = Path.Combine(dir, "personality_background");
         Directory.CreateDirectory(personas);
@@ -87,7 +90,7 @@ internal static class Program
 
     private static void OnboardingTerminal()
     {
-        string dir=Path.Combine(Environment.GetEnvironmentVariable("AF_PLAYER_EXPORTS_TEST_TEMP"),"onboarding-baseline");
+        string dir=Path.Combine(PlayerExportsStore.GetPlayerExportsRootPath(), "onboarding-baseline");
         var profiles=new PersonaProfileStateOwner(); var old=new MyBehavior.NpcPersonaProfile{Personality="old"};profiles.Profiles["h1"]=old;
         bool current=true;Action overwrite=null,skip=null,cancel=null;int unlocked=0,rejected=0,tail=0;
         var adapter=new PersonaProfileImportExportAdapter(profiles,()=>1,_=>current,(t,m,o,s,c)=>{overwrite=o;skip=s;cancel=c;});
@@ -108,7 +111,7 @@ internal static class Program
 
     private static void OnboardingFiveDomainTerminal()
     {
-        string dir=Path.Combine(Environment.GetEnvironmentVariable("AF_PLAYER_EXPORTS_TEST_TEMP"),"onboarding-baseline");
+        string dir=Path.Combine(PlayerExportsStore.GetPlayerExportsRootPath(), "onboarding-baseline");
         Directory.CreateDirectory(Path.Combine(dir,"knowledge"));
         File.WriteAllText(Path.Combine(dir,"knowledge","KnowledgeRules.json"),"{\"Rules\":[{\"Id\":\"rule\",\"Keywords\":[\"key\"]}]}");
         File.WriteAllText(Path.Combine(dir,"voice_mapping","VoiceMapping.json"),"{\"male_young\":[\"voice-new\"],\"fallback\":\"fallback-new\"}");
@@ -155,7 +158,7 @@ internal static class Program
 
     private static void OnboardingBaseline()
     {
-        string dir=Path.Combine(Environment.GetEnvironmentVariable("AF_PLAYER_EXPORTS_TEST_TEMP"),"onboarding-baseline");
+        string dir=Path.Combine(PlayerExportsStore.GetPlayerExportsRootPath(), "onboarding-baseline");
         foreach(string name in new[]{"personality_background","unnamed_persona","knowledge/rules","voice_mapping","event_data","kingdom_profiles"}) Directory.CreateDirectory(Path.Combine(dir,name));
         PlayerExportsStore.WriteJson(Path.Combine(dir,"personality_background","h1__Alice.json"),new MyBehavior.NpcPersonaProfile{Personality="new"});
         PlayerExportsStore.WriteJson(Path.Combine(dir,"unnamed_persona","villager.json"),new MyBehavior.UnnamedPersonaSingleJson{Key="villager",Personality="new"});
@@ -180,7 +183,7 @@ internal static class Program
 
     private static void MemoryFormats()
     {
-        string dir=Path.Combine(Environment.GetEnvironmentVariable("AF_PLAYER_EXPORTS_TEST_TEMP"),"memory-format");
+        string dir=Path.Combine(PlayerExportsStore.GetPlayerExportsRootPath(), "memory-format");
         string compressed=Path.Combine(dir,"compressed_memory");Directory.CreateDirectory(compressed);
         var memory=new MemoryBusinessStateOwner();
         long generation=1;Action overwrite=null,skip=null,cancel=null;int dirty=0;
@@ -310,28 +313,18 @@ internal static class Program
         Directory.CreateDirectory(builtin);
         File.WriteAllText(Path.Combine(module, "SubModule.xml"), "<Module />");
         File.WriteAllText(Path.Combine(builtin, "rule.json"), "{\"source\":\"installed\"}");
-        string exportRoot = PlayerExportsStore.GetPlayerExportsRootPath();
-        string cwd = Directory.GetCurrentDirectory();
-        string configuredRoot = Environment.GetEnvironmentVariable(AnimusForgeDataPaths.OverrideEnvironmentVariable);
-        try
-        {
-            Directory.SetCurrentDirectory(module);
-            // Clear the override after resolving the path-only root to exercise the former gate.
-            Environment.SetEnvironmentVariable(AnimusForgeDataPaths.OverrideEnvironmentVariable, null);
-            Check(PlayerExportsStore.GetPlayerExportsRootPath() == exportRoot, "installed data never gates the user export destination on a migration receipt");
-            var menuFolders = PlayerExportsStore.GetImportFolders();
-            Check(menuFolders.Count == 1 && menuFolders[0].FullPath == builtin, "production menu discovery works without migration credentials");
-        }
-        finally
-        {
-            Directory.SetCurrentDirectory(cwd);
-            Environment.SetEnvironmentVariable(AnimusForgeDataPaths.OverrideEnvironmentVariable, configuredRoot);
-        }
+        string previousModule = AnimusForgeModulePaths.Root;
+        Directory.CreateDirectory(Path.Combine(module, "ModuleData"));
+        AnimusForgeModulePaths.Root = module;
+        Check(PlayerExportsStore.GetPlayerExportsRootPath() == installed, "production exports belong to module");
+        var menuFolders = PlayerExportsStore.GetImportFolders();
+        Check(menuFolders.Count == 1 && menuFolders[0].FullPath == builtin, "production menu reads only module");
+        AnimusForgeModulePaths.Root = previousModule;
         var folders = PlayerExportsStore.GetImportFolders(module, user);
         Check(folders.Count == 1 && folders[0].FullPath == builtin, "fresh install works with missing user root and no migration receipt");
         Check(!Directory.Exists(user), "listing builtins never creates or migrates user data");
         Check(PlayerExportsStore.ResolveImportFolderPath("same-name", module, user) == builtin, "named import reads installed worldbook first");
-        Check(PlayerExportsStore.ResolveImportFolderPath("", module, user) == null, "blank import never falls back to a builtin");
+        Check(PlayerExportsStore.ResolveImportFolderPath("", module, user) == builtin, "blank import uses latest module package");
         string player = Path.Combine(user, "same-name");
         string newest = Path.Combine(user, "newest");
         Directory.CreateDirectory(player);
@@ -341,15 +334,19 @@ internal static class Program
         Directory.SetLastWriteTimeUtc(player, new DateTime(2020, 1, 1));
         Directory.SetLastWriteTimeUtc(newest, new DateTime(2021, 1, 1));
         folders = PlayerExportsStore.GetImportFolders(module, user);
-        Check(folders.Count == 3, "both roots listed; hidden candidates excluded");
-        Check(folders[0].Name == folders[2].Name && folders[0].SourceLabel != folders[2].SourceLabel, "same names retain distinct source labels");
-        Check(PlayerExportsStore.ResolveImportFolderPath(folders[2].FullPath, module, user) == player, "selected user path cannot switch to same-name builtin");
+        Check(folders.Count == 1, "only module root listed; user and hidden candidates excluded");
+        Check(folders[0].SourceLabel == "模组目录", "module source label retained");
+        bool userRejected = false;
+        try { PlayerExportsStore.ResolveImportFolderPath(player, module, user); } catch (ArgumentException) { userRejected = true; }
+        Check(userRejected, "selected user-data package cannot enter module import");
         Check(PlayerExportsStore.ResolveImportFolderPath("same-name", module, user) == builtin, "installed source has priority over same-name user export");
-        Check(PlayerExportsStore.ResolveImportFolderPath("newest", module, user) == newest, "user-only name still resolves");
-        Check(PlayerExportsStore.ResolveImportFolderPath(null, module, user) == newest, "blank input retains newest-user-export semantics");
+        Check(PlayerExportsStore.ResolveImportFolderPath("newest", module, user) == Path.Combine(installed, "newest"), "user-only name cannot resolve to user-data package");
+        Check(PlayerExportsStore.ResolveImportFolderPath(null, module, user) == builtin, "blank input ignores newer user package");
         Check(PlayerExportsStore.GetImportFolders(module, installed).Count == 1, "identical roots are not listed twice");
         string missing = Path.Combine(fixture, "does-not-exist");
-        Check(PlayerExportsStore.ResolveImportFolderPath(missing, module, user) == missing, "missing absolute source is not reinterpreted as a relative package");
+        bool outsideRejected = false;
+        try { PlayerExportsStore.ResolveImportFolderPath(missing, module, user); } catch (ArgumentException) { outsideRejected = true; }
+        Check(outsideRejected, "outside-module absolute source rejected");
         bool rejected = false;
         try { PlayerExportsStore.ResolveImportFolderPath("..", module, user); }
         catch (ArgumentException) { rejected = true; }
@@ -403,7 +400,7 @@ internal static class Program
         Check(Path.IsPathRooted(root) && root.EndsWith(Path.DirectorySeparatorChar + PlayerExportsStore.FolderName) && PlayerExportsStore.GetModuleRootPath().Length > 0, "root path shape: " + root);
 
         string tempRoot = Environment.GetEnvironmentVariable("AF_PLAYER_EXPORTS_TEST_TEMP") ?? Path.GetTempPath();
-        string temp = Path.Combine(tempRoot, "af-player-exports-" + Guid.NewGuid().ToString("N"));
+        string temp = Path.Combine(tempRoot, "af-player-exports-" + Guid.NewGuid().ToString("N"), "PlayerExports");
         try
         {
             Check(PlayerExportsStore.FindLatestExportFolder(temp) == null, "missing root → null");
@@ -412,7 +409,7 @@ internal static class Program
             Directory.CreateDirectory(Path.Combine(temp, "new"));
             Directory.SetLastWriteTimeUtc(Path.Combine(temp, "new"), new DateTime(2021, 1, 1, 0, 0, 0, DateTimeKind.Utc));
             Check(Path.GetFileName(PlayerExportsStore.FindLatestExportFolder(temp)) == "new", "latest export = most recently written");
-            Check(PlayerExportsStore.ResolveImportFolderPath(Path.Combine(temp, "old")) == Path.GetFullPath(Path.Combine(temp, "old")), "rooted existing path wins");
+            Check(PlayerExportsStore.ResolveImportFolderPath(Path.Combine(temp, "old"), Path.GetDirectoryName(temp), null) == Path.GetFullPath(Path.Combine(temp, "old")), "rooted existing path wins");
             Check(PlayerExportsStore.ResolveImportFolderPath("some name") == Path.Combine(root, "some name"), "relative name under PlayerExports");
 
             string file = Path.Combine(temp, "sub", "row.json");
@@ -734,3 +731,5 @@ using System; using System.IO; using System.Reflection; using TaleWorlds.Campaig
 		return PlayerExportsStore.ResolveImportFolderPath(folderName);
 	}internal bool Unlocked; private void OpenImportFolderPicker(Action returned) { } private void CompleteOnboardingAndOpenPlayerPersonaSetup(Action returned,bool importedDatabase) { Unlocked=true; }}
 AF_ONBOARDING_BASELINE_SOURCE_END */
+
+namespace AnimusForge { internal static class AnimusForgeModulePaths { internal static string Root; public static string GetCurrentModuleRoot() => Root; } }
