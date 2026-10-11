@@ -1,3 +1,10 @@
+# 当前交接：工作区完整安全发布（2026-10-11）
+
+- 本轮用户明确授权安全合并后推送；fetch 后 `origin/main` 仍为 `14ce14ae`，无远端新增提交。原工作区 `8d521ec5` 干净、领先25提交，因此不制造额外合并，不改写历史，普通快进发布到 `origin/main`。
+- 纳入工作区全部已提交变化，包括其他对话的会面护卫、模组内提示词、缓存/导出/终端设置/恢复备份；已撤销的两项外交重试保持撤销，不重加。未触碰其他工作树或分支。
+- 产品/测试/构建脚本与最终已验证源码 `ad39448d` 无差异；复核原双API/Bootstrap产物SHA、20源码锚点双模式、待推送全历史的私有文件/产物及凭据模式检查、净差异空白检查。沿用该源码的离线验证，不声称本轮重跑全仓测试；J15基线计数失败及缺旧Release Stage输入仍保留。
+- [唯一主台账：发布范围和保留项](docs/animusforge-refactoring-and-repository-reorganization-plan.md#workspace-safe-publication-20261011)。实际推送结果以本地 `artifacts/publication/workspace-sync-20261011-*/receipt.json` 和远端 `refs/heads/main` 核验；该收据与本地私有交接、缓存、构建产物不上传。本轮不部署、不打包、不实机操作。
+
 # 当前交接：缓存、导出、终端设置和部署备份恢复旧目录（2026-10-11，OFFLINE_VERIFIED / LIVE_PENDING）
 
 - 工作区 `E:/AnimusForge-klfwdf` / `delivery/policy-bounded-retrieval-20261010`；检查点 `2053aff9`，运行时 `2f8edb1f`、编辑器 `bfcdb4da`、部署 `60c94397`，导入reparse收尾 `ad39448d`。缓存恢复模组 `Logs` 并按修改时间重读；游戏/编辑器只用模组 `PlayerExports`，终端设置用 `ModuleData`，导出备份用模组 `Recovery`，部署备份用 `Modules/.AnimusForge.Recovery/deploy`。这四项忽略 `ANIMUSFORGE_DATA_ROOT`，不读、迁移或删除旧 C 盘 AF 用户数据；本条明确替代下方提示词任务的“缓存、PlayerExports 路径不变”边界。
