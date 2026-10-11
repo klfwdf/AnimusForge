@@ -35,7 +35,6 @@ namespace AnimusForge
 		private static void ApplyGlobalPatchesOnce()
 		{
 			if (s_globalPatchesApplied) return;
-			s_globalPatchesApplied = true;
 			try
 			{
 				Harmony harmony = new Harmony("com.AnimusForge.diplomacy");
@@ -43,6 +42,7 @@ namespace AnimusForge
 					typeof(MyBehavior).GetMethod("BuildShoutPromptContextForExternal",
 						BindingFlags.Public | BindingFlags.Static),
 					postfix: new HarmonyMethod(typeof(DiplomacyBehavior), nameof(Patch_BuildDiplomacyContext_Postfix)));
+				s_globalPatchesApplied = true;
 				Logger.Log("DiplomacyBehavior", "[Harmony] Diplomacy context injection applied.");
 			}
 			catch (Exception ex)
