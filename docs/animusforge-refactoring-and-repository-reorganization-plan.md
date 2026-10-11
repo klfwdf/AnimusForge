@@ -36,7 +36,15 @@
 - 本有限包离线退出门完成，未 Stage、部署、打包、推送、收费 API、玩家存档或实机验证。后续获准后验游戏内编辑/打开文件夹/保存、退出重启回读；离线冷回读不替代实机重启验收。回滚只对 `45c63066` / `ebb29ac5` 做 focused inverse，不 hard reset、不改历史、不回滚其他作者。
 
 <a id="refactor-wiring-debug-20261011"></a>
-## 最新源码接线排查（2026-10-11，TWO_FIXES_OFFLINE_VERIFIED / AUDIT_INCOMPLETE）
+## 最新源码接线排查（2026-10-11，ROLLBACK_REQUESTED / ROOT_CAUSE_UNCONFIRMED）
+
+### 用户要求：精准回退两项补丁修复（ROLLBACK_REQUESTED）
+
+- 用户明确要求回退本任务两项改动，不再以安装失败重试作为根因修复。基线 `fd3e4a592d609748753aafe1c33cc6aef481eb47`、开工 clean；仅 inverse 产品 `aba208e8` 与 `8097f599`（两处生产修改与四个新增 tracked 测试文件），不撤销远端拉取、会面护卫、提示词/配置/部署保护或其他作者提交。
+- 保留旧 red/green、构建产物和调查证据，但它们不代表用户实机问题得到根治。退出门为两处源码逐字对齐各修复父提交、其他 tracked 代码/配置/测试不变、原双API/Bootstrap/双Coup验证；不 reset、改写历史、推送或部署。
+
+### 历史两项修复与验证（不再作为当前候选）
+
 
 - 用户要求排查重构后的漏接，先拉取远端再继续；当前工作区 `E:/AnimusForge-klfwdf`，分支 `delivery/policy-bounded-retrieval-20261010`，基线 `14ce14ae974a45e5b129d99effa1bd4e2942bab8`，开工 tracked clean。只在本地修复可复现问题；不推送、部署、Stage、打包或启用历史孤儿补丁。
 - 已用完整当前 `DiplomacyBehavior` 类、实际 CLR ModuleInitializer 与受控 Harmony/game/logging 叶复现：第一次补丁安装失败后 `s_globalPatchesApplied` 仍为 true；真实 `RegisterEvents` 再次调用却不重试，外交上下文 postfix 没有接通。证据 `artifacts/tests/diplomacy-patch-debug-20261011/run-79f94a98dfef4fb99529f66ed248ef7e/run.log`，exit1。尚未证明用户实机故障由此触发，也不将其归因于本次远端提交。
