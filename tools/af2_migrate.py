@@ -603,13 +603,15 @@ def migrate_terminal_settings(sources: list[tuple[str, Path]], root: Path, *,
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Explicit AF2 user-data migration; no source deletion")
+    parser = argparse.ArgumentParser(description="Retired AF2 migration CLI; module-local storage cannot activate C-drive user data")
     parser.add_argument("--data-kind", choices=("player-exports", "prompts", "terminal-settings", "models"), default="player-exports")
     parser.add_argument("--source-kind", choices=("installed", "repo"), default="installed",
                         help="one source identity per operation; repository data is never auto-imported")
     parser.add_argument("--installed-module", type=Path)
-    parser.add_argument("--apply", action="store_true", help="copy/verify/activate into LocalAppData")
+    parser.add_argument("--apply", action="store_true", help="historical option retained; activation is retired")
     args = parser.parse_args()
+    if args.data_kind in ("player-exports", "prompts", "terminal-settings"):
+        raise ValueError("AF storage is module-local; the retired C-drive migration CLI cannot activate or inventory user data.")
     if args.data_kind == "models":
         raise ValueError("ONNX models must remain in Modules/AnimusForge/ONNX; model migration is retired")
     root_text = os.environ.get("LOCALAPPDATA")

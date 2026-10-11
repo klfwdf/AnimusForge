@@ -5242,7 +5242,6 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 
 	private void EnsureModelDropdownCacheHydrated()
 	{
-		if (_modelDropdownCacheHydrated) return;
 		string modelDropdownCachePath;
 		try { modelDropdownCachePath = GetModelDropdownCachePath(); }
 		catch (Exception ex)
@@ -5274,13 +5273,7 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 				_modelDropdownCacheLastWriteUtcTicks = num;
 				return;
 			}
-			ModelDropdownCacheSnapshot modelDropdownCacheSnapshot = JsonConvert.DeserializeObject<ModelDropdownCacheSnapshot>(File.ReadAllText(modelDropdownCachePath, Encoding.UTF8));
-			if (modelDropdownCacheSnapshot == null)
-			{
-				_modelDropdownCacheHydrated = true;
-				_modelDropdownCacheLastWriteUtcTicks = num;
-				return;
-			}
+			ModelDropdownCacheSnapshot modelDropdownCacheSnapshot = ReadModelDropdownCacheSnapshot(modelDropdownCachePath);
 			MergeCachedDropdownState(_mainApiModelOptions, _mainApiModelDropdown, modelDropdownCacheSnapshot.MainOptions, modelDropdownCacheSnapshot.MainSelected, ModelName, DefaultDropdownModelName, preserveBlankSelection: false, out _mainApiModelOptions, out _mainApiModelDropdown);
 			_mainApiModelOptions = FilterRemovedMainModelPresets(_mainApiModelOptions);
 			string text = ReadSelectedModelOption(_mainApiModelDropdown);
@@ -5308,7 +5301,6 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		try
 		{
 			string modelDropdownCachePath = GetModelDropdownCachePath();
-			AnimusForgeDataPaths.EnsureWritableRoot(AnimusForgeDataPaths.GetCurrentRoot());
 			string directoryName = Path.GetDirectoryName(modelDropdownCachePath);
 			if (!string.IsNullOrWhiteSpace(directoryName) && !Directory.Exists(directoryName))
 			{
@@ -5331,8 +5323,19 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 			string contents = JsonConvert.SerializeObject(modelDropdownCacheSnapshot, Formatting.Indented);
 			lock (ModelDropdownCacheFileLock)
 			{
-				File.WriteAllText(modelDropdownCachePath, contents, Encoding.UTF8);
-				_modelDropdownCacheLastWriteUtcTicks = File.GetLastWriteTimeUtc(modelDropdownCachePath).Ticks;
+				AnimusForgeDataPaths.ValidatePath(modelDropdownCachePath);
+				if (File.Exists(modelDropdownCachePath)) ReadModelDropdownCacheSnapshot(modelDropdownCachePath);
+				string candidate = Path.Combine(directoryName, ".af-cache-" + Guid.NewGuid().ToString("N") + ".tmp");
+				try
+				{
+					File.WriteAllText(candidate, contents, new UTF8Encoding(false, true));
+					ReadModelDropdownCacheSnapshot(candidate);
+					AnimusForgeDataPaths.ValidatePath(modelDropdownCachePath);
+					if (File.Exists(modelDropdownCachePath)) File.Replace(candidate, modelDropdownCachePath, null);
+					else File.Move(candidate, modelDropdownCachePath);
+					_modelDropdownCacheLastWriteUtcTicks = File.GetLastWriteTimeUtc(modelDropdownCachePath).Ticks;
+				}
+				finally { if (File.Exists(candidate)) File.Delete(candidate); }
 			}
 			_modelDropdownCacheHydrated = true;
 		}
@@ -5344,9 +5347,19 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 
 	private static string GetModelDropdownCachePath()
 	{
-		return Path.Combine(
-			AnimusForgeDataPaths.GetCacheDirectory(AnimusForgeDataPaths.GetCurrentRoot()),
+		string path = Path.Combine(
+			AnimusForgeDataPaths.GetLogsDirectory(AnimusForgeModulePaths.GetCurrentModuleRoot()),
 			ModelDropdownCacheFileName);
+		AnimusForgeDataPaths.ValidatePath(path);
+		return path;
+	}
+
+	private static ModelDropdownCacheSnapshot ReadModelDropdownCacheSnapshot(string path)
+	{
+		AnimusForgeDataPaths.ValidatePath(path);
+		string json = new UTF8Encoding(false, true).GetString(File.ReadAllBytes(path)).TrimStart('\uFEFF');
+		return JsonConvert.DeserializeObject<ModelDropdownCacheSnapshot>(json)
+			?? throw new InvalidDataException("Model dropdown cache is invalid; refusing to overwrite the original.");
 	}
 
 	private static List<string> CopyNormalizedModelOptions(IEnumerable<string> options)
