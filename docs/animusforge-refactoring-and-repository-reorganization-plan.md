@@ -1,3 +1,11 @@
+<a id="refactor-wiring-debug-20261011"></a>
+## 最新源码接线排查（2026-10-11，ACTIVE）
+
+- 用户要求排查重构后的漏接，先拉取远端再继续；当前工作区 `E:/AnimusForge-klfwdf`，分支 `delivery/policy-bounded-retrieval-20261010`，基线 `14ce14ae974a45e5b129d99effa1bd4e2942bab8`，开工 tracked clean。只在本地修复可复现问题；不推送、部署、Stage、打包或启用历史孤儿补丁。
+- 已用完整当前 `DiplomacyBehavior` 类、实际 CLR ModuleInitializer 与受控 Harmony/game/logging 叶复现：第一次补丁安装失败后 `s_globalPatchesApplied` 仍为 true；真实 `RegisterEvents` 再次调用却不重试，外交上下文 postfix 没有接通。证据 `artifacts/tests/diplomacy-patch-debug-20261011/run-79f94a98dfef4fb99529f66ed248ef7e/run.log`，exit1。尚未证明用户实机故障由此触发，也不将其归因于本次远端提交。
+- 当前切片只把安装完成标记移到成功的 Harmony.Patch 之后，并补失败重试/成功去重回归；保留外交规则、三渠道调用、存档、注册时机和默认入口。频率仅模块初始化/战役 RegisterEvents，不新增 Tick、后台任务或全表扫描。
+- 退出门：完整真实类的 red/green、首次构造/安装异常及成功后日志异常边界、原双API/Bootstrap/双Coup构建（清理构建产物另获明确授权）、diff检查。实机/真实模型/玩家存档/全仓未验，不宣称全部接线正确。
+
 <a id="policy-effect-bounded-retrieval-20261010"></a>
 ## 政策效果检索两片重构（2026-10-10，OFFLINE_VERIFIED_WITH_BASELINE_FAILURES）
 
