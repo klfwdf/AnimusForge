@@ -34,8 +34,16 @@ internal static partial class Program
         Check((string)InvokeStatic(exports, "GetPlayerExportsRootPath", Array.Empty<object>(), 0) == Path.Combine(module, "PlayerExports"), "exports belong to module");
         Directory.CreateDirectory(Path.Combine(module, "PlayerExports", "module-package"));
         Directory.CreateDirectory(Path.Combine(fakeUser, "UserData", "PlayerExports", "USER_ONLY"));
+        string userPackage = Path.Combine(fakeUser, "UserData", "PlayerExports", "USER_ONLY");
+        File.WriteAllText(Path.Combine(userPackage, "data.json"), "{\"fromUser\":true}");
+        string importLink = Path.Combine(module, "PlayerExports", "USER_LINK");
+        RunPromptFixtureCommand("cmd.exe", "/c mklink /J \"" + importLink + "\" \"" + userPackage + "\"");
         object folders = InvokeStatic(exports, "GetImportFolders", Array.Empty<object>(), 0);
         Check(((System.Collections.IEnumerable)folders).Cast<object>().Count() == 1, "production import list excludes user-data packages");
+        Check(exports.GetMethod("ReadJson", All).MakeGenericMethod(typeof(JObject)).Invoke(null,
+            new object[] { Path.Combine(importLink, "data.json") }) == null, "linked import JSON cannot read user-data content");
+        Check((string)InvokeStatic(exports, "ResolveImportFolderPath", new object[] { "" }, 1)
+            == Path.Combine(module, "PlayerExports", "module-package"), "latest module import ignores reparse package");
 
         object instance = Activator.CreateInstance(settings);
         Directory.CreateDirectory(Path.GetDirectoryName(cache));
