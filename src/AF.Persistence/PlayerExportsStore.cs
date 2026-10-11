@@ -67,7 +67,7 @@ internal static class PlayerExportsStore
 			string fullRoot = Path.GetFullPath(root).TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
 			if (!Directory.Exists(fullRoot)) return;
 			foreach (DirectoryInfo directory in new DirectoryInfo(fullRoot).GetDirectories()
-				.Where(d => !d.Name.StartsWith(".", StringComparison.Ordinal))
+				.Where(d => !d.Name.StartsWith(".", StringComparison.Ordinal) && (d.Attributes & FileAttributes.ReparsePoint) == 0)
 				.OrderByDescending(d => d.LastWriteTimeUtc))
 				folders.Add(new ImportFolder(directory, sourceLabel));
 		}
@@ -152,7 +152,7 @@ internal static class PlayerExportsStore
 			}
 			DirectoryInfo directoryInfo = new DirectoryInfo(root);
 			return (from d in directoryInfo.GetDirectories()
-				where !d.Name.StartsWith(".", StringComparison.Ordinal)
+				where !d.Name.StartsWith(".", StringComparison.Ordinal) && (d.Attributes & FileAttributes.ReparsePoint) == 0
 				orderby d.LastWriteTimeUtc descending
 				select d).FirstOrDefault()?.FullName;
 		}
@@ -194,6 +194,7 @@ internal static class PlayerExportsStore
 	{
 		try
 		{
+			AnimusForgeDataPaths.ValidatePath(path);
 			if (!File.Exists(path))
 			{
 				return null;
