@@ -131,6 +131,10 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior, IAgentStateDeci
 
 	private bool _escortsPlaced;
 
+	private const float MeetingEscortPlacementTimeoutSeconds = 5f;
+
+	private float _escortPlacementStartedAt = -1f;
+
 	private float _escortPlacementTimer;
 
 	private float _escortDebugLogCooldown;
@@ -303,6 +307,7 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior, IAgentStateDeci
 		_combatResumed = false;
 		_escortsPlaced = false;
 		_escortPlacementTimer = 0.3f;
+		_escortPlacementStartedAt = -1f;
 		_escortDebugLogCooldown = 0f;
 		_leaderSheathTimer = 0f;
 		_targetOriginalTeam = null;
@@ -635,6 +640,7 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior, IAgentStateDeci
 			{
 				PlaceLeadersForMeeting();
 				_leadersPlaced = true;
+				_escortPlacementStartedAt = base.Mission.CurrentTime;
 				_keepLeaderPoseTimer = 2f;
 				_leaderPoseRefreshTimer = 0f;
 			}
@@ -5438,118 +5444,148 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior, IAgentStateDeci
 
 	private bool TryPlaceEscortGuards()
 	{
+		if (_escortsPlaced || MeetingBattleRuntime.IsCombatEscalated)
+		{
+			return true;
+		}
+		if (base.Mission == null)
+		{
+			return false;
+		}
+		if (_escortPlacementStartedAt < 0f)
+		{
+			_escortPlacementStartedAt = base.Mission.CurrentTime;
+		}
+		if (base.Mission.CurrentTime - _escortPlacementStartedAt >= MeetingEscortPlacementTimeoutSeconds)
+		{
+			_playerEscortPlacementFinalized = true;
+			_targetEscortPlacementFinalized = true;
+			_escortsPlaced = true;
+			Logger.Log("MeetingBattle", "Escort placement timed out: keeping existing real guards; no synthetic guards spawned.");
+			return true;
+		}
 		if (_mainAgent == null || _targetAgent == null || !_mainAgent.IsActive() || !_targetAgent.IsActive())
 		{
 			return false;
 		}
-		Team team = null;
-		Team team2 = null;
-		try
-		{
-			team = _mainAgent.Team;
-		}
-		catch
-		{
-		}
-		try
-		{
-			team2 = _targetAgent.Team;
-		}
-		catch
-		{
-		}
-		if (team == null || team2 == null)
+		Team playerTeam = _mainAgent.Team;
+		Team targetTeam = _targetAgent.Team;
+		if (playerTeam == null || targetTeam == null || playerTeam == targetTeam)
 		{
 			return false;
 		}
-		if (team == team2)
+		PartyBase playerParty = PartyBase.MainParty;
+		PartyBase targetParty = _targetHero?.PartyBelongedTo?.Party;
+		Agent playerEscort = ResolveMeetingEscortForSide(playerTeam, playerParty, _mainAgent.Position, ref _meetingPlayerEscortAgent, ref _playerEscortPlacementFinalized);
+		Agent targetEscort = ResolveMeetingEscortForSide(targetTeam, targetParty, _targetAgent.Position, ref _meetingTargetEscortAgent, ref _targetEscortPlacementFinalized);
+		ConfigureMeetingHoldFormations(playerEscort, targetEscort);
+		List<(float, float, bool)> slots = BuildEscortSlots();
+		Vec3 playerForward = _targetAgent.Position - _mainAgent.Position;
+		playerForward.z = 0f;
+		if (playerForward.LengthSquared < 0.0001f)
 		{
-			if (_escortDebugLogCooldown <= 0f)
+			playerForward = new Vec3(1f);
+		}
+		playerForward.Normalize();
+		Vec3 targetForward = -playerForward;
+		if (playerEscort != null && !IsMeetingEscortAlreadyPositioned(playerEscort))
+		{
+			List<Agent> escorts = new List<Agent> { playerEscort };
+			PositionEscortAgents(_mainAgent.Position, playerForward, escorts, slots);
+			MoveExtraMeetingCircleTroopsAway(playerTeam, _mainAgent.Position, playerForward, escorts);
+		}
+		if (targetEscort != null && !IsMeetingEscortAlreadyPositioned(targetEscort))
+		{
+			List<Agent> escorts = new List<Agent> { targetEscort };
+			PositionEscortAgents(_targetAgent.Position, targetForward, escorts, slots);
+			MoveExtraMeetingCircleTroopsAway(targetTeam, _targetAgent.Position, targetForward, escorts);
+		}
+		_escortsPlaced = _playerEscortPlacementFinalized && _targetEscortPlacementFinalized;
+		if (_escortsPlaced && (playerEscort != null || targetEscort != null))
+		{
+			Logger.Log("MeetingBattle", $"Real escort guards placed. PlayerSide={playerEscort != null}, TargetSide={targetEscort != null}");
+		}
+		return _escortsPlaced;
+	}
+
+	private Agent ResolveMeetingEscortForSide(Team team, PartyBase party, Vec3 anchor, ref Agent cachedEscort, ref bool finalized)
+	{
+		if (finalized)
+		{
+			return IsReusableMeetingEscortCandidate(cachedEscort, team, party) ? cachedEscort : null;
+		}
+		cachedEscort = SelectExistingMeetingEscortAgent(team, party, anchor);
+		if (cachedEscort != null || CountHealthyNonHeroTroops(party) == 0)
+		{
+			finalized = true;
+		}
+		return cachedEscort;
+	}
+
+	private Agent SelectExistingMeetingEscortAgent(Team team, PartyBase party, Vec3 anchor)
+	{
+		if (base.Mission == null || team == null || party == null)
+		{
+			return null;
+		}
+		Agent nearest = null;
+		Agent preferred = null;
+		float nearestDistanceSquared = float.MaxValue;
+		foreach (Agent agent in base.Mission.Agents)
+		{
+			if (!IsReusableMeetingEscortCandidate(agent, team, party))
 			{
-				Logger.Log("MeetingBattle", "Escort placement postponed: main/target leaders are still on the same team.");
-				_escortDebugLogCooldown = 2f;
+				continue;
 			}
-			return false;
-		}
-		List<(float, float, bool)> list = BuildEscortSlots();
-		if (list.Count == 0)
-		{
-			return false;
-		}
-		Vec3 vec = _targetAgent.Position - _mainAgent.Position;
-		vec.z = 0f;
-		if (vec.LengthSquared < 0.0001f)
-		{
-			vec = new Vec3(1f);
-		}
-		vec.Normalize();
-		Vec3 vec2 = _mainAgent.Position - _targetAgent.Position;
-		vec2.z = 0f;
-		if (vec2.LengthSquared < 0.0001f)
-		{
-			vec2 = -vec;
-		}
-		vec2.Normalize();
-		List<Agent> list2 = CollectNearbyMeetingEscortAgents(team, _mainAgent.Position, list.Count);
-		List<Agent> list3 = CollectNearbyMeetingEscortAgents(team2, _targetAgent.Position, list.Count);
-		PartyBase party = null;
-		PartyBase party2 = null;
-		try
-		{
-			party = PartyBase.MainParty;
-		}
-		catch
-		{
-		}
-		try
-		{
-			party2 = _targetHero?.PartyBelongedTo?.Party;
-		}
-		catch
-		{
-		}
-		bool flag = ShouldRequireEscortForSide(team, party);
-		bool flag2 = ShouldRequireEscortForSide(team2, party2);
-		bool flag3 = flag && list2.Count < list.Count;
-		bool flag4 = flag2 && list3.Count < list.Count;
-		if (flag3 || flag4)
-		{
-			TrySpawnFallbackEscortsForBothSides(list.Count, team, team2, _mainAgent.Position, vec, _targetAgent.Position, vec2, list2.Count, list3.Count, flag3, flag4);
-			list2 = CollectNearbyMeetingEscortAgents(team, _mainAgent.Position, list.Count);
-			list3 = CollectNearbyMeetingEscortAgents(team2, _targetAgent.Position, list.Count);
-		}
-		if (list2.Count > 0 || list3.Count > 0)
-		{
-			ConfigureMeetingHoldFormations(list2.FirstOrDefault(), list3.FirstOrDefault());
-		}
-		bool flag5 = !flag || list2.Count > 0;
-		bool flag6 = !flag2 || list3.Count > 0;
-		if (list2.Count > 0 && ShouldPositionEscortSide(list2, _playerEscortPlacementFinalized, list.Count))
-		{
-			PositionEscortAgents(_mainAgent.Position, vec, list2, list);
-		}
-		if (list3.Count > 0 && ShouldPositionEscortSide(list3, _targetEscortPlacementFinalized, list.Count))
-		{
-			PositionEscortAgents(_targetAgent.Position, vec2, list3, list);
-		}
-		MoveExtraMeetingCircleTroopsAway(team, _mainAgent.Position, vec, list2);
-		MoveExtraMeetingCircleTroopsAway(team2, _targetAgent.Position, vec2, list3);
-		_playerEscortPlacementFinalized = flag5;
-		_targetEscortPlacementFinalized = flag6;
-		if (!flag5 || !flag6)
-		{
-			if (_escortDebugLogCooldown <= 0f)
+			Vec3 offset = agent.Position - anchor;
+			offset.z = 0f;
+			float distanceSquared = offset.LengthSquared;
+			if (distanceSquared <= 256f && (distanceSquared < nearestDistanceSquared ||
+				(distanceSquared == nearestDistanceSquared && HasHigherMeetingEscortPriority(agent, nearest))))
 			{
-				Logger.Log("MeetingBattle", $"Escort pending: playerCandidates={list2.Count}, targetCandidates={list3.Count}, playerEscortRequired={flag}, targetEscortRequired={flag2}");
-				_escortDebugLogCooldown = 5f;
+				nearest = agent;
+				nearestDistanceSquared = distanceSquared;
 			}
+			if (HasHigherMeetingEscortPriority(agent, preferred))
+			{
+				preferred = agent;
+			}
+		}
+		return nearest ?? preferred;
+	}
+
+	private bool IsReusableMeetingEscortCandidate(Agent agent, Team team, PartyBase party)
+	{
+		if (agent == null || team == null || party == null || agent == _mainAgent || agent == _targetAgent)
+		{
 			return false;
 		}
-		if (list2.Count > 0 || list3.Count > 0)
+		try
 		{
-			Logger.Log("MeetingBattle", $"Escort guards placed. PlayerSide={list2.Count}, TargetSide={list3.Count}");
+			return agent.IsActive() && agent.Health > 0f && agent.IsHuman && agent.Team == team &&
+				agent.Character is CharacterObject character && !character.IsHero &&
+				agent.Origin is PartyGroupAgentOrigin origin && ReferenceEquals(origin.BattleCombatant, party) &&
+				ReferenceEquals(origin.Troop, character);
 		}
-		return true;
+		catch
+		{
+			return false;
+		}
+	}
+
+	private bool HasHigherMeetingEscortPriority(Agent candidate, Agent current)
+	{
+		if (current == null)
+		{
+			return true;
+		}
+		int priority = GetAgentEscortPriority(candidate).CompareTo(GetAgentEscortPriority(current));
+		if (priority != 0)
+		{
+			return priority > 0;
+		}
+		int tier = GetAgentTier(candidate).CompareTo(GetAgentTier(current));
+		return tier != 0 ? tier > 0 : GetAgentLevel(candidate) > GetAgentLevel(current);
 	}
 
 	private void MoveExtraMeetingCircleTroopsAway(Team team, Vec3 anchor, Vec3 forward, List<Agent> selectedEscorts)
@@ -5669,229 +5705,6 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior, IAgentStateDeci
 		return vec.LengthSquared <= 256f;
 	}
 
-	private bool ShouldRequireEscortForSide(Team team, PartyBase primaryParty)
-	{
-		if (CountHealthyNonHeroTroops(primaryParty) > 0)
-		{
-			return true;
-		}
-		if (CountCurrentTeamEscortCandidates(team) > 0)
-		{
-			return true;
-		}
-		if (TryGetEncounterBattleTroopCountForTeam(team, out var troopCount))
-		{
-			return troopCount > 1;
-		}
-		return false;
-	}
-
-	private int CountCurrentTeamEscortCandidates(Team team)
-	{
-		if (team == null || base.Mission == null)
-		{
-			return 0;
-		}
-		int num = 0;
-		Agent agent = null;
-		Agent agent2 = null;
-		try
-		{
-			agent = _mainAgent?.MountAgent;
-		}
-		catch
-		{
-		}
-		try
-		{
-			agent2 = _targetAgent?.MountAgent;
-		}
-		catch
-		{
-		}
-		try
-		{
-			foreach (Agent agent3 in base.Mission.Agents)
-			{
-				if (agent3 == null || !agent3.IsActive() || !agent3.IsHuman || agent3 == _mainAgent || agent3 == _targetAgent || agent3 == agent || agent3 == agent2)
-				{
-					continue;
-				}
-				Team team2 = null;
-				try
-				{
-					team2 = agent3.Team;
-				}
-				catch
-				{
-					team2 = null;
-				}
-				if (team2 == null || team2 != team)
-				{
-					continue;
-				}
-				CharacterObject characterObject = null;
-				try
-				{
-					characterObject = agent3.Character as CharacterObject;
-				}
-				catch
-				{
-					characterObject = null;
-				}
-				if (characterObject != null && !characterObject.IsHero)
-				{
-					num++;
-				}
-			}
-		}
-		catch
-		{
-		}
-		return num;
-	}
-
-	private bool ShouldPositionEscortSide(List<Agent> escorts, bool sideFinalized, int maxCount)
-	{
-		if (escorts == null || escorts.Count == 0 || maxCount <= 0)
-		{
-			return false;
-		}
-		if (!sideFinalized)
-		{
-			return true;
-		}
-		int num = Math.Min(escorts.Count, maxCount);
-		for (int i = 0; i < num; i++)
-		{
-			if (!IsMeetingEscortAlreadyPositioned(escorts[i]))
-			{
-				return true;
-			}
-		}
-		return false;
-	}
-
-	private bool TryGetEncounterBattleTroopCountForTeam(Team team, out int troopCount)
-	{
-		troopCount = 0;
-		if (team == null)
-		{
-			return false;
-		}
-		if (!TryGetBattleSideForTeam(team, out var side))
-		{
-			return false;
-		}
-		MapEvent currentEncounterBattleSafe = GetCurrentEncounterBattleSafe();
-		if (currentEncounterBattleSafe == null)
-		{
-			return false;
-		}
-		try
-		{
-			troopCount = ((side == BattleSideEnum.Attacker) ? currentEncounterBattleSafe.AttackerSide.TroopCount : currentEncounterBattleSafe.DefenderSide.TroopCount);
-			return troopCount > 0;
-		}
-		catch
-		{
-			troopCount = 0;
-			return false;
-		}
-	}
-
-	private bool TryGetBattleSideForTeam(Team team, out BattleSideEnum side)
-	{
-		side = BattleSideEnum.None;
-		if (team == null)
-		{
-			return false;
-		}
-		try
-		{
-			PropertyInfo propertyInfo = team.GetType().GetProperty("Side") ?? team.GetType().GetProperty("BattleSide") ?? team.GetType().GetProperty("MissionSide");
-			object value = propertyInfo?.GetValue(team, null);
-			if (value == null)
-			{
-				return false;
-			}
-			if (value is BattleSideEnum battleSideEnum)
-			{
-				side = battleSideEnum;
-				return side != BattleSideEnum.None;
-			}
-			if (Enum.TryParse(value.ToString(), ignoreCase: true, out BattleSideEnum result))
-			{
-				side = result;
-				return side != BattleSideEnum.None;
-			}
-		}
-		catch
-		{
-		}
-		return false;
-	}
-
-	private MapEvent GetCurrentEncounterBattleSafe()
-	{
-		try
-		{
-			return PlayerEncounter.Battle ?? PlayerEncounter.EncounteredBattle ?? MapEvent.PlayerMapEvent;
-		}
-		catch
-		{
-			return null;
-		}
-	}
-
-	private void TrySpawnFallbackEscortsForBothSides(int desiredCount, Team playerTeam, Team targetTeam, Vec3 playerAnchor, Vec3 playerForward, Vec3 targetAnchor, Vec3 targetForward, int existingPlayerEscorts, int existingTargetEscorts, bool allowPlayerSpawn, bool allowTargetSpawn)
-	{
-		try
-		{
-			PartyBase mainParty = PartyBase.MainParty;
-			PartyBase partyBase = _targetHero?.PartyBelongedTo?.Party;
-			if (mainParty == null || partyBase == null || playerTeam == null || targetTeam == null)
-			{
-				return;
-			}
-			int num = 0;
-			int num2 = 0;
-			int num3 = Math.Max(0, desiredCount - Math.Max(0, existingPlayerEscorts));
-			int num4 = CountHealthyNonHeroTroops(mainParty);
-			if (allowPlayerSpawn && num3 > 0 && num4 > 0)
-			{
-				int num5 = Math.Min(num3, num4);
-				if (num5 > 0)
-				{
-					List<CharacterObject> list = CollectTopTroopsFromParty(mainParty, num5);
-					if (list.Count > 0)
-					{
-						num = SpawnEscortAgentsFromTroops(mainParty, playerTeam, playerAnchor, playerForward, list);
-					}
-				}
-			}
-			int num6 = Math.Max(0, desiredCount - Math.Max(0, existingTargetEscorts));
-			int num7 = CountHealthyNonHeroTroops(partyBase);
-			if (allowTargetSpawn && num6 > 0 && num7 > 0)
-			{
-				int num8 = Math.Min(num6, num7);
-				if (num8 > 0)
-				{
-					List<CharacterObject> list2 = CollectTopTroopsFromParty(partyBase, num8);
-					if (list2.Count > 0)
-					{
-						num2 = SpawnEscortAgentsFromTroops(partyBase, targetTeam, targetAnchor, targetForward, list2);
-					}
-				}
-			}
-			Logger.Log("MeetingBattle", $"Fallback escort spawn: player={num}, target={num2}");
-		}
-		catch (Exception ex)
-		{
-			Logger.Log("MeetingBattle", "Fallback escort spawn failed: " + ex.Message);
-		}
-	}
-
 	private int CountHealthyNonHeroTroops(PartyBase party)
 	{
 		int num = 0;
@@ -5918,298 +5731,6 @@ public class MeetingBattleLockMissionBehavior : MissionBehavior, IAgentStateDeci
 		{
 		}
 		return num;
-	}
-
-	private List<CharacterObject> CollectTopTroopsFromParty(PartyBase party, int maxCount)
-	{
-		List<CharacterObject> list = new List<CharacterObject>();
-		if (party == null || maxCount <= 0)
-		{
-			return list;
-		}
-		List<(CharacterObject, int, int, int)> list2 = new List<(CharacterObject, int, int, int)>();
-		try
-		{
-			foreach (TroopRosterElement item in party.MemberRoster.GetTroopRoster())
-			{
-				CharacterObject character = item.Character;
-				if (character != null && !character.IsHero)
-				{
-					int num = item.Number - item.WoundedNumber;
-					if (num > 0)
-					{
-						list2.Add((character, character.Tier, character.Level, num));
-					}
-				}
-			}
-		}
-		catch
-		{
-		}
-		foreach (var item2 in from x in list2
-			orderby GetCharacterEscortPriority(x.Item1) descending, x.Item2 descending, x.Item3 descending
-			select x)
-		{
-			for (int num2 = 0; num2 < item2.Item4; num2++)
-			{
-				if (list.Count >= maxCount)
-				{
-					break;
-				}
-				list.Add(item2.Item1);
-			}
-			if (list.Count >= maxCount)
-			{
-				break;
-			}
-		}
-		return list;
-	}
-
-	private int SpawnEscortAgentsFromTroops(PartyBase party, Team team, Vec3 anchor, Vec3 forward, List<CharacterObject> troops)
-	{
-		if (base.Mission == null || party == null || team == null || troops == null || troops.Count == 0)
-		{
-			return 0;
-		}
-		int num = 0;
-		Vec3 vec = forward;
-		vec.z = 0f;
-		if (vec.LengthSquared < 0.0001f)
-		{
-			vec = new Vec3(1f);
-		}
-		vec.Normalize();
-		Vec3 vec2 = new Vec3(0f - vec.y, vec.x);
-		if (vec2.LengthSquared < 0.0001f)
-		{
-			vec2 = Vec3.Side;
-		}
-		vec2.Normalize();
-		for (int i = 0; i < troops.Count; i++)
-		{
-			CharacterObject characterObject = troops[i];
-			if (characterObject == null)
-			{
-				continue;
-			}
-			Vec3 position = anchor + vec2 * (((i % 2 == 0) ? 1f : (-1f)) * (3f + (float)(i / 2) * 0.8f)) - vec * (3f + (float)(i / 2) * 0.5f);
-			try
-			{
-				if (base.Mission.Scene != null)
-				{
-					float height = position.z;
-					if (base.Mission.Scene.GetHeightAtPoint(position.AsVec2, BodyFlags.CommonCollisionExcludeFlags, ref height))
-					{
-						position.z = height;
-					}
-					else
-					{
-						position.z = base.Mission.Scene.GetGroundHeightAtPosition(position);
-					}
-				}
-			}
-			catch
-			{
-			}
-			bool noHorses = !CharacterPrefersMountedEscort(characterObject);
-			AgentBuildData agentBuildData = new AgentBuildData(characterObject).TroopOrigin(new PartyAgentOrigin(party, characterObject)).Monster(TaleWorlds.Core.FaceGen.GetMonsterWithSuffix(characterObject.Race, "_settlement")).Team(team)
-				.InitialPosition(in position)
-				.InitialDirection(vec.AsVec2.Normalized())
-				.Controller(AgentControllerType.AI)
-				.CivilianEquipment(civilianEquipment: false)
-				.NoHorses(noHorses);
-			Agent agent = null;
-			try
-			{
-				agent = base.Mission.SpawnAgent(agentBuildData);
-			}
-			catch
-			{
-				agent = null;
-			}
-			if (agent != null)
-			{
-				try
-				{
-					agent.SetIsAIPaused(isPaused: true);
-				}
-				catch
-				{
-				}
-				try
-				{
-					agent.ClearTargetFrame();
-				}
-				catch
-				{
-				}
-				try
-				{
-					agent.SetTargetPosition(agent.Position.AsVec2);
-				}
-				catch
-				{
-				}
-				try
-				{
-					agent.LookDirection = vec;
-				}
-				catch
-				{
-				}
-				try
-				{
-					TrySheathWeapons(agent);
-				}
-				catch
-				{
-				}
-				num++;
-			}
-		}
-		return num;
-	}
-
-	private List<Agent> CollectTopTierTeamAgents(Team team, int maxCount)
-	{
-		List<Agent> list = new List<Agent>();
-		if (team == null || maxCount <= 0 || base.Mission == null)
-		{
-			return list;
-		}
-		Agent agent = null;
-		Agent agent2 = null;
-		try
-		{
-			agent = _mainAgent?.MountAgent;
-		}
-		catch
-		{
-		}
-		try
-		{
-			agent2 = _targetAgent?.MountAgent;
-		}
-		catch
-		{
-		}
-		try
-		{
-			foreach (Agent agent3 in base.Mission.Agents)
-			{
-				if (agent3 == null || !agent3.IsActive() || !agent3.IsHuman || agent3 == _mainAgent || agent3 == _targetAgent || agent3 == agent || agent3 == agent2)
-				{
-					continue;
-				}
-				Team team2 = null;
-				try
-				{
-					team2 = agent3.Team;
-				}
-				catch
-				{
-				}
-				if (team2 != null && team2 == team)
-				{
-					CharacterObject characterObject = null;
-					try
-					{
-						characterObject = agent3.Character as CharacterObject;
-					}
-					catch
-					{
-					}
-					if (characterObject != null && !characterObject.IsHero)
-					{
-						list.Add(agent3);
-					}
-				}
-			}
-		}
-		catch
-		{
-		}
-		return list.OrderByDescending(GetAgentEscortPriority).ThenByDescending(GetAgentTier).ThenByDescending(GetAgentLevel).Take(maxCount)
-			.ToList();
-	}
-
-	private List<Agent> CollectNearbyMeetingEscortAgents(Team team, Vec3 anchor, int maxCount)
-	{
-		List<(Agent agent, float distanceSquared, bool isHero)> list = new List<(Agent, float, bool)>();
-		if (team == null || maxCount <= 0 || base.Mission == null)
-		{
-			return new List<Agent>();
-		}
-		try
-		{
-			foreach (Agent agent in base.Mission.Agents)
-			{
-				if (!IsMeetingEscortCandidate(agent, team))
-				{
-					continue;
-				}
-				Vec3 vec = agent.Position - anchor;
-				vec.z = 0f;
-				float lengthSquared = vec.LengthSquared;
-				if (lengthSquared > 256f)
-				{
-					continue;
-				}
-				bool item = false;
-				try
-				{
-					item = agent.Character is CharacterObject characterObject && characterObject.IsHero;
-				}
-				catch
-				{
-					item = false;
-				}
-				list.Add((agent, lengthSquared, item));
-			}
-		}
-		catch
-		{
-		}
-		return (from x in list
-			orderby x.distanceSquared, x.isHero, GetAgentEscortPriority(x.agent) descending, GetAgentTier(x.agent) descending, GetAgentLevel(x.agent) descending
-			select x.agent).Take(maxCount).ToList();
-	}
-
-	private bool IsMeetingEscortCandidate(Agent agent, Team team)
-	{
-		if (agent == null || !agent.IsActive() || !agent.IsHuman || team == null)
-		{
-			return false;
-		}
-		Agent agent2 = null;
-		Agent agent3 = null;
-		try
-		{
-			agent2 = _mainAgent?.MountAgent;
-		}
-		catch
-		{
-		}
-		try
-		{
-			agent3 = _targetAgent?.MountAgent;
-		}
-		catch
-		{
-		}
-		if (agent == _mainAgent || agent == _targetAgent || agent == agent2 || agent == agent3)
-		{
-			return false;
-		}
-		try
-		{
-			return agent.Team == team;
-		}
-		catch
-		{
-			return false;
-		}
 	}
 
 	private int GetAgentEscortPriority(Agent agent)
