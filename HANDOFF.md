@@ -1,3 +1,9 @@
+# 当前交接：缓存、导出、终端设置和部署备份恢复旧目录（2026-10-11，OFFLINE_VERIFIED / LIVE_PENDING）
+
+- 工作区 `E:/AnimusForge-klfwdf` / `delivery/policy-bounded-retrieval-20261010`；检查点 `2053aff9`，运行时 `2f8edb1f`、编辑器 `bfcdb4da`、部署 `60c94397`，导入reparse收尾 `ad39448d`。缓存恢复模组 `Logs` 并按修改时间重读；游戏/编辑器只用模组 `PlayerExports`，终端设置用 `ModuleData`，导出备份用模组 `Recovery`，部署备份用 `Modules/.AnimusForge.Recovery/deploy`。这四项忽略 `ANIMUSFORGE_DATA_ROOT`，不读、迁移或删除旧 C 盘 AF 用户数据；本条明确替代下方提示词任务的“缓存、PlayerExports 路径不变”边界。
+- 原统一 Debug 双 API/Bootstrap/双 Coup gate 通过，两实现各348 warning/0 error；双实际 DLL 各69存储/100提示词检查，双 API 导入导出159、纯路径63、真实 MCM47、编辑器完整九步及权限/reparse边界、合成部署时间合并/回滚/中断阻断通过。较新的默认世界书可以替换较旧同名玩家文件，已按选择规则保留可验证备份；提示词与终端已有文件仅补缺失。
+- [唯一主台账：证据、基线失败及回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#module-runtime-storage-20261011)；[已核源码地图](docs/architecture/af-framework-code-scope.md#module-runtime-storage-20261011)。总收据 `artifacts/tests/module-runtime-20261011/verification-receipt.json`。J15完整套件3365/3364计数在基线同样失败，未削弱断言；旧124文件Release Stage测试缺输入未跑。未Stage、部署、打包、推送或实机；旧TTS临时目录/Bootstrap回退不动，后续游戏内保存和重启回读另行授权。
+
 # 当前交接：精准回退两项外交补丁改动（2026-10-11，ROLLED_BACK / ROOT_CAUSE_UNCONFIRMED）
 
 - 按用户明确要求仅 inverse `aba208e8` → `a6bf41a6`、`8097f599` → `ca994df8`，撤销两处源码修改和四个新增测试文件；其他作者代码/配置/部署保护保留，不 reset、改写历史或继续补救式修改。
@@ -6,7 +12,7 @@
 
 # 当前交接：自定义提示词恢复模组内读写（2026-10-11，OFFLINE_VERIFIED / LIVE_PENDING）
 
-- 当前工作区 `E:/AnimusForge-klfwdf` / `delivery/policy-bounded-retrieval-20261010`；检查点 `e5fc3069`，部署保护 `ebb29ac5`，提示词/配置产品 `45c63066`。恢复当前模组单目录、缺失初始化与逐类清空保存，保留当前文案/新功能、字段身份、严格 UTF-8/大小/reparse/坏原件/原子写及一秒/五秒缓存；已有 CustomPrompts 安装时全部保护，仅补缺失。C 盘旧内容保留不迁移且不再生效，日志、缓存、PlayerExports 不变。
+- 当前工作区 `E:/AnimusForge-klfwdf` / `delivery/policy-bounded-retrieval-20261010`；检查点 `e5fc3069`，部署保护 `ebb29ac5`，提示词/配置产品 `45c63066`。恢复当前模组单目录、缺失初始化与逐类清空保存，保留当前文案/新功能、字段身份、严格 UTF-8/大小/reparse/坏原件/原子写及一秒/五秒缓存；已有 CustomPrompts 安装时全部保护，仅补缺失。C 盘旧内容保留不迁移且不再生效。该轮“日志、缓存、PlayerExports 不变”为当时范围；缓存/导出现由[本轮目录恢复](docs/animusforge-refactoring-and-repository-reorganization-plan.md#module-runtime-storage-20261011)替代，常规日志仍不变。
 - 原双 API/Bootstrap/双 Coup 门禁通过；两版实际 DLL 存储专项各100、人物29、快报提示词12、上限配置59及原版程序集适配各97 PASS，合成部署保留/补齐/重复/回滚和 Stage 默认 SHA 通过。原警告及无关完整快报/日志路径失败单独保留；不是全仓或实机验收，没有 Stage/部署/打包/推送。
 - [唯一主台账：证据、风险与 focused inverse](docs/animusforge-refactoring-and-repository-reorganization-plan.md#module-custom-prompts-20261011)；[已验证源码地图](docs/architecture/af-framework-code-scope.md#module-custom-prompts-20261011)。总收据 `artifacts/tests/module-prompts-20261011/verification-receipt.json`。后续等待明确授权的游戏内编辑、保存、退出重启回读；保护部署意味着新默认不会覆盖已有 JSON。
 
