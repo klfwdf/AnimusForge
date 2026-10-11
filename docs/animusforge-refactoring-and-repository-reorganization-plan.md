@@ -15,6 +15,12 @@
 - 原命令 exit0 / `Build Result : success (dual coup seam gates passed)`；1.3.15.110062 / 1.4.6.115628 两实现各 348 warning / 0 error，Bootstrap/probe 各 0 warning / 0 error；两实际最终 DLL 各 `PASS registration smoke`、memory assertions=20。最终 1.3 SHA `e71f254ec8b5b8b9a23caed91f9bd3d345a65b55f272dca82e0f1a81f8b97f1f`，1.4 SHA `101b439b9d4d281ef408f201ce104ec04d2e83d75a56bcefa9473e07fa4bea73`；marker/API/Flavor/PDB/双 gate 哈希绑定与构建输入未变检查通过，八源码锚点再次双模式 PASS。完整调用、日志和复验收据 `artifacts/tests/wiring-official-build-approved-20261014/run-67f8aaa489454742b0c109d8ee0bc9e3/{invocation.json,run.log,verified-receipt.json}`。
 - 本次结果补齐原脚本顶层验证，并接续首次未获清理回复的状态；首次隔离验证及其失败证据不删除、不改绿。只完成获准构建验证，未改产品或构建脚本、未 Stage/部署/推送/打包，实机和全仓接线边界不变。
 
+### 续查：世界外交多补丁注册（ACTIVE）
+
+- 用户继续 Debug；从干净 `6f57e9a46568b75d741b5c5a00219bd4fe3a4dbe` 接续，不重复拉取或覆盖游戏。沿真实 StartupPatchComposition → DiplomacyModuleServices → WorldDiplomacyBehavior 注册与战役 RegisterEvents 检查，完整未改注册/事件/日志方法的受控复现中 6 个目标仅成功 5 个，总完成标记却为 true；真实战役注册与显式重试均仍为 6 次尝试，缺失的共享记忆 postfix 永久不补。证据 `artifacts/tests/world-diplomacy-patch-repro/run-7034d4ff0a85465889efc03a5f2d130b/run.log`，exit1；这是受控 Harmony/game/logger 叶的离线接线复现，不是用户实机故障归因。
+- 当前有限切片只修本 owner 的多 hook 完成状态、已成功目标去重和既有战役注册的失败项补装；不启用新补丁、不改外交业务/三渠道默认入口/存档/外部 API/精灵 owner。频率仅启动与战役 RegisterEvents；缓存只存少量固定 MethodBase 元数据，不持有 Hero/Agent，不增加 Tick/全世界扫描/后台读取。
+- 退出门：完整真实注册/事件方法的 red/green、每个目标与构造/缺失成员/日志失败、部分成功不得重复、原九个事件顺序保持；既有直接外交回归及原统一双API/Bootstrap/双Coup构建、源码锚点/diff检查。继续沿用仅清理两个具名构建产物目录的授权，不 Stage/部署/推送；历史 inverse/适配器夹具失败不刷新改绿。
+
 ### 保留的排查边界与失败
 
 - 当前适配器 runner 在实际断言前因生成夹具缺 `WorldBulletinParticipant` 报 CS0246；证据 `artifacts/tests/wiring-adapter-current-20261011/run-f27a5b5bd67e4c3b8a466792127a04e7/wrapper.log`。J17 历史 inverse gate 的 `Unreviewed J17 current owner: WarStats/AfWarStatsBehavior.cs` 仍失败；没有刷新 hash、删断言或把测试漂移认作生产断线。
