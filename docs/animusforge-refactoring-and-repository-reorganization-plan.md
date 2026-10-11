@@ -1,9 +1,27 @@
 <a id="oral-diplomacy-declaration-20261012"></a>
-## 口头外交 AI 宣言与可见回执修复（2026-10-12，ACTIVE）
+## 口头外交 AI 宣言与可见回执修复（2026-10-12，OFFLINE_VERIFIED / LIVE_PENDING）
 
 - 用户明确批准：删除外交代码回执进入 NPC 正文及额外承诺提示；口头宣言由 AI 使用真实对话与已同意条款拟文；与玩家国王已谈妥的双边协议发布即兑现，第三国未同意仍走提案。基线 `14ce14ae974a45e5b129d99effa1bd4e2942bab8`，`E:/Mount-Blade-Bannerlord-AnimusForge-mod-main` / `main`，开工无未提交改动。
 - 有限范围：共享外交标签消费、口头约定拟文/提交/执行及对应三渠道规则、持久化兼容和离线回放。复用外交请求队列、API、预算、正文篇幅及真实效果端口；不改变构建入口，不部署、打包、推送，不调用收费服务。
 - 退出门：回执不进入可见回复/语音/人物历史；异步拟文确实使用对话素材与锁定条款、禁止模板假成功；已谈妥双边协议只执行一次，第三国提案保持；取消/改约/换国王/读档/迟到结果/失败可恢复边界；受影响专项及官方 1.3/1.4 + Bootstrap 门禁。实机与真实 provider 分层标记 NOT-RUN。
+
+### 当前实现与兼容边界
+
+- 检查点 `140d48924`，产品及回放提交 `f8ac6c267f73839aa81f4bd666635d2c5fa93e7d`。共享标签消费者执行动作但丢弃返回的系统文案，诊断留日志；无 speaker、模块不可用、异常及畸形外交标签也不泄露指令。Native / Scene / Courier 沿用现有共同 bridge，未改默认交互入口或 TTS 网络。
+- 移除新承诺和撤回提案的固定正文模板。两者均绑定持久化约定 ID/版本进入现有 `generate` 队列，复用普通宣言写作合同、配置篇幅、国家画像、文化/统治者语气、私人记忆及有界外交历史；交谈原文和确认条款提供素材，私人秘密及未经证实的自述不自动公开。AI 只写正文、标题与评价，必须原样返回唯一固定动作/对象/条款/来源；短于配置、空白、截断、坏 JSON、技术文案和改约结果延期，不发布模板。
+- 当口头交谈双方确为 NPC 当前统治者与玩家国王，且已有玩家/NPC 本次交谈材料时，记录玩家国王身份。新双边协议用 `accept_*` 宣告履行，借用原有和平/同盟/贸易/并入/臣属效果 owner；执行输入只是未归档的条款校验对象，不伪造玩家提案或玩家接受宣言。无玩家同意证据的旧约定及第三国事项仍用原正常提案/正式答复。
+- 每次送出与主线程提交重验约定版本、来源、当前国王、国家权限与真实条款状态；沿用现有请求 attempt、存档 generation、回合 revision 和动作签名 admission。取消/改约/明确延期移除旧任务；未知/部分效果、已发布历史公文不重放。撤回只在原开放提案仍有效时执行，异步期间被接受的原案不能撤回。
+- 新增约定/任务的可选 JSON 字段，保留类、旧字段、枚举与存档键身份；旧记录没有玩家确认字段时不推定合意。依然经既有世界外交严格分块 adapter 保存，不新增字符串键、Tick 序列化或跨线程游戏对象读取。运行频率为交谈提交、实际发送/完成边界；重拟文最早次日，现有每日最多4项维护及既有队列/请求预算/lease 限制继续适用，无额外轮询或全世界扫描。
+
+### 离线证据与未覆盖项
+
+- `artifacts/oral-diplomacy-declaration-20261012/baseline.log` 在旧消费者复现回执进入台词。最终 `oral-replay.log` **141 assertions PASS**：共享输出清理、真实 Application 队列/写作材料/配置篇幅、已合意效果与第三国提案、AI 改动作/对象/条款/坏稿拒收、原案撤回/已被接受保护、日级重试、旧 JSON 默认、重复/取消/延期/国王/版本/回合/读档晚结果，以及经过实际 completion dispatcher 的强制异步 yield 与同代条款变化。Game/画像及网络叶为夹具，不是付费 provider 或实机验收。
+- `full-replay.log` **4209 assertions PASS**，保持现有外交整个 smoke 入口；`chunk-replay.log` **PASS persistenceChunkReplay / civilWarChunkRegression**。消费回执的旧断言调整为仅保留原 NPC 台词，既有机械调用/权限/结果断言仍保留，未删除回归测试。
+- `chunk-contract.log` **既存 FAIL**：目录仍把 `_af_kingdom_civil_war_v2` 的分块 owner 写为迁移前 MyBehavior；真实接线在 CampaignCivilWarPersistenceAdapter。`catalog-baseline-evidence.json` 确认目录、校验器、旧/新 owner 四输入与开工 `14ce14ae` 相同。本包不改无关目录，不能称所有存档目录校验通过。
+- 原统一 `scripts/build/build_single_module.ps1` Release 双 API、Bootstrap、双 Coup 门禁最终通过，`dual-build-final.log` exit0。引用为 v1.3.15.110062 / v1.4.6.115628，两实现各352 warning / 0 error，Bootstrap 2 warning / 0 error；NU1900 网络审计警告保留。没有 Stage/部署。曾因缺 WorkshopContentDir 找不到 MCMv5 的失败保留为 `dual-build.log`，随后使用核实的本机 Workshop 依赖复验，未改脚本。最终构建后2797源码/构建输入指纹保存在 `final-source-inputs-after-build.json`，产物 SHA 与产品提交在 `verification-receipt.json`。
+- 本包20源码锚点在产品提交与 working-tree 两模式均 PASS，见本地 `code-map.json`、`code-map-revision.log`、`code-map-working-tree.log`；owner、实际消费者、一基坐标及未覆盖责任集中在[源码地图](architecture/af-framework-code-scope.md#oral-diplomacy-declaration-20261012)。并行玩家外交设计文档保留，不纳入本包产品提交或替代其设计状态。
+- 如需回滚，只为产品提交 `f8ac6c267` 创建 focused inverse，并重新运行受影响回放与双构建；检查点和其他作者提交保留，不 hard reset 或重写历史。本轮尚未进行实机安装，因此没有游戏目录回滚操作。
+- **NOT-RUN**：真实 provider 的写作质量、完整三渠道 UI/TTS 实机、玩家旧 `.sav`、Stage/部署/打包/推送。本地回放能验证接线和所列状态，不承诺模型每次都写出优质文章，也不代表 Bannerlord 所有补丁版本通过实机验收。
 
 <a id="workspace-safe-publication-20261011"></a>
 ## 2026-10-11 工作区完整安全发布（用户明确授权）

@@ -1,4 +1,10 @@
-# 当前交接：工作区完整安全发布（2026-10-11）
+# 当前交接：口头外交 AI 宣言与正文回执清理（2026-10-12，OFFLINE_VERIFIED / LIVE_PENDING）
+
+- 用户已授权实施；`E:/Mount-Blade-Bannerlord-AnimusForge-mod-main` / `main`，检查点 `140d48924`、产品 `f8ac6c267`。共享消费层不再输出外交系统回执；承诺与撤回进入原 AI 宣言队列，使用交谈素材与锁定动作/条款，失败延期而不生成模板。玩家国王已谈妥双边协议发布兑现，第三国未同意仍按正常提案；旧记录不推定同意。
+- 口头外交专项141、完整外交回放4209、存档分块回放通过；Release 双 API / Bootstrap / 双 Coup 门禁通过，20源码锚点双模式通过。既存 civil-war 分块目录 owner 失配仍 FAIL，已保存基线证据。真实 provider、三渠道 UI/TTS、旧玩家存档未验，未部署、打包或推送。
+- [唯一主台账：证据及边界](docs/animusforge-refactoring-and-repository-reorganization-plan.md#oral-diplomacy-declaration-20261012)；[已核源码地图](docs/architecture/af-framework-code-scope.md#oral-diplomacy-declaration-20261012)。本地总收据 `artifacts/oral-diplomacy-declaration-20261012/verification-receipt.json`；并行设计访谈及其他作者改动保留，本交接不授权其产品实施。
+
+# 历史交接：工作区完整安全发布（2026-10-11）
 
 - 本轮用户明确授权安全合并后推送；fetch 后 `origin/main` 仍为 `14ce14ae`，无远端新增提交。原工作区 `8d521ec5` 干净、领先25提交，因此不制造额外合并，不改写历史，普通快进发布到 `origin/main`。
 - 纳入工作区全部已提交变化，包括其他对话的会面护卫、模组内提示词、缓存/导出/终端设置/恢复备份；已撤销的两项外交重试保持撤销，不重加。未触碰其他工作树或分支。
