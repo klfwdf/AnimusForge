@@ -10,15 +10,16 @@ public sealed class PlayerExportsService
 
     public string FindDefaultPlayerExportsRoot(string startDirectory)
     {
-        // Kept for editor callers; the current directory is never a data-root fallback.
-        var dataRoot = AnimusForgeDataPaths.GetCurrentRoot();
+        var dataRoot = AnimusForgeDataPaths.FindModuleRoot(startDirectory);
         var exports = AnimusForgeDataPaths.GetPlayerExportsDirectory(dataRoot);
         return exports;
     }
 
     public IReadOnlyList<PlayerExportsPackageInfo> ListPackages(string playerExportsRoot)
     {
-        if (string.IsNullOrWhiteSpace(playerExportsRoot) || !Directory.Exists(playerExportsRoot))
+        if (string.IsNullOrWhiteSpace(playerExportsRoot)) return Array.Empty<PlayerExportsPackageInfo>();
+        playerExportsRoot = ValidateEditablePlayerExportsRoot(playerExportsRoot);
+        if (!Directory.Exists(playerExportsRoot))
         {
             return Array.Empty<PlayerExportsPackageInfo>();
         }
@@ -77,6 +78,7 @@ public sealed class PlayerExportsService
 
     public PlayerExportsPackageData LoadPackage(string packagePath)
     {
+        packagePath = ValidateEditablePackageRoot(packagePath);
         var info = BuildPackageInfo(packagePath);
         var data = new PlayerExportsPackageData { Info = info };
         LoadKnowledgeRules(data);
@@ -216,12 +218,9 @@ public sealed class PlayerExportsService
 
         var full = Path.GetFullPath(playerExportsRoot).TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
         var parent = Directory.GetParent(full);
-        if (!string.Equals(Path.GetFileName(full), "PlayerExports", StringComparison.OrdinalIgnoreCase)
-            || parent == null || !string.Equals(parent.Name, "UserData", StringComparison.OrdinalIgnoreCase)
-            || parent.Parent == null)
-            throw new InvalidOperationException("Editable PlayerExports must be under an AF user-data root.");
-
-        var expected = AnimusForgeDataPaths.GetPlayerExportsDirectory(parent.Parent.FullName);
+        if (!string.Equals(Path.GetFileName(full), "PlayerExports", StringComparison.OrdinalIgnoreCase) || parent == null)
+            throw new InvalidOperationException("Editable PlayerExports must belong to an AnimusForge module.");
+        var expected = AnimusForgeDataPaths.GetPlayerExportsDirectory(parent.FullName);
         if (!string.Equals(full, expected, StringComparison.OrdinalIgnoreCase))
             throw new InvalidOperationException("Editable PlayerExports root is not canonical.");
         return expected;
@@ -436,9 +435,12 @@ public sealed class PlayerExportsService
 
     private PlayerExportsPackageInfo BuildPackageInfo(string packagePath)
     {
+        packagePath = ValidateEditablePackageRoot(packagePath);
         var dir = new DirectoryInfo(packagePath);
         var knowledgeDir = Path.Combine(packagePath, "knowledge", "rules");
         var personaDir = Path.Combine(packagePath, "personality_background");
+        AssertNoReparse(knowledgeDir);
+        AssertNoReparse(personaDir);
         return new PlayerExportsPackageInfo
         {
             Name = dir.Name,

@@ -65,7 +65,7 @@ The Bootstrap must be built independently from the implementation DLLs. Building
 Every function under `一键编译覆盖推送` (the `.bat` entry points) and `scripts/build` (the PowerShell implementations they call) must use the unified contract:
 
 - Build: build Bootstrap plus both implementation variants, then assemble one staged `AnimusForge` module.
-- Deploy/overwrite: assemble and validate the project-local Stage against current build artifacts, then replace only Stage-listed files in `Modules/AnimusForge` through same-volume per-file candidates. Keep verified private Recovery backups and roll back touched files on a caught failure; an interrupted transaction blocks another deploy pending recovery inspection. Unlisted installed files are never mirrored or deleted.
+- Deploy/overwrite: assemble and validate the project-local Stage against current build artifacts, then replace only Stage-listed files in `Modules/AnimusForge` through same-volume per-file candidates. Keep verified backups in `Modules/.AnimusForge.Recovery/deploy`; rollback restores bytes and timestamps, and an interrupted transaction blocks another deploy. Preserve existing `CustomPrompts` and `ModuleData/TerminalSettings.json`, installing only missing files. Merge `PlayerExports` by modification time (newer wins; installed files win ties). Unlisted installed files are never mirrored or deleted.
 - Build and overwrite: run the unified build, deploy the one module, and retain the existing optional launch behavior.
 - Package: package the one staged module into one ZIP containing both implementation DLLs.
 - Push: publish the same unified source/output contract; no step may recreate or publish the legacy two modules.
@@ -73,7 +73,7 @@ Every function under `一键编译覆盖推送` (the `.bat` entry points) and `s
 
 Scripts must consume explicitly captured 1.3 and 1.4 build artifacts. A successful file-existence check is insufficient: validation should also reject identical/misrouted version artifacts when build metadata can identify them.
 
-Generated client output excludes `Logs`, `PlayerExports`, user data, and the separately installed ONNX models; source/package assembly never recursively copies earlier generated module folders. Deployment leaves unlisted installed files untouched, including `Modules/AnimusForge/ONNX`. One-time personal-data migration writes to `%LOCALAPPDATA%/AnimusForge`; it does **not** relocate ONNX models. Models are installation dependencies, not personal settings or save data.
+Generated client output contains the reviewed clean defaults, including the four built-in `PlayerExports` worldbooks. It excludes player-edited data, terminal settings, `Logs`, caches, runtime Recovery and the separately installed ONNX models. Source/package assembly never copies player directories or earlier generated module folders. Deployment preserves unlisted installed files, including `Modules/AnimusForge/ONNX`, and never syncs player data back to source or Stage. Runtime exports, cache, terminal settings and export Recovery belong to the current module; deployment Recovery belongs to `Modules`. None use AppData or `ANIMUSFORGE_DATA_ROOT`. Old C-drive files remain untouched and inactive; automatic migration is not provided.
 
 ## Legacy Module Rules
 
@@ -84,7 +84,7 @@ The retired folders are:
 
 They are never valid runtime roots, build outputs, deployment targets, package roots, or launcher modules after this migration. Code must not fall back to either folder when resolving the active module root.
 
-When preserving existing user data is necessary, the explicit migration tool may inspect the retired folders only as read-only, one-time migration candidates. Migrated data belongs under `%LOCALAPPDATA%/AnimusForge`; the legacy folders must not be modified or refreshed. Existing active user files win conflicts, and private Recovery retains verified source bytes and completion records.
+The historical migration implementation and evidence are retained, but its CLI activation/inventory entry points are retired before any AppData lookup. Legacy module folders and old C-drive records do not participate in runtime reads or new deployment recovery. Do not run a migration or modify those folders without a separate explicit request.
 
 The unified installer or script should warn when an enabled legacy launcher module is detected because loading a legacy copy together with the unified module can duplicate Harmony patches and campaign registrations. Automated cleanup must not delete user data without an explicit, scoped cleanup action.
 

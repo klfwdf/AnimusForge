@@ -38,7 +38,7 @@ $secondRelative = $stageFiles[1].FullName.Substring($stage.Length).TrimStart('\'
 $modules = Join-Path $run 'game\Modules'
 $target = Join-Path $modules 'AnimusForge'
 $local = Join-Path $run 'localappdata'
-$recovery = Join-Path $local 'AnimusForge\Recovery\deploy'
+$recovery = Join-Path $modules '.AnimusForge.Recovery\deploy'
 $oldManaged = 'synthetic-previous-managed-bytes'
 $sentinels = @(
     'ONNX\synthetic.bin',

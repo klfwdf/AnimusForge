@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using static AnimusForge.MyBehavior;
 int count=0;
 void Check(bool result,string label){if(!result)throw new Exception(label);count++;Console.WriteLine("PASS "+label);}
+if(args.Contains("--prompt-storage-only")){PromptStorageCases();Console.WriteLine("PASS bulletin prompt storage assertions="+count);return;}
 string Clean(string x)=>(x??"").Trim();
 List<EventRecordEntry> Sanitize(List<EventRecordEntry> x)=>WeeklyEventDataImportOwner.SanitizeEventRecordEntries(x,Clean,Clean,Clean);
 void Normalize(List<EventRecordEntry> x)=>WeeklyEventDataImportOwner.NormalizeEventRecordEntriesInPlace(x,Clean,Clean,Clean);
@@ -268,7 +269,8 @@ var oldIssueObject=Newtonsoft.Json.Linq.JObject.FromObject(issue);oldIssueObject
 var noField=oldIssueObject.ToObject<EventRecordEntry>();Normalize(new(){noField});
 Check(noField.BulletinAnecdote==""&&!noField.ShortSummary.Contains("牙"),"old JSON missing optional field reads as empty and reconstructs only recorded facts");
 Check(WeeklyReportArchivePolicy.CloneForArchive(issue).BulletinAnecdote==issue.BulletinAnecdote,"archive projection keeps optional anecdote and original full body");
-// Actual JSON file/layered reader and raw exact-default migration; no user directory access.
+void PromptStorageCases(){
+// Actual single-directory JSON reader and raw exact-default migration; no user directory access.
 Directory.CreateDirectory("prompt-fixtures");Directory.CreateDirectory("prompt-packaged");
 string promptFile=Path.Combine("prompt-fixtures","WorldBulletinWritingRequirements.json");
 void WritePrompt(string text)=>File.WriteAllText(promptFile,JsonConvert.SerializeObject(new {Version=1,Text=text}));
@@ -294,9 +296,11 @@ Check(!DuelSettings.ReplayReadPrompt(promptFile,out _)&&File.ReadAllText(promptF
 var packagedPrompt=Newtonsoft.Json.Linq.JObject.Parse(File.ReadAllText("packaged-default.json")).Value<string>("Text");
 Check(packagedPrompt==WorldBulletinPolicy.DefaultWritingRequirements,"shipped default resource exactly matches runtime default");
 File.Copy("packaged-default.json",Path.Combine("prompt-packaged","WorldBulletinWritingRequirements.json"));
-Check(DuelSettings.ReplayReadLayered("prompt-fixtures","prompt-packaged",out var recoveredPrompt)&&recoveredPrompt==packagedPrompt,"invalid override falls back through existing packaged layer");
+Check(!DuelSettings.ReplayReadDirectory("prompt-fixtures",out _) && File.ReadAllText(promptFile)=="broken JSON","invalid module prompt reports failure and retains original; no secondary layer");
 WritePrompt("");
-Check(DuelSettings.ReplayReadLayered("prompt-fixtures","prompt-packaged",out var layeredBlank)&&layeredBlank=="","explicit empty override wins over packaged default");
+Check(DuelSettings.ReplayReadDirectory("prompt-fixtures",out var moduleBlank)&&moduleBlank=="","explicit empty module prompt remains empty");
+}
+PromptStorageCases();
 // Actual NPC assembly + actual diplomacy adapter and permission selector. Only engine identities,
 // current owner/storage, country ordering and unchanged artwork/render boundaries are fixtures.
 var knowledgeOwner = new WorldDiplomacyBehavior(); WorldDiplomacyBehavior.Instance = knowledgeOwner;

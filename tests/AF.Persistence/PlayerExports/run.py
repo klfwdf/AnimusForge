@@ -127,6 +127,7 @@ project=project.replace("</ItemGroup>",'<Compile Include="PackageWeeklyInput.cs"
 project=project.replace("</ItemGroup>",'<Compile Include="PackageExportFormats.cs" /><Compile Include="'+str(ROOT / "src/AF.GameAdapter.Bannerlord/UI/Editors/DeveloperPackageExportController.cs").replace("\\","/")+'" /></ItemGroup>')
 
 links = ["src/AF.GameAdapter.Bannerlord/UI/Onboarding/OnboardingDatabaseImportController.cs",
+         "src/modules/AF.Module.Memory/ImportExport/CompressedMemoryExportBundleReader.cs",
          "src/AF.GameAdapter.Bannerlord/ImportExport/NpcDataIdentityFileAdapter.cs",
          "src/AF.GameAdapter.Bannerlord/ImportExport/PersonaProfileImportExportAdapter.cs",
          "src/modules/AF.Module.Persona/Profiles/PersonaProfileStateOwner.cs",

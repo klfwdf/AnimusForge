@@ -1,0 +1,315 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+
+enum FormationClass { Infantry, Cavalry, LightCavalry, HeavyCavalry, HorseArcher }
+enum BattleSideEnum { None, Attacker, Defender }
+struct Vec2 { public float x, y; }
+struct Vec3
+{
+    public float x, y, z;
+    public Vec3(float x, float y = 0, float z = 0) { this.x = x; this.y = y; this.z = z; }
+    public float LengthSquared => x * x + y * y + z * z;
+    public Vec2 AsVec2 => new Vec2 { x = x, y = y };
+    public void Normalize() { float n = MathF.Sqrt(LengthSquared); if (n > 0) { x /= n; y /= n; z /= n; } }
+    public static Vec3 operator -(Vec3 a, Vec3 b) => new Vec3(a.x - b.x, a.y - b.y, a.z - b.z);
+    public static Vec3 operator -(Vec3 a) => new Vec3(-a.x, -a.y, -a.z);
+}
+class CharacterObject { public bool IsHero, IsMounted; public int Tier = 3, Level = 15; public FormationClass DefaultFormationClass; public Hero HeroObject = new Hero(); }
+class Hero { public MobileParty PartyBelongedTo; public void MakeWounded(object killer = null, KillCharacterAction.KillCharacterActionDetail detail = KillCharacterAction.KillCharacterActionDetail.None) { } }
+class MobileParty { public PartyBase Party; }
+struct TroopRosterElement { public CharacterObject Character; public int Number, WoundedNumber; }
+class Roster
+{
+    public List<TroopRosterElement> Entries = new();
+    public IEnumerable<TroopRosterElement> GetTroopRoster() => Entries;
+    public int Count => Entries.Sum(e => e.Number);
+    public int Wounded => Entries.Sum(e => e.WoundedNumber);
+    public void AddToCounts(CharacterObject troop, int count, bool insertAtFront = false, int wounded = 0)
+    {
+        int i = Entries.FindIndex(e => e.Character == troop);
+        if (i < 0) throw new IndexOutOfRangeException("fixture roster index -1");
+        var entry = Entries[i]; entry.Number += count; entry.WoundedNumber += wounded;
+        if (entry.Number == 0) Entries.RemoveAt(i); else Entries[i] = entry;
+    }
+    public void AddToCounts(CharacterObject troop, int count, bool front, int wounded, int xp, bool remove, int index) => AddToCounts(troop, count, front, wounded);
+}
+class PartyBase { public static PartyBase MainParty; public Roster MemberRoster = new(); }
+class Team { public BattleSideEnum Side; }
+interface Origin { PartyBase Party { get; set; } CharacterObject Troop { get; set; } object BattleCombatant { get; } void SetKilled(); void SetWounded(); }
+class OriginData { public PartyBase Party { get; set; } public CharacterObject Troop { get; set; } public object BattleCombatant => Party; }
+class PartyAgentOrigin : OriginData, Origin
+{
+    bool _isInvincible, _alwaysWounded; CharacterObject _troop => Troop;
+    public PartyAgentOrigin(PartyBase party, CharacterObject troop) { Party = party; Troop = troop; }
+    @@PartyAgentOrigin@@
+}
+class Supplier
+{
+    public PartyBase Party; public Dictionary<int, CharacterObject> Troops = new();
+    public void OnTroopKilled(int descriptor) => Party.MemberRoster.AddToCounts(Troops[descriptor], -1);
+    public void OnTroopWounded(int descriptor) => Party.MemberRoster.AddToCounts(Troops[descriptor], 0, false, 1);
+}
+class PartyGroupAgentOrigin : OriginData, Origin
+{
+    bool _isRemoved; Supplier _supplier; int _descriptor;
+    public PartyGroupAgentOrigin(Supplier supplier, int descriptor)
+    { _supplier = supplier; _descriptor = descriptor; Party = supplier.Party; Troop = supplier.Troops[descriptor]; }
+    @@PartyGroupAgentOrigin@@
+}
+class TemporaryOrigin : OriginData, Origin { public void SetKilled() { } public void SetWounded() { } }
+static class KillCharacterAction { public enum KillCharacterActionDetail { None } public static void ApplyByBattle(Hero hero, object killer, bool show = false) { } }
+class Agent
+{
+    public int Index; public bool Active = true, IsHuman = true; public float Health = 100;
+    public CharacterObject Character; public Agent MountAgent; public Team Team; public Vec3 Position; public Origin Origin;
+    public bool IsActive() => Active && Health > 0;
+}
+class Agents : List<Agent>
+{
+    public int Scans;
+    public new List<Agent>.Enumerator GetEnumerator() { Scans++; return base.GetEnumerator(); }
+}
+class Mission { public Agents Agents = new(); public float CurrentTime; }
+class MissionBehavior { public Mission Mission = new(); }
+class MapEventSide { public int TroopCount; }
+class MapEvent { public static MapEvent PlayerMapEvent; public MapEventSide AttackerSide = new(), DefenderSide = new(); }
+static class PlayerEncounter { public static MapEvent Battle, EncounteredBattle; }
+static class MeetingBattleRuntime { public static bool IsCombatEscalated; }
+static class Logger { public static List<string> Messages = new(); public static void Log(string source, string message) => Messages.Add(message); }
+static class PerfProbe { public static IDisposable Scope(string name) => new ScopeStub(); class ScopeStub : IDisposable { public void Dispose() { } } }
+
+class Meeting : MissionBehavior
+{
+    Agent _mainAgent, _targetAgent, _meetingPlayerEscortAgent, _meetingTargetEscortAgent;
+    Hero _targetHero;
+    bool _leadersPlaced = true, _escortsPlaced, _playerEscortPlacementFinalized, _targetEscortPlacementFinalized;
+    float _escortPlacementTimer, _escortDebugLogCooldown;
+    @@TIMING_FIELDS@@
+    HashSet<int> _meetingEscortPositionedAgentIndices = new();
+    public int SpawnCalls, Positions;
+    public Agent PlayerEscort => _meetingPlayerEscortAgent;
+    public Agent TargetEscort => _meetingTargetEscortAgent;
+    public bool Finished => _escortsPlaced;
+    public void SetLeadersPlaced(bool placed) { _leadersPlaced = placed; }
+    public void InvalidateTeams() { _targetAgent.Team = _mainAgent.Team; }
+    public void ClearTargetParty() { _targetHero.PartyBelongedTo = null; }
+    public void ClearMission() { Mission = null; }
+    public void RemoveTargetLeader() { _targetAgent = null; }
+    public Team PlayerTeam = new() { Side = BattleSideEnum.Attacker }, TargetTeam = new() { Side = BattleSideEnum.Defender };
+    public PartyBase PlayerParty = new(), TargetParty = new();
+    public Meeting()
+    {
+        PartyBase.MainParty = PlayerParty; Logger.Messages.Clear(); MeetingBattleRuntime.IsCombatEscalated = false;
+        _targetHero = new Hero { PartyBelongedTo = new MobileParty { Party = TargetParty } };
+        _mainAgent = new Agent { Index = 1, Team = PlayerTeam, Character = new CharacterObject { IsHero = true }, Position = new Vec3(0) };
+        _targetAgent = new Agent { Index = 2, Team = TargetTeam, Character = new CharacterObject { IsHero = true }, Position = new Vec3(10) };
+        Mission.Agents.Add(_mainAgent); Mission.Agents.Add(_targetAgent);
+    }
+    public Agent Soldier(bool player, float distance = 40, CharacterObject troop = null, bool register = true)
+    {
+        troop ??= new CharacterObject(); var party = player ? PlayerParty : TargetParty;
+        if (register)
+        {
+            int i = party.MemberRoster.Entries.FindIndex(e => e.Character == troop);
+            if (i < 0) party.MemberRoster.Entries.Add(new TroopRosterElement { Character = troop, Number = 1 });
+            else party.MemberRoster.AddToCounts(troop, 1);
+        }
+        int index = Mission.Agents.Count + 1;
+        var supplier = new Supplier { Party = party }; supplier.Troops[index] = troop;
+        var agent = new Agent { Index = index, Team = player ? PlayerTeam : TargetTeam, Character = troop,
+            Position = new Vec3((player ? 0 : 10) + distance), Origin = new PartyGroupAgentOrigin(supplier, index) };
+        Mission.Agents.Add(agent); return agent;
+    }
+    public bool Place() => TryPlaceEscortGuards();
+    public void Tick(float dt)
+    {
+        Mission.CurrentTime += dt;
+        if (MeetingBattleRuntime.IsCombatEscalated) return;
+        _escortPlacementTimer -= dt; _escortDebugLogCooldown -= dt;
+        @@TICK@@
+    }
+    void RefreshMeetingFormationManagedAgents() { }
+    void MoveExtraMeetingCircleTroopsAway(Team team, Vec3 anchor, Vec3 forward, List<Agent> selected) { }
+    void PositionEscortAgents(Vec3 anchor, Vec3 forward, List<Agent> escorts, List<(float, float, bool)> slots)
+    {
+        foreach (var agent in escorts)
+            if (_meetingEscortPositionedAgentIndices.Add(agent.Index)) { agent.Position = anchor; Positions++; }
+    }
+    // Native spawn is a spy: the OLD production placement must never request this edge.
+    void TrySpawnFallbackEscortsForBothSides(int desiredCount, Team playerTeam, Team targetTeam,
+        Vec3 playerAnchor, Vec3 playerForward, Vec3 targetAnchor, Vec3 targetForward,
+        int existingPlayer, int existingTarget, bool allowPlayer, bool allowTarget)
+    {
+        if (allowPlayer && existingPlayer == 0) Spawn(PlayerParty, playerTeam, playerAnchor);
+        if (allowTarget && existingTarget == 0) Spawn(TargetParty, targetTeam, targetAnchor);
+    }
+    void Spawn(PartyBase party, Team team, Vec3 anchor)
+    {
+        var troop = party.MemberRoster.Entries.First(e => e.Number > e.WoundedNumber && !e.Character.IsHero).Character;
+        Mission.Agents.Add(new Agent { Index = Mission.Agents.Count + 1, Team = team, Character = troop,
+            Origin = new PartyAgentOrigin(party, troop), Position = anchor }); SpawnCalls++;
+    }
+    @@METHODS@@
+}
+
+static class Program
+{
+    static int passed, failed;
+    static void Check(bool value, string message) { if (!value) throw new Exception(message); }
+    static void Run(string name, Action test)
+    {
+        try { test(); passed++; Console.WriteLine("PASS " + name); }
+        catch (Exception error) { failed++; Console.WriteLine("FAIL " + name + ": " + error.GetType().Name + ": " + error.Message); }
+    }
+    public static int Main()
+    {
+        Run("distant real soldiers reused on both sides", () => {
+            var m = new Meeting(); var p = m.Soldier(true); var t = m.Soldier(false); var origin = t.Origin;
+            Check(m.Place(), "placement incomplete"); Check(m.SpawnCalls == 0, "synthetic guard spawned");
+            Check(m.PlayerEscort == p && m.TargetEscort == t && t.Origin == origin, "Agent/Origin identity changed");
+        });
+        Run("last-troop crash pattern eliminated", () => {
+            var m = new Meeting(); var real = m.Soldier(false); m.Place(); var guard = m.TargetEscort;
+            guard.Origin.SetKilled();
+            if (guard != real) real.Origin.SetWounded(); // OLD duplicate reaches native roster index -1.
+            Check(m.TargetParty.MemberRoster.Count == 0 && guard == real, "one troop represented by multiple agents");
+        });
+        Run("two troops guard killed other wounded", () => {
+            var m = new Meeting(); var troop = new CharacterObject(); var first = m.Soldier(false, 40, troop); var second = m.Soldier(false, 42, troop);
+            m.Place(); Check(m.Mission.Agents.Count == 4, "extra troop entity"); m.TargetEscort.Origin.SetKilled();
+            (m.TargetEscort == first ? second : first).Origin.SetWounded();
+            Check(m.TargetParty.MemberRoster.Count == 1 && m.TargetParty.MemberRoster.Wounded == 1, "incorrect casualty counts");
+        });
+        Run("native origin casualty once", () => {
+            var m = new Meeting(); var real = m.Soldier(false); m.Place(); m.TargetEscort.Origin.SetKilled(); m.TargetEscort.Origin.SetKilled();
+            Check(m.TargetParty.MemberRoster.Count == 0 && m.TargetEscort == real, "duplicate casualty");
+        });
+        Run("nearest valid soldier before distant high tier", () => {
+            var m = new Meeting(); var near = m.Soldier(false, 4); var far = m.Soldier(false, 40); far.Character.Tier = 9;
+            m.Place(); Check(m.TargetEscort == near && m.SpawnCalls == 0, "nearby preference changed");
+        });
+        Run("16 metre boundary included", () => {
+            var m = new Meeting(); var near = m.Soldier(false, 16); m.Soldier(false, 40).Character.Tier = 9;
+            m.Place(); Check(m.TargetEscort == near, "16m candidate excluded");
+        });
+        Run("fallback mounted priority then tier and level", () => {
+            var m = new Meeting(); m.Soldier(false, 40).Character.Tier = 9;
+            var low = m.Soldier(false, 40); low.Character.IsMounted = true;
+            var high = m.Soldier(false, 42); high.Character.IsMounted = true; high.Character.Tier = 5; high.Character.Level = 25;
+            var tie = m.Soldier(false, 43); tie.Character.IsMounted = true; tie.Character.Tier = 5; tie.Character.Level = 24;
+            m.Place(); Check(m.TargetEscort == high, "fallback priorities wrong");
+        });
+        Run("nearby equal distance priority tie", () => {
+            var m = new Meeting(); m.Soldier(false, 5); var cavalry = m.Soldier(false, 5); cavalry.Character.IsMounted = true;
+            m.Place(); Check(m.TargetEscort == cavalry, "nearby tie priority wrong");
+        });
+        foreach (string invalid in new[] { "hero", "mount", "inactive", "dead", "wrong_team", "wrong_party", "temporary", "null_origin", "party_origin", "null_character", "null_party" })
+            Run("exclude " + invalid, () => {
+                var m = new Meeting(); var bad = m.Soldier(false, 1); var good = m.Soldier(false, 40);
+                switch (invalid)
+                {
+                    case "hero": bad.Character.IsHero = true; break;
+                    case "mount": bad.IsHuman = false; break;
+                    case "inactive": bad.Active = false; break;
+                    case "dead": bad.Health = 0; break;
+                    case "wrong_team": bad.Team = m.PlayerTeam; break;
+                    case "wrong_party": bad.Origin.Party = m.PlayerParty; break;
+                    case "temporary": bad.Origin = new TemporaryOrigin { Party = m.TargetParty, Troop = bad.Character }; break;
+                    case "null_origin": bad.Origin = null; break;
+                    case "party_origin": bad.Origin = new PartyAgentOrigin(m.TargetParty, bad.Character); break;
+                    case "null_character": bad.Character = null; break;
+                    case "null_party": bad.Origin.Party = null; break;
+                }
+                m.Place(); Check(m.TargetEscort == good && m.SpawnCalls == 0, "invalid candidate selected");
+            });
+        Run("empty armies finish without guards", () => {
+            var m = new Meeting(); Check(m.Place(), "empty armies remain pending"); Check(m.SpawnCalls == 0 && m.TargetEscort == null, "ghost guard");
+        });
+        Run("all wounded army finishes immediately", () => {
+            var m = new Meeting(); var troop = new CharacterObject();
+            m.TargetParty.MemberRoster.Entries.Add(new TroopRosterElement { Character = troop, Number = 2, WoundedNumber = 2 });
+            Check(m.Place() && m.TargetEscort == null && m.SpawnCalls == 0, "wounded army waits or spawns");
+        });
+        Run("delayed native spawn reused", () => {
+            var m = new Meeting(); var troop = new CharacterObject(); m.TargetParty.MemberRoster.Entries.Add(new TroopRosterElement { Character = troop, Number = 1 });
+            Check(!m.Place() && m.SpawnCalls == 0, "pending army spawned a duplicate"); m.Mission.CurrentTime = 1;
+            var real = m.Soldier(false, 40, troop, false); Check(m.Place() && m.TargetEscort == real, "late troop not reused");
+        });
+        Run("five second timeout ends retry and logs once", () => {
+            var m = new Meeting(); m.TargetParty.MemberRoster.Entries.Add(new TroopRosterElement { Character = new CharacterObject(), Number = 1 });
+            Check(!m.Place(), "expected pending"); m.Mission.CurrentTime = 4.99f; Check(!m.Place(), "early timeout");
+            m.Mission.CurrentTime = 5; Check(m.Place() && m.Finished && m.TargetEscort == null && m.SpawnCalls == 0, "timeout not finalized");
+            int logs = Logger.Messages.Count; m.Place(); Check(Logger.Messages.Count == logs, "timeout logged twice");
+        });
+        Run("cached side stays stable while other side pending", () => {
+            var m = new Meeting(); var first = m.Soldier(true); m.TargetParty.MemberRoster.Entries.Add(new TroopRosterElement { Character = new CharacterObject(), Number = 1 });
+            m.Place(); var better = m.Soldier(true, 1); better.Character.Tier = 9; m.Mission.CurrentTime = 1; m.Place();
+            Check(m.PlayerEscort == first && m.Positions == 1, "cached escort changed or moved repeatedly");
+        });
+        Run("finished placement no further scans", () => {
+            var m = new Meeting(); m.Soldier(false); m.Tick(0.1f); int scans = m.Mission.Agents.Scans;
+            for (int i = 0; i < 20; i++) m.Tick(0.5f);
+            Check(m.Finished && m.Mission.Agents.Scans == scans && m.SpawnCalls == 0, "completed placement kept scanning");
+        });
+        Run("retry remains throttled to half second", () => {
+            var m = new Meeting(); m.TargetParty.MemberRoster.Entries.Add(new TroopRosterElement { Character = new CharacterObject(), Number = 1 });
+            m.Tick(0.01f); int scans = m.Mission.Agents.Scans; m.Tick(0.1f);
+            Check(m.Mission.Agents.Scans == scans && m.SpawnCalls == 0, "retry every frame or synthetic spawn");
+        });
+        Run("combat escalation stops all guard selection", () => {
+            var m = new Meeting(); m.Soldier(false); MeetingBattleRuntime.IsCombatEscalated = true;
+            m.Tick(1); m.Place(); Check(m.Mission.Agents.Scans == 0 && m.SpawnCalls == 0 && m.TargetEscort == null, "selection continued during combat");
+        });
+        Run("selection leaves roster and origin untouched", () => {
+            var m = new Meeting(); var real = m.Soldier(false); var origin = real.Origin; m.Place();
+            Check(m.TargetParty.MemberRoster.Count == 1 && m.TargetParty.MemberRoster.Wounded == 0 && real.Origin == origin && m.SpawnCalls == 0, "selection mutated roster/origin");
+        });
+        Run("late troop after timeout not selected", () => {
+            var m = new Meeting(); m.TargetParty.MemberRoster.Entries.Add(new TroopRosterElement { Character = new CharacterObject(), Number = 1 });
+            m.Place(); m.Mission.CurrentTime = 5; m.Place(); int scans = m.Mission.Agents.Scans;
+            m.Soldier(false); m.Place(); Check(m.TargetEscort == null && m.Mission.Agents.Scans == scans, "timeout restarted selection");
+        });
+        Run("dead cached escort never replaced", () => {
+            var m = new Meeting(); var original = m.Soldier(true); m.TargetParty.MemberRoster.Entries.Add(new TroopRosterElement { Character = new CharacterObject(), Number = 1 });
+            m.Place(); original.Active = false; m.Soldier(true, 1); m.Place();
+            Check(m.PlayerEscort == original && m.Positions == 1 && m.SpawnCalls == 0, "cached death caused replacement");
+        });
+        Run("same team cannot select and still times out", () => {
+            var m = new Meeting(); m.Soldier(false); m.InvalidateTeams(); Check(!m.Place(), "invalid teams accepted");
+            m.Mission.CurrentTime = 5; Check(m.Place() && m.Finished && m.Mission.Agents.Scans == 0, "invalid teams retry forever");
+        });
+        Run("missing target party fails closed", () => {
+            var m = new Meeting(); m.Soldier(false); m.ClearTargetParty();
+            Check(m.Place() && m.TargetEscort == null && m.SpawnCalls == 0, "unknown party borrowed a guard");
+        });
+        Run("missing mission does not select", () => {
+            var m = new Meeting(); m.ClearMission(); Check(!m.Place() && m.SpawnCalls == 0, "missing mission processed");
+        });
+        Run("missing leader stops at deadline", () => {
+            var m = new Meeting(); m.RemoveTargetLeader(); Check(!m.Place(), "missing leader processed");
+            m.Mission.CurrentTime = 5; Check(m.Place() && m.Finished, "missing leader retries forever");
+        });
+        Run("selection starts only after leaders placed", () => {
+            var m = new Meeting(); m.SetLeadersPlaced(false); var real = m.Soldier(false); m.Tick(10);
+            Check(m.Mission.Agents.Scans == 0, "selection before leaders placed"); m.SetLeadersPlaced(true); m.Tick(0.1f);
+            Check(m.TargetEscort == real && m.Finished, "pre-placement time consumed retry window");
+        });
+        Run("origin troop identity mismatch excluded", () => {
+            var m = new Meeting(); var bad = m.Soldier(false, 1); bad.Origin.Troop = new CharacterObject(); var good = m.Soldier(false);
+            m.Place(); Check(m.TargetEscort == good, "origin troop mismatch accepted");
+        });
+        Run("horse archer below cavalry fallback", () => {
+            var m = new Meeting(); var archer = m.Soldier(false); archer.Character.DefaultFormationClass = FormationClass.HorseArcher;
+            var cavalry = m.Soldier(false); cavalry.Character.DefaultFormationClass = FormationClass.Cavalry;
+            m.Place(); Check(m.TargetEscort == cavalry, "mounted formation priority changed");
+        });
+        Run("actual mount priority preserved", () => {
+            var m = new Meeting(); var mounted = m.Soldier(false); mounted.MountAgent = new Agent { IsHuman = false };
+            m.Soldier(false).Character.Tier = 9; m.Place(); Check(m.TargetEscort == mounted, "mount priority lost");
+        });
+        Console.WriteLine($"RESULT {passed} PASS / {failed} FAIL"); return failed == 0 ? 0 : 1;
+    }
+}

@@ -14,10 +14,13 @@ using HarmonyLib;
 namespace AnimusForge
 {
     internal static class Logger { public static void Log(string area,string text) { throw new Exception(area+": "+text); } }
+    internal static class AnimusForgeModulePaths { public static string GetCurrentModuleRoot()=>AnimusForgeDataPaths.GetCurrentRoot(); }
     internal static class AnimusForgeDataPaths
     {
-        public static string GetCurrentRoot()=>Path.Combine(Environment.CurrentDirectory,"data");
-        public static string GetCacheDirectory(string root)=>Path.Combine(root,"Cache");
+        public static string GetCurrentRoot()=>Path.Combine(Environment.CurrentDirectory,"AnimusForge");
+        public static string GetLogsDirectory(string root)=>Path.Combine(root,"Logs");
+        public static void ValidatePath(string path) {}
+        public static string GetCacheDirectory(string root)=>GetLogsDirectory(root);
         public static void EnsureWritableRoot(string root)=>Directory.CreateDirectory(root);
     }
 }
