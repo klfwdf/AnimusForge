@@ -1,3 +1,9 @@
+# 当前交接：精准回退两项外交补丁改动（2026-10-11，ROLLED_BACK / ROOT_CAUSE_UNCONFIRMED）
+
+- 按用户明确要求仅 inverse `aba208e8` → `a6bf41a6`、`8097f599` → `ca994df8`，撤销两处源码修改和四个新增测试文件；其他作者代码/配置/部署保护保留，不 reset、改写历史或继续补救式修改。
+- 两处源码逐字回到各自修复父提交，其他 tracked 产品文件不变；原统一 Debug 双API/Bootstrap/双Coup门禁通过，两实现各348 warning/0 error，八回退源码锚点双模式通过。原失败注入回归只验证恢复行为，不代表已确认或解决玩家问题根因；旧证据保留为历史。
+- [唯一主台账：回退范围、验证与边界](docs/animusforge-refactoring-and-repository-reorganization-plan.md#refactor-wiring-debug-20261011)；[当前回退坐标及历史地图](docs/architecture/af-framework-code-scope.md#refactor-wiring-debug-20261011)。收据 `artifacts/tests/diplomacy-requested-rollback/run-638fa65c868549f5a47fea1a6c895e81/final-receipt.json`。未推送/Stage/部署/打包或实机验收，游戏安装未改；下方历史修复交接已被本条替代。
+
 # 当前交接：自定义提示词恢复模组内读写（2026-10-11，OFFLINE_VERIFIED / LIVE_PENDING）
 
 - 当前工作区 `E:/AnimusForge-klfwdf` / `delivery/policy-bounded-retrieval-20261010`；检查点 `e5fc3069`，部署保护 `ebb29ac5`，提示词/配置产品 `45c63066`。恢复当前模组单目录、缺失初始化与逐类清空保存，保留当前文案/新功能、字段身份、严格 UTF-8/大小/reparse/坏原件/原子写及一秒/五秒缓存；已有 CustomPrompts 安装时全部保护，仅补缺失。C 盘旧内容保留不迁移且不再生效，日志、缓存、PlayerExports 不变。
@@ -10,7 +16,7 @@
 - 同一专项夹具旧实现5 PASS/33 FAIL，修后1.3/1.4各38 PASS；8个伤亡/转战/站位方法不变。既有183会面边界、67对话转战检查在临时net10项目通过（原net8缺引用包失败保留）。原统一Debug双API/Bootstrap/双Coup exit0，两实现各348警告/0错误；仅进程排除artifacts错误框架候选，未改脚本。
 - [唯一主台账：失败、验证、构建身份与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#meeting-real-troop-escort-20261011)；[已核源码与消费者](docs/architecture/af-framework-code-scope.md#meeting-real-troop-escort-20261011)。证据 `artifacts/tests/meeting-escort-official-build/run-7cf761c9a0de475299b68a5293ee0efd/receipt.json`；组合工作树保留其他作者WIP，不纳入本任务提交。未Stage、部署、打包、推送或实机验收；本次崩溃场景复验待后续单独授权。
 
-# 当前交接：最新源码接线 debug（2026-10-11，TWO_FIXES_OFFLINE_VERIFIED / AUDIT_INCOMPLETE）
+# 历史交接：最新源码接线 debug（两项修复已按用户要求回退）
 
 - 按用户要求先快进拉取 `origin/main` 至 `14ce14ae`，保留当前分支。直接外交产品 `8097f599` 保留；续查检查点 `8b00cb1a`、产品 `aba208e8` 修世界外交多 hook 部分失败却永久标完成的问题：战役注册补失败项，成功目标去重，九监听顺序不变。尚未证明用户实机故障由此触发，未启用历史孤儿补丁。
 - 世界外交完整实际注册/事件声明回放 18 场景/315 检查、直接外交完整类18检查和12源码锚点双模式通过。原统一脚本双实现/Bootstrap/双 Coup gate exit0，两实现各348 warning/0 error；仅清理两个已批准目录。构建绑定当时含另一任务 WIP 的组合工作树，非干净产品提交单独重建或其他任务专项验收；产物与完整收据另存，其他作者改动未纳入本轮提交。

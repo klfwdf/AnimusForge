@@ -31,7 +31,19 @@
 频率仅每次会面初始化最多5秒、0.5秒节流；每侧一次选人扫描、不全量排序，选中后O(1)校验，既有站位/编队扫描责任未重构。公开接口、配置、存档字段与模块身份不变。
 
 <a id="refactor-wiring-debug-20261011"></a>
-### 最新源码接线排查：外交补丁注册失败恢复
+### 当前回退坐标与历史补丁修复地图
+
+用户已明确撤销 `8097f599` 与 `aba208e8`；正常 inverse `a6bf41a6` / `ca994df8` 后，当前源码重新等于各自修复父提交。八锚点 `artifacts/tests/diplomacy-requested-rollback/run-638fa65c868549f5a47fea1a6c895e81/code-map.json` 绑定 `ca994df8029bdf46d1976b5e114067931a9f01b3`，记录提交和 working-tree 均 PASS；仅证明回退定位，不证明玩家原故障已解决。
+
+| 当前一基范围 / 符号 | 回退责任与边界 |
+| --- | --- |
+| `src/modules/AF.Module.Diplomacy/Direct/DiplomacyBehavior.cs:30–33,35–52,54–59`；ModuleInit / ApplyGlobalPatchesOnce / RegisterEvents | 精确恢复原注册实现，撤销后置完成标记；不是新增失败策略或根因修复 |
+| `src/modules/AF.Module.Diplomacy/World/WorldDiplomacyBehavior.cs:157–170,203–272`；RegisterEvents / RegisterHarmonyPatches | 精确恢复原九事件与安装实现，撤销新增补装、成功目标缓存/helper及其诊断分支；其他业务代码和消费者未改 |
+
+**以下两张图仅为旧提交的历史证据**；新增四个测试文件已随逆向提交撤销，旧地图不再用于当前 working-tree 校验。详细范围、双版本结果与未覆盖根因见[唯一主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#refactor-wiring-debug-20261011)。
+
+#### 历史：直接外交注册恢复
+
 
 产品 `8097f59924705e8e2de2d2ba85f2cf716371dfba`；本地八锚点 `artifacts/tests/wiring-debug-final-20261011/run-21bf27f91e3e40b0b0949206f142f686/code-map.json` 在产品修订与 working-tree 均通过。详细 red/green、双实现/Bootstrap/双 Coup 证据、原 gate 失败及未覆盖责任集中在[唯一主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#refactor-wiring-debug-20261011)，本条不替代其他产品验收。
 
@@ -43,7 +55,7 @@
 | `src/AF.GameAdapter.Bannerlord/Composition/SceneExternalPromptCaptureAdapter.cs:59–68`；`src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.PromptPreparation.cs:177–181`（未改） | Scene/Native 共享捕获与 Courier 仍调用同一 BuildShoutPromptContextForExternal；这里只核对消费者坐标，不将其当成三渠道完整验收 |
 | `tests/modules/AF.Module.Diplomacy/DiplomacyPatchRegistrationTests/Program.cs:33–79`；Main | 链接完整生产类和实际 CLR ModuleInitializer，18 项失败恢复/成功去重检查；Harmony、game 和 logging 叶受控，默认 net8 未验，本机显式 net10 |
 
-#### 续查：世界外交多 hook 部分失败恢复
+#### 历史：世界外交多 hook 部分失败恢复
 
 产品 `aba208e82aadd0f54e75ac125863f9e29dbb140c`；12 锚点 `artifacts/tests/world-diplomacy-unified-build/run-ecc750db9c3244a1b41b12f589642aa2/code-map.json` 双模式通过。详细 red/green、组合工作树构建身份和未覆盖责任仍归上述唯一主台账，不将锚点或 Coup gate 当成实机外交验收。
 
