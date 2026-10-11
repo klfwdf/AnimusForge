@@ -36,12 +36,15 @@
 - 本有限包离线退出门完成，未 Stage、部署、打包、推送、收费 API、玩家存档或实机验证。后续获准后验游戏内编辑/打开文件夹/保存、退出重启回读；离线冷回读不替代实机重启验收。回滚只对 `45c63066` / `ebb29ac5` 做 focused inverse，不 hard reset、不改历史、不回滚其他作者。
 
 <a id="refactor-wiring-debug-20261011"></a>
-## 最新源码接线排查（2026-10-11，ROLLBACK_REQUESTED / ROOT_CAUSE_UNCONFIRMED）
+## 最新源码接线排查（2026-10-11，ROLLED_BACK / ROOT_CAUSE_UNCONFIRMED）
 
-### 用户要求：精准回退两项补丁修复（ROLLBACK_REQUESTED）
+### 用户要求：精准回退两项补丁修复（ROLLED_BACK / ROOT_CAUSE_UNCONFIRMED）
 
-- 用户明确要求回退本任务两项改动，不再以安装失败重试作为根因修复。基线 `fd3e4a592d609748753aafe1c33cc6aef481eb47`、开工 clean；仅 inverse 产品 `aba208e8` 与 `8097f599`（两处生产修改与四个新增 tracked 测试文件），不撤销远端拉取、会面护卫、提示词/配置/部署保护或其他作者提交。
-- 保留旧 red/green、构建产物和调查证据，但它们不代表用户实机问题得到根治。退出门为两处源码逐字对齐各修复父提交、其他 tracked 代码/配置/测试不变、原双API/Bootstrap/双Coup验证；不 reset、改写历史、推送或部署。
+- 用户明确否定仅靠重试作为根因修复，并要求精准回退。基线 `fd3e4a592d609748753aafe1c33cc6aef481eb47`、开工 clean，检查点 `63854a8c`。仅正常 inverse 产品 `aba208e8` → `a6bf41a69b0a30f194e9e97fe16c9e189abcb101`、`8097f599` → `ca994df8029bdf46d1976b5e114067931a9f01b3`；两处生产修改和四个新增 tracked 测试文件均已撤销。远端拉取、会面护卫、提示词/配置/部署保护与其他作者提交全部保留，未 reset 或改写历史。
+- 原前两项回归通过只证明受控安装失败后的恢复行为，不证明安装为何失败或玩家所述功能断线的根因；既有红绿与构建证据转为历史，不再作为当前修复候选。停止本轮补救式修改，不擅自扩大成新功能或继续重试方案。
+- 两处当前源码 blob 分别与 `8097f599^`、`aba208e8^` 完全相同；全 tracked tree 对照回退前仅六个获准产品/测试路径和本轮三份接续文档变化，其他源码、配置、部署脚本及测试不变。回退后八源码锚点在 `ca994df8029bdf46d1976b5e114067931a9f01b3` / working-tree 双模式 PASS，覆盖与行号见[同一代码范围图](architecture/af-framework-code-scope.md#refactor-wiring-debug-20261011)。四个撤销测试不再执行，不以它们给当前源码报绿。
+- 原未改统一构建脚本在回退后 clean 源码 `ca994df8029bdf46d1976b5e114067931a9f01b3` 完整执行，Debug 双实现 v1.3.15.110062 / v1.4.6.115628 各348 warning / 0 error，Bootstrap/probe 各0 warning / 0 error；双实际 DLL 的 Coup registration smoke 与 memory assertions=20 均 PASS。沿用仅清理两具名构建产物目录的授权，祖先/目标无 reparse；只进程排除已确认会污染框架引用的 artifacts None 候选，不改项目或构建脚本。完整调用/源哈希/marker/PDB/门禁与另存9候选产物证据 `artifacts/tests/diplomacy-rollback-unified-build/run-0abbbed18a5846a8be8f9af914603014/verified-receipt.json`。
+- 精准回退收据及八坐标图 `artifacts/tests/diplomacy-requested-rollback/run-638fa65c868549f5a47fea1a6c895e81/{intent.json,inverse-commits.json,code-map.json,final-receipt.json}`。旧调查证据保留；未推送、Stage、部署、打包、启动游戏或实机/玩家存档验收。当前源码不含两项重试修复，但游戏安装未改，根因仍未确认。
 
 ### 历史两项修复与验证（不再作为当前候选）
 
@@ -60,7 +63,7 @@
 - 原命令 exit0 / `Build Result : success (dual coup seam gates passed)`；1.3.15.110062 / 1.4.6.115628 两实现各 348 warning / 0 error，Bootstrap/probe 各 0 warning / 0 error；两实际最终 DLL 各 `PASS registration smoke`、memory assertions=20。最终 1.3 SHA `e71f254ec8b5b8b9a23caed91f9bd3d345a65b55f272dca82e0f1a81f8b97f1f`，1.4 SHA `101b439b9d4d281ef408f201ce104ec04d2e83d75a56bcefa9473e07fa4bea73`；marker/API/Flavor/PDB/双 gate 哈希绑定与构建输入未变检查通过，八源码锚点再次双模式 PASS。完整调用、日志和复验收据 `artifacts/tests/wiring-official-build-approved-20261014/run-67f8aaa489454742b0c109d8ee0bc9e3/{invocation.json,run.log,verified-receipt.json}`。
 - 本次结果补齐原脚本顶层验证，并接续首次未获清理回复的状态；首次隔离验证及其失败证据不删除、不改绿。只完成获准构建验证，未改产品或构建脚本、未 Stage/部署/推送/打包，实机和全仓接线边界不变。
 
-### 续查：世界外交多补丁注册（OFFLINE_VERIFIED / LIVE_PENDING）
+### 历史续查：世界外交多补丁注册（原 OFFLINE_VERIFIED，现已回退）
 
 - 用户继续 Debug；从干净 `6f57e9a46568b75d741b5c5a00219bd4fe3a4dbe` 接续，检查点 `8b00cb1a`，产品 `aba208e82aadd0f54e75ac125863f9e29dbb140c`。沿真实 StartupPatchComposition → DiplomacyModuleServices → DiplomacyModule → DiplomacyModuleComposition → WorldDiplomacyBehavior 注册与战役 RegisterEvents 检查，完整未改注册/事件/日志方法的受控复现中 6 个目标仅成功 5 个，总完成标记却为 true；真实战役注册与显式重试均仍为 6 次尝试，缺失的共享记忆 postfix 永久不补。证据 `artifacts/tests/world-diplomacy-patch-repro/run-7034d4ff0a85465889efc03a5f2d130b/run.log`，exit1；不是用户实机故障归因。
 - 修复仅归本 owner：成功返回的 Harmony.Patch 才将目标加入进程级 HashSet，缺失目标/类型或安装异常保留未完成状态；全部本 owner 目标完成后才发布总标记。真实 RegisterEvents 在原九个事件监听之后补失败项，已成功目标不重复安装；补装构造异常不阻断事件注册。缺失 VM/成员不再输出整组成功日志。不新增 hook、不改外交业务/三渠道默认入口/存档/外部 API/精灵 owner。
