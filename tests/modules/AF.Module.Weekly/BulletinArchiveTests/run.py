@@ -5,7 +5,7 @@ import xml.etree.ElementTree as ET
 ROOT=Path(__file__).resolve().parents[4]; HERE=Path(__file__).parent
 sys.path.insert(0,str(ROOT/"tests"))
 from output_isolation import new_run_root, resolve_dotnet, minimal_test_environment
-parser=argparse.ArgumentParser();parser.add_argument("--out",type=Path,required=True);args=parser.parse_args()
+parser=argparse.ArgumentParser();parser.add_argument("--out",type=Path,required=True);parser.add_argument("--framework",choices=["net8.0","net10.0"],default="net8.0");parser.add_argument("--prompt-storage-only",action="store_true");args=parser.parse_args()
 out=new_run_root(ROOT,"bulletin-archive",args.out);dotnet=resolve_dotnet(ROOT)
 spec=importlib.util.spec_from_file_location("extract",ROOT/"tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py");extract=importlib.util.module_from_spec(spec);spec.loader.exec_module(extract)
 sys.path.insert(0,str(ROOT/"tests/modules/AF.Module.Memory/MemorySummaryMainThreadBoundaryTests"))
@@ -51,7 +51,8 @@ generated+='public partial class DuelSettings { private const int WorldDiplomacy
 for name in ["WorldBulletinWritingRequirementsJsonFileName","DefaultWorldBulletinWritingRequirements"]:
  generated+=re.search(r"private const string "+name+r" = [^;]+;",bulletin_settings).group()
 generated+=spans(bulletin_settings,["private static string MigrateLegacyWorldBulletinWritingRequirements","private static string NormalizeWorldBulletinWritingRequirementsText"])
-generated+=spans(settings,["private sealed class CustomPromptTextJson","private static bool TryReadCustomPromptTextJsonFile","private static bool TryReadLayeredCustomPromptTextJsonFile","private static bool IsCustomPromptTextFileTooLarge"])+"}"
+generated+=spans(settings,["private sealed class CustomPromptTextJson","private static bool TryReadCustomPromptTextJsonFile","private static bool TryReadCustomPromptTextJsonFileFromDirectory","private static bool IsCustomPromptTextFileTooLarge"])+"}"
+generated+="internal static class AnimusForgeModulePaths {"+extract.declaration(read("src/AF.Persistence/AnimusForgeModulePaths.cs"),"internal static void ValidateCustomPromptPath(")+"}"
 npc_source=read("src/AF.GameAdapter.Bannerlord/Prompt/WorldBulletinNpcPromptCaptureAdapter.cs")
 assert "latestVisible.Anecdote" in npc_source and "ProjectBulletinForNpc" in npc_source, "NPC must project the optional digest through source visibility"
 packaged=read("content/modules/AF.Module.Weekly/CustomPrompts/WorldBulletinWritingRequirements.json")
@@ -83,13 +84,14 @@ assert open_button.attrib.get("DoNotPassEventsToChildren")=="true"
 assert any(node.attrib.get("Text")=="@PreviewText" for node in ui.iter()), "Card preview missing"
 print("PASS existing XML period width, country select and report body bindings (not rendering)")
 newtonsoft=dotnet.parent/"sdk/8.0.425/Containers/tasks/net8.0/Newtonsoft.Json.dll"
+if not newtonsoft.is_file():newtonsoft=next(iter(sorted((dotnet.parent/"sdk").glob("*/Newtonsoft.Json.dll"))),ROOT/"_deps_auto/Newtonsoft.Json.dll")
 if not newtonsoft.is_file():raise RuntimeError("Missing local Newtonsoft.Json reference")
 links="".join('<Compile Include="'+str(ROOT/path)+'"/>' for path in paths)
 links+="".join('<Compile Include="'+str(HERE/name)+'"/>' for name in ["Stubs.cs","Program.cs"])
-(out/"Proof.csproj").write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><ImplicitUsings>enable</ImplicitUsings><NoWarn>CS0649</NoWarn></PropertyGroup><ItemGroup>'+links+'<Reference Include="Newtonsoft.Json"><HintPath>'+str(newtonsoft)+'</HintPath></Reference></ItemGroup></Project>',encoding="utf-8")
+(out/"Proof.csproj").write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>'+args.framework+'</TargetFramework><ImplicitUsings>enable</ImplicitUsings><NoWarn>CS0649</NoWarn></PropertyGroup><ItemGroup>'+links+'<Reference Include="Newtonsoft.Json"><HintPath>'+str(newtonsoft)+'</HintPath></Reference></ItemGroup></Project>',encoding="utf-8")
 (out/"NuGet.Config").write_text('<configuration><packageSources><clear/></packageSources></configuration>',encoding="utf-8")
 for name in ["Program.cs","Stubs.cs","run.py"]:read(str((HERE/name).relative_to(ROOT)).replace("\\","/"))
 (out/"source-manifest.json").write_text(json.dumps(manifest,indent=2),encoding="utf-8")
-result=subprocess.run([str(dotnet),"run","--project",str(out/"Proof.csproj")],cwd=out,env=minimal_test_environment(dotnet,out),capture_output=True,text=True,encoding="utf-8",errors="replace")
+result=subprocess.run([str(dotnet),"run","--project",str(out/"Proof.csproj")]+(["--","--prompt-storage-only"] if args.prompt_storage_only else []),cwd=out,env=minimal_test_environment(dotnet,out),capture_output=True,text=True,encoding="utf-8",errors="replace")
 (out/"result.log").write_text(result.stdout+result.stderr,encoding="utf-8");print(result.stdout+result.stderr);print("OUTPUT",out)
 raise SystemExit(result.returncode)

@@ -160,6 +160,8 @@ internal static class PolicyEffectModuleRetrievalSettings
 		{
 			lock (Sync)
 			{
+				string path = GetSettingsPath(requireDirectory: true);
+				if (File.Exists(path)) ReadSettingsDocument(path);
 				RetrievalSnapshot current = _snapshot ?? LoadSnapshot();
 				Dictionary<string, PolicyEffectModuleRetrievalState> normalizedStates
 					= new Dictionary<string, PolicyEffectModuleRetrievalState>(StringComparer.Ordinal);
@@ -187,7 +189,7 @@ internal static class PolicyEffectModuleRetrievalSettings
 					["Version"] = CurrentVersion,
 					["Modules"] = moduleDocuments
 				};
-				WriteJsonAtomically(GetSettingsPath(requireDirectory: true), document);
+				WriteJsonAtomically(path, document);
 				RetrievalSnapshot replacement = CreateSnapshot(normalizedStates, ReadRawModuleDocuments(moduleDocuments));
 				Volatile.Write(ref _snapshot, replacement);
 			}
@@ -247,16 +249,8 @@ internal static class PolicyEffectModuleRetrievalSettings
 		{
 			try
 			{
-				FileInfo info = new FileInfo(path);
-				if (info.Length < 0 || info.Length > MaxJsonBytes)
-				{
-					throw new InvalidOperationException("政策效果模块检索设置文件大小无效。");
-				}
-				JObject document = JObject.Parse(File.ReadAllText(path, StrictUtf8));
-				if (document.Value<int?>("Version") != CurrentVersion || document["Modules"] is not JObject modules)
-				{
-					throw new InvalidOperationException("政策效果模块检索设置版本或 Modules 结构无效。");
-				}
+				JObject document = ReadSettingsDocument(path);
+				JObject modules = (JObject)document["Modules"];
 				rawDocuments = ReadRawModuleDocuments(modules);
 				foreach (IPolicyEffectModule module in PolicyEffectModuleCatalog.Modules)
 				{
@@ -306,6 +300,19 @@ internal static class PolicyEffectModuleRetrievalSettings
 			frozenStates,
 			rawDocuments.ToDictionary(pair => pair.Key, pair => pair.Value?.DeepClone(), StringComparer.Ordinal),
 			enabled);
+	}
+
+	private static JObject ReadSettingsDocument(string path)
+	{
+		AnimusForgeModulePaths.ValidateCustomPromptPath(path);
+		if (new FileInfo(path).Length > MaxJsonBytes)
+			throw new InvalidOperationException("政策效果模块检索设置文件大小无效，原件未覆盖。");
+		JObject document = JObject.Parse(StrictUtf8.GetString(File.ReadAllBytes(path)).TrimStart('\uFEFF'));
+		if (document.Value<int?>("Version") != CurrentVersion || document["Modules"] is not JObject modules)
+			throw new InvalidOperationException("政策效果模块检索设置版本或 Modules 结构无效，原件未覆盖。");
+		foreach (IPolicyEffectModule module in PolicyEffectModuleCatalog.Modules)
+			if (modules[module.Id] is JObject state) ReadState(state);
+		return document;
 	}
 
 	private static PolicyEffectModuleRetrievalState CreateDefaultState(IPolicyEffectModule module)
@@ -393,11 +400,14 @@ internal static class PolicyEffectModuleRetrievalSettings
 			}
 			return string.Empty;
 		}
-		return Path.Combine(directory, FileName);
+		string path = Path.Combine(directory, FileName);
+		AnimusForgeModulePaths.ValidateCustomPromptPath(path);
+		return path;
 	}
 
 	private static void WriteJsonAtomically(string path, JObject document)
 	{
+		AnimusForgeModulePaths.ValidateCustomPromptPath(path);
 		string directory = Path.GetDirectoryName(path);
 		if (string.IsNullOrWhiteSpace(directory))
 		{
@@ -414,7 +424,9 @@ internal static class PolicyEffectModuleRetrievalSettings
 				writer.Flush();
 				stream.Flush(flushToDisk: true);
 			}
+			if (new FileInfo(tempPath).Length > MaxJsonBytes) throw new InvalidOperationException("政策检索设置 JSON 超过大小限制，原件未覆盖。");
 			JObject.Parse(File.ReadAllText(tempPath, StrictUtf8));
+			AnimusForgeModulePaths.ValidateCustomPromptPath(path);
 			if (File.Exists(path))
 			{
 				File.Replace(tempPath, path, null);

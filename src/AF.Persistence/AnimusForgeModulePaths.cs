@@ -8,9 +8,47 @@ public static class AnimusForgeModulePaths
 {
 	private const string CurrentModuleFolderName = "AnimusForge";
 	private static readonly string[] LegacyModuleFolderNames = new string[2] { "AnimusForge_1_3_x", "AnimusForge_1_4_5" };
+	private static string _moduleRootOverrideForContractTests;
+
+	internal static string GetCustomPromptsDirectory()
+	{
+		string root = GetCurrentModuleRoot();
+		if (string.IsNullOrWhiteSpace(root) || !Path.IsPathRooted(root) || !IsCurrentModuleRoot(root))
+		{
+			throw new InvalidOperationException("Cannot locate the current AnimusForge module for custom prompts.");
+		}
+		string directory = Path.Combine(Path.GetFullPath(root), "CustomPrompts");
+		ValidateCustomPromptPath(directory);
+		return directory;
+	}
+
+	internal static void ValidateCustomPromptPath(string path)
+	{
+		if (string.IsNullOrWhiteSpace(path) || !Path.IsPathRooted(path)
+			|| !string.Equals(Path.GetPathRoot(path), Path.GetPathRoot(Path.GetFullPath(path)), StringComparison.OrdinalIgnoreCase)
+			|| path.StartsWith(@"\\", StringComparison.Ordinal))
+		{
+			throw new InvalidOperationException("Custom prompt paths must be local absolute paths.");
+		}
+		for (string current = Path.GetFullPath(path); !string.IsNullOrWhiteSpace(current);
+			current = Path.GetDirectoryName(current))
+		{
+			if ((File.Exists(current) || Directory.Exists(current))
+				&& (File.GetAttributes(current) & FileAttributes.ReparsePoint) != 0)
+			{
+				throw new InvalidOperationException("Custom prompt path crosses a reparse point.");
+			}
+		}
+	}
+
+	internal static void SetModuleRootOverrideForContractTests(string root)
+	{
+		_moduleRootOverrideForContractTests = root == null ? null : Path.GetFullPath(root);
+	}
 
 	public static string GetCurrentModuleRoot()
 	{
+		if (_moduleRootOverrideForContractTests != null) return _moduleRootOverrideForContractTests;
 		try
 		{
 			string assemblyLocation = typeof(AnimusForgeModulePaths).Assembly.Location;

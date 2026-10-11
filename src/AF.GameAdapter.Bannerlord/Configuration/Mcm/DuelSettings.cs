@@ -3479,7 +3479,7 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 
 	private void RestoreDefaultWorldDiplomacyPromptNow()
 	{
-		SaveWorldDiplomacyPromptFromEditor("");
+		SaveWorldDiplomacyPromptFromEditor(DefaultWorldDiplomacyPreference);
 	}
 
 	private void OpenNpcRulerPolicyPromptEditor()
@@ -3503,7 +3503,7 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		try
 		{
 			string directory = GetCustomPromptTextStoreDirectory();
-			AnimusForgeDataPaths.EnsureWritableRoot(AnimusForgeDataPaths.GetCurrentRoot());
+			AnimusForgeModulePaths.ValidateCustomPromptPath(directory);
 			if (!Directory.Exists(directory))
 			{
 				Directory.CreateDirectory(directory);
@@ -3637,7 +3637,6 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 	{
 		string text = NormalizePlayerCustomPromptRuleText(input);
 		bool persistedToFile = TryPersistPlayerCustomPromptRuleFile(text);
-		if (persistedToFile && string.IsNullOrWhiteSpace(text)) text = LoadPlayerCustomPromptRuleFromDiskOrDefault();
 		PlayerCustomPromptRule = text;
 		try
 		{
@@ -3665,7 +3664,6 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 	{
 		string text = NormalizeKingdomRebellionSystemPromptText(input);
 		bool persistedToFile = TryPersistKingdomRebellionSystemPromptFile(text);
-		if (persistedToFile && string.IsNullOrWhiteSpace(text)) text = LoadKingdomRebellionSystemPromptFromDiskOrDefault();
 		KingdomRebellionSystemPrompt = text;
 		try
 		{
@@ -3693,7 +3691,6 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 	{
 		string text = NormalizeWeeklyReportWritingRequirementsText(input);
 		bool persistedToFile = TryPersistWeeklyReportWritingRequirementsFile(text);
-		if (persistedToFile && string.IsNullOrWhiteSpace(text)) text = LoadWeeklyReportWritingRequirementsFromDiskOrDefault();
 		WeeklyReportWritingRequirements = text;
 		try
 		{
@@ -3721,7 +3718,6 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 	{
 		string text = NormalizeNpcPersonaGenerationRequirementsText(input);
 		bool persistedToFile = TryPersistNpcPersonaGenerationRequirementsFile(text);
-		if (persistedToFile && string.IsNullOrWhiteSpace(text)) text = LoadNpcPersonaGenerationRequirementsFromDiskOrDefault();
 		NpcPersonaGenerationRequirements = text;
 		try
 		{
@@ -3749,7 +3745,6 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 	{
 		string text = NormalizeDailyMemoryCompressionWritingRequirementsText(input);
 		bool persisted = TryPersistDailyMemoryCompressionWritingRequirementsFile(text);
-		if (persisted && string.IsNullOrWhiteSpace(text)) text = LoadDailyMemoryCompressionWritingRequirementsFromDiskOrDefault();
 		DailyMemoryCompressionWritingRequirements = text;
 		FinishCompressionWritingRequirementsSave(persisted, delegate(DuelSettings settings)
 		{
@@ -3761,7 +3756,6 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 	{
 		string text = NormalizeMemoryOverviewCompressionWritingRequirementsText(input);
 		bool persisted = TryPersistMemoryOverviewCompressionWritingRequirementsFile(text);
-		if (persisted && string.IsNullOrWhiteSpace(text)) text = LoadMemoryOverviewCompressionWritingRequirementsFromDiskOrDefault();
 		MemoryOverviewCompressionWritingRequirements = text;
 		FinishCompressionWritingRequirementsSave(persisted, delegate(DuelSettings settings)
 		{
@@ -3773,7 +3767,6 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 	{
 		string text = NormalizeMajorActionCompressionWritingRequirementsText(input);
 		bool persisted = TryPersistMajorActionCompressionWritingRequirementsFile(text);
-		if (persisted && string.IsNullOrWhiteSpace(text)) text = LoadMajorActionCompressionWritingRequirementsFromDiskOrDefault();
 		MajorActionCompressionWritingRequirements = text;
 		FinishCompressionWritingRequirementsSave(persisted, delegate(DuelSettings settings)
 		{
@@ -3812,7 +3805,6 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 	{
 		string text = NormalizeCustomPolicyEvaluatorPromptText(input);
 		bool persistedToFile = TryPersistCustomPolicyEvaluatorPromptFile(text);
-		if (persistedToFile && string.IsNullOrWhiteSpace(text)) text = LoadCustomPolicyEvaluatorPromptFromDiskOrDefault();
 		CustomPolicyEvaluatorPrompt = text;
 		try
 		{
@@ -3840,7 +3832,6 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 	{
 		string text = NormalizeWorldDiplomacyPromptText(input);
 		bool persisted = TryPersistWorldDiplomacyPromptFile(text);
-		if (persisted && string.IsNullOrWhiteSpace(text)) text = LoadWorldDiplomacyPromptFromDiskOrDefault();
 		WorldDiplomacyPrompt = text;
 		try
 		{
@@ -3858,8 +3849,7 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 	internal void SaveNpcRulerPolicyPromptFromEditor(string input)
 	{
 		string text = NormalizeNpcRulerPolicyPromptText(input);
-		bool persistedToFile = TryPersistNpcRulerPolicyPromptFile(string.IsNullOrWhiteSpace(input) ? "" : text);
-		if (persistedToFile && string.IsNullOrWhiteSpace(input)) text = LoadNpcRulerPolicyPromptFromDiskOrDefault();
+		bool persistedToFile = TryPersistNpcRulerPolicyPromptFile(text);
 		NpcRulerPolicyPrompt = text;
 		try
 		{
@@ -4404,8 +4394,7 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 
 	private static bool TryPersistNpcRulerPolicyPromptFile(string text)
 	{
-		return TryPersistPolicyPromptTextFile(NpcRulerPolicyPromptJsonFileName,
-			string.IsNullOrWhiteSpace(text) ? "" : NormalizeNpcRulerPolicyPromptText(text));
+		return TryPersistPolicyPromptTextFile(NpcRulerPolicyPromptJsonFileName, NormalizeNpcRulerPolicyPromptText(text));
 	}
 
 	private static bool TryPersistWorldDiplomacyPromptFile(string text)
@@ -4468,6 +4457,7 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		text = "";
 		try
 		{
+			AnimusForgeModulePaths.ValidateCustomPromptPath(path);
 			if (string.IsNullOrWhiteSpace(path) || !File.Exists(path))
 			{
 				return false;
@@ -4477,7 +4467,7 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 				LogPlayerCustomPromptRuleWarning("旧自定义提示词文件过大，已跳过迁移: " + path);
 				return false;
 			}
-			string value = File.ReadAllText(path, CustomPromptStrictUtf8Encoding);
+			string value = CustomPromptStrictUtf8Encoding.GetString(File.ReadAllBytes(path)).TrimStart('\uFEFF');
 			text = normalize != null ? normalize(value) : (value ?? "").Trim();
 			return true;
 		}
@@ -4513,57 +4503,57 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 				}
 				_customPromptTextStoreNextRefreshTimestamp = now + CustomPromptTextStoreRefreshIntervalTicks;
 				string directory = GetCustomPromptTextStoreDirectory();
-				string packagedDirectory = GetPackagedCustomPromptTextStoreDirectory();
-				long fingerprint = unchecked(ComputeCustomPromptTextStoreFingerprint(directory) * 31L
-					+ ComputeCustomPromptTextStoreFingerprint(packagedDirectory));
+				long fingerprint = ComputeCustomPromptTextStoreFingerprint(directory);
 				if (_customPromptTextStoreFolderHydrated && _customPromptTextStoreFolderFingerprint == fingerprint && _customPromptTextStoreCached != null)
 				{
 					store = cloneResult ? CloneCustomPromptTextStore(_customPromptTextStoreCached) : _customPromptTextStoreCached;
 					revision = _customPromptTextStoreRevision;
 					return true;
 				}
-				store = BuildDefaultCustomPromptTextStore();
-				if (TryReadLayeredCustomPromptTextJsonFile(directory, packagedDirectory, PlayerCustomPromptRuleJsonFileName, NormalizePlayerCustomPromptRuleText, store.PlayerCustomPromptRule, out string playerRule))
+				store = BuildInitialCustomPromptTextStore();
+				try { EnsureCustomPromptTextStoreFilesUnlocked(directory, store); }
+				catch (Exception ex) { LogPlayerCustomPromptRuleWarning("自定义提示词缺失文件初始化失败，已有文件仍单独读取: " + ex.GetType().Name); }
+				if (TryReadCustomPromptTextJsonFileFromDirectory(directory, PlayerCustomPromptRuleJsonFileName, NormalizePlayerCustomPromptRuleText, store.PlayerCustomPromptRule, out string playerRule))
 				{
 					store.PlayerCustomPromptRule = playerRule;
 				}
-				if (TryReadLayeredCustomPromptTextJsonFile(directory, packagedDirectory, KingdomRebellionSystemPromptJsonFileName, NormalizeKingdomRebellionSystemPromptText, store.KingdomRebellionSystemPrompt, out string rebellionPrompt))
+				if (TryReadCustomPromptTextJsonFileFromDirectory(directory, KingdomRebellionSystemPromptJsonFileName, NormalizeKingdomRebellionSystemPromptText, store.KingdomRebellionSystemPrompt, out string rebellionPrompt))
 				{
 					store.KingdomRebellionSystemPrompt = rebellionPrompt;
 				}
-				if (TryReadLayeredCustomPromptTextJsonFile(directory, packagedDirectory, WeeklyReportWritingRequirementsJsonFileName, NormalizeWeeklyReportWritingRequirementsText, store.WeeklyReportWritingRequirements, out string weeklyRequirements))
+				if (TryReadCustomPromptTextJsonFileFromDirectory(directory, WeeklyReportWritingRequirementsJsonFileName, NormalizeWeeklyReportWritingRequirementsText, store.WeeklyReportWritingRequirements, out string weeklyRequirements))
 				{
 					store.WeeklyReportWritingRequirements = weeklyRequirements;
 				}
-				if (TryReadLayeredCustomPromptTextJsonFile(directory, packagedDirectory, WorldBulletinWritingRequirementsJsonFileName, NormalizeWorldBulletinWritingRequirementsText, store.WorldBulletinWritingRequirements, out string bulletinRequirements))
+				if (TryReadCustomPromptTextJsonFileFromDirectory(directory, WorldBulletinWritingRequirementsJsonFileName, NormalizeWorldBulletinWritingRequirementsText, store.WorldBulletinWritingRequirements, out string bulletinRequirements))
 				{
 					store.WorldBulletinWritingRequirements = bulletinRequirements;
 				}
-				if (TryReadLayeredCustomPromptTextJsonFile(directory, packagedDirectory, NpcPersonaGenerationRequirementsJsonFileName, NormalizeNpcPersonaGenerationRequirementsText, store.NpcPersonaGenerationRequirements, out string npcRequirements))
+				if (TryReadCustomPromptTextJsonFileFromDirectory(directory, NpcPersonaGenerationRequirementsJsonFileName, NormalizeNpcPersonaGenerationRequirementsText, store.NpcPersonaGenerationRequirements, out string npcRequirements))
 				{
 					store.NpcPersonaGenerationRequirements = npcRequirements;
 				}
-				if (TryReadLayeredCustomPromptTextJsonFile(directory, packagedDirectory, DailyMemoryCompressionWritingRequirementsJsonFileName, NormalizeDailyMemoryCompressionWritingRequirementsText, store.DailyMemoryCompressionWritingRequirements, out string dailyMemoryCompressionRequirements))
+				if (TryReadCustomPromptTextJsonFileFromDirectory(directory, DailyMemoryCompressionWritingRequirementsJsonFileName, NormalizeDailyMemoryCompressionWritingRequirementsText, store.DailyMemoryCompressionWritingRequirements, out string dailyMemoryCompressionRequirements))
 				{
 					store.DailyMemoryCompressionWritingRequirements = dailyMemoryCompressionRequirements;
 				}
-				if (TryReadLayeredCustomPromptTextJsonFile(directory, packagedDirectory, MemoryOverviewCompressionWritingRequirementsJsonFileName, NormalizeMemoryOverviewCompressionWritingRequirementsText, store.MemoryOverviewCompressionWritingRequirements, out string memoryOverviewCompressionRequirements))
+				if (TryReadCustomPromptTextJsonFileFromDirectory(directory, MemoryOverviewCompressionWritingRequirementsJsonFileName, NormalizeMemoryOverviewCompressionWritingRequirementsText, store.MemoryOverviewCompressionWritingRequirements, out string memoryOverviewCompressionRequirements))
 				{
 					store.MemoryOverviewCompressionWritingRequirements = memoryOverviewCompressionRequirements;
 				}
-				if (TryReadLayeredCustomPromptTextJsonFile(directory, packagedDirectory, MajorActionCompressionWritingRequirementsJsonFileName, NormalizeMajorActionCompressionWritingRequirementsText, store.MajorActionCompressionWritingRequirements, out string majorActionCompressionRequirements))
+				if (TryReadCustomPromptTextJsonFileFromDirectory(directory, MajorActionCompressionWritingRequirementsJsonFileName, NormalizeMajorActionCompressionWritingRequirementsText, store.MajorActionCompressionWritingRequirements, out string majorActionCompressionRequirements))
 				{
 					store.MajorActionCompressionWritingRequirements = majorActionCompressionRequirements;
 				}
-				if (TryReadLayeredCustomPromptTextJsonFile(directory, packagedDirectory, CustomPolicyEvaluatorPromptJsonFileName, NormalizeCustomPolicyEvaluatorPromptText, store.CustomPolicyEvaluatorPrompt, out string customPolicyPrompt))
+				if (TryReadCustomPromptTextJsonFileFromDirectory(directory, CustomPolicyEvaluatorPromptJsonFileName, NormalizeCustomPolicyEvaluatorPromptText, store.CustomPolicyEvaluatorPrompt, out string customPolicyPrompt))
 				{
 					store.CustomPolicyEvaluatorPrompt = customPolicyPrompt;
 				}
-				if (TryReadLayeredCustomPromptTextJsonFile(directory, packagedDirectory, NpcRulerPolicyPromptJsonFileName, NormalizeNpcRulerPolicyPromptText, store.NpcRulerPolicyPrompt, out string npcRulerPolicyPrompt))
+				if (TryReadCustomPromptTextJsonFileFromDirectory(directory, NpcRulerPolicyPromptJsonFileName, NormalizeNpcRulerPolicyPromptText, store.NpcRulerPolicyPrompt, out string npcRulerPolicyPrompt))
 				{
 					store.NpcRulerPolicyPrompt = npcRulerPolicyPrompt;
 				}
-				if (TryReadLayeredCustomPromptTextJsonFile(directory, packagedDirectory, WorldDiplomacyPromptJsonFileName, NormalizeWorldDiplomacyPromptText, DefaultWorldDiplomacyPreference, out string worldDiplomacyPrompt))
+				if (TryReadCustomPromptTextJsonFileFromDirectory(directory, WorldDiplomacyPromptJsonFileName, NormalizeWorldDiplomacyPromptText, DefaultWorldDiplomacyPreference, out string worldDiplomacyPrompt))
 				{
 					store.WorldDiplomacyPrompt = worldDiplomacyPrompt;
 				}
@@ -4573,7 +4563,7 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 				}
 				store = NormalizeCustomPromptTextStore(store);
 				_customPromptTextStoreFolderHydrated = true;
-				_customPromptTextStoreFolderFingerprint = fingerprint;
+				_customPromptTextStoreFolderFingerprint = ComputeCustomPromptTextStoreFingerprint(directory);
 				_customPromptTextStoreCached = CloneCustomPromptTextStore(store);
 				_customPromptTextStoreRevision++;
 				revision = _customPromptTextStoreRevision;
@@ -4594,7 +4584,7 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		try
 		{
 			string directory = GetCustomPromptTextStoreDirectory();
-			AnimusForgeDataPaths.EnsureWritableRoot(AnimusForgeDataPaths.GetCurrentRoot());
+			AnimusForgeModulePaths.ValidateCustomPromptPath(directory);
 			lock (CustomPromptTextStoreFileLock)
 			{
 				PersistCustomPromptTextFileUnlocked(GetCustomPromptTextFilePath(directory, fileName), text);
@@ -4617,7 +4607,7 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		try
 		{
 			string directory = GetCustomPromptTextStoreDirectory();
-			AnimusForgeDataPaths.EnsureWritableRoot(AnimusForgeDataPaths.GetCurrentRoot());
+			AnimusForgeModulePaths.ValidateCustomPromptPath(directory);
 			lock (CustomPromptTextStoreFileLock)
 			{
 				PersistCustomPromptTextFileUnlocked(GetPolicyPromptTextFilePath(directory, fileName), text);
@@ -4641,20 +4631,12 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		{
 			throw new InvalidOperationException("已有自定义提示词文件损坏；请先备份或修复原件，未覆盖原件。");
 		}
-		if (string.IsNullOrWhiteSpace(text)
-			&& !string.Equals(Path.GetFileName(path), NpcPersonaGenerationRequirementsJsonFileName, StringComparison.OrdinalIgnoreCase)
-            && !string.Equals(Path.GetFileName(path), WorldBulletinWritingRequirementsJsonFileName, StringComparison.OrdinalIgnoreCase))
-		{
-			if (File.Exists(path)) File.Delete(path);
-		}
-		else
-		{
-			WriteCustomPromptTextJsonFileUnlocked(path, text);
-		}
+		WriteCustomPromptTextJsonFileUnlocked(path, text);
 	}
 
 	private static void EnsureCustomPromptTextStoreFilesUnlocked(string directory, CustomPromptTextStoreJson initialStore)
 	{
+		AnimusForgeModulePaths.ValidateCustomPromptPath(directory);
 		if (string.IsNullOrWhiteSpace(directory))
 		{
 			return;
@@ -4698,6 +4680,8 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 					{
 						Directory.CreateDirectory(policyDirectory);
 					}
+					AnimusForgeModulePaths.ValidateCustomPromptPath(legacyPath);
+					AnimusForgeModulePaths.ValidateCustomPromptPath(policyPath);
 					File.Copy(legacyPath, policyPath, overwrite: false);
 				}
 			}
@@ -4712,12 +4696,13 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 	{
 		if (!File.Exists(path))
 		{
-			WriteCustomPromptTextJsonFileUnlocked(path, text);
+			WriteCustomPromptTextJsonFileUnlocked(path, text, replaceExisting: false);
 		}
 	}
 
-	private static void WriteCustomPromptTextJsonFileUnlocked(string path, string text)
+	private static void WriteCustomPromptTextJsonFileUnlocked(string path, string text, bool replaceExisting = true)
 	{
+		AnimusForgeModulePaths.ValidateCustomPromptPath(path);
 		string directoryName = Path.GetDirectoryName(path);
 		if (!string.IsNullOrWhiteSpace(directoryName) && !Directory.Exists(directoryName))
 		{
@@ -4739,8 +4724,14 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 				writer.Flush();
 				stream.Flush(flushToDisk: true);
 			}
+			if (IsCustomPromptTextFileTooLarge(candidate)) throw new InvalidOperationException("自定义提示词 JSON 超过大小限制，原件未覆盖。");
 			JsonConvert.DeserializeObject<CustomPromptTextJson>(File.ReadAllText(candidate, CustomPromptStrictUtf8Encoding));
-			if (File.Exists(path)) File.Replace(candidate, path, null);
+			AnimusForgeModulePaths.ValidateCustomPromptPath(path);
+			if (File.Exists(path))
+			{
+				if (!replaceExisting) return;
+				File.Replace(candidate, path, null);
+			}
 			else File.Move(candidate, path);
 		}
 		finally
@@ -4820,6 +4811,7 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 			{
 				return false;
 			}
+			AnimusForgeModulePaths.ValidateCustomPromptPath(path);
 			if ((File.GetAttributes(path) & FileAttributes.ReparsePoint) != 0)
 			{
 				LogPlayerCustomPromptRuleWarning("自定义提示词 JSON 是未认可的 reparse 文件，已保留并回退默认: " + Path.GetFileName(path));
@@ -4833,7 +4825,7 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 			string json;
 			try
 			{
-				json = File.ReadAllText(path, CustomPromptStrictUtf8Encoding);
+				json = CustomPromptStrictUtf8Encoding.GetString(File.ReadAllBytes(path)).TrimStart('\uFEFF');
 			}
 			catch (DecoderFallbackException ex)
 			{
@@ -4871,25 +4863,13 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		}
 	}
 
-	private static bool TryReadLayeredCustomPromptTextJsonFile(
-		string overrideDirectory, string packagedDirectory, string fileName,
-		Func<string, string> normalize, string fallbackText, out string text)
+	private static bool TryReadCustomPromptTextJsonFileFromDirectory(
+		string directory, string fileName, Func<string, string> normalize, string fallbackText, out string text)
 	{
-		string overridePath = IsPolicyPromptFileName(fileName)
-			? GetPolicyPromptTextFilePath(overrideDirectory, fileName)
-			: GetCustomPromptTextFilePath(overrideDirectory, fileName);
-		if (TryReadCustomPromptTextJsonFile(overridePath, normalize, fallbackText, out text))
-		{
-			return true;
-		}
-		if (string.IsNullOrWhiteSpace(packagedDirectory))
-		{
-			return false;
-		}
-		string packagedPath = IsPolicyPromptFileName(fileName)
-			? GetPolicyPromptTextFilePath(packagedDirectory, fileName)
-			: GetCustomPromptTextFilePath(packagedDirectory, fileName);
-		return TryReadCustomPromptTextJsonFile(packagedPath, normalize, fallbackText, out text);
+		string path = IsPolicyPromptFileName(fileName)
+			? GetPolicyPromptTextFilePath(directory, fileName)
+			: GetCustomPromptTextFilePath(directory, fileName);
+		return TryReadCustomPromptTextJsonFile(path, normalize, fallbackText, out text);
 	}
 
 	private static bool IsCustomPromptTextFileTooLarge(string path)
@@ -5029,26 +5009,25 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 		try
 		{
 			string path = GetLegacyCustomPromptTextStorePath();
+			AnimusForgeModulePaths.ValidateCustomPromptPath(path);
 			if (string.IsNullOrWhiteSpace(path) || !File.Exists(path))
 			{
 				return false;
 			}
 			if (IsCustomPromptTextFileTooLarge(path))
 			{
-				LogPlayerCustomPromptRuleWarning("旧自定义提示词 JSON 过大，已隔离并恢复当前默认值: " + path);
-				QuarantineAndRestoreLegacyCustomPromptTextStoreUnlocked(path, "too_large");
+				LogPlayerCustomPromptRuleWarning("旧自定义提示词 JSON 过大，已保留原件并回退当前默认值: " + path);
 				// 不让坏损的 aggregate 默认值覆盖已成功读取的更旧独立文本。
 				return false;
 			}
 			string json;
 			try
 			{
-				json = File.ReadAllText(path, CustomPromptStrictUtf8Encoding);
+				json = CustomPromptStrictUtf8Encoding.GetString(File.ReadAllBytes(path)).TrimStart('\uFEFF');
 			}
 			catch (DecoderFallbackException ex)
 			{
-				LogPlayerCustomPromptRuleWarning("旧自定义提示词 JSON 不是严格 UTF-8，已隔离并恢复当前默认值: " + path + " - " + ex.Message);
-				QuarantineAndRestoreLegacyCustomPromptTextStoreUnlocked(path, "non_utf8");
+				LogPlayerCustomPromptRuleWarning("旧自定义提示词 JSON 不是严格 UTF-8，已保留原件并回退当前默认值: " + path + " - " + ex.Message);
 				return false;
 			}
 			CustomPromptTextStoreJson parsed;
@@ -5058,20 +5037,17 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 			}
 			catch (Exception ex)
 			{
-				LogPlayerCustomPromptRuleWarning("旧自定义提示词 JSON 格式错误，已隔离并恢复当前默认值: " + path + " - " + ex.Message);
-				QuarantineAndRestoreLegacyCustomPromptTextStoreUnlocked(path, "invalid_json");
+				LogPlayerCustomPromptRuleWarning("旧自定义提示词 JSON 格式错误，已保留原件并回退当前默认值: " + path + " - " + ex.Message);
 				return false;
 			}
 			if (parsed == null)
 			{
-				LogPlayerCustomPromptRuleWarning("旧自定义提示词 JSON 缺少有效内容，已隔离并恢复当前默认值: " + path);
-				QuarantineAndRestoreLegacyCustomPromptTextStoreUnlocked(path, "invalid_schema");
+				LogPlayerCustomPromptRuleWarning("旧自定义提示词 JSON 缺少有效内容，已保留原件并回退当前默认值: " + path);
 				return false;
 			}
 			bool needsMigration = parsed.Version < WorldDiplomacyPromptJsonVersion;
 			if (needsMigration)
 			{
-				BackupCustomPromptMigrationSourceUnlocked(path, "aggregate-v" + Math.Max(1, parsed.Version).ToString(CultureInfo.InvariantCulture));
 				parsed.WorldDiplomacyPrompt = MigrateLegacyWorldDiplomacyPromptText(parsed.WorldDiplomacyPrompt);
 			}
 			parsed.WorldBulletinWritingRequirements = MigrateLegacyWorldBulletinWritingRequirements(parsed.WorldBulletinWritingRequirements);
@@ -5079,7 +5055,6 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 			if (needsMigration)
 			{
 				store.Version = WorldDiplomacyPromptJsonVersion;
-				WriteLegacyCustomPromptTextStoreUnlocked(path, store);
 			}
 			return true;
 		}
@@ -5160,26 +5135,12 @@ AF 王国稳定度是 0 到 100 的国家级尺度，不按城镇数量叠加。
 
 	private static string GetCustomPromptTextStoreDirectory()
 	{
-		return AnimusForgeDataPaths.GetOverridePath(
-			AnimusForgeDataPaths.GetCurrentRoot(), CustomPromptTextStoreFolderName);
-	}
-
-	private static string GetPackagedCustomPromptTextStoreDirectory()
-	{
-		string moduleRoot = AnimusForgeModulePaths.GetCurrentModuleRoot();
-		return string.IsNullOrWhiteSpace(moduleRoot)
-			? string.Empty
-			: Path.Combine(moduleRoot, CustomPromptTextStoreFolderName);
+		return AnimusForgeModulePaths.GetCustomPromptsDirectory();
 	}
 
 	internal static string GetCustomPromptTextStoreDirectoryForPolicyPrompts()
 	{
 		return BuildPolicyPromptSubdirectory(GetCustomPromptTextStoreDirectory());
-	}
-
-	internal static string GetPackagedCustomPromptTextStoreDirectoryForPolicyPrompts()
-	{
-		return BuildPolicyPromptSubdirectory(GetPackagedCustomPromptTextStoreDirectory());
 	}
 
 	internal static string BuildPolicyPromptSubdirectoryForContractTests(string customPromptDirectory)
