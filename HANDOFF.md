@@ -1,3 +1,9 @@
+# 当前交接：会面护卫复用真实士兵（2026-10-11，OFFLINE_VERIFIED / LIVE_PENDING）
+
+- 检查点 `de1c9bcc`，产品 `30e70d37`；每侧最多一名护卫，只缓存原版已分配的同队同部队 `PartyGroupAgentOrigin` 士兵，不额外生成、不改 Origin/名单。保留会面、和平退出、偷袭转战及正常伤亡；初始化重试0.5秒、最多5秒，无兵/超时允许无护卫。
+- 同一专项夹具旧实现5 PASS/33 FAIL，修后1.3/1.4各38 PASS；8个伤亡/转战/站位方法不变。既有183会面边界、67对话转战检查在临时net10项目通过（原net8缺引用包失败保留）。原统一Debug双API/Bootstrap/双Coup exit0，两实现各348警告/0错误；仅进程排除artifacts错误框架候选，未改脚本。
+- [唯一主台账：失败、验证、构建身份与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#meeting-real-troop-escort-20261011)；[已核源码与消费者](docs/architecture/af-framework-code-scope.md#meeting-real-troop-escort-20261011)。证据 `artifacts/tests/meeting-escort-official-build/run-7cf761c9a0de475299b68a5293ee0efd/receipt.json`；组合工作树保留其他作者WIP，不纳入本任务提交。未Stage、部署、打包、推送或实机验收；本次崩溃场景复验待后续单独授权。
+
 # 当前交接：最新源码接线 debug（2026-10-11，TWO_FIXES_OFFLINE_VERIFIED / AUDIT_INCOMPLETE）
 
 - 按用户要求先快进拉取 `origin/main` 至 `14ce14ae`，保留当前分支。直接外交产品 `8097f599` 保留；续查检查点 `8b00cb1a`、产品 `aba208e8` 修世界外交多 hook 部分失败却永久标完成的问题：战役注册补失败项，成功目标去重，九监听顺序不变。尚未证明用户实机故障由此触发，未启用历史孤儿补丁。
