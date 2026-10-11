@@ -1,3 +1,21 @@
+<a id="meeting-real-troop-escort-20261011"></a>
+### 会面护卫：原版真实士兵身份与有限初始化
+
+产品 `30e70d3704256b0a53b205b08133634c51045f71`；以下一基坐标及消费者已按产品修订和工作树核对，本地 `artifacts/tests/meeting-escort-official-build/run-7cf761c9a0de475299b68a5293ee0efd/code-map.json` 保存结果。red/green、框架引用失败、正式双构建与产物身份统一归[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#meeting-real-troop-escort-20261011)；不验收完整Mission或实机。
+
+| 一基范围 / 符号 | owner、实际消费者与覆盖边界 |
+| --- | --- |
+| `src/AF.GameAdapter.Bannerlord/Encounter/LordEncounterBehavior.cs:4600–4605`（未改） | 原会面入口仍只在 MeetingActive/原版 BattleEndLogic 命中时添加真实 MeetingBattleLockMissionBehavior；不改默认交互入口 |
+| `src/AF.GameAdapter.Bannerlord/Encounter/MeetingBattleLockMissionBehavior.cs:132–140,295–360,640–669`；AfterStart / OnMissionTick | 原实例状态初始化与领主安置完成开始计时；原Tick只在未结束时0.5秒重试，转战分支在选人前返回 |
+| 同文件 `5445–5509,5511–5523`；TryPlaceEscortGuards / ResolveMeetingEscortForSide | 最多单护卫、原Agent缓存，侧完成后不重选；无健康士兵结束、5秒超时单次日志，不阻塞会面；删除额外生成入口及独占helper |
+| 同文件 `5525–5555,5557–5574,5576–5589`；SelectExistingMeetingEscortAgent / IsReusableMeetingEscortCandidate / HasHigherMeetingEscortPriority | 每侧一次线性扫描，16米附近最近优先，远处既有优先级；同Team/Party/原PartyGroup Origin/Troop一致，排除英雄/玩家/领主/坐骑/演员。无Origin或名单写入 |
+| 同文件 `3167–3182,5591–5633,6346–6383`（方法原文保持）；ConfigureMeetingHoldFormations / MoveExtraMeetingCircleTroopsAway / PositionEscortAgents | 真实护卫继续沿用原编队、站位、武器和暂停处理；专项的场景叶为替身，站位真实引擎效果未验 |
+| 同文件 `3863–3871,3927–3940,3942–4069`（原文保持）；OnAgentHit / OnAgentRemoved / OnScoreHit | 原伤害/死亡/移除处理入口未改；原版Origin伤亡方法夹具验证兵员唯一性，不吞噬结算异常、不验证完整实机事件次序 |
+| 同文件 `1060–1187,3835–3861,5161–5232`（原文保持）；ForceAgentsIntoCombatReadiness / RestoreTargetLordControllerForCombat / ReleaseMeetingLocksForCombat | 原转战恢复/释放不改，选中的真实护卫沿既有流程恢复；不新增敌对或死亡处理 |
+| `tests/AF.GameAdapter.Bannerlord/MeetingEscortRosterRegressionTests/run.py:33–139`；main提取/接线与Harness | 原生产方法/计时字段/Tick子块和两版原Origin伤亡方法原文编译；38用例/版，8方法不变断言，旧源码同夹具失败。scene/spawn/supplier/roster是替身；net10离线证据，非实机或玩家档验收 |
+
+频率仅每次会面初始化最多5秒、0.5秒节流；每侧一次选人扫描、不全量排序，选中后O(1)校验，既有站位/编队扫描责任未重构。公开接口、配置、存档字段与模块身份不变。
+
 <a id="refactor-wiring-debug-20261011"></a>
 ### 最新源码接线排查：外交补丁注册失败恢复
 
