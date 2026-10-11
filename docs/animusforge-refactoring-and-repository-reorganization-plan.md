@@ -15,11 +15,25 @@
 - 离线退出门已完成；Mission/场景、原版 spawn 边缘、supplier/roster 是小型替身，原版 Origin 的 SetKilled/SetWounded 原文确实执行，但不代表完整引擎事件顺序或玩家档。Coup managed 门禁也不等于实机。**本次崩溃会面/偷袭、和平退出及1.3/1.4实机复验 NOT-RUN**，待后续单独授权；未 Stage、部署、打包、启动游戏或推送。回滚仅定向 inverse 产品 `30e70d37`，不 hard reset、重写历史或回退其他作者；所有失败证据与原私有记录保留本地。
 
 <a id="module-custom-prompts-20261011"></a>
-## 自定义提示词恢复模组内读写（2026-10-11，ACTIVE）
+## 自定义提示词恢复模组内读写（2026-10-11，OFFLINE_VERIFIED / LIVE_PENDING）
 
-- 用户批准实施完整方案：以 `d4cb1467` / `b1ce1d2b` 的单目录、缺失初始化和逐类空值行为为参照，保留当前默认内容、安全检查和原子写入；全部提示词及政策检索/总量上限配置回到当前模组 `CustomPrompts`。基线 `8b00cb1a892f967b0431a7e4b2e9ef1d4374c382`，工作区 `E:/AnimusForge-klfwdf`，分支 `delivery/policy-bounded-retrieval-20261010`，开工 clean。
-- 部署脚本仅增加已有 CustomPrompts 文件保留/缺失补齐；Stage/ZIP 不混入玩家文件。C 盘旧数据不迁移、不删除、不再作为提示词/政策配置读取源；日志、模型缓存、PlayerExports 与其他作者业务保持。仅本地源码/合成回归和构建，不 Stage、部署、打包或推送。
-- 退出门：生产普通/政策提示词与配套配置路径及空值 red/green、缺失初始化和坏文件/只读/reparse 保护、合成部署保留/补齐/重复与回滚、原双 API/Bootstrap/双 Coup gate；无关基线失败单列。用户另行批准仅清理本工作区 `bin/Debug/single_module_artifacts` 与 `obj/single_module/Debug` 两个构建产物目录。性能保持普通一秒/政策五秒节流，保存立即失效，不新增 Tick 扫描。
+- **范围与取舍**：用户批准完整方案，以 `d4cb1467` / `b1ce1d2b` 的单目录、缺失初始化和逐类空值行为为参照，不整体回滚。开工基线 `8b00cb1a892f967b0431a7e4b2e9ef1d4374c382`，工作区 `E:/AnimusForge-klfwdf`，分支 `delivery/policy-bounded-retrieval-20261010`，检查点 `e5fc3069`；部署保护切片 `ebb29ac5`，提示词/配置与测试切片 `45c630666d160e48d54c360557f053e1e762b15f`。本条明确替代 `528031c5` 的提示词双层读取/删除覆盖语义，不替代日志、模型缓存、PlayerExports 合同。
+- **实现**：复用 ModulePaths 定位当前合法模组，所有提示词及政策检索/总量上限配置读写 `CustomPrompts`、`Policy`、`Policy/Effects`；找不到目录、不可写或 reparse 明确失败，不回退 C 盘或 CWD。只补缺失 JSON；兼容模组内旧独立/aggregate 格式，坏原件不修复、不隔离搬走。普通提示词清空保留空 Text；NPC 统治者、代笔、共同/模块政策提示词按原规则写默认值；玩家评议空偏好及新增快报/人物等既有空值语义保留。保留字段/版本身份与未知政策字段，不新增公开 API、存档键或存储系统。
+- **安全与性能**：实际反例证明 File.ReadAllText 自动 BOM 检测可接受 UTF-16，以及组合政策 JSON 可在保存后超过读入上限；改为严格 UTF-8 字节解码（兼容 UTF-8 BOM），写候选大小检查后才原子替换。配套配置保存前校验已有原件，拒绝损坏/非法编码/超限替换；本包不截断既有坏文件或玩家数据。普通一秒/政策五秒指纹节流保留，保存立即失效；缺失初始化失败不隐藏可读原件，坏文件逐类隔离。初始化与保存为有限文件操作，未增加 Tick 扫描或后台游戏对象访问。
+- **部署保护**：仅 `CustomPrompts/` 已有普通文件跳过受管替换，涵盖旧默认、自定义效果、两类配置及坏文件；缺失文件仍安装，路径/reparse 预检和其他受管文件备份/原子激活/回滚不变。Stage 只读干净默认，不从目标反向合并玩家文件；真实 Stage/ZIP 未执行。新版本默认文案不会自动覆盖已有 JSON，是已确认取舍。
+
+### 已执行验证与绑定证据
+
+- `artifacts/tests/module-prompts-20261011/run-564d778e4aae4195a2650a31aa9e054b/runtime-red-bound.log`：旧 DLL 在普通空文本仍应保留 JSON 的新断言失败。新增 UTF-16 反例 `runtime-1.4-484041abac84413e9852a22e9858e16f`、组合序列化超限反例 `runtime-1.4-ed3f0572f660493f91e53ab898427a81` 均为实际断言 red，不是编译错误。最终同一现有 ContractTests 的单目录入口在 1.3 / 1.4 各 **100** 检查 PASS：模组生效/模拟 C 盘同名文件无效、缺失初始化、空值/冷回读/刷新节流/即时失效、坏原件/只读文件和目录 ACL/reparse/定位失败、配套配置实际路径与保存。最终 run `runtime-1.3-2696caa2278a41218ab7852bcfd75b27` / `runtime-1.4-60ddfd2d3c04448086a3045e5262516e`，复制 DLL SHA 与原构建候选完全一致；宿主为 .NET 10，非 live Campaign。
+- 复用人物设置/知识夹具 **29**、快报提示词专项 **12**、生产链接总量上限规则/配置 **59** PASS；人物空值 mutation 在真实断言失败。总量上限 RuntimeTests 对两版原版程序集的原生 .NET Framework 执行各 **97** PASS（没有 live Campaign/Gauntlet）；先前 .NET 10 执行因旧 Harmony 使用 BinaryFormatter 报 PlatformNotSupportedException，未把该失败改绿或削弱断言。测试入口显式支持 net10，默认 net8 仍保留，未改产品构建入口。
+- 合成受管部署：修前 `artifacts/j15-content/prompt-red-a707e5589f404d458ffbbdabcadff541/red.log` 失败；最终 `artifacts/j15-content/prompt-final-3aeb22caa3ba43acabf8a25397cca75f/result.log` PASS，保留 **5** 类提示词/配置与全部 **12** 保护文件，补齐 **1** 文件，重复无变化、故障回滚/中断恢复/FeatureBridges/worldbook 原合同不变，Stage 默认 SHA 不变。所有夹具均在工作区，没有操作真实 C 盘提示词或游戏目录。
+- 原 `scripts/build/build_single_module.ps1` 最终 Debug 双实现、Bootstrap、双 Coup registration/memory gate **exit0**；引用 `v1.3.15.110062` / `v1.4.6.115628`，两实现各 **348 warning / 0 error**，Bootstrap/probe 0 warning / 0 error。只清理用户精确批准的 `bin/Debug/single_module_artifacts`、`obj/single_module/Debug`，预检无 reparse，未传 Stage/Deploy。先前一次构建被另一任务新测试缓存的 net8 System.Core/System.dll 污染，实际 ReferencePath 证据 `reference-diagnostic.json`；最终仅进程内 DefaultItemExcludes 排除 artifacts，没有改一键脚本/项目配置、删别人缓存或削弱门禁。
+- 最终构建证据 `build-final-9d469d888c4c43dfb91b5b39b316138a/{invocation.json,build.log,receipt.json,candidate}`；源码输入前后不变，提交后全部输入字节再对齐。1.3 DLL SHA `4a7abee1e16390e0284ccfc95ee2863c599786913fec7ecbadbff93b4050a707`，1.4 `e8ca2c9b7bbdf003d5915c9a2ac4cb8dc36a26e750cb9ce98081d81552421a22`。构建包含已保留的世界外交/会面作者修改，不冒称只含本包的孤立候选。总收据 `artifacts/tests/module-prompts-20261011/verification-receipt.json`，16 源码锚点 `code-map.json` 在记录提交和 working-tree 均 PASS；导航见[代码范围图](architecture/af-framework-code-scope.md#module-custom-prompts-20261011)。
+
+### 保留的失败、风险与接续
+
+- 完整快报夹具仍在未改的 foreign notice/lower-left information manager 断言失败，`weekly-1c0af474c5e743b3a9285adbadb573f2/result.log`；本包提示词断言均已到达且通过，另设专项复用同一批断言，不删除完整测试。原政策总合同的独立日志/缓存路径基线失败继续保留，本轮未运行带递归清理的完整套件，不称全仓通过。C 盘旧提示词/两类政策配置保留、不迁移、不再生效；仅当前模组已有内容或当前默认生效。
+- 本有限包离线退出门完成，未 Stage、部署、打包、推送、收费 API、玩家存档或实机验证。后续获准后验游戏内编辑/打开文件夹/保存、退出重启回读；离线冷回读不替代实机重启验收。回滚只对 `45c63066` / `ebb29ac5` 做 focused inverse，不 hard reset、不改历史、不回滚其他作者。
 
 <a id="refactor-wiring-debug-20261011"></a>
 ## 最新源码接线排查（2026-10-11，TWO_FIXES_OFFLINE_VERIFIED / AUDIT_INCOMPLETE）

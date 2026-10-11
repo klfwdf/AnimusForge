@@ -1,3 +1,17 @@
+<a id="module-custom-prompts-20261011"></a>
+### 自定义提示词：恢复模组内单目录合同
+
+产品 `45c630666d160e48d54c360557f053e1e762b15f`，部署保护 `ebb29ac5`；16 锚点 `artifacts/tests/module-prompts-20261011/code-map.json` 已验证记录提交与 working-tree。详细 red/green、组合候选、原失败和未覆盖责任见[唯一主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#module-custom-prompts-20261011)，不替代实机验收。
+
+| 一基范围 / 符号 | owner、消费者与覆盖边界 |
+| --- | --- |
+| `src/AF.Persistence/AnimusForgeModulePaths.cs:13–42`；GetCustomPromptsDirectory / ValidateCustomPromptPath | 唯一模组解析和绝对本地/reparse 检查；不修改生产日志/缓存/PlayerExports 路径，测试 override 仅供隔离夹具 |
+| `src/AF.GameAdapter.Bannerlord/Configuration/Mcm/DuelSettings.cs:3501–3521,4485–4580,4628–4741,5136–5143`；OpenCustomPromptTextStoreFolder / TryReadCustomPromptTextStore / PersistCustomPromptTextFileUnlocked / EnsureCustomPromptTextStoreFilesUnlocked / WriteCustomPromptTextJsonFileUnlocked | MCM 与普通提示词消费者共用模组文件；一秒缓存、补缺失、普通空 Text、即时失效、原子写；旧格式初始化兼容仍归本 owner，不宣称整个 DuelSettings 已重构 |
+| `PolicySystem/Effects/PolicyEffectPromptService.cs:150–186,320–333,359–387,562–607`；TrySaveAutoDraftPrompt / EnsureStorageFilesUnlocked / GetSnapshot / WriteJsonAtomically | 政策默认写回、逐模块保留字段、五秒缓存与候选限额；共同/模块保存仍为本服务，非独立存储层 |
+| `PolicySystem/Effects/PolicyEffectModuleRetrievalSettings.cs:305–316,390–406`；ReadSettingsDocument / GetSettingsPath；`PolicySystem/Balance/SettlementBalanceSettings.cs:17–27,78–126`；Initialize / TrySave | 两类配套配置同 Policy 路径；初始化/UI 保存验证原件，热 getter 不读盘，没有 Tick 配置扫描 |
+| `PolicySystem/UI/PolicyPromptEditorUi.cs:27–35`；Open（未改） | 原政策编辑入口调用 EnsureStorageFiles；实际 DLL 存储专项不等于 Gauntlet 界面验收 |
+| `scripts/build/deploy_module.ps1:536,585–589`；Invoke-ManagedStageDeployment | 验路径后仅保留已有 CustomPrompts，补缺失，其他文件恢复规则不变；Stage/ZIP 不合并玩家内容，真实部署/打包未执行 |
+
 <a id="meeting-real-troop-escort-20261011"></a>
 ### 会面护卫：原版真实士兵身份与有限初始化
 
