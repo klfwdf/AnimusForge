@@ -582,6 +582,11 @@ function Invoke-ManagedStageDeployment {
         if ((Test-Path -LiteralPath $target) -and -not (Test-Path -LiteralPath $target -PathType Leaf)) {
             throw 'A managed target path is not a regular file.'
         }
+        # Module-local prompts/configuration are writable player content. Stage remains defaults-only.
+        if ($relative.StartsWith('CustomPrompts\', [System.StringComparison]::OrdinalIgnoreCase) -and
+            (Test-Path -LiteralPath $target -PathType Leaf)) {
+            continue
+        }
         $newHash = Get-FileSha256 -LiteralPath $source.FullName
         $oldHash = if (Test-Path -LiteralPath $target -PathType Leaf) { Get-FileSha256 -LiteralPath $target } else { '' }
         if ($newHash -ne $oldHash) {
