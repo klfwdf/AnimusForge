@@ -100,6 +100,7 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 	private const int RecentNegativeReputationFactRetentionDays = DaysPerYear;
 
 	private static bool _patchesApplied;
+	private static readonly HashSet<MethodBase> _installedPatchTargets = new HashSet<MethodBase>();
 	private static int _internalDiplomaticActionDepth;
 	private readonly BannerlordWorldDiplomacyPersistenceAdapter PersistenceAdapter =
 		new BannerlordWorldDiplomacyPersistenceAdapter();
@@ -166,6 +167,14 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 		CampaignEvents.MakePeace.AddNonSerializedListener(this, OnMakePeace);
 		CampaignEvents.OnSettlementOwnerChangedEvent.AddNonSerializedListener(this, OnSettlementOwnerChanged);
 		CampaignEvents.MapEventEnded.AddNonSerializedListener(this, OnMapEventEnded);
+		try
+		{
+			RegisterHarmonyPatches(null);
+		}
+		catch (Exception ex)
+		{
+			Log("campaign patch retry failed: " + ex.Message);
+		}
 		Log("registered");
 	}
 
@@ -206,8 +215,8 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 		{
 			return;
 		}
-		_patchesApplied = true;
 		Harmony patcher = harmony ?? new Harmony("com.AnimusForge.world_diplomacy");
+		bool allApplied = true;
 		try
 		{
 			MethodInfo addDecision = AccessTools.Method(typeof(Kingdom), nameof(Kingdom.AddDecision), new[]
@@ -217,16 +226,18 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 			});
 			if (addDecision != null)
 			{
-				patcher.Patch(addDecision, prefix: new HarmonyMethod(typeof(WorldDiplomacyBehavior), nameof(Patch_Kingdom_AddDecision_Prefix)));
+				ApplyHarmonyPatchOnce(patcher, addDecision, prefix: new HarmonyMethod(typeof(WorldDiplomacyBehavior), nameof(Patch_Kingdom_AddDecision_Prefix)));
 				Log("Kingdom.AddDecision diplomacy interception patch applied.");
 			}
 			else
 			{
+				allApplied = false;
 				Log("Kingdom.AddDecision patch target missing.");
 			}
 		}
 		catch (Exception ex)
 		{
+			allApplied = false;
 			Log("Kingdom.AddDecision patch failed: " + ex.Message);
 		}
 		try
@@ -234,25 +245,37 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 			Type proposalVmType = AccessTools.TypeByName("TaleWorlds.CampaignSystem.ViewModelCollection.KingdomManagement.Diplomacy.KingdomDiplomacyProposalActionItemVM");
 			if (proposalVmType != null)
 			{
-				foreach (ConstructorInfo constructor in proposalVmType.GetConstructors(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic))
+				ConstructorInfo[] constructors = proposalVmType.GetConstructors(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+				if (constructors.Length == 0) allApplied = false;
+				foreach (ConstructorInfo constructor in constructors)
 				{
-					patcher.Patch(constructor, postfix: new HarmonyMethod(typeof(WorldDiplomacyBehavior), nameof(Patch_DiplomacyProposalActionItem_Constructed_Postfix)));
+					ApplyHarmonyPatchOnce(patcher, constructor, postfix: new HarmonyMethod(typeof(WorldDiplomacyBehavior), nameof(Patch_DiplomacyProposalActionItem_Constructed_Postfix)));
 				}
 				MethodInfo executeAction = AccessTools.Method(proposalVmType, "ExecuteAction");
 				if (executeAction != null)
 				{
-					patcher.Patch(executeAction, prefix: new HarmonyMethod(typeof(WorldDiplomacyBehavior), nameof(Patch_DiplomacyProposalActionItem_Execute_Prefix)));
+					ApplyHarmonyPatchOnce(patcher, executeAction, prefix: new HarmonyMethod(typeof(WorldDiplomacyBehavior), nameof(Patch_DiplomacyProposalActionItem_Execute_Prefix)));
 				}
+				else allApplied = false;
 				MethodInfo refreshValues = AccessTools.Method(proposalVmType, "RefreshValues");
 				if (refreshValues != null)
 				{
-					patcher.Patch(refreshValues, postfix: new HarmonyMethod(typeof(WorldDiplomacyBehavior), nameof(Patch_DiplomacyProposalActionItem_Constructed_Postfix)));
+					ApplyHarmonyPatchOnce(patcher, refreshValues, postfix: new HarmonyMethod(typeof(WorldDiplomacyBehavior), nameof(Patch_DiplomacyProposalActionItem_Constructed_Postfix)));
 				}
-				Log("kingdom diplomacy proposal button disable patches applied.");
+				else allApplied = false;
+				Log(constructors.Length > 0 && executeAction != null && refreshValues != null
+					? "kingdom diplomacy proposal button disable patches applied."
+					: "kingdom diplomacy proposal button patch targets missing.");
+			}
+			else
+			{
+				allApplied = false;
+				Log("kingdom diplomacy proposal VM patch target missing.");
 			}
 		}
 		catch (Exception ex)
 		{
+			allApplied = false;
 			Log("kingdom diplomacy proposal button patches failed: " + ex.Message);
 		}
 		try
@@ -260,15 +283,30 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 			MethodInfo promptBuilder = typeof(MyBehavior).GetMethod("BuildShoutPromptContextForExternal", BindingFlags.Public | BindingFlags.Static);
 			if (promptBuilder != null)
 			{
-				patcher.Patch(promptBuilder, postfix: new HarmonyMethod(typeof(WorldDiplomacyBehavior), nameof(Patch_BuildSharedDiplomacyMemory_Postfix)));
+				ApplyHarmonyPatchOnce(patcher, promptBuilder, postfix: new HarmonyMethod(typeof(WorldDiplomacyBehavior), nameof(Patch_BuildSharedDiplomacyMemory_Postfix)));
 				Log("shared three-channel diplomacy memory patch applied.");
+			}
+			else
+			{
+				allApplied = false;
+				Log("shared diplomacy memory patch target missing.");
 			}
 		}
 		catch (Exception ex)
 		{
+			allApplied = false;
 			Log("shared diplomacy memory patch failed: " + ex.Message);
 		}
 		WorldDiplomacyUiSprites.EnsurePatched(patcher);
+		_patchesApplied = allApplied;
+	}
+
+	private static void ApplyHarmonyPatchOnce(Harmony harmony, MethodBase target, HarmonyMethod prefix = null, HarmonyMethod postfix = null)
+	{
+		// This registration owns one hook per target; cache only successful process-wide installs.
+		if (_installedPatchTargets.Contains(target)) return;
+		harmony.Patch(target, prefix: prefix, postfix: postfix);
+		_installedPatchTargets.Add(target);
 	}
 
 	public static bool OpenComposeFromTerminal(Action onClose = null)
