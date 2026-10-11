@@ -1,3 +1,12 @@
+<a id="workspace-safe-publication-20261011"></a>
+## 2026-10-11 工作区完整安全发布（用户明确授权）
+
+- 核实工作区 `E:/AnimusForge-klfwdf` / `delivery/policy-bounded-retrieval-20261010`，原HEAD `8d521ec595e7fd2b9e767ce86393a5da6145ac11`，无未提交/未跟踪的非忽略文件。fetch 后 `origin/main` 仍为 `14ce14ae974a45e5b129d99effa1bd4e2942bab8`，0 behind / 25 ahead；不需要合并，按用户要求直接普通快进推送，不force、不rebase/reset。
+- 发布原工作区全部净变化，41文件；会面护卫 `30e70d37`、模组内提示词 `45c63066`、缓存/导出/终端设置 `2f8edb1f`、编辑器 `bfcdb4da`、部署 `60c94397` 与导入reparse保护 `ad39448d` 均保留。两项外交补丁及其四测试按用户此前要求已inverse，净产品与远端一致，不重复恢复。其他分支/外部工作树不是此次发布对象。
+- 检查25提交全历史的47变更路径，不含明确私有交接 `docs/handoffs/2026-09-11-native-history-snapshot-team-handoff.md`、ignored本地证据、玩家数据或DLL/ZIP/存档；新增行凭据模式扫描无信号（不是完整安全审计），`git diff --check origin/main HEAD` exit0。原checkpoint、inverse和文档行尾修复历史保持，不为美化发布改写历史。
+- 产品/测试/构建相关文件与最终已验证源码 `ad39448d` 完全一致；重新核对既有双API/Bootstrap三产物SHA全部一致，20源码地图锚点 recorded-revision / working-tree 两模式PASS。复用[目录恢复最终离线验收](#module-runtime-storage-20261011)、[提示词专项](#module-custom-prompts-20261011)和[会面护卫专项](#meeting-real-troop-escort-20261011)，没有重新声称全仓测试通过。J15 3365/3364计数基线失败、旧124文件Release Stage缺输入仍保留；实机/游戏UI/玩家存档未验。
+- 仅新增本条发布范围与根HANDOFF摘要；源码、默认资源和构建流程不变。发布前再次核对远端与dirty；普通推送失败或远端推进时停止当前推送并重新诊断，不强行覆盖。实际发布SHA/远端ref及命令结果保存在本地 `artifacts/publication/workspace-sync-20261011-*/receipt.json`，证据不提交。不部署、Stage、打包或写游戏/C盘玩家数据。
+
 <a id="module-runtime-storage-20261011"></a>
 ## 缓存、导出、终端设置和部署备份恢复旧目录（2026-10-11，OFFLINE_VERIFIED / LIVE_PENDING）
 
