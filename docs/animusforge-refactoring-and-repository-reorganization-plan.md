@@ -1,3 +1,10 @@
+<a id="module-custom-prompts-20261011"></a>
+## 自定义提示词恢复模组内读写（2026-10-11，ACTIVE）
+
+- 用户批准实施完整方案：以 `d4cb1467` / `b1ce1d2b` 的单目录、缺失初始化和逐类空值行为为参照，保留当前默认内容、安全检查和原子写入；全部提示词及政策检索/总量上限配置回到当前模组 `CustomPrompts`。基线 `8b00cb1a892f967b0431a7e4b2e9ef1d4374c382`，工作区 `E:/AnimusForge-klfwdf`，分支 `delivery/policy-bounded-retrieval-20261010`，开工 clean。
+- 部署脚本仅增加已有 CustomPrompts 文件保留/缺失补齐；Stage/ZIP 不混入玩家文件。C 盘旧数据不迁移、不删除、不再作为提示词/政策配置读取源；日志、模型缓存、PlayerExports 与其他作者业务保持。仅本地源码/合成回归和构建，不 Stage、部署、打包或推送。
+- 退出门：生产普通/政策提示词与配套配置路径及空值 red/green、缺失初始化和坏文件/只读/reparse 保护、合成部署保留/补齐/重复与回滚、原双 API/Bootstrap/双 Coup gate；无关基线失败单列。用户另行批准仅清理本工作区 `bin/Debug/single_module_artifacts` 与 `obj/single_module/Debug` 两个构建产物目录。性能保持普通一秒/政策五秒节流，保存立即失效，不新增 Tick 扫描。
+
 <a id="refactor-wiring-debug-20261011"></a>
 ## 最新源码接线排查（2026-10-11，ONE_FIX_OFFLINE_VERIFIED / AUDIT_INCOMPLETE）
 
