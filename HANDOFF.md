@@ -1,7 +1,7 @@
 # 当前交接：最新源码接线 debug（2026-10-11，ONE_FIX_OFFLINE_VERIFIED / AUDIT_INCOMPLETE）
 
 - 按用户要求先快进拉取 `origin/main` 至 `14ce14ae`，保留当前 `delivery/policy-bounded-retrieval-20261010` 分支。检查点 `492ca267`；本地产品 `8097f599` 修外交补丁首次安装失败却永久跳过战役重试的问题，成功安装仍去重。尚未证明用户实机故障由此触发，未擅自启用历史孤儿补丁。
-- 18 项完整生产类注册回归、双实现与 Bootstrap 构建、两实际 DLL 的双 Coup gate、八源码锚点通过。使用原构建/校验函数与全新隔离输出，没有清理旧构建目录或修改脚本；历史 J17 gate/适配器夹具失败如实保留。未推送、Stage、部署、实机/玩家存档/全仓验收，不称全部接线修完。
+- 18 项完整生产类注册回归及八源码锚点通过。首次隔离验证后，用户追加允许仅清理两个指定构建产物目录；未改的原统一脚本完整入口复验 exit0，双实现/Bootstrap/双 Coup gate 通过，两实现各 348 warning / 0 error。构建/源码/产物绑定证据归同一台账；历史 J17 gate/适配器夹具失败如实保留。未推送、Stage、部署、实机/玩家存档/全仓验收，不称全部接线修完。
 - [唯一主台账：复现、修复、失败证据与回滚](docs/animusforge-refactoring-and-repository-reorganization-plan.md#refactor-wiring-debug-20261011)；[本轮源码与消费者](docs/architecture/af-framework-code-scope.md#refactor-wiring-debug-20261011)。本地总收据 `artifacts/tests/wiring-debug-final-20261011/run-21bf27f91e3e40b0b0949206f142f686/receipt.json`。本条仅接续当前 debug，以下产品与部署历史保留。
 
 # 当前交接：Agent Plan HTTP TTS 兼容（2026-10-11，DEPLOYED_MANAGED_FILES_VERIFIED / LIVE_PENDING）
