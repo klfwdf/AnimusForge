@@ -28,29 +28,31 @@ internal static class DiplomacyOralTagApplication
     private static readonly Regex TagRegex = new Regex(
         @"\[ACTION:DIPLOMACY:([A-Z_]+)(?::([^\]]+))?\]",
         RegexOptions.IgnoreCase | RegexOptions.Compiled);
+    private static readonly Regex HiddenTagRegex = new Regex(
+        @"\[ACTION:DIPLOMACY[^\]\r\n]*\]", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
     internal static void Process<TSource>(TSource source, ref string responseText)
         where TSource : struct, IDiplomacyOralTagSource
     {
-        if (!source.HasSpeaker || string.IsNullOrEmpty(responseText)) return;
+        if (string.IsNullOrEmpty(responseText)) return;
         if (responseText.IndexOf("DIPLOMACY", StringComparison.OrdinalIgnoreCase) < 0) return;
-        if (!source.IsAvailable)
+        if (!source.HasSpeaker || !source.IsAvailable)
         {
             source.Log("[Dispatch] Instance is null, abort.");
+            responseText = HiddenTagRegex.Replace(responseText, "").Trim();
             return;
         }
 
-        int matchCount = 0;
         responseText = TagRegex.Replace(responseText, match =>
         {
-            matchCount++;
-            return ProcessSingle(source, match.Groups[1].Value, match.Groups[2].Value);
+            string receipt = ProcessSingle(source, match.Groups[1].Value, match.Groups[2].Value);
+            // Domain outcomes belong to diagnostics/facts and the public declaration,
+            // never to the NPC's visible reply, speech audio or dialogue history.
+            if (!string.IsNullOrWhiteSpace(receipt)) source.Log("[Outcome] " + receipt);
+            return "";
         });
-        if (matchCount > 0)
-        {
-            responseText = TagRegex.Replace(responseText, "");
-            responseText = responseText.Trim();
-        }
+        // Malformed/unrecognized directives are hidden without attempting effects.
+        responseText = HiddenTagRegex.Replace(responseText, "").Trim();
     }
 
     private static string ProcessSingle<TSource>(TSource source, string action, string payload)

@@ -99,7 +99,7 @@ internal static class SubjectReleaseReplay
             Test.True(context.Contains("agreement=first_incarnation") && context.Contains("无须NPC同意"), "runtime context exposes exact release token: " + channel);
             string response = "收到。 [ACTION:DIPLOMACY:RELEASE_SUBJECT:target=vassal;agreement=first_incarnation]";
             DiplomacyOralTagApplication.Process(new TagSource(host, channel), ref response);
-            Test.True(host.Releases == 1 && response.Contains("已释放") && !response.Contains("[ACTION:"), "shared dispatch executes and strips release tag: " + channel);
+            Test.True(host.Releases == 1 && response == "收到。" && !response.Contains("[ACTION:"), "shared dispatch executes and strips release tag: " + channel);
             var doc = owner.CurrentStorage.Documents.Single();
             Test.True(doc.IsPlayerAuthored && doc.ChangedDiplomaticState && doc.Intent == "release_subject"
                 && doc.AnalysisStatus == "success" && !doc.RequiresResponse, "player-authored release receipt: " + channel);
@@ -109,7 +109,7 @@ internal static class SubjectReleaseReplay
                 "counterparty court knows released status immediately: " + channel);
             string repeat = "[ACTION:DIPLOMACY:RELEASE_SUBJECT:target=vassal;agreement=first_incarnation]";
             DiplomacyOralTagApplication.Process(new TagSource(host, channel), ref repeat);
-            Test.True(host.Releases == 1 && owner.CurrentStorage.Documents.Count == 1 && repeat.Contains("未执行"), "repeat release has no effect or new public fact: " + channel);
+            Test.True(host.Releases == 1 && owner.CurrentStorage.Documents.Count == 1 && repeat == "", "repeat release has no effect or new public fact: " + channel);
             host.Token = "second_incarnation";
             string delayed = "[ACTION:DIPLOMACY:RELEASE_SUBJECT:target=vassal;agreement=first_incarnation]";
             DiplomacyOralTagApplication.Process(new TagSource(host, channel), ref delayed);
@@ -154,7 +154,7 @@ internal static class SubjectReleaseReplay
             var (host, owner) = Fixture(); host.ThrowMemory = true;
             string response = "[ACTION:DIPLOMACY:RELEASE_SUBJECT:target=vassal;agreement=first_incarnation]";
             DiplomacyOralTagApplication.Process(new TagSource(host, "scene"), ref response);
-            Test.True(host.Releases == 1 && response.Contains("已释放") && owner.CurrentStorage.Documents.Single().HistoryResultRecorded,
+            Test.True(host.Releases == 1 && response == "" && owner.CurrentStorage.Documents.Single().HistoryResultRecorded,
                 "personal memory failure cannot hide or replay a completed release");
         }
         {
