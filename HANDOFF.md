@@ -1,4 +1,11 @@
-# 当前交接：玩家直接动作（2026-10-12，OFFLINE_VERIFIED / LIVE_PENDING）
+# 当前交接：远端合并与 D 盘部署（2026-10-12，DEPLOYED_MANAGED_FILES_VERIFIED / LIVE_PENDING）
+
+- 本轮明确授权拉取、合并、部署；远端 `59dc32bf3`（333新增提交）已纳入本地合并 `a09faa91d`，前置检查点 `40b8474cd`。保留远端双语/外交及本地14项直接动作，新增文案71个中英键接通原reader/prefab；未推送、打包或启动游戏。
+- 原统一 Debug 双API/Bootstrap/双Coup及干净Stage通过，两实现各363 warning/0 error；349直接动作、50真实Harmony轮盘、48债务、50原版布局通过，14源码锚点双模式通过。综合codec回归的竞技大会旧中文源码断言失败；失败相关测试及生产owner与远端一致，未削弱断言或修改无关机制。
+- `D:/steam/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge`，`v1.5.8`，3362受管文件及三DLL哈希核对通过，3186旧文件备份核对通过。78受保护文件字节/时间未变，3133个PlayerExports按原时间规则合并（1个正文更新、3132个仅时间戳）并有已核备份，无意外受保护文件变化；未覆盖原版DLL/未知安装文件。恢复目录 `Modules/.AnimusForge.Recovery/deploy/deploy-f114dd87d60b4befa0039143b44690d9`。
+- [唯一主台账与验收边界](docs/animusforge-refactoring-and-repository-reorganization-plan.md#remote-merge-deploy-20261012)；[当前职责地图](docs/architecture/af-framework-code-scope.md#remote-merge-deploy-20261012)。本地总收据 `artifacts/tests/remote-merge-deploy-20261012/run-6f31902b/verification-receipt.json`。部署不是实机/旧档/全仓验收；下方原“未部署”交接为本轮之前的历史状态。
+
+# 历史交接：玩家直接动作（2026-10-12，OFFLINE_VERIFIED / LIVE_PENDING）
 
 - 检查点 `4b184f61`，产品/回归 `4b9901a4`；原版对话右上角、场景 Y 菜单共用 14 项直接动作及原版参数弹窗，正常标签 owner 执行，不调用 AI/TTS，不要求 API 配置，不改原给予、开发测试、存档或公开 API。
 - 给钱/物保留原补足路径，部队/俘虏保留编号、数量与 ALL，债务保留零天期限。源码复核纠正方案误差：原机制拒绝 `GIVE_ASSET:ALL:ALL`，所以“全部普通物品”批量提交既有逐项 `:ALL` 标签，排除私人装备/固定资产，不改标签规则。过期目标/候选、取消、重复确认与参数读取异常拒绝执行；原版跟随先排队再自动结束对话。
