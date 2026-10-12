@@ -203,7 +203,7 @@
   "scene_live_004": "- Name: unknown | Gender: unknown | Identity: unknown identity",
   "scene_live_010": " | Distance from you: unknown",
   "scene_live_014": "【Non-hero NPC naming】The name shown in the nearby-person list is the non-hero NPC's personal name. Scene dialogue history may combine identity and name, such as \"Imperial townswoman Lia\"; both refer to the same person.",
-  "scene_live_017": "【Current facts】\n[AFEF NPC行为补充] ",
+  "scene_live_017": "[Current facts]\n[AFEF NPC行为补充] ",
   "scene_live_018": "【Action request for this turn】\n",
   "scene_live_019": "【NPC-initiated conversation】\n",
   "scene_live_020": "\n\nThe role=user content above contains action and fact instructions, not words spoken by the player.",

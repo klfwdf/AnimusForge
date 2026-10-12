@@ -81,7 +81,7 @@
   "AF_CONV_Prompt_0392": "; primary conversation partner ID: ",
   "AF_CONV_Prompt_0393": "; the current speaker has completed this reply.",
   "AF_CONV_Prompt_0394": "[People standing beside you]",
-  "AF_CONV_Prompt_0395": "[Relay selection protocol] Output exactly one [RELAY:接力编号] tag, replacing the placeholder with a candidate's numeric relay ID. Prefer someone addressed, invited to speak or with a clear reason to respond in the latest dialogue. Candidates who have already spoken may speak again; not having spoken is only a tie-breaker. Do not force soldiers or civilians to interrupt merely to include more people.",
+  "AF_CONV_Prompt_0395": "[Relay selection protocol] Output exactly one [RELAY:relay number] tag, replacing the placeholder with a candidate's numeric relay ID. Prefer someone addressed, invited to speak or with a clear reason to respond in the latest dialogue. Candidates who have already spoken may speak again; not having spoken is only a tie-breaker. Do not force soldiers or civilians to interrupt merely to include more people.",
   "AF_CONV_Prompt_0396": "[Relay termination] If the topic has ended, there is an explicit farewell or no suitable next speaker, output [RELAY:",
   "AF_CONV_Prompt_0397": "] to end this relay. This is the current speaker's own ID, not an instruction to speak again. Output this tag even when ending; do not signal termination by omitting it.",
   "AF_CONV_Prompt_0398": "[Fixed assets you can currently transfer]:",
