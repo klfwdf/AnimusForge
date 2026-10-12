@@ -6,6 +6,7 @@
 - 验证：四份 JSON 可解析；统一 Debug 双实现构建通过（1.3/1.4/Bootstrap/Coup gate）；`SceneRelayContinuationTests` 51 项、`ModelPresetTests` 72 项通过。WorldBulletinPolicy smoke 仍受其原有测试夹具缺少 `WorldBulletinPolicyTexts` 阻断；Illustrator 独立工程仍受既有 `WorldBulletinIllustrationPlan` 访问级别错误阻断。未部署、未打包、未启动游戏、未调用真实 provider。
 - 回滚点：`73a77c4ad`（接力/MCM/快报/插画标题修复）、`e5a2d3276`（EN 插画协议标记保持与双格式解析）；此前检查点 `b86740d`。
 - 后续修正 `fad94b1e8` 清掉 EN Prompt 中残留的乱码/中文自然语言片段（当前 `content/**/*.en.json` 不再含替换字符）；AFEF/稳定标签仍按协议原值保留，不能当作自然语言翻译缺口。
+- 增量 `1d33282c7` 在主请求发送前接入 `PromptLanguageAudit`：固定 system Prompt 中未投影中文会记录 `unprojectedSystem`，动态历史/玩家内容单独计数并保持原值；协议标签白名单放行，不改存档或请求正文。1.4 Debug 编译 0 错误/363 警告。
 # 当前交接：EN 运行时文本投影补全与 EN 安装（2026-10-13，OFFLINE_VERIFIED / DEPLOYED_HASH_VERIFIED / LIVE_PENDING）
 
 - 修复 EN 包下仍显示中文的运行时文本：终端子选项入口、外交宣言索引标题、世界快报事实句、事件捕获参与者角色、公开处决周报句、家族首领记忆。写入端原句与存档身份不变，投影只在读取/组句边界；CN 词表下输出对改动前逐字相同，EN 无汉字。
