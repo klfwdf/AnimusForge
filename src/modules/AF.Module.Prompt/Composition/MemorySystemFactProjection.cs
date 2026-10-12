@@ -98,6 +98,13 @@ internal static class MemorySystemFactProjection
     }
     private static string ProjectCourierBody(string body)
     {
+        if (!TryParseCourierFact(body, out PromptFactRecord fact)) return body;
+        return RenderKnownFact(fact);
+    }
+
+    private static bool TryParseCourierFact(string body, out PromptFactRecord fact)
+    {
+        fact = null;
         foreach (Template template in CourierTemplates)
         {
             if (!TryExtract(body, template, out string[] values)) continue;
@@ -116,9 +123,10 @@ internal static class MemorySystemFactProjection
                 if (values[1] == PromptComposerTexts.Raw("memory_courier_unknown_faction_source"))
                     values[1] = PromptComposerTexts.Get("memory_courier_value_unknown_faction");
             }
-            return Expand(PromptComposerTexts.Get(template.Key), values);
+            fact = new PromptFactRecord(template.Key, values, body);
+            return true;
         }
-        return body;
+        return false;
     }
 
     private static readonly Lazy<string[]> RevisitMarkers = new Lazy<string[]>(() => PromptComposerTexts.Raw("RevisitMarkers_Cn").Split(','));
