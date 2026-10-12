@@ -61,43 +61,43 @@ internal sealed class ScenePersonaPreparationAdapter
 		catch
 		{
 		}
-		string arg = "英雄";
+		string arg = AdapterPromptCaptureTexts.PcapText("scene_persona_fallback_1");
 		try
 		{
 			if (PersonaIdentityPromptCaptureAdapter.TryResolveActiveKingdomRuledByHeroForPrompt(hero, out _))
 			{
-				arg = "统治者";
+				arg = AdapterPromptCaptureTexts.PcapText("scene_persona_fallback_2");
 			}
 			else if (hero.Clan?.Leader == hero)
 			{
-				arg = "家族族长";
+				arg = AdapterPromptCaptureTexts.PcapText("scene_persona_fallback_3");
 			}
 			else if (hero.IsLord)
 			{
-				arg = "领主";
+				arg = AdapterPromptCaptureTexts.PcapText("scene_persona_fallback_4");
 			}
 			else if (hero.IsWanderer)
 			{
-				arg = "流浪者";
+				arg = AdapterPromptCaptureTexts.PcapText("scene_persona_fallback_5");
 			}
 			else if (hero.IsNotable)
 			{
-				arg = "要人";
+				arg = AdapterPromptCaptureTexts.PcapText("scene_persona_fallback_6");
 			}
 		}
 		catch
 		{
 		}
-		string arg2 = (string.IsNullOrWhiteSpace(text) ? "" : (text + "的"));
-		personality = $"{hero.Name}是一位{arg2}{arg}，处事谨慎务实，重视秩序与利益平衡。";
+		string arg2 = (string.IsNullOrWhiteSpace(text) ? "" : (text + AdapterPromptCaptureTexts.PcapText("scene_persona_fallback_7")));
+		personality = AdapterPromptCaptureTexts.PcapFormat("scene_persona_fallback_personality", "{NAME} is a {CULTURE}{ROLE}, cautious and pragmatic, valuing order and a balance of interests.", ("NAME", hero.Name), ("CULTURE", arg2), ("ROLE", arg));
 		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.Append(hero.Name).Append("出身于");
-		stringBuilder.Append(string.IsNullOrWhiteSpace(text2) ? "本地家族" : text2);
+		stringBuilder.Append(hero.Name).Append(AdapterPromptCaptureTexts.PcapText("scene_persona_fallback_8"));
+		stringBuilder.Append(string.IsNullOrWhiteSpace(text2) ? AdapterPromptCaptureTexts.PcapText("scene_persona_fallback_9") : text2);
 		if (!string.IsNullOrWhiteSpace(value))
 		{
-			stringBuilder.Append("，当前活跃于").Append(value).Append("的政治与军事事务中");
+			stringBuilder.Append(AdapterPromptCaptureTexts.PcapText("scene_persona_fallback_10")).Append(value).Append(AdapterPromptCaptureTexts.PcapText("scene_persona_fallback_11"));
 		}
-		background = stringBuilder.ToString().TrimEnd('。', '.', ' ') + "。";
+		background = stringBuilder.ToString().TrimEnd('。', '.', ' ') + AdapterPromptCaptureTexts.PcapText("closeout_sentence_end");
 	}
     internal bool IsScenePersonaScopeCurrent(ScenePersonaPreparationScope scope)
     {
@@ -199,9 +199,9 @@ internal sealed class ScenePersonaPreparationAdapter
                 try
                 {
                     if (showHint && state.Available && state.NeedsGeneration)
-                        onStreamText?.Invoke("正在生成" + state.Name + "的个性与背景，请稍等。生成完成后会继续回复你的上一句话。");
+                        onStreamText?.Invoke(ConversationUiLocalization.Text("AF_UI_PersonaGeneration_Progress", "Generating {NAME}’s personality and background. Please wait. Your last message will receive a reply when generation finishes.", "NAME", state.Name));
                     if (showFailure)
-                        onStreamText?.Invoke(state.Name + "的个性与背景暂时生成失败，请稍后再试。");
+                        onStreamText?.Invoke(ConversationUiLocalization.Text("AF_UI_PersonaGeneration_ReadinessFailed", "Generation of {NAME}’s personality and background temporarily failed. Please try again later.", "NAME", state.Name));
                 }
                 catch { } // Presentation failure must not replace the readiness decision.
                 return state;

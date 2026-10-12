@@ -5,15 +5,25 @@ namespace AnimusForge.Illustrator.UI
     // Fixed display and editable input defaults. Existing asset titles and metadata stay in their producer path.
     internal static class IllustratorRemainingUiText
     {
+    // Resolve the template once, then insert display data without re-parsing its braces.
+    private static readonly System.Text.RegularExpressions.Regex LiteralValues = new System.Text.RegularExpressions.Regex(@"AFSWEEPLITERAL([0-9]+)END", System.Text.RegularExpressions.RegexOptions.CultureInvariant);
+    private static string RenderLiteral(TextObject text, params (string Name, object Value)[] values)
+    {
+        for (int i = 0; i < values.Length; i++)
+            if (values[i].Value is TextObject nested)
+                text.SetTextVariable(values[i].Name, nested);
+            else
+                text.SetTextVariable(values[i].Name, "AFSWEEPLITERAL" + i.ToString(System.Globalization.CultureInfo.InvariantCulture) + "END");
+        return LiteralValues.Replace(text.ToString(), match => values[int.Parse(match.Groups[1].Value, System.Globalization.CultureInfo.InvariantCulture)].Value?.ToString() ?? string.Empty);
+    }
+
         private static string Resolve(string id, string fallback)
             => new TextObject($"{{={id}}}{fallback}").ToString();
 
         private static string Format(string id, string fallback, string variable, object value)
-        {
-            var text = new TextObject($"{{={id}}}{fallback}");
-            text.SetTextVariable(variable, value?.ToString() ?? string.Empty);
-            return text.ToString();
-        }
+    {
+        return RenderLiteral(new TextObject($"{{={id}}}{fallback}"), (variable, value?.ToString() ?? string.Empty));
+    }
 
         internal static string GalleryPreviewUnavailable => Resolve("AF_ILL_UI_GALLERY_PREVIEW_UNAVAILABLE", "The image is missing or cannot be decoded. Refresh the gallery.");
         internal static string GalleryRedrawLoading => Resolve("AF_ILL_UI_GALLERY_REDRAW_LOADING", "Redrawing from the selected illustration. You may close the gallery while you wait.");

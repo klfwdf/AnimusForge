@@ -103,7 +103,7 @@ internal static class SettlementBalanceRuntime
 		}
 		if (_foodInstalled && !_reportedFoodFailure && DuelSettings.ShouldDisableProsperityFoodConsumption() && !(models.SettlementFoodModel is DefaultSettlementFoodModel))
 		{
-			PolicySystemLog.Failure("Balance", "custom-food-model", "当前第三方粮食模型不继承原版模型。", "Prosperity food removal is only verified for the vanilla calculation; no guessed compensation applied.");
+			PolicySystemLog.Failure("Balance", "custom-food-model", "The active third-party food model does not inherit the native model.", "Prosperity food removal is only verified for the vanilla calculation; no guessed compensation applied.");
 			ReportFoodFailure(PolicyUiTexts.Get("AFPOL_UI_CustomFoodModelUnsupported", "The custom food model does not use the native calculation; prosperity food removal could not be confirmed."));
 		}
 	}

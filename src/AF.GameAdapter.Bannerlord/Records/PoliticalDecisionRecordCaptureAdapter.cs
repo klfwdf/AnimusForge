@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -78,12 +78,12 @@ internal static string BuildKingdomDecisionNarrative(KingdomDecision decision, D
 				text = "";
 			}
 		}
-		string kingdomDisplayName = GetKingdomDisplayName(decision?.Kingdom, "该王国");
+		string kingdomDisplayName = GetKingdomDisplayName(decision?.Kingdom, AdapterRecordTexts.Raw("AF_REC_Political_0001"));
 		if (string.IsNullOrWhiteSpace(text))
 		{
-			return (forProposer ? "你推动的" : "你所参与的") + kingdomDisplayName + "王国决议已经得出结果。";
+			return (forProposer ? AdapterRecordTexts.Raw("AF_REC_Political_0002") : AdapterRecordTexts.Raw("AF_REC_Political_0003")) + kingdomDisplayName + AdapterRecordTexts.Raw("AF_REC_Political_0004");
 		}
-		return (forProposer ? "你推动的" : "你所参与的") + kingdomDisplayName + "王国决议已有结果：" + text;
+		return (forProposer ? AdapterRecordTexts.Raw("AF_REC_Political_0002") : AdapterRecordTexts.Raw("AF_REC_Political_0003")) + kingdomDisplayName + AdapterRecordTexts.Raw("AF_REC_Political_0005") + text;
 	}
 
 internal static string AppendEventMaterialSentence(string text, string addition)
@@ -194,10 +194,10 @@ internal static string BuildDeclareWarPoliticalTriggerReason(IFaction declaringF
 						string text = NormalizePoliticalReasonText(reason?.ToString());
 						if (!string.IsNullOrWhiteSpace(text))
 						{
-							parts.Add("原版理由：" + text);
+							parts.Add(AdapterRecordTexts.Raw("AF_REC_Political_0006") + text);
 							hasModelReason = true;
 						}
-						AddPoliticalScoreAgainstThresholdPart(parts, "宣战倾向", score, SafeGetPoliticalDecisionThreshold(targetFaction), "目标阈值");
+						AddPoliticalScoreAgainstThresholdPart(parts, AdapterRecordTexts.Raw("AF_REC_Political_0007"), score, SafeGetPoliticalDecisionThreshold(targetFaction), AdapterRecordTexts.Raw("AF_REC_Political_0008"));
 					}
 				}
 				catch
@@ -205,12 +205,12 @@ internal static string BuildDeclareWarPoliticalTriggerReason(IFaction declaringF
 				}
 				if (decision != null)
 				{
-					AddPoliticalReasonNumberPart(parts, "提案家族支持度", SafeCalculateDeclareWarSupport(decision, clan));
+					AddPoliticalReasonNumberPart(parts, AdapterRecordTexts.Raw("AF_REC_Political_0009"), SafeCalculateDeclareWarSupport(decision, clan));
 				}
 			}
-			AddPoliticalFallbackPartIfNeeded(parts, hasModelReason, "宣战", detailText);
+			AddPoliticalFallbackPartIfNeeded(parts, hasModelReason, AdapterRecordTexts.Raw("AF_REC_Political_0010"), detailText);
 			AddPoliticalFactionParameterParts(parts, declaringFaction, targetFaction, clan);
-			return BuildPoliticalReasonSentence("宣战触发原因", parts);
+			return BuildPoliticalReasonSentence(AdapterRecordTexts.Raw("AF_REC_Political_0011"), parts);
 		}
 		catch
 		{
@@ -241,10 +241,10 @@ internal static string BuildMakePeacePoliticalTriggerReason(IFaction peaceFactio
 						string text = NormalizePoliticalReasonText(reason?.ToString());
 						if (!string.IsNullOrWhiteSpace(text))
 						{
-							parts.Add("原版理由：" + text);
+							parts.Add(AdapterRecordTexts.Raw("AF_REC_Political_0006") + text);
 							hasModelReason = true;
 						}
-						AddPoliticalScoreAgainstThresholdPart(parts, "议和倾向", score, SafeGetPoliticalDecisionThreshold(peaceFaction), "己方阈值");
+						AddPoliticalScoreAgainstThresholdPart(parts, AdapterRecordTexts.Raw("AF_REC_Political_0012"), score, SafeGetPoliticalDecisionThreshold(peaceFaction), AdapterRecordTexts.Raw("AF_REC_Political_0013"));
 					}
 				}
 				catch
@@ -252,7 +252,7 @@ internal static string BuildMakePeacePoliticalTriggerReason(IFaction peaceFactio
 				}
 				if (decision != null)
 				{
-					AddPoliticalReasonNumberPart(parts, "提案家族支持度", SafeCalculateMakePeaceSupport(decision, clan));
+					AddPoliticalReasonNumberPart(parts, AdapterRecordTexts.Raw("AF_REC_Political_0009"), SafeCalculateMakePeaceSupport(decision, clan));
 					string tributeText = BuildPeaceTributeParameter(decision, peaceFaction);
 					if (!string.IsNullOrWhiteSpace(tributeText))
 					{
@@ -260,9 +260,9 @@ internal static string BuildMakePeacePoliticalTriggerReason(IFaction peaceFactio
 					}
 				}
 			}
-			AddPoliticalFallbackPartIfNeeded(parts, hasModelReason, "议和", detailText);
+			AddPoliticalFallbackPartIfNeeded(parts, hasModelReason, AdapterRecordTexts.Raw("AF_REC_Political_0014"), detailText);
 			AddPoliticalFactionParameterParts(parts, peaceFaction, targetFaction, clan);
-			return BuildPoliticalReasonSentence("议和触发原因", parts);
+			return BuildPoliticalReasonSentence(AdapterRecordTexts.Raw("AF_REC_Political_0015"), parts);
 		}
 		catch
 		{
@@ -283,7 +283,7 @@ internal static string BuildKingdomPolicyPoliticalTriggerReason(KingdomPolicyDec
 			bool isInverted = SafeGetKingdomPolicyDecisionIsInverted(decision);
 			List<string> parts = new List<string>();
 			string policyName = GetPolicyDisplayName(policy);
-			parts.Add((isInverted ? "议题类型：废止政策“" : "议题类型：推行政策“") + policyName + "”");
+			parts.Add((isInverted ? AdapterRecordTexts.Raw("AF_REC_Political_0016") : AdapterRecordTexts.Raw("AF_REC_Political_0017")) + policyName + "”");
 			string dominantWeight = BuildPolicyDominantWeightPart(policy, isInverted);
 			if (!string.IsNullOrWhiteSpace(dominantWeight))
 			{
@@ -305,7 +305,7 @@ internal static string BuildKingdomPolicyPoliticalTriggerReason(KingdomPolicyDec
 				parts.Add(traitPart);
 			}
 			AddPolicySupportTendencyPart(parts, SafeCalculateKingdomPolicySupport(decision, proposerClan));
-			return BuildPoliticalReasonSentence("政策触发原因", parts);
+			return BuildPoliticalReasonSentence(AdapterRecordTexts.Raw("AF_REC_Political_0018"), parts);
 		}
 		catch
 		{
@@ -350,11 +350,11 @@ internal static string GetPolicyDisplayName(PolicyObject policy)
 		try
 		{
 			string text = NormalizePoliticalReasonText(policy?.Name?.ToString());
-			return string.IsNullOrWhiteSpace(text) ? "未知政策" : text;
+			return string.IsNullOrWhiteSpace(text) ? AdapterRecordTexts.Raw("AF_REC_Political_0019") : text;
 		}
 		catch
 		{
-			return "未知政策";
+			return AdapterRecordTexts.Raw("AF_REC_Political_0019");
 		}
 	}
 
@@ -370,30 +370,30 @@ internal static string BuildPolicyDominantWeightPart(PolicyObject policy, bool i
 		float max = Math.Max(egalitarianAbs, Math.Max(oligarchicAbs, authoritarianAbs));
 		if (max < 0.001f)
 		{
-			return "权重方向：政策取向较中性";
+			return AdapterRecordTexts.Raw("AF_REC_Political_0020");
 		}
 		string axis;
 		float weight;
 		if (egalitarianAbs >= oligarchicAbs && egalitarianAbs >= authoritarianAbs)
 		{
-			axis = "平民与地方共同体利益";
+			axis = AdapterRecordTexts.Raw("AF_REC_Political_0021");
 			weight = policy.EgalitarianWeight;
 		}
 		else if (oligarchicAbs >= authoritarianAbs)
 		{
-			axis = "贵族寡头与高阶家族利益";
+			axis = AdapterRecordTexts.Raw("AF_REC_Political_0022");
 			weight = policy.OligarchicWeight;
 		}
 		else
 		{
-			axis = "王权集中与统治家族利益";
+			axis = AdapterRecordTexts.Raw("AF_REC_Political_0023");
 			weight = policy.AuthoritarianWeight;
 		}
 		if (isInverted)
 		{
-			return "权重方向：废止议题会" + (weight >= 0f ? "削弱" : "强化") + axis;
+			return AdapterRecordTexts.Raw("AF_REC_Political_0024") + (weight >= 0f ? AdapterRecordTexts.Raw("AF_REC_Political_0025") : AdapterRecordTexts.Raw("AF_REC_Political_0026")) + axis;
 		}
-		return "权重方向：推行议题会" + (weight >= 0f ? "强化" : "削弱") + axis;
+		return AdapterRecordTexts.Raw("AF_REC_Political_0027") + (weight >= 0f ? AdapterRecordTexts.Raw("AF_REC_Political_0026") : AdapterRecordTexts.Raw("AF_REC_Political_0025")) + axis;
 	}
 
 internal static string BuildPolicyWeightSummaryPart(PolicyObject policy)
@@ -402,7 +402,7 @@ internal static string BuildPolicyWeightSummaryPart(PolicyObject policy)
 		{
 			return "";
 		}
-		return "政策权重：平民 " + FormatPoliticalPolicyWeight(policy.EgalitarianWeight) + "、贵族 " + FormatPoliticalPolicyWeight(policy.OligarchicWeight) + "、王权 " + FormatPoliticalPolicyWeight(policy.AuthoritarianWeight);
+		return AdapterRecordTexts.Raw("AF_REC_Political_0028") + FormatPoliticalPolicyWeight(policy.EgalitarianWeight) + AdapterRecordTexts.Raw("AF_REC_Political_0029") + FormatPoliticalPolicyWeight(policy.OligarchicWeight) + AdapterRecordTexts.Raw("AF_REC_Political_0030") + FormatPoliticalPolicyWeight(policy.AuthoritarianWeight);
 	}
 
 internal static string FormatPoliticalPolicyWeight(float value)
@@ -426,21 +426,21 @@ internal static string BuildPolicyProposerProfilePart(Clan clan)
 		{
 			if (clan.Kingdom != null && clan.Kingdom.RulingClan == clan)
 			{
-				return "提案家族：" + clanName + "是统治家族，公式中更偏王权集中";
+				return AdapterRecordTexts.Raw("AF_REC_Political_0031") + clanName + AdapterRecordTexts.Raw("AF_REC_Political_0032");
 			}
 			if (clan.IsMinorFaction)
 			{
-				return "提案家族：" + clanName + "是小派系，公式中更偏平民取向";
+				return AdapterRecordTexts.Raw("AF_REC_Political_0031") + clanName + AdapterRecordTexts.Raw("AF_REC_Political_0033");
 			}
 			if (clan.Tier >= 3)
 			{
-				return "提案家族：" + clanName + "是高阶贵族家族（等级 " + clan.Tier + "），公式中更偏贵族寡头";
+				return AdapterRecordTexts.Raw("AF_REC_Political_0031") + clanName + AdapterRecordTexts.Raw("AF_REC_Political_0034") + clan.Tier + AdapterRecordTexts.Raw("AF_REC_Political_0035");
 			}
 			if (clan.Tier == 2)
 			{
-				return "提案家族：" + clanName + "是二阶家族，公式中略偏贵族寡头";
+				return AdapterRecordTexts.Raw("AF_REC_Political_0031") + clanName + AdapterRecordTexts.Raw("AF_REC_Political_0036");
 			}
-			return "提案家族：" + clanName + "是低阶家族（等级 " + clan.Tier + "），身份修正较弱";
+			return AdapterRecordTexts.Raw("AF_REC_Political_0031") + clanName + AdapterRecordTexts.Raw("AF_REC_Political_0037") + clan.Tier + AdapterRecordTexts.Raw("AF_REC_Political_0038");
 		}
 		catch
 		{
@@ -457,14 +457,14 @@ internal static string BuildPolicyLeaderTraitPart(Hero leader)
 				return "";
 			}
 			List<string> parts = new List<string>();
-			AddPolicyLeaderTraitLabel(parts, "平民", leader.GetTraitLevel(DefaultTraits.Egalitarian));
-			AddPolicyLeaderTraitLabel(parts, "贵族寡头", leader.GetTraitLevel(DefaultTraits.Oligarchic));
-			AddPolicyLeaderTraitLabel(parts, "王权", leader.GetTraitLevel(DefaultTraits.Authoritarian));
+			AddPolicyLeaderTraitLabel(parts, AdapterRecordTexts.Raw("AF_REC_Political_0039"), leader.GetTraitLevel(DefaultTraits.Egalitarian));
+			AddPolicyLeaderTraitLabel(parts, AdapterRecordTexts.Raw("AF_REC_Political_0040"), leader.GetTraitLevel(DefaultTraits.Oligarchic));
+			AddPolicyLeaderTraitLabel(parts, AdapterRecordTexts.Raw("AF_REC_Political_0041"), leader.GetTraitLevel(DefaultTraits.Authoritarian));
 			if (parts.Count == 0)
 			{
 				return "";
 			}
-			return "领袖政治性格：" + string.Join("、", parts);
+			return AdapterRecordTexts.Raw("AF_REC_Political_0042") + string.Join("、", parts);
 		}
 		catch
 		{
@@ -492,32 +492,32 @@ internal static void AddPolicySupportTendencyPart(List<string> parts, float? sup
 		{
 			return;
 		}
-		parts.Add("提案家族" + GetPolicySupportTendencyLabel(support.Value) + "（支持度 " + supportText + "）");
+		parts.Add(AdapterRecordTexts.Raw("AF_REC_Political_0043") + GetPolicySupportTendencyLabel(support.Value) + AdapterRecordTexts.Raw("AF_REC_Political_0044") + supportText + "）");
 	}
 
 internal static string GetPolicySupportTendencyLabel(float support)
 	{
 		if (support >= 100f)
 		{
-			return "强烈支持该议题";
+			return AdapterRecordTexts.Raw("AF_REC_Political_0045");
 		}
 		if (support >= 35f)
 		{
-			return "支持该议题";
+			return AdapterRecordTexts.Raw("AF_REC_Political_0046");
 		}
 		if (support > 0f)
 		{
-			return "轻度支持该议题";
+			return AdapterRecordTexts.Raw("AF_REC_Political_0047");
 		}
 		if (support <= -100f)
 		{
-			return "强烈反对该议题";
+			return AdapterRecordTexts.Raw("AF_REC_Political_0048");
 		}
 		if (support <= -35f)
 		{
-			return "反对该议题";
+			return AdapterRecordTexts.Raw("AF_REC_Political_0049");
 		}
-		return "倾向反对该议题";
+		return AdapterRecordTexts.Raw("AF_REC_Political_0050");
 	}
 
 internal static string BuildKingSelectionPoliticalTriggerReason(KingSelectionKingdomDecision decision, DecisionOutcome chosenOutcome)
@@ -539,14 +539,14 @@ internal static string BuildKingSelectionPoliticalTriggerReason(KingSelectionKin
 				kingdom = chosenKing.MapFaction as Kingdom;
 			}
 			List<string> parts = new List<string>();
-			parts.Add("议题类型：选择" + GetKingdomDisplayName(kingdom, "该王国") + "新统治者，最终由" + GetHeroDisplayName(chosenKing) + "继位");
+			parts.Add(AdapterRecordTexts.Raw("AF_REC_Political_0051") + GetKingdomDisplayName(kingdom, AdapterRecordTexts.Raw("AF_REC_Political_0001")) + AdapterRecordTexts.Raw("AF_REC_Political_0052") + GetHeroDisplayName(chosenKing) + AdapterRecordTexts.Raw("AF_REC_Political_0053"));
 			AddKingSelectionFormulaRulePart(parts);
 			AddKingSelectionCandidateProfileParts(parts, chosenKing, kingdom);
 			AddKingSelectionCandidateRankingPart(parts, decision, chosenKing);
 			AddKingSelectionOutcomeScorePart(parts, chosenOutcome);
 			AddKingSelectionVoteSupportPart(parts, chosenOutcome);
 			AddKingSelectionVoterTraitPart(parts, kingdom);
-			return BuildPoliticalReasonSentence("统治者选择触发原因", parts);
+			return BuildPoliticalReasonSentence(AdapterRecordTexts.Raw("AF_REC_Political_0054"), parts);
 		}
 		catch
 		{
@@ -572,8 +572,8 @@ internal static void AddKingSelectionFormulaRulePart(List<string> parts)
 		{
 			return;
 		}
-		parts.Add("原版候选池：符合资格的家族按家族强度取前三");
-		parts.Add("原版评分因素：候选家族强度、王族延续偏好、各家族投票支持");
+		parts.Add(AdapterRecordTexts.Raw("AF_REC_Political_0055"));
+		parts.Add(AdapterRecordTexts.Raw("AF_REC_Political_0056"));
 	}
 
 internal static void AddKingSelectionCandidateProfileParts(List<string> parts, Hero chosenKing, Kingdom kingdom)
@@ -584,22 +584,22 @@ internal static void AddKingSelectionCandidateProfileParts(List<string> parts, H
 		}
 		Clan clan = chosenKing.Clan;
 		List<string> profileParts = new List<string>();
-		profileParts.Add("候选家族：" + GetClanDisplayName(clan));
-		profileParts.Add("等级 " + clan.Tier);
+		profileParts.Add(AdapterRecordTexts.Raw("AF_REC_Political_0057") + GetClanDisplayName(clan));
+		profileParts.Add(AdapterRecordTexts.Raw("AF_REC_Political_0058") + clan.Tier);
 		string strengthText = FormatPoliticalReasonNumber(SafeGetDiplomacyClanStrength(clan));
 		if (!string.IsNullOrWhiteSpace(strengthText))
 		{
-			profileParts.Add("家族强度 " + strengthText);
+			profileParts.Add(AdapterRecordTexts.Raw("AF_REC_Political_0059") + strengthText);
 		}
 		string influenceText = FormatPoliticalReasonNumber(SafeGetClanInfluence(clan));
 		if (!string.IsNullOrWhiteSpace(influenceText))
 		{
-			profileParts.Add("影响力 " + influenceText);
+			profileParts.Add(AdapterRecordTexts.Raw("AF_REC_Political_0060") + influenceText);
 		}
 		string renownText = FormatPoliticalReasonNumber(SafeGetClanRenown(clan));
 		if (!string.IsNullOrWhiteSpace(renownText))
 		{
-			profileParts.Add("声望 " + renownText);
+			profileParts.Add(AdapterRecordTexts.Raw("AF_REC_Political_0061") + renownText);
 		}
 		parts.Add(string.Join("、", profileParts));
 		AddKingSelectionCandidateFiefPart(parts, clan, kingdom);
@@ -644,10 +644,10 @@ internal static void AddKingSelectionCandidateFiefPart(List<string> parts, Clan 
 			}
 			if (count <= 0)
 			{
-				parts.Add("候选家族没有可统计城镇或城堡");
+				parts.Add(AdapterRecordTexts.Raw("AF_REC_Political_0062"));
 				return;
 			}
-			parts.Add("候选家族掌握要塞 " + count + " 处，封地价值 " + FormatPoliticalReasonNumber(totalValue));
+			parts.Add(AdapterRecordTexts.Raw("AF_REC_Political_0063") + count + AdapterRecordTexts.Raw("AF_REC_Political_0064") + FormatPoliticalReasonNumber(totalValue));
 		}
 		catch
 		{
@@ -680,10 +680,10 @@ internal static void AddKingSelectionCandidateWarPartyPart(List<string> parts, C
 			}
 			if (partyCount <= 0)
 			{
-				parts.Add("候选家族无可统计战争部队");
+				parts.Add(AdapterRecordTexts.Raw("AF_REC_Political_0065"));
 				return;
 			}
-			parts.Add("候选家族战争部队 " + partyCount + " 支、兵员 " + troopCount);
+			parts.Add(AdapterRecordTexts.Raw("AF_REC_Political_0066") + partyCount + AdapterRecordTexts.Raw("AF_REC_Political_0067") + troopCount);
 		}
 		catch
 		{
@@ -731,14 +731,14 @@ internal static void AddKingSelectionCandidateRankingPart(List<string> parts, Ki
 			}
 			List<Tuple<Clan, float>> candidatePool = eligible.Take(3).ToList();
 			int poolIndex = candidatePool.FindIndex((Tuple<Clan, float> x) => string.Equals(GetClanId(x.Item1), chosenClanId, StringComparison.OrdinalIgnoreCase));
-			parts.Add("家族强度排名：" + (fullIndex + 1) + "/" + eligible.Count + "（强度 " + FormatPoliticalReasonNumber(eligible[fullIndex].Item2) + "）");
+			parts.Add(AdapterRecordTexts.Raw("AF_REC_Political_0068") + (fullIndex + 1) + "/" + eligible.Count + AdapterRecordTexts.Raw("AF_REC_Political_0069") + FormatPoliticalReasonNumber(eligible[fullIndex].Item2) + "）");
 			if (poolIndex >= 0)
 			{
-				parts.Add("候选池排名：" + (poolIndex + 1) + "/" + candidatePool.Count);
+				parts.Add(AdapterRecordTexts.Raw("AF_REC_Political_0070") + (poolIndex + 1) + "/" + candidatePool.Count);
 			}
 			if (fullIndex > 0)
 			{
-				parts.Add("家族强度最高者为" + GetClanDisplayName(eligible[0].Item1) + "，最终结果还受到议会支持和结算评分影响");
+				parts.Add(AdapterRecordTexts.Raw("AF_REC_Political_0071") + GetClanDisplayName(eligible[0].Item1) + AdapterRecordTexts.Raw("AF_REC_Political_0072"));
 			}
 		}
 		catch
@@ -777,10 +777,10 @@ internal static void AddKingSelectionOutcomeScorePart(List<string> parts, Decisi
 		}
 		if (!string.IsNullOrWhiteSpace(initialText) && !string.IsNullOrWhiteSpace(meritText))
 		{
-			parts.Add("结算保存评分：基础 " + initialText + "，投票后 " + meritText);
+			parts.Add(AdapterRecordTexts.Raw("AF_REC_Political_0073") + initialText + AdapterRecordTexts.Raw("AF_REC_Political_0074") + meritText);
 			return;
 		}
-		parts.Add("结算保存评分：" + (string.IsNullOrWhiteSpace(meritText) ? initialText : meritText));
+		parts.Add(AdapterRecordTexts.Raw("AF_REC_Political_0075") + (string.IsNullOrWhiteSpace(meritText) ? initialText : meritText));
 	}
 
 internal static void AddKingSelectionVoteSupportPart(List<string> parts, DecisionOutcome chosenOutcome)
@@ -825,21 +825,21 @@ internal static void AddKingSelectionVoteSupportPart(List<string> parts, Decisio
 			List<string> labels = new List<string>();
 			if (slight > 0)
 			{
-				labels.Add("轻度 " + slight);
+				labels.Add(AdapterRecordTexts.Raw("AF_REC_Political_0076") + slight);
 			}
 			if (strong > 0)
 			{
-				labels.Add("强力 " + strong);
+				labels.Add(AdapterRecordTexts.Raw("AF_REC_Political_0077") + strong);
 			}
 			if (full > 0)
 			{
-				labels.Add("全力 " + full);
+				labels.Add(AdapterRecordTexts.Raw("AF_REC_Political_0078") + full);
 			}
 			if (other > 0)
 			{
-				labels.Add("其他 " + other);
+				labels.Add(AdapterRecordTexts.Raw("AF_REC_Political_0079") + other);
 			}
-			parts.Add("投票支持：" + total + "个家族支持获选者" + (labels.Count > 0 ? "（" + string.Join("、", labels) + "）" : ""));
+			parts.Add(AdapterRecordTexts.Raw("AF_REC_Political_0080") + total + AdapterRecordTexts.Raw("AF_REC_Political_0081") + (labels.Count > 0 ? "（" + string.Join("、", labels) + "）" : ""));
 		}
 		catch
 		{
@@ -881,7 +881,7 @@ internal static void AddKingSelectionVoterTraitPart(List<string> parts, Kingdom 
 			{
 				return;
 			}
-			parts.Add("王国内投票性格：王权倾向 " + authoritarian + "、贵族寡头倾向 " + oligarchic + "、其他 " + other + "；这些性格会影响王族延续加权");
+			parts.Add(AdapterRecordTexts.Raw("AF_REC_Political_0082") + authoritarian + AdapterRecordTexts.Raw("AF_REC_Political_0083") + oligarchic + AdapterRecordTexts.Raw("AF_REC_Political_0084") + other + AdapterRecordTexts.Raw("AF_REC_Political_0085"));
 		}
 		catch
 		{
@@ -900,15 +900,15 @@ internal static string BuildStartAlliancePoliticalTriggerReason(StartAllianceDec
 			Kingdom targetKingdom = decision.KingdomToStartAllianceWith;
 			bool? shouldStart = SafeGetStartAllianceOutcomeShouldStart(chosenOutcome);
 			List<string> parts = new List<string>();
-			parts.Add("议题类型：与" + GetKingdomDisplayName(targetKingdom, "目标王国") + "结盟，最终" + GetAgreementOutcomeLabel(shouldStart, "结盟", "拒绝结盟"));
+			parts.Add(AdapterRecordTexts.Raw("AF_REC_Political_0086") + GetKingdomDisplayName(targetKingdom, AdapterRecordTexts.Raw("AF_REC_Character_0143")) + AdapterRecordTexts.Raw("AF_REC_Political_0087") + GetAgreementOutcomeLabel(shouldStart, AdapterRecordTexts.Raw("AF_REC_Political_0088"), AdapterRecordTexts.Raw("AF_REC_Political_0089")));
 			string reasonText;
 			float? score = SafeGetStartAllianceSupportScore(decision, decision.ProposerClan, out reasonText);
-			AddAgreementModelScorePart(parts, "提案家族结盟倾向", score, reasonText);
+			AddAgreementModelScorePart(parts, AdapterRecordTexts.Raw("AF_REC_Political_0090"), score, reasonText);
 			AddAgreementFinalSupportPart(parts, decision, decision.ProposerClan, chosenOutcome);
-			AddAgreementVoteSupportPart(parts, chosenOutcome, shouldStart, "结盟", "拒绝结盟");
+			AddAgreementVoteSupportPart(parts, chosenOutcome, shouldStart, AdapterRecordTexts.Raw("AF_REC_Political_0088"), AdapterRecordTexts.Raw("AF_REC_Political_0089"));
 			AddKingdomDiplomaticStatusPart(parts, sourceKingdom, targetKingdom);
 			AddPoliticalFactionParameterParts(parts, sourceKingdom, targetKingdom, decision.ProposerClan);
-			return BuildPoliticalReasonSentence("联盟协议触发原因", parts);
+			return BuildPoliticalReasonSentence(AdapterRecordTexts.Raw("AF_REC_Political_0091"), parts);
 		}
 		catch
 		{
@@ -928,15 +928,15 @@ internal static string BuildTradeAgreementPoliticalTriggerReason(TradeAgreementD
 			Kingdom targetKingdom = decision.TargetKingdom;
 			bool? shouldStart = SafeGetTradeAgreementOutcomeShouldStart(chosenOutcome);
 			List<string> parts = new List<string>();
-			parts.Add("议题类型：与" + GetKingdomDisplayName(targetKingdom, "目标王国") + "签署贸易协议，最终" + GetAgreementOutcomeLabel(shouldStart, "签署", "拒绝签署"));
+			parts.Add(AdapterRecordTexts.Raw("AF_REC_Political_0086") + GetKingdomDisplayName(targetKingdom, AdapterRecordTexts.Raw("AF_REC_Character_0143")) + AdapterRecordTexts.Raw("AF_REC_Political_0092") + GetAgreementOutcomeLabel(shouldStart, AdapterRecordTexts.Raw("AF_REC_Political_0093"), AdapterRecordTexts.Raw("AF_REC_Political_0094")));
 			string reasonText;
 			float? score = SafeGetTradeAgreementSupportScore(sourceKingdom, targetKingdom, decision.ProposerClan, out reasonText);
 			AddTradeAgreementScorePart(parts, score, reasonText);
 			AddAgreementFinalSupportPart(parts, decision, decision.ProposerClan, chosenOutcome);
-			AddAgreementVoteSupportPart(parts, chosenOutcome, shouldStart, "签署", "拒绝签署");
+			AddAgreementVoteSupportPart(parts, chosenOutcome, shouldStart, AdapterRecordTexts.Raw("AF_REC_Political_0093"), AdapterRecordTexts.Raw("AF_REC_Political_0094"));
 			AddKingdomDiplomaticStatusPart(parts, sourceKingdom, targetKingdom);
 			AddPoliticalFactionParameterParts(parts, sourceKingdom, targetKingdom, decision.ProposerClan);
-			return BuildPoliticalReasonSentence("贸易协议触发原因", parts);
+			return BuildPoliticalReasonSentence(AdapterRecordTexts.Raw("AF_REC_Political_0095"), parts);
 		}
 		catch
 		{
@@ -957,16 +957,16 @@ internal static string BuildProposeCallToWarPoliticalTriggerReason(ProposeCallTo
 			Kingdom targetKingdom = decision.KingdomToCallToWarAgainst;
 			bool? shouldCall = SafeGetProposeCallToWarOutcomeShouldCall(chosenOutcome);
 			List<string> parts = new List<string>();
-			parts.Add("议题类型：召唤盟友" + GetKingdomDisplayName(calledKingdom, "盟友王国") + "对" + GetKingdomDisplayName(targetKingdom, "敌对王国") + "参战，最终" + GetAgreementOutcomeLabel(shouldCall, "召战", "不召战"));
-			parts.Add("召战费用 " + decision.CallToWarCost);
+			parts.Add(AdapterRecordTexts.Raw("AF_REC_Political_0096") + GetKingdomDisplayName(calledKingdom, AdapterRecordTexts.Raw("AF_REC_Political_0097")) + AdapterRecordTexts.Raw("AF_REC_Battle_0096") + GetKingdomDisplayName(targetKingdom, AdapterRecordTexts.Raw("AF_REC_Political_0098")) + AdapterRecordTexts.Raw("AF_REC_Political_0099") + GetAgreementOutcomeLabel(shouldCall, AdapterRecordTexts.Raw("AF_REC_Political_0100"), AdapterRecordTexts.Raw("AF_REC_Political_0101")));
+			parts.Add(AdapterRecordTexts.Raw("AF_REC_Political_0102") + decision.CallToWarCost);
 			string reasonText;
 			float? score = SafeGetCallingToWarScore(sourceKingdom, calledKingdom, targetKingdom, decision.ProposerClan, out reasonText);
-			AddAgreementModelScorePart(parts, "提案家族召战倾向", score, reasonText);
+			AddAgreementModelScorePart(parts, AdapterRecordTexts.Raw("AF_REC_Political_0103"), score, reasonText);
 			AddAgreementFinalSupportPart(parts, decision, decision.ProposerClan, chosenOutcome);
-			AddAgreementVoteSupportPart(parts, chosenOutcome, shouldCall, "召战", "不召战");
+			AddAgreementVoteSupportPart(parts, chosenOutcome, shouldCall, AdapterRecordTexts.Raw("AF_REC_Political_0100"), AdapterRecordTexts.Raw("AF_REC_Political_0101"));
 			AddCallToWarDiplomaticStatusParts(parts, sourceKingdom, calledKingdom, targetKingdom, isAcceptanceDecision: false);
 			AddCallToWarStrengthParts(parts, sourceKingdom, calledKingdom, targetKingdom);
-			return BuildPoliticalReasonSentence("召盟友参战触发原因", parts);
+			return BuildPoliticalReasonSentence(AdapterRecordTexts.Raw("AF_REC_Political_0104"), parts);
 		}
 		catch
 		{
@@ -987,16 +987,16 @@ internal static string BuildAcceptCallToWarPoliticalTriggerReason(AcceptCallToWa
 			Kingdom targetKingdom = decision.KingdomToCallToWarAgainst;
 			bool? shouldAccept = SafeGetAcceptCallToWarOutcomeShouldAccept(chosenOutcome);
 			List<string> parts = new List<string>();
-			parts.Add("议题类型：响应盟友" + GetKingdomDisplayName(callingKingdom, "召战王国") + "，对" + GetKingdomDisplayName(targetKingdom, "敌对王国") + "参战，最终" + GetAgreementOutcomeLabel(shouldAccept, "应召参战", "拒绝参战"));
-			parts.Add("应召付款 " + decision.CallToWarCost);
+			parts.Add(AdapterRecordTexts.Raw("AF_REC_Political_0105") + GetKingdomDisplayName(callingKingdom, AdapterRecordTexts.Raw("AF_REC_Political_0106")) + AdapterRecordTexts.Raw("AF_REC_Political_0107") + GetKingdomDisplayName(targetKingdom, AdapterRecordTexts.Raw("AF_REC_Political_0098")) + AdapterRecordTexts.Raw("AF_REC_Political_0099") + GetAgreementOutcomeLabel(shouldAccept, AdapterRecordTexts.Raw("AF_REC_Political_0108"), AdapterRecordTexts.Raw("AF_REC_Political_0109")));
+			parts.Add(AdapterRecordTexts.Raw("AF_REC_Political_0110") + decision.CallToWarCost);
 			string reasonText;
 			float? score = SafeGetJoiningWarScore(callingKingdom, calledKingdom, targetKingdom, decision.ProposerClan, out reasonText);
-			AddAgreementModelScorePart(parts, "提案家族应召倾向", score, reasonText);
+			AddAgreementModelScorePart(parts, AdapterRecordTexts.Raw("AF_REC_Political_0111"), score, reasonText);
 			AddAgreementFinalSupportPart(parts, decision, decision.ProposerClan, chosenOutcome);
-			AddAgreementVoteSupportPart(parts, chosenOutcome, shouldAccept, "应召参战", "拒绝参战");
+			AddAgreementVoteSupportPart(parts, chosenOutcome, shouldAccept, AdapterRecordTexts.Raw("AF_REC_Political_0108"), AdapterRecordTexts.Raw("AF_REC_Political_0109"));
 			AddCallToWarDiplomaticStatusParts(parts, callingKingdom, calledKingdom, targetKingdom, isAcceptanceDecision: true);
 			AddCallToWarStrengthParts(parts, calledKingdom, callingKingdom, targetKingdom);
-			return BuildPoliticalReasonSentence("应召参战触发原因", parts);
+			return BuildPoliticalReasonSentence(AdapterRecordTexts.Raw("AF_REC_Political_0112"), parts);
 		}
 		catch
 		{
@@ -1068,7 +1068,7 @@ internal static string GetAgreementOutcomeLabel(bool? accepted, string positiveL
 	{
 		if (!accepted.HasValue)
 		{
-			return "已结算";
+			return AdapterRecordTexts.Raw("AF_REC_Political_0113");
 		}
 		return accepted.Value ? positiveLabel : negativeLabel;
 	}
@@ -1169,8 +1169,8 @@ internal static void AddAgreementModelScorePart(List<string> parts, string label
 		string scoreText = FormatPoliticalReasonNumber(score);
 		if (!string.IsNullOrWhiteSpace(scoreText))
 		{
-			string tendency = score.HasValue && score.Value >= 0f ? "支持" : "反对";
-			parts.Add((string.IsNullOrWhiteSpace(label) ? "模型倾向" : label.Trim()) + "：" + tendency + "（评分 " + scoreText + "）");
+			string tendency = score.HasValue && score.Value >= 0f ? AdapterRecordTexts.Raw("AF_REC_Political_0114") : AdapterRecordTexts.Raw("AF_REC_Political_0115");
+			parts.Add((string.IsNullOrWhiteSpace(label) ? AdapterRecordTexts.Raw("AF_REC_Political_0116") : label.Trim()) + "：" + tendency + AdapterRecordTexts.Raw("AF_REC_Political_0117") + scoreText + "）");
 		}
 		AddAgreementReasonTextPart(parts, reasonText);
 	}
@@ -1184,8 +1184,8 @@ internal static void AddTradeAgreementScorePart(List<string> parts, float? score
 		string scoreText = FormatPoliticalReasonNumber(score);
 		if (!string.IsNullOrWhiteSpace(scoreText))
 		{
-			string tendency = score.HasValue && score.Value >= 50f ? "倾向签署" : "倾向拒绝";
-			parts.Add("提案家族贸易协议倾向：" + tendency + "（评分 " + scoreText + "/阈值 50）");
+			string tendency = score.HasValue && score.Value >= 50f ? AdapterRecordTexts.Raw("AF_REC_Political_0118") : AdapterRecordTexts.Raw("AF_REC_Political_0119");
+			parts.Add(AdapterRecordTexts.Raw("AF_REC_Political_0120") + tendency + AdapterRecordTexts.Raw("AF_REC_Political_0117") + scoreText + AdapterRecordTexts.Raw("AF_REC_Political_0121"));
 		}
 		AddAgreementReasonTextPart(parts, reasonText);
 	}
@@ -1199,14 +1199,14 @@ internal static void AddAgreementReasonTextPart(List<string> parts, string reaso
 		string text = NormalizePoliticalReasonText(reasonText);
 		if (!string.IsNullOrWhiteSpace(text))
 		{
-			parts.Add("原版理由：" + text);
+			parts.Add(AdapterRecordTexts.Raw("AF_REC_Political_0006") + text);
 		}
 	}
 
 internal static void AddAgreementFinalSupportPart(List<string> parts, KingdomDecision decision, Clan clan, DecisionOutcome chosenOutcome)
 	{
 		float? support = SafeDetermineKingdomDecisionSupport(decision, clan, chosenOutcome);
-		AddSettlementSupportTendencyPart(parts, "提案家族对最终选项", support);
+		AddSettlementSupportTendencyPart(parts, AdapterRecordTexts.Raw("AF_REC_Political_0122"), support);
 	}
 
 internal static void AddAgreementVoteSupportPart(List<string> parts, DecisionOutcome chosenOutcome, bool? accepted, string positiveLabel, string negativeLabel)
@@ -1222,8 +1222,8 @@ internal static void AddAgreementVoteSupportPart(List<string> parts, DecisionOut
 			{
 				return;
 			}
-			string action = accepted.HasValue ? (accepted.Value ? positiveLabel : negativeLabel) : "最终选项";
-			parts.Add("投票支持：" + count + "个家族支持" + action);
+			string action = accepted.HasValue ? (accepted.Value ? positiveLabel : negativeLabel) : AdapterRecordTexts.Raw("AF_REC_Political_0123");
+			parts.Add(AdapterRecordTexts.Raw("AF_REC_Political_0080") + count + AdapterRecordTexts.Raw("AF_REC_Political_0124") + action);
 		}
 		catch
 		{
@@ -1238,19 +1238,19 @@ internal static void AddKingdomDiplomaticStatusPart(List<string> parts, Kingdom 
 		}
 		try
 		{
-			string sourceName = GetKingdomDisplayName(sourceKingdom, "己方王国");
-			string targetName = GetKingdomDisplayName(targetKingdom, "目标王国");
+			string sourceName = GetKingdomDisplayName(sourceKingdom, AdapterRecordTexts.Raw("AF_REC_Political_0125"));
+			string targetName = GetKingdomDisplayName(targetKingdom, AdapterRecordTexts.Raw("AF_REC_Character_0143"));
 			if (sourceKingdom.IsAtWarWith(targetKingdom))
 			{
-				parts.Add(sourceName + "与" + targetName + "当前处于战争状态");
+				parts.Add(sourceName + AdapterRecordTexts.Raw("AF_REC_Political_0126") + targetName + AdapterRecordTexts.Raw("AF_REC_Political_0127"));
 			}
 			else if (sourceKingdom.IsAllyWith(targetKingdom))
 			{
-				parts.Add(sourceName + "与" + targetName + "当前已是盟友");
+				parts.Add(sourceName + AdapterRecordTexts.Raw("AF_REC_Political_0126") + targetName + AdapterRecordTexts.Raw("AF_REC_Political_0128"));
 			}
 			else
 			{
-				parts.Add(sourceName + "与" + targetName + "当前未交战");
+				parts.Add(sourceName + AdapterRecordTexts.Raw("AF_REC_Political_0126") + targetName + AdapterRecordTexts.Raw("AF_REC_Political_0129"));
 			}
 		}
 		catch
@@ -1266,19 +1266,19 @@ internal static void AddCallToWarDiplomaticStatusParts(List<string> parts, Kingd
 		}
 		try
 		{
-			string callingName = GetKingdomDisplayName(callingKingdom, "召战方");
-			string calledName = GetKingdomDisplayName(calledKingdom, "应召方");
-			string targetName = GetKingdomDisplayName(targetKingdom, "敌对王国");
-			parts.Add(callingName + "与" + calledName + (callingKingdom.IsAllyWith(calledKingdom) ? "是盟友" : "不是盟友"));
-			parts.Add(callingName + "与" + targetName + (callingKingdom.IsAtWarWith(targetKingdom) ? "已经交战" : "未交战"));
-			parts.Add(calledName + "与" + targetName + (calledKingdom.IsAtWarWith(targetKingdom) ? "已经交战" : "尚未交战"));
+			string callingName = GetKingdomDisplayName(callingKingdom, AdapterRecordTexts.Raw("AF_REC_Political_0130"));
+			string calledName = GetKingdomDisplayName(calledKingdom, AdapterRecordTexts.Raw("AF_REC_Political_0131"));
+			string targetName = GetKingdomDisplayName(targetKingdom, AdapterRecordTexts.Raw("AF_REC_Political_0098"));
+			parts.Add(callingName + AdapterRecordTexts.Raw("AF_REC_Political_0126") + calledName + (callingKingdom.IsAllyWith(calledKingdom) ? AdapterRecordTexts.Raw("AF_REC_Political_0132") : AdapterRecordTexts.Raw("AF_REC_Political_0133")));
+			parts.Add(callingName + AdapterRecordTexts.Raw("AF_REC_Political_0126") + targetName + (callingKingdom.IsAtWarWith(targetKingdom) ? AdapterRecordTexts.Raw("AF_REC_Political_0134") : AdapterRecordTexts.Raw("AF_REC_Political_0135")));
+			parts.Add(calledName + AdapterRecordTexts.Raw("AF_REC_Political_0126") + targetName + (calledKingdom.IsAtWarWith(targetKingdom) ? AdapterRecordTexts.Raw("AF_REC_Political_0134") : AdapterRecordTexts.Raw("AF_REC_Political_0136")));
 			if (isAcceptanceDecision)
 			{
-				parts.Add("该议题由盟友召战请求触发");
+				parts.Add(AdapterRecordTexts.Raw("AF_REC_Political_0137"));
 			}
 			else
 			{
-				parts.Add("该议题由主动召唤盟友参战触发");
+				parts.Add(AdapterRecordTexts.Raw("AF_REC_Political_0138"));
 			}
 		}
 		catch
@@ -1316,18 +1316,18 @@ internal static string BuildExpelClanPoliticalTriggerReason(ExpelClanFromKingdom
 			Kingdom kingdom = decision.OldKingdom ?? decision.Kingdom ?? targetClan.Kingdom;
 			bool? shouldExpel = SafeGetExpelClanOutcomeShouldBeExpelled(chosenOutcome);
 			List<string> parts = new List<string>();
-			string kingdomName = GetKingdomDisplayName(kingdom, "该王国");
+			string kingdomName = GetKingdomDisplayName(kingdom, AdapterRecordTexts.Raw("AF_REC_Political_0001"));
 			string clanName = GetClanDisplayName(targetClan);
-			parts.Add(shouldExpel.HasValue ? ("议题类型：是否将" + clanName + "逐出" + kingdomName + "，最终" + (shouldExpel.Value ? "驱逐" : "保留")) : ("议题类型：是否将" + clanName + "逐出" + kingdomName));
+			parts.Add(shouldExpel.HasValue ? (AdapterRecordTexts.Raw("AF_REC_Political_0139") + clanName + AdapterRecordTexts.Raw("AF_REC_Political_0140") + kingdomName + AdapterRecordTexts.Raw("AF_REC_Political_0141") + (shouldExpel.Value ? AdapterRecordTexts.Raw("AF_REC_Political_0142") : AdapterRecordTexts.Raw("AF_REC_Political_0143"))) : (AdapterRecordTexts.Raw("AF_REC_Political_0139") + clanName + AdapterRecordTexts.Raw("AF_REC_Political_0140") + kingdomName));
 			AddExpelClanTargetProfileParts(parts, targetClan, kingdom);
 			AddExpelClanRelationNetworkParts(parts, targetClan, kingdom);
-			AddExpelClanRelationToKeyClanPart(parts, "与提案家族关系", targetClan, decision.ProposerClan);
-			AddExpelClanRelationToKeyClanPart(parts, "与统治家族关系", targetClan, kingdom?.RulingClan);
+			AddExpelClanRelationToKeyClanPart(parts, AdapterRecordTexts.Raw("AF_REC_Political_0144"), targetClan, decision.ProposerClan);
+			AddExpelClanRelationToKeyClanPart(parts, AdapterRecordTexts.Raw("AF_REC_Political_0145"), targetClan, kingdom?.RulingClan);
 			AddExpelClanDefaultFormulaPart(parts, shouldExpel);
 			AddExpelClanVoteSupportPart(parts, chosenOutcome, shouldExpel);
 			AddExpelClanRelationCostPart(parts, shouldExpel);
 			AddExpelClanFormulaValuePart(parts, decision, chosenOutcome, shouldExpel);
-			return BuildPoliticalReasonSentence("驱逐家族触发原因", parts);
+			return BuildPoliticalReasonSentence(AdapterRecordTexts.Raw("AF_REC_Political_0146"), parts);
 		}
 		catch
 		{
@@ -1356,11 +1356,11 @@ internal static void AddExpelClanTargetProfileParts(List<string> parts, Clan tar
 		{
 			return;
 		}
-		parts.Add("目标家族等级 " + targetClan.Tier + "、影响力 " + FormatPoliticalReasonNumber(SafeGetClanInfluence(targetClan)) + "、声望 " + FormatPoliticalReasonNumber(SafeGetClanRenown(targetClan)));
+		parts.Add(AdapterRecordTexts.Raw("AF_REC_Political_0147") + targetClan.Tier + AdapterRecordTexts.Raw("AF_REC_Political_0148") + FormatPoliticalReasonNumber(SafeGetClanInfluence(targetClan)) + AdapterRecordTexts.Raw("AF_REC_Political_0149") + FormatPoliticalReasonNumber(SafeGetClanRenown(targetClan)));
 		string strengthText = FormatPoliticalReasonNumber(SafeGetClanStrength(targetClan));
 		if (!string.IsNullOrWhiteSpace(strengthText))
 		{
-			parts.Add("目标家族野战力量 " + strengthText);
+			parts.Add(AdapterRecordTexts.Raw("AF_REC_Political_0150") + strengthText);
 		}
 		AddExpelClanFiefValueParts(parts, targetClan, kingdom);
 		AddExpelClanWarPartyParts(parts, targetClan);
@@ -1416,10 +1416,10 @@ internal static void AddExpelClanFiefValueParts(List<string> parts, Clan targetC
 			}
 			if (count <= 0)
 			{
-				parts.Add("目标家族没有可统计封地，封地价值不会提高保留权重");
+				parts.Add(AdapterRecordTexts.Raw("AF_REC_Political_0151"));
 				return;
 			}
-			parts.Add("目标家族封地 " + count + " 处，封地价值 " + FormatPoliticalReasonNumber(totalValue) + " 会提高保留该家族的公式权重");
+			parts.Add(AdapterRecordTexts.Raw("AF_REC_Political_0152") + count + AdapterRecordTexts.Raw("AF_REC_Political_0064") + FormatPoliticalReasonNumber(totalValue) + AdapterRecordTexts.Raw("AF_REC_Political_0153"));
 		}
 		catch
 		{
@@ -1464,10 +1464,10 @@ internal static void AddExpelClanWarPartyParts(List<string> parts, Clan targetCl
 			}
 			if (partyCount <= 0)
 			{
-				parts.Add("目标家族无可统计战争部队");
+				parts.Add(AdapterRecordTexts.Raw("AF_REC_Political_0154"));
 				return;
 			}
-			parts.Add("目标家族战争部队 " + partyCount + " 支、兵员 " + troopCount + "，统帅型投票者会把兵力计入保留权重");
+			parts.Add(AdapterRecordTexts.Raw("AF_REC_Political_0155") + partyCount + AdapterRecordTexts.Raw("AF_REC_Political_0067") + troopCount + AdapterRecordTexts.Raw("AF_REC_Political_0156"));
 		}
 		catch
 		{
@@ -1520,15 +1520,15 @@ internal static void AddExpelClanRelationNetworkParts(List<string> parts, Clan t
 		{
 			return;
 		}
-		string range = worstRelation.HasValue && bestRelation.HasValue ? ("，关系范围 " + worstRelation.Value + "/" + bestRelation.Value) : "";
-		parts.Add("王国内关系网：" + positiveCount + "个家族关系为正、" + nonPositiveCount + "个不高于0" + range);
+		string range = worstRelation.HasValue && bestRelation.HasValue ? (AdapterRecordTexts.Raw("AF_REC_Political_0157") + worstRelation.Value + "/" + bestRelation.Value) : "";
+		parts.Add(AdapterRecordTexts.Raw("AF_REC_Political_0158") + positiveCount + AdapterRecordTexts.Raw("AF_REC_Political_0159") + nonPositiveCount + AdapterRecordTexts.Raw("AF_REC_Political_0160") + range);
 		if (nonPositiveMagnitude > positiveMagnitude)
 		{
-			parts.Add("负面关系权重更重，政治上更容易形成清算目标");
+			parts.Add(AdapterRecordTexts.Raw("AF_REC_Political_0161"));
 		}
 		else if (positiveMagnitude > nonPositiveMagnitude)
 		{
-			parts.Add("正面关系权重更重，原版公式更倾向保留该家族");
+			parts.Add(AdapterRecordTexts.Raw("AF_REC_Political_0162"));
 		}
 	}
 
@@ -1566,15 +1566,15 @@ internal static void AddExpelClanDefaultFormulaPart(List<string> parts, bool? sh
 		}
 		if (shouldExpel == true)
 		{
-			parts.Add("原版公式有 10000 的保留基准，最终驱逐通常意味着政治表态或统治者裁决压过保留倾向");
+			parts.Add(AdapterRecordTexts.Raw("AF_REC_Political_0163"));
 		}
 		else if (shouldExpel == false)
 		{
-			parts.Add("原版公式有 10000 的保留基准，关系、封地、军力和声望通常都会强化保留倾向");
+			parts.Add(AdapterRecordTexts.Raw("AF_REC_Political_0164"));
 		}
 		else
 		{
-			parts.Add("原版公式有 10000 的保留基准，天然更偏向保留家族");
+			parts.Add(AdapterRecordTexts.Raw("AF_REC_Political_0165"));
 		}
 	}
 
@@ -1591,8 +1591,8 @@ internal static void AddExpelClanVoteSupportPart(List<string> parts, DecisionOut
 			{
 				return;
 			}
-			string action = shouldExpel == true ? "驱逐" : shouldExpel == false ? "保留" : "最终选项";
-			parts.Add("投票支持：" + count + "个家族支持" + action);
+			string action = shouldExpel == true ? AdapterRecordTexts.Raw("AF_REC_Political_0142") : shouldExpel == false ? AdapterRecordTexts.Raw("AF_REC_Political_0143") : AdapterRecordTexts.Raw("AF_REC_Political_0123");
+			parts.Add(AdapterRecordTexts.Raw("AF_REC_Political_0080") + count + AdapterRecordTexts.Raw("AF_REC_Political_0124") + action);
 		}
 		catch
 		{
@@ -1613,7 +1613,7 @@ internal static void AddExpelClanRelationCostPart(List<string> parts, bool? shou
 				return;
 			}
 			int relationCost = diplomacyModel.GetRelationCostOfExpellingClanFromKingdom();
-			parts.Add("驱逐副作用：支持者会与目标家族产生关系变化 " + relationCost);
+			parts.Add(AdapterRecordTexts.Raw("AF_REC_Political_0166") + relationCost);
 		}
 		catch
 		{
@@ -1634,15 +1634,15 @@ internal static void AddExpelClanFormulaValuePart(List<string> parts, ExpelClanF
 		}
 		if (shouldExpel == true && value.HasValue && value.Value < 0f)
 		{
-			parts.Add("提案家族公式阻力：驱逐选项被保留基准压制（公式值 " + valueText + "）");
+			parts.Add(AdapterRecordTexts.Raw("AF_REC_Political_0167") + valueText + "）");
 		}
 		else if (shouldExpel == false && value.HasValue && value.Value > 0f)
 		{
-			parts.Add("提案家族公式倾向：保留目标家族（公式值 " + valueText + "）");
+			parts.Add(AdapterRecordTexts.Raw("AF_REC_Political_0168") + valueText + "）");
 		}
 		else
 		{
-			parts.Add("提案家族公式值 " + valueText);
+			parts.Add(AdapterRecordTexts.Raw("AF_REC_Political_0169") + valueText);
 		}
 	}
 
@@ -1661,21 +1661,21 @@ internal static string BuildSettlementClaimantPreliminaryPoliticalTriggerReason(
 			string settlementName = GetSettlementDisplayName(settlement);
 			if (shouldChange.HasValue)
 			{
-				parts.Add("议题类型：是否重分配" + settlementName + "，最终" + (shouldChange.Value ? "进入新封地主竞争" : "维持现任封地主"));
+				parts.Add(AdapterRecordTexts.Raw("AF_REC_Political_0170") + settlementName + AdapterRecordTexts.Raw("AF_REC_Political_0141") + (shouldChange.Value ? AdapterRecordTexts.Raw("AF_REC_Political_0171") : AdapterRecordTexts.Raw("AF_REC_Political_0172")));
 			}
 			else
 			{
-				parts.Add("议题类型：是否重分配" + settlementName);
+				parts.Add(AdapterRecordTexts.Raw("AF_REC_Political_0170") + settlementName);
 			}
 			if (ownerClan != null)
 			{
-				parts.Add("现任封地主：" + GetClanDisplayName(ownerClan));
+				parts.Add(AdapterRecordTexts.Raw("AF_REC_Political_0173") + GetClanDisplayName(ownerClan));
 				AddSettlementOwnerRelationNetworkParts(parts, ownerClan);
 				AddSettlementOwnerStrengthPart(parts, ownerClan);
 			}
-			AddSettlementSupportTendencyPart(parts, "提案家族对重分配", SafeCalculateSettlementClaimantPreliminarySupport(decision, decision.ProposerClan));
-			AddSettlementSupportTendencyPart(parts, "提案家族对最终选项", SafeDetermineKingdomDecisionSupport(decision, decision.ProposerClan, chosenOutcome));
-			return BuildPoliticalReasonSentence("封地重分配触发原因", parts);
+			AddSettlementSupportTendencyPart(parts, AdapterRecordTexts.Raw("AF_REC_Political_0174"), SafeCalculateSettlementClaimantPreliminarySupport(decision, decision.ProposerClan));
+			AddSettlementSupportTendencyPart(parts, AdapterRecordTexts.Raw("AF_REC_Political_0122"), SafeDetermineKingdomDecisionSupport(decision, decision.ProposerClan, chosenOutcome));
+			return BuildPoliticalReasonSentence(AdapterRecordTexts.Raw("AF_REC_Political_0175"), parts);
 		}
 		catch
 		{
@@ -1698,12 +1698,12 @@ internal static string BuildSettlementClaimantPoliticalTriggerReason(SettlementC
 			}
 			Settlement settlement = decision.Settlement;
 			List<string> parts = new List<string>();
-			parts.Add("议题类型：决定" + GetSettlementDisplayName(settlement) + "归属，获选家族为" + GetClanDisplayName(chosenClan));
+			parts.Add(AdapterRecordTexts.Raw("AF_REC_Political_0176") + GetSettlementDisplayName(settlement) + AdapterRecordTexts.Raw("AF_REC_Political_0177") + GetClanDisplayName(chosenClan));
 			AddSettlementClaimantCandidateFormulaParts(parts, settlement, chosenClan);
 			AddSettlementClaimantCandidateRankingPart(parts, decision, chosenClan);
 			AddSettlementClaimantVoteSupportPart(parts, chosenOutcome);
-			AddSettlementSupportTendencyPart(parts, "提案家族对获选方", SafeDetermineKingdomDecisionSupport(decision, decision.ProposerClan, chosenOutcome));
-			return BuildPoliticalReasonSentence("封地分配触发原因", parts);
+			AddSettlementSupportTendencyPart(parts, AdapterRecordTexts.Raw("AF_REC_Political_0178"), SafeDetermineKingdomDecisionSupport(decision, decision.ProposerClan, chosenOutcome));
+			return BuildPoliticalReasonSentence(AdapterRecordTexts.Raw("AF_REC_Political_0179"), parts);
 		}
 		catch
 		{
@@ -1828,14 +1828,14 @@ internal static void AddSettlementOwnerRelationNetworkParts(List<string> parts, 
 		{
 			return;
 		}
-		parts.Add("现任家族关系网：" + positiveCount + "个家族关系为正、" + nonPositiveCount + "个不高于0");
+		parts.Add(AdapterRecordTexts.Raw("AF_REC_Political_0180") + positiveCount + AdapterRecordTexts.Raw("AF_REC_Political_0159") + nonPositiveCount + AdapterRecordTexts.Raw("AF_REC_Political_0160"));
 		if (nonPositiveMagnitude > positiveMagnitude)
 		{
-			parts.Add("关系权重显示对现任家族不满更重，原版公式更容易推动重分配");
+			parts.Add(AdapterRecordTexts.Raw("AF_REC_Political_0181"));
 		}
 		else if (positiveMagnitude > nonPositiveMagnitude)
 		{
-			parts.Add("关系权重显示现任家族盟友更强，原版公式更容易维持原主");
+			parts.Add(AdapterRecordTexts.Raw("AF_REC_Political_0182"));
 		}
 	}
 
@@ -1862,7 +1862,7 @@ internal static void AddSettlementOwnerStrengthPart(List<string> parts, Clan own
 		{
 			return;
 		}
-		parts.Add("现任家族实力 " + strengthText + "，实力越高越会提高维持原主的公式基准");
+		parts.Add(AdapterRecordTexts.Raw("AF_REC_Political_0183") + strengthText + AdapterRecordTexts.Raw("AF_REC_Political_0184"));
 	}
 
 internal static void AddSettlementClaimantCandidateFormulaParts(List<string> parts, Settlement settlement, Clan clan)
@@ -1871,18 +1871,18 @@ internal static void AddSettlementClaimantCandidateFormulaParts(List<string> par
 		{
 			return;
 		}
-		parts.Add("候选家族等级 " + clan.Tier + "，等级越高基础分越高");
+		parts.Add(AdapterRecordTexts.Raw("AF_REC_Political_0185") + clan.Tier + AdapterRecordTexts.Raw("AF_REC_Political_0186"));
 		string strengthText = FormatPoliticalReasonNumber(SafeGetSettlementClaimantAdjustedStrength(settlement, clan));
 		if (!string.IsNullOrWhiteSpace(strengthText))
 		{
-			parts.Add("候选家族野战力量 " + strengthText + "，会折入候选基础分");
+			parts.Add(AdapterRecordTexts.Raw("AF_REC_Political_0187") + strengthText + AdapterRecordTexts.Raw("AF_REC_Political_0188"));
 		}
 		AddSettlementClaimantExistingFiefParts(parts, settlement, clan);
 		AddSettlementClaimantSpecialBonusParts(parts, settlement, clan);
 		string settlementValue = FormatPoliticalReasonNumber(SafeGetSettlementValueForClan(settlement, clan));
 		if (!string.IsNullOrWhiteSpace(settlementValue))
 		{
-			parts.Add("目标封地价值 " + settlementValue + "，价值越高越会稀释候选分母");
+			parts.Add(AdapterRecordTexts.Raw("AF_REC_Political_0189") + settlementValue + AdapterRecordTexts.Raw("AF_REC_Political_0190"));
 		}
 	}
 
@@ -1926,11 +1926,11 @@ internal static void AddSettlementClaimantExistingFiefParts(List<string> parts, 
 		}
 		if (count == 0)
 		{
-			parts.Add("该家族没有其他城镇或城堡，原版公式给予无封地补正");
+			parts.Add(AdapterRecordTexts.Raw("AF_REC_Political_0191"));
 			return;
 		}
 		string valueText = FormatPoliticalReasonNumber(totalValue);
-		parts.Add("该家族已有要塞 " + count + " 处" + (string.IsNullOrWhiteSpace(valueText) ? "" : ("，既有封地价值 " + valueText + " 会降低新增封地需求")));
+		parts.Add(AdapterRecordTexts.Raw("AF_REC_Political_0192") + count + AdapterRecordTexts.Raw("AF_REC_Political_0193") + (string.IsNullOrWhiteSpace(valueText) ? "" : (AdapterRecordTexts.Raw("AF_REC_Political_0194") + valueText + AdapterRecordTexts.Raw("AF_REC_Political_0195"))));
 		string distancePart = BuildSettlementClaimantDistancePart(nearest, secondNearest);
 		if (!string.IsNullOrWhiteSpace(distancePart))
 		{
@@ -1951,13 +1951,13 @@ internal static string BuildSettlementClaimantDistancePart(float nearest, float 
 			string daysText = days.ToString("0.#");
 			if (days <= 1f)
 			{
-				return "现有封地与目标封地很近（约 " + daysText + " 天行军），连片治理加成明显";
+				return AdapterRecordTexts.Raw("AF_REC_Political_0196") + daysText + AdapterRecordTexts.Raw("AF_REC_Political_0197");
 			}
 			if (days <= 2.5f)
 			{
-				return "现有封地与目标封地距离适中（约 " + daysText + " 天行军），仍有连片治理加成";
+				return AdapterRecordTexts.Raw("AF_REC_Political_0198") + daysText + AdapterRecordTexts.Raw("AF_REC_Political_0199");
 			}
-			return "现有封地离目标较远（约 " + daysText + " 天行军），距离因子不占优";
+			return AdapterRecordTexts.Raw("AF_REC_Political_0200") + daysText + AdapterRecordTexts.Raw("AF_REC_Political_0201");
 		}
 		catch
 		{
@@ -1975,20 +1975,20 @@ internal static void AddSettlementClaimantSpecialBonusParts(List<string> parts, 
 		{
 			if (clan.Leader == clan.Kingdom?.Leader)
 			{
-				parts.Add("候选人是王国统治者，原版公式给予统治者加成");
+				parts.Add(AdapterRecordTexts.Raw("AF_REC_Political_0202"));
 			}
 			if (settlement.Town != null && settlement.Town.LastCapturedBy == clan)
 			{
-				parts.Add("该家族最后攻下此封地，原版公式给予攻城功劳加成");
+				parts.Add(AdapterRecordTexts.Raw("AF_REC_Political_0203"));
 			}
 			if (clan.Leader == Hero.MainHero)
 			{
-				parts.Add("候选人是玩家，原版公式给予玩家候选加成");
+				parts.Add(AdapterRecordTexts.Raw("AF_REC_Political_0204"));
 			}
 			int gold = clan.Leader.Gold;
 			if (gold < 30000)
 			{
-				parts.Add("家族领袖资金不足（" + gold + "），原版公式给予财政困难补正");
+				parts.Add(AdapterRecordTexts.Raw("AF_REC_Political_0205") + gold + AdapterRecordTexts.Raw("AF_REC_Political_0206"));
 			}
 		}
 		catch
@@ -2075,10 +2075,10 @@ internal static void AddSettlementClaimantCandidateRankingPart(List<string> part
 			{
 				return;
 			}
-			parts.Add("候选基础评分排名：" + (index + 1) + "/" + candidates.Count + "（评分 " + FormatPoliticalReasonNumber(candidates[index].Item2) + "）");
+			parts.Add(AdapterRecordTexts.Raw("AF_REC_Political_0207") + (index + 1) + "/" + candidates.Count + AdapterRecordTexts.Raw("AF_REC_Political_0117") + FormatPoliticalReasonNumber(candidates[index].Item2) + "）");
 			if (index > 0)
 			{
-				parts.Add("基础评分最高者为" + GetClanDisplayName(candidates[0].Item1) + "，最终结果还受到投票支持和统治者裁决影响");
+				parts.Add(AdapterRecordTexts.Raw("AF_REC_Political_0208") + GetClanDisplayName(candidates[0].Item1) + AdapterRecordTexts.Raw("AF_REC_Political_0209"));
 			}
 		}
 		catch
@@ -2100,7 +2100,7 @@ internal static void AddSettlementClaimantVoteSupportPart(List<string> parts, De
 				return;
 			}
 			string meritText = FormatPoliticalReasonNumber(chosenOutcome.Merit);
-			parts.Add("投票支持：" + count + "个家族支持获选方" + (string.IsNullOrWhiteSpace(meritText) ? "" : ("，支持后总评分 " + meritText)));
+			parts.Add(AdapterRecordTexts.Raw("AF_REC_Political_0080") + count + AdapterRecordTexts.Raw("AF_REC_Political_0210") + (string.IsNullOrWhiteSpace(meritText) ? "" : (AdapterRecordTexts.Raw("AF_REC_Political_0211") + meritText)));
 		}
 		catch
 		{
@@ -2118,32 +2118,32 @@ internal static void AddSettlementSupportTendencyPart(List<string> parts, string
 		{
 			return;
 		}
-		parts.Add(label.Trim() + GetSettlementSupportTendencyLabel(support.Value) + "（支持度 " + supportText + "）");
+		parts.Add(label.Trim() + GetSettlementSupportTendencyLabel(support.Value) + AdapterRecordTexts.Raw("AF_REC_Political_0044") + supportText + "）");
 	}
 
 internal static string GetSettlementSupportTendencyLabel(float support)
 	{
 		if (support >= 100f)
 		{
-			return "强烈支持";
+			return AdapterRecordTexts.Raw("AF_REC_Political_0212");
 		}
 		if (support >= 35f)
 		{
-			return "支持";
+			return AdapterRecordTexts.Raw("AF_REC_Political_0114");
 		}
 		if (support > 0f)
 		{
-			return "轻度支持";
+			return AdapterRecordTexts.Raw("AF_REC_Political_0213");
 		}
 		if (support <= -100f)
 		{
-			return "强烈反对";
+			return AdapterRecordTexts.Raw("AF_REC_Political_0214");
 		}
 		if (support <= -35f)
 		{
-			return "反对";
+			return AdapterRecordTexts.Raw("AF_REC_Political_0115");
 		}
-		return "倾向反对";
+		return AdapterRecordTexts.Raw("AF_REC_Political_0215");
 	}
 
 internal static Clan ResolvePoliticalReasonEvaluatorClan(IFaction faction)
@@ -2207,11 +2207,11 @@ internal static string BuildPeaceTributeParameter(MakePeaceKingdomDecision decis
 		int tribute = decision.DailyTributeToBePaid;
 		if (tribute == 0)
 		{
-			return "停战贡金 0";
+			return AdapterRecordTexts.Raw("AF_REC_Political_0216");
 		}
-		string factionName = GetFactionDisplayName(peaceFaction, "己方");
-		string verb = tribute > 0 ? "支付" : "收取";
-		return factionName + verb + "每日贡金 " + Math.Abs(tribute) + "，持续 " + Math.Abs(decision.DailyTributeDurationInDays) + " 天";
+		string factionName = GetFactionDisplayName(peaceFaction, AdapterRecordTexts.Raw("AF_REC_Political_0217"));
+		string verb = tribute > 0 ? AdapterRecordTexts.Raw("AF_REC_Political_0218") : AdapterRecordTexts.Raw("AF_REC_Political_0219");
+		return factionName + verb + AdapterRecordTexts.Raw("AF_REC_Political_0220") + Math.Abs(tribute) + AdapterRecordTexts.Raw("AF_REC_Political_0221") + Math.Abs(decision.DailyTributeDurationInDays) + AdapterRecordTexts.Raw("AF_REC_Political_0222");
 	}
 
 internal static void AddPoliticalFactionParameterParts(List<string> parts, IFaction sourceFaction, IFaction targetFaction, Clan evaluatingClan)
@@ -2230,13 +2230,13 @@ internal static void AddPoliticalFactionParameterParts(List<string> parts, IFact
 		int? relation = SafeGetPoliticalRelation(evaluatingClan, sourceFaction, targetFaction);
 		if (relation.HasValue)
 		{
-			parts.Add("相关家族关系 " + relation.Value);
+			parts.Add(AdapterRecordTexts.Raw("AF_REC_Political_0223") + relation.Value);
 		}
 		int? sourceWarParties = SafeGetFactionWarPartyCount(sourceFaction);
 		int? targetWarParties = SafeGetFactionWarPartyCount(targetFaction);
 		if (sourceWarParties.HasValue && targetWarParties.HasValue)
 		{
-			parts.Add("战争部队数 " + sourceWarParties.Value + "/" + targetWarParties.Value);
+			parts.Add(AdapterRecordTexts.Raw("AF_REC_Political_0224") + sourceWarParties.Value + "/" + targetWarParties.Value);
 		}
 	}
 
@@ -2247,14 +2247,14 @@ internal static void AddPoliticalFallbackPartIfNeeded(List<string> parts, bool h
 			return;
 		}
 		string text = GetPoliticalEventDetailLabel(detailText);
-		string action = string.IsNullOrWhiteSpace(actionLabel) ? "外交事件" : actionLabel.Trim();
+		string action = string.IsNullOrWhiteSpace(actionLabel) ? AdapterRecordTexts.Raw("AF_REC_Political_0225") : actionLabel.Trim();
 		if (string.IsNullOrWhiteSpace(text))
 		{
-			parts.Add("触发方式：" + action + "事件，原版未提供更细原因");
+			parts.Add(AdapterRecordTexts.Raw("AF_REC_Political_0226") + action + AdapterRecordTexts.Raw("AF_REC_Political_0227"));
 		}
 		else
 		{
-			parts.Add("触发方式：" + text + "，原版未提供更细原因");
+			parts.Add(AdapterRecordTexts.Raw("AF_REC_Political_0226") + text + AdapterRecordTexts.Raw("AF_REC_Political_0228"));
 		}
 	}
 
@@ -2267,21 +2267,21 @@ internal static string GetPoliticalEventDetailLabel(string detailText)
 		}
 		if (text.IndexOf("KingdomDecision", StringComparison.OrdinalIgnoreCase) >= 0)
 		{
-			return "王国决议";
+			return AdapterRecordTexts.Raw("AF_REC_Character_0049");
 		}
 		if (text.IndexOf("Default", StringComparison.OrdinalIgnoreCase) >= 0)
 		{
-			return "默认外交结算";
+			return AdapterRecordTexts.Raw("AF_REC_Political_0229");
 		}
 		if (text.IndexOf("Barter", StringComparison.OrdinalIgnoreCase) >= 0)
 		{
-			return "交易或谈判";
+			return AdapterRecordTexts.Raw("AF_REC_Political_0230");
 		}
 		if (text.IndexOf("Conversation", StringComparison.OrdinalIgnoreCase) >= 0)
 		{
-			return "对话谈判";
+			return AdapterRecordTexts.Raw("AF_REC_Political_0231");
 		}
-		return "原版细节 " + text;
+		return AdapterRecordTexts.Raw("AF_REC_Political_0232") + text;
 	}
 
 internal static string BuildPoliticalStrengthComparisonPart(IFaction sourceFaction, IFaction targetFaction, float? sourceStrength, float? targetStrength)
@@ -2292,45 +2292,45 @@ internal static string BuildPoliticalStrengthComparisonPart(IFaction sourceFacti
 		{
 			return "";
 		}
-		string sourceName = GetFactionDisplayName(sourceFaction, "己方");
-		string targetName = GetFactionDisplayName(targetFaction, "对方");
+		string sourceName = GetFactionDisplayName(sourceFaction, AdapterRecordTexts.Raw("AF_REC_Political_0217"));
+		string targetName = GetFactionDisplayName(targetFaction, AdapterRecordTexts.Raw("AF_REC_Battle_0067"));
 		if (sourceStrength.Value <= 0f && targetStrength.Value <= 0f)
 		{
-			return "实力对比：双方均无可统计野战力量";
+			return AdapterRecordTexts.Raw("AF_REC_Political_0233");
 		}
 		if (sourceStrength.Value <= 0f)
 		{
-			return "实力对比：" + sourceName + "无可统计野战力量";
+			return AdapterRecordTexts.Raw("AF_REC_Political_0234") + sourceName + AdapterRecordTexts.Raw("AF_REC_Political_0235");
 		}
 		if (targetStrength.Value <= 0f)
 		{
-			return "实力对比：" + targetName + "无可统计野战力量";
+			return AdapterRecordTexts.Raw("AF_REC_Political_0234") + targetName + AdapterRecordTexts.Raw("AF_REC_Political_0235");
 		}
 		string relation = GetPoliticalStrengthComparisonLabel(sourceStrength.Value, targetStrength.Value, targetName);
-		return "实力对比：" + sourceName + relation + "（" + sourceText + "/" + targetText + "）";
+		return AdapterRecordTexts.Raw("AF_REC_Political_0234") + sourceName + relation + "（" + sourceText + "/" + targetText + "）";
 	}
 
 internal static string GetPoliticalStrengthComparisonLabel(float sourceStrength, float targetStrength, string targetName)
 	{
-		string targetText = string.IsNullOrWhiteSpace(targetName) ? "对方" : targetName.Trim();
+		string targetText = string.IsNullOrWhiteSpace(targetName) ? AdapterRecordTexts.Raw("AF_REC_Battle_0067") : targetName.Trim();
 		float ratio = sourceStrength / targetStrength;
 		if (ratio >= 1.75f)
 		{
-			return "明显强于" + targetText;
+			return AdapterRecordTexts.Raw("AF_REC_Political_0236") + targetText;
 		}
 		if (ratio >= 1.2f)
 		{
-			return "略强于" + targetText;
+			return AdapterRecordTexts.Raw("AF_REC_Political_0237") + targetText;
 		}
 		if (ratio > 0.83f)
 		{
-			return "与" + targetText + "接近";
+			return AdapterRecordTexts.Raw("AF_REC_Political_0126") + targetText + AdapterRecordTexts.Raw("AF_REC_Political_0238");
 		}
 		if (ratio > 0.57f)
 		{
-			return "略弱于" + targetText;
+			return AdapterRecordTexts.Raw("AF_REC_Political_0239") + targetText;
 		}
-		return "明显弱于" + targetText;
+		return AdapterRecordTexts.Raw("AF_REC_Political_0240") + targetText;
 	}
 
 internal static float? SafeGetFactionStrength(IFaction faction)
@@ -2403,7 +2403,7 @@ internal static void AddPoliticalScoreAgainstThresholdPart(List<string> parts, s
 		string thresholdText = FormatPoliticalReasonNumber(threshold);
 		if (IsExtremePoliticalReasonScore(score))
 		{
-			string tendency = score > 0f ? "极高" : "极低";
+			string tendency = score > 0f ? AdapterRecordTexts.Raw("AF_REC_Political_0241") : AdapterRecordTexts.Raw("AF_REC_Political_0242");
 			parts.Add(string.IsNullOrWhiteSpace(thresholdText) ? (scoreLabel + tendency) : (scoreLabel + tendency + "（" + thresholdLabel + " " + thresholdText + "）"));
 			return;
 		}
@@ -2429,22 +2429,22 @@ internal static string GetPoliticalScoreThresholdRelation(float score, float thr
 	{
 		if (threshold <= 0f)
 		{
-			return score >= threshold ? "高于" : "低于";
+			return score >= threshold ? AdapterRecordTexts.Raw("AF_REC_Political_0243") : AdapterRecordTexts.Raw("AF_REC_Political_0244");
 		}
 		float ratio = score / threshold;
 		if (ratio >= 1.5f)
 		{
-			return "明显高于";
+			return AdapterRecordTexts.Raw("AF_REC_Political_0245");
 		}
 		if (ratio >= 1.05f)
 		{
-			return "略高于";
+			return AdapterRecordTexts.Raw("AF_REC_Political_0246");
 		}
 		if (ratio >= 0.95f)
 		{
-			return "接近";
+			return AdapterRecordTexts.Raw("AF_REC_Political_0238");
 		}
-		return "低于";
+		return AdapterRecordTexts.Raw("AF_REC_Political_0244");
 	}
 
 internal static string FormatPoliticalReasonNumber(float? value)
@@ -2458,7 +2458,7 @@ internal static string FormatPoliticalReasonNumber(float? value)
 
 internal static string BuildPlayerKingdomDecisionActionText(KingdomDecision decision, DecisionOutcome chosenOutcome)
 	{
-		string kingdomDisplayName = GetKingdomDisplayName(decision?.Kingdom, "该王国");
+		string kingdomDisplayName = GetKingdomDisplayName(decision?.Kingdom, AdapterRecordTexts.Raw("AF_REC_Political_0001"));
 		string decisionTitle = "";
 		try
 		{
@@ -2481,11 +2481,11 @@ internal static string BuildPlayerKingdomDecisionActionText(KingdomDecision deci
 		outcomeTitle = (outcomeTitle ?? "").Replace("\r", " ").Replace("\n", " ").Trim();
 		if (string.IsNullOrWhiteSpace(decisionTitle))
 		{
-			decisionTitle = "一项王国决议";
+			decisionTitle = AdapterRecordTexts.Raw("AF_REC_Political_0247");
 		}
 		return string.IsNullOrWhiteSpace(outcomeTitle)
-			? ("你参与了" + kingdomDisplayName + "的“" + decisionTitle + "”决议。")
-			: ("你参与了" + kingdomDisplayName + "的“" + decisionTitle + "”决议，最终结果为“" + outcomeTitle + "”。");
+			? (AdapterRecordTexts.Raw("AF_REC_Political_0248") + kingdomDisplayName + AdapterRecordTexts.Raw("AF_REC_Political_0249") + decisionTitle + AdapterRecordTexts.Raw("AF_REC_Political_0250"))
+			: (AdapterRecordTexts.Raw("AF_REC_Political_0248") + kingdomDisplayName + AdapterRecordTexts.Raw("AF_REC_Political_0249") + decisionTitle + AdapterRecordTexts.Raw("AF_REC_Political_0251") + outcomeTitle + "”。");
 	}
 
 internal static Hero ResolveKingdomDecisionActionTargetHero(KingdomDecision decision, DecisionOutcome chosenOutcome)
@@ -2576,9 +2576,9 @@ internal static string BuildKingdomDecisionSupporterSummary(KingdomDecision deci
 		{
 			return "";
 		}
-		string text3 = string.IsNullOrWhiteSpace(text) ? "本次决议" : text.Trim();
-		string text4 = string.IsNullOrWhiteSpace(text2) ? "" : "，最终结果为“" + text2.Trim() + "”";
-		return GetKingdomDisplayName(decision.Kingdom, "该王国") + "的“" + text3 + "”决议" + text4 + "，得到这些支持者表态：" + string.Join("；", list) + "。";
+		string text3 = string.IsNullOrWhiteSpace(text) ? AdapterRecordTexts.Raw("AF_REC_Political_0252") : text.Trim();
+		string text4 = string.IsNullOrWhiteSpace(text2) ? "" : AdapterRecordTexts.Raw("AF_REC_Political_0253") + text2.Trim() + "”";
+		return GetKingdomDisplayName(decision.Kingdom, AdapterRecordTexts.Raw("AF_REC_Political_0001")) + AdapterRecordTexts.Raw("AF_REC_Political_0249") + text3 + AdapterRecordTexts.Raw("AF_REC_Political_0254") + text4 + AdapterRecordTexts.Raw("AF_REC_Political_0255") + string.Join("；", list) + "。";
 	}
 
 internal static string GetKingdomDecisionTitle(KingdomDecision decision)
@@ -2638,8 +2638,8 @@ internal static bool IsTrivialKingdomDecisionOutcomeTitle(string text)
 		{
 			return true;
 		}
-		return string.Equals(text2, "是", StringComparison.OrdinalIgnoreCase)
-			|| string.Equals(text2, "否", StringComparison.OrdinalIgnoreCase)
+		return string.Equals(text2, AdapterRecordTexts.Raw("AF_REC_Political_0256"), StringComparison.OrdinalIgnoreCase)
+			|| string.Equals(text2, AdapterRecordTexts.Raw("AF_REC_Political_0257"), StringComparison.OrdinalIgnoreCase)
 			|| string.Equals(text2, "yes", StringComparison.OrdinalIgnoreCase)
 			|| string.Equals(text2, "no", StringComparison.OrdinalIgnoreCase);
 	}
@@ -2649,15 +2649,15 @@ internal static string GetSupportWeightLabel(Supporter.SupportWeights supportWei
 		switch (supportWeight)
 		{
 		case Supporter.SupportWeights.SlightlyFavor:
-			return "轻度支持";
+			return AdapterRecordTexts.Raw("AF_REC_Political_0213");
 		case Supporter.SupportWeights.StronglyFavor:
-			return "强力支持";
+			return AdapterRecordTexts.Raw("AF_REC_Political_0258");
 		case Supporter.SupportWeights.FullyPush:
-			return "全力推动";
+			return AdapterRecordTexts.Raw("AF_REC_Political_0259");
 		case Supporter.SupportWeights.StayNeutral:
-			return "中立";
+			return AdapterRecordTexts.Raw("AF_REC_Political_0260");
 		case Supporter.SupportWeights.Choose:
-			return "选择";
+			return AdapterRecordTexts.Raw("AF_REC_Political_0261");
 		default:
 			return supportWeight.ToString();
 		}
@@ -2705,8 +2705,8 @@ internal void OnKingdomDecisionConcluded(KingdomDecision decision, DecisionOutco
 			if (!string.IsNullOrWhiteSpace(text4))
 			{
 				string kingdomId = GetKingdomId(decision.Kingdom);
-				string labelPrefix = string.IsNullOrWhiteSpace(text5) ? "决议支持明细" : "决议支持与触发原因";
-				RecordEventSourceMaterial("kingdom_decision_support", labelPrefix + " - " + GetKingdomDisplayName(decision.Kingdom, "该王国"), text4, text + ":supporters", kingdomId, "", includeInWorld: false, includeInKingdom: true);
+				string labelPrefix = string.IsNullOrWhiteSpace(text5) ? AdapterRecordTexts.Raw("AF_REC_Political_0262") : AdapterRecordTexts.Raw("AF_REC_Political_0263");
+				RecordEventSourceMaterial("kingdom_decision_support", labelPrefix + " - " + GetKingdomDisplayName(decision.Kingdom, AdapterRecordTexts.Raw("AF_REC_Political_0001")), text4, text + ":supporters", kingdomId, "", includeInWorld: false, includeInKingdom: true);
 			}
 			if (isPlayerInvolved)
 			{
@@ -2737,13 +2737,13 @@ internal static string LimitCustomPolicyWeeklyMaterialText(string text, int maxC
 
 internal void RecordWarOrPeaceMaterial(string materialKind, string actionLabel, IFaction faction1, IFaction faction2, string detailText)
 	{
-		string text = GetFactionDisplayName(faction1, "一方势力");
-		string text2 = GetFactionDisplayName(faction2, "另一方势力");
+		string text = GetFactionDisplayName(faction1, AdapterRecordTexts.Raw("AF_REC_Political_0264"));
+		string text2 = GetFactionDisplayName(faction2, AdapterRecordTexts.Raw("AF_REC_Political_0265"));
 		bool flag = string.Equals((materialKind ?? "").Trim(), "war_declared", StringComparison.OrdinalIgnoreCase);
-		string text3 = flag ? (text + "向" + text2 + "宣战，双方进入战争状态。") : (text + "与" + text2 + "停战议和，双方结束战争状态。");
+		string text3 = flag ? (text + AdapterRecordTexts.Raw("AF_REC_Political_0266") + text2 + AdapterRecordTexts.Raw("AF_REC_Political_0267")) : (text + AdapterRecordTexts.Raw("AF_REC_Political_0126") + text2 + AdapterRecordTexts.Raw("AF_REC_Political_0268"));
 		if (!string.IsNullOrWhiteSpace(detailText))
 		{
-			text3 += " 原版事件细节：" + detailText.Trim() + "。";
+			text3 += AdapterRecordTexts.Raw("AF_REC_Political_0269") + detailText.Trim() + "。";
 		}
 		text3 = AppendEventMaterialSentence(text3, BuildWarOrPeacePoliticalTriggerReason(materialKind, faction1, faction2, detailText));
 		string kingdomId = GetKingdomId(faction1);

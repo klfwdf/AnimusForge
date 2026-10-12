@@ -218,14 +218,14 @@
                                 <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="frame_9" ExtendLeft="5" ExtendTop="5" ExtendRight="5" ExtendBottom="5" AlphaFactor="0.54" IsEnabled="false" />
                                 <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginLeft="4" MarginRight="4" MarginTop="4" MarginBottom="4" Sprite="BlankWhiteSquare_9" Color="#080604FF" AlphaFactor="0.58" IsEnabled="false" />
 
-                                <!-- 2. 中部：人物 (3D Half-body Tableau with Bound Idle) -->
+                                <!-- 2. Center: character (3D Half-body Tableau with Bound Idle) -->
                                 <Widget IsVisible="@HasPrisonerModel" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" MarginBottom="94" ClipContents="true" DoNotAcceptEvents="true">
                                   <Children>
                                     <CharacterTableauWidget DataSource="{PrisonerModel}" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="750" SuggestedHeight="1500" HorizontalAlignment="Center" VerticalAlignment="Top" PositionYOffset="-315" BannerCodeText="@BannerCodeText" BodyProperties="@BodyProperties" CharStringId="@CharStringId" EquipmentCode="@EquipmentCode" IsFemale="@IsFemale" MountCreationKey="" StanceIndex="@StanceIndex" ArmorColor1="@ArmorColor1" ArmorColor2="@ArmorColor2" Race="@Race" IdleAction="@IdleAction" IsTableauEnabled="@IsTableauEnabled" DoNotUseCustomScale="true" DoNotAcceptEvents="true" />
                                   </Children>
                                 </Widget>
 
-                                <!-- 1. 顶部：名字与家族旗帜 (Name & Clan Row with Banner Icon) -->
+                                <!-- 1. Top: name and clan banner (Name & Clan Row with Banner Icon) -->
                                 <ListPanel WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" VerticalAlignment="Top" MarginLeft="14" MarginRight="14" MarginTop="12" StackLayout.LayoutMethod="VerticalTopToBottom" DoNotAcceptEvents="true">
                                   <Children>
                                     <!-- Line 1: Prisoner Name -->
@@ -252,7 +252,7 @@
                                   </Children>
                                 </ListPanel>
 
-                                <!-- 3. 底部：沉浸式底舱面板 (Integrated Lower Deck: Title, Custody Origin, Announced Charge) -->
+                                <!-- 3. Bottom: immersive panel (Integrated Lower Deck: Title, Custody Origin, Announced Charge) -->
                                 <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="86" VerticalAlignment="Bottom" MarginLeft="4" MarginRight="4" MarginBottom="4" ClipContents="true">
                                   <Children>
                                     <!-- Solid dark backing flush with card interior -->

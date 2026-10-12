@@ -1,0 +1,97 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using Newtonsoft.Json;
+namespace AnimusForge;
+
+internal sealed class Hero { internal string Name, StringId; }
+internal sealed class CharacterObject { internal Hero HeroObject; }
+internal readonly struct Position
+{
+    private readonly double coordinate;
+    internal Position(double value) { coordinate = value; }
+    internal double DistanceSquared(Position other) => (coordinate - other.coordinate) * (coordinate - other.coordinate);
+}
+internal sealed class Settlement { internal string Name, StringId; internal Position GatePosition; internal bool Eligible = true; }
+internal sealed class MobileParty { internal string Name, StringId; internal Position Position; internal static MobileParty MainParty; }
+internal sealed class Hideout
+{
+    internal bool IsSpotted;
+    internal Settlement Settlement;
+    internal static readonly List<Hideout> Items = new();
+    internal static bool Throw;
+    internal static IEnumerable<Hideout> All => Throw ? throw new Exception("fixture enumeration failure") : Items;
+}
+internal static class WorldMapNpcHideoutCompletionPatch { internal static bool IsReady; }
+internal sealed class PostprocessRuleEntry { internal string Tag, Description; }
+internal static class AIConfigHandler
+{
+    internal static List<PostprocessRuleEntry> Rules;
+    internal static List<PostprocessRuleEntry> GetGuardrailRulePostprocessRules(string id) => Rules;
+}
+internal sealed class Campaign
+{
+    internal static Campaign Current;
+    internal T GetCampaignBehavior<T>() => default;
+}
+internal static class AnimusForgeModulePaths
+{
+    internal static string Root;
+    internal static int Reads;
+    internal static string GetModuleDataFilePath(string name) { Reads++; return Path.Combine(Root, name); }
+}
+internal static class Program
+{
+    private static void Check(bool condition, string label) { if (!condition) throw new Exception("FAIL: " + label); }
+    private static void Main(string[] args)
+    {
+        AnimusForgeModulePaths.Root = args[0];
+        var current = WorldMapPartyCommandBehavior.RunCases();
+        var prompt = WorldMapPartyCommandBehavior.RunPromptCases();
+        var legacyPrompt = LegacyWorldMapPartyCommandBehavior.RunPromptCases();
+        if (args[1] == "CN")
+        {
+            var baseline = LegacyWorldMapPartyCommandBehavior.RunCases();
+            foreach (var pair in baseline) Check(current[pair.Key] == pair.Value, "CN baseline parity: " + pair.Key);
+            foreach (var pair in legacyPrompt)
+                if (pair.Key != "merge_independent") Check(prompt[pair.Key] == pair.Value, "CN full prompt parity: " + pair.Key);
+            Check(prompt["merge_independent"].Contains("{days}") && prompt["merge_independent"].StartsWith("独立部队归队"), "CN independent-party translation retains timeout placeholder");
+        }
+        else
+        {
+            Check(current["no_owner"] == "[Current NPC command tasks]None", "empty owner");
+            Check(current["empty"] == current["stopped"] && current["stopped"] == current["resolution_error"], "empty and stopped/error boundaries");
+            Check(current["force"] == "Force an attack on Pravend (3 days)", "force mode");
+            Check(current["AttackParty"] == "Attack Pravend (3 days)", "normal attack");
+            Check(current["ClearHideout"] == "Clear Pravend (time limit: 3 days)", "hideout limit");
+            Check(current["unknown"] == "Unknown task (1 days)" && current["null_command"] == current["unknown"], "clamped unknown and null");
+            Check(current["missing_GoToSettlement"] == "Go to unknown location (1 days)", "missing settlement");
+            Check(current["missing_FollowHero"] == "Follow unknown person (1 days)", "missing hero");
+            Check(current["missing_FollowParty"] == "Follow unknown party (1 days)", "missing party");
+            Check(current["nameless_GoToSettlement"] == "Go to target settlement (3 days)", "nameless settlement");
+            Check(current["nameless_FollowParty"] == "Follow target party (3 days)", "nameless party");
+            Check(current["braced_name"] == "Follow Literal {DAYS} {TARGET} name (3 days)", "dynamic braces preserved");
+            Check(current["queue"] == "[Current NPC command tasks]Current: Go to Pravend (3 days) → Then: Patrol Pravend (3 days) → Then: Follow Pravend (3 days) → Then: Attack Pravend (3 days) → Then: Clear Pravend (time limit: 3 days) → 1 more tasks", "snapshot index, order and five-command limit");
+            Check(current["pending"] == "[Current NPC command tasks]Current: Go to Pravend (3 days)", "pending party queue");
+            Check(current["nonhero"] == "[Current NPC command tasks]Current: Patrol Pravend (3 days)", "nonhero eligibility");
+            Check(!System.Text.RegularExpressions.Regex.IsMatch(string.Join("", current.Values), "[\\u3400-\\u9fff]"), "EN fixed output has no Han");
+            Check(prompt["hideout_not_ready"] == "\n[Available hideout-clear targets]None", "EN hideout header and no targets");
+            Check(prompt["hideout_nameless"] == "\n[Available hideout-clear targets]\ntarget settlement; ID=", "hideout nameless fallback");
+            Check(prompt["hideout_candidates"] == "\n[Available hideout-clear targets]\n" + string.Join("\n", Enumerable.Range(1, 12).Select(index => "Hideout " + index + "; ID=hideout_" + index)), "eligible spotted targets sorted by distance and limited to twelve");
+            Check(prompt["merge_independent"] == legacyPrompt["merge_independent"], "EN independent-party rule exact baseline");
+            Check(prompt["merge_main"] == "When you output other ACTION:WORLDMAP tags, unless the player explicitly says there is no need to return to the party, you must place this tag last. Never omit it.", "EN main-party merge rule");
+            Check(prompt["combined_prompt"] == current["empty"] + prompt["hideout_empty"], "complete public prompt entry");
+            Check(!System.Text.RegularExpressions.Regex.IsMatch(string.Join("", prompt.Values), "[\\u3400-\\u9fff]"), "EN full prompt output has no Han");
+        }
+        foreach (string name in new[] { "hideout_no_campaign", "hideout_no_actor", "hideout_no_observer", "hideout_empty", "hideout_exception" })
+            Check(prompt[name] == prompt["hideout_not_ready"], "hideout gate/exception: " + name);
+        foreach (string name in new[] { "hideout_nonhero", "hideout_character_hero", "hideout_main_observer" })
+            Check(prompt[name] == prompt["hideout_candidates"], "hideout actor path: " + name);
+        foreach (string name in new[] { "rule_tags", "rules_no_merge", "rules_no_hideout", "rules_no_actor", "rules_nonhero" })
+            Check(prompt[name] == legacyPrompt[name], "postprocess filtering/tag parity: " + name);
+        File.WriteAllText(Path.Combine(args[0], "WorldMapCommandPromptTexts.json"), "{}");
+        Check(WorldMapPartyCommandBehavior.RunCases()["queue"] == current["queue"] && AnimusForgeModulePaths.Reads == 1, "one package read, cached corpus");
+        Console.WriteLine("PASS " + args[1] + ": " + current.Count + " command cases + " + prompt.Count + " complete prompt/postprocess cases; package cache and queue/rule immutability");
+    }
+}

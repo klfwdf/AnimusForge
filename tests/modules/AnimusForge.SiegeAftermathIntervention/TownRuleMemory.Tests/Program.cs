@@ -180,7 +180,19 @@ namespace AnimusForge
         internal static bool IsStale(long generation) => generation != Generation;
     }
     internal static class GcczTownPromptResourceProvider
-    { internal static TownPromptTextCatalog GetCatalog() => null; }
+    {
+        internal static TownPromptTextCatalog GetCatalog() => null;
+        internal static TownPromptTextCatalog GetPresentationCatalog() => null;
+    }
+    internal static class SiegeAftermathUiText
+    {
+        internal static string Aftermath(string actor, string outcome)
+            => SettlementRuleMemoryEventText.Aftermath(actor, outcome);
+        internal static string CompletedIntervention(string actor, string outcome, long loot, long gold, int civs, int notables, int rGold, int rFood)
+            => SettlementRuleMemoryEventText.CompletedIntervention(actor, outcome, loot, gold, civs, notables, rGold, rFood);
+        internal static string Policy(string kind, string title)
+            => SettlementRuleMemoryEventText.Policy(kind, title);
+    }
     internal static class Logger
     { internal static bool IsModLogicEnabled => false; internal static void Log(string source, string message) { } }
     internal static class AIConfigHandler

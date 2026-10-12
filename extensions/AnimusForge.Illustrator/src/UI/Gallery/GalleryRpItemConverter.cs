@@ -26,7 +26,7 @@ namespace AnimusForge.Illustrator.UI.Gallery
         internal static string BuildIntroduction(CachedIllustrationItem item)
         {
             var text = new StringBuilder(IllustratorRemainingUiText.GalleryIntroductionName(DisplayItemName(item))).Append('\n');
-            string theme = Clean(item?.Theme, 600);
+            string theme = Clean(IllustrationStatusUiText.DisplayTheme(item?.Theme), 600);
             string action = Clean(item?.ActionSummary, 900);
             if (theme.Length > 0) text.Append(IllustratorRemainingUiText.GalleryIntroductionTheme(theme)).Append('\n');
             if (action.Length > 0) text.Append(IllustratorRemainingUiText.GalleryIntroductionAction(action)).Append('\n');

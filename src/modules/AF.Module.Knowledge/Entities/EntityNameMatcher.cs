@@ -70,6 +70,12 @@ internal static class EntityNameMatcher
 		return !string.IsNullOrWhiteSpace(normalizedMention) && string.Equals(normalizedMention, Normalize(name), StringComparison.OrdinalIgnoreCase);
 	}
 
+	internal static bool RequiresExactDisplayName(string mention)
+	{
+		return string.Equals(mention, "lord", StringComparison.OrdinalIgnoreCase)
+			|| string.Equals(mention, "lords", StringComparison.OrdinalIgnoreCase);
+	}
+
 	internal static float BestScore(string mention, IEnumerable<string> aliases)
 	{
 		return BestScore(BuildProfile(mention), BuildAliasProfiles(aliases));

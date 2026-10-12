@@ -162,4 +162,18 @@
     <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Domain/WorldDiplomacyLiveRoundRules.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Persistence/WorldDiplomacyDialogueRecords.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Persistence/WorldDiplomacyPlayerResponse.cs" />
-</ItemGroup><ItemGroup><Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyRequestHistoryApplication.cs" /></ItemGroup><ItemGroup><EmbeddedResource Include="../../../../content/modules/AF.Module.Diplomacy/ModuleData/DiplomacyPromptCompatibility.json" LogicalName="AnimusForge.Diplomacy.PromptCompatibility.json" /></ItemGroup></Project>
+</ItemGroup><ItemGroup><Compile Include="../../../../src/modules/AF.Module.Diplomacy/Application/WorldDiplomacyRequestHistoryApplication.cs" /></ItemGroup><ItemGroup><EmbeddedResource Include="../../../../content/modules/AF.Module.Diplomacy/ModuleData/DiplomacyPromptCompatibility.json" LogicalName="AnimusForge.Diplomacy.PromptCompatibility.json" /></ItemGroup>
+  <ItemGroup>
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Presentation/DiplomacyPromptTexts.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Presentation/DiplomacyMiscPromptTexts.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Presentation/DiplomacyCompatibilityTexts.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Presentation/DiplomacyUiLocalization.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Diplomacy/Presentation/DiplomacyDialogueStatusUi.cs" />
+    <Reference Include="TaleWorlds.Localization"><HintPath>F:/SteamLibrary/steamapps/common/Mount &amp; Blade II Bannerlord/bin/Win64_Shipping_Client/TaleWorlds.Localization.dll</HintPath></Reference>
+    <Reference Include="TaleWorlds.Library"><HintPath>F:/SteamLibrary/steamapps/common/Mount &amp; Blade II Bannerlord/bin/Win64_Shipping_Client/TaleWorlds.Library.dll</HintPath></Reference>
+    <Reference Include="TaleWorlds.DotNet"><HintPath>F:/SteamLibrary/steamapps/common/Mount &amp; Blade II Bannerlord/bin/Win64_Shipping_Client/TaleWorlds.DotNet.dll</HintPath></Reference>
+    <Content Include="../../../../content/modules/AF.Module.Diplomacy/ModuleData/DiplomacyPromptTexts.json" Link="ModuleData/DiplomacyPromptTexts.json" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="../../../../content/modules/AF.Module.Diplomacy/ModuleData/DiplomacyMiscPromptTexts.json" Link="ModuleData/DiplomacyMiscPromptTexts.json" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="../../../../content/modules/AF.Module.Diplomacy/ModuleData/DiplomacyMiscCompatibility.json" Link="ModuleData/DiplomacyMiscCompatibility.json" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+</Project>

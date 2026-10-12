@@ -60,9 +60,9 @@ public sealed partial class CourierDeliveryBehavior
 					string playerName = MyBehavior.BuildPlayerPublicDisplayNameForExternal();
 					if (string.IsNullOrWhiteSpace(playerName))
 					{
-						playerName = Hero.MainHero?.Name?.ToString() ?? "玩家";
+						playerName = Hero.MainHero?.Name?.ToString() ?? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0465");
 					}
-					bool historyAccepted = CommitCourierDialogueHistory(recipient, "【来信】" + playerName + "通过信使写道：" + session.LetterText, null, session.DeliveryFactText);
+					bool historyAccepted = CommitCourierDialogueHistory(recipient, ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0466") + playerName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0467") + session.LetterText, null, session.DeliveryFactText);
 					if (historyAccepted) RecordModuleCourierStep(session, CoreCourierAcceptedSteps.DeliveryHistory);
 					if (!payloadAccepted || !historyAccepted)
 					FailModuleCourierSession(session, payloadAccepted ? "courier.history_unconfirmed" : "courier.payload_unconfirmed");
@@ -517,7 +517,7 @@ public sealed partial class CourierDeliveryBehavior
 			else
 			{
 				FailModuleCourierSession(session, "courier.postprocess_failed");
-				Logger.Log("CourierDelivery", "[UnifiedPostprocess] 调用失败: " + error);
+				Logger.Log("CourierDelivery", "[UnifiedPostprocess] failed: " + error);
 				postprocessed = workItem.FallbackText;
 			}
 			FinalizeCourierReplyGenerationOnMainThread(request, reply, postprocessed, completionLogDetails);
@@ -570,7 +570,7 @@ public sealed partial class CourierDeliveryBehavior
 			NonBlockingErrorReport.Show(CourierFailureUiText.ReplyFailedTitle, CourierFailureUiText.ReplyFailedDetail(error));
 			InformationManager.ShowInquiry(new InquiryData(
 				CourierFailureUiText.ReplyFailedTitle,
-				LlmRetryPrompt.BuildRetryDescription("信使回信正文生成", error),
+				LlmRetryPrompt.BuildRetryDescription(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0469"), error),
 				isAffirmativeOptionShown: true,
 				isNegativeOptionShown: true,
 				CourierFailureUiText.Retry,
@@ -814,7 +814,7 @@ public sealed partial class CourierDeliveryBehavior
 			NonBlockingErrorReport.Show(CourierFailureUiText.LetterFailedTitle, CourierFailureUiText.LetterFailedDetail(error));
 			InformationManager.ShowInquiry(new InquiryData(
 				CourierFailureUiText.LetterFailedTitle,
-				LlmRetryPrompt.BuildRetryDescription("信使来信正文生成", error),
+				LlmRetryPrompt.BuildRetryDescription(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0470"), error),
 				isAffirmativeOptionShown: true,
 				isNegativeOptionShown: true,
 				CourierFailureUiText.Retry,

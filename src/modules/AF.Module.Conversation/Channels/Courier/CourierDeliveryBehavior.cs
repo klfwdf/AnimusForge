@@ -115,6 +115,8 @@ public sealed partial class CourierDeliveryBehavior : CampaignBehaviorBase
 		public string DeliveryFactText;
 		public string ReplyText;
 		public string ReplyPostprocessedText;
+        public string DiplomacyReplyBody;
+        public List<string> DiplomacyReplyReceipts;
 		public string InboundLetterKind;
 		public string InboundMotiveType;
 		public string InboundNeedType;
@@ -215,6 +217,8 @@ public sealed partial class CourierDeliveryBehavior : CampaignBehaviorBase
 		public string ItemStringId;
 		public string DisplayName;
 		public string LetterBody;
+        public string DiplomacyReplyBody;
+        public List<string> DiplomacyReplyReceipts;
 		public string TemplateStringId;
 		public uint ObjectId;
 		public string SenderHeroId;
@@ -1131,7 +1135,7 @@ public sealed partial class CourierDeliveryBehavior : CampaignBehaviorBase
 				{
 					Kind = "settlement",
 					Id = MyBehavior.GetSettlementTransferAssetIdForExternal(entry),
-					Name = MyBehavior.GetSettlementTransferAssetDisplayNameForExternal(entry),
+					Name = EconomyUiTexts.ProjectPartyAssetNameForUi(MyBehavior.GetSettlementTransferAssetDisplayNameForExternal(entry)),
 					AvailableAmount = 1,
 					GuidePriceDenars = Math.Max(0, entry.GuidePriceDenars),
 					SettlementEntry = entry
@@ -1156,7 +1160,7 @@ public sealed partial class CourierDeliveryBehavior : CampaignBehaviorBase
 			{
 				Kind = mode == CourierPayloadMode.Show ? "show_gold" : "gold",
 				Id = "gold",
-				Name = "第纳尔",
+				Name = ConversationUiLocalization.Text("AF_UI_Terminal_UnitDenars", " denars").Trim(),
 				AvailableAmount = gold,
 				GuidePriceDenars = 1
 			});
@@ -2349,7 +2353,7 @@ public sealed partial class CourierDeliveryBehavior : CampaignBehaviorBase
 	{
 		if (roster == null || roster.TotalManCount <= 0)
 		{
-			return "无";
+			return "none";
 		}
 		List<string> parts = new List<string>();
 		foreach (TroopRosterElement item in SnapshotRoster(roster))
@@ -2358,17 +2362,17 @@ public sealed partial class CourierDeliveryBehavior : CampaignBehaviorBase
 			{
 				continue;
 			}
-			parts.Add((item.Character.Name?.ToString() ?? item.Character.StringId ?? "未知") + "×" + item.Number);
+			parts.Add((item.Character.Name?.ToString() ?? item.Character.StringId ?? "unknown") + "×" + item.Number);
 		}
-		return parts.Count == 0 ? "无" : string.Join("，", parts);
+		return parts.Count == 0 ? "none" : string.Join("，", parts);
 	}
 
 	private static string PrepareNpcReplyForActionPostprocess(string text)
 	{
 		string value = LlmVisibleReplyNormalizer.NormalizeComplete(text).Trim();
 		value = Regex.Replace(value, "<think>.*?</think>", "", RegexOptions.Singleline | RegexOptions.IgnoreCase).Trim();
-		value = Regex.Replace(value, "^(NPC|回复|回信)[:：]\\s*", "", RegexOptions.IgnoreCase).Trim();
-		if (value == "（没说话）" || value == "无" || value == "无回信")
+		value = Regex.Replace(value, ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0422"), "", RegexOptions.IgnoreCase).Trim();
+		if (value == ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0423") || value == ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0424") || value == ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0425"))
 		{
 			return "";
 		}
@@ -2389,13 +2393,13 @@ public sealed partial class CourierDeliveryBehavior : CampaignBehaviorBase
 	{
 		string value = LlmVisibleReplyNormalizer.NormalizeComplete(text).Trim();
 		value = Regex.Replace(value, "<think>.*?</think>", "", RegexOptions.Singleline | RegexOptions.IgnoreCase).Trim();
-		value = Regex.Replace(value, "^(NPC|来信|信件|外交信|私人来信|请求信)[:：]\\s*", "", RegexOptions.IgnoreCase).Trim();
+		value = Regex.Replace(value, ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0426"), "", RegexOptions.IgnoreCase).Trim();
 		value = StripCourierActionTags(value).Trim();
 		if (!LooksLikeApiError(value))
 		{
 			value = CourierVisibleLetterSanitizer.Clean(value);
 		}
-		if (!string.IsNullOrWhiteSpace(value) && value != "（没说话）" && value != "无" && value != "无信件")
+		if (!string.IsNullOrWhiteSpace(value) && value != ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0427") && value != ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0428") && value != ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0429"))
 		{
 			return value;
 		}
@@ -2412,33 +2416,33 @@ public sealed partial class CourierDeliveryBehavior : CampaignBehaviorBase
 		string playerName = MyBehavior.BuildPlayerPublicDisplayNameForExternal(sender);
 		if (string.IsNullOrWhiteSpace(playerName))
 		{
-			playerName = Hero.MainHero?.Name?.ToString() ?? "玩家";
+			playerName = Hero.MainHero?.Name?.ToString() ?? ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0530");
 		}
 		if (string.Equals(session?.InboundLetterKind, InboundLetterKindNeedRequest, StringComparison.OrdinalIgnoreCase))
 		{
-			return senderName + "致" + playerName + "：\n\n我有一项确切的困难，希望与你商量。若你愿意，请回信。";
+			return ConversationRuntimeTexts.FormatPrompt("letter_fallback_generic_need", ("SENDER", senderName), ("PLAYER", playerName));
 		}
 		if (string.Equals(session?.InboundLetterKind, InboundLetterKindPersonal, StringComparison.OrdinalIgnoreCase))
 		{
-			return senderName + "致" + playerName + "：\n\n愿你近来安好。得空时，请回信告诉我你的近况。";
+			return ConversationRuntimeTexts.FormatPrompt("letter_fallback_generic_personal", ("SENDER", senderName), ("PLAYER", playerName));
 		}
-		return senderName + "致" + playerName + "：\n\n我希望以正式信件与你讨论当前事务。若你愿意，请回信说明你的看法。";
+		return ConversationRuntimeTexts.FormatPrompt("letter_fallback_generic_formal", ("SENDER", senderName), ("PLAYER", playerName));
 	}
 
 	private static bool LooksLikeApiError(string text)
 	{
 		string value = (text ?? "").Trim();
-		return value.StartsWith("（错误", StringComparison.Ordinal) || value.StartsWith("（程序错误", StringComparison.Ordinal) || value.StartsWith("（API请求失败", StringComparison.Ordinal) || value.StartsWith("（API响应格式错误", StringComparison.Ordinal);
+		return value.StartsWith(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0437"), StringComparison.Ordinal) || value.StartsWith(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0438"), StringComparison.Ordinal) || value.StartsWith(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0439"), StringComparison.Ordinal) || value.StartsWith(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0440"), StringComparison.Ordinal);
 	}
 
 	private static void LogCourierContextAlignment(string chain, string sessionId, Hero hero, string npcRoleContext, string extras, string entityPostprocessContext, string historyText, IEnumerable<ConversationMessage> persistentMemoryRoleMessages)
 	{
 		string role = npcRoleContext ?? "";
 		string extra = extras ?? "";
-		bool hasPersonality = role.IndexOf("你的个性为：", StringComparison.Ordinal) >= 0;
-		bool hasBackground = role.IndexOf("你的背景是：", StringComparison.Ordinal) >= 0;
-		bool hasKnowledge = extra.IndexOf("参与互动让你的脑海里浮现了这些知识", StringComparison.Ordinal) >= 0
-			|| extra.IndexOf("【以下是关于（", StringComparison.Ordinal) >= 0;
+		bool hasPersonality = role.IndexOf(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0441"), StringComparison.Ordinal) >= 0;
+		bool hasBackground = role.IndexOf(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0442"), StringComparison.Ordinal) >= 0;
+		bool hasKnowledge = extra.IndexOf(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0443"), StringComparison.Ordinal) >= 0
+			|| extra.IndexOf(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0444"), StringComparison.Ordinal) >= 0;
 		int persistentMemoryCount = persistentMemoryRoleMessages?.Count() ?? 0;
 		Log("[ContextAlignment] chain=courier_" + (chain ?? "unknown")
 			+ " session=" + (sessionId ?? "")
@@ -2525,7 +2529,7 @@ public sealed partial class CourierDeliveryBehavior : CampaignBehaviorBase
 		{
 			return value;
 		}
-		string pattern = "(?ms)^【附加规则:" + id + "】.*?(?=^【附加规则:|\\z)";
+		string pattern = ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0445") + id + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0446");
 		return Regex.Replace(value, pattern, "").Trim();
 	}
 

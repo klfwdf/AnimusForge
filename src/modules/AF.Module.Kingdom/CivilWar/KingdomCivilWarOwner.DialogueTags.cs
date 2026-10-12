@@ -58,17 +58,17 @@ internal sealed partial class KingdomCivilWarOwner
 	private string RecruitBlockReason(Hero recruiter, Clan target, Kingdom kingdom, KingdomCivilWarKingdomState state)
 	{
 		if (recruiter?.Clan == null || !PoliticalClan(target, kingdom) || kingdom == null || recruiter.Clan.Kingdom != kingdom || target == Clan.PlayerClan || target == kingdom.RulingClan)
-			return "当前对象不满足派系招募条件。";
-		if (state != null && state.Factions.Any(x => x.Stage == KingdomCivilWarStage.OpenWar)) return "内战期间不能招募或换派。";
-		if (state != null && state.Factions.Any(x => x.LeaderClanId == target.StringId)) return "派系领袖不会被游说。";
+			return KingdomCivilWarTexts.Raw("KW_Raw_127");
+		if (state != null && state.Factions.Any(x => x.Stage == KingdomCivilWarStage.OpenWar)) return KingdomCivilWarTexts.Raw("KW_Raw_139");
+		if (state != null && state.Factions.Any(x => x.LeaderClanId == target.StringId)) return KingdomCivilWarTexts.Raw("KW_Raw_140");
 		KingdomCivilWarClanState targetRecord = null;
 		state?.Clans.TryGetValue(target.StringId ?? "", out targetRecord);
-		if (targetRecord != null && targetRecord.Side != KingdomCivilWarSide.Middle) return "该家族已有派系，须先退出。";
-		if (_storage.ClanExitUntilDay.TryGetValue(target.StringId ?? "", out int exitUntil) && CivilWarWorld.CurrentDay() < exitUntil) return "该家族刚退出派系，冷却至第 " + exitUntil + " 天，暂不能被招募。";
+		if (targetRecord != null && targetRecord.Side != KingdomCivilWarSide.Middle) return KingdomCivilWarTexts.Raw("KW_Raw_141");
+		if (_storage.ClanExitUntilDay.TryGetValue(target.StringId ?? "", out int exitUntil) && CivilWarWorld.CurrentDay() < exitUntil) return KingdomCivilWarTexts.Raw("KW_Raw_142") + exitUntil + KingdomCivilWarTexts.Raw("KW_Raw_143");
 		if (CivilWarWorld.IsPlayerRuled(kingdom) && recruiter.Clan == kingdom.RulingClan) return "";
 		KingdomCivilWarClanState source = null;
-		if (state == null || !state.Clans.TryGetValue(recruiter.Clan.StringId ?? "", out source) || source.Side == KingdomCivilWarSide.Middle) return "招募者没有明确派系。";
-		if (source.Side == KingdomCivilWarSide.Opposition && !IsPreWar(FactionOfClan(state, recruiter.Clan))) return "招募者所在派系已无法招募。";
+		if (state == null || !state.Clans.TryGetValue(recruiter.Clan.StringId ?? "", out source) || source.Side == KingdomCivilWarSide.Middle) return KingdomCivilWarTexts.Raw("KW_Raw_144");
+		if (source.Side == KingdomCivilWarSide.Opposition && !IsPreWar(FactionOfClan(state, recruiter.Clan))) return KingdomCivilWarTexts.Raw("KW_Raw_129");
 		return "";
 	}
 
@@ -82,22 +82,22 @@ internal sealed partial class KingdomCivilWarOwner
 		if (clan == Clan.PlayerClan || clan == kingdom.RulingClan || !PoliticalClan(clan, kingdom)) return "";
 		var state = Find(kingdom);
 		if (state != null && state.Factions.Any(x => x.Stage == KingdomCivilWarStage.OpenWar))
-			return "【派系运行时事实】王国正处于内战期间，家族的派系站位不能变动，不得答应任何加入、退出或招募派系的请求。";
+			return KingdomCivilWarTexts.Prompt("KW_Prompt_049");
 		KingdomCivilWarClanState record = null;
 		state?.Clans.TryGetValue(clan.StringId ?? "", out record);
 		KingdomCivilWarFactionState faction = FactionOfClan(state, clan);
-		string stance = record == null || record.Side == KingdomCivilWarSide.Middle ? "中立"
-			: record.Side == KingdomCivilWarSide.Crown ? "王室派"
-			: faction == null ? "反对派" : "反对派（" + FactionName(faction, CivilWarCatalog.FindDemand(faction.DemandId)) + "）";
+		string stance = record == null || record.Side == KingdomCivilWarSide.Middle ? KingdomCivilWarTexts.Prompt("KW_Prompt_050")
+			: record.Side == KingdomCivilWarSide.Crown ? KingdomCivilWarTexts.Prompt("KW_Prompt_051")
+			: faction == null ? KingdomCivilWarTexts.Prompt("KW_Prompt_052") : KingdomCivilWarTexts.Prompt("KW_Prompt_053") + FactionName(faction, CivilWarCatalog.FindDemand(faction.DemandId)) + "）";
 		int relation = CivilWarWorld.Relation(clan.Leader, kingdom.Leader);
 		float factor = CivilWarFactionRules.JoinRelationFactor(relation);
-		var text = new StringBuilder("【派系运行时事实】你的家族目前站位：").Append(stance)
-			.Append("；族长与国王关系 ").Append(relation).Append("（").Append(factor >= 0.95f ? "一般或更差" : factor > 0.5f ? "较好" : "很好").Append("）。");
-		if (factor < 1f) text.Append("关系越好越不愿倒向反对派，但并非绝对不会；被充分说服或利益足够时仍可能同意。");
-		if (clan.Leader != target) text.Append("你不是族长，不能代表家族加入或退出派系。");
-		else if (faction != null && faction.LeaderClanId == clan.StringId) text.Append("你是该派系的领袖，不会被他人招募；若你自己决定退出，领导权将移交继任者。");
+		var text = new StringBuilder(KingdomCivilWarTexts.Prompt("KW_Prompt_054")).Append(stance)
+			.Append(KingdomCivilWarTexts.Prompt("KW_Prompt_055")).Append(relation).Append("（").Append(factor >= 0.95f ? KingdomCivilWarTexts.Prompt("KW_Prompt_056") : factor > 0.5f ? KingdomCivilWarTexts.Prompt("KW_Prompt_057") : KingdomCivilWarTexts.Prompt("KW_Prompt_058")).Append("）。");
+		if (factor < 1f) text.Append(KingdomCivilWarTexts.Prompt("KW_Prompt_059"));
+		if (clan.Leader != target) text.Append(KingdomCivilWarTexts.Prompt("KW_Prompt_060"));
+		else if (faction != null && faction.LeaderClanId == clan.StringId) text.Append(KingdomCivilWarTexts.Prompt("KW_Prompt_061"));
 		if (_storage.ClanExitUntilDay.TryGetValue(clan.StringId ?? "", out int until) && CivilWarWorld.CurrentDay() < until)
-			text.Append("你的家族刚退出派系，冷却至第 ").Append(until).Append(" 天，期间不能再加入派系。");
+			text.Append(KingdomCivilWarTexts.Prompt("KW_Prompt_062")).Append(until).Append(KingdomCivilWarTexts.Prompt("KW_Prompt_063"));
 		return text.ToString();
 	}
 }

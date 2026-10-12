@@ -1,0 +1,6 @@
+{
+  "Version": 1,
+  "ModuleId": "prosperityPerDay",
+  "UnderstandingPrompt": "Prosperity is mainly affected by trade, tax burdens, industry and commerce, market confidence, development investment and war damage. When policies continuously change the scale of towns' economies through these mechanisms, prosperity is a direct consequence.",
+  "EvaluationPrompt": "Judge daily changes per affected town. Mild impact: ±0.5 to ±2; regular policies: ±2 to ±5; clear economic policies, trade stimulus, damage from tax burdens or war damage: ±5 to ±10; major nationwide investment or disasters: ±12 to ±24; extreme prosperity projects, severe plunder, blockades, famine or national economic catastrophes: ±24 to ±36."
+}

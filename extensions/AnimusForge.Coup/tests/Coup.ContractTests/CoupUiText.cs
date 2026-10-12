@@ -4,6 +4,15 @@ namespace AnimusForge.CoupSystem;
 // The production implementation resolves these strings through Bannerlord TextObject.
 internal static class CoupUiText
 {
+    internal static string PoliticalSettlementComplete => "Coup political settlement is complete.";
+    internal static string MinimumTroopsConflict(int minimumTroops, int streetLimit)
+        => "篡位配置冲突：最低突击队人数" + minimumTroops + "超过街道上限" + streetLimit + "，请在 MCM 中调整。";
+    internal static string InsufficientTier(int current, int required)
+        => "家族等级不足：" + current + "／" + required + "级。";
+    internal static string InsufficientInfluence(string current, int required)
+        => "影响力不足：" + current + "／" + required + "（仅检查，不扣除）。";
+    internal static string InsufficientRegulars(int required, int current)
+        => "至少需要" + required + "名健康普通士兵，其中1人留守接应；当前" + current + "人。";
     internal static string FormerRulerHeld => "is captured and still held by your party.";
     internal static string FormerRulerNoLongerHeld => "was captured but is no longer held by your party.";
     internal static string FormerRulerReleased => "was forced to abdicate; you chose not to capture him.";

@@ -9,6 +9,9 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Program.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Knowledge/Host/KnowledgeSourceTexts.cs" Link="KnowledgeSourceTexts.cs" />
+    <Reference Include="Newtonsoft.Json"><HintPath>../../../../local/dotnet/8.0.425/sdk/8.0.425/Newtonsoft.Json.dll</HintPath></Reference>
+    <EmbeddedResource Include="../../../../content/modules/AF.Module.Knowledge/ModuleData/KnowledgeSourceTexts.json" LogicalName="AnimusForge.Knowledge.SourceTexts.json" />
     <Compile Include="../../../../src/modules/AF.Module.Knowledge/Entities/EntityNameMatcher.cs" Link="EntityNameMatcher.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Knowledge/Entities/EntityInjectionAllocator.cs" Link="EntityInjectionAllocator.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Knowledge/Entities/EntityMentionList.cs" Link="EntityMentionList.cs" />

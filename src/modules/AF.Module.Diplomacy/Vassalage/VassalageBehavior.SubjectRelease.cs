@@ -1,3 +1,4 @@
+using AnimusForge;
 using System;
 using System.Collections.Generic;
 using TaleWorlds.CampaignSystem;
@@ -37,7 +38,7 @@ internal sealed partial class VassalageBehavior
         string current = GetPlayerSubjectReleaseToken(suzerain, subject);
         if (string.IsNullOrWhiteSpace(expectedToken) || current != expectedToken)
         {
-            reason = "释放未执行：玩家国王权限、直属臣属关系或条约凭证已经变化。";
+            reason = DiplomacyMiscPromptTexts.Get("SubjectRelease_PreconditionsChanged", "Release not executed: player ruler authority, direct vassal relationship, or treaty token has changed.");
             Logger.Log("Vassalage", "subject release rejected suzerain=" + suzerain?.StringId
                 + " subject=" + subject?.StringId + " reason=authority_or_agreement_changed");
             return false;
@@ -45,11 +46,11 @@ internal sealed partial class VassalageBehavior
         var agreement = GetAnyVassalAgreement(subject);
         // Preserve native wars and other agreements. The existing owner ends all
         // tribute, independence, policy and pending protection obligations.
-        reason = GetKingdomDisplayName(suzerain, "宗主国") + "已主动释放"
-            + GetKingdomDisplayName(subject, "臣属国") + "，臣属条约终止，该国恢复独立。";
+        reason = string.Format(DiplomacyMiscPromptTexts.Get("SubjectRelease_VassalageTerminatedFormat", "{0} has actively released {1}; the vassalage treaty is terminated and the kingdom restores independence."), GetKingdomDisplayName(suzerain, DiplomacyMiscPromptTexts.Get("Vassalage_SuzerainKingdom", "suzerain kingdom")), GetKingdomDisplayName(subject, DiplomacyMiscPromptTexts.Get("Vassalage_SubjectKingdom", "subject kingdom")));
+
         BreakAgreement(agreement, "suzerain_released_subject", reason);
         bool released = GetAnyVassalAgreement(subject) == null;
-        if (!released) reason = "释放未确认：臣属关系仍然存在。";
+        if (!released) reason = DiplomacyMiscPromptTexts.Get("SubjectRelease_UnconfirmedStillExists", "Release unconfirmed: vassalage relationship still exists.");
         return released;
     }
 

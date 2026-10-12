@@ -199,7 +199,7 @@ internal sealed partial class KingdomCivilWarOwner
 		if (!string.IsNullOrWhiteSpace(text)) AddHistory(state, week, text);
 		if (withdrawnClans != null)
 		{
-			string withdrawal = string.Join("、", withdrawnClans) + "因" + source.Name + "等事件积累不满，撤回对王室的支持，转为中立";
+			string withdrawal = string.Join("、", withdrawnClans) + KingdomCivilWarTexts.Raw("KW_Raw_113") + source.Name + KingdomCivilWarTexts.Raw("KW_Raw_114");
 			// Panel projection of the same fact. The raw `withdrawal` above still feeds the weekly material
 			// and the log; only the chronicle entry renders the localized sentence, labelled by source id.
 			string withdrawalDisplay = CivilWarUiText.T("AF_KINGDOM_CW_Chronicle_SupportWithdrawn", "{CLANS} grow discontent over {SOURCE} and withdraw their support for the crown, turning neutral", ("CLANS", string.Join(", ", withdrawnClans)), ("SOURCE", CivilWarUiText.SourceName(source.Id, source.Name)));
@@ -346,7 +346,7 @@ internal sealed partial class KingdomCivilWarOwner
 		ApplyFoundingRelationLoss(kingdom, leader);
 		string name = FactionName(faction, demand);
 		AddHistory(state, week, CivilWarUiText.T("AF_KINGDOM_CW_Core_FactionFounded", "{FACTION} is founded; demand: {DEMAND}", ("FACTION", name), ("DEMAND", FormatDemand(demand, faction.TargetName))));
-		PublishPoliticalResult(kingdom, state, faction, leader, faction.Id + ":founded", "反对派成立：" + name + "，诉求" + FormatDemand(demand, faction.TargetName),
+		PublishPoliticalResult(kingdom, state, faction, leader, faction.Id + ":founded", KingdomCivilWarTexts.Raw("KW_Raw_115") + name + KingdomCivilWarTexts.Raw("KW_Raw_116") + FormatDemand(demand, faction.TargetName),
 			displayText: CivilWarUiText.T("AF_KINGDOM_CW_Chronicle_OppositionFounded", "An opposition faction is founded: {FACTION}, demanding {DEMAND}", ("FACTION", FactionDisplayName(faction, demand)), ("DEMAND", CivilWarUiText.DemandDisplayText(demand, ResolveDemandTargetDisplay(demand, faction, kingdom)))));
 	}
 
@@ -425,7 +425,7 @@ internal sealed partial class KingdomCivilWarOwner
 			// Another faction may already claim the throne; then this one keeps its demand.
 			if (usurp != null && !state.Factions.Any(x => x != faction && x.DemandId == usurp.Id))
 			{
-				faction.DemandId = usurp.Id; faction.WarGoal = (int)CivilWarWarGoal.Usurp; faction.TargetId = ""; faction.TargetName = "王位"; demand = usurp;
+				faction.DemandId = usurp.Id; faction.WarGoal = (int)CivilWarWarGoal.Usurp; faction.TargetId = ""; faction.TargetName = KingdomCivilWarTexts.Raw("KW_Raw_110"); demand = usurp;
 				AddHistory(state, week, CivilWarUiText.T("AF_KINGDOM_CW_Core_DemandTurnedToAbdication", "{FACTION} has been refused repeatedly and now demands the king's abdication", ("FACTION", name)));
 			}
 		}
@@ -553,7 +553,7 @@ internal sealed partial class KingdomCivilWarOwner
 		if (leader == null || leader.IsEliminated) faction.RebelKingdomDestroyed = true;
 		if (string.IsNullOrWhiteSpace(faction.RebelKingdomId))
 		{
-			if (leader?.Kingdom != kingdom) { faction.ResolutionNeedsReview = true; faction.ResolutionError = "待建国领袖已离开原王国，保留状态核查。"; return; }
+			if (leader?.Kingdom != kingdom) { faction.ResolutionNeedsReview = true; faction.ResolutionError = KingdomCivilWarTexts.Raw("KW_Raw_117"); return; }
 			if (_activeNamingRequests.Add(faction.Id)) Host.QueueRebellion(kingdom, leader, faction.WarClanIds.Select(CivilWarWorld.FindClan).Where(x => x != null && x != leader && x != Clan.PlayerClan && x.Kingdom == kingdom).ToList(), faction.Id, true);
 			// WarStartWeek is only set by the creation callback; without it there is no war to resolve.
 			if (CivilWarWorld.CurrentDay() <= faction.WarRequestDay + tuning.WarRequestTimeoutWeeks * 7) return;
@@ -613,11 +613,11 @@ internal sealed partial class KingdomCivilWarOwner
 		IndexOppositionSettlements(state, faction);
 		faction.RebelFortShareAtStart = CivilWarWorld.FortificationCount(rebelKingdom) / (float)Math.Max(1, CivilWarWorld.FortificationCount(kingdom));
 		Host.AdjustStability(kingdom, -8, "civil_war_outbreak");
-		Host.ApplyPrestige(kingdom, -10, "内战爆发");
+		Host.ApplyPrestige(kingdom, -10, KingdomCivilWarTexts.Raw("KW_Raw_118"));
 		CivilWarDemandDef outbreakDemand = CivilWarCatalog.FindDemand(faction.DemandId);
 		string name = FactionName(faction, outbreakDemand);
 		AddHistory(state, week, CivilWarUiText.T("AF_KINGDOM_CW_Core_OutbreakHistory", "{FACTION} establishes {REBEL}; the civil war breaks out", ("FACTION", name), ("REBEL", CivilWarWorld.KingdomName(rebelKingdom))));
-		PublishPoliticalResult(kingdom, state, faction, CivilWarWorld.FindClan(faction.LeaderClanId), faction.Id + ":war:outbreak", "内战爆发：" + name + "建立" + CivilWarWorld.KingdomName(rebelKingdom) + "，与" + CivilWarWorld.KingdomName(kingdom) + "开战",
+		PublishPoliticalResult(kingdom, state, faction, CivilWarWorld.FindClan(faction.LeaderClanId), faction.Id + ":war:outbreak", KingdomCivilWarTexts.Raw("KW_Raw_119") + name + KingdomCivilWarTexts.Raw("KW_Raw_120") + CivilWarWorld.KingdomName(rebelKingdom) + KingdomCivilWarTexts.Raw("KW_Raw_121") + CivilWarWorld.KingdomName(kingdom) + KingdomCivilWarTexts.Raw("KW_Raw_122"),
 			displayText: CivilWarUiText.T("AF_KINGDOM_CW_Chronicle_Outbreak", "{FACTION} establishes {REBEL} and goes to war with {KINGDOM}; the civil war breaks out", ("FACTION", FactionDisplayName(faction, outbreakDemand)), ("REBEL", CivilWarWorld.KingdomName(rebelKingdom)), ("KINGDOM", CivilWarWorld.KingdomName(kingdom))));
 		Revision++;
 		if (faction.PlayerFollowPending) HasPendingFollowPrompt = true;
@@ -747,12 +747,12 @@ internal sealed partial class KingdomCivilWarOwner
 		if (restoration && outcome?.Id == "rebels_usurp" && !faction.EndedByPeace && !faction.RebelKingdomDestroyed)
 			faction.RestorationVictoryConfirmed = true;
 		CivilWarEffectContext ctx = BuildContext(kingdom, state, faction, demand, leader, week);
-		string reason = "无可用结局";
+		string reason = KingdomCivilWarTexts.Raw("KW_Raw_123");
 		string effectId = restoration && faction.RestorationVictoryConfirmed && outcome?.Id == "rebels_usurp"
 			? CivilWarEffectIds.RestoreDynasty : outcome?.EffectId;
 		bool applied = outcome != null && CivilWarEffects.TryApply(effectId, ctx, out reason);
 		string name = FactionName(faction, demand);
-		string text = applied ? name + "的内战结束（" + outcome.Name + "）：" + string.Join("；", ctx.Notes) : name + "的内战结算失败：" + (reason ?? "无可用结局");
+		string text = applied ? name + KingdomCivilWarTexts.Raw("KW_Raw_124") + outcome.Name + "）：" + string.Join("；", ctx.Notes) : name + KingdomCivilWarTexts.Raw("KW_Raw_125") + (reason ?? KingdomCivilWarTexts.Raw("KW_Raw_123"));
 		// Panel projection of the same fact. `outcome.Name` and `ctx.Notes` are raw rule text, so both render
 		// through their projections here; the raw `text` above keeps feeding the political-result material,
 		// the saved receipt and the AFEF facts.
@@ -872,7 +872,7 @@ internal sealed partial class KingdomCivilWarOwner
 			// The speaker is not in a pre-war faction: only fall back when the choice is unambiguous, never guess the strongest one.
 			var open = state?.Factions.Where(IsPreWar).Take(2).ToList();
 			faction = open != null && open.Count == 1 ? open[0] : null;
-			if (faction == null) { message = "无法确定要加入哪个派系，请先明确说明是哪个派系。"; return false; }
+			if (faction == null) { message = KingdomCivilWarTexts.Raw("KW_Raw_126"); return false; }
 		}
 		var result = Execute(new CivilWarActionRequest { OperationId = Guid.NewGuid().ToString("N"), KingdomId = kingdom?.StringId ?? "",
 			FactionId = faction?.Id ?? "", Action = side == KingdomCivilWarSide.Crown ? CivilWarAction.JoinCrown : CivilWarAction.JoinOpposition }, Clan.PlayerClan);
@@ -891,7 +891,7 @@ internal sealed partial class KingdomCivilWarOwner
 		KingdomCivilWarKingdomState state = kingdom == null ? null : GetOrCreate(kingdom, CivilWarWorld.CurrentWeek());
 		// One shared precondition check: the dialogue tag filter (ApplicableDialogueActions) uses the same method, so they cannot drift apart.
 		string block = RecruitBlockReason(recruiter, target, kingdom, state);
-		if (state == null || block.Length > 0) { message = block.Length > 0 ? block : "当前对象不满足派系招募条件。"; return false; }
+		if (state == null || block.Length > 0) { message = block.Length > 0 ? block : KingdomCivilWarTexts.Raw("KW_Raw_127"); return false; }
 		int week = CivilWarWorld.CurrentWeek();
 		KingdomCivilWarClanState record = GetOrCreateClan(state, target, week);
 		bool crown = CivilWarWorld.IsPlayerRuled(kingdom) && recruiter.Clan == kingdom.RulingClan;
@@ -901,17 +901,17 @@ internal sealed partial class KingdomCivilWarOwner
 		if (crown || state.Clans[recruiter.Clan.StringId].Side == KingdomCivilWarSide.Crown)
 		{
 			record.Side = KingdomCivilWarSide.Crown; record.FactionId = "";
-			message = CivilWarWorld.ClanName(target) + "加入了王室派。";
+			message = CivilWarWorld.ClanName(target) + KingdomCivilWarTexts.Raw("KW_Raw_128");
 			display = CivilWarUiText.T("AF_KINGDOM_CW_Chronicle_RecruitedCrown", "{CLAN} joins the crown faction.", ("CLAN", CivilWarWorld.ClanName(target)));
 		}
 		else
 		{
 			KingdomCivilWarFactionState faction = FactionOfClan(state, recruiter.Clan);
-			if (faction == null || !IsPreWar(faction)) { message = "招募者所在派系已无法招募。"; return false; }
+			if (faction == null || !IsPreWar(faction)) { message = KingdomCivilWarTexts.Raw("KW_Raw_129"); return false; }
 			record.Side = KingdomCivilWarSide.Opposition; record.FactionId = faction.Id;
 			AddGrievanceToFaction(state, faction, "demand_refused", 8f, 0f);
 			CivilWarDemandDef demand = CivilWarCatalog.FindDemand(faction.DemandId);
-			message = CivilWarWorld.ClanName(target) + "加入了" + FactionName(faction, demand) + "。";
+			message = CivilWarWorld.ClanName(target) + KingdomCivilWarTexts.Raw("KW_Raw_130") + FactionName(faction, demand) + "。";
 			display = CivilWarUiText.T("AF_KINGDOM_CW_Chronicle_RecruitedFaction", "{CLAN} joins {FACTION}.", ("CLAN", CivilWarWorld.ClanName(target)), ("FACTION", FactionDisplayName(faction, demand)));
 		}
 		record.SideSinceWeek = week; record.SideSinceDay = CivilWarWorld.CurrentDay();
@@ -933,7 +933,7 @@ internal sealed partial class KingdomCivilWarOwner
 	{
 		message = "";
 		displayMessage = "";
-		if (kingdom == null || clan == null) { message = "当前对象无法退出阵营。"; return false; }
+		if (kingdom == null || clan == null) { message = KingdomCivilWarTexts.Raw("KW_Raw_131"); return false; }
 		var result = Execute(new CivilWarActionRequest { OperationId = Guid.NewGuid().ToString("N"), KingdomId = kingdom.StringId, Action = CivilWarAction.Leave }, clan);
 		message = result.Message;
 		displayMessage = CivilWarUiText.ResultNotice(result);
@@ -952,7 +952,7 @@ internal sealed partial class KingdomCivilWarOwner
 		KingdomCivilWarFactionState faction = speaker?.Clan == null ? null : FactionOfClan(state, speaker.Clan);
 		if (kingdom == null || faction == null || !IsPreWar(faction) || faction.LeaderClanId != speaker.Clan.StringId || PlayerKingdomRebellionImmunity.ShouldProtectKingdom(kingdom)
 			|| Clan.PlayerClan == null || FactionOfClan(state, Clan.PlayerClan) != faction)
-		{ message = "当前不满足引爆内战的条件。"; return false; }
+		{ message = KingdomCivilWarTexts.Raw("KW_Raw_132"); return false; }
 		var result = Execute(new CivilWarActionRequest { OperationId = Guid.NewGuid().ToString("N"), KingdomId = kingdom.StringId,
 			FactionId = faction.Id, Action = CivilWarAction.Detonate }, Clan.PlayerClan, true);
 		message = result.Message;
@@ -1196,7 +1196,7 @@ internal sealed partial class KingdomCivilWarOwner
 		// Localized faction tag comes from the shared helper (AF_KINGDOM_CW_FactionTag_*). The Chinese
 		// suffix strip below still applies to the zh-CN tag ("反战派" -> "反战"); English tags pass through whole.
 		string tag = CivilWarUiText.DemandTag(demand);
-		string demandWord = tag.EndsWith("派", StringComparison.Ordinal) ? tag.Substring(0, tag.Length - 1) : tag;
+		string demandWord = tag.EndsWith(KingdomCivilWarTexts.Raw("KW_Raw_133"), StringComparison.Ordinal) ? tag.Substring(0, tag.Length - 1) : tag;
 		bool playerFaction = faction.Id == kingdomPanel.PlayerFactionId;
 		bool playerLeader = playerFaction && kingdomPanel.Role == CivilWarPanelRole.Leader;
 		CivilWarPanelFaction panel = new CivilWarPanelFaction
@@ -1388,8 +1388,8 @@ internal sealed partial class KingdomCivilWarOwner
 	private static string FactionTag(CivilWarDemandDef demand)
 	{
 		string name = demand?.FactionNameFormat ?? "";
-		int index = name.IndexOf("为首的", StringComparison.Ordinal);
-		return index >= 0 ? name.Substring(index + 3) : "反对派";
+		int index = name.IndexOf(KingdomCivilWarTexts.Raw("KW_Raw_134"), StringComparison.Ordinal);
+		return index >= 0 ? name.Substring(index + 3) : KingdomCivilWarTexts.Raw("KW_Raw_135");
 	}
 
 	private static string FactionName(KingdomCivilWarFactionState faction, CivilWarDemandDef demand)
@@ -1551,7 +1551,7 @@ internal sealed partial class KingdomCivilWarOwner
 	{
 		if (demand == null) return "";
 		if (demand.Target == CivilWarDemandTarget.EnemyKingdom) return CivilWarWorld.KingdomName(StrongestForeignEnemy(kingdom, state));
-		if (demand.Target == CivilWarDemandTarget.ImposedPolicy) return "现行政策";
+		if (demand.Target == CivilWarDemandTarget.ImposedPolicy) return KingdomCivilWarTexts.Raw("KW_Raw_136");
 		return "";
 	}
 
@@ -1584,7 +1584,7 @@ internal sealed partial class KingdomCivilWarOwner
 
 	private static string FormatDemand(CivilWarDemandDef demand, string target)
 	{
-		return (demand == null ? "未命名诉求" : demand.Text).Replace("{target}", string.IsNullOrWhiteSpace(target) ? "目标" : target);
+		return (demand == null ? KingdomCivilWarTexts.Raw("KW_Raw_137") : demand.Text).Replace("{target}", string.IsNullOrWhiteSpace(target) ? KingdomCivilWarTexts.Raw("KW_Raw_138") : target);
 	}
 
 	private CivilWarEffectContext BuildContext(Kingdom kingdom, KingdomCivilWarKingdomState state, KingdomCivilWarFactionState faction, CivilWarDemandDef demand, Clan leader, int week)

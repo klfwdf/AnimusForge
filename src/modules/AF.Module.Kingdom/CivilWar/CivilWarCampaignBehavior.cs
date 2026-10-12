@@ -248,6 +248,6 @@ internal sealed class CivilWarCampaignBehavior : CampaignBehaviorBase
 		if (kingdom == null || string.IsNullOrWhiteSpace(text)) return;
 		string hash;
 		using (var sha = SHA256.Create()) hash = BitConverter.ToString(sha.ComputeHash(Encoding.UTF8.GetBytes(text))).Replace("-", "");
-		MyBehavior.RecordEventSourceMaterialForExternal("civil_war", "内战 - " + (kingdom.Name?.ToString() ?? "王国"), text, "civil_war:" + (kingdom.StringId ?? "") + ":" + Math.Max(0, weekIndex) + ":" + hash, kingdom.StringId ?? "", true, true);
+		MyBehavior.RecordEventSourceMaterialForExternal("civil_war", KingdomCivilWarTexts.Raw("KW_Raw_033") + (kingdom.Name?.ToString() ?? KingdomCivilWarTexts.Raw("KW_Raw_034")), text, "civil_war:" + (kingdom.StringId ?? "") + ":" + Math.Max(0, weekIndex) + ":" + hash, kingdom.StringId ?? "", true, true);
 	}
 }

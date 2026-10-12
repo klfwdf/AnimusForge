@@ -1,3 +1,4 @@
+using AnimusForge;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,19 +14,19 @@ internal sealed partial class VassalageBehavior
         reason = "";
         if (!IsValidKingdom(suzerain) || !IsValidKingdom(subject) || suzerain == subject
             || suzerain.RulingClan?.Leader?.IsAlive != true || subject.RulingClan?.Leader?.IsAlive != true)
-        { reason = "臣属条约未成立：当事国或统治者已失效。"; return false; }
+        { reason = DiplomacyMiscPromptTexts.Get("FormalTreaty_InvalidPartiesOrRuler", "Vassalage treaty not established: participating kingdoms or ruler is invalid."); return false; }
         if (type != AfVassalageType.Tributary && type != AfVassalageType.Garrison && type != AfVassalageType.Vassal)
-        { reason = "臣属条约未成立：类型不支持。"; return false; }
+        { reason = DiplomacyMiscPromptTexts.Get("FormalTreaty_UnsupportedType", "Vassalage treaty not established: treaty type is unsupported."); return false; }
         if (GetAnyVassalAgreement(subject) != null || WouldCreateVassalageCycle(suzerain.StringId, subject.StringId, out _))
-        { reason = "臣属条约未成立：已有臣属关系或形成循环。"; return false; }
+        { reason = DiplomacyMiscPromptTexts.Get("FormalTreaty_ExistingOrCircular", "Vassalage treaty not established: existing vassalage or circular relationship."); return false; }
         var agreement = new VassalageAgreement { SuzerainKingdomId = suzerain.StringId, VassalKingdomId = subject.StringId,
             Type = type, CreatedDay = GetCurrentCampaignDay(), NegotiatedByHeroId = subject.RulingClan.Leader.StringId,
             EstablishedNoticeShown = suzerain != GetPlayerKingdom(), FormalInitialSynchronizationPending = true };
         var suzerainEnemies = GetKingdomWarEnemies(suzerain).Where(x => x != subject).ToList();
         var subjectEnemies = GetKingdomWarEnemies(subject).Where(x => x != suzerain).ToList();
         _agreementsByVassalId[subject.StringId] = agreement;
-        reason = GetKingdomDisplayName(subject, "臣属国") + "已正式承认" + GetKingdomDisplayName(suzerain, "宗主国")
-            + "的宗主权，类型：" + GetVassalageTypeDisplayName(type) + "。";
+        string text = string.Format(DiplomacyMiscPromptTexts.Get("FormalTreaty_FullDeclarationFormat", "{0} has officially recognized the suzerainty of {1}; treaty type: {2}."), GetKingdomDisplayName(subject, DiplomacyMiscPromptTexts.Get("Vassalage_SubjectKingdom", "subject kingdom")), GetKingdomDisplayName(suzerain, DiplomacyMiscPromptTexts.Get("Vassalage_SuzerainKingdom", "suzerain kingdom")), GetVassalageTypeDisplayName(type));
+
         try
         {
             if (UsesSubjectIndependence(type)) EnsureGarrisonObedience(agreement);
@@ -38,7 +39,7 @@ internal sealed partial class VassalageBehavior
         {
             // The persisted treaty is already effective. Maintenance resumes
             // peace/war synchronization; retrying acceptance must not recreate it.
-            reason += "和平与战争同步暂缓，待条约维护恢复。";
+reason += DiplomacyMiscPromptTexts.Get("FormalTreaty_PeaceWarSyncDeferred", "Peace and war synchronization deferred, awaiting treaty maintenance restoration.");
             Logger.Log("Vassalage", "formal treaty synchronization deferred: " + ex.Message);
         }
         Logger.Log("Vassalage", "formal treaty executed suzerain=" + suzerain.StringId + " subject=" + subject.StringId + " type=" + type);
@@ -72,7 +73,7 @@ internal sealed partial class VassalageBehavior
             if (!IsValidKingdom(suzerain) || !IsValidKingdom(subject)) continue;
             try
             {
-                TryBreakSubjectAtCurrentThreshold(agreement, "subject_ruler_relation_threshold", "正式臣属履约复核");
+                TryBreakSubjectAtCurrentThreshold(agreement, "subject_ruler_relation_threshold", DiplomacyMiscPromptTexts.Get("FormalTreaty_PerformanceReview", "formal vassal performance review"));
                 if (GetAnyVassalAgreement(subject) != agreement) continue;
                 MakePeaceIfNeeded(suzerain, subject, "formal_subject_mutual_peace");
                 SynchronizeCurrentWarsForNewAgreement(suzerain, subject, Enemies(suzerain).Where(x => x != subject).ToList(),

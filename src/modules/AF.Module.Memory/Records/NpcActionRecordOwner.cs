@@ -183,7 +183,7 @@ internal void RebuildNpcRecentActionStableKeyIndex(Dictionary<string,List<NpcAct
     }
 
 
-internal string BuildSummary(MemoryBusinessStateOwner state, string npcActionHeroKey, Func<string> actorName, bool recentOnly, Func<int> currentDay, Func<NpcActionEntry,string> metadata, Func<string,string> stripMarker)
+internal string BuildSummary(MemoryBusinessStateOwner state, string npcActionHeroKey, Func<string> actorName, bool recentOnly, Func<int> currentDay, Func<NpcActionEntry,string> metadata, Func<string,string> stripMarker, Func<NpcActionEntry, string, string> projectEntry = null)
 	{
 		if (string.IsNullOrWhiteSpace(npcActionHeroKey))
 		{
@@ -206,19 +206,19 @@ internal string BuildSummary(MemoryBusinessStateOwner state, string npcActionHer
 			{
 				string summary = stripMarker(summaryState.Summary.Trim());
 				List<NpcActionEntry> pendingActions = list.Where((NpcActionEntry x) => MemoryBusinessStateOwner.IsNpcActionAfterSummaryCursor(x, summaryState)).ToList();
-				string pendingRaw = RenderEntries(actorName, pendingActions, metadata, stripMarker);
+				string pendingRaw = RenderEntries(actorName, pendingActions, metadata, stripMarker, projectEntry);
 				if (!string.IsNullOrWhiteSpace(pendingRaw))
 				{
-					summary += "\n\n【尚未压缩的新重大履历原始记录】\n" + pendingRaw;
+					summary += MemoryTextResources.Prompt("MEM_Prompt_070") + pendingRaw;
 				}
 				return summary;
 			}
-			return RenderEntries(actorName, list, metadata, stripMarker);
+			return RenderEntries(actorName, list, metadata, stripMarker, projectEntry);
 		}
-		return RenderEntries(actorName, list, metadata, stripMarker);
+		return RenderEntries(actorName, list, metadata, stripMarker, projectEntry);
 	}
 
-internal static string RenderEntries(Func<string> actorName, List<NpcActionEntry> entries, Func<NpcActionEntry,string> metadata, Func<string,string> stripMarker)
+internal static string RenderEntries(Func<string> actorName, List<NpcActionEntry> entries, Func<NpcActionEntry,string> metadata, Func<string,string> stripMarker, Func<NpcActionEntry, string, string> projectEntry = null)
 	{
 		if (entries == null || entries.Count <= 0)
 		{
@@ -233,7 +233,7 @@ internal static string RenderEntries(Func<string> actorName, List<NpcActionEntry
 			{
 				continue;
 			}
-			string text2 = !string.IsNullOrWhiteSpace(item.GameDate) ? item.GameDate.Trim() : ("第 " + item.Day + " 日");
+			string text2 = !string.IsNullOrWhiteSpace(item.GameDate) ? item.GameDate.Trim() : (MemoryTextResources.Prompt("MEM_Prompt_071") + item.Day + MemoryTextResources.Prompt("MEM_Prompt_072"));
 			if (item.Day != num || !string.Equals(text, text2, StringComparison.Ordinal))
 			{
 				if (stringBuilder.Length > 0)
@@ -244,7 +244,7 @@ internal static string RenderEntries(Func<string> actorName, List<NpcActionEntry
 				num = item.Day;
 				text = text2;
 			}
-			stringBuilder.AppendLine("- " + RenderText(actorName(), item.Text, stripMarker) + metadata(item));
+			stringBuilder.AppendLine("- " + (projectEntry?.Invoke(item, actorName()) ?? RenderText(actorName(), item.Text, stripMarker)) + metadata(item));
 		}
 		return stringBuilder.ToString().TrimEnd();
 	}
@@ -259,10 +259,10 @@ internal static string RenderText(string actorName, string rawText, Func<string,
 		string text2 = actorName;
 		if (string.IsNullOrWhiteSpace(text2))
 		{
-			text2 = "该人物";
+			text2 = MemoryTextResources.Raw("MEM_Raw_067");
 		}
 		text = RewriteNpcActionSecondPersonPronouns(text, text2);
-		if (text.StartsWith("你", StringComparison.Ordinal))
+		if (text.StartsWith(MemoryTextResources.Raw("MEM_Raw_068"), StringComparison.Ordinal))
 		{
 			return text2 + text.Substring(1);
 		}
@@ -276,85 +276,85 @@ internal static string RenderText(string actorName, string rawText, Func<string,
 internal static string RewriteNpcActionSecondPersonPronouns(string rawText, string actorName)
 	{
 		string text = (rawText ?? "").Trim();
-		string name = string.IsNullOrWhiteSpace(actorName) ? "该人物" : actorName.Trim();
+		string name = string.IsNullOrWhiteSpace(actorName) ? MemoryTextResources.Raw("MEM_Raw_067") : actorName.Trim();
 		if (string.IsNullOrWhiteSpace(text))
 		{
 			return "";
 		}
 		return text
-			.Replace("你们的", name + "一方的")
-			.Replace("你们", name + "一方")
-			.Replace("你的", name + "的")
-			.Replace("你", name);
+			.Replace(MemoryTextResources.Raw("MEM_Raw_069"), name + MemoryTextResources.Raw("MEM_Raw_070"))
+			.Replace(MemoryTextResources.Raw("MEM_Raw_071"), name + MemoryTextResources.Raw("MEM_Raw_072"))
+			.Replace(MemoryTextResources.Raw("MEM_Raw_073"), name + MemoryTextResources.Raw("MEM_Raw_074"))
+			.Replace(MemoryTextResources.Raw("MEM_Raw_068"), name);
 	}
 
-internal static string BuildMetadata(NpcActionEntry entry, Func<NpcActionEntry,string> settlementName, Func<string,string> heroName, Func<string,string> clanName, Func<string,string> kingdomName)
+internal static string BuildMetadata(NpcActionEntry entry, Func<NpcActionEntry,string> settlementName, Func<string,string> heroName, Func<string,string> clanName, Func<string,string> kingdomName, Func<string,string> actionKindName = null)
 	{
 		if (entry == null)
 		{
 			return "";
 		}
 		List<string> list = new List<string>();
-		string text = WeeklyAggregateEventLineOwner.TranslateNpcActionKindForPrompt(entry.ActionKind);
+		string text = actionKindName != null ? actionKindName(entry.ActionKind) : WeeklyAggregateEventLineOwner.TranslateNpcActionKindForPrompt(entry.ActionKind);
 		if (!string.IsNullOrWhiteSpace(text))
 		{
-			list.Add("这属于" + text);
+			list.Add(MemoryTextResources.Prompt("MEM_Prompt_073") + text);
 		}
 		string text2 = settlementName(entry);
 		if (!string.IsNullOrWhiteSpace(text2))
 		{
-			list.Add("事情发生在" + text2);
+			list.Add(MemoryTextResources.Prompt("MEM_Prompt_074") + text2);
 		}
 		string text3 = heroName(entry.TargetHeroId);
 		if (!string.IsNullOrWhiteSpace(text3))
 		{
-			list.Add("主要涉及的人物是" + text3);
+			list.Add(MemoryTextResources.Prompt("MEM_Prompt_075") + text3);
 		}
 		string text4 = clanName(entry.TargetClanId);
 		if (!string.IsNullOrWhiteSpace(text4))
 		{
-			list.Add("对方家族是" + text4);
+			list.Add(MemoryTextResources.Prompt("MEM_Prompt_076") + text4);
 		}
 		string text5 = kingdomName(entry.TargetKingdomId);
 		if (!string.IsNullOrWhiteSpace(text5))
 		{
-			list.Add("对方所属王国是" + text5);
+			list.Add(MemoryTextResources.Prompt("MEM_Prompt_077") + text5);
 		}
 		string text6 = clanName(entry.SettlementOwnerClanId);
 		string text7 = kingdomName(entry.SettlementOwnerKingdomId);
 		if (!string.IsNullOrWhiteSpace(text6) && !string.IsNullOrWhiteSpace(text7))
 		{
-			list.Add("当时该定居点由" + text6 + "掌控，隶属于" + text7);
+			list.Add(MemoryTextResources.Prompt("MEM_Prompt_078") + text6 + MemoryTextResources.Prompt("MEM_Prompt_079") + text7);
 		}
 		else if (!string.IsNullOrWhiteSpace(text6))
 		{
-			list.Add("当时该定居点由" + text6 + "掌控");
+			list.Add(MemoryTextResources.Prompt("MEM_Prompt_078") + text6 + MemoryTextResources.Prompt("MEM_Prompt_080"));
 		}
 		else if (!string.IsNullOrWhiteSpace(text7))
 		{
-			list.Add("当时该定居点隶属于" + text7);
+			list.Add(MemoryTextResources.Prompt("MEM_Prompt_081") + text7);
 		}
 		string text8 = clanName(entry.PreviousSettlementOwnerClanId);
 		string text9 = kingdomName(entry.PreviousSettlementOwnerKingdomId);
 		if (!string.IsNullOrWhiteSpace(text8) && !string.IsNullOrWhiteSpace(text9))
 		{
-			list.Add("此前这里由" + text8 + "掌控，归属" + text9);
+			list.Add(MemoryTextResources.Prompt("MEM_Prompt_082") + text8 + MemoryTextResources.Prompt("MEM_Prompt_083") + text9);
 		}
 		else if (!string.IsNullOrWhiteSpace(text8))
 		{
-			list.Add("此前这里由" + text8 + "掌控");
+			list.Add(MemoryTextResources.Prompt("MEM_Prompt_082") + text8 + MemoryTextResources.Prompt("MEM_Prompt_080"));
 		}
 		else if (!string.IsNullOrWhiteSpace(text9))
 		{
-			list.Add("此前这里归属" + text9);
+			list.Add(MemoryTextResources.Prompt("MEM_Prompt_084") + text9);
 		}
 		if (entry.Won.HasValue)
 		{
-			list.Add("结果是" + (entry.Won.Value ? "获胜" : "失利"));
+			list.Add(MemoryTextResources.Prompt("MEM_Prompt_085") + (entry.Won.Value ? MemoryTextResources.Prompt("MEM_Prompt_086") : MemoryTextResources.Prompt("MEM_Prompt_087")));
 		}
 		if (entry.IsMajor)
 		{
-			list.Add("这是一件重大行动");
+			list.Add(MemoryTextResources.Prompt("MEM_Prompt_088"));
 		}
 		if (list.Count <= 0)
 		{

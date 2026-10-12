@@ -28,6 +28,14 @@ LEX = re.compile(
     r"|(?P<char>'(?:\\.|[^'\\])')"
 )
 ESCAPE = re.compile(r'\\(?:u([0-9a-fA-F]{4})|U([0-9a-fA-F]{8})|x([0-9a-fA-F]{1,4})|(.))')
+LINE_BREAK = re.compile(r'\r\n|[\r\n]')
+
+
+def source_line_index(source: str) -> tuple[list[str], list[int]]:
+    """Keep physical CR/LF line content and offsets in the same convention."""
+    return LINE_BREAK.split(source), [0, *(match.end() for match in LINE_BREAK.finditer(source))]
+
+
 ID = re.compile(r'\{=([^}]+)\}')
 SINKS = {
     "InquiryData": None, "TextInquiryData": None,
@@ -72,6 +80,19 @@ REVIEWED = {
 
 MCM_SOURCE = "src/AF.GameAdapter.Bannerlord/Configuration/Mcm/DuelSettings.cs"
 RETRY_SOURCE = "src/AF.GameAdapter.Bannerlord/UI/Errors/LlmRetryPrompt.cs"
+
+
+def english_prose_has_chinese(value: str) -> bool:
+    # Exact saved-history envelopes and documented protocol examples retain their
+    # identity in both packages. Chinese inside any other tag or prose still fails.
+    for token in (
+        "[ACTION:SCENE_ACT:动作程序]", "[RELAY:接力编号]",
+        "[AFEF NPC行为补充]", "【AFEF NPC行为补充】",
+        "[AFEF玩家行为补充]", "【AFEF玩家行为补充】",
+        "[AFEF行为补充]", "[AFEF 行为补充]",
+    ):
+        value = value.replace(token, "")
+    return bool(HAN.search(value))
 
 
 def method_region(source: str, code: str, name: str):
@@ -265,10 +286,26 @@ def worldbook_english_index(root: Path):
             key = ("path", relative.as_posix())
         if key:
             index.setdefault(key, []).append(path)
+    exports = base.parent
+    map_path = exports / 'english-worldbook-identity-map.json'
+    if map_path.is_file():
+        identity_map = json.loads(map_path.read_text(encoding='utf-8-sig'))
+        for book in identity_map['worldbooks'].values():
+            for section in ('globals', 'heroes', 'rules'):
+                for original, mapping in book[section].items():
+                    translated = mapping if section == 'globals' else mapping['en_file']
+                    english_path = exports / book['en_directory'] / translated
+                    original_path = exports / book['zh_directory'] / original
+                    if english_path.is_file():
+                        key = ('mapped_path', original_path.relative_to(root).as_posix())
+                        index.setdefault(key, []).append(english_path)
     return index
 
 
 def worldbook_counterpart(path: Path, root: Path, index):
+    mapped = index.get(('mapped_path', path.relative_to(root).as_posix()), [])
+    if len(mapped) == 1:
+        return mapped[0]
     base = root / "content/modules/AF.Module.Onboarding/PlayerExports/卡拉迪亚编年史"
     if not path.is_relative_to(base):
         return None
@@ -313,7 +350,10 @@ def run(root: Path):
             problems.append({"file": relative, "reason": "not_utf8"})
             continue
         if path.suffix == ".json":
-            if relative == "content/content-map.json":
+            if relative in {
+                "content/content-map.json",
+                "content/modules/AF.Module.Onboarding/PlayerExports/english-worldbook-identity-map.json",
+            }:
                 continue
             try:
                 payload = json.loads(source)
@@ -323,14 +363,13 @@ def run(root: Path):
             chinese = [(pointer, value) for pointer, value in json_strings(payload) if HAN.search(value)]
             counterpart = worldbook_counterpart(path, root, worldbook_index)
             if counterpart:
-                excluded["verified_calradia_original_files"] += 1
+                excluded["worldbook_files_with_english_counterpart"] += 1
                 continue
             if re.search(r'\.en(?:-US)?\.json$', path.name) or "/Calradia Chronicles/" in relative:
-                # Two protocol templates deliberately retain Chinese tokens.
-                unexpected = [(k, v) for k, v in chinese if HAN.search(v.replace("[ACTION:SCENE_ACT:动作程序]", "").replace("[RELAY:接力编号]", ""))]
+                unexpected = [(k, v) for k, v in chinese if english_prose_has_chinese(v)]
                 if unexpected:
                     problems.append({"file": relative, "reason": "Chinese remains in English asset", "values": len(unexpected)})
-                excluded["english_asset_protocol_tokens"] += len(chinese)
+                excluded["english_asset_protocol_tokens"] += len(chinese) - len(unexpected)
                 continue
             if path.name.endswith(".zh-CN.json"):
                 excluded["retained_chinese_backup"] += len(chinese)
@@ -340,8 +379,7 @@ def run(root: Path):
             if counterpart:
                 try:
                     english = json.loads(counterpart.read_text(encoding="utf-8-sig"))
-                    unexpected = [(p, v) for p, v in json_strings(english) if HAN.search(
-                        v.replace("[ACTION:SCENE_ACT:动作程序]", "").replace("[RELAY:接力编号]", ""))]
+                    unexpected = [(p, v) for p, v in json_strings(english) if english_prose_has_chinese(v)]
                     if not unexpected:
                         excluded["paired_prompt_or_content"] += len(chinese)
                         continue
@@ -398,7 +436,7 @@ def run(root: Path):
         projected_offsets = mcm_projected_offsets(source, code, tokens, en_keys) if relative == MCM_SOURCE else set()
         display_regions = [region for name in TRACED_UI_METHODS.get(relative, ())
                            if (region := method_region(source, code, name))]
-        lines = source.splitlines()
+        lines, line_starts = source_line_index(source)
         newlines = [m.start() for m in re.finditer("\n", source)]
         for match, frames in tokens:
             value = decode(match[0])
@@ -419,7 +457,8 @@ def run(root: Path):
             right = code.find(";", match.end())
             right = right if right >= 0 else len(code)
             statement = code[left:right]
-            line = bisect.bisect_left(newlines, match.start()) + 1
+            line = bisect.bisect_right(line_starts, match.start())
+            lf_line = bisect.bisect_left(newlines, match.start()) + 1
             ids = ID.findall(value)
             if ids and all(i in en_keys for i in ids):
                 excluded["localized_source_reference"] += 1
@@ -471,7 +510,7 @@ def run(root: Path):
             if path.name in {"LlmRetryPrompt.cs", "AiErrorAnalysisInquiry.cs"} and value == "未知错误":
                 # This fallback also appears in protocol/diagnostic helpers.
                 display_context = "".join(calls)
-                if not any(t in display_context for t in ("Show", "Retry", "NormalizeFullText")) and line > 415:
+                if not any(t in display_context for t in ("Show", "Retry", "NormalizeFullText")) and lf_line > 415:
                     confirmed = False
             if not confirmed and retry_role != "raw_diagnostic" and failure_argument != "diagnostic" and (PROMPT_CONTEXT.search(statement) or PROMPT_CONTEXT.search(path.stem)):
                 # LlmRetryPrompt also contains UI calls; only its direct UI arguments are confirmed.
@@ -480,7 +519,8 @@ def run(root: Path):
             if not confirmed and failure_argument != "diagnostic" and not ("/UI/" in relative or UI_CONTEXT.search(statement)):
                 excluded["non_ui_or_internal"] += 1
                 continue
-            rows.append({"file": relative, "line": line, "column": match.start() - (source.rfind("\n", 0, match.start()) + 1) + 1,
+            rows.append({"file": relative, "line": line, "lfLine": lf_line,
+                         "column": match.start() - line_starts[line - 1] + 1,
                          "module": module(path, root), "text": value,
                          "status": "confirmed_ui" if confirmed else "consumer_review",
                          "evidence": ("raw diagnostic fallback; display consumer remains untranslated" if retry_role == "raw_diagnostic"
@@ -505,6 +545,7 @@ def run(root: Path):
             changed.append(relative)
     return {"schemaVersion": 1, "sourceRevision": revision, "root": str(root),
             "basis": "working tree, including untracked English assets",
+            "lineConvention": "line/column/sourceLine use physical CR/LF boundaries; lfLine preserves historical LF-only anchors",
             "meaning": "literal occurrences, not unique phrases or a complete semantic/UI count; confirmed is a lower bound",
             "summary": dict(statuses), "files": len({r["file"] for r in rows}),
             "registeredResourcePairs": len(pairs), "modules": modules, "packages": packages,

@@ -109,7 +109,7 @@ internal static class WeeklyReportArchivePolicy
     {
         if (string.IsNullOrWhiteSpace(rawDate)) return Localize("AF_UI_Timeline_UnknownDate", "Unknown date");
         string value = rawDate.Trim();
-        if (string.Equals(value, "Unknown date", StringComparison.Ordinal) || string.Equals(value, "未知日期", StringComparison.Ordinal))
+        if (string.Equals(value, "Unknown date", StringComparison.Ordinal) || string.Equals(value, WorldBulletinPolicyTexts.Raw("WBLT_Raw_044"), StringComparison.Ordinal))
             return Localize("AF_UI_Timeline_UnknownDate", "Unknown date");
         if (TryProjectKnownDay(value, out string display)) return display;
         const string separator = " — ";
@@ -127,9 +127,9 @@ internal static class WeeklyReportArchivePolicy
         string number;
         if (value.StartsWith("Day ", StringComparison.Ordinal))
             number = value.Substring(4);
-        else if (value.Length >= 4 && value.StartsWith("第 ", StringComparison.Ordinal) && value.EndsWith(" 日", StringComparison.Ordinal))
+        else if (value.Length >= 4 && value.StartsWith(WorldBulletinPolicyTexts.Raw("WBLT_Raw_045"), StringComparison.Ordinal) && value.EndsWith(WorldBulletinPolicyTexts.Raw("WBLT_Raw_046"), StringComparison.Ordinal))
             number = value.Substring(2, value.Length - 4);
-        else if (value.Length >= 2 && value.StartsWith("第", StringComparison.Ordinal) && value.EndsWith("天", StringComparison.Ordinal))
+        else if (value.Length >= 2 && value.StartsWith(WorldBulletinPolicyTexts.Raw("WBLT_Raw_047"), StringComparison.Ordinal) && value.EndsWith(WorldBulletinPolicyTexts.Raw("WBLT_Raw_048"), StringComparison.Ordinal))
             number = value.Substring(1, value.Length - 2);
         else
             return false;
@@ -277,7 +277,7 @@ internal static class WeeklyReportArchivePolicy
     {
         string date = (gameFormattedDate ?? "").Trim();
         if (date.Length == 0) return Localize("AF_UI_Timeline_UnknownDate", "Unknown date");
-        if (date.StartsWith("卡拉迪亚", StringComparison.Ordinal) || date.StartsWith("Calradia", StringComparison.OrdinalIgnoreCase)) return date;
+        if (date.StartsWith(WorldBulletinPolicyTexts.Raw("WBLT_Raw_032"), StringComparison.Ordinal) || date.StartsWith("Calradia", StringComparison.OrdinalIgnoreCase)) return date;
         return Localize("AF_UI_Weekly_Browser_CalradiaDate", "Calradia {DATE}", ("DATE", date));
     }
 }

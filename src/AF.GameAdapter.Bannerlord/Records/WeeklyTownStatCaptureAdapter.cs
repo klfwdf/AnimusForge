@@ -47,29 +47,29 @@ internal void TrackTownWeeklyMaterialChanges(Town town)
 		}
 		List<string> list = new List<string>();
 		HashSet<string> changedLabels = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-		if (AppendTownChangeRangeLine(list, "繁荣", value2.Prosperity, townStatSnapshot.Prosperity, 100f))
+		if (AppendTownChangeRangeLine(list, AdapterRecordTexts.Raw("AF_REC_Town_0001"), value2.Prosperity, townStatSnapshot.Prosperity, 100f))
 		{
-			changedLabels.Add("繁荣");
+			changedLabels.Add(AdapterRecordTexts.Raw("AF_REC_Town_0002"));
 		}
-		if (AppendTownChangeRangeLine(list, "忠诚度", value2.Loyalty, townStatSnapshot.Loyalty, 2f))
+		if (AppendTownChangeRangeLine(list, AdapterRecordTexts.Raw("AF_REC_Town_0003"), value2.Loyalty, townStatSnapshot.Loyalty, 2f))
 		{
-			changedLabels.Add("忠诚度");
+			changedLabels.Add(AdapterRecordTexts.Raw("AF_REC_Town_0004"));
 		}
-		if (AppendTownChangeRangeLine(list, "治安", value2.Security, townStatSnapshot.Security, 2f))
+		if (AppendTownChangeRangeLine(list, AdapterRecordTexts.Raw("AF_REC_Town_0005"), value2.Security, townStatSnapshot.Security, 2f))
 		{
-			changedLabels.Add("治安");
+			changedLabels.Add(AdapterRecordTexts.Raw("AF_REC_Town_0006"));
 		}
-		if (AppendTownChangeRangeLine(list, "粮食", value2.FoodStocks, townStatSnapshot.FoodStocks, 5f))
+		if (AppendTownChangeRangeLine(list, AdapterRecordTexts.Raw("AF_REC_Town_0007"), value2.FoodStocks, townStatSnapshot.FoodStocks, 5f))
 		{
-			changedLabels.Add("粮食");
+			changedLabels.Add(AdapterRecordTexts.Raw("AF_REC_Town_0008"));
 		}
-		if (AppendTownChangeRangeLine(list, "民兵", value2.Militia, townStatSnapshot.Militia, 8f))
+		if (AppendTownChangeRangeLine(list, AdapterRecordTexts.Raw("AF_REC_Town_0009"), value2.Militia, townStatSnapshot.Militia, 8f))
 		{
-			changedLabels.Add("民兵");
+			changedLabels.Add(AdapterRecordTexts.Raw("AF_REC_Town_0010"));
 		}
-		if (AppendTownChangeRangeLine(list, "驻军", value2.Garrison, townStatSnapshot.Garrison, 10))
+		if (AppendTownChangeRangeLine(list, AdapterRecordTexts.Raw("AF_REC_Town_0011"), value2.Garrison, townStatSnapshot.Garrison, 10))
 		{
-			changedLabels.Add("驻军");
+			changedLabels.Add(AdapterRecordTexts.Raw("AF_REC_Town_0012"));
 		}
 		_townStatSnapshots[settlementId] = townStatSnapshot;
 		if (list.Count == 0)
@@ -77,19 +77,19 @@ internal void TrackTownWeeklyMaterialChanges(Town town)
 			return;
 		}
 		string settlementDisplayName = MemoryEntityIdentityBannerlordAdapter.GetSettlementDisplayName(town.Settlement);
-		string text = settlementDisplayName + "本周治理状态发生波动：" + string.Join("；", list) + "。";
+		string text = settlementDisplayName + AdapterRecordTexts.Raw("AF_REC_Town_0013") + string.Join("；", list) + "。";
 		string townStatChangeReasonText = BuildTownStatChangeReasonText(town, changedLabels);
 		if (!string.IsNullOrWhiteSpace(townStatChangeReasonText))
 		{
 			text = text + " " + townStatChangeReasonText;
 		}
 		string clanDisplayName = MemoryEntityIdentityBannerlordAdapter.GetClanDisplayName(town.Settlement.OwnerClan);
-		string kingdomDisplayName = MemoryEntityIdentityBannerlordAdapter.GetKingdomDisplayName(town.Settlement.MapFaction as Kingdom, "所属王国");
+		string kingdomDisplayName = MemoryEntityIdentityBannerlordAdapter.GetKingdomDisplayName(town.Settlement.MapFaction as Kingdom, AdapterRecordTexts.Raw("AF_REC_Town_0014"));
 		if (!string.IsNullOrWhiteSpace(clanDisplayName) && !string.IsNullOrWhiteSpace(kingdomDisplayName))
 		{
-			text = text + " 当前由" + clanDisplayName + "掌控，隶属于" + kingdomDisplayName + "。";
+			text = text + AdapterRecordTexts.Raw("AF_REC_Town_0015") + clanDisplayName + AdapterRecordTexts.Raw("AF_REC_Town_0016") + kingdomDisplayName + "。";
 		}
-		_record().RecordEventSourceMaterial("settlement_stats", "定居点状态变化 - " + settlementDisplayName, text, "settlement_stats:" + settlementId + ":" + MemoryEntityIdentityBannerlordAdapter.GetCurrentGameDayIndexSafe(), MemoryEntityIdentityBannerlordAdapter.GetKingdomId(town.Settlement.MapFaction), settlementId, includeInWorld: false, includeInKingdom: true);
+		_record().RecordEventSourceMaterial("settlement_stats", AdapterRecordTexts.Raw("AF_REC_Town_0017") + settlementDisplayName, text, "settlement_stats:" + settlementId + ":" + MemoryEntityIdentityBannerlordAdapter.GetCurrentGameDayIndexSafe(), MemoryEntityIdentityBannerlordAdapter.GetKingdomId(town.Settlement.MapFaction), settlementId, includeInWorld: false, includeInKingdom: true);
 	}
 
 internal static int GetCurrentWeeklyIndexSafe()
@@ -123,35 +123,35 @@ internal static string BuildTownStatChangeReasonText(Town town, HashSet<string> 
 			return "";
 		}
 		List<string> parts = new List<string>();
-		if (changedLabels.Contains("繁荣"))
+		if (changedLabels.Contains(AdapterRecordTexts.Raw("AF_REC_Town_0018")))
 		{
-			AddTownStatModelReasonPart(parts, "繁荣", () => models.SettlementProsperityModel.CalculateProsperityChange(town, true));
+			AddTownStatModelReasonPart(parts, AdapterRecordTexts.Raw("AF_REC_Town_0019"), () => models.SettlementProsperityModel.CalculateProsperityChange(town, true));
 		}
-		if (changedLabels.Contains("忠诚度"))
+		if (changedLabels.Contains(AdapterRecordTexts.Raw("AF_REC_Town_0020")))
 		{
-			AddTownStatModelReasonPart(parts, "忠诚度", () => models.SettlementLoyaltyModel.CalculateLoyaltyChange(town, true));
+			AddTownStatModelReasonPart(parts, AdapterRecordTexts.Raw("AF_REC_Town_0021"), () => models.SettlementLoyaltyModel.CalculateLoyaltyChange(town, true));
 		}
-		if (changedLabels.Contains("治安"))
+		if (changedLabels.Contains(AdapterRecordTexts.Raw("AF_REC_Town_0022")))
 		{
-			AddTownStatModelReasonPart(parts, "治安", () => models.SettlementSecurityModel.CalculateSecurityChange(town, true));
+			AddTownStatModelReasonPart(parts, AdapterRecordTexts.Raw("AF_REC_Town_0023"), () => models.SettlementSecurityModel.CalculateSecurityChange(town, true));
 		}
-		if (changedLabels.Contains("粮食"))
+		if (changedLabels.Contains(AdapterRecordTexts.Raw("AF_REC_Town_0024")))
 		{
-			AddTownStatModelReasonPart(parts, "粮食", () => models.SettlementFoodModel.CalculateTownFoodStocksChange(town, true, true));
+			AddTownStatModelReasonPart(parts, AdapterRecordTexts.Raw("AF_REC_Town_0025"), () => models.SettlementFoodModel.CalculateTownFoodStocksChange(town, true, true));
 		}
-		if (changedLabels.Contains("民兵"))
+		if (changedLabels.Contains(AdapterRecordTexts.Raw("AF_REC_Town_0026")))
 		{
-			AddTownStatModelReasonPart(parts, "民兵", () => models.SettlementMilitiaModel.CalculateMilitiaChange(town.Settlement, true));
+			AddTownStatModelReasonPart(parts, AdapterRecordTexts.Raw("AF_REC_Town_0027"), () => models.SettlementMilitiaModel.CalculateMilitiaChange(town.Settlement, true));
 		}
-		if (changedLabels.Contains("驻军"))
+		if (changedLabels.Contains(AdapterRecordTexts.Raw("AF_REC_Town_0028")))
 		{
-			AddTownStatModelReasonPart(parts, "驻军", () => models.SettlementGarrisonModel.CalculateBaseGarrisonChange(town.Settlement, true));
+			AddTownStatModelReasonPart(parts, AdapterRecordTexts.Raw("AF_REC_Town_0029"), () => models.SettlementGarrisonModel.CalculateBaseGarrisonChange(town.Settlement, true));
 		}
 		if (parts.Count == 0)
 		{
 			return "";
 		}
-		return "变化原因：" + string.Join("；", parts.Take(TownStatReasonMaxStats)) + "。";
+		return AdapterRecordTexts.Raw("AF_REC_Town_0030") + string.Join("；", parts.Take(TownStatReasonMaxStats)) + "。";
 	}
 
 internal static void AddTownStatModelReasonPart(List<string> parts, string label, Func<ExplainedNumber> calculator)
@@ -191,7 +191,7 @@ internal static string BuildTownStatExplainedNumberReason(string label, Explaine
 			return "";
 		}
 		List<string> factors = list.OrderByDescending((Tuple<string, float> x) => MathF.Abs(x.Item2)).ThenBy((Tuple<string, float> x) => x.Item1, StringComparer.OrdinalIgnoreCase).Select((Tuple<string, float> x) => x.Item1).Distinct(StringComparer.OrdinalIgnoreCase).Take(TownStatReasonMaxLinesPerStat).ToList();
-		return label + "主因：" + string.Join("、", factors);
+		return label + AdapterRecordTexts.Raw("AF_REC_Town_0031") + string.Join("、", factors);
 	}
 
 internal static string CondenseTownStatReasonLineName(string text)
@@ -266,23 +266,23 @@ internal static bool AppendTownChangeRangeLine(List<string> lines, string label,
 internal static string BuildTownChangeQualitativeLine(string label, float delta, float threshold)
 	{
 		string text = (label ?? "").Trim();
-		string intensity = MathF.Abs(delta) >= Math.Max(threshold * 3f, threshold + 0.001f) ? "明显" : "小幅";
+		string intensity = MathF.Abs(delta) >= Math.Max(threshold * 3f, threshold + 0.001f) ? AdapterRecordTexts.Raw("AF_REC_Town_0032") : AdapterRecordTexts.Raw("AF_REC_Town_0033");
 		bool rise = delta > 0f;
 		switch (text)
 		{
-		case "繁荣":
-			return text + intensity + (rise ? "扩张" : "回落");
-		case "忠诚度":
-			return text + intensity + (rise ? "改善" : "走低");
-		case "治安":
-			return text + intensity + (rise ? "改善" : "恶化");
-		case "粮食":
-			return text + intensity + (rise ? "恢复" : "吃紧");
-		case "民兵":
-		case "驻军":
-			return text + intensity + (rise ? "增加" : "减少");
+		case var _ when text == AdapterRecordTexts.Raw("AF_REC_Town_0034"):
+			return text + intensity + (rise ? AdapterRecordTexts.Raw("AF_REC_Town_0035") : AdapterRecordTexts.Raw("AF_REC_Town_0036"));
+		case var _ when text == AdapterRecordTexts.Raw("AF_REC_Town_0037"):
+			return text + intensity + (rise ? AdapterRecordTexts.Raw("AF_REC_Town_0038") : AdapterRecordTexts.Raw("AF_REC_Town_0039"));
+		case var _ when text == AdapterRecordTexts.Raw("AF_REC_Town_0040"):
+			return text + intensity + (rise ? AdapterRecordTexts.Raw("AF_REC_Town_0041") : AdapterRecordTexts.Raw("AF_REC_Town_0042"));
+		case var _ when text == AdapterRecordTexts.Raw("AF_REC_Town_0043"):
+			return text + intensity + (rise ? AdapterRecordTexts.Raw("AF_REC_Town_0044") : AdapterRecordTexts.Raw("AF_REC_Town_0045"));
+		case var _ when text == AdapterRecordTexts.Raw("AF_REC_Town_0046"):
+		case var _ when text == AdapterRecordTexts.Raw("AF_REC_Town_0047"):
+			return text + intensity + (rise ? AdapterRecordTexts.Raw("AF_REC_Town_0048") : AdapterRecordTexts.Raw("AF_REC_Town_0049"));
 		default:
-			return text + intensity + (rise ? "改善" : "走低");
+			return text + intensity + (rise ? AdapterRecordTexts.Raw("AF_REC_Town_0038") : AdapterRecordTexts.Raw("AF_REC_Town_0039"));
 		}
 	}
 }

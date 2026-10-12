@@ -27,7 +27,7 @@ namespace AnimusForge.Illustrator.Context
         {
             IllustratorRuntime.AssertMainThread();
             appearance = null;
-            source = civilian ? "人物便服装备栏（无匹配现场Agent）" : "人物战斗装备栏（无匹配现场Agent）";
+            source = civilian ? IllustratorText.Get("EquipmentCivilianSource") : IllustratorText.Get("EquipmentBattleSource");
             Agent agent = Mission.Current?.MainAgent;
             if (!Matches(agent, hero))
             {
@@ -42,7 +42,7 @@ namespace AnimusForge.Illustrator.Context
             }
             if (agent?.SpawnEquipment != null)
             {
-                source = "匹配身份的现场Agent完整装备（5穿戴槽、5武器槽、坐骑及挽具槽）；文字和离屏参考图共用快照";
+                source = IllustratorText.Get("EquipmentMatchedAgentSource");
                 var equipment = CopyAgentEquipment(agent);
                 appearance = CharacterAppearanceSnapshot.FromAgent(agent, equipment);
                 return equipment;
@@ -56,7 +56,7 @@ namespace AnimusForge.Illustrator.Context
             out ConversationNpcAgeSnapshot ageSnapshot)
         {
             IllustratorRuntime.AssertMainThread();
-            source = "未找到当前普通NPC的现场装备";
+            source = IllustratorText.Get("EquipmentNpcMissingSource");
             bodyProperties = null;
             appearance = null;
             ageSnapshot = new ConversationNpcAgeSnapshot(null, null, "unconfirmed_no_current_agent");
@@ -71,10 +71,10 @@ namespace AnimusForge.Illustrator.Context
                 ageSnapshot = new ConversationNpcAgeSnapshot(body.Age, agent.Index, "current_conversation_agent_body");
                 if (agent.SpawnEquipment == null)
                 {
-                    source = "当前会话NPC实例缺少装备快照";
+                    source = IllustratorText.Get("EquipmentNpcSnapshotMissingSource");
                     return null;
                 }
-                source = "当前一对一会话NPC实例完整装备；不使用同兵种其他人物或模板替代";
+                source = IllustratorText.Get("EquipmentNpcInstanceSource");
                 var equipment = CopyAgentEquipment(agent);
                 appearance = CharacterAppearanceSnapshot.FromAgent(agent, equipment, body);
                 return equipment;
@@ -118,7 +118,7 @@ namespace AnimusForge.Illustrator.Context
 
             if (fallback != null)
             {
-                source = "普通NPC大地图标准会话装备（匹配当前会话变体）";
+                source = IllustratorText.Get("EquipmentNpcMapSource");
                 var visible = CharacterAppearanceSnapshot.VisibleEquipment(fallback);
                 BodyProperties bp = character.GetBodyProperties(visible, seed);
                 bodyProperties = bp.ToString();

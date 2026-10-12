@@ -121,8 +121,9 @@ public partial class ShoutBehavior
 		return SceneHistoryMessageAssemblyOwner.TryNormalizeAfefFactLineForPrompt(text, out factLine);
 	}
 
-	private static string NormalizeAfefFactLineForPrompt(string text, string fallbackPrefix = "[AFEF玩家行为补充]")
+	private static string NormalizeAfefFactLineForPrompt(string text, string fallbackPrefix = null)
 	{
+		fallbackPrefix = fallbackPrefix ?? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0729");
 		return SceneHistoryMessageAssemblyOwner.NormalizeAfefFactLineForPrompt(text, fallbackPrefix);
 	}
 

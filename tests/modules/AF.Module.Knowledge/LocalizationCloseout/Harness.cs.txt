@@ -1,0 +1,120 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text.RegularExpressions;
+using System.Xml.Linq;
+using AnimusForge;
+
+namespace TaleWorlds.Localization {
+    internal sealed class TextObject {
+        internal static string Language;
+        internal static readonly Dictionary<string, Dictionary<string, string>> Catalogs = new();
+        private readonly string raw;
+        private readonly Dictionary<string, string> variables = new();
+        internal TextObject(string value) { raw = value; }
+        internal void SetTextVariable(string name, string value) { variables[name] = value; }
+        public override string ToString() {
+            Match match = Regex.Match(raw, @"^\{=([^}]+)\}(.*)$", RegexOptions.Singleline);
+            string value = match.Success && Catalogs[Language].TryGetValue(match.Groups[1].Value, out string localized) ? localized : match.Success ? match.Groups[2].Value : raw;
+            return Regex.Replace(value, @"\{([A-Z_]+)\}", item => variables.TryGetValue(item.Groups[1].Value, out string variable) ? variable : item.Value);
+        }
+    }
+}
+namespace AnimusForge {
+    internal static class AnimusForgeModulePaths {
+        internal static string Root;
+        internal static string GetModuleDataFilePath(string name) => Path.Combine(Root, name);
+    }
+    internal static class Index { internal static long Version = 7; }
+    internal static class LoreCandidateRetriever {
+        internal static string NormalizeKeywordForCompare(string value) => Regex.Replace((value ?? "").Replace("\r", " ").Replace("\n", " "), @"\s+", " ").Trim();
+    }
+    public partial class KnowledgeLibraryBehavior {
+        private static int checks;
+        private static void Check(bool value, string description) { checks++; if (!value) throw new Exception(description); }
+        private static void Equal(string actual, string expected, string description) => Check(actual == expected, description + " expected=[" + expected + "] actual=[" + actual + "]");
+        internal static int Replay(bool english) {
+            string raw = "literal{COUNT}$1AFKNOWLEDGELITERAL0END";
+            var rule = new LoreRule {
+                Id = "raw_id_{NAME}", Keywords = new() { "quartz{COUNT}", "copper" },
+                RagShortTexts = new() { "old phrase {COUNT}" },
+                SemanticPrototypes = new() { "old prototype" },
+                Variants = new() { new LoreVariant { Content = "SOURCE_{CATEGORIES}_$1", When = new LoreWhen { Cultures = new() { "raw_culture" }, IsFemale = false } } }
+            };
+            var owner = new KnowledgeLibraryBehavior();
+            owner._file.Rules.Add(rule);
+            string firstRequest = null;
+            List<RuleIndexItem> previousCache = null;
+            foreach (string uiLanguage in new[] { "zh-CN", "en", "zh-CN" }) {
+                TaleWorlds.Localization.TextObject.Language = uiLanguage;
+                bool englishUi = uiLanguage == "en";
+                string prompt = BuildRagShortTextGenerationUserPrompt(rule, 3);
+                if (firstRequest == null) firstRequest = prompt;
+                Equal(prompt, firstRequest, "RAG request is stable across UI language switches");
+                Check(prompt.Contains(english ? "Specific (Culture+Gender)" : "专属(文化+性别)"), "prompt condition follows package");
+                Check(prompt.Contains("SOURCE_{CATEGORIES}_$1"), "worldbook content is literal");
+                Check(prompt.Contains("quartz{COUNT}"), "keyword braces remain literal");
+                Check(prompt.Contains("8~50"), "RAG retains character range");
+                Equal(BuildWhenPromptLabel(null), english ? "General" : "通用", "general prompt condition");
+                Equal(BuildWhenPromptLabel(new LoreWhen()), english ? "General" : "通用", "empty prompt condition");
+                Equal(BuildWhenLabel(rule.Variants[0].When), englishUi ? "Specific (Culture+Gender)" : "专属(文化+性别)", "editor condition follows UI");
+                owner.EnsureRuleIndexCache();
+                Check(owner._ruleIndexCache.Single().Label.Contains(englishUi ? "Keywords:" : "关键词"), "cached editor index follows UI");
+                if (previousCache != null) Check(!ReferenceEquals(previousCache, owner._ruleIndexCache), "language switch refreshes cache");
+                previousCache = owner._ruleIndexCache;
+                owner.EnsureRuleIndexCache();
+                Check(ReferenceEquals(previousCache, owner._ruleIndexCache), "unchanged version/language reuses cache");
+                Equal(KnowledgeUiTexts.Occupation("Tavernkeeper"), englishUi ? "Tavernkeeper" : "酒馆老板", "occupation UI projection");
+                Equal(KnowledgeUiTexts.Occupation("OtherMod_{NAME}"), "OtherMod_{NAME}", "external occupation remains raw");
+                Equal(KnowledgeUiTexts.Ui("AF_KNOWLEDGE_MappingTarget_Hero", "Hero"), englishUi ? "Hero" : "英雄", "hero picker kind");
+                Equal(KnowledgeUiTexts.Ui("AF_KNOWLEDGE_MappingTarget_Clan", "Clan"), englishUi ? "Clan" : "家族", "clan picker kind");
+                Equal(KnowledgeUiTexts.RagFailureDetail("API key is not configured."), englishUi ? "API key is not configured." : "尚未配置 API 密钥。", "RAG key failure UI");
+                Equal(KnowledgeUiTexts.RagFailureDetail("API URL is empty."), englishUi ? "API URL is empty." : "API 地址为空。", "RAG URL failure UI");
+                Equal(KnowledgeUiTexts.RagFailureDetail("RAG API request failed: " + raw), (englishUi ? "RAG API request failed: " : "RAG API 请求失败：") + raw, "RAG error prefix projection keeps provider detail");
+                Equal(KnowledgeUiTexts.RagFailureDetail(raw), raw, "unknown errors retain raw data");
+                Check(KnowledgeUiTexts.RagFailureDetail(null) == null, "null error remains null");
+                foreach (var item in TaleWorlds.Localization.TextObject.Catalogs[uiLanguage]) {
+                    string[] names = Regex.Matches(item.Value, @"\{([A-Z_]+)\}").Select(match => match.Groups[1].Value).Distinct().ToArray();
+                    string expected = Regex.Replace(item.Value, @"\{([A-Z_]+)\}", _ => raw);
+                    Equal(KnowledgeUiTexts.Ui(item.Key, "MISSING", names.Select(name => (name, raw)).ToArray()), expected, "actual UI template literal variables: " + item.Key);
+                }
+                string prototypes = BuildPrototypeGenerationUserPrompt(rule, 4);
+                Check(prototypes.Contains("quartz{COUNT}") && prototypes.Contains("old phrase {COUNT}") && !prototypes.Contains("SOURCE_"), "prototype source boundary unchanged");
+                Check(prototypes.Contains(english ? "8–30 characters" : "8~30 字"), "prototype character range unchanged");
+                string appearance = BuildPermanentPlayerAppearanceContext("NPC_{NAME}", "APPEARANCE_{NPC}");
+                Check(appearance.Contains("NPC_{NAME}") && appearance.Contains("APPEARANCE_{NPC}"), "appearance stays literal");
+                Check(appearance.Contains(english ? "Player appearance" : "玩家外貌"), "appearance header follows content package");
+            }
+            string system = BuildRagShortTextGenerationSystemPrompt();
+            Check(system.Contains(english ? "50 characters" : "50 个字符") && system.Contains("ACTION"), "system range and action prohibition");
+            Equal(NormalizeRagShortTextCandidate("提示词内容不要保留"), "", "legacy prompt marker preserved");
+            Equal(NormalizeRagShortTextCandidate("检索短句不能保留"), "", "legacy retrieval marker preserved");
+            Equal(NormalizeRagShortTextCandidate("[ACTION:duel]"), "", "action tags never enter RAG data");
+            Check(ParseRagShortTextCandidates("```json\n[\"granite history\",\"granite history\",\"[ACTION:duel]\",\"copper ore\"]\n```", 3).SequenceEqual(new[] { "granite history", "copper ore" }), "parser retains JSON/code-block/tag/dedup behavior");
+            var fallback = BuildDeterministicRagShortTextFallback(rule, 3);
+            Check(fallback.Count == 3 && fallback[0].Contains("quartz{COUNT}"), "deterministic RAG fallback uses literal keyword");
+            Equal(fallback[0], english ? "What is quartz{COUNT}" : "quartz{COUNT}是什么", "RAG fallback follows package");
+            var prototypeFallback = BuildDeterministicPrototypeFallback(rule, 3);
+            Check(prototypeFallback.Count == 3 && prototypeFallback[0].Contains("quartz{COUNT}"), "prototype fallback remains literal");
+            var allConditions = new LoreWhen { Cultures = new() { "c" }, KingdomIds = new() { "k" }, SettlementIds = new() { "s" }, Roles = new() { "lord" }, HeroIds = new() { "h" }, IsFemale = false, IsClanLeader = false, SkillMin = new() { ["skill"] = 1 } };
+            Equal(BuildWhenPromptLabel(allConditions), english ? "Specific (Culture+Faction+Settlement+Identity+Specific identity+Gender+Clan leader+Skill)" : "专属(文化+势力+定居点+身份+具体身份+性别+族长+技能)", "all condition categories retain order and false flags");
+            Index.Version++;
+            owner.EnsureRuleIndexCache();
+            Check(!ReferenceEquals(previousCache, owner._ruleIndexCache), "data change refreshes editor cache");
+            return checks;
+        }
+    }
+}
+internal static class Program {
+    private static int Main(string[] args) {
+        try {
+            AnimusForgeModulePaths.Root = args[0];
+            foreach (var item in new[] { ("en", "Languages/afknowledge_strings.xml"), ("zh-CN", "Languages/CNs/afknowledge_strings-zh-CN.xml") }) {
+                TaleWorlds.Localization.TextObject.Catalogs[item.Item1] = XDocument.Load(Path.Combine(args[0], item.Item2)).Descendants("string").ToDictionary(element => element.Attribute("id").Value, element => element.Attribute("text").Value);
+            }
+            Console.WriteLine("PASS Knowledge closeout content=" + args[1] + " UI=zh-CN/en/zh-CN checks=" + KnowledgeLibraryBehavior.Replay(args[1] == "en"));
+            return 0;
+        } catch (Exception error) { Console.WriteLine(error); return 1; }
+    }
+}

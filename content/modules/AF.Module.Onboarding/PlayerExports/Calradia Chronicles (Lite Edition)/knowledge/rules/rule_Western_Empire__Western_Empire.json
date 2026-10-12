@@ -23,7 +23,7 @@
         "IsClanLeader": null,
         "SkillMin": null
       },
-      "Content": "In a country with a highly militarized political system, the local military chief is also the local chief executive. The legion system after the Kalad Empire abolished the standing army was followed, but since its territory was only 1/3 of the original empire, the emperor was the ruler of the empire and the supreme commander of the military."
+      "Content": "A state with a highly militarized political system, where the regional military commander also serves as the chief civil administrator. It continues the legionary system adopted after the Calradic Empire abolished its standing army; because its territory covers only one-third of the former empire, the emperor is both sovereign of the realm and supreme commander of the armed forces."
     },
     {
       "Priority": 0,
@@ -46,7 +46,7 @@
           "Leadership": 150
         }
       },
-      "Content": "The empire’s military promotion system follows the promotion system of the Kalad Empire, and it also follows this system, which will never allow lower-level civilians to climb to the core of our aristocratic class. As each level goes up, the accumulated military merits need to be higher. Unless they kill everyone on the entire continent, they will not be able to accumulate the title of real power. Respecting soldiers is a common method used by the elders of noble families, but if necessary, soldiers are victims who can be consumed at will, and their lives are not valuable. As for the people? In the eyes of the lords, they might just be gray animals used as production tools. In fact, the power of the Western Empire is still vigorously competed by several imperial families. Especially those lords with poor reputations who were excluded by the Northern Senate and were not accepted by the Southern Empire."
+      "Content": "Our empire's military promotion system inherits that of the Calradic Empire—and precisely because it follows that system, it will never allow lowborn commoners to climb into the core of our noble class. Each rank upward demands vastly greater accumulated military merit; unless they slaughter everyone across the entire continent, they can never amass enough merit for a title with real power. Showing respect to soldiers is a familiar method taught by the elders of noble houses, yet when necessary, soldiers are expendable pawns whose lives carry little price. As for the common folk? In the eyes of lords, they are little more than gray beasts of burden used as tools of production. In truth, supreme power in the Western Empire is still fiercely contested among several great imperial families—especially those lords of sullied reputation who were pushed out by the Northern Senate and rejected by the Southern Empire."
     },
     {
       "Priority": 0,
@@ -68,7 +68,7 @@
           "Leadership": 150
         }
       },
-      "Content": "The power of the Western Empire came entirely from the support of the army. From the beginning, there was almost no promotion mechanism with any secular bias, attracting a large number of capable people. But are there people among these capable people who hope to become emperors? No one wants to have fewer rights, which means that becoming the emperor of this empire must have strong military capabilities that deter other lords of the empire. If not, then the emperor of the empire will most likely change hands. After all, the Kalad Empire's \"Senate\" legal system and lineage are not recognized here. The power of the army is the only order. When the free promotion mechanism comes, it is a free order, and even violence is one of the tacitly allowed freedoms."
+      "Content": "Power in the Western Empire comes entirely from the backing of the army, and a promotion mechanism that from the beginning held almost no worldly prejudice has drawn in large numbers of capable men. Yet among those capable men, are there none who aspire to become emperor themselves? No one wishes to hold less power, which means that anyone who would be emperor of this realm must possess formidable military strength sufficient to overawe the other lords of the empire; otherwise, the imperial throne will very likely change hands. After all, neither the senatorial constitution of the Calradic Empire nor bloodline legitimacy carries weight here—the strength of the army is the only order. What a free promotion mechanism brings is a free-for-all order, in which even violence is one of the tacitly permitted freedoms."
     }
   ],
   "TextMappings": []

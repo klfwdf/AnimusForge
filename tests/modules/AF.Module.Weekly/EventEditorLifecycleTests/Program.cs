@@ -12,7 +12,13 @@ var port=new EventEditorPort {
 };
 var ui=new EventEditorController(port);
 Check(EventEditorProjection.BuildDevSummaryPreview("  a\n b\t c  ",40)=="a b c","preview whitespace projection");Check(EventEditorProjection.BuildDevSummaryPreview("abcdef",3)=="abc...","preview truncation preserved");
-Check(EventEditorProjection.BuildDevEventRecordMenuLabel(port,records[0])=="世界周报","world label unchanged");Check(EventEditorProjection.BuildDevEventMaterialItemLabel(port,new(){MaterialType="type",SnapshotText="fallback"})=="[type] fallback","material snapshot fallback");
+foreach(bool chinese in new[]{false,true}) {
+ TaleWorlds.Localization.TextObject.UseLanguage(chinese);
+ Check(EventEditorProjection.BuildDevEventRecordMenuLabel(port,records[0])==(chinese?"世界周报":"World weekly report"),"world label follows selected display language");
+ Check(records[0].EventKind=="world"&&records[0].Title=="title0","display language leaves source record identity and text intact");
+}
+TaleWorlds.Localization.TextObject.UseLanguage(false);
+Check(EventEditorProjection.BuildDevEventMaterialItemLabel(port,new(){MaterialType="type",SnapshotText="fallback"})=="[type] fallback","material snapshot fallback");
 ui.OpenDevEventViewerMenu(99);var page=MBInformationManager.Last;Check(ui.RecordPage==2&&page.Options.Count(o=>o.Identifier is EventRecordEntry)==2,"14 record page clamp");page.Confirm(new(){new(records[29],"",null)});Check(ReferenceEquals(ui.RecordSelection,records[29]),"selection remains original record identity");
 ui.SynchronizeGeneration(1);ui.RecordSelection=records[0];ui.RecordPage=2;ui.MaterialPage=1;ui.SynchronizeGeneration(2);Check(ui.RecordSelection==null&&ui.RecordPage==0&&ui.MaterialPage==0,"load resets UI selection/pages");
 ui.OpenDevEventEditorMenu();var oldSelection=MBInformationManager.Last;generation++;oldSelection.Confirm(new(){new("kingdom_stability_lab","",null)});Check(returns==0,"late menu callback rejected");

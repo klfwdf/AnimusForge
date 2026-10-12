@@ -8,6 +8,7 @@ using AnimusForge;
 internal static class Program
 {
     private static int _checks;
+    private static bool _englishPackage;
 
     private static void Check(bool condition, string message)
     {
@@ -18,8 +19,9 @@ internal static class Program
     private static GuardrailRuleHit Hit(string id, int priority = 0, float score = 0f)
         => new GuardrailRuleHit { RuleId = id, Priority = priority, Score = score };
 
-    private static void Main()
+    private static void Main(string[] args)
     {
+        _englishPackage = args.Length > 0 && args[0] == "en";
         RuleIdPolicy();
         StickyCarry();
         TopicRouter();
@@ -40,7 +42,9 @@ internal static class Program
     private static void RuleInstructionComposer()
     {
         Check(PromptRuleInstructionComposer.Compose(null) == "", "null sections compose to empty");
-        Check(PromptRuleInstructionComposer.BuildUnqualifiedDuelBody(" ", 2).StartsWith("玩家触发了决斗相关话题，但等级(2)过低"), "unqualified duel body default name");
+        Check(PromptRuleInstructionComposer.BuildUnqualifiedDuelBody(" ", 2).StartsWith(_englishPackage
+            ? "the player raised a duel topic, but their tier (2) is too low."
+            : "玩家触发了决斗相关话题，但等级(2)过低"), "unqualified duel body default name");
         Check(PromptRuleInstructionComposer.ResolveRewardInstruction(false, "merchant", "runtime", null, "nonhero", "default") == "runtime\nmerchant", "merchant + runtime joined");
         Check(PromptRuleInstructionComposer.ResolveRewardInstruction(false, "merchant", " ", null, "nonhero", "default") == "merchant", "merchant alone when runtime blank");
         Check(PromptRuleInstructionComposer.ResolveRewardInstruction(true, "merchant", "x", "hero-runtime", "nonhero", "default") == "hero-runtime", "hero ignores merchant");
@@ -63,7 +67,9 @@ internal static class Program
         string text = PromptRuleInstructionComposer.Compose(s).Replace("\r\n", "\n");
         var headers = text.Split('\n').Where(l => l.StartsWith("【附加规则:")).ToList();
         Check(headers.SequenceEqual(new[] { "【附加规则:duel】", "【附加规则:reward】", "【附加规则:duel_stake】", "【附加规则:loan】", "【附加规则:worldmap_party_command】", "【附加规则:party_transfer】", "【附加规则:meeting_taunt】" }), "legacy block order, excluded surroundings skipped, party-transfer promotion does not duplicate reward/loan: " + string.Join(",", headers));
-        Check(text.Contains("阿尔文触发了决斗相关话题，但等级(1)过低"), "unqualified duel uses captured name");
+        Check(text.Contains(_englishPackage
+            ? "阿尔文 raised a duel topic, but their tier (1) is too low."
+            : "阿尔文触发了决斗相关话题，但等级(1)过低"), "unqualified duel uses captured name");
 
         var s2 = new PromptRuleInstructionSections { ExcludedRuleIds = null, ExtraRuleInstructions = "【附加规则:party_transfer】\nPT", PartyTransferEligible = true, RewardInstruction = "R", LoanInstruction = "L" };
         string t2 = PromptRuleInstructionComposer.Compose(s2).Replace("\r\n", "\n");
@@ -386,10 +392,21 @@ internal static class Program
         var ordered = new PromptExtrasSections { WeeklyShortReports = "short", ActivePolicyContext = "policy", TriggeredRuleInstructions = "rules", WeeklyFullReports = "full", LoreContext = "lore", ResidentRecentActions = "recent", NearbySettlementsDetail = "nearby", HeroArmyRuntimeFact = "army", PlayerArmyRuntimeFact = "parmy" };
         Check(PromptExtrasComposer.Compose(ordered).Split(new[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries).SequenceEqual(new[] { "army", "parmy", "recent", "nearby", "short", "policy", "rules", "full", "lore" }), "world/weekly/policy/rules/full/lore ordering");
 
-        Check(PromptExtrasComposer.BuildDuelResultLine(true, " ").StartsWith("【战斗结果】你刚刚在一场正式的决斗中输给了玩家。"), "duel loss with default player name");
-        Check(PromptExtrasComposer.BuildDuelResultLine(false, "阿尔文").Contains("打败了阿尔文。你可以据此调整对阿尔文的态度，或提醒阿尔文履行"), "duel win uses display name three times");
-        Check(PromptExtrasComposer.BuildVanillaBattleDefeatLine(null).StartsWith("【原版战斗结果】你刚刚在一场战斗中被玩家击败了。"), "vanilla defeat line");
-        Check(PromptExtrasComposer.BuildReleasedPrisonerLine("X").StartsWith("【释放通知】你之前被X俘虏关押"), "released prisoner line");
+        Check(PromptExtrasComposer.BuildDuelResultLine(true, " ").StartsWith(_englishPackage
+            ? "[Battle result] You have just lost a formal duel to the player."
+            : "【战斗结果】你刚刚在一场正式的决斗中输给了玩家。"), "duel loss with default player name");
+        Check(PromptExtrasComposer.BuildDuelResultLine(false, "阿尔文").Contains(_englishPackage
+            ? "defeated 阿尔文 in a formal duel. You may adjust your attitude toward 阿尔文 accordingly or remind 阿尔文 to honor"
+            : "打败了阿尔文。你可以据此调整对阿尔文的态度，或提醒阿尔文履行"), "duel win uses display name three times");
+        Check(PromptExtrasComposer.BuildVanillaBattleDefeatLine(null).StartsWith(_englishPackage
+            ? "[Vanilla battle result] You have just been defeated by the player in battle."
+            : "【原版战斗结果】你刚刚在一场战斗中被玩家击败了。"), "vanilla defeat line");
+        Check(PromptExtrasComposer.BuildReleasedPrisonerLine("X").StartsWith(_englishPackage
+            ? "[Release notice] You were previously captured and imprisoned by X"
+            : "【释放通知】你之前被X俘虏关押"), "released prisoner line");
+        string literalName = "Hero {NAME} $1";
+        Check(PromptExtrasComposer.BuildDuelResultLine(false, literalName).Split(new[] { literalName }, StringSplitOptions.None).Length == 4,
+            "dynamic name remains literal in all three positions");
 
         Check(PromptExtrasComposer.MergePostprocessBlock("", "b") == "b" && PromptExtrasComposer.MergePostprocessBlock("a \n", "b") == "a\nb" && PromptExtrasComposer.MergePostprocessBlock("a", " ") == "a" && PromptExtrasComposer.MergePostprocessBlock(null, null) == "", "postprocess block merge");
 
@@ -468,6 +485,10 @@ internal static class Program
     private static void StickyCarry()
     {
         Check(BuiltInRuleStickyCarry.IsShortAck("好的") && BuiltInRuleStickyCarry.IsShortAck("我选雇佣兵") && BuiltInRuleStickyCarry.IsShortAck(" 继续 "), "short acknowledgements");
+        foreach (string acknowledgement in new[] { "我同意！", "没问题。", "继续吧", "YES!", "I agree.", "I choose vassal", "Okay！" })
+            Check(BuiltInRuleStickyCarry.IsShortAck(acknowledgement), "explicit bilingual acknowledgement: " + acknowledgement);
+        foreach (string other in new[] { "天气很好", "他是商人", "执行了什么", "我对价格有疑问", "不同意", "不要继续", "如果我同意呢", "是否可以", "好的？", "yes?", "what if I agree?", "I don't agree", "I can’t agree", "yesterday", "continue later" })
+            Check(!BuiltInRuleStickyCarry.IsShortAck(other), "non-acknowledgement must not carry a topic: " + other);
         Check(!BuiltInRuleStickyCarry.IsShortAck("") && !BuiltInRuleStickyCarry.IsShortAck("我想和你谈谈关于城堡的事情，还有很多其他细节"), "long or empty input is not a short ack");
         Check(BuiltInRuleStickyCarry.TurnLimit("Duel") == 2 && BuiltInRuleStickyCarry.TurnLimit("reward") == 2 && BuiltInRuleStickyCarry.TurnLimit("loan") == 3 && BuiltInRuleStickyCarry.TurnLimit("marriage") == 0, "turn limits");
         Check(BuiltInRuleStickyCarry.ResolveTargetKey(" Hero_A ", "char", "heroB") == "hero_a", "hero id wins");
@@ -476,6 +497,9 @@ internal static class Program
         Check(BuiltInRuleStickyCarry.ResolveTargetKey(null, null, null) == "", "no ids yields empty key");
 
         var carry = new BuiltInRuleStickyCarry();
+        carry.Prime("t1", true, true, true, out _);
+        Check(!carry.TryConsume("t1", "天气很好", out _, out _, out _, out _) && carry.TargetKey == null,
+            "unrelated short Chinese prose clears carry just like unrelated English prose");
         Check(!carry.Prime("t1", false, false, false, out _) && carry.TargetKey == null, "no hits leave carry unset");
         Check(carry.Prime("t1", true, false, true, out string primeLog) && primeLog.Contains("duel=2") && primeLog.Contains("loan=3") && primeLog.Contains("reward=0"), "prime sets per-topic rounds");
         Check(!carry.TryConsume("t1", "我想聊点别的很长的话题啊啊啊啊啊啊啊啊啊啊啊", out _, out _, out _, out _) && carry.TargetKey == null, "non-ack input clears carry");

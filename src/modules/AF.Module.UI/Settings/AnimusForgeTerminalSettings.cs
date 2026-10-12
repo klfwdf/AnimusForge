@@ -94,7 +94,7 @@ public static class AnimusForgeTerminalSettings
 		}
 		catch (Exception)
 		{
-			Logger.Log("TerminalSettings", "[WARN] Failed to load user TerminalSettings; using built-in defaults.");
+			Logger.Log("TerminalSettings", "[WARN] Failed to load module TerminalSettings; using built-in defaults.");
 		}
 		_isHotkeyEnabled = true;
 		_isMapIconEnabled = true;
@@ -108,6 +108,7 @@ public static class AnimusForgeTerminalSettings
 	internal static bool TryLoadSettingsFile(string path, out AnimusForgeTerminalSettingsData data)
 	{
 		data = null;
+		AnimusForgeDataPaths.ValidatePath(path);
 		if (!File.Exists(path))
 		{
 			return false;
@@ -116,14 +117,16 @@ public static class AnimusForgeTerminalSettings
 		{
 			throw new InvalidOperationException("TerminalSettings file is a reparse point.");
 		}
-		data = JsonConvert.DeserializeObject<AnimusForgeTerminalSettingsData>(File.ReadAllText(path));
+		data = JsonConvert.DeserializeObject<AnimusForgeTerminalSettingsData>(new System.Text.UTF8Encoding(false, true).GetString(File.ReadAllBytes(path)).TrimStart('\uFEFF'));
 		return data != null;
 	}
 
 	internal static void TrySaveSettingsFile(string path, AnimusForgeTerminalSettingsData data)
 	{
+		AnimusForgeDataPaths.ValidatePath(path);
 		string directory = Path.GetDirectoryName(path);
 		Directory.CreateDirectory(directory);
+		AnimusForgeDataPaths.ValidatePath(path);
 		if ((new DirectoryInfo(directory).Attributes & FileAttributes.ReparsePoint) != 0)
 		{
 			throw new InvalidOperationException("TerminalSettings directory is a reparse point.");
@@ -143,6 +146,7 @@ public static class AnimusForgeTerminalSettings
 			{
 				throw new InvalidDataException("TerminalSettings candidate is invalid.");
 			}
+			AnimusForgeDataPaths.ValidatePath(path);
 			if (File.Exists(path))
 			{
 				File.Replace(candidate, path, null);
@@ -174,7 +178,7 @@ public static class AnimusForgeTerminalSettings
 			}
 			catch (Exception)
 			{
-				Logger.Log("TerminalSettings", "[WARN] Failed to save user TerminalSettings; existing file was preserved.");
+				Logger.Log("TerminalSettings", "[WARN] Failed to save module TerminalSettings; existing file was preserved.");
 				return false;
 			}
 		}

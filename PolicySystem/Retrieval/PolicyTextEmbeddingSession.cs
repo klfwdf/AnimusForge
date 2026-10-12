@@ -58,7 +58,7 @@ internal sealed class PolicyTextEmbeddingSession
 		string normalized = (text ?? string.Empty).Trim();
 		if (normalized.Length == 0)
 		{
-			throw new InvalidOperationException("政策文本 embedding 输入为空。");
+			throw new InvalidOperationException("Policy text embedding input is empty.");
 		}
 		string cacheKey = _baseFingerprint + ":" + StableTextHash(normalized);
 		lock (_sync)
@@ -79,12 +79,12 @@ internal sealed class PolicyTextEmbeddingSession
 			OnnxEmbeddingEngine engine = OnnxEmbeddingEngine.Instance;
 			if (engine == null || !engine.IsAvailable || !engine.TryGetEmbedding(normalized, out vector))
 			{
-				throw new InvalidOperationException("政策文本 ONNX embedding 不可用：" + (engine?.LastError ?? "unknown"));
+				throw new InvalidOperationException("Policy text ONNX embedding is unavailable: " + (engine?.LastError ?? "unknown"));
 			}
 		}
 		if (vector == null || vector.Length == 0)
 		{
-			throw new InvalidOperationException("政策文本 embedding 结果为空。");
+			throw new InvalidOperationException("Policy text embedding result is empty.");
 		}
 		lock (_sync)
 		{
@@ -95,7 +95,7 @@ internal sealed class PolicyTextEmbeddingSession
 			else if (_dimension != vector.Length)
 			{
 				_vectors.Clear();
-				throw new InvalidOperationException("政策文本 embedding 维度在同一请求中发生变化。");
+				throw new InvalidOperationException("Policy text embedding dimension changed within the same request.");
 			}
 			if (_vectors.Count >= QueryCacheCapacity)
 			{

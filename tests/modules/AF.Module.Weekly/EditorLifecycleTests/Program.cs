@@ -11,6 +11,8 @@ var port=new WeeklyEditorPort {
  PromptProfileLabel=()=>"standard",ResolveKingdomDisplay=id=>"Kingdom "+id,ResolveHeroDisplay=id=>id,ResolveSettlementDisplay=id=>id,
  BuildDevSummaryPreview=(text,max)=>text??"",TranslateEventMaterialTypeForDev=kind=>kind,
  AppendDevNpcActionField=(sb,label,value)=>sb.AppendLine(label+":"+value),GetEventAndRebellionApiMaxTokens=()=>100,
+ GetDevNpcActionKindDisplay=kind=>kind,ResolveHeroNames=ids=>ids?.ToList()??new(),
+ ResolveClanNames=ids=>ids?.ToList()??new(),ResolveKingdomNames=ids=>ids?.ToList()??new(),
  BuildWeeklyReportGroupReportId=g=>g.GroupKind,
  EventRecords=()=>records,WorldOpeningSummary=()=>"opening",EnsureWeekZeroOpeningSummaryEvents=sanitize=>{},SanitizeEventRecordEntries=x=>x,
  GetDevEditableKingdoms=()=>new(),BuildWeeklyEventMaterialPreviewGroups=()=>new(){group},OrderWeeklyReportGenerationGroups=groups=>groups,
@@ -21,6 +23,13 @@ var port=new WeeklyEditorPort {
  BuildBulletinPanel=(entry,id)=>failBuild?throw new Exception("bad panel"):new(){EventId=id},AwardReadingXp=id=>awarded++
 };
 var ui=new WeeklyReportEditorController(port);ui.SynchronizeGeneration(1);
+var gatheringMaterial=new EventMaterialReference{MaterialType="raw_text",ActionStableKey="noble_gathering:1:started",Label="gathering label",SnapshotText="gathering snapshot"};
+string gatheringDetail=ui.BuildDevEventMaterialDetailText(gatheringMaterial);
+Check(gatheringDetail.Contains("ui:gathering label")&&gatheringDetail.Contains("ui:gathering snapshot"),"gathering detail projects label and snapshot only at display");
+Check(WeeklyEditorProjection.BuildWeeklyPreviewMaterialLabel(port,gatheringMaterial).Contains("ui:gathering label"),"gathering preview projects label at display");
+Check(gatheringMaterial.Label=="gathering label"&&gatheringMaterial.SnapshotText=="gathering snapshot","gathering display leaves source material unchanged");
+var ordinaryMaterial=new EventMaterialReference{MaterialType="raw_text",ActionStableKey="other:1",Label="ordinary label",SnapshotText="ordinary snapshot"};
+Check(!ui.BuildDevEventMaterialDetailText(ordinaryMaterial).Contains("ui:"),"unrelated detail bypasses gathering projector");
 var countries=ui.GetTerminalWeeklyReportBrowserCountries();Check(countries[0].IsWorld&&countries[0].CountryId=="world","world comes first");Check(countries.Count==2&&countries[1].CountryId=="k","orphan record kingdom remains browseable");Check(countries[0].Reports[0].EventId=="world-new","descending week order");Check(countries[0].Reports.Single(e=>e.EventId=="world-old").BodyText=="short"&&!countries[0].Reports.Single(e=>e.EventId=="world-old").HasFullReport&&countries[0].Reports.Single(e=>e.EventId=="world-old").CreatedDay==0,"short fallback and clamp");Check(countries[0].Reports[0].BodyText=="full"&&countries[0].Reports[0].HasFullReport,"full report projection");
 ui.OpenDevWeeklyEventMaterialPreviewGroupDetail(group,100);Check(ui.MaterialPage==2&&ReferenceEquals(ui.MaterialSelection,group),"material page clamp and source identity");var late=TaleWorlds.Core.MBInformationManager.Last.Confirm;SaveRuntimeGuard.Generation++;late(new(){new(group.Materials[0],"",null)});Check(ui.MaterialDetail==null,"late material navigation rejected");
 ui.SynchronizeGeneration(2);Check(ui.MaterialSelection==null&&ui.MaterialPage==0,"load retires selections");

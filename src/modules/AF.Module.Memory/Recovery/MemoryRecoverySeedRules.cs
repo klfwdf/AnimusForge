@@ -73,17 +73,17 @@ internal static string RenderInteractionMemoryFact(string factsText)
         {
             return string.Empty;
         }
-        if (!rendered.StartsWith("[AFEF玩家行为补充]", StringComparison.Ordinal)
-            && !rendered.StartsWith("[AFEF NPC行为补充]", StringComparison.Ordinal))
+        if (!rendered.StartsWith(MemoryTextResources.Raw("MEM_Raw_018"), StringComparison.Ordinal)
+            && !rendered.StartsWith(MemoryTextResources.Raw("MEM_Raw_006"), StringComparison.Ordinal))
         {
-            rendered = "[AFEF玩家行为补充] " + rendered;
+            rendered = MemoryTextResources.Raw("MEM_Raw_075") + rendered;
         }
         return rendered;
     }
 internal static string RenderInteractionMemoryAssistant(string npcName, string assistantText)
     {
         string rendered = (assistantText ?? string.Empty).Trim();
-        if (string.IsNullOrWhiteSpace(rendered) || rendered.StartsWith("[场景喊话]", StringComparison.Ordinal))
+        if (string.IsNullOrWhiteSpace(rendered) || rendered.StartsWith(MemoryTextResources.Raw("MEM_Raw_036"), StringComparison.Ordinal))
         {
             return rendered;
         }

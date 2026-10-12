@@ -2026,8 +2026,8 @@ namespace AnimusForge
 				if (record == null) return;
 				Kingdom first = ResolveKingdom(record.FirstKingdomId);
 				Kingdom second = ResolveKingdom(record.SecondKingdomId);
-				string firstName = first?.Name?.ToString() ?? record.FirstKingdomId ?? "第一方王国";
-				string secondName = second?.Name?.ToString() ?? record.SecondKingdomId ?? "第二方王国";
+				string firstName = first?.Name?.ToString() ?? record.FirstKingdomId ?? DiplomacyMiscPromptTexts.Get("Bilateral_FirstKingdomDefault", "Party 1 Kingdom");
+				string secondName = second?.Name?.ToString() ?? record.SecondKingdomId ?? DiplomacyMiscPromptTexts.Get("Bilateral_SecondKingdomDefault", "Party 2 Kingdom");
 				string kindText = GetBilateralDiplomacyKindText(record);
 				string narrative;
 				bool isFinal = !string.Equals(state, "pending", StringComparison.OrdinalIgnoreCase);
@@ -2035,27 +2035,27 @@ namespace AnimusForge
 				switch ((state ?? "").Trim().ToLowerInvariant())
 				{
 					case "effective":
-						narrative = firstName + "与" + secondName + "均已批准" + kindText + "提案，双边协议已经正式生效。";
+						narrative = string.Format(DiplomacyMiscPromptTexts.Get("Bilateral_BothApproved", "{0} and {1} have both approved the {2} proposal; the bilateral agreement has officially taken effect."), firstName, secondName, kindText);
 						won = true;
 						break;
 					case "rejected":
-						narrative = firstName + "曾在本国议程中批准" + kindText + "提案，但" + secondName + "在对等复议中拒绝；该提案未获双方同意，协议未达成、未生效。";
+						narrative = string.Format(DiplomacyMiscPromptTexts.Get("Bilateral_SecondRejected", "{0} approved the {1} proposal in domestic agenda, but {2} rejected it in reciprocal review; proposal lacked bilateral consent, agreement not reached or effective."), firstName, kindText, secondName);
 						won = false;
 						break;
 					case "invalid":
-						narrative = firstName + "与" + secondName + "虽先后批准" + kindText + "提案，但生效条件已经变化；协议最终未生效。";
+						narrative = string.Format(DiplomacyMiscPromptTexts.Get("Bilateral_ConditionChanged", "Although {0} and {1} successively approved the {2} proposal, enactment conditions have changed; agreement ultimately did not take effect."), firstName, secondName, kindText);
 						won = false;
 						break;
 					case "creation_failed":
-						narrative = firstName + "仅在本国议程中批准了" + kindText + "提案，但未能建立由" + secondName + "进行的对等复议；该提案未获双方同意，协议未达成、未生效。";
+						narrative = string.Format(DiplomacyMiscPromptTexts.Get("Bilateral_FailedReciprocal", "{0} only approved the {1} proposal in domestic agenda, but reciprocal review by {2} could not be established; proposal lacked bilateral consent, agreement not reached or effective."), firstName, kindText, secondName);
 						won = false;
 						break;
 					case "cancelled":
-						narrative = firstName + "曾在本国议程中批准" + kindText + "提案，但" + secondName + "的对等复议已经取消或失效；该提案未获双方有效同意，协议未达成、未生效。";
+						narrative = string.Format(DiplomacyMiscPromptTexts.Get("Bilateral_ReciprocalCancelled", "{0} approved the {1} proposal in domestic agenda, but reciprocal review by {2} was cancelled or invalidated; proposal lacked valid bilateral consent, agreement not reached or effective."), firstName, kindText, secondName);
 						won = false;
 						break;
 					default:
-						narrative = firstName + "仅在本国议程中批准了" + kindText + "提案，并已提交" + secondName + "复议；" + secondName + "尚未批准，双边协议尚未达成、尚未生效。";
+						narrative = string.Format(DiplomacyMiscPromptTexts.Get("Bilateral_PendingReciprocal", "{0} approved the {1} proposal in domestic agenda and submitted to {2} for review; {2} has not yet approved, bilateral agreement not yet reached or effective."), firstName, kindText, secondName);
 						isFinal = false;
 						break;
 				}
@@ -2069,7 +2069,7 @@ namespace AnimusForge
 				AddBilateralDiplomacyParticipant(heroIds, decision?.ProposerClan?.Leader);
 				try { AddBilateralDiplomacyParticipant(heroIds, decision?.DetermineChooser()?.Leader); } catch { }
 
-				string fact = "[AFEF NPC行为补充] 双边外交状态：" + narrative;
+				string fact = string.Format(DiplomacyMiscPromptTexts.Get("Bilateral_FactPrefix", PromptComposerTexts.Raw("afef_npc_action") + " Bilateral diplomatic status: {0}"), narrative);
 				string stableKey = "bilateral_diplomacy:" + (record.RecordId ?? "unknown") + ":" + (isFinal ? "outcome" : "pending");
 				string actionKind = isFinal ? "bilateral_diplomacy_outcome" : "bilateral_diplomacy_pending";
 				string locationText = firstName + "—" + secondName;
@@ -2513,10 +2513,10 @@ namespace AnimusForge
 		{
 			switch (kind)
 			{
-				case BilateralDiplomacyKind.Peace: return "和平";
-				case BilateralDiplomacyKind.Alliance: return "同盟";
-				case BilateralDiplomacyKind.Trade: return "贸易协定";
-				default: return "外交";
+				case BilateralDiplomacyKind.Peace: return DiplomacyMiscPromptTexts.Get("Bilateral_Kind_Peace", "peace");
+				case BilateralDiplomacyKind.Alliance: return DiplomacyMiscPromptTexts.Get("Bilateral_Kind_Alliance", "alliance");
+				case BilateralDiplomacyKind.Trade: return DiplomacyMiscPromptTexts.Get("Bilateral_Kind_Trade", "trade agreement");
+				default: return DiplomacyMiscPromptTexts.Get("Bilateral_Kind_Diplomacy", "diplomacy");
 			}
 		}
 
@@ -2979,7 +2979,7 @@ namespace AnimusForge
 							DecisionBasicKey = BuildVoteDealDecisionKey(decision, includeProposer: false),
 							TypeLabel = VoteDealBehavior.GetBilateralDiplomacyAgendaTypeText(decision) ?? GetDecisionTypeDisplayLabelForAgenda(decision),
 							Title = GetDecisionDisplayTitleForAgenda(decision),
-							ProposerName = CleanVoteDealText(VoteDealBehavior.GetBilateralDiplomacyAgendaProposerText(decision) ?? decision.ProposerClan?.Name?.ToString() ?? "未知"),
+							ProposerName = CleanVoteDealText(VoteDealBehavior.GetBilateralDiplomacyAgendaProposerText(decision) ?? decision.ProposerClan?.Name?.ToString() ?? DiplomacyUiLocalization.Text("AF_DIP_UI_Vote_Unknown", "Unknown")),
 							RemainingDays = decision.TriggerTime.RemainingDaysFromNow
 						};
 
@@ -2995,7 +2995,7 @@ namespace AnimusForge
 								OutcomeBasicKey = BuildVoteDealOutcomeKey(outcome, includeSponsor: false),
 								Title = GetDecisionOutcomeDisplayTitleForAgenda(decision, outcome),
 								Description = GetDecisionOutcomeDisplayDescriptionForAgenda(decision, outcome),
-								SponsorName = CleanVoteDealText(outcome.SponsorClan?.Name?.ToString() ?? "未知"),
+								SponsorName = CleanVoteDealText(outcome.SponsorClan?.Name?.ToString() ?? DiplomacyUiLocalization.Text("AF_DIP_UI_Vote_Unknown", "Unknown")),
 								SponsorClanId = outcome.SponsorClan?.StringId ?? ""
 							});
 							optionIndex++;
@@ -3059,9 +3059,9 @@ namespace AnimusForge
 				// Non-leader cannot make vote deals
 				if (clan.Leader != null && npc != clan.Leader)
 				{
-					sb.Append("【投票交易身份限制】你不是家族族长（你的族长是");
-					sb.Append(clan.Leader.Name?.ToString() ?? "未知");
-					sb.AppendLine("），你不能代表家族做出投票或提案承诺。如果有人找你商议议程，你必须告知对方去找你的族长。");
+					sb.Append(DiplomacyPromptTexts.Get("VoteContext_000", "[Vote-deal authority restriction] You are not the clan leader (your clan leader is "));
+					sb.Append(clan.Leader.Name?.ToString() ?? DiplomacyPromptTexts.Get("VoteContext_001", "Unknown"));
+					sb.AppendLine(DiplomacyPromptTexts.Get("VoteContext_002", "); you cannot make voting or proposal commitments on behalf of the clan. If someone approaches you about an agenda, direct them to your clan leader."));
 				}
 
 				// Existing commitments block
@@ -3074,14 +3074,14 @@ namespace AnimusForge
 						.ToList();
 					if (existing.Count > 0)
 					{
-						sb.AppendLine("【你已承诺的投票交易】（务必遵守！不可反悔！）");
+						sb.AppendLine(DiplomacyPromptTexts.Get("VoteContext_003", "[Vote deals you already promised] (You must honor them; do not renege!)"));
 						foreach (var deal in existing)
 						{
-							sb.Append(" - 议程:").Append(string.IsNullOrWhiteSpace(deal.TargetDecisionTitle) ? "未知议程" : deal.TargetDecisionTitle);
-							sb.Append("，已承诺投票选择:").Append(string.IsNullOrWhiteSpace(deal.TargetOptionTitle) ? "未知选项" : deal.TargetOptionTitle);
-							sb.Append("，权重:").Append((Supporter.SupportWeights)deal.SupportWeightValue);
+							sb.Append(DiplomacyPromptTexts.Get("VoteContext_004", " - Agenda: ")).Append(string.IsNullOrWhiteSpace(deal.TargetDecisionTitle) ? DiplomacyPromptTexts.Get("VoteContext_005", "Unknown agenda") : deal.TargetDecisionTitle);
+							sb.Append(DiplomacyPromptTexts.Get("VoteContext_006", ", promised voting choice: ")).Append(string.IsNullOrWhiteSpace(deal.TargetOptionTitle) ? DiplomacyPromptTexts.Get("VoteContext_007", "Unknown option") : deal.TargetOptionTitle);
+							sb.Append(DiplomacyPromptTexts.Get("VoteContext_008", ", weight: ")).Append((Supporter.SupportWeights)deal.SupportWeightValue);
 							if (!string.IsNullOrEmpty(deal.Notes))
-								sb.Append("，备注:").Append(deal.Notes);
+								sb.Append(DiplomacyPromptTexts.Get("VoteContext_009", ", notes: ")).Append(deal.Notes);
 							sb.AppendLine();
 						}
 					}
@@ -3091,21 +3091,21 @@ namespace AnimusForge
 				if (includeAgendaDetails && kingdom.UnresolvedDecisions != null && kingdom.UnresolvedDecisions.Count > 0)
 				{
 					sb.AppendLine();
-					sb.AppendLine("【王国当前议程】（正在公示中的提案，公示期结束后将进入投票阶段。你可以按议程名称、城镇/国家/政策名、候选人或家族名理解玩家想拉票的对象；正文只自然说话，不要输出任何系统标签。）");
+					sb.AppendLine(DiplomacyPromptTexts.Get("VoteContext_010", "[Current kingdom agendas] (Proposals are in their announcement period and enter voting afterwards. Identify the player’s lobbying target by agenda title, town/kingdom/policy name, candidate or clan name. Speak naturally in the body; do not output system tags.)"));
 					List<VoteDealAgendaEntry> agendas = BuildVoteDealAgendaEntries(npc);
 					foreach (VoteDealAgendaEntry agenda in agendas)
 					{
 						bool isOwnProposal = agenda.Decision.ProposerClan?.StringId == clan.StringId;
-						string proposerNote = isOwnProposal ? "【你的家族提案，不可交易】" : "";
+						string proposerNote = isOwnProposal ? DiplomacyPromptTexts.Get("VoteContext_011", "[Your clan’s proposal; no vote deal allowed]") : "";
 						if (agenda.RemainingDays > 0)
-							sb.AppendLine($" - [{agenda.TypeLabel}] {agenda.Title}（提案人: {agenda.ProposerName}，剩余 {agenda.RemainingDays:F1} 天进入投票）{proposerNote}");
+							sb.AppendLine(DiplomacyPromptTexts.Format("VoteContextAgendaTimed", " - [{TYPE}] {TITLE} (proposer: {PROPOSER}, {DAYS} days until voting){NOTE}", "TYPE", GetDecisionTypePromptLabelForAgenda(agenda.Decision), "TITLE", agenda.Title, "PROPOSER", agenda.ProposerName, "DAYS", agenda.RemainingDays.ToString("F1"), "NOTE", proposerNote));
 						else
-							sb.AppendLine($" - [{agenda.TypeLabel}] {agenda.Title}（提案人: {agenda.ProposerName}，即将进入投票）{proposerNote}");
+							sb.AppendLine(DiplomacyPromptTexts.Format("VoteContextAgendaSoon", " - [{TYPE}] {TITLE} (proposer: {PROPOSER}, voting begins soon){NOTE}", "TYPE", GetDecisionTypePromptLabelForAgenda(agenda.Decision), "TITLE", agenda.Title, "PROPOSER", agenda.ProposerName, "NOTE", proposerNote));
 						foreach (VoteDealOptionEntry option in agenda.Options)
 						{
-							string sponsorText = string.IsNullOrWhiteSpace(option.SponsorName) || option.SponsorName == "未知" ? "" : $"，赞助/候选:{option.SponsorName}";
-							string descriptionText = string.IsNullOrWhiteSpace(option.Description) ? "" : $"，说明:{option.Description}";
-							sb.AppendLine($"   - 可投选项: {option.Title}{sponsorText}{descriptionText}");
+							string sponsorText = string.IsNullOrWhiteSpace(option.SponsorName) || option.SponsorName == DiplomacyMiscPromptTexts.Get("WorldDiplomacy_Unknown", "Unknown") || option.SponsorName.Equals("Unknown", StringComparison.OrdinalIgnoreCase) ? "" : DiplomacyPromptTexts.Format("VoteContextSponsor", ", sponsor/candidate: {NAME}", "NAME", option.SponsorName);
+							string descriptionText = string.IsNullOrWhiteSpace(option.Description) ? "" : DiplomacyPromptTexts.Format("VoteContextDescription", ", description: {DESCRIPTION}", "DESCRIPTION", option.Description);
+							sb.AppendLine(DiplomacyPromptTexts.Format("VoteContextOption", "   - Voting option: {TITLE}{SPONSOR}{DESCRIPTION}", "TITLE", option.Title, "SPONSOR", sponsorText, "DESCRIPTION", descriptionText));
 						}
 					}
 				}
@@ -3132,16 +3132,16 @@ namespace AnimusForge
 
 		private static string GetDecisionTypeLabel(KingdomDecision decision)
 	{
-		if (decision is DeclareWarDecision) return "宣战";
-		if (decision is MakePeaceKingdomDecision) return "和平";
-		if (decision is KingdomPolicyDecision) return "政策";
-		if (decision is SettlementClaimantPreliminaryDecision) return "封地";
-		if (decision is SettlementClaimantDecision) return "封地";
-		if (decision is KingSelectionKingdomDecision) return "王选";
-		if (decision is ExpelClanFromKingdomDecision) return "驱逐";
-		if (decision is StartAllianceDecision) return "联盟";
-		if (decision is TradeAgreementDecision) return "贸易";
-		return "决议";
+		if (decision is DeclareWarDecision) return DiplomacyMiscPromptTexts.Get("DecisionType_War", "War");
+		if (decision is MakePeaceKingdomDecision) return DiplomacyMiscPromptTexts.Get("DecisionType_Peace", "Peace");
+		if (decision is KingdomPolicyDecision) return DiplomacyMiscPromptTexts.Get("DecisionType_Policy", "Policy");
+		if (decision is SettlementClaimantPreliminaryDecision) return DiplomacyMiscPromptTexts.Get("DecisionType_Fief", "Fief");
+		if (decision is SettlementClaimantDecision) return DiplomacyMiscPromptTexts.Get("DecisionType_Fief", "Fief");
+		if (decision is KingSelectionKingdomDecision) return DiplomacyMiscPromptTexts.Get("DecisionType_KingSelection", "King Selection");
+		if (decision is ExpelClanFromKingdomDecision) return DiplomacyMiscPromptTexts.Get("DecisionType_Expel", "Expel Clan");
+		if (decision is StartAllianceDecision) return DiplomacyMiscPromptTexts.Get("DecisionType_Alliance", "Alliance");
+		if (decision is TradeAgreementDecision) return DiplomacyMiscPromptTexts.Get("DecisionType_Trade", "Trade Agreement");
+		return DiplomacyMiscPromptTexts.Get("DecisionType_Resolution", "Resolution");
 	}
 
 	/// <summary>
@@ -3150,6 +3150,20 @@ namespace AnimusForge
 	/// BuildVoteDealDecisionKey embeds its result in a persisted, save-stable deal key.
 	/// This projection is only for player-visible UI (agenda chip, dossier header, info line).
 	/// </summary>
+	private static string GetDecisionTypePromptLabelForAgenda(KingdomDecision decision)
+	{
+		if (IsBilateralDiplomacyCounterpartAgenda(decision)) return DiplomacyPromptTexts.Get("AF_DIP_UI_Vote_BilateralCounterpartType", "Reciprocal review");
+		if (decision is DeclareWarDecision) return DiplomacyPromptTexts.Get("AF_DIP_UI_Vote_TypeDeclareWar", "War");
+		if (decision is MakePeaceKingdomDecision) return DiplomacyPromptTexts.Get("AF_DIP_UI_Vote_TypeMakePeace", "Peace");
+		if (decision is KingdomPolicyDecision) return DiplomacyPromptTexts.Get("AF_DIP_UI_Vote_TypePolicy", "Policy");
+		if (decision is SettlementClaimantPreliminaryDecision || decision is SettlementClaimantDecision) return DiplomacyPromptTexts.Get("AF_DIP_UI_Vote_TypeFief", "Fief");
+		if (decision is KingSelectionKingdomDecision) return DiplomacyPromptTexts.Get("AF_DIP_UI_Vote_TypeKingSelection", "King selection");
+		if (decision is ExpelClanFromKingdomDecision) return DiplomacyPromptTexts.Get("AF_DIP_UI_Vote_TypeExpelClan", "Expel clan");
+		if (decision is StartAllianceDecision) return DiplomacyPromptTexts.Get("AF_DIP_UI_Vote_TypeAlliance", "Alliance");
+		if (decision is TradeAgreementDecision) return DiplomacyPromptTexts.Get("AF_DIP_UI_Vote_TypeTrade", "Trade");
+		return DiplomacyPromptTexts.Get("AF_DIP_UI_Vote_TypeDecision", "Decision");
+	}
+
 	internal static string GetDecisionTypeDisplayLabelForAgenda(KingdomDecision decision)
 	{
 		if (decision is DeclareWarDecision) return DiplomacyUiLocalization.Text("AF_DIP_UI_Vote_TypeDeclareWar", "War");
@@ -3187,7 +3201,7 @@ namespace AnimusForge
 				string playerName = MyBehavior.BuildPlayerPublicDisplayNameForExternal();
 				if (string.IsNullOrWhiteSpace(playerName))
 				{
-					playerName = "玩家";
+					playerName = DiplomacyPromptTexts.Get("VoteContextPlayer", "Player");
 				}
 				var tokens = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
 				{
@@ -3286,7 +3300,7 @@ namespace AnimusForge
 			{
 				if (__result == null) return;
 				Hero contextTarget = targetHero ?? (targetCharacter?.HeroObject);
-				bool voteDealRuleInjected = (__result.Extras ?? "").IndexOf("【附加规则:kingdom_agenda】", StringComparison.OrdinalIgnoreCase) >= 0;
+				bool voteDealRuleInjected = PromptRuleBlockText.Has(__result.Extras, "kingdom_agenda");
 				if (voteDealRuleInjected)
 				{
 					string runtimeInstruction = BuildRuntimeVoteDealInstruction(contextTarget);
@@ -4470,18 +4484,18 @@ namespace AnimusForge
 		}
 
 		private static string GetDecisionTypeLabel(KingdomDecision decision)
-		{
-			if (decision is DeclareWarDecision) return "宣战";
-			if (decision is MakePeaceKingdomDecision) return "和平";
-			if (decision is KingdomPolicyDecision) return "政策";
-			if (decision is SettlementClaimantPreliminaryDecision) return "封地";
-			if (decision is SettlementClaimantDecision) return "封地";
-			if (decision is KingSelectionKingdomDecision) return "王选";
-			if (decision is ExpelClanFromKingdomDecision) return "驱逐";
-			if (decision is StartAllianceDecision) return "联盟";
-			if (decision is TradeAgreementDecision) return "贸易";
-			return "决议";
-		}
+	{
+		if (decision is DeclareWarDecision) return DiplomacyMiscPromptTexts.Get("DecisionType_War", "War");
+		if (decision is MakePeaceKingdomDecision) return DiplomacyMiscPromptTexts.Get("DecisionType_Peace", "Peace");
+		if (decision is KingdomPolicyDecision) return DiplomacyMiscPromptTexts.Get("DecisionType_Policy", "Policy");
+		if (decision is SettlementClaimantPreliminaryDecision) return DiplomacyMiscPromptTexts.Get("DecisionType_Fief", "Fief");
+		if (decision is SettlementClaimantDecision) return DiplomacyMiscPromptTexts.Get("DecisionType_Fief", "Fief");
+		if (decision is KingSelectionKingdomDecision) return DiplomacyMiscPromptTexts.Get("DecisionType_KingSelection", "King Selection");
+		if (decision is ExpelClanFromKingdomDecision) return DiplomacyMiscPromptTexts.Get("DecisionType_Expel", "Expel Clan");
+		if (decision is StartAllianceDecision) return DiplomacyMiscPromptTexts.Get("DecisionType_Alliance", "Alliance");
+		if (decision is TradeAgreementDecision) return DiplomacyMiscPromptTexts.Get("DecisionType_Trade", "Trade Agreement");
+		return DiplomacyMiscPromptTexts.Get("DecisionType_Resolution", "Resolution");
+	}
 	}
 
 		public class AgendaSupporterVM : ViewModel

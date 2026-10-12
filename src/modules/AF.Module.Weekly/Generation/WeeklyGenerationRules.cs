@@ -36,11 +36,11 @@ internal static string BuildWeeklyReportFailureReason(string response, bool pars
 		string text = (response ?? "").Trim();
 		if (parseFailed)
 		{
-			return LlmRetryPrompt.BuildFailureDetail(string.IsNullOrWhiteSpace(text) ? "模型返回为空，且无法解析。" : "模型返回无法解析。", text);
+			return LlmRetryPrompt.BuildFailureDetail(string.IsNullOrWhiteSpace(text) ? WorldBulletinPolicyTexts.Title("AF_WBLT_UI_037", "The model returned an empty response that could not be parsed.") : WorldBulletinPolicyTexts.Title("AF_WBLT_UI_038", "The model response could not be parsed."), text);
 		}
 		if (string.IsNullOrWhiteSpace(text))
 		{
-			return "接口返回为空响应。";
+			return WorldBulletinPolicyTexts.Title("AF_WBLT_UI_039", "The API returned an empty response.");
 		}
 		return text;
 	}
@@ -70,7 +70,7 @@ internal static bool TryValidateWeeklyReportTagText(string rawTagText, out strin
 		string text = NormalizeWeeklyReportTagText(rawTagText);
 		if (string.IsNullOrWhiteSpace(text))
 		{
-			failureReason = "缺少 [TAGS]。";
+			failureReason = WorldBulletinPolicyTexts.Title("AF_WBLT_UI_040", "Missing [TAGS].");
 			return false;
 		}
 		List<string> list = text.Split(new char[1] { '\n' }, StringSplitOptions.RemoveEmptyEntries).Select((string x) => (x ?? "").Trim()).Where((string x) => !string.IsNullOrWhiteSpace(x)).ToList();
@@ -94,13 +94,13 @@ internal static bool TryValidateWeeklyReportTagText(string rawTagText, out strin
 			}
 			else if (!string.Equals(text3, text4, StringComparison.Ordinal))
 			{
-				failureReason = "包含多个相互冲突的稳定度标签。";
+				failureReason = WorldBulletinPolicyTexts.Title("AF_WBLT_UI_041", "The response contains conflicting stability tags.");
 				return false;
 			}
 		}
 		if (string.IsNullOrWhiteSpace(text3))
 		{
-			failureReason = "缺少合法稳定度标签。";
+			failureReason = WorldBulletinPolicyTexts.Title("AF_WBLT_UI_042", "No valid stability tag was found.");
 			return false;
 		}
 		normalizedTagText = text3;
@@ -184,12 +184,20 @@ internal static string NeutralizeWeeklyReportScenarioName(string text)
 		{
 			return "";
 		}
-		text2 = text2.Replace("卡拉迪亚大陆", "大陆");
-		text2 = text2.Replace("卡拉迪亚", "大陆");
-		text2 = Regex.Replace(text2, "\\bCalradia\\b", "大陆", RegexOptions.IgnoreCase);
-		while (text2.Contains("大陆大陆"))
+		string neutralName = WorldBulletinPolicyTexts.Prompt("AF_WBLT_Prompt_NeutralContinent");
+		string legacyNeutralName = WorldBulletinPolicyTexts.Raw("WBLT_Raw_031");
+		string legacyDuplicateName = WorldBulletinPolicyTexts.Raw("WBLT_Raw_033");
+		while (text2.Contains(legacyDuplicateName))
 		{
-			text2 = text2.Replace("大陆大陆", "大陆");
+			text2 = text2.Replace(legacyDuplicateName, legacyNeutralName);
+		}
+		text2 = text2.Replace(WorldBulletinPolicyTexts.Raw("WBLT_Raw_030"), neutralName);
+		text2 = text2.Replace(WorldBulletinPolicyTexts.Raw("WBLT_Raw_032"), neutralName);
+		text2 = Regex.Replace(text2, "\\bCalradia\\b", _ => neutralName, RegexOptions.IgnoreCase);
+		string duplicateName = neutralName + neutralName;
+		while (text2.Contains(duplicateName))
+		{
+			text2 = text2.Replace(duplicateName, neutralName);
 		}
 		return text2.Trim();
 	}
@@ -201,7 +209,7 @@ internal bool TryParseWeeklyBatchResponse(string rawResponse, WeeklyReportBatchR
 		string text = (rawResponse ?? "").Replace("\r", "").Trim();
 		if (string.IsNullOrWhiteSpace(text))
 		{
-			failureReason = "批量周报响应为空。";
+			failureReason = WorldBulletinPolicyTexts.Title("AF_WBLT_UI_043", "The batch weekly-report response is empty.");
 			missingReportIds = BuildWeeklyBatchExpectedReportIds(batch);
 			return false;
 		}
@@ -210,7 +218,7 @@ internal bool TryParseWeeklyBatchResponse(string rawResponse, WeeklyReportBatchR
 		MatchCollection matchCollection = Regex.Matches(text, "\\[REPORT_BLOCK_BEGIN\\]\\s*(?<body>[\\s\\S]*?)\\s*\\[REPORT_BLOCK_END\\]", RegexOptions.IgnoreCase);
 		if (matchCollection.Count == 0)
 		{
-			failureReason = "响应中没有找到任何 REPORT_BLOCK。";
+			failureReason = WorldBulletinPolicyTexts.Title("AF_WBLT_UI_044", "No REPORT_BLOCK was found in the response.");
 			missingReportIds = BuildWeeklyBatchExpectedReportIds(batch);
 			return false;
 		}
@@ -243,7 +251,7 @@ internal bool TryParseWeeklyBatchResponse(string rawResponse, WeeklyReportBatchR
 		}
 		if (missingReportIds.Count > 0)
 		{
-			failureReason = (list.Count == 0) ? ("批量周报响应缺少部分 report_id：" + string.Join("、", missingReportIds)) : ((list.Count == missingReportIds.Count) ? ("批量周报响应中的 report_id 解析失败：" + string.Join("、", list)) : ("批量周报响应缺少或解析失败的 report_id：" + string.Join("、", missingReportIds)));
+			failureReason = (list.Count == 0) ? (WorldBulletinPolicyTexts.Title("AF_WBLT_UI_045", "Missing report_id values in the batch response: ") + string.Join("、", missingReportIds)) : ((list.Count == missingReportIds.Count) ? (WorldBulletinPolicyTexts.Title("AF_WBLT_UI_046", "Could not parse report_id values in the batch response: ") + string.Join("、", list)) : (WorldBulletinPolicyTexts.Title("AF_WBLT_UI_047", "Missing or unparseable report_id values in the batch response: ") + string.Join("、", missingReportIds)));
 		}
 		return blocks.Any((WeeklyReportBatchBlockResult x) => x != null && x.Parsed);
 	}
@@ -253,7 +261,7 @@ internal bool TryParseWeeklyBatchBlock(string rawBlockBody, WeeklyReportBatchReq
 		string text = (rawBlockBody ?? "").Trim();
 		if (string.IsNullOrWhiteSpace(text))
 		{
-			block.FailureReason = "空 block。";
+			block.FailureReason = WorldBulletinPolicyTexts.Title("AF_WBLT_UI_048", "Empty block.");
 			return false;
 		}
 		block.ReportId = ExtractWeeklyBatchHeaderValue(text, "report_id");
@@ -262,12 +270,12 @@ internal bool TryParseWeeklyBatchBlock(string rawBlockBody, WeeklyReportBatchReq
 		block.KingdomId = ExtractWeeklyBatchHeaderValue(text, "kingdom_id");
 		if (string.IsNullOrWhiteSpace(block.ReportId))
 		{
-			block.FailureReason = "缺少 report_id。";
+			block.FailureReason = WorldBulletinPolicyTexts.Title("AF_WBLT_UI_049", "Missing report_id.");
 			return false;
 		}
 		if (groupMap == null || !groupMap.TryGetValue(block.ReportId, out var value) || value == null)
 		{
-			block.FailureReason = "report_id 未在输入批次中找到：" + block.ReportId;
+			block.FailureReason = WorldBulletinPolicyTexts.Title("AF_WBLT_UI_050", "The report_id was not found in the input batch: ") + block.ReportId;
 			return false;
 		}
 		bool flag = value.OutputMode == WeeklyReportOutputMode.TitleShortTagsOnly;
@@ -276,12 +284,12 @@ internal bool TryParseWeeklyBatchBlock(string rawBlockBody, WeeklyReportBatchReq
 			string text2 = (block.Mode ?? "").Trim().ToLowerInvariant();
 			if (flag && !string.Equals(text2, "title_short_tags_only", StringComparison.OrdinalIgnoreCase))
 			{
-				block.FailureReason = "mode 与输入批次不一致。";
+				block.FailureReason = WorldBulletinPolicyTexts.Title("AF_WBLT_UI_051", "The mode does not match the input batch.");
 				return false;
 			}
 			if (!flag && !string.Equals(text2, "full_report", StringComparison.OrdinalIgnoreCase))
 			{
-				block.FailureReason = "mode 与输入批次不一致。";
+				block.FailureReason = WorldBulletinPolicyTexts.Title("AF_WBLT_UI_051", "The mode does not match the input batch.");
 				return false;
 			}
 		}
@@ -290,7 +298,7 @@ internal bool TryParseWeeklyBatchBlock(string rawBlockBody, WeeklyReportBatchReq
 			string text2 = (value.KingdomId ?? "").Trim();
 			if (string.IsNullOrWhiteSpace((block.KingdomId ?? "").Trim()) || !string.Equals((block.KingdomId ?? "").Trim(), text2, StringComparison.OrdinalIgnoreCase))
 			{
-				block.FailureReason = "kingdom_id 与输入批次不一致。";
+				block.FailureReason = WorldBulletinPolicyTexts.Title("AF_WBLT_UI_052", "The kingdom_id does not match the input batch.");
 				return false;
 			}
 		}

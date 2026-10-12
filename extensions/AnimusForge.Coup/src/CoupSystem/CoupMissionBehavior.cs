@@ -59,7 +59,7 @@ internal sealed class CoupMissionBehavior : MissionLogic
             {
                 if (Mission.MainAgent?.IsActive() != true)
                 {
-                    if (Mission.CurrentTime > 30f) ExitTechnical("原版场景没有生成玩家。");
+                    if (Mission.CurrentTime > 30f) ExitTechnical(CoupSourceTexts.Get("VanillaNoPlayer"));
                     return;
                 }
                 InitializeObjective();
@@ -77,7 +77,7 @@ internal sealed class CoupMissionBehavior : MissionLogic
         catch (Exception ex)
         {
             Logger.Log("Coup", "Mission tick failed: " + ex);
-            ExitTechnical("政变场景处理失败：" + ex.Message);
+            ExitTechnical(CoupSourceTexts.Format("SceneHandlingFailed", ex.Message));
         }
     }
 
@@ -94,7 +94,7 @@ internal sealed class CoupMissionBehavior : MissionLogic
                 return;
             }
             if (!_player.IsActive()) return;
-            if (passage.IsMissionExit) { ExitDefeat("从场景出口撤出了政变战斗。"); return; }
+            if (passage.IsMissionExit) { ExitDefeat(CoupSourceTexts.Get("ExitDefeat")); return; }
             if (_hall || _session.Phase != CoupPhase.Street || passage.ToLocation?.StringId != "lordshall")
             {
                 InformationManager.DisplayMessage(new InformationMessage(CoupUiText.PassageBlocked));
@@ -115,7 +115,7 @@ internal sealed class CoupMissionBehavior : MissionLogic
         catch (Exception ex)
         {
             Logger.Log("Coup", "Hall passage transition failed: " + ex);
-            ExitTechnical("大厅转场失败：" + ex.Message);
+            ExitTechnical(CoupSourceTexts.Format("HallTransitionFailed", ex.Message));
         }
     }
 
@@ -128,13 +128,13 @@ internal sealed class CoupMissionBehavior : MissionLogic
             || Mission.MissionTeamAIType == Mission.MissionTeamAITypeEnum.Siege
             || Mission.MissionTeamAIType == Mission.MissionTeamAITypeEnum.SallyOut
             || Mission.MissionTeamAIType == Mission.MissionTeamAITypeEnum.FieldBattle)
-            throw new InvalidOperationException("政变任务上下文已改变。");
+            throw new InvalidOperationException(CoupSourceTexts.Get("MissionContextChanged"));
 
         _player = Mission.MainAgent;
         _player.Health = ClampHealth(_session.PlayerHealth, _player.HealthLimit);
         MissionAgentHandler handler = Mission.GetMissionBehavior<MissionAgentHandler>();
         if (!_hall && !TryGetDoor(handler?.TownPassageProps) && !TryGetDoor(handler?.DisabledPassages))
-            throw new InvalidOperationException("街道没有可用的真实领主大厅门口。");
+            throw new InvalidOperationException(CoupSourceTexts.Get("NoHallEntrance"));
         if (_hall)
         {
             foreach (Agent agent in Mission.Agents)
@@ -146,10 +146,10 @@ internal sealed class CoupMissionBehavior : MissionLogic
                 GameEntity throne = Mission.Scene.FindEntityWithTag("sp_throne")
                     ?? Mission.Scene.FindEntityWithTag("defender_infantry");
                 CharacterObject kingCharacter = Hero.FindFirst(hero => hero.StringId == _session.KingId)?.CharacterObject;
-                if (throne == null || kingCharacter == null) throw new InvalidOperationException("领主大厅没有国王或有效的王座/守军生成点。");
+                if (throne == null || kingCharacter == null) throw new InvalidOperationException(CoupSourceTexts.Get("NoKingOrThrone"));
                 _king = SettlementEntryTroopSelectionBehavior.SpawnCoupKing(Mission, kingCharacter, throne.GetGlobalFrame());
             }
-            if (_king == null) throw new InvalidOperationException("国王无法在大厅生成。");
+            if (_king == null) throw new InvalidOperationException(CoupSourceTexts.Get("KingSpawnFailed"));
             _king.Health = ClampHealth(_session.KingHealth, _king.HealthLimit);
         }
         _initialized = true;
@@ -176,13 +176,13 @@ internal sealed class CoupMissionBehavior : MissionLogic
 
     private void CheckObjectives()
     {
-        if (!_player.IsActive()) { ExitDefeat("玩家已倒地。"); return; }
+        if (!_player.IsActive()) { ExitDefeat(CoupSourceTexts.Get("PlayerDown")); return; }
         SaveHealth();
         if (_hall)
         {
             if (!_session.KingSubdued && _king?.IsActive() != true)
             {
-                ExitTechnical("目标国王异常离开大厅，政变结果尚未成立。");
+                ExitTechnical(CoupSourceTexts.Get("KingLeftHall"));
                 return;
             }
             if (_king?.IsActive() == true)
@@ -230,7 +230,7 @@ internal sealed class CoupMissionBehavior : MissionLogic
         if (affectedAgent == _player && casualty)
         {
             _session.PlayerHealth = 1f;
-            ExitDefeat("玩家已倒地。");
+            ExitDefeat(CoupSourceTexts.Get("PlayerDown"));
             return;
         }
         if (affectedAgent == _king && casualty)
@@ -325,7 +325,7 @@ internal sealed class CoupMissionBehavior : MissionLogic
             // A verified hall victory survives an external closure; map recovery asks for the
             // still-undecided disposition instead of turning an established victory into defeat.
             if (_session.Phase != CoupPhase.Suspended && (!_victoryAwaitingChoice || _session.Phase != CoupPhase.AwaitingResolution))
-                CoupCampaignBehavior.NotifyDefeat(Mission, "政变战斗已提前结束。");
+                CoupCampaignBehavior.NotifyDefeat(Mission, CoupSourceTexts.Get("BattleEndedEarly"));
         }
         Mission.IsAgentInteractionAllowed_AdditionalCondition -= DenyNativeInteraction;
         base.OnEndMission();

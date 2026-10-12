@@ -44,7 +44,7 @@ internal sealed class CivilWarGrievanceSourceDef
 internal sealed class CivilWarDemandDef
 {
 	internal string Id = "";
-	internal string FactionNameFormat = "{leader}为首的派系"; // {leader} = clan name
+	internal string FactionNameFormat = KingdomCivilWarTexts.Raw("CW_Catalog_FactionName_default"); // {leader} = clan name
 	internal string Text = "";                               // {target} = resolved target name
 	internal string Color = "#6B3A78FF";
 	internal float BaseWeight = 0.1f;
@@ -147,16 +147,16 @@ internal static class CivilWarCatalog
 	// ---------------------------------------------------------------- sources
 	internal static readonly IReadOnlyList<CivilWarGrievanceSourceDef> Sources = new List<CivilWarGrievanceSourceDef>
 	{
-		new CivilWarGrievanceSourceDef { Id = "royal_execution", Name = "王室处决", DecayPerWeek = 0.08f },
-		new CivilWarGrievanceSourceDef { Id = "fief_denied", Name = "封地落选", DecayPerWeek = 0.12f },
-		new CivilWarGrievanceSourceDef { Id = "policy_imposed", Name = "政策强推", DecayPerWeek = 0.12f },
-		new CivilWarGrievanceSourceDef { Id = "war_imposed", Name = "强行开战", DecayPerWeek = 0.15f },
-		new CivilWarGrievanceSourceDef { Id = "peace_imposed", Name = "强行议和", DecayPerWeek = 0.15f },
-		new CivilWarGrievanceSourceDef { Id = "lands_raided", Name = "领地遭劫", DecayPerWeek = 0.20f },
-		new CivilWarGrievanceSourceDef { Id = "fief_lost", Name = "失守封地", DecayPerWeek = 0.10f },
-		new CivilWarGrievanceSourceDef { Id = "broken_pledge", Name = "国王背诺", DecayPerWeek = 0.06f },
-		new CivilWarGrievanceSourceDef { Id = "demand_refused", Name = "诉求被拒", DecayPerWeek = 0.10f },
-		new CivilWarGrievanceSourceDef { Id = "royal_suppression", Name = "王室打压", DecayPerWeek = 0.10f }
+		new CivilWarGrievanceSourceDef { Id = "royal_execution", Name = KingdomCivilWarTexts.Raw("CW_Catalog_Source_royal_execution"), DecayPerWeek = 0.08f },
+		new CivilWarGrievanceSourceDef { Id = "fief_denied", Name = KingdomCivilWarTexts.Raw("CW_Catalog_Source_fief_denied"), DecayPerWeek = 0.12f },
+		new CivilWarGrievanceSourceDef { Id = "policy_imposed", Name = KingdomCivilWarTexts.Raw("CW_Catalog_Source_policy_imposed"), DecayPerWeek = 0.12f },
+		new CivilWarGrievanceSourceDef { Id = "war_imposed", Name = KingdomCivilWarTexts.Raw("CW_Catalog_Source_war_imposed"), DecayPerWeek = 0.15f },
+		new CivilWarGrievanceSourceDef { Id = "peace_imposed", Name = KingdomCivilWarTexts.Raw("CW_Catalog_Source_peace_imposed"), DecayPerWeek = 0.15f },
+		new CivilWarGrievanceSourceDef { Id = "lands_raided", Name = KingdomCivilWarTexts.Raw("CW_Catalog_Source_lands_raided"), DecayPerWeek = 0.20f },
+		new CivilWarGrievanceSourceDef { Id = "fief_lost", Name = KingdomCivilWarTexts.Raw("CW_Catalog_Source_fief_lost"), DecayPerWeek = 0.10f },
+		new CivilWarGrievanceSourceDef { Id = "broken_pledge", Name = KingdomCivilWarTexts.Raw("CW_Catalog_Source_broken_pledge"), DecayPerWeek = 0.06f },
+		new CivilWarGrievanceSourceDef { Id = "demand_refused", Name = KingdomCivilWarTexts.Raw("CW_Catalog_Source_demand_refused"), DecayPerWeek = 0.10f },
+		new CivilWarGrievanceSourceDef { Id = "royal_suppression", Name = KingdomCivilWarTexts.Raw("CW_Catalog_Source_royal_suppression"), DecayPerWeek = 0.10f }
 	};
 
 	// ---------------------------------------------------------------- demands
@@ -164,7 +164,7 @@ internal static class CivilWarCatalog
 	{
 		new CivilWarDemandDef
 		{
-			Id = "make_peace", FactionNameFormat = "{leader}为首的反战派", Text = "停止与{target}的战争并议和", Color = "#1E6B4AFF",
+			Id = "make_peace", FactionNameFormat = KingdomCivilWarTexts.Raw("CW_Catalog_FactionName_make_peace"), Text = KingdomCivilWarTexts.Raw("CW_Catalog_Demand_make_peace"), Color = "#1E6B4AFF",
 			BaseWeight = 0.05f, Target = CivilWarDemandTarget.EnemyKingdom,
 			Affinity = A(("lands_raided", 0.9f), ("war_imposed", 1.0f), ("fief_lost", 0.6f)),
 			AcceptEffectId = CivilWarEffectIds.MakePeaceWithTarget,
@@ -174,7 +174,7 @@ internal static class CivilWarCatalog
 		},
 		new CivilWarDemandDef
 		{
-			Id = "continue_war", FactionNameFormat = "{leader}为首的主战派", Text = "对{target}战事不许议和", Color = "#8C4A1EFF",
+			Id = "continue_war", FactionNameFormat = KingdomCivilWarTexts.Raw("CW_Catalog_FactionName_continue_war"), Text = KingdomCivilWarTexts.Raw("CW_Catalog_Demand_continue_war"), Color = "#8C4A1EFF",
 			BaseWeight = 0.05f, Target = CivilWarDemandTarget.EnemyKingdom,
 			Affinity = A(("peace_imposed", 1.2f), ("fief_lost", 0.5f)),
 			AcceptEffectId = CivilWarEffectIds.PledgeWarOnTarget,
@@ -184,7 +184,7 @@ internal static class CivilWarCatalog
 		},
 		new CivilWarDemandDef
 		{
-			Id = "revoke_policy", FactionNameFormat = "{leader}为首的改革派", Text = "废除{target}", Color = "#6B3A78FF",
+			Id = "revoke_policy", FactionNameFormat = KingdomCivilWarTexts.Raw("CW_Catalog_FactionName_revoke_policy"), Text = KingdomCivilWarTexts.Raw("CW_Catalog_Demand_revoke_policy"), Color = "#6B3A78FF",
 			BaseWeight = 0.02f, Target = CivilWarDemandTarget.ImposedPolicy,
 			Affinity = A(("policy_imposed", 1.3f)),
 			AcceptEffectId = CivilWarEffectIds.RevokeTargetPolicy,
@@ -194,7 +194,7 @@ internal static class CivilWarCatalog
 		},
 		new CivilWarDemandDef
 		{
-			Id = "redress", FactionNameFormat = "{leader}为首的复仇派", Text = "赔偿损失并追究责任", Color = "#6B1E4AFF",
+			Id = "redress", FactionNameFormat = KingdomCivilWarTexts.Raw("CW_Catalog_FactionName_redress"), Text = KingdomCivilWarTexts.Raw("CW_Catalog_Demand_redress"), Color = "#6B1E4AFF",
 			BaseWeight = 0.03f,
 			Affinity = A(("royal_execution", 1.2f), ("fief_denied", 0.8f), ("broken_pledge", 0.8f), ("fief_lost", 0.4f)),
 			AcceptEffectId = CivilWarEffectIds.PayRedress,
@@ -204,7 +204,7 @@ internal static class CivilWarCatalog
 		},
 		new CivilWarDemandDef
 		{
-			Id = "autonomy", FactionNameFormat = "{leader}为首的分离派", Text = "承认本派封地自治", Color = "#8C5A12FF",
+			Id = "autonomy", FactionNameFormat = KingdomCivilWarTexts.Raw("CW_Catalog_FactionName_autonomy"), Text = KingdomCivilWarTexts.Raw("CW_Catalog_Demand_autonomy"), Color = "#8C5A12FF",
 			BaseWeight = 0.02f, MinFortifications = 1, MaxLeaderRelationToKing = -5,
 			Affinity = A(("royal_suppression", 0.8f), ("fief_denied", 0.6f), ("lands_raided", 0.5f), ("demand_refused", 0.5f), ("broken_pledge", 0.5f)),
 			AcceptEffectId = CivilWarEffectIds.GrantPrivileges,
@@ -214,7 +214,7 @@ internal static class CivilWarCatalog
 		},
 		new CivilWarDemandDef
 		{
-			Id = UsurpDemandId, FactionNameFormat = "{leader}为首的宣权派", Text = "国王退位，由本派领袖继位", Color = "#8C1E1EFF",
+			Id = UsurpDemandId, FactionNameFormat = KingdomCivilWarTexts.Raw("CW_Catalog_FactionName_usurp"), Text = KingdomCivilWarTexts.Raw("CW_Catalog_Demand_usurp"), Color = "#8C1E1EFF",
 			BaseWeight = 0.01f, MinFortifications = 1, MaxLeaderRelationToKing = -10,
 			Affinity = A(("royal_suppression", 1f), ("royal_execution", 0.7f), ("broken_pledge", 0.6f), ("demand_refused", 0.8f)),
 			AcceptEffectId = CivilWarEffectIds.Abdicate,
@@ -229,27 +229,27 @@ internal static class CivilWarCatalog
 	{
 		new CivilWarOutcomeDef
 		{
-			Id = "rebels_usurp", Name = "叛军夺位", Goals = G(CivilWarWarGoal.Usurp), EffectId = CivilWarEffectIds.UsurpThrone, RebelsWon = true,
+			Id = "rebels_usurp", Name = KingdomCivilWarTexts.Raw("CW_Catalog_Outcome_rebels_usurp"), Goals = G(CivilWarWarGoal.Usurp), EffectId = CivilWarEffectIds.UsurpThrone, RebelsWon = true,
 			Weight = new CivilWarChance(0.35f, W(CivilWarFeature.WarScore, 0.60f))
 		},
 		new CivilWarOutcomeDef
 		{
-			Id = SecedeOutcomeId, Name = "叛军独立", Goals = G(CivilWarWarGoal.Secede), EffectId = CivilWarEffectIds.Secede, RebelsWon = true,
+			Id = SecedeOutcomeId, Name = KingdomCivilWarTexts.Raw("CW_Catalog_Outcome_rebels_secede"), Goals = G(CivilWarWarGoal.Secede), EffectId = CivilWarEffectIds.Secede, RebelsWon = true,
 			Weight = new CivilWarChance(0.35f, W(CivilWarFeature.WarScore, 0.60f))
 		},
 		new CivilWarOutcomeDef
 		{
-			Id = "rebels_coerce", Name = "叛军逼宫", Goals = G(CivilWarWarGoal.Coerce), EffectId = CivilWarEffectIds.Concession, RebelsWon = true,
+			Id = "rebels_coerce", Name = KingdomCivilWarTexts.Raw("CW_Catalog_Outcome_rebels_coerce"), Goals = G(CivilWarWarGoal.Coerce), EffectId = CivilWarEffectIds.Concession, RebelsWon = true,
 			Weight = new CivilWarChance(0.35f, W(CivilWarFeature.WarScore, 0.60f))
 		},
 		new CivilWarOutcomeDef
 		{
-			Id = NegotiatedOutcomeId, Name = "议和妥协", Goals = G(CivilWarWarGoal.Coerce, CivilWarWarGoal.Usurp, CivilWarWarGoal.Secede), EffectId = CivilWarEffectIds.Concession, RebelsWon = false,
+			Id = NegotiatedOutcomeId, Name = KingdomCivilWarTexts.Raw("CW_Catalog_Outcome_negotiated"), Goals = G(CivilWarWarGoal.Coerce, CivilWarWarGoal.Usurp, CivilWarWarGoal.Secede), EffectId = CivilWarEffectIds.Concession, RebelsWon = false,
 			Weight = new CivilWarChance(0.25f, W(CivilWarFeature.WarScoreAbs, -0.30f), W(CivilWarFeature.WarProgress, 0.15f))
 		},
 		new CivilWarOutcomeDef
 		{
-			Id = CrownVictoryOutcomeId, Name = "王室平叛", Goals = G(CivilWarWarGoal.Coerce, CivilWarWarGoal.Usurp, CivilWarWarGoal.Secede), EffectId = CivilWarEffectIds.CrownVictory, RebelsWon = false,
+			Id = CrownVictoryOutcomeId, Name = KingdomCivilWarTexts.Raw("CW_Catalog_Outcome_crown_victory"), Goals = G(CivilWarWarGoal.Coerce, CivilWarWarGoal.Usurp, CivilWarWarGoal.Secede), EffectId = CivilWarEffectIds.CrownVictory, RebelsWon = false,
 			Weight = new CivilWarChance(0.35f, W(CivilWarFeature.WarScore, -0.60f))
 		}
 	};

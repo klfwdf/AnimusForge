@@ -8,7 +8,7 @@ namespace AnimusForge.Illustrator.UI
     // Presentation projections only. Raw director, cache and capture metadata stay unchanged.
     internal static class IllustrationStatusUiText
     {
-        private static readonly Regex SceneBudget = new Regex(@"^环境物件超过([0-9]+)个预算，已跳过环境采集，继续绘制$", RegexOptions.CultureInvariant);
+        private static readonly Regex SceneBudget = new Regex(IllustratorText.Raw("Residual_IllustrationStatusUiText_cbe2dc408a8b"), RegexOptions.CultureInvariant);
 
         internal static string Bulletin(BulletinIllustrationPreloader.Job job)
         {
@@ -45,12 +45,18 @@ namespace AnimusForge.Illustrator.UI
             return string.IsNullOrWhiteSpace(direction.FinishReason) ? Validated : Complete;
         }
 
+        internal static string DisplayTheme(string raw)
+        {
+            return string.Equals(raw, IllustratorText.Raw("Residual_IllustrationStatusUiText_ade70c013f11"), StringComparison.Ordinal)
+                ? IllustratorUiText.Resolve("AF_ILL_UI_DEFAULT_THEME", "Characters and circumstances") : raw;
+        }
+
         internal static string Cached(CachedIllustrationItem item, string styleFingerprint = null, bool checkStyle = false)
         {
             if (item == null) return string.Empty;
             string display = string.IsNullOrWhiteSpace(item.Theme)
                 ? IllustratorUiText.StatusChronicle
-                : IllustratorUiText.StatusTheme(item.Theme);
+                : IllustratorUiText.StatusTheme(DisplayTheme(item.Theme));
             if (!string.IsNullOrWhiteSpace(item.DirectorStatus) && item.DirectorStatus != "complete" && !string.IsNullOrWhiteSpace(item.DirectorStatusText))
                 display += "\n" + CachedDirector(item.DirectorStatus, item.DirectorStatusText, item.DirectorFallbackReason);
             if (checkStyle && !DiskImageCacheManager.IsStyleCompatible(item, styleFingerprint))
@@ -60,27 +66,37 @@ namespace AnimusForge.Illustrator.UI
 
         private static string CachedDirector(string status, string raw, string reason)
         {
-            if (status == "failed" && raw == (reason ?? string.Empty) + "，已停止生图") return Failed(reason);
-            if (status == "truncated" && raw == "导演输出截断，已停止生图") return Truncated;
-            if (status == "vision_unsupported" && raw == "导演不支持识图，已使用文字构思") return VisionUnsupported;
+            if (status == "failed" && (raw == (reason ?? string.Empty) + IllustratorText.Raw("Residual_IllustrationStatusUiText_10fb0edab25d") || raw == (reason ?? string.Empty) + ". Image generation stopped.")) return Failed(reason);
+            if (status == "truncated" && (raw == IllustratorText.Raw("Residual_IllustrationStatusUiText_49d596298256") || raw == "The director output was truncated. Image generation stopped.")) return Truncated;
+            if (status == "vision_unsupported" && (raw == IllustratorText.Raw("Residual_IllustrationStatusUiText_761f454d6192") || raw == "The director does not support vision. Text-only conception was used.")) return VisionUnsupported;
             return status == "local_fallback" ? KnownLocalFallback(raw) : raw;
         }
 
         private static string KnownLocalFallback(string raw)
         {
-            const string visionPrefix = "导演不支持识图；";
-            bool vision = raw != null && raw.StartsWith(visionPrefix, StringComparison.Ordinal);
-            string body = vision ? raw.Substring(visionPrefix.Length) : raw;
+            string visionPrefix = IllustratorText.Raw("Residual_IllustrationStatusUiText_4d674f005f6e");
+            const string englishVisionPrefix = "The director does not support vision; ";
+            bool chineseVision = raw != null && raw.StartsWith(visionPrefix, StringComparison.Ordinal);
+            bool englishVision = raw != null && raw.StartsWith(englishVisionPrefix, StringComparison.Ordinal);
+            bool vision = chineseVision || englishVision;
+            string body = chineseVision ? raw.Substring(visionPrefix.Length) : englishVision ? raw.Substring(englishVisionPrefix.Length) : raw;
             string reason;
-            switch (body)
+            switch (IllustratorText.NormalizeLegacyCase(body))
             {
-                case "导演已关闭，已使用本地构图": reason = IllustratorUiText.StatusDirectorDisabled; break;
-                case "导演接口未配置，已使用本地构图": reason = IllustratorUiText.StatusDirectorUnconfigured; break;
-                case "导演正文违反人物或装备约束，已使用本地构图": reason = IllustratorUiText.StatusDirectorConstraint; break;
-                case "导演正文未转成画面描述，已使用本地构图": reason = IllustratorUiText.StatusDirectorNarrative; break;
-                case "导演正文结构或构图不合要求，已使用本地构图": reason = IllustratorUiText.StatusDirectorStructure; break;
-                case "导演正文缺少画面描述，已使用本地构图": reason = IllustratorUiText.StatusDirectorEmpty; break;
-                case "导演正文不可用，已使用本地构图": reason = IllustratorUiText.StatusDirectorUnavailable; break;
+                case "AFICASE0f18bd4735d56b6e":
+                case "The director is disabled. A local composition was used": reason = IllustratorUiText.StatusDirectorDisabled; break;
+                case "AFICASEa01eeb634c60faff":
+                case "The director interface is not configured. A local composition was used": reason = IllustratorUiText.StatusDirectorUnconfigured; break;
+                case "AFICASEfd4f3116db18cbda":
+                case "The director body violates character or equipment constraints. A local composition was used": reason = IllustratorUiText.StatusDirectorConstraint; break;
+                case "AFICASE77f3d1765c9838f7":
+                case "The director body was not translated into a visual description. A local composition was used": reason = IllustratorUiText.StatusDirectorNarrative; break;
+                case "AFICASE3c08919c06430fe7":
+                case "The director body has an unsuitable structure or composition. A local composition was used": reason = IllustratorUiText.StatusDirectorStructure; break;
+                case "AFICASEac7bd50a6013b00d":
+                case "The director body lacks a visual description. A local composition was used": reason = IllustratorUiText.StatusDirectorEmpty; break;
+                case "AFICASE9807866671a11e30":
+                case "The director body is unusable. A local composition was used": reason = IllustratorUiText.StatusDirectorUnavailable; break;
                 default: return raw;
             }
             return (vision ? IllustratorUiText.StatusVisionPrefix : string.Empty) + IllustratorUiText.StatusLocalFallback(reason);
@@ -88,13 +104,13 @@ namespace AnimusForge.Illustrator.UI
 
         internal static string Scene(string raw)
         {
-            switch (raw)
+            switch (IllustratorText.NormalizeLegacyCase(raw))
             {
-                case "野外对话：按地形事实构图（不截图）": return IllustratorUiText.StatusSceneTerrain;
-                case "场景全景已关闭：使用当前画面截图": return IllustratorUiText.StatusSceneDisabledScreenshot;
-                case "场景全景已关闭：按文字事实构图": return IllustratorUiText.StatusSceneDisabledFacts;
-                case "任务场景：附近30米全景参考可用": return IllustratorUiText.StatusScenePanorama;
-                case "任务场景：附近30米全景参考可用；当前位置截图未取得": return IllustratorUiText.StatusScenePanoramaNoScreenshot;
+                case "AFICASE6bab834a93172e19": return IllustratorUiText.StatusSceneTerrain;
+                case "AFICASE9b51875a1934a3b6": return IllustratorUiText.StatusSceneDisabledScreenshot;
+                case "AFICASE1f88a73b3f5e8a7d": return IllustratorUiText.StatusSceneDisabledFacts;
+                case "AFICASE226ef240347eeb15": return IllustratorUiText.StatusScenePanorama;
+                case "AFICASE8989e163cce94d4b": return IllustratorUiText.StatusScenePanoramaNoScreenshot;
                 default:
                     var match = SceneBudget.Match(raw ?? string.Empty);
                     return match.Success ? IllustratorUiText.StatusSceneBudget(match.Groups[1].Value) : raw;

@@ -464,7 +464,7 @@ internal static List<ConversationMessage> ProjectHistoryMessages(List<AnimusForg
 							Scene = entry.Scene ?? "",
 							Role = "system",
 							Content = factLine,
-							SpeakerName = "系统",
+							SpeakerName = ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0627"),
 							SpeakerAgentIndex = -1
 						});
 					}
@@ -497,7 +497,7 @@ internal static List<ConversationMessage> ProjectHistoryMessages(List<AnimusForg
 					Scene = entry.Scene ?? "",
 					Role = "user",
 					Content = text,
-					SpeakerName = "你",
+					SpeakerName = ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0628"),
 					SpeakerAgentIndex = -1,
 					TargetAgentIndex = entry.TargetAgentIndex >= 0 ? entry.TargetAgentIndex : targetAgentIndex,
 					TargetName = string.IsNullOrWhiteSpace(entry.TargetName) ? targetName : entry.TargetName.Trim(),

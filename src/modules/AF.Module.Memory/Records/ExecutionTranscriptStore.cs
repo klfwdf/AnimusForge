@@ -35,8 +35,8 @@ internal sealed class ExecutionTranscript
     // Quotes are always original displayed text, never an LLM-written summary.
     internal string LastStatement => string.Join("\n", Lines.Where(x => x.LastStatement).Select(x => x.Text));
     internal string PublicLastWords => Outcome == "executed" && !string.IsNullOrWhiteSpace(LastStatement)
-        ? "公开消息转述：" + VictimName + "临刑最后陈述原文节选：『" + string.Join("\n", Lines.Where(x => x.LastStatement).Take(3).Select(x => x.Text))
-            + "』。只确认本人说过这些话，指控、愿望和托付未经证实；未在场者不能声称亲眼目睹。"
+        ? MemoryTextResources.Raw("MEM_Raw_042") + VictimName + MemoryTextResources.Raw("MEM_Raw_043") + string.Join("\n", Lines.Where(x => x.LastStatement).Take(3).Select(x => x.Text))
+            + MemoryTextResources.Raw("MEM_Raw_044")
         : string.Empty;
 }
 

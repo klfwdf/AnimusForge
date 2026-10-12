@@ -106,10 +106,8 @@ namespace AnimusForge.Illustrator.Core
                 divisor = remainder;
                 remainder = next;
             }
-            string orientation = width == height ? "正方形" : width > height ? "横向" : "竖向";
-            return "最终成图必须为" + orientation + (width / divisor) + ":" + (height / divisor)
-                + "，目标尺寸" + imageSize
-                + "。按此画幅重新组织完整画面，保持人物与场景的自然比例；参考图只提供其标注用途，不决定输出画幅。不得改用其他比例，不要拉伸或加边框伪造目标画幅。此画幅要求适用于普通生成和重绘。";
+            string orientation = width == height ? IllustratorText.Get("Frame_Square") : width > height ? IllustratorText.Get("Frame_Landscape") : IllustratorText.Get("Frame_Portrait");
+            return IllustratorText.Format("Frame_OutputRequirement", orientation, width / divisor, height / divisor, imageSize);
         }
 
         // Map the existing presets to exact 16:9 sizes with both edges divisible by 16.
@@ -521,7 +519,7 @@ namespace AnimusForge.Illustrator.Core
                     bool valid = item != null && item.CampaignKey == CampaignKey && item.Category == _category && item.SubjectKey == subjectKey;
                     update = new IllustrationGenerationUpdate { Source = this, CampaignKey = CampaignKey, Category = _category,
                         SubjectKey = subjectKey, SessionKey = sessionKey, Saved = valid ? item : null,
-                        Error = error?.Message ?? (valid ? null : resultError?.Invoke(result) ?? "未能保存图像") };
+                        Error = error?.Message ?? (valid ? null : resultError?.Invoke(result) ?? IllustratorText.Raw("Residual_IllustratorRuntime_cdf7c2522d1c")) };
                 }
                 try
                 {

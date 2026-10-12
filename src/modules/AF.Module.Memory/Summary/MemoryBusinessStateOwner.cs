@@ -290,15 +290,15 @@ internal sealed partial class MemoryBusinessStateOwner
 		}
 		if (validObjectCount > 0)
 		{
-			error = "未找到包含必需字段的 JSON 对象：" + BuildRequiredJsonFieldDescription(requiredPrimaryKeys, requiredSecondaryKeys) + "。";
+			error = MemoryTextResources.Raw("MEM_Raw_076") + BuildRequiredJsonFieldDescription(requiredPrimaryKeys, requiredSecondaryKeys) + "。";
 			return false;
 		}
 		if (parseFailureCount > 0)
 		{
-			error = lastParseException?.Message ?? "JSON 解析失败。";
+			error = lastParseException?.Message ?? MemoryTextResources.Raw("MEM_Raw_077");
 			return false;
 		}
-		error = "找不到 JSON 对象。";
+		error = MemoryTextResources.Raw("MEM_Raw_078");
 		return false;
 	}
 
@@ -424,7 +424,7 @@ internal sealed partial class MemoryBusinessStateOwner
 	internal static string BuildRequiredJsonFieldGroupDescription(string[] keys)
 	{
 		List<string> list = (keys ?? new string[0]).Where((string x) => !string.IsNullOrWhiteSpace(x)).Select((string x) => x.Trim()).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
-		return list.Count == 0 ? "（无）" : string.Join("/", list);
+		return list.Count == 0 ? MemoryTextResources.Raw("MEM_Raw_079") : string.Join("/", list);
 	}
 
 	internal static bool HasAnyNonWhiteSpaceJsonProperty(JObject obj, string[] names)
@@ -441,7 +441,7 @@ internal sealed partial class MemoryBusinessStateOwner
 		string detail = (parseError ?? "").Trim();
 		if (string.IsNullOrWhiteSpace(detail))
 		{
-			detail = "未知解析错误。";
+			detail = MemoryTextResources.Raw("MEM_Raw_080");
 		}
 		return LlmRetryPrompt.BuildFailureDetail(prefix + "：" + detail, content);
 	}
@@ -531,7 +531,7 @@ internal static bool IsSceneShoutObserverHistoryLine(string line)
 			return false;
 		}
 		DialogueHistoryLedger.TryStripSceneSessionMarker(text, out text, out var _);
-		return text.TrimStart().StartsWith("[场景喊话]", StringComparison.Ordinal);
+		return text.TrimStart().StartsWith(MemoryTextResources.Raw("MEM_Raw_036"), StringComparison.Ordinal);
 	}
 
 internal static bool IsLoreInjectionHistoryLine(string line)
@@ -541,27 +541,27 @@ internal static bool IsLoreInjectionHistoryLine(string line)
 		{
 			return false;
 		}
-		if (text.StartsWith("【玩家触发了（", StringComparison.Ordinal))
+		if (text.StartsWith(MemoryTextResources.Raw("MEM_Raw_081"), StringComparison.Ordinal))
 		{
 			return true;
 		}
-		if (text.StartsWith("【以下是关于（", StringComparison.Ordinal))
+		if (text.StartsWith(MemoryTextResources.Raw("MEM_Raw_082"), StringComparison.Ordinal))
 		{
 			return true;
 		}
-		if (text.StartsWith("【玩家外貌信息（常驻）】", StringComparison.Ordinal))
+		if (text.StartsWith(MemoryTextResources.Raw("MEM_Raw_083"), StringComparison.Ordinal))
 		{
 			return true;
 		}
-		if (text.StartsWith("【触发相关话题/背景】", StringComparison.Ordinal))
+		if (text.StartsWith(MemoryTextResources.Raw("MEM_Raw_084"), StringComparison.Ordinal))
 		{
 			return true;
 		}
-		if (text.IndexOf("参与互动让你的脑海里浮现了这些知识", StringComparison.Ordinal) >= 0)
+		if (text.IndexOf(MemoryTextResources.Raw("MEM_Raw_085"), StringComparison.Ordinal) >= 0)
 		{
 			return true;
 		}
-		if (text.IndexOf("应当知晓以下信息", StringComparison.OrdinalIgnoreCase) >= 0)
+		if (text.IndexOf(MemoryTextResources.Raw("MEM_Raw_086"), StringComparison.OrdinalIgnoreCase) >= 0)
 		{
 			return true;
 		}
@@ -890,7 +890,7 @@ internal string BuildHistoryContextById(MemoryHistoryContextReadCapabilities cap
 		}
 		catch (Exception ex)
 		{
-			Logger.Log("DialogueHistory", "[错误] 构建上下文失败: " + ex.Message);
+			Logger.Log("DialogueHistory", "[ERROR] Failed to build dialogue history context: " + ex.Message);
 			Logger.Obs("History", "build_context_error", new Dictionary<string, object>
 			{
 				["message"] = ex.Message,
@@ -922,27 +922,27 @@ internal static string ConvertWeekNumberToChineseOrdinal(int weekNumber)
 		switch (weekNumber)
 		{
 		case 1:
-			return "第一";
+			return MemoryTextResources.Raw("MEM_Raw_087");
 		case 2:
-			return "第二";
+			return MemoryTextResources.Raw("MEM_Raw_088");
 		case 3:
-			return "第三";
+			return MemoryTextResources.Raw("MEM_Raw_089");
 		case 4:
-			return "第四";
+			return MemoryTextResources.Raw("MEM_Raw_090");
 		case 5:
-			return "第五";
+			return MemoryTextResources.Raw("MEM_Raw_091");
 		case 6:
-			return "第六";
+			return MemoryTextResources.Raw("MEM_Raw_092");
 		case 7:
-			return "第七";
+			return MemoryTextResources.Raw("MEM_Raw_093");
 		case 8:
-			return "第八";
+			return MemoryTextResources.Raw("MEM_Raw_094");
 		case 9:
-			return "第九";
+			return MemoryTextResources.Raw("MEM_Raw_095");
 		case 10:
-			return "第十";
+			return MemoryTextResources.Raw("MEM_Raw_096");
 		default:
-			return "第" + Math.Max(1, weekNumber);
+			return MemoryTextResources.Raw("MEM_Raw_097") + Math.Max(1, weekNumber);
 		}
 	}
 
@@ -1055,7 +1055,7 @@ internal static bool IsArmyCommanderDailyBehavior(NpcActionEntry entry)
 			return false;
 		}
 		string text2 = (entry?.Text ?? "").Trim();
-		return text2.IndexOf("率领", StringComparison.OrdinalIgnoreCase) >= 0;
+		return text2.IndexOf(MemoryTextResources.Raw("MEM_Raw_098"), StringComparison.OrdinalIgnoreCase) >= 0;
 	}
 
 internal static bool IsDailyBehaviorRaid(NpcActionEntry entry)
@@ -1066,7 +1066,7 @@ internal static bool IsDailyBehaviorRaid(NpcActionEntry entry)
 			return true;
 		}
 		string text2 = (entry?.Text ?? "").Trim();
-		return text2.IndexOf("袭扰", StringComparison.OrdinalIgnoreCase) >= 0;
+		return text2.IndexOf(MemoryTextResources.Raw("MEM_Raw_099"), StringComparison.OrdinalIgnoreCase) >= 0;
 	}
 
 internal static bool IsDailyBehaviorDefend(NpcActionEntry entry)
@@ -1077,7 +1077,7 @@ internal static bool IsDailyBehaviorDefend(NpcActionEntry entry)
 			return true;
 		}
 		string text2 = (entry?.Text ?? "").Trim();
-		return text2.IndexOf("守备", StringComparison.OrdinalIgnoreCase) >= 0 || text2.IndexOf("保卫", StringComparison.OrdinalIgnoreCase) >= 0;
+		return text2.IndexOf(MemoryTextResources.Raw("MEM_Raw_100"), StringComparison.OrdinalIgnoreCase) >= 0 || text2.IndexOf(MemoryTextResources.Raw("MEM_Raw_101"), StringComparison.OrdinalIgnoreCase) >= 0;
 	}
 
 
@@ -1129,8 +1129,8 @@ internal static bool IsNpcAskingForConfirmation(string npcText)
 		}
 		string[] array = new string[13]
 		{
-			"是否", "要不要", "你要", "你是要", "确认", "同意", "愿意", "还是", "雇佣兵", "封臣",
-			"成交吗", "继续吗", "要这样吗"
+			MemoryTextResources.Raw("MEM_Raw_102"), MemoryTextResources.Raw("MEM_Raw_103"), MemoryTextResources.Raw("MEM_Raw_104"), MemoryTextResources.Raw("MEM_Raw_105"), MemoryTextResources.Raw("MEM_Raw_106"), MemoryTextResources.Raw("MEM_Raw_107"), MemoryTextResources.Raw("MEM_Raw_108"), MemoryTextResources.Raw("MEM_Raw_109"), MemoryTextResources.Raw("MEM_Raw_110"), MemoryTextResources.Raw("MEM_Raw_111"),
+			MemoryTextResources.Raw("MEM_Raw_112"), MemoryTextResources.Raw("MEM_Raw_113"), MemoryTextResources.Raw("MEM_Raw_114")
 		};
 		for (int i = 0; i < array.Length; i++)
 		{
@@ -1206,13 +1206,13 @@ internal static void AppendPlayerExtraFactLine(StringBuilder sb, string extraFac
 		string text = (extraFact ?? "").Replace("\r", " ").Replace("\n", " ").Trim();
 		if (!string.IsNullOrWhiteSpace(text))
 		{
-			if (text.StartsWith("[AFEF玩家行为补充]", StringComparison.Ordinal) || text.StartsWith("[AFEF NPC行为补充]", StringComparison.Ordinal))
+			if (text.StartsWith(MemoryTextResources.Raw("MEM_Raw_018"), StringComparison.Ordinal) || text.StartsWith(MemoryTextResources.Raw("MEM_Raw_006"), StringComparison.Ordinal))
 			{
 				sb.AppendLine(text);
 			}
 			else
 			{
-				sb.AppendLine("[AFEF玩家行为补充] " + text);
+				sb.AppendLine(MemoryTextResources.Raw("MEM_Raw_075") + text);
 			}
 		}
 	}
@@ -1233,7 +1233,7 @@ internal static List<string> BuildRenderedHistoryLines(List<HistoryLineEntry> en
 				if (historyLineEntry.Day != 0 && historyLineEntry.Day != num)
 				{
 					num = historyLineEntry.Day;
-					string text = ((!string.IsNullOrWhiteSpace(historyLineEntry.Date)) ? historyLineEntry.Date : $"第 {historyLineEntry.Day} 日");
+					string text = ((!string.IsNullOrWhiteSpace(historyLineEntry.Date)) ? historyLineEntry.Date : MemoryTextResources.FormatRaw("MEM_Raw_115" ,historyLineEntry.Day));
 					list.Add("—— " + text + " ——");
 				}
 				list.Add(AnimusForge.Refactor.Adapters.PersonaIdentityPromptCaptureAdapter.NormalizePlayerHistoryLineForPrompt(historyLineEntry.Line, targetDisplayName, addressToYou));

@@ -1,3 +1,4 @@
+using AnimusForge;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -164,7 +165,7 @@ public static class WorldDiplomacyStorageMigration
         }
         else
         {
-            active.RoundTopic = WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(root.PlannedRoundTopic, root.Title, "外交交涉");
+            active.RoundTopic = WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(root.PlannedRoundTopic, root.Title, DiplomacyMiscPromptTexts.Get("Round_DefaultTopicNegotiation", "Diplomatic Negotiation"));
             active.TopicCategory = WorldDiplomacyIntentVocabulary.NormalizeIntent(root.Intent) is "warning" or "ultimatum"
                 ? "war_escalation"
                 : WorldDiplomacyIntentVocabulary.InferTopicCategory(active.RoundTopic, isAtWarByKingdomId(rootAuthorId, root.TargetKingdomId));
@@ -458,7 +459,7 @@ public static class WorldDiplomacyStorageMigration
     {
         document.GameDate = formatCampaignDate(document.Day);
     }
-    if (string.Equals(document.TargetKingdomName, "未知王国", StringComparison.Ordinal))
+    if (string.Equals(document.TargetKingdomName, DiplomacyMiscPromptTexts.Get("Prompt_UnknownKingdomFallback", "Unknown Kingdom"), StringComparison.Ordinal))
     {
         document.TargetKingdomName = "";
     }

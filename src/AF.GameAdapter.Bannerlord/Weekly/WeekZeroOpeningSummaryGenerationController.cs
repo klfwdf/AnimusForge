@@ -298,8 +298,8 @@ internal async Task<bool> GenerateWeekZeroShortSummaryWithRetriesAsync(WeekZeroS
 				string text = NormalizeWeekZeroShortSummaryResponse(apiCallResult.Content, request.Summary);
 				if (string.IsNullOrWhiteSpace(text))
 				{
-					Logger.Log("EventWeeklyReport", "[Week0Short][WARN] 短周报解析为空 " + request.EventId + "，尝试 " + i + "/3");
-					failureDetails.Add("第 " + i + " 次尝试：\n" + LlmRetryPrompt.BuildFailureDetail("第0周短周报模型回复解析为空。", apiCallResult.Content, apiCallResult.ResponseBody));
+					Logger.Log("EventWeeklyReport", "[Week0Short][WARN] Short report parsed empty: " + request.EventId + "; attempt " + i + "/3");
+					failureDetails.Add(AnimusForge.PromptComposerTexts.Raw("weekly_memory_compat_9552fe3bd366") + i + AnimusForge.PromptComposerTexts.Raw("weekly_memory_compat_e36a20a5e37b") + LlmRetryPrompt.BuildFailureDetail(AnimusForge.PromptComposerTexts.Raw("weekly_memory_compat_d5e6e6260b83"), apiCallResult.Content, apiCallResult.ResponseBody));
 				}
 				else
 				{
@@ -308,8 +308,8 @@ internal async Task<bool> GenerateWeekZeroShortSummaryWithRetriesAsync(WeekZeroS
 			}
 			else
 			{
-				Logger.Log("EventWeeklyReport", "[Week0Short][WARN] 短周报生成失败 " + request.EventId + "，尝试 " + i + "/3 -> " + (apiCallResult.ErrorMessage ?? "未知错误"));
-				failureDetails.Add("第 " + i + " 次尝试：\n" + (apiCallResult.ErrorMessage ?? LlmRetryPrompt.BuildFailureDetail("未知错误", apiCallResult.Content, apiCallResult.ResponseBody)));
+				Logger.Log("EventWeeklyReport", "[Week0Short][WARN] Short report generation failed: " + request.EventId + "; attempt " + i + "/3 -> " + (apiCallResult.ErrorMessage ?? "unknown error"));
+				failureDetails.Add(AnimusForge.PromptComposerTexts.Raw("weekly_memory_compat_9552fe3bd366") + i + AnimusForge.PromptComposerTexts.Raw("weekly_memory_compat_e36a20a5e37b") + (apiCallResult.ErrorMessage ?? LlmRetryPrompt.BuildFailureDetail(AnimusForge.PromptComposerTexts.Raw("weekly_memory_compat_13a46616e16f"), apiCallResult.Content, apiCallResult.ResponseBody)));
 			}
 			if (i < 3)
 			{
@@ -326,7 +326,7 @@ internal async Task<bool> GenerateWeekZeroShortSummaryWithRetriesAsync(WeekZeroS
 			}
 		}
 		if (!IsCurrent(stamp)) return false;
-        LlmRetryPrompt.ShowLocalizedFailurePopup("{=AF_UI_Retry_WeekZeroShortReportFailed}Week-zero short report generation failed", failureDetails.Count > 0 ? string.Join("\n\n", failureDetails) : LlmRetryPrompt.BuildFailureDetail("三次尝试均失败。", ""),
+        LlmRetryPrompt.ShowLocalizedFailurePopup("{=AF_UI_Retry_WeekZeroShortReportFailed}Week-zero short report generation failed", failureDetails.Count > 0 ? string.Join("\n\n", failureDetails) : LlmRetryPrompt.BuildFailureDetail(AnimusForge.PromptComposerTexts.Raw("weekly_memory_compat_a5e942a8d7f5"), ""),
             reasonTemplate: failureDetails.Count > 0 ? null : "{=AF_UI_Retry_ThreeAttemptsFailed}All three attempts failed.", modelReply: failureDetails.Count > 0 ? null : "");
 		return false;
 	}
@@ -499,7 +499,7 @@ internal void TryQueueWeekZeroShortSummaryGeneration(EventRecordEntry entry, str
 internal void EnsureWeekZeroOpeningSummaryEvents(bool sanitizeAfter = true)
 	{
 		FreezeWatchdog.Mark("WeeklyPrompt.EnsureWeek0.start", "entries=" + (_eventRecordEntries?.Count ?? 0) + " thread=" + Thread.CurrentThread.ManagedThreadId);
-		UpsertWeekZeroOpeningSummaryEvent("world", "", "第0天世界开局概要", _records.WorldOpening, "世界开局概要", "world_opening_summary", sanitizeAfter: false);
+		UpsertWeekZeroOpeningSummaryEvent("world", "", AnimusForge.PromptComposerTexts.Raw("weekly_memory_compat_871fa8d0ce6a"), _records.WorldOpening, AnimusForge.PromptComposerTexts.Raw("weekly_memory_compat_2f59a5b54d55"), "world_opening_summary", sanitizeAfter: false);
 		FreezeWatchdog.Mark("WeeklyPrompt.EnsureWeek0.world_done", "entries=" + (_eventRecordEntries?.Count ?? 0));
 		int kingdomIndex = 0;
 		foreach (Kingdom devEditableKingdom in EventEditorProjection.GetDevEditableKingdoms())
@@ -510,8 +510,8 @@ internal void EnsureWeekZeroOpeningSummaryEvents(bool sanitizeAfter = true)
 			string kingdomOpeningSummary = WeeklyEventDataImportOwner.GetKingdomOpeningSummary(devEditableKingdom.StringId, _records.KingdomOpenings);
 			if (!string.IsNullOrWhiteSpace(kingdomOpeningSummary))
 			{
-				string text = devEditableKingdom.Name?.ToString() ?? (devEditableKingdom.StringId ?? "王国");
-				UpsertWeekZeroOpeningSummaryEvent("kingdom", devEditableKingdom.StringId ?? "", text + "第0天开局概要", kingdomOpeningSummary, text + " 开局概要", "kingdom_opening_summary", sanitizeAfter: false);
+				string text = devEditableKingdom.Name?.ToString() ?? (devEditableKingdom.StringId ?? AnimusForge.PromptComposerTexts.Raw("weekly_memory_compat_96da11258bbe"));
+				UpsertWeekZeroOpeningSummaryEvent("kingdom", devEditableKingdom.StringId ?? "", text + AnimusForge.PromptComposerTexts.Raw("weekly_memory_compat_21d709ad6255"), kingdomOpeningSummary, text + AnimusForge.PromptComposerTexts.Raw("weekly_memory_compat_7443025bba34"), "kingdom_opening_summary", sanitizeAfter: false);
 			}
 			FreezeWatchdog.Mark("WeeklyPrompt.EnsureWeek0.kingdom_done", "index=" + kingdomIndex + " kingdom=" + diagnosticKingdomId + " entries=" + (_eventRecordEntries?.Count ?? 0));
 		}
@@ -576,7 +576,7 @@ internal bool UpsertWeekZeroOpeningSummaryEvent(string eventKind, string kingdom
 			|| !string.Equals(eventRecordEntry.PromptText ?? "", text8, StringComparison.Ordinal)
 			|| !string.Equals(eventRecordEntry.TagText ?? "", "", StringComparison.Ordinal)
 			|| eventRecordEntry.CreatedDay != 0
-			|| !string.Equals((eventRecordEntry.CreatedDate ?? "").Trim(), "第 0 日", StringComparison.Ordinal)
+			|| !string.Equals((eventRecordEntry.CreatedDate ?? "").Trim(), AnimusForge.PromptComposerTexts.Raw("weekly_memory_compat_e06eabeb34b7"), StringComparison.Ordinal)
 			|| !flag3;
 		if (!flag4)
 		{
@@ -595,7 +595,7 @@ internal bool UpsertWeekZeroOpeningSummaryEvent(string eventKind, string kingdom
 		eventRecordEntry.Summary = text;
 		eventRecordEntry.TagText = "";
 		eventRecordEntry.CreatedDay = 0;
-		eventRecordEntry.CreatedDate = "第 0 日";
+		eventRecordEntry.CreatedDate = AnimusForge.PromptComposerTexts.Raw("weekly_memory_compat_e06eabeb34b7");
 		eventRecordEntry.Materials = new List<EventMaterialReference>
 		{
 			new EventMaterialReference
@@ -701,7 +701,7 @@ internal bool ProcessWeekZeroOpeningSummaryEventsSlice()
 		{
 			if (!_weekZeroOpeningSummaryMaintenanceWorldProcessed)
 			{
-				UpsertWeekZeroOpeningSummaryEvent("world", "", "第0天世界开局概要", _records.WorldOpening, "世界开局概要", "world_opening_summary", sanitizeAfter: false);
+				UpsertWeekZeroOpeningSummaryEvent("world", "", AnimusForge.PromptComposerTexts.Raw("weekly_memory_compat_871fa8d0ce6a"), _records.WorldOpening, AnimusForge.PromptComposerTexts.Raw("weekly_memory_compat_2f59a5b54d55"), "world_opening_summary", sanitizeAfter: false);
 				_weekZeroOpeningSummaryMaintenanceWorldProcessed = true;
 				return false;
 			}
@@ -716,8 +716,8 @@ internal bool ProcessWeekZeroOpeningSummaryEventsSlice()
 				string summary = WeeklyEventDataImportOwner.GetKingdomOpeningSummary(kingdom?.StringId, _records.KingdomOpenings);
 				if (!string.IsNullOrWhiteSpace(summary))
 				{
-					string kingdomName = kingdom?.Name?.ToString() ?? (kingdom?.StringId ?? "王国");
-					UpsertWeekZeroOpeningSummaryEvent("kingdom", kingdom?.StringId ?? "", kingdomName + "第0天开局概要", summary, kingdomName + " 开局概要", "kingdom_opening_summary", sanitizeAfter: false);
+					string kingdomName = kingdom?.Name?.ToString() ?? (kingdom?.StringId ?? AnimusForge.PromptComposerTexts.Raw("weekly_memory_compat_96da11258bbe"));
+					UpsertWeekZeroOpeningSummaryEvent("kingdom", kingdom?.StringId ?? "", kingdomName + AnimusForge.PromptComposerTexts.Raw("weekly_memory_compat_21d709ad6255"), summary, kingdomName + AnimusForge.PromptComposerTexts.Raw("weekly_memory_compat_7443025bba34"), "kingdom_opening_summary", sanitizeAfter: false);
 				}
 				return false;
 			}

@@ -166,8 +166,12 @@ internal static void ShowWeeklyFullOnDemandFailurePopup(string message)
 			return WeeklyReportUiText.Get("AF_UI_Weekly_Editor_008","Invalid material.");
 		}
 		StringBuilder stringBuilder = new StringBuilder();
+		bool isGatheringMaterial = string.Equals((material.MaterialType ?? "").Trim(), "noble_gathering", StringComparison.OrdinalIgnoreCase)
+			|| (string.Equals((material.MaterialType ?? "").Trim(), "raw_text", StringComparison.OrdinalIgnoreCase)
+				&& (material.ActionStableKey ?? "").StartsWith("noble_gathering:", StringComparison.Ordinal));
 		_port.AppendDevNpcActionField(stringBuilder, WeeklyReportUiText.Get("AF_UI_Weekly_Editor_009","Material type"), _port.TranslateEventMaterialTypeForDev(material.MaterialType));
-		_port.AppendDevNpcActionField(stringBuilder, WeeklyReportUiText.Get("AF_UI_Weekly_Editor_010","Material label"), (material.Label ?? "").Trim());
+		string materialLabel = (material.Label ?? "").Trim();
+		_port.AppendDevNpcActionField(stringBuilder, WeeklyReportUiText.Get("AF_UI_Weekly_Editor_010","Material label"), isGatheringMaterial ? NobleGatheringTextProjection.ProjectForUi(materialLabel) : materialLabel);
 		_port.AppendDevNpcActionField(stringBuilder, WeeklyReportUiText.Get("AF_UI_Weekly_Editor_011","Hero"), _port.ResolveHeroDisplay(material.HeroId));
 		_port.AppendDevNpcActionField(stringBuilder, WeeklyReportUiText.Get("AF_UI_Weekly_Editor_012","kingdom"), _port.ResolveKingdomDisplay(material.KingdomId));
 		_port.AppendDevNpcActionField(stringBuilder, WeeklyReportUiText.Get("AF_UI_Weekly_Editor_013","Settlement"), _port.ResolveSettlementDisplay(material.SettlementId));
@@ -215,7 +219,10 @@ internal static void ShowWeeklyFullOnDemandFailurePopup(string message)
 		default:
 			stringBuilder.AppendLine();
 			stringBuilder.AppendLine(WeeklyReportUiText.Get("AF_UI_Weekly_Editor_021","Material body"));
-			stringBuilder.AppendLine(string.IsNullOrWhiteSpace(material.SnapshotText) ? WeeklyReportUiText.Get("AF_UI_Weekly_Editor_023","This material has no additional snapshot text.") : material.SnapshotText.Trim());
+			string snapshot = string.IsNullOrWhiteSpace(material.SnapshotText)
+				? WeeklyReportUiText.Get("AF_UI_Weekly_Editor_023","This material has no additional snapshot text.")
+				: material.SnapshotText.Trim();
+			stringBuilder.AppendLine(isGatheringMaterial ? NobleGatheringTextProjection.ProjectForUi(snapshot) : snapshot);
 			break;
 		}
 		return stringBuilder.ToString().TrimEnd();
@@ -764,7 +771,7 @@ internal static void ShowWeeklyFullOnDemandFailurePopup(string message)
 			int num = Math.Max(1, weeklyReportRequestsPerMinute / 2);
 			stringBuilder.AppendLine();
 			stringBuilder.AppendLine(WeeklyReportUiText.Get("AF_UI_Weekly_Editor_105","The system suspects an RPM (requests per minute) limit."));
-			stringBuilder.AppendLine(WeeklyReportUiText.Get("AF_UI_Weekly_Editor_106","Current MCM [maximum weekly reports per minute] = ") + weeklyReportRequestsPerMinute + "。");
+			stringBuilder.AppendLine(EventEditorUiText.T("AF_UI_Weekly_Editor_106", "Current MCM [maximum weekly reports per minute] = {VALUE}.", ("VALUE", weeklyReportRequestsPerMinute.ToString())));
 			stringBuilder.AppendLine(WeeklyReportUiText.Get("AF_UI_Weekly_Editor_107","Lower it to about ") + num + WeeklyReportUiText.Get("AF_UI_Weekly_Editor_108"," and retry."));
 			if (weeklyReportRetryContext.RetryAfterSeconds.HasValue)
 			{

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base type="string">
+  <tags>
+    <tag language="English" />
+  </tags>
+  <strings>
+    <string id="AF_LLM_UI_VoiceGroup_MaleYoung" text="Young male (&lt;30 years)" />
+    <string id="AF_LLM_UI_VoiceGroup_MaleMiddle" text="Middle-aged male (30-50 years)" />
+    <string id="AF_LLM_UI_VoiceGroup_MaleOld" text="Elderly male (&gt;50 years)" />
+    <string id="AF_LLM_UI_VoiceGroup_FemaleYoung" text="Young female (&lt;30 years)" />
+    <string id="AF_LLM_UI_VoiceGroup_FemaleMiddle" text="Middle-aged female (30-50 years)" />
+    <string id="AF_LLM_UI_VoiceGroup_FemaleOld" text="Elderly female (&gt;50 years)" />
+  </strings>
+</base>

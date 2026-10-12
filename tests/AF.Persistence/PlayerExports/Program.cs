@@ -320,6 +320,9 @@ internal static class Program
         File.WriteAllText(Path.Combine(module, "SubModule.xml"), "<Module />");
         File.WriteAllText(Path.Combine(builtin, "rule.json"), "{\"source\":\"installed\"}");
         string exportRoot = PlayerExportsStore.GetPlayerExportsRootPath();
+        string activeBuiltin = Path.Combine(exportRoot, "same-name");
+        Directory.CreateDirectory(activeBuiltin);
+        File.WriteAllText(Path.Combine(activeBuiltin, "rule.json"), "{\"source\":\"active-module\"}");
         string cwd = Directory.GetCurrentDirectory();
         string configuredRoot = Environment.GetEnvironmentVariable(AnimusForgeDataPaths.OverrideEnvironmentVariable);
         try
@@ -329,7 +332,7 @@ internal static class Program
             Environment.SetEnvironmentVariable(AnimusForgeDataPaths.OverrideEnvironmentVariable, null);
             Check(PlayerExportsStore.GetPlayerExportsRootPath() == exportRoot, "installed data never gates the user export destination on a migration receipt");
             var menuFolders = PlayerExportsStore.GetImportFolders();
-            Check(menuFolders.Count == 1 && menuFolders[0].FullPath == builtin, "production menu discovery works without migration credentials");
+            Check(menuFolders.Count == 1 && menuFolders[0].FullPath == activeBuiltin, "production menu discovery uses active module identity, never changed CWD or migration credentials");
         }
         finally
         {
@@ -372,7 +375,7 @@ internal static class Program
     private static void InstalledWorldbooks()
     {
         // The runner starts at the repository root; use the actual reviewed shipped files.
-        string module = Path.Combine(Directory.GetCurrentDirectory(), "content", "modules", "AF.Module.Onboarding");
+        string module = Environment.GetEnvironmentVariable("AF_PLAYER_EXPORTS_WORLD_BOOK_MODULE") ?? throw new InvalidOperationException("The runner must provide the real selected content-map worldbooks.");
         string missingUser = Path.Combine(Environment.GetEnvironmentVariable("AF_PLAYER_EXPORTS_TEST_TEMP"), "absent-user-exports");
         var folders = PlayerExportsStore.GetImportFolders(module, missingUser);
         Check(folders.Count == 4, "fresh install lists all four complete real worldbooks");

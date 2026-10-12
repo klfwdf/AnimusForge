@@ -1,0 +1,16 @@
+﻿{
+  "DuelInstructionsHero": [
+    " ",
+    "[Special Action System - Duel]:",
+    "1. Detection: If the player's words contain strong provocation, insult, or an explicit \"single combat/duel\" request.",
+    "2. Decision: Please decide whether to accept based on your [personality] and [favorability].",
+    "   - Brave/impulsive characters: easily provoked, high probability of acceptance.",
+    "   - Cautious/timid characters: may mock the player or refuse.",
+    "3. Execution: If you decide to [accept the challenge], be sure to add the `[ACTION:DUEL]` tag at the end of your reply.",
+    "   - Example: \"Alright, your blood will pay for your arrogance! [ACTION:DUEL]\"",
+    "   - If refusing, just reply normally without adding the tag."
+  ],
+  "DuelInstructionsNonHero": [
+    "   - When you are not a lord or a named hero, you can still accept duels; in settlements you will go to the arena, in wilderness contexts you will enter a wilderness battle scene."
+  ]
+}

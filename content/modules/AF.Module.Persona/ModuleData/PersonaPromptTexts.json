@@ -24,5 +24,6 @@
   "AF_PERSONA_PROMPT_SkillSourceLabel": "当前基础技能(来自原兵种模板，生成失败时保留这些值): {SKILL_SOURCE}",
   "AF_PERSONA_PROMPT_PersonaSummaryLabel": "人设摘要: {SUMMARY}",
   "AF_PERSONA_PROMPT_FallbackPersonality": "{NAME}曾是{TROOP_NAME}，保留着原本职业养成的警觉、纪律和生存本能；面对玩家时，他会把加入前的承诺与利害放在心里，既愿意服从队伍安排，也会在危险或失信时变得谨慎。",
-  "AF_PERSONA_PROMPT_FallbackBackground": "{JOIN_FACT}他原本以“{FULL_NAME}”的身份在{SCENE}活动，加入后只以个人名“{NAME}”示人。此前对话中可用的经历会成为他追随玩家的理由：{HISTORY}"
+  "AF_PERSONA_PROMPT_FallbackBackground": "{JOIN_FACT}他原本以“{FULL_NAME}”的身份在{SCENE}活动，加入后只以个人名“{NAME}”示人。此前对话中可用的经历会成为他追随玩家的理由：{HISTORY}",
+  "AF_PERSONA_PROMPT_PromotedSkillNone": "（无）"
 }

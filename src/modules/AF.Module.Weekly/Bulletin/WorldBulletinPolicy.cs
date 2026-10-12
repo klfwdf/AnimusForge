@@ -167,7 +167,7 @@ internal static class WorldBulletinPolicy
 			if (fact != null && fact.Key != lead.Key && facts.Count < MaxMajorFacts &&
 				!string.IsNullOrWhiteSpace(lead.Group) && fact.Group == lead.Group && !facts.Any(x => x.Key == fact.Key)) facts.Add(fact);
 		var plan = new WorldBulletinIllustrationPlan { Identity = identity ?? "", Title = TitleForKind(lead.Kind), DateText = dateText ?? "" };
-		plan.Facts = string.Join("\n", facts.Select(f => (f.Sentence ?? "") + (string.IsNullOrWhiteSpace(f.Detail) ? "" : "\n补充事实：" + f.Detail)));
+		plan.Facts = string.Join("\n", facts.Select(f => BuildNpcFactSentence(f) + (string.IsNullOrWhiteSpace(f.Detail) ? "" : "\n" + WorldBulletinPolicyTexts.Prompt("AF_WBLT_Prompt_AdditionalFact", "Additional fact: ") + BuildCoupDetailForPrompt(f))));
 		foreach (var fact in facts)
 			foreach (var person in fact.Participants ?? new List<WorldBulletinParticipant>())
 				if (person != null && !string.IsNullOrWhiteSpace(person.HeroId) && plan.Participants.Count < 4 && !plan.Participants.Any(x => x.HeroId == person.HeroId))
@@ -240,38 +240,38 @@ internal static class WorldBulletinPolicy
 
 	private static readonly Regex IndexedMinorTag = new Regex("^\\[M(\\d{1,2})\\]\\s*(.*)$", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
-    private const string BattleQuantity = @"(?:\d+(?:[,，]\d{3})*(?:\.\d+)?|[零〇○一二两三四五六七八九十百千万亿壹贰叁肆伍陆柒捌玖拾佰仟萬億廿卅]+|几|数|若干)(?:余|多|来|左右|上下)?";
-    private const string BattlePersonUnit = @"(?:人|名|位|兵|骑|骑兵|步兵|士兵|兵卒|军士|将士|军人|精兵)";
-    private const string BattleCountTerm = @"(?:兵力|兵马|参战|投入战斗|阵亡|战死|负伤|受伤|伤亡|死伤|伤员|伤者|亡者|折损|损失|丧命)";
-    private const string BattleCountGap = @"[^\d零〇○一二两三四五六七八九十百千万亿壹贰叁肆伍陆柒捌玖拾佰仟萬億廿卅，,、。.!！?？；;\r\n]{0,10}";
+    private static readonly string BattleQuantity = WorldBulletinPolicyTexts.Raw("WBLT_Raw_011");
+    private static readonly string BattlePersonUnit = WorldBulletinPolicyTexts.Raw("WBLT_Raw_012");
+    private static readonly string BattleCountTerm = WorldBulletinPolicyTexts.Raw("WBLT_Raw_013");
+    private static readonly string BattleCountGap = WorldBulletinPolicyTexts.Raw("WBLT_Raw_014");
     private static readonly Regex BattleNumericRecital = new Regex(
-        BattleCountTerm + BattleCountGap + @"(?:百分之)?" + BattleQuantity + @"\s*(?:" + BattlePersonUnit + @"|[%％成]|(?=[，,、。.!！?？；;\s]|$))"
+        BattleCountTerm + BattleCountGap + WorldBulletinPolicyTexts.Raw("WBLT_Raw_015") + BattleQuantity + @"\s*(?:" + BattlePersonUnit + WorldBulletinPolicyTexts.Raw("WBLT_Raw_016")
         + "|" + BattleQuantity + @"\s*" + BattlePersonUnit + BattleCountGap + BattleCountTerm
-        + "|" + BattleQuantity + @"\s*(?:名|位)?(?:士兵|兵卒|骑兵|步兵|军士|军人|将士|精兵|兵马|守军)"
-        + @"|(?:率领|领军|领兵|出动|调集|集结|派出|守军|敌军|大军|军团|部队)" + BattleCountGap + BattleQuantity + @"\s*" + BattlePersonUnit
-        + "|" + BattleQuantity + @"\s*" + BattlePersonUnit + @"\s*(?:对|打|迎战|对阵)\s*" + BattleQuantity + @"\s*" + BattlePersonUnit
-        + "|" + BattleQuantity + @"\s*(?:" + BattlePersonUnit + @")?\s*(?:对|打|迎战|对阵)\s*" + BattleQuantity + @"\s*(?:" + BattlePersonUnit + @")?(?=[，,、。.!！?？；;\s]|$)",
+        + "|" + BattleQuantity + WorldBulletinPolicyTexts.Raw("WBLT_Raw_017")
+        + WorldBulletinPolicyTexts.Raw("WBLT_Raw_018") + BattleCountGap + BattleQuantity + @"\s*" + BattlePersonUnit
+        + "|" + BattleQuantity + @"\s*" + BattlePersonUnit + WorldBulletinPolicyTexts.Raw("WBLT_Raw_019") + BattleQuantity + @"\s*" + BattlePersonUnit
+        + "|" + BattleQuantity + @"\s*(?:" + BattlePersonUnit + WorldBulletinPolicyTexts.Raw("WBLT_Raw_020") + BattleQuantity + @"\s*(?:" + BattlePersonUnit + @")?(?=[，,、。.!！?？；;\s]|$)",
         RegexOptions.Compiled);
     private static readonly Regex LegacyBattleTroopSuffix = new Regex(
-        @"[，,]\s*双方\s*(?:约|共|总计)?\s*" + BattleQuantity + @"\s*人\s*参战(?=[。.!！?？]?\s*$)", RegexOptions.Compiled);
+        WorldBulletinPolicyTexts.Raw("WBLT_Raw_021") + BattleQuantity + WorldBulletinPolicyTexts.Raw("WBLT_Raw_022"), RegexOptions.Compiled);
     private static readonly Regex CapturedBattleCountPrefix = new Regex(
-        @"^\s*(?:胜方|败方)\s*" + BattleQuantity + @"\s*" + BattlePersonUnit, RegexOptions.Compiled);
+        WorldBulletinPolicyTexts.Raw("WBLT_Raw_023") + BattleQuantity + @"\s*" + BattlePersonUnit, RegexOptions.Compiled);
 
-	private const string ChineseNumeralDigits = "零〇○一二两三四五六七八九壹贰叁肆伍陆柒捌玖";
-	private const string ChineseNumeralUnits = "十百千万亿兆拾佰仟萬億";
-	private const string NumericMeasureCharacters = "人名位个队军城座村镇日天月年次起件场战门支艘户";
+	private static readonly string ChineseNumeralDigits = WorldBulletinPolicyTexts.Raw("WBLT_Raw_024");
+	private static readonly string ChineseNumeralUnits = WorldBulletinPolicyTexts.Raw("WBLT_Raw_025");
+	private static readonly string NumericMeasureCharacters = WorldBulletinPolicyTexts.Raw("WBLT_Raw_026");
 	private static readonly Dictionary<char, int> ChineseNumeralDigitValues = new Dictionary<char, int>
 	{
-		['零'] = 0, ['〇'] = 0, ['○'] = 0, ['一'] = 1, ['二'] = 2, ['两'] = 2, ['三'] = 3,
-		['四'] = 4, ['五'] = 5, ['六'] = 6, ['七'] = 7, ['八'] = 8, ['九'] = 9,
-		['壹'] = 1, ['贰'] = 2, ['叁'] = 3, ['肆'] = 4, ['伍'] = 5, ['陆'] = 6,
-		['柒'] = 7, ['捌'] = 8, ['玖'] = 9
+		[PromptComposerTexts.Raw("weekly_memory_char_96f6")[0]] = 0, ['〇'] = 0, ['○'] = 0, [PromptComposerTexts.Raw("weekly_memory_char_4e00")[0]] = 1, [PromptComposerTexts.Raw("weekly_memory_char_4e8c")[0]] = 2, [PromptComposerTexts.Raw("weekly_memory_char_4e24")[0]] = 2, [PromptComposerTexts.Raw("weekly_memory_char_4e09")[0]] = 3,
+		[PromptComposerTexts.Raw("weekly_memory_char_56db")[0]] = 4, [PromptComposerTexts.Raw("weekly_memory_char_4e94")[0]] = 5, [PromptComposerTexts.Raw("weekly_memory_char_516d")[0]] = 6, [PromptComposerTexts.Raw("weekly_memory_char_4e03")[0]] = 7, [PromptComposerTexts.Raw("weekly_memory_char_516b")[0]] = 8, [PromptComposerTexts.Raw("weekly_memory_char_4e5d")[0]] = 9,
+		[PromptComposerTexts.Raw("weekly_memory_char_58f9")[0]] = 1, [PromptComposerTexts.Raw("weekly_memory_char_8d30")[0]] = 2, [PromptComposerTexts.Raw("weekly_memory_char_53c1")[0]] = 3, [PromptComposerTexts.Raw("weekly_memory_char_8086")[0]] = 4, [PromptComposerTexts.Raw("weekly_memory_char_4f0d")[0]] = 5, [PromptComposerTexts.Raw("weekly_memory_char_9646")[0]] = 6,
+		[PromptComposerTexts.Raw("weekly_memory_char_67d2")[0]] = 7, [PromptComposerTexts.Raw("weekly_memory_char_634c")[0]] = 8, [PromptComposerTexts.Raw("weekly_memory_char_7396")[0]] = 9
 	};
 	private static readonly Dictionary<char, long> ChineseNumeralUnitValues = new Dictionary<char, long>
 	{
-		['十'] = 10, ['百'] = 100, ['千'] = 1000, ['万'] = 10000, ['亿'] = 100000000,
-		['兆'] = 1000000000000L, ['拾'] = 10, ['佰'] = 100, ['仟'] = 1000,
-		['萬'] = 10000, ['億'] = 100000000
+		[PromptComposerTexts.Raw("weekly_memory_char_5341")[0]] = 10, [PromptComposerTexts.Raw("weekly_memory_char_767e")[0]] = 100, [PromptComposerTexts.Raw("weekly_memory_char_5343")[0]] = 1000, [PromptComposerTexts.Raw("weekly_memory_char_4e07")[0]] = 10000, [PromptComposerTexts.Raw("weekly_memory_char_4ebf")[0]] = 100000000,
+		[PromptComposerTexts.Raw("weekly_memory_char_5146")[0]] = 1000000000000L, [PromptComposerTexts.Raw("weekly_memory_char_62fe")[0]] = 10, [PromptComposerTexts.Raw("weekly_memory_char_4f70")[0]] = 100, [PromptComposerTexts.Raw("weekly_memory_char_4edf")[0]] = 1000,
+		[PromptComposerTexts.Raw("weekly_memory_char_842c")[0]] = 10000, [PromptComposerTexts.Raw("weekly_memory_char_5104")[0]] = 100000000
 	};
 
 	public static bool InvolvesKingdom(WorldBulletinEvent e, string kingdomId)
@@ -475,7 +475,7 @@ internal static class WorldBulletinPolicy
 	{
 		List<string> parts = (events ?? new List<WorldBulletinEvent>()).Take(MaxMinorGroupSentences).Select(e => TrimSentenceEnd(BuildWriterFactSentence(e))).ToList();
 		int extra = (events?.Count ?? 0) - parts.Count;
-		return string.Join("；", parts) + (extra > 0 ? "，另有" + extra + "起同类事件" : "") + "。";
+		return string.Join(WorldBulletinPolicyTexts.Prompt("AF_WBLT_Prompt_MinorSeparator", "; "), parts) + (extra > 0 ? WorldBulletinPolicyTexts.Prompt("AF_WBLT_Prompt_MinorExtra", ", with {COUNT} more of the same kind", ("COUNT", extra.ToString(System.Globalization.CultureInfo.InvariantCulture))) : "") + WorldBulletinPolicyTexts.Prompt("AF_WBLT_Prompt_SentenceEnd", ".");
 	}
 
 	// ---------- NPC regional knowledge: raw facts, assembled locally, no LLM ----------
@@ -521,7 +521,7 @@ internal static class WorldBulletinPolicy
 	public static string DaysAgoLabel(int eventDay, int currentDay)
 	{
 		int days = Math.Max(0, currentDay - eventDay);
-		return days == 0 ? "今日" : days == 1 ? "昨日" : days + "日前";
+		return days == 0 ? WorldBulletinPolicyTexts.Prompt("AF_WBLT_Prompt_DaysToday", "Today, ") : days == 1 ? WorldBulletinPolicyTexts.Prompt("AF_WBLT_Prompt_DaysYesterday", "Yesterday, ") : WorldBulletinPolicyTexts.Prompt("AF_WBLT_Prompt_DaysAgo", "{DAYS} days ago, ", ("DAYS", days.ToString(System.Globalization.CultureInfo.InvariantCulture)));
 	}
 
 	// Always-on layer, same header as the legacy weekly short block so the prompt contract stays put.
@@ -539,12 +539,12 @@ internal static class WorldBulletinPolicy
 			}
 			if (written == 0)
 			{
-				sb.AppendLine("【近期三个王国发生的事】");
-				sb.AppendLine("以下为最近三个相关王国的事");
+				sb.AppendLine(WorldBulletinPolicyTexts.Prompt("AF_WBLT_Prompt_BriefHeader", "[Recent events in three relevant kingdoms]"));
+				sb.AppendLine(WorldBulletinPolicyTexts.Prompt("AF_WBLT_Prompt_BriefIntro", "The following are recent events from the three most relevant kingdoms"));
 			}
 			written++;
-			sb.Append("- ").Append(kingdom.Value).Append("：")
-				.AppendLine(string.Join("；", facts.Select(e => DaysAgoLabel(e.Day, currentDay) + TrimSentenceEnd(e.Sentence))) + "。");
+			sb.Append("- ").Append(kingdom.Value).Append(WorldBulletinPolicyTexts.Prompt("AF_WBLT_Prompt_LabelColon", ": "))
+				.AppendLine(string.Join(WorldBulletinPolicyTexts.Prompt("AF_WBLT_Prompt_MinorSeparator", "; "), facts.Select(e => DaysAgoLabel(e.Day, currentDay) + TrimSentenceEnd(BuildNpcFactSentence(e)))) + WorldBulletinPolicyTexts.Prompt("AF_WBLT_Prompt_SentenceEnd", "."));
 		}
 		return written > 0 ? sb.ToString().TrimEnd() : "";
 	}
@@ -557,16 +557,16 @@ internal static class WorldBulletinPolicy
 		{
 			return "";
 		}
-		return "【" + header + "】\n标题：" + (kingdomName ?? "").Trim() + "近" + NpcDigestDays + "日大事\n" + string.Join("\n", facts.Select(e => FormatFactLine(e, currentDay)));
+		return "【" + header + "】\n" + WorldBulletinPolicyTexts.Prompt("AF_WBLT_Prompt_DetailTitle", "Title: Major events in {KINGDOM} over the past {DAYS} days", ("KINGDOM", (kingdomName ?? "").Trim()), ("DAYS", NpcDigestDays.ToString(System.Globalization.CultureInfo.InvariantCulture))) + "\n" + string.Join("\n", facts.Select(e => FormatFactLine(e, currentDay)));
 	}
 
 	// Header names reuse the legacy "完整周报" headers: the scene prompt splitter (ShoutBehavior.IsSceneWeeklyFullReportHeader)
 	// ends the rule section on exactly these, and the NPC dedup keys stay unchanged.
-	public const string NpcKingdomHeader = "NPC所属王国完整周报";
+	public static readonly string NpcKingdomHeader = WorldBulletinPolicyTexts.Raw("NpcKingdomHeader");
 
-	public const string NpcWorldHeader = "世界完整周报";
+	public static readonly string NpcWorldHeader = WorldBulletinPolicyTexts.Raw("NpcWorldHeader");
 
-	public const string NpcSurroundingsHeader = "周边相关王国完整周报";
+	public static readonly string NpcSurroundingsHeader = WorldBulletinPolicyTexts.Raw("NpcSurroundingsHeader");
 
 	// excludeKingdomId: the NPC's own kingdom block already lists those facts; world headlines skip them.
 	public static string BuildNpcWorldBlock(IEnumerable<WorldBulletinEvent> events, int currentDay, string latestBulletinTitle, string latestBulletinShort, int latestBulletinDay, string excludeKingdomId = null, string latestBulletinAnecdote = "")
@@ -578,19 +578,20 @@ internal static class WorldBulletinPolicy
 		if (latestBulletinDay >= 0 && latestBulletinDay <= currentDay && latestBulletinDay >= currentDay - NpcDigestDays)
 		{
 			if (!string.IsNullOrWhiteSpace(latestBulletinShort))
-				lines.Add("- 最新快报事实摘要：" + latestBulletinShort.Trim());
+				lines.Add(WorldBulletinPolicyTexts.Prompt("AF_WBLT_Prompt_LatestBulletinFacts", "- Latest bulletin fact summary: {FACTS}", ("FACTS", latestBulletinShort.Trim())));
 			string anecdote = NormalizeBulletinAnecdote(latestBulletinAnecdote);
 			if (anecdote.Length > 0)
-				lines.Add("- 【快报轶闻】来源：快报《" + (latestBulletinTitle ?? "").Trim() + "》。" + anecdote
-					+ "（报刊叙事加工，可以用“听说”“报上说”转述；不作为已确认事实，不据此认定伤病、关系变化或外交执行结果。）");
+				lines.Add(WorldBulletinPolicyTexts.Prompt("AF_WBLT_Prompt_BulletinAnecdote",
+					"- [Bulletin anecdote] Source: the bulletin \"{TITLE}\". {ANECDOTE} (Newspaper narrative embellishment: it may be retold as \"I heard\" or \"the paper says\", but it is not a confirmed fact and must not be used to conclude injuries, relationship changes, or diplomatic outcomes.)",
+					("TITLE", (latestBulletinTitle ?? "").Trim()), ("ANECDOTE", anecdote)));
 		}
-		return lines.Count == 0 ? "" : "【" + NpcWorldHeader + "】\n标题：近" + NpcDigestDays + "日天下大事\n" + string.Join("\n", lines);
+		return lines.Count == 0 ? "" : "【" + NpcWorldHeader + "】\n" + WorldBulletinPolicyTexts.Prompt("AF_WBLT_Prompt_WorldTitle", "Title: Major events across the realm over the past {DAYS} days", ("DAYS", NpcDigestDays.ToString(System.Globalization.CultureInfo.InvariantCulture))) + "\n" + string.Join("\n", lines);
 	}
 
 	private static string FormatFactLine(WorldBulletinEvent e, int currentDay)
 	{
-		string detail = string.IsNullOrWhiteSpace(e.Detail) ? "" : "（" + e.Detail.Trim() + "）";
-		return "- " + DaysAgoLabel(e.Day, currentDay) + TrimSentenceEnd(e.Sentence) + detail + "。";
+		string detail = string.IsNullOrWhiteSpace(e.Detail) ? "" : WorldBulletinPolicyTexts.Prompt("AF_WBLT_Prompt_DetailWrap", " ({DETAIL})", ("DETAIL", BuildCoupDetailForPrompt(e).Trim()));
+		return "- " + DaysAgoLabel(e.Day, currentDay) + TrimSentenceEnd(BuildNpcFactSentence(e)) + detail + WorldBulletinPolicyTexts.Prompt("AF_WBLT_Prompt_SentenceEnd", ".");
 	}
 
 	public static void CompletePublish(WorldBulletinScopeState scope, double nowHour, string majorKey)
@@ -745,15 +746,24 @@ internal static class WorldBulletinPolicy
 
     // Project retained old facts for writing without rewriting their saved numeric evidence.
     private static string BuildWriterFactSentence(WorldBulletinEvent fact)
-        => IsBattleKind(fact?.Kind) ? LegacyBattleTroopSuffix.Replace(fact.Sentence ?? "", "") : fact?.Sentence ?? "";
+        => IsBattleKind(fact?.Kind) ? LegacyBattleTroopSuffix.Replace(fact.Sentence ?? "", "") : BuildNpcFactSentence(fact);
+
+    private static bool IsCoupKind(string kind)
+        => string.Equals(kind, "coup_success", StringComparison.Ordinal) || string.Equals(kind, "coup_failure", StringComparison.Ordinal);
+
+    private static string BuildNpcFactSentence(WorldBulletinEvent fact)
+        => IsCoupKind(fact?.Kind) ? AnimusForge.CoupSystem.CoupSourceTexts.ReportForPrompt(fact.Sentence ?? "") : CampaignSystemFactProjection.Project(fact?.Kind, fact?.Sentence ?? "");
+
+    private static string BuildCoupDetailForPrompt(WorldBulletinEvent fact)
+        => IsCoupKind(fact?.Kind) ? AnimusForge.CoupSystem.CoupSourceTexts.TimeForPrompt(fact.Detail ?? "") : CampaignSystemFactProjection.Project(fact?.Kind, fact?.Detail ?? "");
 
     private static string BuildWriterMinorSentence(WorldBulletinMinor minor)
-        => minor?.Events?.Any(f => IsBattleKind(f?.Kind)) == true
+        => minor?.Events?.Any(f => IsBattleKind(f?.Kind) || IsCoupKind(f?.Kind) || CampaignSystemFactProjection.IsSupported(f?.Kind)) == true
             ? BuildMinorSentence(minor.Events) : minor?.Sentence ?? "";
 
     private static string BuildWriterFactDetail(WorldBulletinEvent fact)
     {
-        if (!IsBattleKind(fact?.Kind)) return fact?.Detail ?? "";
+        if (!IsBattleKind(fact?.Kind)) return BuildCoupDetailForPrompt(fact);
         return string.Join("；", (fact.Detail ?? "").Split(new[] { '；', ';' })
             .Where(part => !CapturedBattleCountPrefix.IsMatch(part) && !ContainsBattleNumericRecital(part)));
     }
@@ -783,26 +793,13 @@ internal static class WorldBulletinPolicy
         return rejectedSection.Length == 0 ? generated : null;
     }
 
-    internal const string BattleWritingRequirements = "战事正文禁止兵力、参战、阵亡、负伤或伤亡数字对账，不得写“X人对Y人”“几人打几人”，也不得把这些数字改成中文数量词继续罗列。只叙述交战方、地点、行动、胜负和已确认的后果；此限制不涉及日期、标题序号等非战事数量。";
+    internal static readonly string BattleWritingRequirements = WorldBulletinPolicyTexts.Prompt("AF_WBLT_Prompt_SysBattle");
 
-    internal const string LegacyDefaultWritingRequirements = "战斗报道不要写成几人对几人、多少人打多少人的兵力对账，也不要连续罗列双方参战、阵亡和负伤人数。用交战方、地点、行动、胜负及已经确认的后果组织叙述；人数只用于核对事实，不机械照抄。不得仅凭人数自行宣称全歼、惨胜或改变国运。";
-    internal const string LegacyNarrativeWritingRequirements = "以事件素材为骨架，写成生动的中世纪报刊报道，不要机械复述数据。\n"
-        + "可以合理补写现场动作、短对白、人物反应和战场轶事，例如拳脚冲突、牙齿被打落、怒骂、惊慌、嘲讽或狼狈退场；这些是报道的叙事加工，不代表游戏机制实际发生变化。\n"
-        + "每篇自然选用一到两个有趣细节，变化叙述角度，不要每场都使用同一桥段，也不要固定照抄示例。对白应短，符合人物身份和当前情境，避免整篇变成小说对话。\n"
-        + "战事不要写成几人对几人，不连续罗列参战和伤亡人数；重点写交战方、现场交锋、胜负与后续反应。\n"
-        + "宴会、竞技、政策和外交也可以补写相应的现场气氛、言语与反应。\n"
-        + "保留素材中的主体、地点和重大结果，不另造死亡、俘虏、领土易主、宣战或结盟。出城战不能扩大成整支军团覆灭；外交宣言中的主张不能直接变成已经执行的结果。\n"
-        + "多件事件有关联时串联，无关时自然转场，不为了衔接编造因果。已有明确记录的对白或遗言不得被补写内容替换。";
+    internal static readonly string LegacyDefaultWritingRequirements = WorldBulletinPolicyTexts.Raw("LegacyDefaultWritingRequirements");
+    internal static readonly string LegacyNarrativeWritingRequirements = WorldBulletinPolicyTexts.Raw("LegacyNarrativeWritingRequirements");
 
-    internal const string DefaultWritingRequirements = "以事件素材为骨架，写成生动的中世纪报刊报道，不要机械复述数据。\n"
-        + "可以合理补写现场动作、短对白、人物反应和战场轶事；这些是报道的叙事加工，不代表游戏机制实际发生变化。只有素材确认两人确实参与同场交战，且身份与情境合理时，才可以补写两人直接交锋，例如拳脚冲突、牙齿被打落或怒骂退开；不能把远处君主或其他未参战人物拉到现场，也不能改变胜负、生死或俘虏结果。\n"
-        + "允许适度讥讽和粗粝感，可以写怒骂、嘲弄、丢脸与狼狈，也可以写勇气、机智和体面。对白应短，符合中世纪人物身份与当前情境，避免现代段子，避免整篇变成小说对话。\n"
-        + "每篇自然选用一到两个有趣细节，变化叙述角度，不要每场都使用同一桥段，不固定照抄示例，也不要每篇都靠打架取乐。\n"
-        + "自由选择切入点，可从一个动作、一句短对白、旁观者反应或战后场面开篇，再自然交代主体、地点、经过和结果；不固定按背景、经过、影响的顺序写，没有值得写的局势影响时，不强行补一段宏大评价。\n"
-        + BattleWritingRequirements + "\n"
-        + "宴会、竞技、政策和外交也可以补写相应的现场气氛、言语与反应。\n"
-        + "保留素材中的主体、地点和重大结果，不另造死亡、俘虏、领土易主、宣战或结盟。出城战不能扩大成整支军团覆灭；外交宣言中的主张不能直接变成已经执行的结果。\n"
-        + "多件事件有关联时串联，无关时自然转场，不为了衔接编造因果。已有明确记录的对白或遗言不得被补写内容替换。";
+    internal static readonly string LegacyCurrentWritingRequirements = WorldBulletinPolicyTexts.Raw("LegacyCurrentWritingRequirements");
+    internal static readonly string DefaultWritingRequirements = WorldBulletinPolicyTexts.Prompt("AF_WBLT_Prompt_DefaultWritingRequirements");
 
     internal static string NormalizeBulletinAnecdote(string text)
     {
@@ -816,27 +813,27 @@ internal static class WorldBulletinPolicy
 	public static string BuildSystemPrompt(int majorFactCount, int minorCount, string writingRequirements = null)
 	{
 		StringBuilder sb = new StringBuilder();
-		sb.AppendLine("你为一个中世纪世界撰写即时快报，以给出的事件与背景为骨架，保持报刊纪实语气。允许合理补写动作、短对白和现场反应，正文自然呈现，无需每句加“据说”或“未经核实”；叙事加工不代表游戏机制实际发生变化。保留素材中的主体、地点和重大结果，不另造死亡、俘虏、领土易主、宣战或结盟，不编造伤亡数字；已有明确记录的对白或遗言不得被补写替换。外交宣言的主张不等于已经执行的结果；推测影响时只能用“或将”“恐怕”这类审慎措辞。");
-        sb.AppendLine(BattleWritingRequirements);
-		sb.AppendLine("各类事件每篇自然选用一到两个有趣细节，变化叙述角度，不固定照抄示例或反复套用同一桥段，也不强制发生人物冲突。");
-		sb.AppendLine("只有素材确认两人确实参与同场交战，且身份与情境合理时，才可以作为报刊轶事补写两人直接交锋；不能把远处君主或其他未参战人物拉到现场，也不能改变胜负、生死或俘虏结果。允许适度讥讽和粗粝感，也可表现勇气、机智和体面；保持中世纪人物口吻，避免现代段子，不要每篇都靠打架取乐。");
-		sb.AppendLine("以“交易/买卖”“王国决议”等方式移交、写明并非攻城的领地，不得写成攻陷或夺城。不要使用原版默认大陆名，需要指代大范围时只写“大陆”或具体王国名。");
-		sb.AppendLine("标记为出城战的事实只涉及本次出城交战的参战部队：只能写该部队被击退、击败或伤亡，不得扩大为围城军、守军或整支军团覆灭；除非事实明确确认整支军团被消灭，否则禁止写“击败全军”“击溃军团”等结论。");
+		sb.AppendLine(WorldBulletinPolicyTexts.Prompt("AF_WBLT_Prompt_SysIntro", "You write instant bulletins for a medieval world, using the given events and background as the skeleton and keeping a factual newspaper tone. You may plausibly add actions, short dialogue and on-scene reactions, presented naturally in the body without prefacing every sentence with \"it is said\" or \"unverified\"; this narrative embellishment does not mean the game mechanics actually changed. Keep the actors, places and major outcomes of the source, and do not invent deaths, captives, changes of territorial ownership, declarations of war or alliances, and do not make up casualty figures; dialogue or last words that are explicitly recorded must not be replaced by added text. A claim in a diplomatic declaration is not an executed outcome; when speculating about effects, use only cautious wording such as \"may\" or \"is likely to\"."));
+		sb.AppendLine(WorldBulletinPolicyTexts.Prompt("AF_WBLT_Prompt_SysBattle", "Battle copy must not recite troop strength, participation, deaths, wounds or casualty figures, must not write \"X men against Y men\" or \"a few men against a few men\", and must not turn those numbers into spelled-out quantities and list them anyway. Narrate only the belligerents, place, actions, result and confirmed consequences; this limit does not cover non-battle quantities such as dates or title numbering."));
+		sb.AppendLine(WorldBulletinPolicyTexts.Prompt("AF_WBLT_Prompt_SysVariety", "For every kind of event, naturally pick one or two interesting details per piece and vary the angle; do not copy examples verbatim or reuse the same device repeatedly, and do not force conflict between characters."));
+		sb.AppendLine(WorldBulletinPolicyTexts.Prompt("AF_WBLT_Prompt_SysClash", "Only when the source confirms that two people actually fought in the same engagement, and their identities and the situation make it plausible, may you add a direct clash between them as a newspaper anecdote; never bring a distant ruler or any other person who did not take part onto the scene, and never change the victory, death or captive outcome. Moderate sarcasm and grit are allowed, and so are courage, wit and dignity; keep a medieval voice, avoid modern jokes, and do not rely on brawling for amusement in every piece."));
+		sb.AppendLine(WorldBulletinPolicyTexts.Prompt("AF_WBLT_Prompt_SysTransfer", "A territory handed over by means such as \"trade/purchase\" or \"kingdom decree\", or one stated not to have been taken by siege, must not be written as stormed or captured. Do not use the vanilla default name of the continent; to refer to a wide area, write only \"the continent\" or a specific kingdom name."));
+		sb.AppendLine(WorldBulletinPolicyTexts.Prompt("AF_WBLT_Prompt_SysSally", "A fact marked as a sally-out battle involves only the troops that fought in this sally: write only that this force was repelled, defeated or took losses, and do not expand it into the besieging army, the garrison or a whole army being wiped out; unless the fact explicitly confirms that a whole army was destroyed, do not write conclusions such as \"the entire army was defeated\" or \"the army was routed\"."));
 		if (majorFactCount > 1)
 		{
-			sb.AppendLine("【大事件】给出的" + majorFactCount + "条事实必须合写成同一篇纪要：以第1条为主线，有明确关联时串联，其余无关事实自然转场并入，不为了衔接编造因果；不得分成几篇，也不得遗漏任何一条。");
+			sb.AppendLine(WorldBulletinPolicyTexts.Prompt("AF_WBLT_Prompt_SysMajorMerge", "The {COUNT} facts given under [Major event] must be written together as one report: use fact 1 as the main thread, link facts that are clearly related, and fold the unrelated ones in with natural transitions without inventing causes to connect them; do not split them into several pieces and do not omit any of them.", ("COUNT", majorFactCount.ToString(System.Globalization.CultureInfo.InvariantCulture))));
 		}
-		sb.AppendLine("严格按以下格式输出，不要输出任何其他内容：");
-		sb.AppendLine("[TITLE] 不超过14个字的标题，概括整篇大事件");
-		sb.AppendLine("[MAJOR] " + (majorFactCount > 1 ? "320到480字" : "260到400字") + "的纪要，分两到三段；自由选择切入点，可从一个动作、一句短对白、旁观者反应或战后场面开篇，再自然交代主体、地点、经过和结果，不固定叙述顺序；没有值得写的局势影响时，不强行补一段宏大评价；善用细节与背景，避免整篇变成小说对话");
+		sb.AppendLine(WorldBulletinPolicyTexts.Prompt("AF_WBLT_Prompt_SysFormat", "Output strictly in the following format and nothing else:"));
+		sb.AppendLine("[TITLE] " + WorldBulletinPolicyTexts.Prompt("AF_WBLT_Prompt_SysTitleSpec", "A headline of at most 14 characters that summarizes the whole major event"));
+		sb.AppendLine("[MAJOR] " + (majorFactCount > 1 ? WorldBulletinPolicyTexts.Prompt("AF_WBLT_Prompt_SysMajorSpecMulti", "A report of 320 to 480 characters in two to three paragraphs. Choose the entry point freely: open with an action, a short line of dialogue, a bystander's reaction or the aftermath, then naturally cover the actors, place, course and result, in no fixed order. If there is no consequence for the wider situation worth noting, do not force a grand verdict. Use detail and background, and avoid turning the whole piece into fiction dialogue") : WorldBulletinPolicyTexts.Prompt("AF_WBLT_Prompt_SysMajorSpecSingle", "A report of 260 to 400 characters in two to three paragraphs. Choose the entry point freely: open with an action, a short line of dialogue, a bystander's reaction or the aftermath, then naturally cover the actors, place, course and result, in no fixed order. If there is no consequence for the wider situation worth noting, do not force a grand verdict. Use detail and background, and avoid turning the whole piece into fiction dialogue")));
 		for (int i = 1; i <= minorCount; i++)
 		{
-			sb.AppendLine("[M" + i + "] 第" + i + "条小消息改写成一句通顺的话，不超过60字；一条里有多件同类事实时合并成一句");
+			sb.AppendLine("[M" + i + "] " + WorldBulletinPolicyTexts.Prompt("AF_WBLT_Prompt_SysMinorSpec", "Rewrite minor item {INDEX} as one fluent sentence of at most 60 characters; if an item contains several facts of the same kind, merge them into one sentence", ("INDEX", i.ToString(System.Globalization.CultureInfo.InvariantCulture))));
 		}
-		sb.Append("[SHORT] 不超过100字，从本期正文摘取可转述的轶闻；只能概括正文已有内容，不另生成另一套故事，供旁人按报刊轶闻转述");
-        string writing = writingRequirements ?? DefaultWritingRequirements;
-        if (!string.IsNullOrWhiteSpace(writing)) sb.Append("\n\n【快报写作要求】\n").Append(writing.Trim());
-        return sb.ToString();
+		sb.Append("[SHORT] " + WorldBulletinPolicyTexts.Prompt("AF_WBLT_Prompt_SysShortSpec", "At most 100 characters; pick out an anecdote from this issue's body that others could retell. Summarize only what the body already says and do not invent a separate story, so that bystanders can pass it on as a newspaper anecdote"));
+		string writing = writingRequirements ?? DefaultWritingRequirements;
+		if (!string.IsNullOrWhiteSpace(writing)) sb.Append("\n\n").Append(WorldBulletinPolicyTexts.Prompt("AF_WBLT_Prompt_SysWritingHeader", "[Bulletin writing requirements]")).Append("\n").Append(writing.Trim());
+		return PromptComposerTexts.ApplyOutputLanguage(sb.ToString());
 	}
 
 	// facts' Detail and kingdomContext are writer-only background; nothing here is shown verbatim.
@@ -844,8 +841,8 @@ internal static class WorldBulletinPolicy
 	{
 		StringBuilder sb = new StringBuilder();
 		sb.AppendLine(scopeLine);
-		sb.AppendLine("当前日期：" + dateText);
-		sb.AppendLine("【大事件】");
+		sb.AppendLine(WorldBulletinPolicyTexts.Prompt("AF_WBLT_Prompt_UserDateLine", "Current date: {DATE}", ("DATE", dateText)));
+		sb.AppendLine(WorldBulletinPolicyTexts.Prompt("AF_WBLT_Prompt_UserMajorHeader", "[Major event]"));
 		List<WorldBulletinEvent> facts = selection.MajorFacts.Count > 0 ? selection.MajorFacts : new List<WorldBulletinEvent> { selection.Major };
 		for (int i = 0; i < facts.Count; i++)
 		{
@@ -853,14 +850,14 @@ internal static class WorldBulletinPolicy
             string detail = BuildWriterFactDetail(facts[i]);
 			if (!string.IsNullOrWhiteSpace(detail))
 			{
-				sb.Append("（细节：").Append(detail.Trim()).Append("）");
+				sb.Append(WorldBulletinPolicyTexts.Prompt("AF_WBLT_Prompt_UserFactDetail", " (details: {DETAIL})", ("DETAIL", detail.Trim())));
 			}
 			sb.AppendLine();
 		}
 		List<string> context = (kingdomContext ?? Enumerable.Empty<string>()).Where(x => !string.IsNullOrWhiteSpace(x)).ToList();
 		if (context.Count > 0)
 		{
-			sb.AppendLine("【相关王国现状】");
+			sb.AppendLine(WorldBulletinPolicyTexts.Prompt("AF_WBLT_Prompt_UserContextHeader", "[Related kingdom status]"));
 			foreach (string line in context)
 			{
 				sb.AppendLine("· " + line.Trim());
@@ -870,7 +867,7 @@ internal static class WorldBulletinPolicy
 		{
 			if (i == 0)
 			{
-				sb.AppendLine("【小消息】");
+				sb.AppendLine(WorldBulletinPolicyTexts.Prompt("AF_WBLT_Prompt_UserMinorHeader", "[Minor news]"));
 			}
 			sb.AppendLine("M" + (i + 1) + ". " + BuildWriterMinorSentence(selection.Minors[i]));
 		}
@@ -880,11 +877,11 @@ internal static class WorldBulletinPolicy
 	public static string BuildBody(string major, IEnumerable<string> minors)
 	{
 		StringBuilder sb = new StringBuilder();
-		sb.Append("【大事件】\n").Append((major ?? "").Trim());
+		sb.Append(WorldBulletinPolicyTexts.Raw("BodyMajorHeader")).Append("\n").Append((major ?? "").Trim());
 		List<string> list = (minors ?? Enumerable.Empty<string>()).Where(x => !string.IsNullOrWhiteSpace(x)).ToList();
 		if (list.Count > 0)
 		{
-			sb.Append("\n\n【其他消息】");
+			sb.Append("\n\n").Append(WorldBulletinPolicyTexts.Raw("BodyMinorHeader"));
 			foreach (string minor in list)
 			{
 				sb.Append("\n· ").Append(minor.Trim());
@@ -905,76 +902,80 @@ internal static class WorldBulletinPolicy
 		switch ((kind ?? "").Trim())
 		{
 		case "war_declared":
-			return "烽烟再起";
-        case "diplomatic_declaration": return "外交宣言";
-        case "ruler_policy": return "施政新令";
-        case "noble_gathering": return "贵族宴集";
-        case "tournament_finished": return "竞技捷报";
+			return WorldBulletinPolicyTexts.Title("AF_WBLT_Title_WarDeclared", "War breaks out");
+		case "diplomatic_declaration":
+			return WorldBulletinPolicyTexts.Title("AF_WBLT_Title_DiplomaticDeclaration", "Diplomatic declaration");
+		case "ruler_policy":
+			return WorldBulletinPolicyTexts.Title("AF_WBLT_Title_RulerPolicy", "New ruler policy");
+		case "noble_gathering":
+			return WorldBulletinPolicyTexts.Title("AF_WBLT_Title_NobleGathering", "Noble gathering");
+		case "tournament_finished":
+			return WorldBulletinPolicyTexts.Title("AF_WBLT_Title_TournamentFinished", "Tournament results");
 		case "peace_made":
-			return "干戈暂息";
+			return WorldBulletinPolicyTexts.Title("AF_WBLT_Title_PeaceMade", "Peace concluded");
 		case "settlement_siege":
-			return "城池易主";
+			return WorldBulletinPolicyTexts.Title("AF_WBLT_Title_SettlementSiege", "Settlement changes hands");
 		case "settlement_transfer":
-			return "领地移交";
+			return WorldBulletinPolicyTexts.Title("AF_WBLT_Title_SettlementTransfer", "Territory transferred");
 		case "fief_grant":
-			return "封地授予";
+			return WorldBulletinPolicyTexts.Title("AF_WBLT_Title_FiefGrant", "Fief granted");
 		case "battle":
 		case "siege_battle":
-			return "战场急报";
+			return WorldBulletinPolicyTexts.Title("AF_WBLT_Title_Battle", "Battle report");
 		case "sally_out_battle":
-			return "出城战报";
+			return WorldBulletinPolicyTexts.Title("AF_WBLT_Title_SallyOutBattle", "Sally-out battle report");
 		case "ruler_killed":
-			return "君王陨落";
+			return WorldBulletinPolicyTexts.Title("AF_WBLT_Title_RulerKilled", "Ruler slain");
 		case "lord_killed":
-			return "贵族殒命";
+			return WorldBulletinPolicyTexts.Title("AF_WBLT_Title_LordKilled", "Noble slain");
 		case "lord_captured":
-			return "贵胄被俘";
+			return WorldBulletinPolicyTexts.Title("AF_WBLT_Title_LordCaptured", "Noble captured");
 		case "kingdom_destroyed":
-			return "王国覆灭";
+			return WorldBulletinPolicyTexts.Title("AF_WBLT_Title_KingdomDestroyed", "Kingdom falls");
 		case "kingdom_created":
-			return "新国崛起";
+			return WorldBulletinPolicyTexts.Title("AF_WBLT_Title_KingdomCreated", "Kingdom founded");
 		case "kingdom_rebellion":
-			return "叛旗高举";
+			return WorldBulletinPolicyTexts.Title("AF_WBLT_Title_KingdomRebellion", "Kingdom rebellion");
 		case "civil_war":
-			return "内战爆发";
+			return WorldBulletinPolicyTexts.Title("AF_WBLT_Title_CivilWar", "Civil war erupts");
 		case "civil_war_resolution":
-			return "内战结束";
+			return WorldBulletinPolicyTexts.Title("AF_WBLT_Title_CivilWarResolution", "Civil war ends");
 		case "civil_war_politics":
-			return "派系交涉";
+			return WorldBulletinPolicyTexts.Title("AF_WBLT_Title_CivilWarPolitics", "Faction negotiations");
 		case "coup_success":
-			return "政变夺位";
+			return WorldBulletinPolicyTexts.Title("AF_WBLT_Title_CoupSuccess", "Coup succeeds");
 		case "coup_failure":
-			return "政变失败";
+			return WorldBulletinPolicyTexts.Title("AF_WBLT_Title_CoupFailure", "Coup fails");
 		case "raid":
-			return "村庄遭劫";
+			return WorldBulletinPolicyTexts.Title("AF_WBLT_Title_Raid", "Village raided");
 		case "alliance_formed":
-			return "盟约缔结";
+			return WorldBulletinPolicyTexts.Title("AF_WBLT_Title_AllianceFormed", "Alliance formed");
 		case "alliance_ended":
-			return "盟约解除";
+			return WorldBulletinPolicyTexts.Title("AF_WBLT_Title_AllianceEnded", "Alliance ended");
 		case "ruler_changed":
-			return "新君即位";
+			return WorldBulletinPolicyTexts.Title("AF_WBLT_Title_RulerChanged", "New ruler");
 		case "royal_marriage":
-			return "王室联姻";
+			return WorldBulletinPolicyTexts.Title("AF_WBLT_Title_RoyalMarriage", "Royal marriage");
 		case "noble_marriage":
-			return "贵胄联姻";
+			return WorldBulletinPolicyTexts.Title("AF_WBLT_Title_NobleMarriage", "Noble marriage");
 		case "clan_defection":
-			return "家族改投";
+			return WorldBulletinPolicyTexts.Title("AF_WBLT_Title_ClanDefection", "Clan defects");
 		case "clan_destroyed":
-			return "家族覆亡";
+			return WorldBulletinPolicyTexts.Title("AF_WBLT_Title_ClanDestroyed", "Clan destroyed");
 		case "army_gathered":
-			return "大军集结";
+			return WorldBulletinPolicyTexts.Title("AF_WBLT_Title_ArmyGathered", "Army assembled");
 		case "town_unrest":
-			return "民心浮动";
+			return WorldBulletinPolicyTexts.Title("AF_WBLT_Title_TownUnrest", "Town unrest");
 		case "town_rebellion":
-			return "城中民变";
+			return WorldBulletinPolicyTexts.Title("AF_WBLT_Title_TownRebellion", "Town rebellion");
 		case "kingdom_annexed":
-			return "王国并吞";
+			return WorldBulletinPolicyTexts.Title("AF_WBLT_Title_KingdomAnnexed", "Kingdom annexed");
 		case "vassalage_established":
-			return "称臣纳贡";
+			return WorldBulletinPolicyTexts.Title("AF_WBLT_Title_VassalageEstablished", "Vassalage established");
 		case "vassalage_ended":
-			return "宗藩决裂";
+			return WorldBulletinPolicyTexts.Title("AF_WBLT_Title_VassalageEnded", "Vassalage ends");
 		default:
-			return "时事快报";
+			return WorldBulletinPolicyTexts.Title("AF_WBLT_Title_Default", "Current affairs bulletin");
 		}
 	}
 

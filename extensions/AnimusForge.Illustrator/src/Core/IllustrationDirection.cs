@@ -35,14 +35,14 @@ namespace AnimusForge.Illustrator.Core
         {
             get
             {
-                if (DirectionStatus == "failed") return FallbackReason + "，已停止生图";
-                if (DirectionStatus == "truncated") return "导演输出截断，已停止生图";
+                if (DirectionStatus == "failed") return FallbackReason + ". Image generation stopped.";
+                if (DirectionStatus == "truncated") return "The director output was truncated. Image generation stopped.";
                 if (UsedLocalFallback || DirectionStatus == "local_fallback")
-                    return (VisionUnsupported ? "导演不支持识图；" : string.Empty) + LocalFallbackStatusReason() + "，已使用本地构图";
+                    return (VisionUnsupported ? "The director does not support vision; " : string.Empty) + LocalFallbackStatusReason() + ". A local composition was used";
                 if (VisionUnsupported || DirectionStatus == "vision_unsupported")
-                    return "导演不支持识图，已使用文字构思";
+                    return "The director does not support vision. Text-only conception was used.";
                 return string.IsNullOrWhiteSpace(FinishReason)
-                    ? "导演正文已校验（接口未返回结束标记）" : "导演构思完成";
+                    ? "The director body was validated (the interface did not return a finish marker)" : "Director conception complete";
             }
         }
 
@@ -50,32 +50,32 @@ namespace AnimusForge.Illustrator.Core
         {
             // Keep UI reasons bounded and selected locally, never expose a provider's raw error body.
             string reason = FallbackReason ?? string.Empty;
-            if (reason.IndexOf("导演已关闭", StringComparison.Ordinal) >= 0) return "导演已关闭";
-            if (reason.IndexOf("导演接口未配置", StringComparison.Ordinal) >= 0) return "导演接口未配置";
-            if (reason.IndexOf("无依据盾牌", StringComparison.Ordinal) >= 0) return "导演正文违反人物或装备约束";
-            if (reason.IndexOf("复述叙事原文", StringComparison.Ordinal) >= 0) return "导演正文未转成画面描述";
-            if (reason.IndexOf("缺少完整场景", StringComparison.Ordinal) >= 0) return "导演正文结构或构图不合要求";
-            if (reason.IndexOf("空正文", StringComparison.Ordinal) >= 0) return "导演正文缺少画面描述";
-            return "导演正文不可用";
+            if (reason.IndexOf(IllustratorText.Raw("Direction_709"), StringComparison.Ordinal) >= 0 || reason.IndexOf("The director is disabled", StringComparison.Ordinal) >= 0) return "The director is disabled";
+            if (reason.IndexOf(IllustratorText.Raw("Direction_711"), StringComparison.Ordinal) >= 0 || reason.IndexOf("The director interface is not configured", StringComparison.Ordinal) >= 0) return "The director interface is not configured";
+            if (reason.IndexOf(IllustratorText.Raw("Direction_713"), StringComparison.Ordinal) >= 0 || reason.IndexOf("unsupported shields", StringComparison.Ordinal) >= 0) return "The director body violates character or equipment constraints";
+            if (reason.IndexOf(IllustratorText.Raw("Direction_715"), StringComparison.Ordinal) >= 0 || reason.IndexOf("repeated the narrative", StringComparison.Ordinal) >= 0) return "The director body was not translated into a visual description";
+            if (reason.IndexOf(IllustratorText.Raw("Direction_717"), StringComparison.Ordinal) >= 0 || reason.IndexOf("lacks complete scene", StringComparison.Ordinal) >= 0) return "The director body has an unsuitable structure or composition";
+            if (reason.IndexOf(IllustratorText.Raw("Direction_719"), StringComparison.Ordinal) >= 0 || reason.IndexOf("empty body", StringComparison.Ordinal) >= 0) return "The director body lacks a visual description";
+            return "The director body is unusable";
         }
 
         internal static IllustrationDirection SplitMetadata(string output)
         {
             var result = new IllustrationDirection();
             result.Prompt = Regex.Replace(output ?? string.Empty,
-                @"【(画作标题|画作主题|人物行动|环境取景|环境辅助取景)】([^【]*)", match =>
+                IllustratorText.Raw("Direction_722"), match =>
                 {
                     string label = match.Groups[1].Value;
-                    if (label == "环境取景" || label == "环境辅助取景")
+                    if (label == IllustratorText.Raw("Direction_723") || label == IllustratorText.Raw("Direction_724"))
                     {
-                        ReadSceneFraming(result, match.Groups[2].Value, label == "环境辅助取景");
+                        ReadSceneFraming(result, match.Groups[2].Value, label == IllustratorText.Raw("Direction_725"));
                         return string.Empty;
                     }
                     // Theme is shown in a wrapping/scrolling viewport. Keep its full sentence
                     // in metadata instead of permanently cutting it off before disk save.
-                    string value = CleanLabel(match.Groups[2].Value, label == "画作标题" ? 18 : label == "画作主题" ? int.MaxValue : 160);
-                    if (label == "画作标题") result.Title = value;
-                    else if (label == "画作主题") result.Theme = value;
+                    string value = CleanLabel(match.Groups[2].Value, label == IllustratorText.Raw("Direction_726") ? 18 : label == IllustratorText.Raw("Direction_727") ? int.MaxValue : 160);
+                    if (label == IllustratorText.Raw("Direction_728")) result.Title = value;
+                    else if (label == IllustratorText.Raw("Direction_729")) result.Theme = value;
                     else result.ActionSummary = value;
                     return string.Empty;
                 }).Trim();
@@ -121,7 +121,7 @@ namespace AnimusForge.Illustrator.Core
 
         internal static string ExtractActionSummary(string prompt)
         {
-            var match = Regex.Match(prompt ?? string.Empty, @"【(?:人物与镜头|人物镜头|角色与镜头|人物与构图)】([^【]+)");
+            var match = Regex.Match(prompt ?? string.Empty, IllustratorText.Raw("Direction_730"));
             string section = Regex.Replace(match.Groups[1].Value, @"\s+", " ").Trim();
             // Old prompts often put hand placement after the equipment description.
             return section.Length <= 360 ? section : section.Substring(0, 180) + "…" + section.Substring(section.Length - 179);
@@ -135,13 +135,13 @@ namespace AnimusForge.Illustrator.Core
                 .Select(i => string.IsNullOrWhiteSpace(i.ActionSummary) ? ExtractActionSummary(i.Prompt) : i.ActionSummary)
                 .Where(s => !string.IsNullOrWhiteSpace(s)).Select(s => CleanLabel(s, 360)).Distinct().ToArray();
             return summaries.Length == 0 ? string.Empty :
-                "【近期人物行动参考】以下是旧画构思，不是本次现场事实：\n" + string.Join("\n", summaries) +
+                IllustratorText.Get("Direction_731") + string.Join("\n", summaries) +
                 (weeklyReport
-                    ? "\n以上仅是旧纪事画的构思，不是本期事件证据。依据本期正文选择事件与叙事瞬间，保留所选事件参与方、地点关联、行动和结果；艺术环境与陈设可围绕事件重新设计，不因旧图是领主肖像就沿用肖像构图。"
+                    ? IllustratorText.Get("Direction_732")
                     : eventAnchored
-                    ? "\n当前现场与事件事实优先，旧画行动不作为本次事实；在当前事实允许的叙事瞬间内推导手势、视线和机位，不能为动作去重改变事件或添加道具。"
-                    : "\n本次先选择符合人物的新行动意图，再推导姿态、手部动作与视线；减少重复的双手下垂展示姿势，不能仅换背景。换一个幅度清楚、轮廓可读的肢体动作，支撑须可信。") +
-                "\n【近期人物行动参考结束】";
+                    ? IllustratorText.Get("Direction_733")
+                    : IllustratorText.Get("Direction_734")) +
+                IllustratorText.Raw("Direction_735");
         }
 
         internal static bool IsLocalFallback(CachedIllustrationItem item)
@@ -152,9 +152,9 @@ namespace AnimusForge.Illustrator.Core
         internal static string RemoveActionHistory(string artDirection)
         {
             string value = artDirection ?? string.Empty;
-            value = Regex.Replace(value, @"【近期人物行动参考】[\s\S]*?【近期人物行动参考结束】", string.Empty);
+            value = Regex.Replace(value, IllustratorText.Raw("Direction_736"), string.Empty);
             // Accept callers with the earlier unframed format without consuming later sections.
-            return Regex.Replace(value, @"【近期人物行动参考】[^【]*", string.Empty).Trim();
+            return Regex.Replace(value, IllustratorText.Raw("Direction_737"), string.Empty).Trim();
         }
 
         internal static string ReadEventActionHistory(string campaignKey, string subjectKey, string category)

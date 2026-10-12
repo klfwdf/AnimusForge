@@ -13,6 +13,7 @@ PREFIX = "src/AF.GameAdapter.Bannerlord/UI/Terminal/"
 spec = importlib.util.spec_from_file_location("inventory", ROOT / "tools/localization/inventory_untranslated.py")
 audit = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(audit)
+LEX, decode = audit.LEX, audit.decode
 
 
 def old(relative):
@@ -59,14 +60,71 @@ vm_pairs = [
 ]
 
 
+
+# Exact inverse of nine reviewed literal-safe display bindings. Formatting is
+# ignored outside lexed strings/comments; data/logic tokens remain compared.
+def code_tokens(text):
+    parts, cursor = [], 0
+    for token in LEX.finditer(text):
+        parts.append(re.sub(r'\s+', '', text[cursor:token.start()]))
+        parts.append(json.dumps(decode(token[0]), ensure_ascii=False) if token.lastgroup == 'string' else token[0])
+        cursor = token.end()
+    parts.append(re.sub(r'\s+', '', text[cursor:]))
+    return ''.join(parts)
+
+def restore_reviewed_display_bindings(source):
+    raw = json.loads((ROOT / 'content/foundation/AF.Foundation.Localization/ModuleData/AdapterPromptCaptureCompatibility.json').read_text(encoding='utf-8-sig'))
+    mcm = json.loads((ROOT / 'content/foundation/AF.Foundation.Localization/ModuleData/McmPromptSourceCompatibility.json').read_text(encoding='utf-8-sig'))
+    assert mcm['Mcm_ManualDropdownModelName'] == '*手动填写*'
+    source = re.sub(r'AdapterPromptCaptureTexts.PcapCompat\("([^"\n]+)"\)', lambda match: json.dumps(raw[match[1]], ensure_ascii=False), source)
+    source = re.sub(r'McmPromptDefaults.Raw\("([^"\n]+)"\)', lambda match: json.dumps(mcm[match[1]], ensure_ascii=False), source)
+    source = code_tokens(source)
+    bindings = [
+        ('hotkeyMessage', 'HotkeySet', 'Hotkey {TITLE} set to [{KEY}]', '("TITLE", (object)_activeListeningItem.Title), ("KEY", keyName)', 'hotkeyMessage.SetTextVariable("TITLE", _activeListeningItem.Title ?? ""); hotkeyMessage.SetTextVariable("KEY", keyName);'),
+        ('exported', 'ExportedTo', 'Exported to:\n{PATH}', '("PATH", (object)path)', 'exported.SetTextVariable("PATH", path);'),
+        ('titleText', 'NumericTitle', 'Set {TITLE}', '("TITLE", (object)Title)', 'titleText.SetTextVariable("TITLE", Title ?? "");'),
+        ('promptText', 'NumericPrompt', 'Enter a value (valid range: {MIN} ~ {MAX}):\n{HINT}', '("MIN", (object)SettingDef.MinValue), ("MAX", SettingDef.MaxValue), ("HINT", HintText)', 'promptText.SetTextVariable("MIN", SettingDef.MinValue); promptText.SetTextVariable("MAX", SettingDef.MaxValue); promptText.SetTextVariable("HINT", HintText ?? "");'),
+        ('titleText', 'DropdownTitle', 'Select {TITLE}', '("TITLE", (object)Title)', 'titleText.SetTextVariable("TITLE", Title ?? "");'),
+        ('promptText', 'DropdownPrompt', 'Choose from the available options:\n{HINT}', '("HINT", (object)HintText)', 'promptText.SetTextVariable("HINT", HintText ?? "");'),
+        ('titleText', 'TextTitle', 'Edit {TITLE}', '("TITLE", (object)Title)', 'titleText.SetTextVariable("TITLE", Title ?? "");'),
+        ('triggeredMessage', 'SettingTriggered', 'Triggered: {TITLE}', '("TITLE", (object)Title)', 'triggeredMessage.SetTextVariable("TITLE", Title ?? "");'),
+        ('triggerFailedMessage', 'SettingTriggerFailed', 'Trigger failed: {ERROR}', '("ERROR", (object)(ex.Message ?? new TextObject("{=AF_UI_Terminal_UnknownError}Unknown error.").ToString()))', 'triggerFailedMessage.SetTextVariable("ERROR", ex.Message ?? "Unknown error.");'),
+    ]
+    en_path = ROOT / 'content/modules/AF.Module.UI/ModuleData/Languages/af_ui_strings.xml'
+    en = {node.get('id'): node.get('text') for node in ET.parse(en_path).iter('string')}
+    zh = {node.get('id'): node.get('text') for node in ET.parse(en_path.parent / 'CNs/af_ui_strings-zh-CN.xml').iter('string')}
+    historical_en = {node.get('id'): node.get('text') for node in ET.fromstring(subprocess.check_output(['git', 'show', '192390cbb:content/modules/AF.Module.UI/ModuleData/Languages/af_ui_strings.xml'], cwd=ROOT)).iter('string')}
+    historical_zh = {node.get('id'): node.get('text') for node in ET.fromstring(subprocess.check_output(['git', 'show', '192390cbb:content/modules/AF.Module.UI/ModuleData/Languages/CNs/af_ui_strings-zh-CN.xml'], cwd=ROOT)).iter('string')}
+    for variable, suffix, fallback, actual_variables, original_binding in bindings:
+        key = 'AF_UI_Terminal_' + suffix
+        assert en[key] == historical_en[key] and zh[key] == historical_zh[key], key + ': both original resource values unchanged'
+        assert sorted(re.findall(r'\{\w+\}', fallback)) == sorted(re.findall(r'\{\w+\}', en[key])) == sorted(re.findall(r'\{\w+\}', zh[key])), key
+        actual = code_tokens('string ' + variable + ' = DeveloperUiText.Format(' + json.dumps(key) + ', ' + json.dumps(fallback) + ', ' + actual_variables + ');')
+        original = code_tokens('var ' + variable + ' = new TextObject(' + json.dumps('{=' + key + '}' + fallback) + ');' + original_binding)
+        assert source.count(actual) == 1, key + ': exact variable identity and single consumer'
+        source = source.replace(actual, original, 1)
+    for name in ('hotkeyMessage', 'triggeredMessage', 'triggerFailedMessage'):
+        actual = 'newInformationMessage(' + name + ','
+        assert source.count(actual) == 1
+        source = source.replace(actual, 'newInformationMessage(' + name + '.ToString(),', 1)
+    assert source.count(',exported);') == 1
+    source = source.replace(',exported);', ',exported.ToString());', 1)
+    formatter = (ROOT / 'src/AF.GameAdapter.Bannerlord/UI/Editors/DeveloperUiText.cs').read_text(encoding='utf-8-sig')
+    assert 'LiteralValues.Replace(text.ToString(), match =>' in formatter
+    assert 'variables[int.Parse(match.Groups[1].Value, System.Globalization.CultureInfo.InvariantCulture)].Value?.ToString() ?? string.Empty' in formatter
+    return source
+
 def main():
     catalog = (ROOT / PREFIX / "AnimusForgeTagCatalog.cs").read_text(encoding="utf-8-sig")
     vm = (ROOT / PREFIX / "AnimusForgeTerminalUiModels.cs").read_text(encoding="utf-8-sig")
-    assert restore(catalog, catalog_pairs) == old("AnimusForgeTagCatalog.cs"), "Snapshot/scan/cache/ID/tag/category/group/sort/log/export-file behavior changed"
+    raw = json.loads((ROOT / 'content/foundation/AF.Foundation.Localization/ModuleData/AdapterPromptCaptureCompatibility.json').read_text(encoding='utf-8-sig'))
+    restored_catalog = restore(catalog, catalog_pairs)
+    restored_catalog = re.sub(r'AdapterPromptCaptureTexts.PcapCompat\("([^"\n]+)"\)', lambda match: json.dumps(raw[match[1]], ensure_ascii=False), restored_catalog)
+    assert code_tokens(restored_catalog) == code_tokens(old("AnimusForgeTagCatalog.cs")), "Snapshot/scan/cache/ID/tag/category/group/sort/log/export-file behavior changed"
     categories = json.loads((ROOT / "content/foundation/AF.Foundation.Localization/ModuleData/TerminalCategories.json").read_text(encoding="utf-8"))["Categories"]
-    assert restore(restore_terminal_categories(vm, categories), vm_pairs) == old("AnimusForgeTerminalUiModels.cs"), "VM input/lifecycle/search/original routing changed"
+    assert restore_reviewed_display_bindings(restore(restore_terminal_categories(vm, categories), vm_pairs)) == code_tokens(old("AnimusForgeTerminalUiModels.cs")), "VM input/lifecycle/search/original routing changed"
     helper = (ROOT / PREFIX / "TagCatalogUiText.cs").read_text(encoding="utf-8-sig")
-    assert 'default: return raw;' in helper and 'return description;' in helper
+    assert 'return raw;' in helper and 'return description;' in helper
     assert ': raw ?? string.Empty;' in helper and 'return raw != null && raw.StartsWith(prefix, StringComparison.Ordinal)' in helper
     assert not re.search(r'\b(?:entry|snapshot)\.\w+\s*=(?!=)', helper), "Projection writes raw snapshot"
     assert 'private static readonly HashSet<string> VillageActions' in helper and 'VillageActions.Contains(action)' in helper
@@ -76,7 +134,8 @@ def main():
     assert 'Enum.IsDefined' not in helper, "Repeated enum reflection in display path"
     # Only the known natural-language pseudo-tag is projected; all executable protocol tags pass through.
     tag = helper.split('internal static string Tag(', 1)[1].split('internal static string Description(', 1)[0]
-    assert 'raw == "正文（自然语言）"' in tag and ': raw ?? string.Empty;' in tag
+    assert raw['TagCat_NaturalLanguage'] == '正文（自然语言）'
+    assert 'raw == AdapterPromptCaptureTexts.PcapCompat("TagCat_NaturalLanguage")' in tag and ': raw ?? string.Empty;' in tag
     lang = ROOT / "content/modules/AF.Module.UI/ModuleData/Languages"
     en = {n.get("id"): n.get("text") for n in ET.parse(lang / "af_ui_strings.xml").iter("string")}
     zh = {n.get("id"): n.get("text") for n in ET.parse(lang / "CNs/af_ui_strings-zh-CN.xml").iter("string")}
@@ -104,7 +163,10 @@ def main():
     )
     description_method = helper.split('internal static string Description(', 1)[1].split('private static string VillageActionDisplay', 1)[0]
     for description, key in builtin_descriptions:
-        assert description in built_ins and f'case "{description}":' in description_method and key in description_method
+        raw_key = {'AF_UI_TagCatalog_DescriptionBody': 'TagCat_DescBody', 'AF_UI_TagCatalog_DescriptionContent': 'TagCat_DescContent', 'AF_UI_TagCatalog_DescriptionPlayerFact': 'TagCat_DescPlayerFact', 'AF_UI_TagCatalog_DescriptionNpcFact': 'TagCat_DescNpcFact'}[key]
+        assert raw[raw_key] == description
+        assert 'AdapterPromptCaptureTexts.PcapCompat("' + raw_key + '")' in built_ins
+        assert 'if (description == AdapterPromptCaptureTexts.PcapCompat("' + raw_key + '"))' in description_method and key in description_method
     assert 'Title = BuildTagCatalogEntryTitle(entry)' in vm and 'Hint = BuildTagCatalogEntryHint(entry)' in vm
     assert 'BuildTagCatalogEntryDetailText(entry)' in vm and 'BuildExportText(snapshot, moduleRoot)' in catalog
     print("PASS terminal tag static integration: 42 new keys + 3 reused; raw protocol/snapshot/cache/scan/sort/export mechanics exact inverse; raw and English search aliases present; unknown values retained; C#/game NOT-RUN")

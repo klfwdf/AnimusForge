@@ -32,6 +32,8 @@ namespace AnimusForge.SceneActions.Core
     /// </summary>
     public static class SceneActionFrameworkV1
     {
+        private static readonly Lazy<char[]> LiExcludedNounsChars = new Lazy<char[]>(() =>
+            Array.ConvertAll(SceneActionVocabulary.List("SceneActionFrameworkV1.LiExcludedNouns"), s => s[0]));
         public const int ContractVersion = 1;
 
         public const string Kneel = "kneel";
@@ -50,17 +52,17 @@ namespace AnimusForge.SceneActions.Core
                     Kneel,
                     IntentKind.PlayAction,
                     Kneel,
-                    "跪下",
-                    "跪倒",
-                    "跪地",
-                    "下跪",
-                    "单膝跪",
-                    "双膝跪",
-                    "屈膝跪",
-                    "跪拜",
-                    "跪伏",
-                    "单膝着地",
-                    "双膝着地",
+                    SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0001"),
+                    SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0002"),
+                    SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0003"),
+                    SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0004"),
+                    SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0005"),
+                    SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0006"),
+                    SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0007"),
+                    SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0008"),
+                    SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0009"),
+                    SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0010"),
+                    SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0011"),
                     "kneel",
                     "knelt",
                     "knelt down",
@@ -73,18 +75,18 @@ namespace AnimusForge.SceneActions.Core
                     StandUp,
                     IntentKind.ExitOwnedState,
                     null,
-                    "站起来",
-                    "站起身",
-                    "站了起来",
-                    "站起",
-                    "起身",
-                    "直起身",
-                    "撑地而起",
-                    "爬起身",
-                    "撑住膝盖直起身",
-                    "从跪姿中直起身",
-                    "双手撑住膝盖直起身",
-                    "撑地站起身",
+                    SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0012"),
+                    SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0013"),
+                    SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0014"),
+                    SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0015"),
+                    SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0016"),
+                    SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0017"),
+                    SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0018"),
+                    SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0019"),
+                    SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0020"),
+                    SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0021"),
+                    SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0022"),
+                    SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0023"),
                     "stood up",
                     "stood from his knees",
                     "stood from her knees",
@@ -95,35 +97,35 @@ namespace AnimusForge.SceneActions.Core
                     Xihai,
                     IntentKind.PlayAction,
                     Xihai,
-                    "西海",
-                    "纳粹礼",
-                    "纳粹式敬礼",
-                    "纳粹举手礼",
-                    "纳粹式举手礼",
-                    "纳粹抬手礼",
-                    "希特勒礼",
-                    "希特勒式敬礼",
-                    "希特勒举手礼",
-                    "希特勒式举手礼",
-                    "德意志礼",
-                    "德意志式敬礼",
+                    SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0024"),
+                    SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0025"),
+                    SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0026"),
+                    SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0027"),
+                    SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0028"),
+                    SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0029"),
+                    SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0030"),
+                    SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0031"),
+                    SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0032"),
+                    SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0033"),
+                    SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0034"),
+                    SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0035"),
                     "nazi salute",
                     "hitler salute",
                     "sieg heil salute",
                     "heil hitler salute",
-                    "抬手45度行礼",
-                    "抬手45°行礼",
-                    "抬手四十五度行礼",
-                    "抬起手45度并行礼",
-                    "抬起手45°并行礼",
-                    "抬起手四十五度并行礼",
-                    "举手45度行礼",
-                    "举起手45度行礼",
-                    "高抬右臂45度",
-                    "右臂斜向上45度伸直",
-                    "右臂斜向上伸直",
-                    "右臂向斜上方伸直",
-                    "右臂向前上方伸直",
+                    SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0036"),
+                    SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0037"),
+                    SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0038"),
+                    SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0039"),
+                    SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0040"),
+                    SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0041"),
+                    SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0042"),
+                    SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0043"),
+                    SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0044"),
+                    SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0045"),
+                    SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0046"),
+                    SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0047"),
+                    SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0048"),
                     "raised his right arm at forty-five degrees in salute",
                     "raised her right arm at forty-five degrees in salute",
                     "raised his right arm in a salute",
@@ -132,16 +134,16 @@ namespace AnimusForge.SceneActions.Core
                     Cheer,
                     IntentKind.PlayAction,
                     Cheer,
-                    "欢呼",
-                    "喝彩",
-                    "振臂高呼",
-                    "高声叫好",
-                    "大声叫好",
-                                         "振臂呐喊",
-                     "高举拳头振臂呐喊",
-                     "为胜利大声喝彩",
-                     "高声欢呼起来",
-                     "挥舞双臂呐喊",
+                    SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0049"),
+                    SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0050"),
+                    SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0051"),
+                    SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0052"),
+                    SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0053"),
+                                         SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0054"),
+                     SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0055"),
+                     SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0056"),
+                     SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0057"),
+                     SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0058"),
                      "cheer",
                      "cheered",
                      "cheered loudly",
@@ -152,16 +154,16 @@ namespace AnimusForge.SceneActions.Core
                     Applaud,
                     IntentKind.PlayAction,
                     Applaud,
-                    "鼓掌",
-                    "拍手",
-                    "拍起手",
-                    "拍了拍手",
-                    "拍掌",
-                                         "鼓起掌",
-                     "鼓起掌来",
-                     "双掌连续拍击",
-                     "连续拍击",
-                     "清脆地鼓起掌来",
+                    SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0059"),
+                    SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0060"),
+                    SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0061"),
+                    SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0062"),
+                    SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0063"),
+                                         SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0064"),
+                     SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0065"),
+                     SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0066"),
+                     SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0067"),
+                     SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0068"),
                      "clapped",
                      "clapped his hands",
                      "clapped her hands",
@@ -171,37 +173,37 @@ namespace AnimusForge.SceneActions.Core
                     Respect,
                     IntentKind.PlayAction,
                     Respect,
-                    "行礼",
-                    "回礼",
-                    "欠身",
-                    "鞠躬",
-                    "躬身",
-                    "抱拳",
-                    "施礼",
-                    "见礼",
-                    "还礼",
-                    "答礼",
-                    "致礼",
-                    "行过礼",
-                    "作揖",
-                    "拱手作揖",
-                    "拱手见礼",
-                    "拱手致意",
-                    "抬手致意",
-                    "举手致意",
-                    "抚胸",
-                    "抚胸致意",
-                    "颔首",
-                    "颔首致意",
-                    "点头致意",
-                    "弯腰致意",
-                    "低头致意",
-                    "俯身致意",
-                    "俯首致意",
-                     "脱帽致意",
-                     "微微躬身抱拳",
-                     "躬身向你致意",
-                     "郑重向对方致礼",
+                    SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0069"),
+                    SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0070"),
+                    SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0071"),
+                    SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0072"),
+                    SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0073"),
+                    SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0074"),
+                    SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0075"),
+                    SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0076"),
+                    SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0077"),
+                    SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0078"),
+                    SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0079"),
+                    SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0080"),
+                    SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0081"),
+                    SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0082"),
+                    SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0083"),
+                    SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0084"),
+                    SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0085"),
+                    SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0086"),
+                    SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0087"),
+                    SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0088"),
+                    SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0089"),
+                    SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0090"),
+                    SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0091"),
+                    SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0092"),
+                    SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0093"),
+                    SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0094"),
+                    SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0095"),
+                     SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0096"),
+                     SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0097"),
+                     SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0098"),
+                     SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0099"),
                      "bowed politely",
                      "bowed in respect",
                      "made a respectful bow",
@@ -210,16 +212,16 @@ namespace AnimusForge.SceneActions.Core
                     Threat,
                     IntentKind.PlayAction,
                     Threat,
-                    "威胁",
-                    "恐吓",
-                    "威吓",
-                    "挥拳示威",
-                    "出言恫吓",
-                    "挥舞拳头示威",
-                                         "握紧拳头示威",
-                     "攥拳向你示威",
-                     "攥紧拳头在对方面前晃了晃作势恐吓",
-                     "逼近半步攥紧拳头恐吓",
+                    SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0100"),
+                    SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0101"),
+                    SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0102"),
+                    SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0103"),
+                    SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0104"),
+                    SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0105"),
+                                         SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0106"),
+                     SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0107"),
+                     SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0108"),
+                     SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0109"),
                      "clenched his fist",
                      "clenched her fist",
                      "clenched his fist and shook it threateningly",
@@ -231,25 +233,25 @@ namespace AnimusForge.SceneActions.Core
                     Surrender,
                     IntentKind.PlayAction,
                     Surrender,
-                    "投降",
-                    "认输",
-                    "缴械",
-                    "放下武器",
-                    "放下兵器",
-                    "丢下武器",
-                    "丢下兵器",
-                    "扔下武器",
-                    "扔掉武器",
-                    "弃械",
-                    "放弃抵抗",
-                    "束手就擒",
-                    "举手投降",
-                    "举起双手",
-                    "高举双手",
-                     "双手高举",
-                     "把兵器扔到脚边",
-                     "双手高举过头表示投降",
-                     "丢下兵器高举双手",
+                    SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0110"),
+                    SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0111"),
+                    SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0112"),
+                    SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0113"),
+                    SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0114"),
+                    SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0115"),
+                    SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0116"),
+                    SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0117"),
+                    SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0118"),
+                    SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0119"),
+                    SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0120"),
+                    SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0121"),
+                    SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0122"),
+                    SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0123"),
+                    SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0124"),
+                     SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0125"),
+                     SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0126"),
+                     SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0127"),
+                     SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0128"),
                      "surrendered",
                      "raised both hands in surrender",
                      "dropped his weapon and surrendered",
@@ -353,28 +355,28 @@ namespace AnimusForge.SceneActions.Core
         private static readonly string[] CutThroatPhysicalCues = SceneActionVocabulary.List("SceneActionFrameworkV1.CutThroatPhysicalCues");
         private static readonly string[] GenericRespectCues = SceneActionVocabulary.List("SceneActionFrameworkV1.GenericRespectCues");
 
-        private const string RespectMotionAdverbPatternText =
-            "(?:缓缓|慢慢|逐渐|徐徐|轻轻|猛地|迅速|突然)?";
+        private static readonly string RespectMotionAdverbPatternText =
+            SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0129");
 
         private static readonly Regex RespectLinkedMotionPattern = new Regex(
-            "(?:(?:把|将)?" + RespectMotionAdverbPatternText +
-            "(?:抬起|举起|伸出|高抬|抬高|举高)(?:了)?" +
-            "(?:手臂|胳膊|左臂|右臂|双臂|左手|右手|双手|手|臂)|" +
-            "(?:把|将)?(?:手臂|胳膊|左臂|右臂|双臂|左手|右手|双手|手|臂)" +
+            SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0130") + RespectMotionAdverbPatternText +
+            SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0131") +
+            SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0132") +
+            SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0133") +
             RespectMotionAdverbPatternText +
-            "(?:抬起|举起|伸出|高抬|抬高|举高)(?:了)?|" +
-            "(?:把|将)?" + RespectMotionAdverbPatternText +
-            "(?:抬手|举手|伸手|抬臂|举臂|伸臂))",
+            SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0134") +
+            SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0135") + RespectMotionAdverbPatternText +
+            SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0136"),
             RegexOptions.CultureInvariant);
 
         private static readonly string[] RespectRecoveryMarkers = SceneActionVocabulary.List("SceneActionFrameworkV1.RespectRecoveryMarkers");
 
-        private const string RespectCeremonyPatternText =
-            "(?:(?:(?<!举)行|施|回|还|答|见|致)" +
-            "(?:了|着|上|出|起|以)?(?:一个|一下|一|个)?礼|" +
-            "举(?:了)?(?:一个|一|个)?礼|" +
-            "(?:作|做|打)(?:了)?(?:一个|一|个)(?:揖|礼))" +
-            "(?!物|品|貌|节|服|仪|制|法|拜|堂|盒|金|炮|券|帽|花|包)";
+        private static readonly string RespectCeremonyPatternText =
+            SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0137") +
+            SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0138") +
+            SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0139") +
+            SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0140") +
+            SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0141");
 
         private static readonly Regex RespectCeremonyPattern = new Regex(
             RespectCeremonyPatternText,
@@ -399,15 +401,15 @@ namespace AnimusForge.SceneActions.Core
         private static readonly string[] XihaiEquipmentContinuations = SceneActionVocabulary.List("SceneActionFrameworkV1.XihaiEquipmentContinuations");
 
         private static readonly Regex XihaiDegreeGesturePattern = new Regex(
-            "(?:(?:抬起|举起|伸出|伸直)(?:了)?(?:手臂|右臂|右手|手)|" +
-            "(?:高抬|抬高|举高|斜举)(?:了)?(?:右臂|右手)|" +
-            "(?:右臂|右手|手臂|手)" +
-            "(?:缓缓|慢慢|逐渐|徐徐|轻轻|猛地|迅速|突然)?" +
-            "(?:抬起|举起|抬到|举到|抬至|举至|抬高|举高|伸出|伸直|前伸)" +
-            "(?:了)?|抬手|举手|抬臂|举臂)" +
-            "(?:到|至|成|呈|约|大约|大概|将近|接近|了|斜向上|向斜上方|" +
-            "向前上方|的|一个|\\s)*(?:45\\s*(?:度|°)|四十五\\s*(?:度|°))" +
-            "(?:角|并|来|作势|进行|\\s)*(?:行礼|敬礼|致意|" +
+            SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0142") +
+            SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0143") +
+            SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0144") +
+            SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0129") +
+            SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0145") +
+            SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0146") +
+            SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0147") +
+            SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0148") +
+            SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0149") +
             RespectCeremonyPatternText + ")",
             RegexOptions.CultureInvariant);
 
@@ -572,7 +574,7 @@ namespace AnimusForge.SceneActions.Core
                 cueIndex + cueLength > normalizedText.Length ||
                 !string.Equals(
                     normalizedText.Substring(cueIndex, cueLength),
-                    "西海",
+                    SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0024"),
                     StringComparison.Ordinal))
             {
                 return false;
@@ -580,7 +582,7 @@ namespace AnimusForge.SceneActions.Core
 
             int continuationStart = cueIndex + cueLength;
             if (continuationStart < normalizedText.Length &&
-                normalizedText[continuationStart] == '的')
+                normalizedText[continuationStart] == SceneActionVocabulary.Text("SceneActionFrameworkV1.ContinuationParticle")[0])
             {
                 continuationStart++;
             }
@@ -948,31 +950,18 @@ namespace AnimusForge.SceneActions.Core
             if (cueLength <= 0 ||
                 cueIndex < 0 ||
                 cueIndex + cueLength >= text.Length ||
-                text[cueIndex + cueLength - 1] != '礼')
+                text[cueIndex + cueLength - 1] != SceneActionVocabulary.Text("SceneActionFrameworkV1.LiChar")[0])
             {
                 return false;
             }
 
-            switch (text[cueIndex + cueLength])
+            char nextChar = text[cueIndex + cueLength];
+            if (Array.IndexOf(LiExcludedNounsChars.Value, nextChar) >= 0)
             {
-                case '物':
-                case '品':
-                case '貌':
-                case '节':
-                case '服':
-                case '仪':
-                case '制':
-                case '法':
-                case '拜':
-                case '堂':
-                case '盒':
-                case '金':
-                case '炮':
-                case '券':
-                case '帽':
-                case '花':
-                case '包':
-                    return true;
+                return true;
+            }
+            switch (nextChar)
+            {
                 default:
                     return false;
             }
@@ -1050,7 +1039,7 @@ namespace AnimusForge.SceneActions.Core
             bool hasUpwardDirection = ContainsAny(segment, XihaiUpwardDirections);
             bool hasFingerDetail = ContainsAny(segment, XihaiFingerDetails);
             bool hasPalmDetail = ContainsAny(segment, XihaiPalmDetails);
-            bool hasStraightArm = segment.IndexOf("伸直", StringComparison.Ordinal) >= 0;
+            bool hasStraightArm = segment.IndexOf(SceneActionVocabulary.Text("SceneActionFrameworkV1.Raw0150"), StringComparison.Ordinal) >= 0;
 
             return hasSpecificLimb && hasMotion &&
                    (hasUpwardDirection ||

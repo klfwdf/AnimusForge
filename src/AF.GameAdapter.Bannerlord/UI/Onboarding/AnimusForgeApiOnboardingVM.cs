@@ -558,16 +558,16 @@ public sealed class AnimusForgeApiOnboardingVM : ViewModel
 	public string AF_UI_Onboarding_Prefab_037Text => Localize("{=AF_UI_Onboarding_Prefab_037}All four API tests passed; configuration is ready!");
 
 	[DataSourceProperty]
-	public string AF_UI_Onboarding_Prefab_038Text { get { var text = new TextObject("{=AF_UI_Onboarding_Prefab_038}✔ Main API: {MODEL}"); text.SetTextVariable("MODEL", PrimaryModel); return text.ToString(); } }
+	public string AF_UI_Onboarding_Prefab_038Text => FormatLocalized("{=AF_UI_Onboarding_Prefab_038}✔ Main API: {MODEL}", "MODEL", PrimaryModel);
 
 	[DataSourceProperty]
-	public string AF_UI_Onboarding_Prefab_039Text { get { var text = new TextObject("{=AF_UI_Onboarding_Prefab_039}✔ Preprocessing API: {MODEL}"); text.SetTextVariable("MODEL", AuxiliaryModel); return text.ToString(); } }
+	public string AF_UI_Onboarding_Prefab_039Text => FormatLocalized("{=AF_UI_Onboarding_Prefab_039}✔ Preprocessing API: {MODEL}", "MODEL", AuxiliaryModel);
 
 	[DataSourceProperty]
-	public string AF_UI_Onboarding_Prefab_040Text { get { var text = new TextObject("{=AF_UI_Onboarding_Prefab_040}✔ Postprocessing API: {MODEL}"); text.SetTextVariable("MODEL", PostprocessModel); return text.ToString(); } }
+	public string AF_UI_Onboarding_Prefab_040Text => FormatLocalized("{=AF_UI_Onboarding_Prefab_040}✔ Postprocessing API: {MODEL}", "MODEL", PostprocessModel);
 
 	[DataSourceProperty]
-	public string AF_UI_Onboarding_Prefab_041Text { get { var text = new TextObject("{=AF_UI_Onboarding_Prefab_041}✔ Daily and weekly API: {MODEL}"); text.SetTextVariable("MODEL", EventModel); return text.ToString(); } }
+	public string AF_UI_Onboarding_Prefab_041Text => FormatLocalized("{=AF_UI_Onboarding_Prefab_041}✔ Daily and weekly API: {MODEL}", "MODEL", EventModel);
 
 	[DataSourceProperty]
 	public string AF_UI_Onboarding_Prefab_042Text => Localize("{=AF_UI_Onboarding_Prefab_042}Click below to save. A new save continues with world-book and character setup; completed saves return to the game.");
@@ -1399,9 +1399,7 @@ public sealed class AnimusForgeApiOnboardingVM : ViewModel
 
 	private static string FormatLocalized(string value, string variable, string replacement)
 	{
-		var text = new TextObject(value);
-		text.SetTextVariable(variable, replacement ?? string.Empty);
-		return text.ToString();
+		return DeveloperUiText.FormatTemplate(value, (variable, (object)replacement));
 	}
 
 	public override void OnFinalize()

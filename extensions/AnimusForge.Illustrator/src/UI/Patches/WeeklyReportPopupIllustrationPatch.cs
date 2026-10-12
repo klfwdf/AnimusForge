@@ -627,7 +627,7 @@ namespace AnimusForge.Illustrator.UI.Patches
             if (bulletin)
             {
                 options = options?.WithSceneImageSize();
-                string composition = "【快报版式】画幅为横向16:9，目标尺寸" + options?.ImageSize + "，围绕已选定的同一事件重新创作完整插画；不要照搬旧作品，不要将方图或竖图拉伸为横图。";
+                string composition = IllustratorText.Format("WeeklyBulletinComposition", options?.ImageSize);
                 artDirection += "\n" + composition;
                 hardFacts += "\n" + composition;
             }
@@ -649,7 +649,7 @@ namespace AnimusForge.Illustrator.UI.Patches
                 catch (Exception ex) { Debug.Print("[Illustrator] Weekly action history read failed: " + ex.Message); }
                 string workerArtDirection = artDirection;
                 if (!string.IsNullOrWhiteSpace(actionHistory)) workerArtDirection += "\n" + actionHistory;
-                var promptPlan = new IllustrationPromptPlan("周报历史纪事插画", hardFacts, workerArtDirection, directorFacts, playerRedrawPrompt);
+                var promptPlan = new IllustrationPromptPlan(IllustratorText.Raw("Director_937"), hardFacts, workerArtDirection, directorFacts, playerRedrawPrompt);
                 var refs = new List<IllustrationReferenceImage>();
                 var banners = new HashSet<string>(StringComparer.Ordinal);
                 // Sequential native stages keep GPU work bounded. No per-frame scan or parallel tableau allocation.
@@ -663,7 +663,7 @@ namespace AnimusForge.Illustrator.UI.Patches
                             appearance: person.Profile.Appearance).ConfigureAwait(false);
                     if (portraits != null)
                         IllustrationReferenceRouting.AddCharacter(refs, null, portraits, person.Name,
-                            $"事件人物【{person.Name}】，角色【{person.Role}】。全身与同名头肩图属于同一人，只锁定五官、须发和实际穿戴；不得借给另一方使用。人物行动按已选事件重新创作，不复制参考立绘站姿、背景或游戏渲染质感。相关身份不等于亲临现场，是否入画以事件事实为准。", eventReference: true);
+                            IllustratorText.Format("WeeklyParticipantReference", person.Name, person.Role), eventReference: true);
                     GenerationDiagnostics.Current?.RecordStage("weekly_participant_references", new JObject {
                         ["heroId"] = person.HeroId, ["name"] = person.Name, ["role"] = person.Role,
                         ["fullBody"] = !string.IsNullOrWhiteSpace(portraits?.FullBody),
@@ -677,7 +677,7 @@ namespace AnimusForge.Illustrator.UI.Patches
                         {
                             string owners = string.Join("、", people.Where(p => p.BannerCode == person.BannerCode).Select(p => p.Name));
                             refs.Add(new IllustrationReferenceImage(emblemB64,
-                                $"人物【{owners}】所属家族纹章参考；仅在该阵营已有依据的载体上使用，保留底色和徽记，不贴给敌方，不因提供参考新增旗帜或盾牌。", IllustrationReferenceKind.EventEmblem));
+                                IllustratorText.Format("WeeklyEmblemReference", owners), IllustrationReferenceKind.EventEmblem));
                         }
                     }
                 }
@@ -703,14 +703,12 @@ namespace AnimusForge.Illustrator.UI.Patches
         private static string GenerateWeeklyVariation()
         {
             // 构图全权交给导演：只给自由创作授权，不再提供预写取景句式。
-            return "【构图自由创作】：取景景别、机位角度、叙事瞬间与前景运用由你依据事件要闻与事实区全权自由创作，" +
-                "挑选最有叙事力的瞬间，不拘泥任何固定构图模板。";
+            return IllustratorText.Get("WeeklyFreeComposition");
         }
 
         private static string BuildWeeklyRedrawDirective(int redrawIndex)
         {
-            return $"【纪事重绘 · 第 {redrawIndex} 次绘制】参考本期最近作品的事件与行动摘要，自主选择同一事件的另一可信瞬间、观察位置或叙事重点，始终围绕已选事件，不改选其他消息。" +
-                "保留所选事件的参与方、地点关联和已知结果；不能为变化编造新事件，不能用更换领主展示姿势代替事件叙事。旧作品与人物参考不是发生事实，身份装备只在对应人物实际入画时生效。";
+            return IllustratorText.Format("WeeklyChronicleRedraw", redrawIndex);
         }
 
         private static void OnDefaultImageChanged(CachedIllustrationItem image)
@@ -736,7 +734,7 @@ namespace AnimusForge.Illustrator.UI.Patches
             _activeItem = item;
             if (!string.IsNullOrWhiteSpace(item?.Title)) _sink.TitleText = item.Title;
             _sink.SpriteName = spriteName;
-            _sink.PromptText = prompt;
+            _sink.PromptText = IllustratorUiText.ProjectKnownCachedPrompt(prompt);
             _sink.HasIllustration = true;
             _sink.IsLoading = false;
             GenerationDiagnostics.WriteDelivery(item?.DiagnosticId, "weekly_ui_publish_complete", "sprite=" + spriteName + "; bytes=" + (bytes?.Length ?? 0) + "; publishMs=" + publishClock.ElapsedMilliseconds);

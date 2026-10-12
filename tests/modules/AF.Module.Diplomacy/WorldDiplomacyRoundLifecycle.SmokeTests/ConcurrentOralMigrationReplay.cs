@@ -285,7 +285,14 @@ internal static class ConcurrentOralMigrationReplay
 
         // Real oral consent path remains independent and private while publication is deferred.
         var origin = new DialogueInteractionOrigin("courier", "interaction_1", "session_1", "PRIVATE_PLAYER", "PRIVATE_NPC");
-        o.SubmitOralDiplomaticCommitment("ruler_a", "a", "action=Trade;move=NewMatter;target=b;days=14", origin);
+        o.SubmitOralDiplomaticCommitment("ruler_a", "a", "action=Trade;move=NewMatter;target=b;days=14", origin, out bool oralRegistered);
+        Test.True(oralRegistered, "deferred oral publication remains registered without claiming treaty execution");
+        int beforeDuplicate = o.CurrentStorage.DialogueArrangements.Count;
+        o.SubmitOralDiplomaticCommitment("ruler_a", "a", "action=Trade;move=NewMatter;target=b;days=14", origin, out bool duplicateRegistered);
+        Test.True(duplicateRegistered && o.CurrentStorage.DialogueArrangements.Count == beforeDuplicate,
+            "duplicate of a live deferred commitment is registered without creating another arrangement");
+        o.SubmitOralDiplomaticCommitment("ruler_a", "a", "invalid_payload", origin, out bool invalidRegistered);
+        Test.True(!invalidRegistered, "invalid oral submission cannot be reported as registered");
         var arrangement = o.CurrentStorage.DialogueArrangements.Single();
         var oral = o.ResolveRound(arrangement.RoundId);
         Test.True(oral != a && oral.EventSourceType == "dialogue_commitment" && oral.InitiatorKingdomId == "a", "oral commitment independent of occupied ordinary event");
@@ -294,6 +301,8 @@ internal static class ConcurrentOralMigrationReplay
         var drafted = o.ResolveDocument(arrangement.DocumentId);
         Test.True(drafted == null || !drafted.Body.Contains("PRIVATE_"), "private negotiation provenance never leaks into public body");
         o.CancelUnpublishedCommitmentWork(arrangement.ArrangementId, arrangement.Version, "changed_mind");
+        Test.True(!WorldDiplomacyOrchestration.IsRegisteredDialogueCommitment(arrangement),
+            "cancelled arrangement is not a registered request under the production receipt predicate");
         Test.True(arrangement.Status == "cancelled" && !WorldDiplomacyLiveRoundRules.Contains(o.CurrentStorage, oral), "cancel unpublished oral work closes only its own event");
         Test.True(WorldDiplomacyLiveRoundRules.Contains(o.CurrentStorage, a) && WorldDiplomacyLiveRoundRules.Contains(o.CurrentStorage, c), "oral cancellation leaves concurrent ordinary negotiations intact");
 

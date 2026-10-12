@@ -16,7 +16,7 @@ public static class Patch_GlobalUI_Click
 		}
 		try
 		{
-			Logger.LogTrace("GodMode", "\ud83d\udc49 [UI点击] ID: " + __instance.Id);
+			Logger.LogTrace("GodMode", "\ud83d\udc49 [UI click] ID: " + __instance.Id);
 		}
 		catch
 		{

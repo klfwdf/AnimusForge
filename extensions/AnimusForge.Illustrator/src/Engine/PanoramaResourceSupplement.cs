@@ -41,11 +41,11 @@ namespace AnimusForge.Illustrator.Engine
         {
             IllustratorRuntime.AssertMainThread();
             token.ThrowIfCancellationRequested();
-            if (_disposed || _snapshot.IsDisposed) throw new OperationCanceledException("资源补齐已取消。", token);
+            if (_disposed || _snapshot.IsDisposed) throw new OperationCanceledException("Resource supplementation was cancelled.", token);
             if (_templates == null)
             {
                 string name = "afi_t" + Interlocked.Increment(ref _nextId).ToString("x8");
-                if (name.Length > 16) throw new InvalidOperationException("资源模板场景名称过长。");
+                if (name.Length > 16) throw new InvalidOperationException("The resource template scene name is too long.");
                 _templates = Scene.CreateNewScene(initialize_physics: false, enable_decals: false, sceneName: name);
                 _templates.SetDoNotAddEntitiesToTickList(true);
                 _templates.SetClothSimulationState(false);
@@ -72,7 +72,7 @@ namespace AnimusForge.Illustrator.Engine
                 {
                     GameEntity node = _pending.Pop();
                     if (++_nodeCount > ScreenCaptureHelper.PanoramaSnapshotMaxNodes)
-                        throw new InvalidOperationException("资源补齐超过实体遍历预算，已停止采集。");
+                        throw new InvalidOperationException("Resource supplementation exceeded its entity traversal budget. Capture stopped.");
                     if (node == null || !node.WeakEntity.IsValid) { _boundsValid = false; continue; }
                     bool scripted;
                     using (var scripts = node.GetScriptComponents().GetEnumerator()) scripted = scripts.MoveNext();
@@ -92,7 +92,7 @@ namespace AnimusForge.Illustrator.Engine
                     }
                     int children = node.ChildCount;
                     if ((long)_nodeCount + _pending.Count + children > ScreenCaptureHelper.PanoramaSnapshotMaxNodes)
-                        throw new InvalidOperationException("资源模板层级超过遍历预算。");
+                        throw new InvalidOperationException("The resource template hierarchy exceeds the traversal budget.");
                     for (int i = children - 1; i >= 0; i--) _pending.Push(node.GetChild(i));
                     _current = node; _meshIndex = 0; _currentFrame = node.GetGlobalFrame();
                     continue;
@@ -144,7 +144,7 @@ namespace AnimusForge.Illustrator.Engine
                     _root = GameEntity.Instantiate(_templates, _entry.PrefabName, callScriptCallbacks: false, createPhysics: false);
                     if (_root == null) { _missing++; Record("prefab_unavailable", _entry.PrefabName, null); continue; }
                     if (_root.Scene?.Pointer != _templates.Pointer)
-                        throw new InvalidOperationException("资源模板不属于自有场景，拒绝设置其变换。");
+                        throw new InvalidOperationException("The resource template does not belong to the owned scene. Its transform was not changed.");
                     _root.SetFrame(ref templateFrame);
                 }
                 else
@@ -155,7 +155,7 @@ namespace AnimusForge.Illustrator.Engine
                     try
                     {
                         _root = GameEntity.CreateEmpty(_templates, isModifiableFromEditor: false, createPhysics: false, callScriptCallbacks: false);
-                        if (_root == null) throw new InvalidOperationException("无法创建静态资源模板。");
+                        if (_root == null) throw new InvalidOperationException("A static resource template could not be created.");
                         _root.AddMultiMesh(mesh);
                         attached = true;
                         _root.SetFrame(ref templateFrame);
@@ -164,7 +164,7 @@ namespace AnimusForge.Illustrator.Engine
                     finally { if (attached) mesh.ManualInvalidate(); }
                 }
                 if (_root == null || _root.Scene?.Pointer != _templates.Pointer)
-                    throw new InvalidOperationException("无法在独立模板场景加载资源几何。");
+                    throw new InvalidOperationException("Resource geometry could not be loaded into the isolated template scene.");
                 _root.EntityFlags |= EntityFlags.DoNotTick | EntityFlags.DontTickChildren;
                 _templatesLoaded++;
                 if (!_measuringBounds) _instanceLoads++;
@@ -195,14 +195,14 @@ namespace AnimusForge.Illustrator.Engine
             PanoramaGeometryBudget.BeforeCopy(_snapshot.CopiedRoots, ScreenCaptureHelper.PanoramaSnapshotMaxCopies, "runtime_and_resources");
             MetaMesh copy = original.CreateCopy();
             if (copy == null || copy.Pointer == UIntPtr.Zero || copy.Pointer == original.Pointer)
-                throw new InvalidOperationException("无法取得资源网格的独立副本。");
+                throw new InvalidOperationException("An independent resource mesh copy could not be obtained.");
             GameEntity target = null;
             try
             {
                 copy.Frame = original.Frame;
                 target = _snapshot.Scene.AddItemEntity(ref frame, copy);
                 if (target == null || target.Scene?.Pointer != _snapshot.Scene.Pointer || target.Pointer == source.Pointer)
-                    throw new InvalidOperationException("资源几何未正确进入独立渲染场景。");
+                    throw new InvalidOperationException("Resource geometry did not correctly enter the isolated render scene.");
                 target.EntityFlags |= EntityFlags.DoNotTick | EntityFlags.DontTickChildren;
                 target.RecomputeBoundingBox(); target.UpdateGlobalBounds(); target.UpdateVisibilityMask();
                 RegisterGeometry(_existing, name, effective);
@@ -218,7 +218,7 @@ namespace AnimusForge.Illustrator.Engine
                 {
                     var targetBounds = target.GetGlobalBoundingBox();
                     if (!ScreenCaptureHelper.HasUsablePanoramaBounds(targetBounds.min, targetBounds.max))
-                        throw new InvalidOperationException("资源副本网格边界无效。");
+                        throw new InvalidOperationException("The resource copy mesh bounds are invalid.");
                     _snapshot.IncludeCopiedBounds(targetBounds.min, targetBounds.max);
                     targetBoundsRecorded = true;
                     detail["targetFrame"] = new JArray(PanoramaSnapshotInventory.Frame(target.GetGlobalFrame()));

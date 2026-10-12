@@ -339,5 +339,41 @@
     <string id="AF_CONV_UI_Issue_TurnInAmbiguousBranch" text="The vanilla turn-in chain branched into multiple paths and could not be auto-selected with high confidence." />
     <string id="AF_CONV_UI_Issue_TurnInNotCompleted" text="The vanilla turn-in chain ran, but the quest is still not completed." />
     <string id="AF_CONV_UI_Issue_UnknownCompanion" text="an unknown companion" />
+      <string id="AF_CONV_UI_Runtime_0062" text="this lord" />
+    <string id="AF_CONV_UI_Runtime_0063" text="An NPC approaches" />
+    <string id="AF_CONV_UI_Runtime_0064" text="'s party has caught up with you. They seem to have something to discuss." />
+    <string id="AF_CONV_UI_Runtime_0498" text=", it has been some time since I last sent my greetings. I hope all is well with you. When you can, please write and tell me how you have been." />
+    <string id="AF_CONV_UI_Runtime_0501" text=", I am writing simply to let you know I am safe and to ask where you are these days. Please reply when it is convenient." />
+    <string id="AF_CONV_UI_Runtime_0504" text=", thinking of our past dealings, I felt some things would be better put in writing. May you be safe, and may our trust not be misplaced." />
+    <string id="AF_CONV_UI_Runtime_0508" text=", something happened recently that I wanted you to know about: " />
+    <string id="AF_CONV_UI_Runtime_0509" text=', I am currently facing "' />
+    <string id="AF_CONV_UI_Runtime_0510" text="a particular difficulty" />
+    <string id="AF_CONV_UI_Runtime_0511" text='" and would like to discuss it with you. Please write back if you are willing.' />
+    <string id="AF_CONV_UI_Runtime_0512" text=", I would like to use this letter to discuss a real diplomatic matter currently at hand. If you are willing, please write back with your views." />
+    <string id="AF_CONV_UI_Runtime_0621" text="Failed" />
+      <string id="AF_CONV_UI_Runtime_0750" text="Unified LLM Gateway request failed: " />
+      <string id="AF_CONV_UI_Runtime_0751" text="The model returned an empty reply, so no persona could be generated." />
+      <string id="AF_CONV_UI_Runtime_0756" text="The model reply could not be parsed as persona JSON." />
+      <string id="AF_CONV_UI_Runtime_0419" text="None" />
+    <string id="AF_CONV_UI_Runtime_0420" text="Unknown" />
+    <string id="AF_CONV_UI_Runtime_0430" text="Player" />
+    <string id="AF_CONV_UI_Runtime_0431" text=" to " />
+    <string id="AF_CONV_UI_Runtime_0432" text=":&#10;&#10;I have a specific difficulty that I would like to discuss with you. Please write back if you are willing." />
+    <string id="AF_CONV_UI_Runtime_0434" text=":&#10;&#10;I hope you have been well. When you have time, please write and tell me how you are doing." />
+    <string id="AF_CONV_UI_Runtime_0436" text=":&#10;&#10;I would like to discuss current matters with you in a formal letter. If you are willing, please write back with your views." />
+    <string id="AF_CONV_UI_Runtime_0596" text="Courier party members:" />
+    <string id="AF_CONV_UI_Runtime_0597" text="Enclosed: letter only." />
+    <string id="AF_CONV_UI_Runtime_0598" text="Enclosed:" />
+    <string id="AF_CONV_UI_Runtime_0599" text="Send " />
+    <string id="AF_CONV_UI_Runtime_0600" text=" denars" />
+    <string id="AF_CONV_UI_Runtime_0601" text="Show " />
+    <string id="AF_CONV_UI_Runtime_0604" text=" × " />
+    <string id="AF_CONV_UI_Runtime_0607" text="Transfer " />
+    <string id="AF_CONV_UI_Runtime_0608" text=" × " />
+    <string id="AF_CONV_UI_Runtime_0609" text="Transfer prisoner " />
+    <string id="AF_CONV_UI_Runtime_0612" text=" prisoners" />
+    <string id="AF_CONV_UI_Runtime_0613" text="Transfer fixed asset " />
+    <string id="AF_CONV_UI_Runtime_0670" text="Enough talk. If you want a fight, come on." />
+    <string id="AF_CONV_UI_Runtime_0671" text="Watch your mouth. Do not force my hand." />
   </strings>
 </base>

@@ -1,10 +1,20 @@
 using System;
+using System.IO;
+using System.Text;
 using System.Threading;
 
 namespace AnimusForge;
 
 internal static class SaveRuntimeGuard
 {
+    private static readonly Lazy<string> StaleRequestCompatibilityText = new Lazy<string>(() =>
+    {
+        using (Stream stream = typeof(SaveRuntimeGuard).Assembly.GetManifestResourceStream(
+            "AnimusForge.Foundation.StaleRequestError.txt"))
+        using (StreamReader reader = new StreamReader(stream, new UTF8Encoding(false, true)))
+            return reader.ReadToEnd();
+    }, true);
+
 	private static long _generation = 1;
 
 	public static long CurrentGeneration => Interlocked.Read(ref _generation);
@@ -50,7 +60,7 @@ internal static class SaveRuntimeGuard
 
 	public static string BuildStaleRequestErrorText()
 	{
-		return "（错误：请求已因读档失效）";
+		return StaleRequestCompatibilityText.Value;
 	}
 
 	private static string NormalizeReason(string reason)

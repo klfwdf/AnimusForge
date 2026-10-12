@@ -2,6 +2,27 @@
 <base xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" type="string">
   <tags><tag language="简体中文" /></tags>
   <strings>
+    <string id="SAX_BatchSummary" text="场景动作：接受 {ACCEPTED} 项，失败 {FAILED} 项，跳过 {SKIPPED} 项。" />
+    <string id="SAX_Reason_UnknownSpeaker" text="未知人物" />
+    <string id="SAX_Reason_UnknownReason" text="未知原因" />
+    <string id="SAX_Reason_SpeakerLeft" text="演讲者已离开场景。" />
+    <string id="SAX_Reason_SpeakerTeamChanged" text="演讲者已更换队伍。" />
+    <string id="SAX_Reason_PlayerCancelled" text="玩家已取消。" />
+    <string id="SAX_Reason_RequestReplaced" text="已被新的阵前演讲请求替代。" />
+    <string id="SAX_Reason_InvalidSpeech" text="演讲文本或演讲者无效。" />
+    <string id="SAX_Reason_PhaseChanged" text="阵前演讲阶段已改变。" />
+    <string id="SAX_Reason_SpeakerUnavailable" text="演讲者已不可用。" />
+    <string id="SAX_Reason_PhaseClosed" text="阵前演讲阶段已结束。" />
+    <string id="SAX_Reason_RequestTimedOut" text="阵前演讲请求已超时。" />
+    <string id="SAX_Reason_BridgeUnavailable" text="AF 专用 NPC 演讲接口不可用，或演讲者已不再处于活动状态。" />
+    <string id="SAX_Reason_ShoutUnavailable" text="AF 场景喊话实例不可用。" />
+    <string id="SAX_Reason_PacketUnavailable" text="AF 无法构建 NPC 演讲数据包。" />
+    <string id="SAX_Reason_PromptUnclaimed" text="专用 NPC 演讲会话无法取得其提示词。" />
+    <string id="SAX_Reason_UnexpectedTask" text="AF 返回了非预期的 NPC 演讲任务。" />
+    <string id="SAX_Reason_ReplayUnavailable" text="延迟的 AF 回复已无法播放。" />
+    <string id="SAX_Reason_ReplayNoResult" text="AF 回复重放未返回播放结果。" />
+    <string id="SAX_Reason_NpcRequestFailed" text="NPC 演讲请求无法启动：{DETAIL}" />
+    <string id="SAX_Reason_ReplayFailed" text="延迟的 AF 回复重放失败：{DETAIL}" />
     <string id="SAX_Loaded" text="AnimusForge 西海动作已加载（v1.1 / 动作框架 V4 + 阵前演讲 V2）。" />
     <string id="SAX_Disabled" text="AnimusForge 西海动作已禁用：所需的 AnimusForge 运行时契约不可用。" />
     <string id="SAX_InitializationFailed" text="AnimusForge 西海动作初始化失败：{REASON}" />
@@ -138,5 +159,6 @@
     <string id="SAX_BattleSpeechInputContentHint" text="请输入内容：" />
     <string id="SAX_BattleSpeechInputSubmit" text="发表" />
     <string id="SAX_BattleSpeechInputCancel" text="取消" />
+    <string id="SAX_Item_DaimaoHead_Name" text="呆喵" />
   </strings>
 </base>

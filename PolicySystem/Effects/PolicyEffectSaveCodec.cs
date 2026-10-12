@@ -153,7 +153,7 @@ internal static class PolicyEffectSaveCodec
 		}
 		if (ContainsTypeMetadata(source))
 		{
-			error = "旧 DynamicPolicy 存档不得包含 $type 元数据";
+			error = PolicyCompatibilityTexts.Get("SaveCodec_Error_LegacyDynamicTypeMetadata");
 			return false;
 		}
 		normalized = (JObject)source.DeepClone();
@@ -183,14 +183,14 @@ internal static class PolicyEffectSaveCodec
 		}
 		if (ContainsTypeMetadata(source))
 		{
-			error = "旧 LocalPolicy 存档不得包含 $type 元数据";
+			error = PolicyCompatibilityTexts.Get("SaveCodec_Error_LegacyLocalTypeMetadata");
 			return false;
 		}
 		normalized = (JObject)source.DeepClone();
 		normalized["Version"] = 6;
 		normalized["Status"] = "abolished";
 		normalized["EffectStatus"] = "abolished";
-		normalized["EndReason"] = "旧政策系统升级后停止，可重新评议";
+		normalized["EndReason"] = PolicyCompatibilityTexts.Get("SaveCodec_EndReason_Upgraded");
 		normalized["ActiveEffectId"] = string.Empty;
 		normalized["RemainingDays"] = 0;
 		normalized["Effects"] = new JArray();
@@ -223,14 +223,14 @@ internal static class PolicyEffectSaveCodec
 			if (Utf8Size(json) > MaxSerializedEnvelopeBytes)
 			{
 				json = string.Empty;
-				error = "policy effect save envelope 超过 2MiB";
+				error = PolicyCompatibilityTexts.Get("SaveCodec_Error_EnvelopeExceeds2MiB");
 				return false;
 			}
 			return true;
 		}
 		catch (Exception ex)
 		{
-			error = "policy effect save 序列化失败: " + ex.Message;
+			error = PolicyCompatibilityTexts.Get("SaveCodec_Error_SerializationFailed") + ex.Message;
 			return false;
 		}
 	}
@@ -241,12 +241,12 @@ internal static class PolicyEffectSaveCodec
 		error = string.Empty;
 		if (string.IsNullOrWhiteSpace(json))
 		{
-			error = "policy effect save 不能为空";
+			error = PolicyCompatibilityTexts.Get("SaveCodec_Error_SaveEmpty");
 			return false;
 		}
 		if (Utf8Size(json) > MaxSerializedEnvelopeBytes)
 		{
-			error = "policy effect save envelope 超过 2MiB";
+			error = PolicyCompatibilityTexts.Get("SaveCodec_Error_EnvelopeExceeds2MiB");
 			return false;
 		}
 		try
@@ -270,7 +270,7 @@ internal static class PolicyEffectSaveCodec
 		}
 		catch (Exception ex)
 		{
-			error = "policy effect save 反序列化失败: " + ex.Message;
+			error = PolicyCompatibilityTexts.Get("SaveCodec_Error_DeserializationFailed") + ex.Message;
 			return false;
 		}
 		if (!TryUpgradeEnvelopeSchema(envelope, out error))
@@ -459,7 +459,7 @@ internal static class PolicyEffectSaveCodec
 			|| !PolicyEffectModuleCatalog.TryResolveCanonicalId(instance.ModuleId, out string canonicalModuleId)
 			|| !string.Equals(module.Id, canonicalModuleId, StringComparison.Ordinal))
 		{
-			error = "runtime state 模块与实例不匹配";
+			error = PolicyCompatibilityTexts.Get("SaveCodec_Error_RuntimeStateMismatch");
 			return false;
 		}
 		JToken moduleState = ExtractModuleRuntimeState(instance.RuntimeState);
@@ -480,7 +480,7 @@ internal static class PolicyEffectSaveCodec
 		}
 		if (ContainsTypeMetadata(migratedState))
 		{
-			error = "迁移后的 runtime state 不得包含 $type 元数据";
+			error = PolicyCompatibilityTexts.Get("SaveCodec_Error_MigratedRuntimeStateTypeMetadata");
 			return false;
 		}
 		JObject existingRoot = instance.RuntimeState as JObject;
@@ -559,10 +559,16 @@ internal static class PolicyEffectSaveCodec
 		return DescribeInstancesCore(sources, playerVisible: true, localized: false);
 	}
 
+	internal static List<string> DescribePromptInstances(IEnumerable<PolicyEffectInstanceSaveData> sources)
+	{
+		return DescribeInstancesCore(sources, playerVisible: true, promptText: true);
+	}
+
 	private static List<string> DescribeInstancesCore(
 		IEnumerable<PolicyEffectInstanceSaveData> sources,
 		bool playerVisible,
-		bool localized = true)
+		bool localized = true,
+		bool promptText = false)
 	{
 		List<PolicyEffectInstanceSaveData> instances = (sources ?? Enumerable.Empty<PolicyEffectInstanceSaveData>())
 			.Where(instance => instance != null)
@@ -582,7 +588,7 @@ internal static class PolicyEffectSaveCodec
 				|| string.IsNullOrWhiteSpace(module.Descriptor.DisplayGroup))
 			{
 				result.Add(playerVisible
-					? (localized ? DescribePlayerVisibleInstance(instance, module) : DescribeRawPlayerVisibleInstance(instance, module))
+					? (localized ? DescribePlayerVisibleInstance(instance, module, promptText) : DescribeRawPlayerVisibleInstance(instance, module))
 					: DescribeInstance(instance));
 				continue;
 			}
@@ -607,7 +613,7 @@ internal static class PolicyEffectSaveCodec
 			}
 
 			result.Add(playerVisible && localized
-				? DescribeDisplayGroup(displayGroup, grouped, playerVisible: true)
+				? DescribeDisplayGroup(displayGroup, grouped, playerVisible: true, promptText: promptText)
 				: DescribeRawDisplayGroup(displayGroup, grouped, playerVisible));
 		}
 		return result.Where(text => !string.IsNullOrWhiteSpace(text)).ToList();
@@ -620,11 +626,11 @@ internal static class PolicyEffectSaveCodec
 	{
 		if (!TryNormalizeInstance(source, out PolicyEffectNormalizedInstance normalized, out _))
 		{
-			return "无法读取的模块效果";
+			return PolicyCompatibilityTexts.Get("SaveCodec_RawFormat_000");
 		}
 		if (normalized.IsInert)
 		{
-			return "当前版本无法执行的模块效果";
+			return PolicyCompatibilityTexts.Get("SaveCodec_RawFormat_001");
 		}
 		IPolicyEffectModule module = normalized.Module ?? knownModule;
 		if (module == null
@@ -634,10 +640,10 @@ internal static class PolicyEffectSaveCodec
 				out string payloadText,
 				out _))
 		{
-			return "无法读取的模块效果";
+			return PolicyCompatibilityTexts.Get("SaveCodec_RawFormat_000");
 		}
 		string displayName = string.IsNullOrWhiteSpace(module.Descriptor?.PlayerDisplayName)
-			? "模块效果"
+			? PolicyCompatibilityTexts.Get("SaveCodec_GenericEffectFallback")
 			: module.Descriptor.PlayerDisplayName.Trim();
 		if (normalized.RuntimeInstance.Payload is NumericPolicyEffectPayload numericPayload)
 		{
@@ -661,14 +667,14 @@ internal static class PolicyEffectSaveCodec
 			if (Math.Abs(once) > 0.0001f
 				&& instances.Any(instance => string.Equals(instance?.ModuleId, "clanInfluenceNextDayOnce", StringComparison.Ordinal)))
 			{
-				parts.Add("下一游戏日一次 " + FormatSignedPlayerVisibleNumber(once));
+				parts.Add(PolicyCompatibilityTexts.Get("SaveCodec_NextDayOncePrefix") + FormatSignedPlayerVisibleNumber(once));
 			}
 			if (Math.Abs(daily) > 0.0001f
 				&& instances.Any(instance => string.Equals(instance?.ModuleId, "clanInfluencePerDay", StringComparison.Ordinal)))
 			{
-				parts.Add("随后每日 " + FormatSignedPlayerVisibleNumber(daily));
+				parts.Add(PolicyCompatibilityTexts.Get("SaveCodec_EliteDailyPrefix") + FormatSignedPlayerVisibleNumber(daily));
 			}
-			return "影响力：" + (parts.Count > 0 ? string.Join("；", parts) : "无变化");
+			return PolicyCompatibilityTexts.Get("SaveCodec_InfluenceLabel") + (parts.Count > 0 ? string.Join("；", parts) : PolicyCompatibilityTexts.Get("SaveCodec_EliteNoChange"));
 		}
 		if (string.Equals(displayGroup, "heroGold", StringComparison.Ordinal))
 		{
@@ -677,13 +683,13 @@ internal static class PolicyEffectSaveCodec
 			List<string> parts = new List<string>();
 			if (instances.Any(instance => string.Equals(instance?.ModuleId, "heroGoldNextDayOnce", StringComparison.Ordinal)))
 			{
-				parts.Add("下一游戏日一次 " + FormatSignedPlayerVisibleNumber(once));
+				parts.Add(PolicyCompatibilityTexts.Get("SaveCodec_NextDayOncePrefix") + FormatSignedPlayerVisibleNumber(once));
 			}
 			if (instances.Any(instance => string.Equals(instance?.ModuleId, "heroGoldPerDay", StringComparison.Ordinal)))
 			{
-				parts.Add("随后每日 " + FormatSignedPlayerVisibleNumber(daily));
+				parts.Add(PolicyCompatibilityTexts.Get("SaveCodec_EliteDailyPrefix") + FormatSignedPlayerVisibleNumber(daily));
 			}
-			return "人物第纳尔：" + (parts.Count > 0 ? string.Join("；", parts) : "无变化");
+			return PolicyCompatibilityTexts.Get("SaveCodec_DenarsLabel") + (parts.Count > 0 ? string.Join("；", parts) : PolicyCompatibilityTexts.Get("SaveCodec_EliteNoChange"));
 		}
 		if (string.Equals(displayGroup, "soldierTroopXp", StringComparison.Ordinal))
 		{
@@ -692,13 +698,13 @@ internal static class PolicyEffectSaveCodec
 			List<string> parts = new List<string>();
 			if (instances.Any(instance => string.Equals(instance?.ModuleId, "soldierTroopXpOnce", StringComparison.Ordinal)))
 			{
-				parts.Add("下一游戏日一次 " + FormatSignedPlayerVisibleNumber(once) + " XP/兵");
+				parts.Add(PolicyCompatibilityTexts.Get("SaveCodec_NextDayOncePrefix") + FormatSignedPlayerVisibleNumber(once) + PolicyCompatibilityTexts.Get("SaveCodec_EliteDailySuffix"));
 			}
 			if (instances.Any(instance => string.Equals(instance?.ModuleId, "soldierTroopXpPerDay", StringComparison.Ordinal)))
 			{
-				parts.Add("随后每日 " + FormatSignedPlayerVisibleNumber(daily) + " XP/兵");
+				parts.Add(PolicyCompatibilityTexts.Get("SaveCodec_EliteDailyPrefix") + FormatSignedPlayerVisibleNumber(daily) + PolicyCompatibilityTexts.Get("SaveCodec_EliteDailySuffix"));
 			}
-			return "士兵精锐化：" + (parts.Count > 0 ? string.Join("；", parts) : "无变化");
+			return PolicyCompatibilityTexts.Get("SaveCodec_EliteLabel") + (parts.Count > 0 ? string.Join("；", parts) : PolicyCompatibilityTexts.Get("SaveCodec_EliteNoChange"));
 		}
 		if (string.Equals(displayGroup, "partySizeLimit", StringComparison.Ordinal))
 		{
@@ -706,7 +712,7 @@ internal static class PolicyEffectSaveCodec
 				instances,
 				"partySizeLimitClanLeader",
 				"partySizeLimitClanLords");
-			return "领主部队上限：" + FormatSignedPlayerVisibleNumber(value);
+			return PolicyCompatibilityTexts.Get("SaveCodec_PartySizeLabel") + FormatSignedPlayerVisibleNumber(value);
 		}
 		if (string.Equals(displayGroup, "kingdomStability", StringComparison.Ordinal))
 		{
@@ -716,14 +722,14 @@ internal static class PolicyEffectSaveCodec
 				"kingdomStabilityOnce");
 			bool hasDeferredInstance = (instances ?? Array.Empty<PolicyEffectInstanceSaveData>()).Any(instance =>
 				string.Equals(instance?.ModuleId, "kingdomStabilityNextDayOnce", StringComparison.Ordinal));
-			return "王国稳定度：" + (hasDeferredInstance ? "下一游戏日一次 " : "生效时一次 ")
+			return PolicyCompatibilityTexts.Get("SaveCodec_StabilityLabel") + (hasDeferredInstance ? PolicyCompatibilityTexts.Get("SaveCodec_NextDayOncePrefix") : PolicyCompatibilityTexts.Get("SaveCodec_ActivationOncePrefix"))
 				+ FormatSignedPlayerVisibleNumber(value);
 		}
 
 		PolicyEffectInstanceSaveData first = instances?.FirstOrDefault();
 		if (first == null)
 		{
-			return playerVisible ? "模块效果" : displayGroup;
+			return playerVisible ? PolicyCompatibilityTexts.Get("SaveCodec_GenericEffectFallback") : displayGroup;
 		}
 		if (TryNormalizeInstance(first, out PolicyEffectNormalizedInstance normalized, out _)
 			&& !normalized.IsInert
@@ -736,7 +742,7 @@ internal static class PolicyEffectSaveCodec
 			if (playerVisible)
 			{
 				string displayName = string.IsNullOrWhiteSpace(normalized.Module.Descriptor?.PlayerDisplayName)
-					? "模块效果"
+					? PolicyCompatibilityTexts.Get("SaveCodec_GenericEffectFallback")
 					: normalized.Module.Descriptor.PlayerDisplayName.Trim();
 				return string.IsNullOrWhiteSpace(payloadText)
 					? displayName
@@ -744,7 +750,7 @@ internal static class PolicyEffectSaveCodec
 			}
 			return displayGroup + "=" + payloadText;
 		}
-		return playerVisible ? "模块效果" : displayGroup;
+		return playerVisible ? PolicyCompatibilityTexts.Get("SaveCodec_GenericEffectFallback") : displayGroup;
 	}
 
 	private static string DescribeRawPlayerVisibleNumericValue(
@@ -754,47 +760,48 @@ internal static class PolicyEffectSaveCodec
 		string signed = FormatSignedPlayerVisibleNumber(value);
 		if (descriptor?.ValueUnit == PolicyEffectValueUnit.PercentPoints)
 		{
-			return "原版主税收 " + signed + "%";
+			return PolicyCompatibilityTexts.Get("SaveCodec_TaxIncomePrefix") + signed + "%";
 		}
 		if (descriptor?.ValueUnit == PolicyEffectValueUnit.RelativePercent)
 		{
 			if (descriptor.Hook == PolicyEffectHook.VolunteerProductionProbability)
 			{
-				return "相对原版每日判定频率 " + signed + "%";
+				return PolicyCompatibilityTexts.Get("SaveCodec_VolunteerFrequencyPrefix") + signed + "%";
 			}
 			if (descriptor.Hook == PolicyEffectHook.VillageGoodsProduction)
 			{
-				return "相对原版村庄商品产量 " + signed + "%";
+				return PolicyCompatibilityTexts.Get("SaveCodec_VillageProductionPrefix") + signed + "%";
 			}
-			return "相对原版候选分数 " + signed + "%";
+			return PolicyCompatibilityTexts.Get("SaveCodec_ArmyScorePrefix") + signed + "%";
 		}
 		if (descriptor?.ValueUnit == PolicyEffectValueUnit.PartySizePoints)
 		{
-			return "原版部队上限 " + signed;
+			return PolicyCompatibilityTexts.Get("SaveCodec_VanillaPartySizePrefix") + signed;
 		}
 		if (descriptor?.ExecutionKind == PolicyEffectExecutionKind.ScheduledOnce)
 		{
-			return "下一游戏日一次 " + signed;
+			return PolicyCompatibilityTexts.Get("SaveCodec_NextDayOncePrefix") + signed;
 		}
 		if (descriptor?.ExecutionKind == PolicyEffectExecutionKind.OneShot
 			|| descriptor?.ValueUnit == PolicyEffectValueUnit.PointsOnce)
 		{
-			return "生效时一次 " + signed;
+			return PolicyCompatibilityTexts.Get("SaveCodec_ActivationOncePrefix") + signed;
 		}
-		return "每日 " + signed;
+		return PolicyCompatibilityTexts.Get("SaveCodec_DailyPrefix") + signed;
 	}
 
 	private static string DescribePlayerVisibleInstance(
 		PolicyEffectInstanceSaveData source,
-		IPolicyEffectModule knownModule = null)
+		IPolicyEffectModule knownModule = null,
+		bool promptText = false)
 	{
 		if (!TryNormalizeInstance(source, out PolicyEffectNormalizedInstance normalized, out _))
 		{
-			return PolicyUiTexts.Get(PlayerVisibleTextKeyPrefix + "EffectUnreadable", "Unreadable module effect");
+			return GetDescriptionText(promptText, PlayerVisibleTextKeyPrefix + "EffectUnreadable", "Unreadable module effect");
 		}
 		if (normalized.IsInert)
 		{
-			return PolicyUiTexts.Get(PlayerVisibleTextKeyPrefix + "EffectNotExecutable", "Module effect that this version cannot execute");
+			return GetDescriptionText(promptText, PlayerVisibleTextKeyPrefix + "EffectNotExecutable", "Module effect that this version cannot execute");
 		}
 		IPolicyEffectModule module = normalized.Module ?? knownModule;
 		if (module == null
@@ -804,22 +811,23 @@ internal static class PolicyEffectSaveCodec
 				out string payloadText,
 				out _))
 		{
-			return PolicyUiTexts.Get(PlayerVisibleTextKeyPrefix + "EffectUnreadable", "Unreadable module effect");
+			return GetDescriptionText(promptText, PlayerVisibleTextKeyPrefix + "EffectUnreadable", "Unreadable module effect");
 		}
-		string displayName = PolicyEffectUiText.Name(module);
+		payloadText = DescribePresentationPayload(normalized.RuntimeInstance.Payload, payloadText, promptText);
+		string displayName = promptText ? PolicyEffectUiText.PromptName(module) : PolicyEffectUiText.Name(module);
 		if (normalized.RuntimeInstance.Payload is NumericPolicyEffectPayload numericPayload)
 		{
-			return PolicyUiTexts.Format(
+			return FormatDescriptionText(promptText,
 				PlayerVisibleTextKeyPrefix + "EffectNameValue",
 				"{NAME}: {VALUE}",
 				"NAME",
 				displayName,
 				"VALUE",
-				DescribePlayerVisibleNumericValue(module.Descriptor, numericPayload.Value));
+				DescribePlayerVisibleNumericValue(module.Descriptor, numericPayload.Value, promptText));
 		}
 		return string.IsNullOrWhiteSpace(payloadText)
 			? displayName
-			: PolicyUiTexts.Format(
+			: FormatDescriptionText(promptText,
 				PlayerVisibleTextKeyPrefix + "EffectNameValue",
 				"{NAME}: {VALUE}",
 				"NAME",
@@ -831,7 +839,8 @@ internal static class PolicyEffectSaveCodec
 	private static string DescribeDisplayGroup(
 		string displayGroup,
 		IReadOnlyCollection<PolicyEffectInstanceSaveData> instances,
-		bool playerVisible)
+		bool playerVisible,
+		bool promptText = false)
 	{
 		if (string.Equals(displayGroup, "clanInfluence", StringComparison.Ordinal))
 		{
@@ -841,7 +850,7 @@ internal static class PolicyEffectSaveCodec
 			if (Math.Abs(once) > 0.0001f
 				&& instances.Any(instance => string.Equals(instance?.ModuleId, "clanInfluenceNextDayOnce", StringComparison.Ordinal)))
 			{
-				parts.Add(PolicyUiTexts.Format(
+				parts.Add(FormatDescriptionText(promptText,
 					PlayerVisibleTextKeyPrefix + "ScheduleNextDayOnce",
 					"Once next game day {VALUE}",
 					"VALUE",
@@ -850,19 +859,19 @@ internal static class PolicyEffectSaveCodec
 			if (Math.Abs(daily) > 0.0001f
 				&& instances.Any(instance => string.Equals(instance?.ModuleId, "clanInfluencePerDay", StringComparison.Ordinal)))
 			{
-				parts.Add(PolicyUiTexts.Format(
+				parts.Add(FormatDescriptionText(promptText,
 					PlayerVisibleTextKeyPrefix + "ScheduleThenDaily",
 					"Then daily {VALUE}",
 					"VALUE",
 					FormatSignedPlayerVisibleNumber(daily)));
 			}
-			return PolicyUiTexts.Format(
+			return FormatDescriptionText(promptText,
 				PlayerVisibleTextKeyPrefix + "InfluenceValue",
 				"Influence: {VALUE}",
 				"VALUE",
 				parts.Count > 0
-					? string.Join(PolicyUiTexts.Get(PlayerVisibleTextKeyPrefix + "ListSeparator", "; "), parts)
-					: PolicyUiTexts.Get(PlayerVisibleTextKeyPrefix + "NoChange", "No change"));
+					? string.Join(GetDescriptionText(promptText, PlayerVisibleTextKeyPrefix + "ListSeparator", "; "), parts)
+					: GetDescriptionText(promptText, PlayerVisibleTextKeyPrefix + "NoChange", "No change"));
 		}
 		if (string.Equals(displayGroup, "heroGold", StringComparison.Ordinal))
 		{
@@ -871,7 +880,7 @@ internal static class PolicyEffectSaveCodec
 			List<string> parts = new List<string>();
 			if (instances.Any(instance => string.Equals(instance?.ModuleId, "heroGoldNextDayOnce", StringComparison.Ordinal)))
 			{
-				parts.Add(PolicyUiTexts.Format(
+				parts.Add(FormatDescriptionText(promptText,
 					PlayerVisibleTextKeyPrefix + "ScheduleNextDayOnce",
 					"Once next game day {VALUE}",
 					"VALUE",
@@ -879,19 +888,19 @@ internal static class PolicyEffectSaveCodec
 			}
 			if (instances.Any(instance => string.Equals(instance?.ModuleId, "heroGoldPerDay", StringComparison.Ordinal)))
 			{
-				parts.Add(PolicyUiTexts.Format(
+				parts.Add(FormatDescriptionText(promptText,
 					PlayerVisibleTextKeyPrefix + "ScheduleThenDaily",
 					"Then daily {VALUE}",
 					"VALUE",
 					FormatSignedPlayerVisibleNumber(daily)));
 			}
-			return PolicyUiTexts.Format(
+			return FormatDescriptionText(promptText,
 				PlayerVisibleTextKeyPrefix + "HeroGoldValue",
 				"Character denars: {VALUE}",
 				"VALUE",
 				parts.Count > 0
-					? string.Join(PolicyUiTexts.Get(PlayerVisibleTextKeyPrefix + "ListSeparator", "; "), parts)
-					: PolicyUiTexts.Get(PlayerVisibleTextKeyPrefix + "NoChange", "No change"));
+					? string.Join(GetDescriptionText(promptText, PlayerVisibleTextKeyPrefix + "ListSeparator", "; "), parts)
+					: GetDescriptionText(promptText, PlayerVisibleTextKeyPrefix + "NoChange", "No change"));
 		}
 		if (string.Equals(displayGroup, "soldierTroopXp", StringComparison.Ordinal))
 		{
@@ -900,7 +909,7 @@ internal static class PolicyEffectSaveCodec
 			List<string> parts = new List<string>();
 			if (instances.Any(instance => string.Equals(instance?.ModuleId, "soldierTroopXpOnce", StringComparison.Ordinal)))
 			{
-				parts.Add(PolicyUiTexts.Format(
+				parts.Add(FormatDescriptionText(promptText,
 					PlayerVisibleTextKeyPrefix + "ScheduleNextDayOnceXpPerSoldier",
 					"Once next game day {VALUE} XP/soldier",
 					"VALUE",
@@ -908,19 +917,19 @@ internal static class PolicyEffectSaveCodec
 			}
 			if (instances.Any(instance => string.Equals(instance?.ModuleId, "soldierTroopXpPerDay", StringComparison.Ordinal)))
 			{
-				parts.Add(PolicyUiTexts.Format(
+				parts.Add(FormatDescriptionText(promptText,
 					PlayerVisibleTextKeyPrefix + "ScheduleThenDailyXpPerSoldier",
 					"Then daily {VALUE} XP/soldier",
 					"VALUE",
 					FormatSignedPlayerVisibleNumber(daily)));
 			}
-			return PolicyUiTexts.Format(
+			return FormatDescriptionText(promptText,
 				PlayerVisibleTextKeyPrefix + "SoldierTroopXpValue",
 				"Soldier elite training: {VALUE}",
 				"VALUE",
 				parts.Count > 0
-					? string.Join(PolicyUiTexts.Get(PlayerVisibleTextKeyPrefix + "ListSeparator", "; "), parts)
-					: PolicyUiTexts.Get(PlayerVisibleTextKeyPrefix + "NoChange", "No change"));
+					? string.Join(GetDescriptionText(promptText, PlayerVisibleTextKeyPrefix + "ListSeparator", "; "), parts)
+					: GetDescriptionText(promptText, PlayerVisibleTextKeyPrefix + "NoChange", "No change"));
 		}
 		if (string.Equals(displayGroup, "partySizeLimit", StringComparison.Ordinal))
 		{
@@ -928,7 +937,7 @@ internal static class PolicyEffectSaveCodec
 				instances,
 				"partySizeLimitClanLeader",
 				"partySizeLimitClanLords");
-			return PolicyUiTexts.Format(
+			return FormatDescriptionText(promptText,
 				PlayerVisibleTextKeyPrefix + "PartySizeLimitValue",
 				"Lords' party size limit: {VALUE}",
 				"VALUE",
@@ -942,13 +951,13 @@ internal static class PolicyEffectSaveCodec
 				"kingdomStabilityOnce");
 			bool hasDeferredInstance = (instances ?? Array.Empty<PolicyEffectInstanceSaveData>()).Any(instance =>
 				string.Equals(instance?.ModuleId, "kingdomStabilityNextDayOnce", StringComparison.Ordinal));
-			return PolicyUiTexts.Format(
+			return FormatDescriptionText(promptText,
 				PlayerVisibleTextKeyPrefix + "KingdomStabilityValue",
 				"Kingdom stability: {SCHEDULE}{VALUE}",
 				"SCHEDULE",
 				hasDeferredInstance
-					? PolicyUiTexts.Get(PlayerVisibleTextKeyPrefix + "ScheduleNextDayOncePrefix", "Once next game day ")
-					: PolicyUiTexts.Get(PlayerVisibleTextKeyPrefix + "ScheduleOnActivationPrefix", "Once on activation "),
+					? GetDescriptionText(promptText, PlayerVisibleTextKeyPrefix + "ScheduleNextDayOncePrefix", "Once next game day ")
+					: GetDescriptionText(promptText, PlayerVisibleTextKeyPrefix + "ScheduleOnActivationPrefix", "Once on activation "),
 				"VALUE",
 				FormatSignedPlayerVisibleNumber(value));
 		}
@@ -957,7 +966,7 @@ internal static class PolicyEffectSaveCodec
 		if (first == null)
 		{
 			return playerVisible
-				? PolicyUiTexts.Get(PlayerVisibleTextKeyPrefix + "ModuleEffect", "Module effect")
+				? GetDescriptionText(promptText, PlayerVisibleTextKeyPrefix + "ModuleEffect", "Module effect")
 				: displayGroup;
 		}
 		if (TryNormalizeInstance(first, out PolicyEffectNormalizedInstance normalized, out _)
@@ -970,10 +979,11 @@ internal static class PolicyEffectSaveCodec
 		{
 			if (playerVisible)
 			{
-				string displayName = PolicyEffectUiText.Name(normalized.Module);
+				string displayName = promptText ? PolicyEffectUiText.PromptName(normalized.Module) : PolicyEffectUiText.Name(normalized.Module);
+				payloadText = DescribePresentationPayload(normalized.RuntimeInstance.Payload, payloadText, promptText);
 				return string.IsNullOrWhiteSpace(payloadText)
 					? displayName
-					: PolicyUiTexts.Format(
+					: FormatDescriptionText(promptText,
 						PlayerVisibleTextKeyPrefix + "EffectNameValue",
 						"{NAME}: {VALUE}",
 						"NAME",
@@ -984,18 +994,19 @@ internal static class PolicyEffectSaveCodec
 			return displayGroup + "=" + payloadText;
 		}
 		return playerVisible
-			? PolicyUiTexts.Get(PlayerVisibleTextKeyPrefix + "ModuleEffect", "Module effect")
+			? GetDescriptionText(promptText, PlayerVisibleTextKeyPrefix + "ModuleEffect", "Module effect")
 			: displayGroup;
 	}
 
 	private static string DescribePlayerVisibleNumericValue(
 		PolicyEffectModuleDescriptor descriptor,
-		double value)
+		double value,
+		bool promptText = false)
 	{
 		string signed = FormatSignedPlayerVisibleNumber(value);
 		if (descriptor?.ValueUnit == PolicyEffectValueUnit.PercentPoints)
 		{
-			return PolicyUiTexts.Format(
+			return FormatDescriptionText(promptText,
 				PlayerVisibleTextKeyPrefix + "NativeTaxIncomePercent",
 				"Native main tax income {VALUE}%",
 				"VALUE",
@@ -1005,7 +1016,7 @@ internal static class PolicyEffectSaveCodec
 		{
 			if (descriptor.Hook == PolicyEffectHook.VolunteerProductionProbability)
 			{
-				return PolicyUiTexts.Format(
+				return FormatDescriptionText(promptText,
 					PlayerVisibleTextKeyPrefix + "RelativeVolunteerDailyChancePercent",
 					"Relative to native daily volunteer check frequency {VALUE}%",
 					"VALUE",
@@ -1013,13 +1024,13 @@ internal static class PolicyEffectSaveCodec
 			}
 			if (descriptor.Hook == PolicyEffectHook.VillageGoodsProduction)
 			{
-				return PolicyUiTexts.Format(
+				return FormatDescriptionText(promptText,
 					PlayerVisibleTextKeyPrefix + "RelativeVillageGoodsProductionPercent",
 					"Relative to native village goods production {VALUE}%",
 					"VALUE",
 					signed);
 			}
-			return PolicyUiTexts.Format(
+			return FormatDescriptionText(promptText,
 				PlayerVisibleTextKeyPrefix + "RelativeCandidateScorePercent",
 				"Relative to native candidate score {VALUE}%",
 				"VALUE",
@@ -1027,7 +1038,7 @@ internal static class PolicyEffectSaveCodec
 		}
 		if (descriptor?.ValueUnit == PolicyEffectValueUnit.PartySizePoints)
 		{
-			return PolicyUiTexts.Format(
+			return FormatDescriptionText(promptText,
 				PlayerVisibleTextKeyPrefix + "NativePartySizeLimit",
 				"Native party size limit {VALUE}",
 				"VALUE",
@@ -1035,7 +1046,7 @@ internal static class PolicyEffectSaveCodec
 		}
 		if (descriptor?.ExecutionKind == PolicyEffectExecutionKind.ScheduledOnce)
 		{
-			return PolicyUiTexts.Format(
+			return FormatDescriptionText(promptText,
 				PlayerVisibleTextKeyPrefix + "ScheduleNextDayOnce",
 				"Once next game day {VALUE}",
 				"VALUE",
@@ -1044,17 +1055,65 @@ internal static class PolicyEffectSaveCodec
 		if (descriptor?.ExecutionKind == PolicyEffectExecutionKind.OneShot
 			|| descriptor?.ValueUnit == PolicyEffectValueUnit.PointsOnce)
 		{
-			return PolicyUiTexts.Format(
+			return FormatDescriptionText(promptText,
 				PlayerVisibleTextKeyPrefix + "ScheduleOnActivation",
 				"Once on activation {VALUE}",
 				"VALUE",
 				signed);
 		}
-		return PolicyUiTexts.Format(
+		return FormatDescriptionText(promptText,
 			PlayerVisibleTextKeyPrefix + "ScheduleDaily",
 			"Daily {VALUE}",
 			"VALUE",
 			signed);
+	}
+
+	private static string GetDescriptionText(bool promptText, string id, string fallback)
+	{
+		return promptText ? PolicyGenerationPromptTexts.Get(id, fallback) : PolicyUiTexts.Get(id, fallback);
+	}
+
+	private static string FormatDescriptionText(bool promptText, string id, string fallback, params string[] variables)
+	{
+		return promptText ? PolicyGenerationPromptTexts.Format(id, fallback, variables) : PolicyUiTexts.Format(id, fallback, variables);
+	}
+
+	private static string DescribePresentationPayload(PolicyEffectPayload payload, string rawText, bool promptText)
+	{
+		string once = null;
+		string daily = null;
+		bool troopXp = false;
+		if (payload is Modules.ClanInfluencePayload influence)
+		{
+			once = influence.OnceDelta.ToString("0.###", System.Globalization.CultureInfo.InvariantCulture);
+			daily = influence.DailyDelta.ToString("0.###", System.Globalization.CultureInfo.InvariantCulture);
+		}
+		else if (payload is Modules.HeroGoldPayload gold)
+		{
+			once = gold.OnceDelta.ToString(System.Globalization.CultureInfo.InvariantCulture);
+			daily = gold.DailyDelta.ToString(System.Globalization.CultureInfo.InvariantCulture);
+		}
+		else if (payload is Modules.SoldierTroopXpPayload experience)
+		{
+			once = experience.OnceDelta.ToString(System.Globalization.CultureInfo.InvariantCulture);
+			daily = experience.DailyDelta.ToString(System.Globalization.CultureInfo.InvariantCulture);
+			troopXp = true;
+		}
+		if (once != null)
+		{
+			string text = FormatDescriptionText(promptText, "AFPOL_UI_PayloadOnceDaily", "Once {ONCE} / daily {DAILY}", "ONCE", once, "DAILY", daily);
+			return troopXp ? text + GetDescriptionText(promptText, "AFPOL_UI_PayloadXpPerSoldier", " XP/soldier") : text;
+		}
+		int? partySize = payload is Modules.PartySizeLimitPayload size ? size.Value
+			: payload is Modules.PartySizeLimitRuntimePayload runtimeSize ? (int?)runtimeSize.Value : null;
+		if (partySize.HasValue)
+		{
+			string amount = (partySize.Value > 0 ? "+" : string.Empty) + partySize.Value.ToString(System.Globalization.CultureInfo.InvariantCulture);
+			return FormatDescriptionText(promptText, "AFPOL_UI_PayloadPartyMembers", "{VALUE} troops", "VALUE", amount);
+		}
+		if (payload is Modules.KingdomVillageRaidBanPayload)
+			return GetDescriptionText(promptText, "AFPOL_UI_PayloadVillageRaidBan", "Lords of the issuing kingdom may not raid villages");
+		return rawText;
 	}
 
 	private static string FormatSignedPlayerVisibleNumber(double value)
@@ -1293,7 +1352,7 @@ internal static class PolicyEffectSaveCodec
 		int version = ReadInt(source, "Version", 4);
 		if (version < 4 || version > 6)
 		{
-			error = "不支持的 active policy effect 版本: " + version;
+			error = PolicyCompatibilityTexts.Get("SaveCodec_Error_UnsupportedActiveVersion") + version;
 			return false;
 		}
 		if (version == 6)
@@ -1331,7 +1390,7 @@ internal static class PolicyEffectSaveCodec
 		int version = ReadInt(source, "Version", 4);
 		if (version < 4 || version > 7)
 		{
-			error = "不支持的 active policy effect 版本: " + version;
+			error = PolicyCompatibilityTexts.Get("SaveCodec_Error_UnsupportedActiveVersion") + version;
 			return false;
 		}
 		if (version == 7)
@@ -1365,7 +1424,7 @@ internal static class PolicyEffectSaveCodec
 		int version = ReadInt(source, "Version", 4);
 		if (version < 4 || version > 8)
 		{
-			error = "不支持的 active policy effect 版本: " + version;
+			error = PolicyCompatibilityTexts.Get("SaveCodec_Error_UnsupportedActiveVersion") + version;
 			return false;
 		}
 		if (version == 8)
@@ -1426,7 +1485,7 @@ internal static class PolicyEffectSaveCodec
 		int version = ReadInt(source, "Version", 1);
 		if (version < 1 || version > 3)
 		{
-			error = "不支持的 policy record 版本: " + version;
+			error = PolicyCompatibilityTexts.Get("SaveCodec_Error_UnsupportedPolicyRecordVersion") + version;
 			return false;
 		}
 		if (version == 3)
@@ -1465,13 +1524,13 @@ internal static class PolicyEffectSaveCodec
 		error = string.Empty;
 		if (source == null)
 		{
-			error = "local policy record 不能为空";
+			error = PolicyCompatibilityTexts.Get("SaveCodec_Error_LocalPolicyRecordEmpty");
 			return false;
 		}
 		int version = ReadInt(source, "Version", 1);
 		if (version < 1 || version > 4)
 		{
-			error = "不支持的 local policy 版本: " + version;
+			error = PolicyCompatibilityTexts.Get("SaveCodec_Error_UnsupportedLocalPolicyVersion") + version;
 			return false;
 		}
 		normalized = (JObject)source.DeepClone();
@@ -1517,7 +1576,7 @@ internal static class PolicyEffectSaveCodec
 		int version = ReadInt(source, "Version", 1);
 		if (version < 1 || version > 5)
 		{
-			error = "不支持的 local policy record 版本: " + version;
+			error = PolicyCompatibilityTexts.Get("SaveCodec_Error_UnsupportedLocalRecordVersion") + version;
 			return false;
 		}
 		if (version == 5)
@@ -1573,7 +1632,7 @@ internal static class PolicyEffectSaveCodec
 		int version = ReadInt(source, "Version", 1);
 		if (version < 1 || version > 6)
 		{
-			error = "不支持的 local policy record 版本: " + version;
+			error = PolicyCompatibilityTexts.Get("SaveCodec_Error_UnsupportedLocalRecordVersion") + version;
 			return false;
 		}
 		if (version == 6)
@@ -1640,7 +1699,7 @@ internal static class PolicyEffectSaveCodec
 		int version = ReadInt(source, "Version", 1);
 		if (version < 1 || version > 3)
 		{
-			error = "不支持的 dynamic policy 版本: " + version;
+			error = PolicyCompatibilityTexts.Get("SaveCodec_Error_UnsupportedDynamicVersion") + version;
 			return false;
 		}
 		if (version == 3)
@@ -1680,7 +1739,7 @@ internal static class PolicyEffectSaveCodec
 		int version = ReadInt(source, "Version", 1);
 		if (version < 1 || version > 4)
 		{
-			error = "不支持的 dynamic policy 版本: " + version;
+			error = PolicyCompatibilityTexts.Get("SaveCodec_Error_UnsupportedDynamicVersion") + version;
 			return false;
 		}
 		if (version == 4)
@@ -1731,7 +1790,7 @@ internal static class PolicyEffectSaveCodec
 		}
 		if (playerPayloadProperty.Value.Type != JTokenType.String)
 		{
-			error = "DynamicPolicy PlayerPayloadJson 必须是 JSON 字符串";
+			error = PolicyCompatibilityTexts.Get("SaveCodec_Error_PlayerPayloadMustBeJson");
 			return false;
 		}
 		string rawPayload = playerPayloadProperty.Value.Value<string>() ?? string.Empty;
@@ -1752,12 +1811,12 @@ internal static class PolicyEffectSaveCodec
 		}
 		catch (Exception ex)
 		{
-			error = "DynamicPolicy PlayerPayloadJson 解析失败: " + ex.Message;
+			error = PolicyCompatibilityTexts.Get("SaveCodec_Error_PlayerPayloadParseFailed") + ex.Message;
 			return false;
 		}
 		if (ContainsTypeMetadata(pending))
 		{
-			error = "DynamicPolicy PlayerPayloadJson 不得包含 $type 元数据";
+			error = PolicyCompatibilityTexts.Get("SaveCodec_Error_PlayerPayloadTypeMetadata");
 			return false;
 		}
 		if (!TryGetUniqueProperty(pending, "Assessment", out JProperty assessmentProperty, out error))
@@ -1770,7 +1829,7 @@ internal static class PolicyEffectSaveCodec
 		}
 		if (!(assessmentProperty.Value is JObject assessment))
 		{
-			error = "DynamicPolicy PlayerPayloadJson.Assessment 必须是对象";
+			error = PolicyCompatibilityTexts.Get("SaveCodec_Error_AssessmentMustBeObject");
 			return false;
 		}
 		if (!TryGetUniqueProperty(assessment, "effects", out JProperty effectsProperty, out error))
@@ -1783,7 +1842,7 @@ internal static class PolicyEffectSaveCodec
 		}
 		if (!(effectsProperty.Value is JArray effects))
 		{
-			error = "DynamicPolicy PlayerPayloadJson.Assessment.effects 必须是数组";
+			error = PolicyCompatibilityTexts.Get("SaveCodec_Error_EffectsMustBeArray");
 			return false;
 		}
 
@@ -1794,7 +1853,7 @@ internal static class PolicyEffectSaveCodec
 		{
 			if (!(token is JObject effect))
 			{
-				error = "DynamicPolicy PlayerPayloadJson.Assessment.effects 每项必须是对象";
+				error = PolicyCompatibilityTexts.Get("SaveCodec_Error_EffectItemMustBeObject");
 				return false;
 			}
 			if (!TryNormalizeDynamicWireEffect(
@@ -1834,7 +1893,7 @@ internal static class PolicyEffectSaveCodec
 		{
 			if (!IsAllowedDynamicWireProperty(propertyName))
 			{
-				error = "DynamicPolicy effect 包含未知字段: " + propertyName;
+				error = PolicyCompatibilityTexts.Get("SaveCodec_Error_UnknownEffectField") + propertyName;
 				return false;
 			}
 		}
@@ -1857,7 +1916,7 @@ internal static class PolicyEffectSaveCodec
 		{
 			if (hasModuleId || hasPayload || legacyValues.Count > 0)
 			{
-				error = "DynamicPolicy effect 不得混用 changes、新 module wire 或非零固定字段";
+				error = PolicyCompatibilityTexts.Get("SaveCodec_Error_MixedEffectStructure");
 				return false;
 			}
 			return TryNormalizeDynamicChangesEffect(
@@ -1874,7 +1933,7 @@ internal static class PolicyEffectSaveCodec
 			if (!hasModuleId || !hasPayload || !hasTargetHandles || legacyValues.Count > 0
 				|| HasNonNullProperty(properties, "targets"))
 			{
-				error = "DynamicPolicy 新 module wire 结构不完整或混入旧字段";
+				error = PolicyCompatibilityTexts.Get("SaveCodec_Error_IncompleteModuleWire");
 				return false;
 			}
 			if (!TryReadRequiredString(properties, "moduleId", out string moduleId, out error)
@@ -1884,7 +1943,7 @@ internal static class PolicyEffectSaveCodec
 			}
 			if (!(properties["payload"].Value is JObject payload))
 			{
-				error = "DynamicPolicy 新 module wire 的 payload 必须是对象";
+				error = PolicyCompatibilityTexts.Get("SaveCodec_Error_ModuleWirePayloadMustBeObject");
 				return false;
 			}
 			if (!TryReadOptionalReason(properties, out string reason, out error))
@@ -1904,7 +1963,7 @@ internal static class PolicyEffectSaveCodec
 
 		if (!hasLegacyFields)
 		{
-			error = "DynamicPolicy effect 不是受支持的 module、changes 或旧固定字段结构";
+			error = PolicyCompatibilityTexts.Get("SaveCodec_Error_UnsupportedEffectStructure");
 			return false;
 		}
 		if (!TryValidateNoDuplicateLegacyModules(properties, out error))
@@ -1953,7 +2012,7 @@ internal static class PolicyEffectSaveCodec
 		{
 			if (string.IsNullOrWhiteSpace(error))
 			{
-				error = "DynamicPolicy effect.changes 必须是对象";
+				error = PolicyCompatibilityTexts.Get("SaveCodec_Error_ChangesMustBeObject");
 			}
 			return false;
 		}
@@ -1963,7 +2022,7 @@ internal static class PolicyEffectSaveCodec
 			string moduleId = (change.Key ?? string.Empty).Trim();
 			if (moduleId.Length == 0 || !TryReadFiniteNumber(change.Value.Value, out double value))
 			{
-				error = "DynamicPolicy effect.changes 包含空 moduleId 或非有限数值";
+				error = PolicyCompatibilityTexts.Get("SaveCodec_Error_ChangesInvalidValue");
 				return false;
 			}
 			if (Math.Abs(value) <= 0.0001d)
@@ -2013,7 +2072,7 @@ internal static class PolicyEffectSaveCodec
 		string moduleId = (rawModuleId ?? string.Empty).Trim();
 		if (moduleId.Length == 0 || payload == null || targetHandles == null || targetHandles.Count == 0)
 		{
-			error = "DynamicPolicy module wire 缺少 moduleId、targetHandles 或 payload";
+			error = PolicyCompatibilityTexts.Get("SaveCodec_Error_ModuleWireIncomplete");
 			return false;
 		}
 		if (PolicyEffectModuleCatalog.TryResolveCanonicalId(moduleId, out string canonicalModuleId))
@@ -2022,13 +2081,13 @@ internal static class PolicyEffectSaveCodec
 		}
 		if (ContainsTypeMetadata(payload) || ContainsNonFiniteNumber(payload))
 		{
-			error = "DynamicPolicy module wire payload 包含 $type 或非有限数值: " + moduleId;
+			error = PolicyCompatibilityTexts.Get("SaveCodec_Error_ModuleWirePayloadInvalid") + moduleId;
 			return false;
 		}
 		int payloadBytes = Utf8Size(payload.ToString(Formatting.None));
 		if (payloadBytes > MaxPayloadBytes)
 		{
-			error = "DynamicPolicy module wire payload 超过 4KiB: " + moduleId;
+			error = PolicyCompatibilityTexts.Get("SaveCodec_Error_ModuleWirePayloadExceeds4KiB") + moduleId;
 			return false;
 		}
 		string targetSetKey = string.Join("\u001f", targetHandles
@@ -2053,17 +2112,17 @@ internal static class PolicyEffectSaveCodec
 			{
 				return true;
 			}
-			error = "DynamicPolicy module wire 包含冲突的重复 moduleId + targetHandles: " + moduleId;
+			error = PolicyCompatibilityTexts.Get("SaveCodec_Error_DuplicateModuleWire") + moduleId;
 			return false;
 		}
 		if (totalPayloadBytes + payloadBytes > MaxTotalPayloadBytes)
 		{
-			error = "DynamicPolicy module wire payload 总量超过 32KiB";
+			error = PolicyCompatibilityTexts.Get("SaveCodec_Error_TotalPayloadExceeds32KiB");
 			return false;
 		}
 		if (normalizedEffects.Count >= MaxWireEffectsPerPolicy)
 		{
-			error = "DynamicPolicy module wire 超过 12 个效果实例";
+			error = PolicyCompatibilityTexts.Get("SaveCodec_Error_WireCountExceeds12");
 			return false;
 		}
 
@@ -2098,7 +2157,7 @@ internal static class PolicyEffectSaveCodec
 		}
 		if (explicitTargets.Count > 1)
 		{
-			error = "DynamicPolicy effect 不得同时提供多种目标字段";
+			error = PolicyCompatibilityTexts.Get("SaveCodec_Error_MultipleTargetFields");
 			return false;
 		}
 		if (explicitTargets.Count == 1)
@@ -2108,7 +2167,7 @@ internal static class PolicyEffectSaveCodec
 			{
 				if (property.Value.Type != JTokenType.String || string.IsNullOrWhiteSpace(property.Value.Value<string>()))
 				{
-					error = "DynamicPolicy effect.targetHandle 必须是非空字符串";
+					error = PolicyCompatibilityTexts.Get("SaveCodec_Error_TargetHandleMustBeString");
 					return false;
 				}
 				targetHandles.Add(property.Value.Value<string>().Trim());
@@ -2116,7 +2175,7 @@ internal static class PolicyEffectSaveCodec
 			}
 			if (!(property.Value is JArray array))
 			{
-				error = "DynamicPolicy effect 目标字段必须是字符串数组";
+				error = PolicyCompatibilityTexts.Get("SaveCodec_Error_TargetArrayMustBeStringArray");
 				return false;
 			}
 			HashSet<string> seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
@@ -2124,27 +2183,27 @@ internal static class PolicyEffectSaveCodec
 			{
 				if (target.Type != JTokenType.String)
 				{
-					error = "DynamicPolicy effect 目标句柄必须是字符串";
+					error = PolicyCompatibilityTexts.Get("SaveCodec_Error_TargetHandleItemMustBeString");
 					return false;
 				}
 				string value = (target.Value<string>() ?? string.Empty).Trim();
 				if (value.Length == 0 || !seen.Add(value))
 				{
-					error = "DynamicPolicy effect 目标句柄为空或重复";
+					error = PolicyCompatibilityTexts.Get("SaveCodec_Error_TargetHandleEmptyOrDuplicate");
 					return false;
 				}
 				targetHandles.Add(value);
 			}
 			if (targetHandles.Count == 0)
 			{
-				error = "DynamicPolicy effect 目标句柄不能为空";
+				error = PolicyCompatibilityTexts.Get("SaveCodec_Error_TargetHandlesEmpty");
 				return false;
 			}
 			return true;
 		}
 		if (!allowRequestResolution)
 		{
-			error = "DynamicPolicy 新 module wire 缺少 targetHandles";
+			error = PolicyCompatibilityTexts.Get("SaveCodec_Error_ModuleWireMissingTargets");
 			return false;
 		}
 		return TryResolveDynamicLegacyTargetFromRequest(pending, properties, out targetHandles, out error);
@@ -2167,13 +2226,13 @@ internal static class PolicyEffectSaveCodec
 		{
 			if (string.IsNullOrWhiteSpace(error))
 			{
-				error = "DynamicPolicy 旧固定 effect 缺少可解析的 Request.TargetHandles";
+				error = PolicyCompatibilityTexts.Get("SaveCodec_Error_LegacyTargetHandlesMissing");
 			}
 			return false;
 		}
 		if (!(handlesProperty?.Value is JArray handles))
 		{
-			error = "DynamicPolicy Request.TargetHandles 必须是数组";
+			error = PolicyCompatibilityTexts.Get("SaveCodec_Error_RequestTargetsMustBeArray");
 			return false;
 		}
 
@@ -2189,7 +2248,7 @@ internal static class PolicyEffectSaveCodec
 		{
 			if (!(handleToken is JObject handle))
 			{
-				error = "DynamicPolicy Request.TargetHandles 每项必须是对象";
+				error = PolicyCompatibilityTexts.Get("SaveCodec_Error_RequestTargetItemMustBeObject");
 				return false;
 			}
 			if (!TryBuildCaseInsensitivePropertyMap(handle, out Dictionary<string, JProperty> handleProperties, out error)
@@ -2204,7 +2263,7 @@ internal static class PolicyEffectSaveCodec
 			}
 			if (!seenKeys.Add(key))
 			{
-				error = "DynamicPolicy Request.TargetHandles 包含重复 Key";
+				error = PolicyCompatibilityTexts.Get("SaveCodec_Error_RequestTargetDuplicateKey");
 				return false;
 			}
 			if (requestedKingdomId.Length > 0
@@ -2237,7 +2296,7 @@ internal static class PolicyEffectSaveCodec
 					&& !string.Equals(requestedScope, PolicyEffectScopes.Vassal, StringComparison.OrdinalIgnoreCase)
 					&& !string.Equals(requestedScope, PolicyEffectScopes.Local, StringComparison.OrdinalIgnoreCase))
 				{
-					error = "DynamicPolicy 旧固定 effect targetScope 无效: " + requestedScope;
+					error = PolicyCompatibilityTexts.Get("SaveCodec_Error_LegacyInvalidTargetScope") + requestedScope;
 					return false;
 				}
 			}
@@ -2246,8 +2305,8 @@ internal static class PolicyEffectSaveCodec
 		if (candidates.Count != 1)
 		{
 			error = candidates.Count == 0
-				? "DynamicPolicy 旧固定 effect 目标不合法"
-				: "DynamicPolicy 旧固定 effect 目标不唯一";
+				? PolicyCompatibilityTexts.Get("SaveCodec_LegacyFixedTargetInvalid")
+				: PolicyCompatibilityTexts.Get("SaveCodec_LegacyFixedTargetAmbiguous");
 			return false;
 		}
 		targetHandles.Add(candidates[0]);
@@ -2265,7 +2324,7 @@ internal static class PolicyEffectSaveCodec
 			if (LegacyPolicyEffectFieldAdapter.TryResolveModuleId(propertyName, out string moduleId)
 				&& !modules.Add(moduleId))
 			{
-				error = "DynamicPolicy 旧固定 effect 包含重复模块字段: " + moduleId;
+				error = PolicyCompatibilityTexts.Get("SaveCodec_Error_LegacyDuplicateModule") + moduleId;
 				return false;
 			}
 		}
@@ -2292,7 +2351,7 @@ internal static class PolicyEffectSaveCodec
 			}
 			if (property != null)
 			{
-				error = "JSON 字段大小写重复: " + propertyName;
+				error = PolicyCompatibilityTexts.Get("SaveCodec_Error_JsonDuplicateField") + propertyName;
 				return false;
 			}
 			property = candidate;
@@ -2309,14 +2368,14 @@ internal static class PolicyEffectSaveCodec
 		error = string.Empty;
 		if (source == null)
 		{
-			error = "JSON 对象不能为空";
+			error = PolicyCompatibilityTexts.Get("SaveCodec_Error_JsonObjectEmpty");
 			return false;
 		}
 		foreach (JProperty property in source.Properties())
 		{
 			if (properties.ContainsKey(property.Name))
 			{
-				error = "JSON 字段大小写重复: " + property.Name;
+				error = PolicyCompatibilityTexts.Get("SaveCodec_Error_JsonDuplicateField") + property.Name;
 				return false;
 			}
 			properties.Add(property.Name, property);
@@ -2336,7 +2395,7 @@ internal static class PolicyEffectSaveCodec
 			|| property.Value.Type != JTokenType.String
 			|| string.IsNullOrWhiteSpace(property.Value.Value<string>()))
 		{
-			error = "JSON 字段必须是非空字符串: " + propertyName;
+			error = PolicyCompatibilityTexts.Get("SaveCodec_Error_JsonFieldMustBeNonEmpty") + propertyName;
 			return false;
 		}
 		value = property.Value.Value<string>().Trim();
@@ -2358,7 +2417,7 @@ internal static class PolicyEffectSaveCodec
 		}
 		if (property.Value.Type != JTokenType.String)
 		{
-			error = "JSON 字段必须是字符串: " + propertyName;
+			error = PolicyCompatibilityTexts.Get("SaveCodec_Error_JsonFieldMustBeString") + propertyName;
 			return false;
 		}
 		value = (property.Value.Value<string>() ?? string.Empty).Trim();
@@ -2447,7 +2506,7 @@ internal static class PolicyEffectSaveCodec
 		error = string.Empty;
 		if (source == null)
 		{
-			error = "save record 不能为空";
+			error = PolicyCompatibilityTexts.Get("SaveCodec_Error_SaveRecordEmpty");
 			return false;
 		}
 		try
@@ -2461,14 +2520,14 @@ internal static class PolicyEffectSaveCodec
 			normalized = normalizedObject.ToObject<T>(serializer);
 			if (normalized == null)
 			{
-				error = "save record 规范化结果无法反序列化";
+				error = PolicyCompatibilityTexts.Get("SaveCodec_Error_SaveRecordDeserializeFailed");
 				return false;
 			}
 			return true;
 		}
 		catch (Exception ex)
 		{
-			error = "save record 规范化失败: " + ex.Message;
+			error = PolicyCompatibilityTexts.Get("SaveCodec_Error_SaveRecordNormalizationFailed") + ex.Message;
 			return false;
 		}
 	}
@@ -2578,7 +2637,7 @@ internal static class PolicyEffectSaveCodec
 		error = string.Empty;
 		if (source == null || moduleEffects == null || receipts == null || summary == null)
 		{
-			error = "legacy active stability migration 输入不能为空";
+			error = PolicyCompatibilityTexts.Get("SaveCodec_Error_LegacyStabilityInputEmpty");
 			return false;
 		}
 		if (moduleEffects.OfType<JObject>().Any(instance =>
@@ -2588,7 +2647,7 @@ internal static class PolicyEffectSaveCodec
 		}
 		if (!PolicyEffectModuleCatalog.TryGet("kingdomStabilityOnce", out IPolicyEffectModule module))
 		{
-			error = "legacy active stability 模块未注册";
+			error = PolicyCompatibilityTexts.Get("SaveCodec_Error_LegacyStabilityModuleNotRegistered");
 			return false;
 		}
 		PolicyEffectCanonicalTargetSet targetSet = BuildTargetSet(source, source);
@@ -2983,22 +3042,22 @@ internal static class PolicyEffectSaveCodec
 	{
 		if (envelope == null)
 		{
-			error = "policy effect save envelope 不能为空";
+			error = PolicyCompatibilityTexts.Get("SaveCodec_Error_EnvelopeEmpty");
 			return false;
 		}
 		if (envelope.SchemaVersion != PolicyEffectDataVersions.SaveSchemaVersion)
 		{
-			error = "不支持的 policy effect save schemaVersion: " + envelope.SchemaVersion;
+			error = PolicyCompatibilityTexts.Get("SaveCodec_Error_UnsupportedSchemaVersionCN") + envelope.SchemaVersion;
 			return false;
 		}
 		if (envelope.Instances == null)
 		{
-			error = "policy effect instances 不能为空";
+			error = PolicyCompatibilityTexts.Get("SaveCodec_Error_InstancesEmpty");
 			return false;
 		}
 		if (envelope.Instances.Count > MaxInstancesPerPolicy)
 		{
-			error = "单政策 policy effect instance 超过 24 个";
+			error = PolicyCompatibilityTexts.Get("SaveCodec_Error_SinglePolicyInstanceExceeds24");
 			return false;
 		}
 		if (envelope.Receipts == null)
@@ -3032,7 +3091,7 @@ internal static class PolicyEffectSaveCodec
 			totalPayloadBytes += Utf8Size(instance.Payload.ToString(Formatting.None));
 			if (totalPayloadBytes > MaxTotalPayloadBytes)
 			{
-				error = "单政策 policy effect payload 总量超过 32KiB";
+				error = PolicyCompatibilityTexts.Get("SaveCodec_Error_SinglePolicyPayloadExceeds32KiB");
 				return false;
 			}
 		}
@@ -3050,7 +3109,7 @@ internal static class PolicyEffectSaveCodec
 			|| instance.Payload.Type == JTokenType.Null
 			|| instance.TargetSet == null)
 		{
-			error = "policy effect instance 结构不完整";
+			error = PolicyCompatibilityTexts.Get("SaveCodec_Error_InstanceIncomplete");
 			return false;
 		}
 		instance.InstanceId = instance.InstanceId.Trim();
@@ -3089,12 +3148,12 @@ internal static class PolicyEffectSaveCodec
 		}
 		if (Utf8Size(instance.Payload.ToString(Formatting.None)) > MaxPayloadBytes)
 		{
-			error = "policy effect payload 超过 4KiB: " + instance.InstanceId;
+			error = PolicyCompatibilityTexts.Get("SaveCodec_Error_PayloadExceeds4KiB") + instance.InstanceId;
 			return false;
 		}
 		if (ContainsTypeMetadata(instance.Payload) || ContainsTypeMetadata(instance.RuntimeState))
 		{
-			error = "policy effect payload/runtimeState 不得包含 $type 元数据: " + instance.InstanceId;
+			error = PolicyCompatibilityTexts.Get("SaveCodec_Error_PayloadTypeMetadata") + instance.InstanceId;
 			return false;
 		}
 		error = string.Empty;
@@ -3173,7 +3232,7 @@ internal static class PolicyEffectSaveCodec
 		}
 		if (instances.Count > MaxInstancesPerPolicy)
 		{
-			error = "单政策迁移后的 policy effect instance 超过 24 个";
+			error = PolicyCompatibilityTexts.Get("SaveCodec_Error_MigratedInstanceExceeds24");
 			return false;
 		}
 		int totalPayloadBytes = 0;
@@ -3183,18 +3242,18 @@ internal static class PolicyEffectSaveCodec
 			JToken runtimeState = instance.RuntimeState;
 			if (payload == null || Utf8Size(payload.ToString(Formatting.None)) > MaxPayloadBytes)
 			{
-				error = "迁移后的 policy effect payload 缺失或超过 4KiB";
+				error = PolicyCompatibilityTexts.Get("SaveCodec_Error_MigratedPayloadInvalid");
 				return false;
 			}
 			if (ContainsTypeMetadata(payload) || ContainsTypeMetadata(runtimeState))
 			{
-				error = "迁移后的 policy effect payload/runtimeState 不得包含 $type 元数据";
+				error = PolicyCompatibilityTexts.Get("SaveCodec_Error_MigratedPayloadTypeMetadata");
 				return false;
 			}
 			totalPayloadBytes += Utf8Size(payload.ToString(Formatting.None));
 			if (totalPayloadBytes > MaxTotalPayloadBytes)
 			{
-				error = "单政策迁移后的 policy effect payload 总量超过 32KiB";
+				error = PolicyCompatibilityTexts.Get("SaveCodec_Error_MigratedPayloadExceeds32KiB");
 				return false;
 			}
 			string moduleId = instance.ModuleId;
@@ -3232,7 +3291,7 @@ internal static class PolicyEffectSaveCodec
 			}
 			catch (Exception ex)
 			{
-				error = "迁移后的 policy effect 目标壳无法反序列化: " + ex.Message;
+				error = PolicyCompatibilityTexts.Get("SaveCodec_Error_MigratedTargetHandleDeserializeFailed") + ex.Message;
 				return false;
 			}
 			if (!TryValidateInstanceShape(shell, out error))
@@ -3261,7 +3320,7 @@ internal static class PolicyEffectSaveCodec
 			}
 			if (!AreCompatibleAuthoritativeShellInstances(aggregate, shell))
 			{
-				error = "同一 policy effect instanceId 的目标壳静态数据不一致: " + instanceId;
+				error = PolicyCompatibilityTexts.Get("SaveCodec_Error_TargetHandleStaticMismatch") + instanceId;
 				return false;
 			}
 			aggregate.ActorHeroId = FirstNonEmpty(aggregate.ActorHeroId, shell.ActorHeroId);
@@ -3780,13 +3839,13 @@ internal static class PolicyEffectSaveCodec
 		error = string.Empty;
 		if (source == null)
 		{
-			error = "save record 不能为空";
+			error = PolicyCompatibilityTexts.Get("SaveCodec_Error_SaveRecordEmpty");
 			return false;
 		}
 		version = ReadInt(source, "Version", legacyVersion);
 		if (version != legacyVersion && version != currentVersion)
 		{
-			error = "不支持的 save record 版本: " + version;
+			error = PolicyCompatibilityTexts.Get("SaveCodec_Error_UnsupportedSaveRecordVersion") + version;
 			return false;
 		}
 		normalized = (JObject)source.DeepClone();

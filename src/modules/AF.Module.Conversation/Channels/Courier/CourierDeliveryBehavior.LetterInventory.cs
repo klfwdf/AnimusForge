@@ -84,7 +84,7 @@ public sealed partial class CourierDeliveryBehavior
 		return record;
 	}
 
-	private bool RememberCourierLetterInventoryRecord(string itemStringId, string displayName, string letterBody, string templateStringId, uint objectId, Hero sender, string senderName, bool isReply, int amount)
+	private bool RememberCourierLetterInventoryRecord(string itemStringId, string displayName, string letterBody, string templateStringId, uint objectId, Hero sender, string senderName, bool isReply, int amount, string diplomacyReplyBody = null, List<string> diplomacyReplyReceipts = null)
 	{
 		try
 		{
@@ -107,6 +107,8 @@ public sealed partial class CourierDeliveryBehavior
 				ItemStringId = itemStringId,
 				DisplayName = displayName,
 				LetterBody = letterBody,
+                DiplomacyReplyBody = diplomacyReplyBody,
+                DiplomacyReplyReceipts = diplomacyReplyReceipts == null ? null : new List<string>(diplomacyReplyReceipts),
 				TemplateStringId = templateStringId,
 				ObjectId = objectId,
 				SenderHeroId = SafeHeroId(sender),
@@ -197,7 +199,12 @@ public sealed partial class CourierDeliveryBehavior
 					{
 						record.SenderName = existing.SenderName;
 					}
-					if (string.IsNullOrWhiteSpace(record.LetterBody))
+					if (record.DiplomacyReplyBody == null && existing.DiplomacyReplyBody != null)
+                    {
+                        record.DiplomacyReplyBody = existing.DiplomacyReplyBody;
+                        record.DiplomacyReplyReceipts = existing.DiplomacyReplyReceipts;
+                    }
+                    if (string.IsNullOrWhiteSpace(record.LetterBody))
 					{
 						record.LetterBody = existing.LetterBody;
 					}
@@ -500,7 +507,7 @@ public sealed partial class CourierDeliveryBehavior
 			{
 				objectId = normalizedObjectId;
 			}
-			bool remembered = Instance?.RememberCourierLetterInventoryRecord(itemStringId, displayName, body, templateStringId, objectId, sender, name, isReply, after) == true;
+			bool remembered = Instance?.RememberCourierLetterInventoryRecord(itemStringId, displayName, body, templateStringId, objectId, sender, name, isReply, after, isReply ? session?.DiplomacyReplyBody : null, isReply ? session?.DiplomacyReplyReceipts : null) == true;
 			InformationManager.DisplayMessage(new InformationMessage(ConversationUiLocalization.Text("AF_CONV_UI_Courier_LetterAdded", "The letter was added to the player inventory."), Colors.Green));
 			Log("courier letter inventory item added session=" + (session?.Id ?? "") + " item=" + itemStringId + " generated=" + generated + " after=" + after + " reply=" + isReply + " clanTier=" + senderClanTier + " template=" + templateItemId + " nameLen=" + displayName.Length + " itemName=" + (itemName ?? ""));
 			return remembered;
@@ -634,14 +641,14 @@ public sealed partial class CourierDeliveryBehavior
 			return false;
 		}
 		return IsCourierReplyInventoryDisplayName(text)
-			|| (text.StartsWith("\u6765\u81ea", StringComparison.Ordinal)
-				&& (text.Contains("\u7684\u4fe1\uff1a") || GetCourierLetterInventoryFirstLine(text).EndsWith("\u7684\u4fe1", StringComparison.Ordinal)));
+			|| (text.StartsWith(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0471"), StringComparison.Ordinal)
+				&& (text.Contains(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0472")) || GetCourierLetterInventoryFirstLine(text).EndsWith(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0473"), StringComparison.Ordinal)));
 	}
 
 	private static bool IsCourierReplyInventoryDisplayName(string displayName)
 	{
 		string text = (displayName ?? "").Trim();
-		return text.Contains("\u7684\u56de\u4fe1\uff1a") || GetCourierLetterInventoryFirstLine(text).EndsWith("\u7684\u56de\u4fe1", StringComparison.Ordinal);
+		return text.Contains(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0474")) || GetCourierLetterInventoryFirstLine(text).EndsWith(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0475"), StringComparison.Ordinal);
 	}
 
 	public static string GetCourierLetterTransferDisplayTitleForExternal(string displayName)
@@ -659,7 +666,7 @@ public sealed partial class CourierDeliveryBehavior
 		string original = (displayName ?? "").Trim();
 		string title = GetCourierLetterTransferDisplayTitleForExternal(original);
 		string letterBody = "";
-		if (!TryGetCourierLetterInventoryDetailForExternal(itemStringId, objectId, out letterBody)
+		if (!TryGetCourierLetterInventoryDetailForExternal(itemStringId, objectId, out letterBody, forUi: false)
 			&& TrySplitCourierLetterInventoryDisplayName(original, out string legacyTitle, out string legacyBody))
 		{
 			title = legacyTitle;
@@ -669,9 +676,9 @@ public sealed partial class CourierDeliveryBehavior
 		{
 			if (string.IsNullOrWhiteSpace(title))
 			{
-				title = "信件";
+				title = ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0476");
 			}
-			return BuildInventoryDetailFactDescription(title, "信件正文", letterBody);
+			return BuildInventoryDetailFactDescription(title, ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0477"), letterBody);
 		}
 		// Courier letters remain the authoritative detail when an item happens to
 		// match both formats. RP introductions are only appended for non-letter
@@ -681,7 +688,7 @@ public sealed partial class CourierDeliveryBehavior
 			objectId,
 			out string introduction))
 		{
-			return BuildInventoryDetailFactDescription(title, "物品介绍", introduction);
+			return BuildInventoryDetailFactDescription(title, ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0478"), introduction);
 		}
 		return original;
 	}
@@ -698,13 +705,16 @@ public sealed partial class CourierDeliveryBehavior
 		}
 		if (string.IsNullOrWhiteSpace(title))
 		{
-			title = "物品";
+			title = ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0479");
 		}
 		string factBody = Regex.Replace(detailText, "\\s+", " ");
 		return title.Trim() + "（" + detailLabel + "：" + factBody + "）";
 	}
 
-	public static bool TryGetCourierLetterInventoryDetailForExternal(string itemStringId, uint objectId, out string letterBody)
+	public static bool TryGetCourierLetterInventoryDetailForExternal(string itemStringId, uint objectId, out string letterBody) =>
+        TryGetCourierLetterInventoryDetailForExternal(itemStringId, objectId, out letterBody, forUi: true);
+
+    private static bool TryGetCourierLetterInventoryDetailForExternal(string itemStringId, uint objectId, out string letterBody, bool forUi)
 	{
 		letterBody = "";
 		try
@@ -730,7 +740,8 @@ public sealed partial class CourierDeliveryBehavior
 			{
 				return false;
 			}
-			letterBody = record.LetterBody;
+			letterBody = record.DiplomacyReplyBody == null ? record.LetterBody :
+                CourierVisibleLetterSanitizer.Clean(StripCourierActionTags(DiplomacyConversationBridge.ComposeReply(record.DiplomacyReplyBody, record.DiplomacyReplyReceipts, forUi: forUi)));
 			return true;
 		}
 		catch (Exception ex)
@@ -747,29 +758,29 @@ public sealed partial class CourierDeliveryBehavior
 		{
 			return "";
 		}
-		int replyIndex = text.IndexOf("\u7684\u56de\u4fe1\uff1a", StringComparison.Ordinal);
+		int replyIndex = text.IndexOf(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0480"), StringComparison.Ordinal);
 		if (replyIndex > 0)
 		{
 			return text.Substring(0, replyIndex).Trim();
 		}
-		if (text.StartsWith("\u6765\u81ea", StringComparison.Ordinal))
+		if (text.StartsWith(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0481"), StringComparison.Ordinal))
 		{
-			int senderStart = "\u6765\u81ea".Length;
-			int senderEnd = text.IndexOf("\u7684\u4fe1\uff1a", senderStart, StringComparison.Ordinal);
+			int senderStart = ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0482").Length;
+			int senderEnd = text.IndexOf(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0483"), senderStart, StringComparison.Ordinal);
 			if (senderEnd > senderStart)
 			{
 				return text.Substring(senderStart, senderEnd - senderStart).Trim();
 			}
 			string firstLine = GetCourierLetterInventoryFirstLine(text);
-			if (firstLine.EndsWith("\u7684\u4fe1", StringComparison.Ordinal) && firstLine.Length > senderStart + "\u7684\u4fe1".Length)
+			if (firstLine.EndsWith(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0484"), StringComparison.Ordinal) && firstLine.Length > senderStart + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0485").Length)
 			{
-				return firstLine.Substring(senderStart, firstLine.Length - senderStart - "\u7684\u4fe1".Length).Trim();
+				return firstLine.Substring(senderStart, firstLine.Length - senderStart - ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0486").Length).Trim();
 			}
 		}
 		string replyTitle = GetCourierLetterInventoryFirstLine(text);
-		if (replyTitle.EndsWith("\u7684\u56de\u4fe1", StringComparison.Ordinal))
+		if (replyTitle.EndsWith(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0487"), StringComparison.Ordinal))
 		{
-			return replyTitle.Substring(0, replyTitle.Length - "\u7684\u56de\u4fe1".Length).Trim();
+			return replyTitle.Substring(0, replyTitle.Length - ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0488").Length).Trim();
 		}
 		return "";
 	}
@@ -782,7 +793,7 @@ public sealed partial class CourierDeliveryBehavior
 	private static string BuildCourierLetterInventoryTitle(string senderName, bool isReply)
 	{
 		string name = string.IsNullOrWhiteSpace(senderName) ? "NPC" : senderName.Trim();
-		return isReply ? name + "的回信" : "来自" + name + "的信";
+		return isReply ? name + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0489") : ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0490") + name + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0491");
 	}
 
 	private static bool TrySplitCourierLetterInventoryDisplayName(string displayName, out string title, out string body)

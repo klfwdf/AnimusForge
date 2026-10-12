@@ -81,7 +81,7 @@ internal static class LegacyPolicyEffectFieldAdapter
 		error = string.Empty;
 		if (source == null)
 		{
-			error = "legacy effect JSON 不能为空";
+			error = "Legacy effect JSON cannot be empty";
 			return false;
 		}
 		foreach (FieldBinding binding in Bindings)
@@ -105,14 +105,14 @@ internal static class LegacyPolicyEffectFieldAdapter
 			if ((token.Type != JTokenType.Integer && token.Type != JTokenType.Float)
 				|| !TryReadFiniteFloat(token, out float value))
 			{
-				error = "legacy effect 字段不是有限数字: " + binding.CanonicalFieldName;
+				error = "Legacy effect field is not a finite number: " + binding.CanonicalFieldName;
 				return false;
 			}
 			if (Math.Abs(value) > 0.0001f)
 			{
 				if (!PolicyEffectModuleCatalog.TryResolveCanonicalId(binding.CanonicalFieldName, out string moduleId))
 				{
-					error = "legacy effect 字段没有已注册模块: " + binding.CanonicalFieldName;
+					error = "Legacy effect field has no registered module: " + binding.CanonicalFieldName;
 					return false;
 				}
 				result[moduleId] = value;
@@ -166,7 +166,7 @@ internal static class LegacyPolicyEffectFieldAdapter
 		{
 			if (!PolicyEffectModuleCatalog.TryResolveCanonicalId(binding.CanonicalFieldName, out string moduleId))
 			{
-				throw new InvalidOperationException("legacy effect 字段没有已注册模块: " + binding.CanonicalFieldName);
+				throw new InvalidOperationException("Legacy effect field has no registered module: " + binding.CanonicalFieldName);
 			}
 			result.Add(moduleId);
 		}

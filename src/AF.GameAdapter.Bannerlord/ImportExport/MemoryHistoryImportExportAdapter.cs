@@ -113,7 +113,7 @@ internal sealed class MemoryHistoryImportExportAdapter
 			}
 			if (!CompressedMemoryExportBundleReader.TryRead(text3, out var bundle, out var memoryImportError))
 			{
-				InformationManager.DisplayMessage(new InformationMessage(ImportExportUiText.ImportFailed(memoryImportError)));
+				InformationManager.DisplayMessage(new InformationMessage(ImportExportUiText.ImportFailed(CompressedMemoryExportBundleReader.ForDisplay(memoryImportError))));
 				return;
 			}
 			bool flag = true;

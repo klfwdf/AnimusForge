@@ -33,7 +33,7 @@ internal void OnQuestCompletedForActionHistory(QuestBase quest, QuestBase.QuestC
 			string questTitle = (quest?.Title?.ToString() ?? "").Trim();
 			if (string.IsNullOrWhiteSpace(questTitle))
 			{
-				questTitle = "一项原版任务";
+				questTitle = AdapterSceneTexts.Raw("ExternalObservation_000");
 			}
 			string detailLabel = CampaignCharacterRecordCaptureAdapter.GetQuestCompletionDetailLabel(detail);
 			string actionKind = CampaignCharacterRecordCaptureAdapter.GetQuestCompletionActionKind(detail);
@@ -42,11 +42,11 @@ internal void OnQuestCompletedForActionHistory(QuestBase quest, QuestBase.QuestC
 			Settlement settlement = CampaignCharacterRecordCaptureAdapter.ResolveQuestActionSettlement(questGiver);
 			if (questGiver != null)
 			{
-				string npcText = "你交给玩家的任务“" + questTitle + "”已有结果：" + detailLabel + "。";
+				string npcText = AdapterSceneTexts.Raw("ExternalObservation_001") + questTitle + AdapterSceneTexts.Raw("ExternalObservation_002") + detailLabel + "。";
 				_application.RecordExternalNpcAction(questGiver, npcText, stableKey + ":giver", actionKind, isMajor: true, isRecent: true, targetHero: Hero.MainHero, settlement: settlement, locationText: MemoryEntityIdentityBannerlordAdapter.GetSettlementDisplayName(settlement), allowNonLordHero: true, won: won);
 			}
-			string giverName = questGiver != null ? MemoryEntityIdentityBannerlordAdapter.GetHeroDisplayName(questGiver) : "任务发布人";
-			string playerText = "你承接的任务“" + questTitle + "”已有结果：" + detailLabel + "。发布人：" + giverName + "。";
+			string giverName = questGiver != null ? MemoryEntityIdentityBannerlordAdapter.GetHeroDisplayName(questGiver) : AdapterSceneTexts.Raw("ExternalObservation_003");
+			string playerText = AdapterSceneTexts.Raw("ExternalObservation_004") + questTitle + AdapterSceneTexts.Raw("ExternalObservation_005") + detailLabel + AdapterSceneTexts.Raw("ExternalObservation_006") + giverName + "。";
 			_application.RecordExternalPlayerAction(playerText, stableKey + ":player", actionKind, isMajor: true, targetHero: questGiver, settlement: settlement, locationText: MemoryEntityIdentityBannerlordAdapter.GetSettlementDisplayName(settlement), won: won);
 		}
 		catch (Exception ex)
@@ -65,8 +65,8 @@ internal void OnNewCompanionAddedForActionHistory(Hero newCompanion)
 			Settlement settlement = CampaignCharacterRecordCaptureAdapter.ResolveCurrentActionSettlement(newCompanion);
 			string companionName = MemoryEntityIdentityBannerlordAdapter.GetHeroDisplayName(newCompanion);
 			string stableKey = "companion_join:" + MemoryEntityIdentityBannerlordAdapter.GetHeroId(newCompanion) + ":" + MemoryEntityIdentityBannerlordAdapter.GetCurrentGameDayIndexSafe();
-			_application.RecordExternalNpcAction(newCompanion, "你加入了玩家队伍，成为玩家的同伴。", stableKey + ":npc", "companion_join", isMajor: true, isRecent: true, targetHero: Hero.MainHero, settlement: settlement, locationText: MemoryEntityIdentityBannerlordAdapter.GetSettlementDisplayName(settlement), allowNonLordHero: true, won: true);
-			_application.RecordExternalPlayerAction("你招募了" + companionName + "加入队伍，成为你的同伴。", stableKey + ":player", "companion_join", isMajor: true, targetHero: newCompanion, settlement: settlement, locationText: MemoryEntityIdentityBannerlordAdapter.GetSettlementDisplayName(settlement), won: true);
+			_application.RecordExternalNpcAction(newCompanion, AdapterSceneTexts.Raw("ExternalObservation_007"), stableKey + ":npc", "companion_join", isMajor: true, isRecent: true, targetHero: Hero.MainHero, settlement: settlement, locationText: MemoryEntityIdentityBannerlordAdapter.GetSettlementDisplayName(settlement), allowNonLordHero: true, won: true);
+			_application.RecordExternalPlayerAction(AdapterSceneTexts.Raw("ExternalObservation_008") + companionName + AdapterSceneTexts.Raw("ExternalObservation_009"), stableKey + ":player", "companion_join", isMajor: true, targetHero: newCompanion, settlement: settlement, locationText: MemoryEntityIdentityBannerlordAdapter.GetSettlementDisplayName(settlement), won: true);
 		}
 		catch (Exception ex)
 		{
@@ -85,8 +85,8 @@ internal void OnCompanionRemovedForActionHistory(Hero companion, RemoveCompanion
 			string detailLabel = CampaignCharacterRecordCaptureAdapter.GetCompanionRemovedDetailLabel(detail);
 			string companionName = MemoryEntityIdentityBannerlordAdapter.GetHeroDisplayName(companion);
 			string stableKey = "companion_leave:" + MemoryEntityIdentityBannerlordAdapter.GetHeroId(companion) + ":" + detail + ":" + MemoryEntityIdentityBannerlordAdapter.GetCurrentGameDayIndexSafe();
-			string npcText = "你离开了玩家队伍。原因：" + detailLabel + "。";
-			string playerText = companionName + "离开了你的队伍。原因：" + detailLabel + "。";
+			string npcText = AdapterSceneTexts.Raw("ExternalObservation_010") + detailLabel + "。";
+			string playerText = companionName + AdapterSceneTexts.Raw("ExternalObservation_011") + detailLabel + "。";
 			_application.RecordExternalNpcAction(companion, npcText, stableKey + ":npc", "companion_leave", isMajor: true, isRecent: true, targetHero: Hero.MainHero, settlement: settlement, locationText: MemoryEntityIdentityBannerlordAdapter.GetSettlementDisplayName(settlement), allowNonLordHero: true, won: null);
 			_application.RecordExternalPlayerAction(playerText, stableKey + ":player", "companion_leave", isMajor: true, targetHero: companion, settlement: settlement, locationText: MemoryEntityIdentityBannerlordAdapter.GetSettlementDisplayName(settlement), won: null);
 		}
@@ -109,14 +109,14 @@ internal void OnGovernorChangedForActionHistory(Town fortification, Hero oldGove
 			if (oldGovernor != null && oldGovernor != newGovernor)
 			{
 				string oldName = MemoryEntityIdentityBannerlordAdapter.GetHeroDisplayName(oldGovernor);
-				_application.RecordExternalNpcAction(oldGovernor, "你卸任了" + settlementName + "总督。", stablePrefix + ":removed:" + MemoryEntityIdentityBannerlordAdapter.GetHeroId(oldGovernor), "governor_removed", isMajor: true, isRecent: true, targetHero: Hero.MainHero, settlement: settlement, locationText: settlementName, allowNonLordHero: true, won: null);
-				_application.RecordExternalPlayerAction("你解除了" + oldName + "的" + settlementName + "总督职务。", stablePrefix + ":player_removed:" + MemoryEntityIdentityBannerlordAdapter.GetHeroId(oldGovernor), "governor_removed", isMajor: true, targetHero: oldGovernor, settlement: settlement, locationText: settlementName, won: null);
+				_application.RecordExternalNpcAction(oldGovernor, AdapterSceneTexts.Raw("ExternalObservation_012") + settlementName + AdapterSceneTexts.Raw("ExternalObservation_013"), stablePrefix + ":removed:" + MemoryEntityIdentityBannerlordAdapter.GetHeroId(oldGovernor), "governor_removed", isMajor: true, isRecent: true, targetHero: Hero.MainHero, settlement: settlement, locationText: settlementName, allowNonLordHero: true, won: null);
+				_application.RecordExternalPlayerAction(AdapterSceneTexts.Raw("ExternalObservation_014") + oldName + AdapterSceneTexts.Raw("ExternalObservation_015") + settlementName + AdapterSceneTexts.Raw("ExternalObservation_016"), stablePrefix + ":player_removed:" + MemoryEntityIdentityBannerlordAdapter.GetHeroId(oldGovernor), "governor_removed", isMajor: true, targetHero: oldGovernor, settlement: settlement, locationText: settlementName, won: null);
 			}
 			if (newGovernor != null)
 			{
 				string newName = MemoryEntityIdentityBannerlordAdapter.GetHeroDisplayName(newGovernor);
-				_application.RecordExternalNpcAction(newGovernor, "你被任命为" + settlementName + "总督。", stablePrefix + ":appointed:" + MemoryEntityIdentityBannerlordAdapter.GetHeroId(newGovernor), "governor_appointed", isMajor: true, isRecent: true, targetHero: Hero.MainHero, settlement: settlement, locationText: settlementName, allowNonLordHero: true, won: true);
-				_application.RecordExternalPlayerAction("你任命了" + newName + "担任" + settlementName + "总督。", stablePrefix + ":player_appointed:" + MemoryEntityIdentityBannerlordAdapter.GetHeroId(newGovernor), "governor_appointed", isMajor: true, targetHero: newGovernor, settlement: settlement, locationText: settlementName, won: true);
+				_application.RecordExternalNpcAction(newGovernor, AdapterSceneTexts.Raw("ExternalObservation_017") + settlementName + AdapterSceneTexts.Raw("ExternalObservation_018"), stablePrefix + ":appointed:" + MemoryEntityIdentityBannerlordAdapter.GetHeroId(newGovernor), "governor_appointed", isMajor: true, isRecent: true, targetHero: Hero.MainHero, settlement: settlement, locationText: settlementName, allowNonLordHero: true, won: true);
+				_application.RecordExternalPlayerAction(AdapterSceneTexts.Raw("ExternalObservation_019") + newName + AdapterSceneTexts.Raw("ExternalObservation_020") + settlementName + AdapterSceneTexts.Raw("ExternalObservation_021"), stablePrefix + ":player_appointed:" + MemoryEntityIdentityBannerlordAdapter.GetHeroId(newGovernor), "governor_appointed", isMajor: true, targetHero: newGovernor, settlement: settlement, locationText: settlementName, won: true);
 			}
 		}
 		catch (Exception ex)
@@ -171,19 +171,19 @@ internal void RecordExternalPlayerHighValueRpCraft(
 			finalName,
 			StringComparison.Ordinal);
 		string actionText = craftedByPlayer
-			? "你投入 " + investment + " 第纳尔，亲手制造"
-			: "你投入 " + investment + " 第纳尔，并委托 "
+			? AdapterSceneTexts.Raw("ExternalObservation_022") + investment + AdapterSceneTexts.Raw("ExternalObservation_023")
+			: AdapterSceneTexts.Raw("ExternalObservation_024") + investment + AdapterSceneTexts.Raw("ExternalObservation_025")
 				+ (string.IsNullOrWhiteSpace(crafterName)
-					? "一名家族成员或同伴"
+					? AdapterSceneTexts.Raw("ExternalObservation_026")
 					: crafterName)
-				+ " 制造";
+				+ AdapterSceneTexts.Raw("ExternalObservation_027");
 		actionText += renamedByOutcome
-			? "“" + requested + "”，最终得到“" + finalName + "”"
-			: "了“" + finalName + "”";
-		actionText += "；成品价值 " + outputValue + " 第纳尔"
+			? "“" + requested + AdapterSceneTexts.Raw("ExternalObservation_028") + finalName + "”"
+			: AdapterSceneTexts.Raw("ExternalObservation_029") + finalName + "”";
+		actionText += AdapterSceneTexts.Raw("ExternalObservation_030") + outputValue + AdapterSceneTexts.Raw("ExternalObservation_031")
 			+ (string.IsNullOrWhiteSpace(result)
 				? "。"
-				: "，制造结果为" + result + "。");
+				: AdapterSceneTexts.Raw("ExternalObservation_032") + result + "。");
 
 		string stableKey =
 			"player_rp_craft_high_value:" + normalizedBatchId;
@@ -194,7 +194,7 @@ internal void RecordExternalPlayerHighValueRpCraft(
 			MemoryEntityIdentityBannerlordAdapter.GetSettlementDisplayName(settlement);
 		if (string.IsNullOrWhiteSpace(locationText))
 		{
-			locationText = "旅途中";
+			locationText = AdapterSceneTexts.Raw("ExternalObservation_033");
 		}
 		_application.RecordExternalPlayerAction(
 			actionText,
@@ -215,22 +215,22 @@ internal void RecordExternalPlayerHighValueRpCraft(
 			settlementId = MemoryEntityIdentityBannerlordAdapter.GetSettlementId(settlement);
 		}
 		string weeklySnapshot = craftedByPlayer
-			? "玩家投入 " + investment + " 第纳尔亲手制造"
-			: "玩家投入 " + investment + " 第纳尔，委托 "
+			? AdapterSceneTexts.Raw("ExternalObservation_034") + investment + AdapterSceneTexts.Raw("ExternalObservation_035")
+			: AdapterSceneTexts.Raw("ExternalObservation_036") + investment + AdapterSceneTexts.Raw("ExternalObservation_037")
 				+ (string.IsNullOrWhiteSpace(crafterName)
-					? "一名家族成员或同伴"
+					? AdapterSceneTexts.Raw("ExternalObservation_038")
 					: crafterName)
-				+ " 制造";
+				+ AdapterSceneTexts.Raw("ExternalObservation_039");
 		weeklySnapshot += renamedByOutcome
-			? "“" + requested + "”，最终得到“" + finalName + "”"
-			: "了“" + finalName + "”";
-		weeklySnapshot += "；成品价值 " + outputValue + " 第纳尔"
+			? "“" + requested + AdapterSceneTexts.Raw("ExternalObservation_040") + finalName + "”"
+			: AdapterSceneTexts.Raw("ExternalObservation_041") + finalName + "”";
+		weeklySnapshot += AdapterSceneTexts.Raw("ExternalObservation_042") + outputValue + AdapterSceneTexts.Raw("ExternalObservation_043")
 			+ (string.IsNullOrWhiteSpace(result)
 				? "。"
-				: "，制造结果为" + result + "。");
+				: AdapterSceneTexts.Raw("ExternalObservation_044") + result + "。");
 		_application.RecordEventSourceMaterial(
 			"player_rp_craft",
-			"贵重物品制造 - " + finalName,
+			AdapterSceneTexts.Raw("ExternalObservation_045") + finalName,
 			weeklySnapshot,
 			stableKey + ":weekly",
 			kingdomId,
@@ -268,7 +268,7 @@ internal void RecordVoteDealFulfilled(Hero npc, KingdomDecision decision, Decisi
 		}
 		if (string.IsNullOrWhiteSpace(decisionTitle))
 		{
-			decisionTitle = "一项王国决议";
+			decisionTitle = AdapterSceneTexts.Raw("ExternalObservation_046");
 		}
 		string optionTitle = CampaignCharacterRecordCaptureAdapter.CleanExternalActionTitle(targetOptionTitle);
 		if (string.IsNullOrWhiteSpace(optionTitle))
@@ -282,10 +282,10 @@ internal void RecordVoteDealFulfilled(Hero npc, KingdomDecision decision, Decisi
 				optionTitle = "";
 			}
 		}
-		string optionPhrase = string.IsNullOrWhiteSpace(optionTitle) ? "" : ("，支持“" + optionTitle + "”");
+		string optionPhrase = string.IsNullOrWhiteSpace(optionTitle) ? "" : (AdapterSceneTexts.Raw("ExternalObservation_047") + optionTitle + "”");
 		string stableKey = "vote_deal_fulfilled:" + ((dealId ?? "").Trim()) + ":" + MemoryEntityIdentityBannerlordAdapter.GetHeroId(npc) + ":" + MemoryBusinessStateOwner.NormalizeWeeklyPromptKeyPart(decisionTitle);
-		string npcText = "你履行了与玩家达成的投票交易，在“" + decisionTitle + "”中按承诺投票" + optionPhrase + "。";
-		string playerText = "你促成" + MemoryEntityIdentityBannerlordAdapter.GetHeroDisplayName(npc) + "履行投票交易，在“" + decisionTitle + "”中按承诺投票" + optionPhrase + "。";
+		string npcText = AdapterSceneTexts.Raw("ExternalObservation_048") + decisionTitle + AdapterSceneTexts.Raw("ExternalObservation_049") + optionPhrase + "。";
+		string playerText = AdapterSceneTexts.Raw("ExternalObservation_050") + MemoryEntityIdentityBannerlordAdapter.GetHeroDisplayName(npc) + AdapterSceneTexts.Raw("ExternalObservation_051") + decisionTitle + AdapterSceneTexts.Raw("ExternalObservation_052") + optionPhrase + "。";
 		_application.RecordExternalNpcAction(npc, npcText, stableKey + ":npc", "vote_deal_fulfilled", isMajor: true, isRecent: true, targetHero: Hero.MainHero, settlement: null, locationText: MemoryEntityIdentityBannerlordAdapter.GetKingdomDisplayName(decision?.Kingdom, ""), allowNonLordHero: false, won: true);
 		_application.RecordExternalPlayerAction(playerText, stableKey + ":player", "vote_deal_fulfilled", isMajor: true, targetHero: npc, settlement: null, locationText: MemoryEntityIdentityBannerlordAdapter.GetKingdomDisplayName(decision?.Kingdom, ""), won: true);
 	}
@@ -302,10 +302,10 @@ internal void RecordPlayerPrisonBreakRescue(Hero rescuedHero)
 			int hour = AnimusForge.Refactor.Adapters.PersonaIdentityPromptCaptureAdapter.GetCurrentHourOfDaySafeForPrompt();
 			Settlement settlement = ResolvePrisonBreakRescueSettlement(rescuedHero, player);
 			string settlementName = MemoryEntityIdentityBannerlordAdapter.GetSettlementDisplayName(settlement);
-			string locationText = string.IsNullOrWhiteSpace(settlementName) ? "越狱现场" : settlementName;
-			string locationPhrase = string.IsNullOrWhiteSpace(settlementName) ? "" : ("在" + settlementName + "的地牢中");
+			string locationText = string.IsNullOrWhiteSpace(settlementName) ? AdapterSceneTexts.Raw("ExternalObservation_053") : settlementName;
+			string locationPhrase = string.IsNullOrWhiteSpace(settlementName) ? "" : (AdapterSceneTexts.Raw("ExternalObservation_054") + settlementName + AdapterSceneTexts.Raw("ExternalObservation_055"));
 			string playerName = MemoryEntityIdentityBannerlordAdapter.GetHeroDisplayName(player);
-			string text = "你" + locationPhrase + "被" + playerName + "越狱营救，成功脱离囚禁。";
+			string text = AdapterSceneTexts.Raw("ExternalObservation_056") + locationPhrase + AdapterSceneTexts.Raw("ExternalObservation_057") + playerName + AdapterSceneTexts.Raw("ExternalObservation_058");
 			NpcActionFacts facts = CampaignCharacterRecordCaptureAdapter.CreateNpcActionFacts("prison_break_rescue", rescuedHero);
 			CampaignCharacterRecordCaptureAdapter.ApplyTargetFacts(facts, player);
 			if (settlement != null)
@@ -343,7 +343,7 @@ internal void RecordDuelResult(Hero targetHero, bool playerWon, string duelConte
 		bool targetWon = !playerWon;
 		string playerName = MemoryEntityIdentityBannerlordAdapter.GetHeroDisplayName(mainHero);
 		string targetName = MemoryEntityIdentityBannerlordAdapter.GetHeroDisplayName(targetHero);
-		string text = targetWon ? ("你在一场正式决斗中击败了" + playerName + "。") : ("你在一场正式决斗中败给了" + playerName + "。");
+		string text = targetWon ? (AdapterSceneTexts.Raw("ExternalObservation_059") + playerName + "。") : (AdapterSceneTexts.Raw("ExternalObservation_060") + playerName + "。");
 		NpcActionFacts npcActionFacts = CampaignCharacterRecordCaptureAdapter.CreateNpcActionFacts("duel_result", targetHero);
 		CampaignCharacterRecordCaptureAdapter.ApplyTargetFacts(npcActionFacts, mainHero);
 		npcActionFacts.Won = targetWon;
@@ -351,7 +351,7 @@ internal void RecordDuelResult(Hero targetHero, bool playerWon, string duelConte
 		string stableKey = "duel_result:" + MemoryEntityIdentityBannerlordAdapter.GetHeroId(targetHero) + ":" + MemoryEntityIdentityBannerlordAdapter.GetHeroId(mainHero) + ":" + day + ":" + hour + ":" + (targetWon ? "npc_win" : "npc_loss");
 		_application.RecordNpcOutcome(targetHero, text, stableKey, npcActionFacts, allowNonLordHero: true);
 		Settlement settlement = Settlement.CurrentSettlement;
-		string playerText = playerWon ? ("你在一场正式决斗中击败了" + targetName + "。") : ("你在一场正式决斗中败给了" + targetName + "。");
+		string playerText = playerWon ? (AdapterSceneTexts.Raw("ExternalObservation_061") + targetName + "。") : (AdapterSceneTexts.Raw("ExternalObservation_062") + targetName + "。");
 		string playerStableKey = "player_duel_result:" + MemoryEntityIdentityBannerlordAdapter.GetHeroId(mainHero) + ":" + MemoryEntityIdentityBannerlordAdapter.GetHeroId(targetHero) + ":" + day + ":" + hour + ":" + (playerWon ? "player_win" : "player_loss");
 		PlayerNotorietyBehavior.RecordPlayerActionForExternal(
 			playerText,
@@ -395,60 +395,60 @@ internal void RecordAnimusForgeSiegeInterventionForExternal(
 			{
 				return;
 			}
-			string settlementName = settlement.Name?.ToString() ?? settlement.StringId ?? "未知定居点";
-			string outcomeLabel = "宽恕/安抚";
+			string settlementName = settlement.Name?.ToString() ?? settlement.StringId ?? AdapterSceneTexts.Raw("ExternalObservation_063");
+			string outcomeLabel = AdapterSceneTexts.Raw("ExternalObservation_064");
 			if (aftermath == SiegeAftermathAction.SiegeAftermath.Pillage)
 			{
-				outcomeLabel = "搜掠";
+				outcomeLabel = AdapterSceneTexts.Raw("ExternalObservation_065");
 			}
 			else if (aftermath == SiegeAftermathAction.SiegeAftermath.Devastate)
 			{
-				outcomeLabel = massacreStarted ? "血洗/毁坏" : "毁坏";
+				outcomeLabel = massacreStarted ? AdapterSceneTexts.Raw("ExternalObservation_066") : AdapterSceneTexts.Raw("ExternalObservation_067");
 			}
 			StringBuilder textBuilder = new StringBuilder();
-			textBuilder.Append("攻城后处置：");
-			textBuilder.Append(Hero.MainHero?.Name?.ToString() ?? "玩家");
-			textBuilder.Append("刚攻下 ");
+			textBuilder.Append(AdapterSceneTexts.Raw("ExternalObservation_068"));
+			textBuilder.Append(Hero.MainHero?.Name?.ToString() ?? AdapterSceneTexts.Raw("ExternalObservation_069"));
+			textBuilder.Append(AdapterSceneTexts.Raw("ExternalObservation_070"));
 			textBuilder.Append(settlementName);
-			textBuilder.Append(" 后执行 ");
+			textBuilder.Append(AdapterSceneTexts.Raw("ExternalObservation_071"));
 			textBuilder.Append(outcomeLabel);
 			textBuilder.Append("。");
 			if (!string.IsNullOrWhiteSpace(trigger))
 			{
-				textBuilder.Append("触发：");
+				textBuilder.Append(AdapterSceneTexts.Raw("ExternalObservation_072"));
 				textBuilder.Append(trigger.Trim());
 				textBuilder.Append("。");
 			}
 			if (!string.IsNullOrWhiteSpace(detail))
 			{
-				textBuilder.Append("细节：");
+				textBuilder.Append(AdapterSceneTexts.Raw("ExternalObservation_073"));
 				textBuilder.Append(detail.Trim());
 				textBuilder.Append("。");
 			}
-			textBuilder.Append("参与士兵约 ");
+			textBuilder.Append(AdapterSceneTexts.Raw("ExternalObservation_074"));
 			textBuilder.Append(Math.Max(0, selectedSoldiers));
-			textBuilder.Append(" 人。");
+			textBuilder.Append(AdapterSceneTexts.Raw("ExternalObservation_075"));
 			if (plunderStarted || lootItemTotal > 0 || marketGoldLoot > 0 || civilianGoldLoot > 0)
 			{
-				textBuilder.Append("掠获：物品 ");
+				textBuilder.Append(AdapterSceneTexts.Raw("ExternalObservation_076"));
 				textBuilder.Append(Math.Max(0, lootItemTotal));
-				textBuilder.Append(" 件/");
+				textBuilder.Append(AdapterSceneTexts.Raw("ExternalObservation_077"));
 				textBuilder.Append(Math.Max(0, lootStackKinds));
-				textBuilder.Append(" 类，估值 ");
+				textBuilder.Append(AdapterSceneTexts.Raw("ExternalObservation_078"));
 				textBuilder.Append(Math.Max(0, lootValue));
-				textBuilder.Append("，市场金币 ");
+				textBuilder.Append(AdapterSceneTexts.Raw("ExternalObservation_079"));
 				textBuilder.Append(Math.Max(0, marketGoldLoot));
-				textBuilder.Append("，民众金币 ");
+				textBuilder.Append(AdapterSceneTexts.Raw("ExternalObservation_080"));
 				textBuilder.Append(Math.Max(0, civilianGoldLoot));
-				textBuilder.Append("，被索取目标 ");
+				textBuilder.Append(AdapterSceneTexts.Raw("ExternalObservation_081"));
 				textBuilder.Append(Math.Max(0, civilianTargetsLooted));
-				textBuilder.Append(" 人。");
+				textBuilder.Append(AdapterSceneTexts.Raw("ExternalObservation_082"));
 			}
 			if (massacreStarted || killedCivilianUnits > 0 || killedNotables > 0)
 			{
-				textBuilder.Append("伤亡：平民单位 ");
+				textBuilder.Append(AdapterSceneTexts.Raw("ExternalObservation_083"));
 				textBuilder.Append(Math.Max(0, killedCivilianUnits));
-				textBuilder.Append("，要人 ");
+				textBuilder.Append(AdapterSceneTexts.Raw("ExternalObservation_084"));
 				textBuilder.Append(Math.Max(0, killedNotables));
 				textBuilder.Append("。");
 			}
@@ -506,13 +506,13 @@ internal static string BuildDuelResultLocationText(string duelContext)
 		switch (text2)
 		{
 		case "arena":
-			return "竞技场";
+			return AdapterSceneTexts.Raw("ExternalObservation_085");
 		case "wilderness":
-			return "野外决斗现场";
+			return AdapterSceneTexts.Raw("ExternalObservation_086");
 		case "meeting":
-			return "会面现场";
+			return AdapterSceneTexts.Raw("ExternalObservation_087");
 		}
 		string text3 = (Mission.Current?.SceneName ?? "").Trim();
-		return string.IsNullOrWhiteSpace(text3) || string.Equals(text3, "Unknown", StringComparison.OrdinalIgnoreCase) ? "决斗现场" : text3;
+		return string.IsNullOrWhiteSpace(text3) || string.Equals(text3, "Unknown", StringComparison.OrdinalIgnoreCase) ? AdapterSceneTexts.Raw("ExternalObservation_088") : text3;
 	}
 }

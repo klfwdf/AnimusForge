@@ -33,9 +33,9 @@ namespace AnimusForge.Illustrator
         private const string DefaultDirectorModelOption = "{=AF_ILL_UI_OPTION_DEFAULT_DIRECTOR}*Default (reuse conversation API)*";
         private const string Player2ModelOption = "{=AF_ILL_UI_OPTION_PLAYER2_MODEL}Use the model selected in the Player2 app";
 
-        private static bool IsManualModelOption(string value) => value == ManualModelOption || value == "*手动输入*";
-        private static bool IsDefaultDirectorModelOption(string value) => value == DefaultDirectorModelOption || value == "*默认(复用正文API)*";
-        private static bool IsPlayer2ModelOption(string value) => value == Player2ModelOption || value == "使用 Player2 应用中选择的模型";
+        private static bool IsManualModelOption(string value) => value == ManualModelOption || value == IllustratorText.Raw("Residual_IllustratorSettings_5aa017883627");
+        private static bool IsDefaultDirectorModelOption(string value) => value == DefaultDirectorModelOption || value == IllustratorText.Raw("Residual_IllustratorSettings_f6b6caf875a0");
+        private static bool IsPlayer2ModelOption(string value) => value == Player2ModelOption || value == IllustratorText.Raw("Residual_IllustratorSettings_ca5c63c47021");
 
         // Normalize only when MCM loads a setting/preset; API model names remain raw values.
         private static Dropdown<string> NormalizeModelOptions(Dropdown<string> value)
@@ -262,7 +262,7 @@ namespace AnimusForge.Illustrator
             return -1;
         }
 
-        [SettingPropertyDropdown("{=AF_ILL_IMAGE_SIZE}Image resolution (Size)", Order = 7, RequireRestart = false, HintText = "{=AF_ILL_IMAGE_SIZE_HINT}Bulletin and fullscreen scene illustrations convert presets to 16:9. Encyclopedia and standalone-panel illustrations use the selected size. The image service must support the size.")]
+        [SettingPropertyDropdown("{=AF_ILL_IMAGE_SIZE}Image resolution (Size)", Order = 7, RequireRestart = false, HintText = "{=AF_ILL_IMAGE_SIZE_HINT}Bulletin and fullscreen scene illustrations convert presets to 16:9: the 1024 square and 1280/720 presets become 1280×720; the 1344/1536 presets become 1536×864; the 2048 square becomes 2048×1152. Encyclopedia and standalone-panel scene illustrations use the selected size. The image service must support the corresponding size.")]
         [SettingPropertyGroup("{=AF_ILL_GROUP_IMAGE_API}2. Image API (OpenAI-compatible)", GroupOrder = 2)]
         public Dropdown<string> SizePresetDropdown
         {
@@ -384,7 +384,7 @@ namespace AnimusForge.Illustrator
         public Action EditCustomStylePrompt { get; set; }
 
         // 预填古典油画预设内容，供玩家查看/改写；仅在画风预设选“提示词”时生效
-        public string CustomStylePrompt { get; set; } = "古典写实历史油画巨作, 伦勃朗与克雷格·穆林斯(Craig Mullins)式明暗对照法(Chiaroscuro), 戏剧性光影微光, 细腻富有体积感的笔触肌理, classical oil painting masterpiece, dramatic chiaroscuro lighting, painterly brushwork, 8k fine detail";
+        public string CustomStylePrompt { get; set; } = IllustratorText.Get("DefaultCustomStyle");
 
         [SettingPropertyBool("{=AF_ILL_REFERENCE_IMAGE}Send reference image to image model", HintText = "{=AF_ILL_REFERENCE_IMAGE_HINT}Sends captured 3D character references with the request through supported multimodal and image-edit channels. When disabled, references are used only by the prompt director.", Order = 10, RequireRestart = false)]
         [SettingPropertyGroup("{=AF_ILL_GROUP_IMAGE_API}2. Image API (OpenAI-compatible)", GroupOrder = 2)]
@@ -400,7 +400,7 @@ namespace AnimusForge.Illustrator
         public Action EditNegativePrompt { get; set; }
 
         // 预填古典油画预设负面词，供玩家查看/改写；仅在画风预设选“提示词(自定义画风)”时生效
-        public string NegativePrompt { get; set; } = "cartoon, anime, cel shading, flat colors, plastic skin, 3d render, oversaturated, modern objects, 卡通, 动漫风, 塑料质感, 现代物品";
+        public string NegativePrompt { get; set; } = IllustratorText.Get("DefaultNegativePrompt");
 
         [SettingPropertyInteger("{=AF_ILL_RANDOMNESS}Randomness", 0, 100, "0", Order = 12, RequireRestart = false, HintText = "{=AF_ILL_RANDOMNESS_HINT}At 0, no random prompt is added. Higher values encourage variation in framing, negative space, depth of field, and lighting while preserving identity, equipment, heraldry, and established facts. This controls prompt guidance, not model sampling.")]
         [SettingPropertyGroup("{=AF_ILL_GROUP_IMAGE_API}2. Image API (OpenAI-compatible)", GroupOrder = 2)]
@@ -408,7 +408,7 @@ namespace AnimusForge.Illustrator
 
         private int _imageGenerationTimeoutSeconds = 240;
 
-        [SettingPropertyInteger("{=AF_ILL_IMAGE_TIMEOUT}Image request timeout", 60, 600, "{=AF_ILL_UNIT_SECONDS}0 sec", Order = 13, RequireRestart = false, HintText = "{=AF_ILL_IMAGE_TIMEOUT_HINT}Maximum wait for one image request, including edits, conversation fallback, and download. Applies to the next request and does not affect director or off-screen capture timeouts.")]
+        [SettingPropertyInteger("{=AF_ILL_IMAGE_TIMEOUT}Image request timeout", 60, 600, "{=AF_ILL_UNIT_SECONDS}0 sec", Order = 13, RequireRestart = false, HintText = "{=AF_ILL_IMAGE_TIMEOUT_HINT}Maximum total wait for one image request; the default is 240 seconds. Includes Edits attempts, conversation-channel fallback, and downloading the result image. Increase it for high-quality redraws with multiple reference images or a slow relay. Applies to the next image request and does not affect visual director requests or off-screen capture timeouts.")]
         [SettingPropertyGroup("{=AF_ILL_GROUP_IMAGE_API}2. Image API (OpenAI-compatible)", GroupOrder = 2)]
         public int ImageGenerationTimeoutSeconds
         {
@@ -494,7 +494,7 @@ namespace AnimusForge.Illustrator
         [SettingPropertyGroup("{=AF_ILL_GROUP_DIRECTOR_API}3. Visual Director API (OpenAI-compatible; blank uses main API)", GroupOrder = 3)]
         public int DirectorApiMaxTokens { get; set; } = 25000;
 
-        [SettingPropertyInteger("{=AF_ILL_DIRECTOR_REFERENCE_TOKENS}Director prompt reference length (approx. tokens)", 600, 4000, "0 Token", HintText = "{=AF_ILL_DIRECTOR_REFERENCE_TOKENS_HINT}A soft length reference, not the API output limit. The full four sections are retained without padding.", Order = 9, RequireRestart = false)]
+        [SettingPropertyInteger("{=AF_ILL_DIRECTOR_REFERENCE_TOKENS}Director prompt reference length (approx. tokens)", 600, 4000, "0 Token", HintText = "{=AF_ILL_DIRECTOR_REFERENCE_TOKENS_HINT}A soft length reference, not the API output limit. When forced reduction is enabled, the character budget takes priority; otherwise the complete reply may contain at most 30000 characters. The full four sections are retained without padding.", Order = 9, RequireRestart = false)]
         [SettingPropertyGroup("{=AF_ILL_GROUP_DIRECTOR_API}3. Visual Director API (OpenAI-compatible; blank uses main API)", GroupOrder = 3)]
         public int DirectorMaxTokens { get; set; } = 2000;
 

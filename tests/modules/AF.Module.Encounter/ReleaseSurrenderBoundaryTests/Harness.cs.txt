@@ -1,4 +1,13 @@
+
+
 using AnimusForge.Refactor.Modules;
+
+class TextObject
+{
+    private readonly string _text;
+    public TextObject(string text) { _text = text; }
+    public override string ToString() => _text;
+}
 
 class Program
 {

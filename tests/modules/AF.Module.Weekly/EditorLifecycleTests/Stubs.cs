@@ -1,4 +1,5 @@
 ﻿using System; using System.Collections.Generic;
+namespace TaleWorlds.Engine {internal static class Utilities {internal static string GetBasePath()=>AppContext.BaseDirectory;}}
 namespace TaleWorlds.CampaignSystem { public class Kingdom { public string StringId; } public class Campaign {public static Campaign Current;public T GetCampaignBehavior<T>()=>default;} public class Hero { public static Hero FindFirst(Func<Hero,bool> match)=>null; public string Name="Hero", StringId="h"; } }
 namespace AnimusForge.Refactor.Runtime { internal static class SaveRuntimeGuard { internal static long Generation=1; internal static long CaptureGeneration()=>Generation; internal static bool IsStale(long g,string context)=>g!=Generation; } }
 namespace TaleWorlds.Library {
@@ -12,6 +13,10 @@ namespace TaleWorlds.Library {
 namespace TaleWorlds.Core { public static class MBInformationManager { public static TaleWorlds.Library.MultiSelectionInquiryData Last; public static void ShowMultiSelectionInquiry(TaleWorlds.Library.MultiSelectionInquiryData data){Last=data;} } }
 namespace AnimusForge {
  internal static class Logger {internal static void Log(string a,string b){} }
+ internal static class NobleGatheringTextProjection {
+  internal static string ProjectForUi(string raw)=>"ui:"+raw;
+  internal static string ProjectWeeklyMaterialForPrompt(string type,string key,string raw)=>raw;
+ }
  internal sealed class NpcActionEntry {}
  internal sealed class WorldBulletinPanelData { internal string EventId; }
  internal static class DevWeeklyReportPopup {

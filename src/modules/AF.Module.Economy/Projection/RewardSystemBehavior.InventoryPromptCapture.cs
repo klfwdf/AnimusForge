@@ -122,12 +122,12 @@ public partial class RewardSystemBehavior
 	{
 		if (hero == null)
 		{
-			return "（无）";
+			return EconomyPromptTexts.Get("S643");
 		}
 		List<RewardItemInfo> heroVisibleEquipmentItemsForPrompt = GetHeroVisibleEquipmentItemsForPrompt(hero);
 		if (heroVisibleEquipmentItemsForPrompt == null || heroVisibleEquipmentItemsForPrompt.Count <= 0)
 		{
-			return "（无）";
+			return EconomyPromptTexts.Get("S643");
 		}
 		List<RewardItemInfo> filteredItems;
 		if (!PromptListRetrievalService.TryGetRewardItemSnapshot(PromptListRetrievalService.PlayerVisibleEquipmentSnapshotScope, hero, hero?.CharacterObject, -1, out filteredItems))
@@ -146,28 +146,28 @@ public partial class RewardSystemBehavior
 			{
 				continue;
 			}
-			stringBuilder.Append(item.Name ?? item.StringId ?? "未知物品")
+			stringBuilder.Append(item.Name ?? item.StringId ?? EconomyPromptTexts.Get("S423"))
 				.Append(" | type=")
-				.Append(GetItemPromptTypeLabel(item.Item))
+				.Append(EconomyPromptTexts.ProjectSource(GetItemPromptTypeLabel(item.Item)))
 				.Append(" | x")
 				.Append(Math.Max(1, item.Count))
 				.Append(" | inventoryUnitValue=")
 				.Append(Math.Max(1, GetVisibleEquipmentActualUnitValue(item)))
 				.AppendLine();
 		}
-		return stringBuilder.Length > 0 ? stringBuilder.ToString().TrimEnd() : "（无）";
+		return stringBuilder.Length > 0 ? stringBuilder.ToString().TrimEnd() : EconomyPromptTexts.Get("S643");
 	}
 
 	public string BuildVisibleEquipmentPostprocessListForAI(Hero hero, MentionedWorldEntities mentions, int maxItems = 0)
 	{
 		if (hero == null)
 		{
-			return "（无）";
+			return EconomyPromptTexts.Get("S643");
 		}
 		List<RewardItemInfo> heroVisibleEquipmentItemsForPrompt = GetHeroVisibleEquipmentItemsForPrompt(hero);
 		if (heroVisibleEquipmentItemsForPrompt == null || heroVisibleEquipmentItemsForPrompt.Count <= 0)
 		{
-			return "（无）";
+			return EconomyPromptTexts.Get("S643");
 		}
 		List<RewardItemInfo> orderedItems = heroVisibleEquipmentItemsForPrompt.OrderByDescending((RewardItemInfo x) => x.Count).ThenBy((RewardItemInfo x) => x.StringId, StringComparer.Ordinal).ToList();
 		List<RewardItemInfo> filteredItems;
@@ -182,16 +182,16 @@ public partial class RewardSystemBehavior
 			{
 				continue;
 			}
-			stringBuilder.Append(item.Name ?? item.StringId ?? "未知物品")
+			stringBuilder.Append(item.Name ?? item.StringId ?? EconomyPromptTexts.Get("S423"))
 				.Append(" | type=")
-				.Append(GetItemPromptTypeLabel(item.Item))
+				.Append(EconomyPromptTexts.ProjectSource(GetItemPromptTypeLabel(item.Item)))
 				.Append(" | x")
 				.Append(Math.Max(1, item.Count))
 				.Append(" | inventoryUnitValue=")
 				.Append(Math.Max(1, GetVisibleEquipmentActualUnitValue(item)))
 				.AppendLine();
 		}
-		return stringBuilder.Length > 0 ? stringBuilder.ToString().TrimEnd() : "（无）";
+		return stringBuilder.Length > 0 ? stringBuilder.ToString().TrimEnd() : EconomyPromptTexts.Get("S643");
 	}
 
 	public string BuildFilteredInventorySummaryForAI(Hero hero, MentionedWorldEntities mentions, int maxItems = 0, bool includeGuidePrice = true, bool includePrivateBattleEquipment = false)
@@ -216,7 +216,7 @@ public partial class RewardSystemBehavior
 				: PromptListRetrievalService.FilterRewardItems(displayCandidates, mentions, maxItems);
 			PromptListRetrievalService.PublishRewardItemSnapshot(PromptListRetrievalService.NpcRewardItemsSnapshotScope, hero, hero?.CharacterObject, -1, options);
 			int gold = IsNotableMarketHero(hero, ResolveNotableMarketSettlement(hero)) ? GetRewardPostprocessGoldForHero(hero) : GetHeroGold(hero);
-			return BuildFilteredItemSummaryForAI(options, gold, includeGuidePrice, allOptions, "你");
+			return BuildFilteredItemSummaryForAI(options, gold, includeGuidePrice, allOptions, EconomyPromptTexts.Get("S682"));
 		}
 		catch
 		{
@@ -236,7 +236,7 @@ public partial class RewardSystemBehavior
 			List<RewardItemInfo> options = PromptListRetrievalService.FilterRewardItems(allOptions, mentions, maxItems);
 			PromptListRetrievalService.PublishRewardItemSnapshot(PromptListRetrievalService.SettlementMerchantItemsSnapshotScope, null, character, -1, options);
 			int gold = GetSettlementMarketTradeGold(settlement);
-			return BuildFilteredItemSummaryForAI(options, gold, includeGuidePrice, allOptions, "你");
+			return BuildFilteredItemSummaryForAI(options, gold, includeGuidePrice, allOptions, EconomyPromptTexts.Get("S682"));
 		}
 		catch
 		{
@@ -244,26 +244,27 @@ public partial class RewardSystemBehavior
 		}
 	}
 
-	private static string BuildFilteredItemSummaryForAI(List<RewardItemInfo> options, int gold, bool includeGuidePrice, List<RewardItemInfo> allOptions = null, string ownerLabel = "你")
+	private static string BuildFilteredItemSummaryForAI(List<RewardItemInfo> options, int gold, bool includeGuidePrice, List<RewardItemInfo> allOptions = null, string ownerLabel = null)
 	{
+		ownerLabel = ownerLabel ?? EconomyPromptTexts.Get("S682");
 		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.Append("第纳尔: ").Append(Math.Max(0, gold)).AppendLine();
+		stringBuilder.Append(EconomyPromptTexts.Get("S415")).Append(Math.Max(0, gold)).AppendLine();
 		if (options == null || options.Count == 0)
 		{
-			stringBuilder.AppendLine("（本轮检索清单无可显示物品）");
-			stringBuilder.Append("全部可转物品总值: ").Append(CalculateRewardItemsTotalValueForExternal(allOptions)).AppendLine(" 第纳尔（不含第纳尔）");
+			stringBuilder.AppendLine(EconomyPromptTexts.Get("S683"));
+			stringBuilder.Append(EconomyPromptTexts.Get("S684")).Append(CalculateRewardItemsTotalValueForExternal(allOptions)).AppendLine(EconomyPromptTexts.Get("S685"));
 			return stringBuilder.ToString().TrimEnd();
 		}
 		List<RewardItemInfo> publicItems = options.Where((RewardItemInfo x) => x != null && !x.IsPrivateEquipment).ToList();
 		List<RewardItemInfo> privateItems = options.Where((RewardItemInfo x) => x != null && x.IsPrivateEquipment).ToList();
-		AppendFilteredItemSummarySection(stringBuilder, "库存物品：", publicItems, includeGuidePrice);
-		AppendFilteredItemSummarySection(stringBuilder, "私人战斗装备：", privateItems, includeGuidePrice);
+		AppendFilteredItemSummarySection(stringBuilder, EconomyPromptTexts.Get("S417"), publicItems, includeGuidePrice);
+		AppendFilteredItemSummarySection(stringBuilder, EconomyPromptTexts.Get("S686"), privateItems, includeGuidePrice);
 		string remainder = PromptListRetrievalService.BuildRemainingRewardItemsSummary(allOptions, options, ownerLabel);
 		if (!string.IsNullOrWhiteSpace(remainder))
 		{
 			stringBuilder.AppendLine(remainder);
 		}
-		stringBuilder.Append("全部可转物品总值: ").Append(CalculateRewardItemsTotalValueForExternal(allOptions ?? options)).AppendLine(" 第纳尔（不含第纳尔）");
+		stringBuilder.Append(EconomyPromptTexts.Get("S684")).Append(CalculateRewardItemsTotalValueForExternal(allOptions ?? options)).AppendLine(EconomyPromptTexts.Get("S685"));
 		return stringBuilder.ToString().TrimEnd();
 	}
 }

@@ -151,115 +151,236 @@ public static class SetsSettlementEntryProfile
 
     public static string GetSettlementNoun(SetsSettlementSceneKind kind)
     {
+        return GetSettlementNoun(kind, isEnglish: false);
+    }
+
+    public static string GetSettlementNoun(SetsSettlementSceneKind kind, bool isEnglish)
+    {
+        if (isEnglish)
+        {
+            switch (kind)
+            {
+                case SetsSettlementSceneKind.Castle:
+                    return "castle";
+                case SetsSettlementSceneKind.Village:
+                    return "village";
+                case SetsSettlementSceneKind.Town:
+                    return "town";
+                default:
+                    return "settlement";
+            }
+        }
         switch (kind)
         {
             case SetsSettlementSceneKind.Castle:
-                return "城堡";
+                return SiegeAftermathCompatibilityTexts.Raw("noun_castle");
             case SetsSettlementSceneKind.Village:
-                return "村庄";
+                return SiegeAftermathCompatibilityTexts.Raw("noun_village");
             case SetsSettlementSceneKind.Town:
-                return "城镇";
+                return SiegeAftermathCompatibilityTexts.Raw("noun_town");
             default:
-                return "定居点";
+                return SiegeAftermathCompatibilityTexts.Raw("noun_settlement");
         }
     }
 
     public static string GetDefenderSummary(SetsSettlementSceneKind kind)
     {
+        return GetDefenderSummary(kind, isEnglish: false);
+    }
+
+    public static string GetDefenderSummary(SetsSettlementSceneKind kind, bool isEnglish)
+    {
+        if (isEnglish)
+        {
+            switch (kind)
+            {
+                case SetsSettlementSceneKind.Castle:
+                    return "guards, militia, garrison, and castle lord troops";
+                case SetsSettlementSceneKind.Village:
+                    return "village militia";
+                case SetsSettlementSceneKind.Town:
+                    return "guards, militia, garrison, and town lord troops";
+                default:
+                    return "the defenders";
+            }
+        }
         switch (kind)
         {
             case SetsSettlementSceneKind.Castle:
-                return "守卫、民兵、驻军与驻堡领主部队";
+                return SiegeAftermathCompatibilityTexts.Raw("defenders_castle");
             case SetsSettlementSceneKind.Village:
-                return "村庄民兵";
+                return SiegeAftermathCompatibilityTexts.Raw("defenders_village");
             case SetsSettlementSceneKind.Town:
-                return "守卫、民兵、驻军与驻城领主部队";
+                return SiegeAftermathCompatibilityTexts.Raw("defenders_town");
             default:
-                return "守军";
+                return SiegeAftermathCompatibilityTexts.Raw("defenders_default");
         }
     }
 
     public static string GetReserveSpawnDescription(SetsSettlementSceneKind kind)
     {
+        return GetReserveSpawnDescription(kind, isEnglish: false);
+    }
+
+    public static string GetReserveSpawnDescription(SetsSettlementSceneKind kind, bool isEnglish)
+    {
+        if (isEnglish)
+        {
+            switch (kind)
+            {
+                case SetsSettlementSceneKind.Castle:
+                    return "the lord's hall entrance";
+                case SetsSettlementSceneKind.Village:
+                    return "the village map edge";
+                case SetsSettlementSceneKind.Town:
+                    return "the town workshop district";
+                default:
+                    return "the edge of the scene";
+            }
+        }
         switch (kind)
         {
             case SetsSettlementSceneKind.Castle:
-                return "领主大厅门口";
+                return SiegeAftermathCompatibilityTexts.Raw("spawn_castle");
             case SetsSettlementSceneKind.Village:
-                return "村庄地图边缘";
+                return SiegeAftermathCompatibilityTexts.Raw("spawn_village");
             case SetsSettlementSceneKind.Town:
-                return "城镇工坊区";
+                return SiegeAftermathCompatibilityTexts.Raw("spawn_town");
             default:
-                return "场景边缘";
+                return SiegeAftermathCompatibilityTexts.Raw("spawn_default");
         }
     }
 
     public static string GetDefenderPhaseDisplayName(SetsSettlementSceneKind kind, string phaseKind)
     {
+        return GetDefenderPhaseDisplayName(kind, phaseKind, isEnglish: false);
+    }
+
+    public static string GetDefenderPhaseDisplayName(SetsSettlementSceneKind kind, string phaseKind, bool isEnglish)
+    {
         if (kind == SetsSettlementSceneKind.Village)
         {
-            return "村庄民兵";
+            return isEnglish ? "village militia" : SiegeAftermathCompatibilityTexts.Raw("defenders_village");
         }
 
-        string settlementNoun = GetSettlementNoun(kind);
+        string settlementNoun = GetSettlementNoun(kind, isEnglish);
         if (string.Equals(phaseKind, "garrison", StringComparison.OrdinalIgnoreCase))
         {
-            return settlementNoun + "驻军";
+            return isEnglish ? settlementNoun + " garrison" : settlementNoun + SiegeAftermathCompatibilityTexts.Raw("noun_garrison");
         }
 
         if (string.Equals(phaseKind, "militia", StringComparison.OrdinalIgnoreCase))
         {
-            return settlementNoun + "民兵";
+            return isEnglish ? settlementNoun + " militia" : settlementNoun + SiegeAftermathCompatibilityTexts.Raw("noun_militia");
         }
 
-        return "敌对领主部队";
+        return isEnglish ? "hostile lord troops" : SiegeAftermathCompatibilityTexts.Raw("noun_lord_troops");
     }
 
     public static string BuildConflictStartedMessage(SetsSettlementSceneKind kind)
     {
-        return "【SETS内部暴乱】" + GetDefenderSummary(kind) + "已进入敌对状态（第 0 波）。选中的随行士兵与现场同伴、家族成员已加入玩家编队，等待你的指挥。";
+        return BuildConflictStartedMessage(kind, isEnglish: false);
+    }
+
+    public static string BuildConflictStartedMessage(SetsSettlementSceneKind kind, bool isEnglish)
+    {
+        if (isEnglish)
+        {
+            return "[SETS internal unrest] " + GetDefenderSummary(kind, true) + " are hostile (wave 0). Selected escort soldiers, companions, and family members have joined your formation and await your orders.";
+        }
+        return SiegeAftermathCompatibilityTexts.Raw("sets_conflict_started_prefix") + GetDefenderSummary(kind) + SiegeAftermathCompatibilityTexts.Raw("sets_conflict_started_suffix");
     }
 
     public static string BuildReserveWaveMessage(SetsSettlementSceneKind kind, string phaseKind, int waveNumber, int maxActiveWaves)
     {
+        return BuildReserveWaveMessage(kind, phaseKind, waveNumber, maxActiveWaves, isEnglish: false);
+    }
+
+    public static string BuildReserveWaveMessage(SetsSettlementSceneKind kind, string phaseKind, int waveNumber, int maxActiveWaves, bool isEnglish)
+    {
         int wave = waveNumber < 0 ? 0 : waveNumber;
         int activeWaves = maxActiveWaves < 1 ? 1 : maxActiveWaves;
-        return "【SETS内部暴乱】"
+        if (isEnglish)
+        {
+            return "[SETS internal unrest] "
+                + GetDefenderPhaseDisplayName(kind, phaseKind, true)
+                + " have joined the fight from "
+                + GetReserveSpawnDescription(kind, true)
+                + " (wave "
+                + wave
+                + "; up to "
+                + activeWaves
+                + " active waves).";
+        }
+        return SiegeAftermathCompatibilityTexts.Raw("sets_reserve_prefix")
             + GetDefenderPhaseDisplayName(kind, phaseKind)
-            + "从"
+            + SiegeAftermathCompatibilityTexts.Raw("sets_reserve_from")
             + GetReserveSpawnDescription(kind)
-            + "加入战斗（第 "
+            + SiegeAftermathCompatibilityTexts.Raw("sets_reserve_joined")
             + wave
-            + " 波，场上最多 "
+            + SiegeAftermathCompatibilityTexts.Raw("sets_reserve_max")
             + activeWaves
-            + " 波）。";
+            + SiegeAftermathCompatibilityTexts.Raw("sets_reserve_suffix");
     }
 
     public static string BuildExitBlockedMessage(SetsSettlementSceneKind kind)
     {
-        return "内部暴乱尚未结束。击溃" + GetDefenderSummary(kind) + "后才能退出。";
+        return BuildExitBlockedMessage(kind, isEnglish: false);
+    }
+
+    public static string BuildExitBlockedMessage(SetsSettlementSceneKind kind, bool isEnglish)
+    {
+        if (isEnglish)
+        {
+            return "The internal unrest is not over. Defeat " + GetDefenderSummary(kind, true) + " before leaving.";
+        }
+        return SiegeAftermathCompatibilityTexts.Raw("sets_blocked_prefix") + GetDefenderSummary(kind) + SiegeAftermathCompatibilityTexts.Raw("sets_blocked_suffix");
     }
 
     public static string BuildVictoryMessage(SetsSettlementSceneKind kind)
     {
+        return BuildVictoryMessage(kind, isEnglish: false);
+    }
+
+    public static string BuildVictoryMessage(SetsSettlementSceneKind kind, bool isEnglish)
+    {
         if (kind == SetsSettlementSceneKind.Village)
         {
-            return "【SETS内部暴乱】村庄民兵已被击溃。按 TAB 退出后领取金钱，并进入原版战利品界面。";
+            return isEnglish
+                ? "[SETS internal unrest] The village militia has been defeated. Press TAB to leave, collect the payment, and open the native loot screen."
+                : SiegeAftermathCompatibilityTexts.Raw("sets_victory_village");
         }
 
-        return "【SETS内部暴乱】"
+        if (isEnglish)
+        {
+            return "[SETS internal unrest] "
+                + GetDefenderSummary(kind, true)
+                + " have been defeated. Press TAB to leave and open the native siege victory disposition menu; you may choose the native or GCCZ siege disposition.";
+        }
+        return SiegeAftermathCompatibilityTexts.Raw("sets_reserve_prefix")
             + GetDefenderSummary(kind)
-            + "已被击溃。按 TAB 退出后进入原版围城战胜利处置菜单，可选择原版处置或 GCCZ 攻城处置。";
+            + SiegeAftermathCompatibilityTexts.Raw("sets_victory_suffix");
     }
 
     public static string BuildOwnedIncidentMessage(SetsSettlementSceneKind kind)
     {
-        string noun = GetSettlementNoun(kind);
+        return BuildOwnedIncidentMessage(kind, isEnglish: false);
+    }
+
+    public static string BuildOwnedIncidentMessage(SetsSettlementSceneKind kind, bool isEnglish)
+    {
+        string noun = GetSettlementNoun(kind, isEnglish);
         if (kind == SetsSettlementSceneKind.Village)
         {
-            return "【SETS】自有/附属村庄事件已触发，村民正在逃散。可随时按 TAB 退出并进入 GCCZ 村庄处置菜单，决定是否继续处置。";
+            return isEnglish
+                ? "[SETS] An owned or attached village incident has started; villagers are fleeing. Press TAB at any time to leave and open the GCCZ village disposition menu."
+                : SiegeAftermathCompatibilityTexts.Raw("sets_owned_incident_village");
         }
 
-        return "【SETS】自有/附属" + noun + "事件已触发，居民正在逃散。可随时按 TAB 退出后进入 SETS 专用处置菜单。";
+        if (isEnglish)
+        {
+            return "[SETS] An owned or attached " + noun + " incident has started; residents are fleeing. Press TAB at any time to leave and open the SETS disposition menu.";
+        }
+        return SiegeAftermathCompatibilityTexts.Raw("sets_owned_incident_prefix") + noun + SiegeAftermathCompatibilityTexts.Raw("sets_owned_incident_suffix");
     }
 }

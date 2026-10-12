@@ -4,6 +4,76 @@
     <tag language="English" />
   </tags>
   <strings>
+    <string id="AFPOL_UI_PayloadOnceDaily" text="Once {ONCE} / daily {DAILY}" />
+    <string id="AFPOL_UI_PayloadXpPerSoldier" text=" XP/soldier" />
+    <string id="AFPOL_UI_PayloadPartyMembers" text="{VALUE} troops" />
+    <string id="AFPOL_UI_PayloadVillageRaidBan" text="Lords of the issuing kingdom may not raid villages" />
+    <string id="AFPOL_UI_Management_error_request_empty_0" text="Policy request is empty." />
+    <string id="AFPOL_UI_Management_error_policy_record_not_exist_0" text="Local policy record does not exist." />
+    <string id="AFPOL_UI_Management_error_cannot_extend_0" text="This local policy cannot extend its effect at present." />
+    <string id="AFPOL_UI_Management_error_all_fiefs_lost_0" text="All original target fiefs have been lost." />
+    <string id="AFPOL_UI_Management_error_no_executable_target_0" text="The publishing fief policy effect no longer has executable targets." />
+    <string id="AFPOL_UI_Management_error_cannot_recover_effect_0" text="The publishing fief policy effect can no longer be recovered." />
+    <string id="AFPOL_UI_Management_error_cannot_merge_multi_target_0" text="Local policy multi-target effects cannot be merged: " />
+    <string id="AFPOL_UI_Management_error_lifecycle_prepare_failed_0" text="Module lifecycle preparation for extension failed: " />
+    <string id="AFPOL_UI_Management_error_shell_sync_failed_0" text="Record shell synchronization for extension failed: " />
+    <string id="AFPOL_UI_Management_error_validation_failed_0" text="Extension state validation failed: " />
+    <string id="AFPOL_UI_Management_error_vassal_record_not_exist_0" text="Vassal policy record does not exist." />
+    <string id="AFPOL_UI_Management_error_vassal_cannot_renew_0" text="This policy cannot be renewed at present." />
+    <string id="AFPOL_UI_Management_error_no_ruler_authority_0" text="No ruler authority for the original publishing kingdom at present." />
+    <string id="AFPOL_UI_Management_error_no_longer_direct_vassal_0" text="The target kingdom is no longer a direct vassal of the player's kingdom." />
+    <string id="AFPOL_UI_Management_error_renewal_external_prepare_failed_0" text="Renewal external submission preparation failed: " />
+    <string id="AFPOL_UI_Management_error_vassal_effect_cannot_recover_0" text="The target vassal's policy effect can no longer be recovered." />
+    <string id="AFPOL_UI_Management_error_vassal_cannot_merge_0" text="Vassal policy multi-target effects cannot be merged: " />
+    <string id="AFPOL_UI_Management_error_renewal_lifecycle_failed_0" text="Renewal module lifecycle preparation failed: " />
+    <string id="AFPOL_UI_Management_error_renewal_shell_sync_failed_0" text="Renewal record shell synchronization failed: " />
+    <string id="AFPOL_UI_Management_error_renewal_validation_failed_0" text="Renewal state validation failed: " />
+    <string id="AFPOL_UI_Management_error_renewal_breakaway_validation_failed_0" text="Renewal state validation after breakaway failed: " />
+    <string id="AFPOL_UI_Management_error_renewal_commit_not_observable_0" text="Renewal independence submission result is not yet observable; externalCommitPending retained for daily idempotent reconciliation." />
+    <string id="AFPOL_UI_Management_error_renewal_commit_not_happened_0" text="Renewal independence external submission did not occur; pre-submission AF state restored." />
+    <string id="AFPOL_UI_Management_error_no_merge_target_0" text="No renewal target shell to merge" />
+    <string id="AFPOL_UI_Management_error_shell_inconsistent_0" text="Target shell record/scope/duration/progress are inconsistent" />
+    <string id="AFPOL_UI_Management_error_shell_empty_or_duplicate_id_0" text="Target shell contains empty or duplicate InstanceId" />
+    <string id="AFPOL_UI_Management_error_invalid_merged_instance_count_0" text="Merged logical module instance count is invalid" />
+    <string id="AFPOL_UI_Management_error_instance_incompatible_2" text=" target shell is incompatible: " />
+    <string id="AFPOL_UI_Management_error_instance_empty_0" text="Instance is empty" />
+    <string id="AFPOL_UI_Management_error_module_payload_inconsistent_0" text="module/payload are inconsistent" />
+    <string id="AFPOL_UI_Management_error_policy_runtime_inconsistent_0" text="policy/runtime/lifecycle/timeline are inconsistent" />
+    <string id="AFPOL_UI_Management_error_renewal_instance_invalid_2" text=" renewal instance is invalid: " />
+    <string id="AFPOL_UI_Management_error_renewal_prepare_failed_2" text=" renewal Prepare failed: " />
+    <string id="AFPOL_UI_Management_error_renewal_onrenewed_failed_2" text=" OnRenewed failed: " />
+    <string id="AFPOL_UI_Management_error_renewal_invalid_receipt_2" text=" OnRenewed returned an invalid receipt" />
+    <string id="AFPOL_UI_Management_error_active_v8_incomplete_0" text="Active v8 extension structure is incomplete" />
+    <string id="AFPOL_UI_Management_error_local_renewal_no_target_0" text="Local renewal Active lacks current settlement target" />
+    <string id="AFPOL_UI_Management_error_vassal_renewal_invalid_target_0" text="Vassal renewal Active has an invalid target kingdom" />
+    <string id="AFPOL_UI_Management_error_renewal_module_invalid_0" text="Renewal module instance is invalid: " />
+    <string id="AFPOL_UI_Management_error_renewal_payload_too_large_0" text="Renewal module payload total exceeds 32KiB" />
+    <string id="AFPOL_UI_Management_error_unknown_module_no_target_0" text="Unknown module renewal instance lacks retainable canonical target: " />
+    <string id="AFPOL_UI_Management_error_renewal_payload_not_executable_2" text=" renewal payload is not executable: " />
+    <string id="AFPOL_UI_Management_error_renewal_target_scope_invalid_2" text=" renewal target or scope is invalid: " />
+    <string id="AFPOL_UI_Management_error_renewal_cannot_replay_oneshot_2" text=" renewal must not replay OneShot" />
+    <string id="AFPOL_UI_Management_error_renewal_invalid_receipt_set_0" text="Renewal Active contains invalid, duplicate, or orphaned execution receipts" />
+    <string id="AFPOL_UI_Management_error_target_empty_2" text=" target is empty" />
+    <string id="AFPOL_UI_Management_error_target_not_exist_2" text=" target does not exist: " />
+    <string id="AFPOL_UI_Management_error_shell_active_not_exist_0" text="Record shell references a non-existent Active: " />
+    <string id="AFPOL_UI_Management_error_shell_empty_or_duplicate_instance_0" text="Record shell contains empty or duplicate InstanceId" />
+    <string id="AFPOL_UI_Management_error_shell_instance_not_in_active_0" text="Record shell logical instance did not enter Active: " />
+    <string id="AFPOL_UI_Management_error_shell_instance_no_target_0" text="Record shell logical instance lacks target: " />
+    <string id="AFPOL_UI_Management_error_shell_no_instance_0" text="Record shell contains no module instances" />
+    <string id="AFPOL_UI_Management_error_renewal_active_serialize_failed_0" text="Renewal Active serialization result exceeds limit or cannot be normalized" />
+    <string id="AFPOL_UI_Management_error_renewal_active_duplicate_id_0" text="Renewal Active effectId is duplicate: " />
+    <string id="AFPOL_UI_Management_error_renewal_record_v6_incomplete_0" text="Renewal record v6 structure is incomplete" />
+    <string id="AFPOL_UI_Management_error_renewal_record_active_mismatch_0" text="Renewal record and Active reference sets are inconsistent" />
+    <string id="AFPOL_UI_Management_error_renewal_record_serialize_failed_0" text="Renewal record serialization result exceeds limit or cannot be normalized" />
+    <string id="AFPOL_UI_Management_error_renewal_state_serialize_exception_0" text="Renewal state serialization failed: " />
+    <string id="AFPOL_UI_Management_error_renewal_commit_incomplete_0" text="Renewal submission data is incomplete." />
+    <string id="AFPOL_UI_Management_error_renewal_effectid_conflict_0" text="Renewal effectId conflicts with existing Active: " />
+    <string id="AFPOL_UI_Management_error_vassal_effect_record_invalid_0" text="Vassal policy effect record is invalid." />
+    <string id="AFPOL_UI_Management_MissingPrepared" text="No prepared instance returned" />
+    <string id="AFPOL_UI_Management_MissingRenewed" text="No successful result returned" />
+    <string id="AFPOL_UI_Management_CommitFailed" text="Renewal state submission failed; " />
+    <string id="AFPOL_UI_Management_SnapshotRestored" text="the old snapshot was restored." />
+    <string id="AFPOL_UI_Management_SnapshotRestoreFailed" text="restoring the old snapshot also failed." />
     <string id="AFPOL_UI_BalanceDescription" text="Each day, native and policy net changes are applied: positive changes are capped at the total limit; negative changes still apply, and existing stock above a new cap is not reduced." />
     <string id="AFPOL_UI_BalanceFoodRule" text="Applies to players and NPCs. By default only city/castle food capacity 1000 is enabled; the other six limits are disabled. Prosperity food consumption remains controlled by its separate MCM switch. Garrison food, sieges, supply, and policy food changes are preserved." />
     <string id="AFPOL_UI_BalanceInitialStatus" text="Disabled prefilled values have no effect. Changes apply after saving; Cancel or Esc discards edits, and restored defaults must be saved." />
@@ -626,5 +696,38 @@
     <string id="AFPOL_UI_Effect_HearthPerDaySummary" text="Daily village hearth change" />
     <string id="AFPOL_UI_Effect_ConstructionPerDayName" text="Construction power" />
     <string id="AFPOL_UI_Effect_ConstructionPerDaySummary" text="Daily construction points for towns or castles" />
+    <string id="AFPOL_UI_PromptAutoDraftFileCorrupt" text="The existing player AI drafting prompt file is corrupted; back up or repair the original first. The original was not overwritten." />
+    <string id="AFPOL_UI_PromptCommonEffectFileCorrupt" text="The existing shared effect requirements file is corrupted; the original was not overwritten." />
+    <string id="AFPOL_UI_PromptModuleFileCorrupt" text="The existing policy effect requirements file is corrupted; the original was not overwritten." />
+    <string id="AFPOL_UI_PromptEffectNotEditable" text="The selected policy effect can no longer be edited." />
+    <string id="AFPOL_UI_PromptStorageFolderUnavailable" text="Unable to locate the policy prompt folder." />
+    <string id="AFPOL_UI_PromptTargetDirectoryEmpty" text="The policy prompt target directory is empty." />
+    <string id="AFPOL_UI_PromptModuleIdUnsafe" text="The policy effect ModuleId cannot be safely mapped to a prompt file name." />
+    <string id="AFPOL_UI_VassalPolicyPrepareFailed" text="The vassal relationship could not be frozen for submission. The policy was not enacted and independence was not changed." />
+    <string id="AFPOL_UI_VassalPolicyCommitRolledBack" text="Policy submission failed. Effects and local and unified records were rolled back; independence has not changed." />
+    <string id="AFPOL_UI_VassalPolicyCommitUnconfirmed" text="The independence change could not yet be confirmed. The policy is retained pending external reconciliation; independence will not be increased again." />
+    <string id="AFPOL_UI_VassalPolicyCommitUnchanged" text="The prerequisites for the independence change have changed, or the change did not occur. AF effects and records were safely rolled back." />
+    <!-- Player policy autodraft UI notices -->
+    <string id="AFPOL_UI_AutoDraft_MissingDescription" text="Missing policy description." />
+    <string id="AFPOL_UI_AutoDraft_NeedTitleOrContent" text="Please enter a policy title or content first." />
+    <string id="AFPOL_UI_AutoDraft_EvaluatingPrevious" text="The previous policy is still being evaluated; cannot use AI drafting right now." />
+    <string id="AFPOL_UI_AutoDraft_AlreadyDrafting" text="A draft is already being written by AI, please wait." />
+    <string id="AFPOL_UI_AutoDraft_ApiUnavailable" text="AI service configuration is unavailable, please check model, key and connection settings." />
+    <string id="AFPOL_UI_AutoDraft_Failed" text="AI drafting failed." />
+    <!-- LocalPolicyUi autodraft error mapping -->
+    <string id="AFPOL_UI_AutoDraft_RequestFailed" text="AI drafting request failed. Check connection settings and logs." />
+    <string id="AFPOL_UI_AutoDraft_StaleDraft" text="Policy draft request was invalidated by loading a game." />
+    <string id="AFPOL_UI_AutoDraft_NoStructuredResult" text="AI drafting did not return a valid structured result." />
+    <string id="AFPOL_UI_AutoDraft_CannotParseStructuredResult" text="Structured result returned by AI drafting cannot be parsed." />
+    <string id="AFPOL_UI_AutoDraft_OnlyTwoFieldsAllowed" text="AI drafting can only return policyName and policyContent." />
+    <string id="AFPOL_UI_AutoDraft_FieldsMustBeText" text="policyName and policyContent returned by AI drafting must be text." />
+    <string id="AFPOL_UI_AutoDraft_FieldsCannotBeEmpty" text="AI drafting returned empty policyName or policyContent." />
+    <string id="AFPOL_UI_AutoDraft_CannotModifyExistingName" text="AI drafting modified the player-specified policy name." />
+      <string id="AFPOL_UI_CampaignDate" text="Year {YEAR}, {SEASON}, day {DAY}" />
+    <string id="AFPOL_UI_NoAvailablePolicySummary" text="No summary is available for this policy yet." />
+    <string id="AFPOL_UI_SeasonSpring" text="Spring" />
+    <string id="AFPOL_UI_SeasonSummer" text="Summer" />
+    <string id="AFPOL_UI_SeasonAutumn" text="Autumn" />
+    <string id="AFPOL_UI_SeasonWinter" text="Winter" />
   </strings>
 </base>

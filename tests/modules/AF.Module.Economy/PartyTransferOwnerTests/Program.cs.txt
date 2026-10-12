@@ -39,7 +39,7 @@ var prompt = PartyTransferPromptOwner.Build(new PartyTransferPromptCapture {
  Troops=auth.IndexedTroops,HiddenTroops=auth.HiddenTroops,AllTroops=auth.AllTroops,Prisoners=new(),AllPrisoners=new(),
  RuntimeHint="hint [ATT:1:ALL]",WildernessInstruction="field",Notable=true,MaximumRecruitableVolunteerIndex=2
 },e=>"dungeon",e=>"infantry",e=>2);
-Check(!prompt.Contains("[ATT:") && prompt.Contains("最高槽位索引 2") && prompt.Contains("本轮可移交"),"runtime sanitization/volunteer field projection");
+Check(!prompt.Contains("[ATT:") && prompt.Contains(EconomyPromptTexts.Get("S665") + "2") && prompt.Contains(EconomyPromptTexts.Get("S676")),"runtime sanitization/volunteer field projection");
 var assets=new List<MyBehavior.SettlementTransferPromptEntry>{new(){AssetId="town_alpha",DisplayName="Alpha",GuidePriceDenars=20},new(){AssetId="castle_beta",DisplayName="Beta",GuidePriceDenars=30},new(){AssetId="invalid",GuidePriceDenars=99}};
 bool Valid(MyBehavior.SettlementTransferPromptEntry e)=>e!=null&&e.AssetId!="invalid";
 string Id(MyBehavior.SettlementTransferPromptEntry e)=>e.AssetId;
@@ -48,7 +48,7 @@ Check(fixedIndexed.Count==2 && fixedIndexed[1].PromptIndex==2,"valid fixed asset
 Check(PartyTransferProjectionOwner.FindSettlementTransferEntryByToken(fixedIndexed,"2",Valid,Id)==fixedIndexed[1] && PartyTransferProjectionOwner.FindSettlementTransferEntryByToken(fixedIndexed,"town_alpha",Valid,Id)==fixedIndexed[0],"shared asset index/id resolver");
 Check(PartyTransferProjectionOwner.CalculateSettlementTransferTotalValueForExternal(assets,Valid)==50,"actual valid fixed guide value");
 var fixedPrompt=SettlementTransferPromptOwner.Build(new(){PlayerName="player",NpcAssets=fixedIndexed,AllNpcAssets=fixedIndexed,PlayerAssets=new(),AllPlayerAssets=new()},Valid,Id);
-Check(fixedPrompt.Contains("town_alpha") && fixedPrompt.Contains("50 第纳尔") && !fixedPrompt.Contains("invalid"),"fixed projection same valid snapshots");
+Check(fixedPrompt.Contains("town_alpha") && fixedPrompt.Contains("50" + EconomyPromptTexts.Get("S027")) && !fixedPrompt.Contains(" | ID invalid"),"fixed projection same valid snapshots");
 var liveSource=new PartyBase();var liveTarget=new PartyBase();var liveEntry=Make("live",1,5);liveEntry.OwnerParty=liveSource;
 liveSource.MemberRoster.Values[liveEntry.Character]=new(){Number=5,WoundedNumber=2,Xp=100};
 var actual=ActualAdapterFixture.Observe(liveEntry,liveTarget,false,()=>ActualAdapterFixture.TransferPartyMemberEntry(liveEntry,2,liveTarget));

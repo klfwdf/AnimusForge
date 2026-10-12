@@ -335,21 +335,21 @@ internal static class PartyAssetTransferBannerlordAdapter
 		catch
 		{
 		}
-		return "对方";
+		return EconomySourceTexts.Get("PartyAsset_Other");
 	}
 
 	internal static string GetPartyTransferEntryDisplayName(CharacterObject character)
 	{
 		if (character == null)
 		{
-			return "未知";
+			return EconomySourceTexts.Get("PartyAsset_Unknown");
 		}
 		string text = (character.Name?.ToString() ?? "").Trim();
 		if (!string.IsNullOrWhiteSpace(text))
 		{
 			return text;
 		}
-		return (character.StringId ?? "未知").Trim();
+		return (character.StringId ?? EconomySourceTexts.Get("PartyAsset_Unknown")).Trim();
 	}
 
 	internal static bool IsPartyTransferVolunteerEntry(PartyTransferPromptEntry entry)
@@ -925,7 +925,7 @@ internal static class PartyAssetTransferBannerlordAdapter
 		{
 			return entry.DisplayName;
 		}
-		return entry?.Settlement?.Name?.ToString() ?? entry?.Workshop?.Name?.ToString() ?? entry?.CaravanParty?.Name?.ToString() ?? "未知资产";
+		return entry?.Settlement?.Name?.ToString() ?? entry?.Workshop?.Name?.ToString() ?? entry?.CaravanParty?.Name?.ToString() ?? EconomySourceTexts.Get("PartyAsset_UnknownAsset");
 	}
 
 	/// <summary>
@@ -975,8 +975,8 @@ internal static class PartyAssetTransferBannerlordAdapter
 				OwnerHero = ownerClan?.Leader,
 				SettlementId = (settlement.StringId ?? "").Trim(),
 				AssetId = (settlement.StringId ?? "").Trim(),
-				DisplayName = settlement.Name?.ToString() ?? "未知定居点",
-				TypeLabel = settlement.IsTown ? "城市" : "城堡",
+				DisplayName = settlement.Name?.ToString() ?? EconomySourceTexts.Get("PartyAsset_UnknownSettlement"),
+				TypeLabel = settlement.IsTown ? EconomySourceTexts.Get("PartyAsset_Town") : EconomySourceTexts.Get("PartyAsset_Castle"),
 				DailyIncomeDenars = CalculateSettlementDailyIncomeDenars(settlement, ownerClan),
 				GuidePriceDenars = CalculateSettlementGuidePriceDenars(settlement, Clan.PlayerClan),
 				OwnerClan = ownerClan
@@ -1061,7 +1061,7 @@ internal static class PartyAssetTransferBannerlordAdapter
 			SettlementId = assetId,
 			AssetId = assetId,
 			DisplayName = BuildWorkshopDisplayName(workshop),
-			TypeLabel = "工坊",
+			TypeLabel = EconomySourceTexts.Get("PartyAsset_Workshop"),
 			DailyIncomeDenars = CalculateWorkshopDailyIncomeDenars(workshop),
 			GuidePriceDenars = CalculateWorkshopGuidePriceDenars(workshop, playerIsBuyer: true),
 			OwnerClan = owner?.Clan
@@ -1095,7 +1095,7 @@ internal static class PartyAssetTransferBannerlordAdapter
 				SettlementId = assetId,
 				AssetId = assetId,
 				DisplayName = BuildCaravanDisplayName(component),
-				TypeLabel = component.CanHaveNavalNavigationCapability ? "商船队" : "商队",
+				TypeLabel = component.CanHaveNavalNavigationCapability ? EconomySourceTexts.Get("PartyAsset_NavalCaravan") : EconomySourceTexts.Get("PartyAsset_Caravan"),
 				DailyIncomeDenars = CalculateCaravanDailyIncomeDenars(caravanParty),
 				GuidePriceDenars = CalculateCaravanGuidePriceDenars(caravanParty),
 				OwnerClan = owner?.Clan
@@ -1167,7 +1167,7 @@ internal static class PartyAssetTransferBannerlordAdapter
 
 	internal static string BuildWorkshopDisplayName(Workshop workshop)
 	{
-		string workshopName = workshop?.Name?.ToString() ?? "工坊";
+		string workshopName = workshop?.Name?.ToString() ?? EconomySourceTexts.Get("PartyAsset_Workshop");
 		string settlementName = workshop?.Settlement?.Name?.ToString();
 		return string.IsNullOrWhiteSpace(settlementName) ? workshopName : (workshopName + "（" + settlementName + "）");
 	}
@@ -1178,7 +1178,7 @@ internal static class PartyAssetTransferBannerlordAdapter
 		string name = party?.Name?.ToString();
 		if (string.IsNullOrWhiteSpace(name))
 		{
-			name = component?.Name?.ToString() ?? "商队";
+			name = component?.Name?.ToString() ?? EconomySourceTexts.Get("PartyAsset_Caravan");
 		}
 		string leaderName = component?.Leader?.Name?.ToString();
 		if (!string.IsNullOrWhiteSpace(leaderName))
@@ -1211,7 +1211,7 @@ internal static class PartyAssetTransferBannerlordAdapter
 				SettlementId = assetId,
 				AssetId = assetId,
 				DisplayName = BuildWorkshopDisplayName(workshop),
-				TypeLabel = "工坊",
+				TypeLabel = EconomySourceTexts.Get("PartyAsset_Workshop"),
 				DailyIncomeDenars = CalculateWorkshopDailyIncomeDenars(workshop),
 				GuidePriceDenars = CalculateWorkshopGuidePriceDenars(workshop, section == SettlementTransferEntrySection.NpcFiefs),
 				OwnerClan = owner.Clan
@@ -1244,7 +1244,7 @@ internal static class PartyAssetTransferBannerlordAdapter
 				SettlementId = assetId,
 				AssetId = assetId,
 				DisplayName = BuildCaravanDisplayName(component),
-				TypeLabel = isNaval ? "商船队" : "商队",
+				TypeLabel = isNaval ? EconomySourceTexts.Get("PartyAsset_NavalCaravan") : EconomySourceTexts.Get("PartyAsset_Caravan"),
 				DailyIncomeDenars = CalculateCaravanDailyIncomeDenars(party),
 				GuidePriceDenars = CalculateCaravanGuidePriceDenars(party),
 				OwnerClan = owner.Clan
@@ -1278,8 +1278,8 @@ internal static class PartyAssetTransferBannerlordAdapter
 							Settlement = settlement,
 							SettlementId = (settlement.StringId ?? "").Trim(),
 							AssetId = (settlement.StringId ?? "").Trim(),
-							DisplayName = settlement.Name?.ToString() ?? "未知定居点",
-							TypeLabel = (settlement.IsTown ? "城市" : "城堡"),
+							DisplayName = settlement.Name?.ToString() ?? EconomySourceTexts.Get("PartyAsset_UnknownSettlement"),
+							TypeLabel = (settlement.IsTown ? EconomySourceTexts.Get("PartyAsset_Town") : EconomySourceTexts.Get("PartyAsset_Castle")),
 							DailyIncomeDenars = CalculateSettlementDailyIncomeDenars(settlement, playerClan),
 							GuidePriceDenars = CalculateSettlementGuidePriceDenars(settlement, clan),
 							OwnerClan = playerClan
@@ -1303,8 +1303,8 @@ internal static class PartyAssetTransferBannerlordAdapter
 							Settlement = settlement2,
 							SettlementId = (settlement2.StringId ?? "").Trim(),
 							AssetId = (settlement2.StringId ?? "").Trim(),
-							DisplayName = settlement2.Name?.ToString() ?? "未知定居点",
-							TypeLabel = (settlement2.IsTown ? "城市" : "城堡"),
+							DisplayName = settlement2.Name?.ToString() ?? EconomySourceTexts.Get("PartyAsset_UnknownSettlement"),
+							TypeLabel = (settlement2.IsTown ? EconomySourceTexts.Get("PartyAsset_Town") : EconomySourceTexts.Get("PartyAsset_Castle")),
 							DailyIncomeDenars = CalculateSettlementDailyIncomeDenars(settlement2, clan),
 							GuidePriceDenars = CalculateSettlementGuidePriceDenars(settlement2, playerClan),
 							OwnerClan = clan
@@ -1387,7 +1387,7 @@ internal static class PartyAssetTransferBannerlordAdapter
 			string text = MyBehavior.BuildPlayerPublicDisplayNameForExternal(hero);
 			if (string.IsNullOrWhiteSpace(text))
 			{
-				text = "玩家";
+				text = EconomyPromptTexts.Get("PartyAsset_Player");
 			}
 			Clan clan = hero?.Clan;
 			Hero leader = clan?.Leader;
@@ -1395,9 +1395,9 @@ internal static class PartyAssetTransferBannerlordAdapter
 			{
 				if (leader != null)
 				{
-					return $"【固定资产转移规则】你当前没有可直接转移给{text}的固定资产；若{text}想谈家族城市或城堡转移，你必须明确引导{text}去找家族族长 {leader.Name?.ToString() ?? "家族族长"}。正文只口头引导，不写资产转移标签。";
+					return string.Format(EconomyPromptTexts.Get("PartyAsset_ReferClanLeader"), text, leader.Name?.ToString() ?? EconomyPromptTexts.Get("PartyAsset_ClanLeader"));
 				}
-				return $"【固定资产转移规则】你当前没有可直接转移给{text}的固定资产。正文只口头拒绝或引导，不写资产转移标签。";
+				return string.Format(EconomyPromptTexts.Get("PartyAsset_NoTransferableAssets"), text);
 			}
 			List<SettlementTransferPromptEntry> list = BuildSettlementTransferPromptEntriesInternal(hero, targetCharacter);
 			List<SettlementTransferPromptEntry> list2All = BuildDisplayIndexedSettlementTransferEntries(((RewardSystemBehavior.Instance != null) ? RewardSystemBehavior.Instance.GetAllowedNpcSettlementTransferEntriesForPlayer(hero, targetCharacter) : list.Where((SettlementTransferPromptEntry x) => x.Section == SettlementTransferEntrySection.NpcFiefs)));
@@ -1411,8 +1411,8 @@ internal static class PartyAssetTransferBannerlordAdapter
             return SettlementTransferPromptOwner.Build(new SettlementTransferPromptCapture {
                 PlayerName = text, Guidance = RewardSystemBehavior.Instance?.BuildSettlementTransferPromptGuidanceForAI(hero, targetCharacter),
                 NpcAssets = list2, PlayerAssets = list3, AllNpcAssets = list2All, AllPlayerAssets = list3All,
-                NpcRemainder = PromptListRetrievalService.BuildRemainingSettlementTransferSummary(list2All, list2, "你"),
-                PlayerRemainder = PromptListRetrievalService.BuildRemainingSettlementTransferSummary(list3All, list3, "玩家")
+                NpcRemainder = PromptListRetrievalService.BuildRemainingSettlementTransferSummary(list2All, list2, EconomyPromptTexts.Get("S682")),
+                PlayerRemainder = PromptListRetrievalService.BuildRemainingSettlementTransferSummary(list3All, list3, EconomyPromptTexts.Get("PartyAsset_Player"))
             }, IsSettlementTransferEntryValidForExternal, GetSettlementTransferAssetIdForExternal);
 		}
 		catch
@@ -1428,7 +1428,7 @@ internal static class PartyAssetTransferBannerlordAdapter
 		try
 		{
 			string settlementName = (entry?.SourceSettlement?.Name?.ToString() ?? "").Trim();
-			return string.IsNullOrWhiteSpace(settlementName) ? "" : (settlementName + "地牢");
+			return string.IsNullOrWhiteSpace(settlementName) ? "" : (settlementName + EconomySourceTexts.Get("PartyAsset_DungeonSuffix"));
 		}
 		catch
 		{
@@ -1452,33 +1452,33 @@ internal static class PartyAssetTransferBannerlordAdapter
 			switch (character?.DefaultFormationClass)
 			{
 			case FormationClass.Ranged:
-				return "弓手";
+				return EconomySourceTexts.Get("PartyAsset_Ranged");
 			case FormationClass.Cavalry:
-				return "骑兵";
+				return EconomySourceTexts.Get("PartyAsset_Cavalry");
 			case FormationClass.HorseArcher:
-				return "骑射手";
+				return EconomySourceTexts.Get("PartyAsset_HorseArcher");
 			case FormationClass.Infantry:
 			case FormationClass.HeavyInfantry:
 			case FormationClass.NumberOfDefaultFormations:
-				return "步兵";
+				return EconomySourceTexts.Get("PartyAsset_Infantry");
 			default:
 				if (character != null)
 				{
 					if (character.IsMounted)
 					{
-						return character.IsRanged ? "骑射手" : "骑兵";
+						return character.IsRanged ? EconomySourceTexts.Get("PartyAsset_HorseArcher") : EconomySourceTexts.Get("PartyAsset_Cavalry");
 					}
 					if (character.IsRanged)
 					{
-						return "弓手";
+						return EconomySourceTexts.Get("PartyAsset_Ranged");
 					}
 				}
-				return "步兵";
+				return EconomySourceTexts.Get("PartyAsset_Infantry");
 			}
 		}
 		catch
 		{
-			return "步兵";
+			return EconomySourceTexts.Get("PartyAsset_Infantry");
 		}
 	}
 
@@ -1574,7 +1574,7 @@ internal static class PartyAssetTransferBannerlordAdapter
 			string text = MyBehavior.BuildPlayerPublicDisplayNameForExternal();
 			if (string.IsNullOrWhiteSpace(text))
 			{
-				text = "玩家";
+				text = EconomyPromptTexts.Get("PartyAsset_Player");
 			}
 			int partyTransferRecruitTrustLevelIndex = ResolvePartyTransferRecruitTrustLevelIndex(targetHero, targetCharacter);
 			int partyTransferRecruitMaxTier = ResolvePartyTransferRecruitMaxTier(partyTransferRecruitTrustLevelIndex);
@@ -1607,8 +1607,8 @@ internal static class PartyAssetTransferBannerlordAdapter
                 VolunteerCount = authorization.VolunteerCount, WildernessInstruction = wildernessInstruction, RuntimeHint = runtimeHint,
                 Troops = list6, HiddenTroops = list4Filtered, AllTroops = authorizedAllTroops,
                 Prisoners = list7, AllPrisoners = list7All,
-                TroopRemainder = PromptListRetrievalService.BuildRemainingPartyTransferSummary(list6All, list6, isPrisoner: false, "你"),
-                PrisonerRemainder = PromptListRetrievalService.BuildRemainingPartyTransferSummary(list7All, list7, isPrisoner: true, "你")
+                TroopRemainder = PromptListRetrievalService.BuildRemainingPartyTransferSummary(list6All, list6, isPrisoner: false, AdapterPromptCaptureTexts.PcapText("AF_PCAP_You", "you")),
+                PrisonerRemainder = PromptListRetrievalService.BuildRemainingPartyTransferSummary(list7All, list7, isPrisoner: true, AdapterPromptCaptureTexts.PcapText("AF_PCAP_You", "you"))
             }, GetPartyTransferPrisonerSourceLabelForExternal,
                 entry => GetPartyTransferTroopTypeLabelForExternal(entry.Character), GetPartyTransferTroopTier);
 		}

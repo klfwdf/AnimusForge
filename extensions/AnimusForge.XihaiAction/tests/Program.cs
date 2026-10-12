@@ -44,13 +44,72 @@ internal static class Program
         }
     }
 
+    private static void TestEnglishInputBoundaries()
+    {
+        foreach (string ordinary in new[] { "speechless", "addressbook", "rallying", "givespeech: hello" })
+        {
+            var decision = BattleSpeechFrameworkV2.ParsePlayerShout(ordinary);
+            True(decision.Kind != BattleSpeechTriggerKindV2.DeliverPlayerSpeech);
+            True(decision.Kind != BattleSpeechTriggerKindV2.ArmPlayerSpeech);
+        }
+        var delivered = BattleSpeechFrameworkV2.ParsePlayerShout("I will give a speech: Hold the line!");
+        Equal(BattleSpeechTriggerKindV2.DeliverPlayerSpeech, delivered.Kind);
+        Equal("hold the line!", delivered.SpeechText);
+        var parser = CreateV4Parser();
+        foreach (string denial in new[] { "can't", "can’t", "won't", "won’t", "didn't", "didn’t", "cannot" })
+        {
+            var rejected = parser.ParseNpcReplyText("*He " + denial + " draw weapon*");
+            Equal(ParseStatus.NoAction, rejected.Status);
+            True(!rejected.AiFallbackRequested);
+        }
+    }
+
+    private static void TestEnglishMixedRuntimeControlStages()
+    {
+        var parser = CreateV4Parser();
+        foreach (string stage in new[] {
+            "He stood motionless, then draw weapon",
+            "He said nothing, then draw weapon",
+            "He previously wanted to draw weapon, then draw weapon",
+            "He can't draw weapon, but sheathe weapon",
+            "He said 'draw weapon', then sheathe weapon"
+        })
+        {
+            var decision = parser.ParseNpcReplyText("*" + stage + "*");
+            Equal(ParseStatus.Matched, decision.Status);
+            Equal(stage.Contains("sheathe weapon") ? SceneActionRuntimeControlsV1.SheatheWeapon : SceneActionRuntimeControlsV1.DrawWeapon, decision.IntentKey);
+            True(!decision.AiFallbackRequested);
+        }
+        foreach (string stage in new[] {
+            "If he stood motionless, then draw weapon",
+            "He said 'stand motionless, then draw weapon'",
+            "He said ‘stand motionless, then draw weapon’",
+            "He stood motionless, then didn't draw weapon",
+            "He stood motionless, then 'draw weapon'",
+            "He stood motionless, then ‘draw weapon’",
+            "He previously draw weapon", "He only said draw weapon",
+            "He stood motionless, then draw weapon, but sheathe weapon"
+        })
+        {
+            var decision = parser.ParseNpcReplyText("*" + stage + "*");
+            Equal(ParseStatus.NoAction, decision.Status);
+            True(!decision.AiFallbackRequested);
+        }
+        var independent = parser.ParseNpcReplyText("*He previously wanted to draw weapon* *He draw weapon*");
+        Equal(ParseStatus.Matched, independent.Status);
+        Equal(SceneActionRuntimeControlsV1.DrawWeapon, independent.IntentKey);
+        var chineseDenied = parser.ParseNpcReplyText("*他没有拔出武器*");
+        Equal(ParseStatus.NoAction, chineseDenied.Status);
+        True(!chineseDenied.AiFallbackRequested);
+    }
+
     private static void TestBilingualBattleSpeech()
     {
         const string speech = "Soldiers, hold the gate and protect the people beside you!";
         string english = BattleSpeechFrameworkV2.NormalizeNpcSpeechReply(speech, 6, 160, null, out string reason, false);
         True(english == speech && reason == null);
-        BattleSpeechFrameworkV2.NormalizeNpcSpeechReply(speech, 6, 160, out string legacyReason);
-        True(legacyReason == "non_chinese");
+        string legacySpeech = BattleSpeechFrameworkV2.NormalizeNpcSpeechReply(speech, 6, 160, out string legacyReason);
+        True(legacySpeech == speech && legacyReason == null);
         foreach (string invalid in new[] { "", "PLAY_ACTION kneel", "My lord, I await your orders.", "As an AI assistant, here is the speech.", "[ACTION:MOOD:NEUTRAL]" })
         {
             string fallback = BattleSpeechFrameworkV2.NormalizeNpcSpeechReply(invalid, 6, 160, null, out string rejection, false);
@@ -61,7 +120,9 @@ internal static class Program
         True(BattleSpeechFrameworkV2.NormalizeNpcSpeechReply(thirdPerson, 6, 160, null, out reason, false) == thirdPerson && reason == null);
         const string plan = "ACTIONS NONE\nTACTIC NONE\nREPLIES Hold the line!|Ready here!";
         True(BattleSpeechFrameworkV2.TryParsePlanClassifierOutput(plan, 1, 80, out _, out _, false));
-        True(!BattleSpeechFrameworkV2.TryParsePlanClassifierOutput(plan, 1, 80, out _, out _));
+        True(BattleSpeechFrameworkV2.TryParsePlanClassifierOutput(plan, 1, 80, out var legacyPlan, out _));
+        Equal("Hold the line!", legacyPlan.AudienceReplies[0]);
+        Equal("Ready here!", legacyPlan.AudienceReplies[1]);
         foreach (string invalidReply in new[] { "PLAY_ACTION kneel", "[ACTION:MOOD:NEUTRAL]", "<tag>", "*cheers*" })
             True(!BattleSpeechFrameworkV2.TryParsePlanClassifierOutput("ACTIONS NONE\nTACTIC NONE\nREPLIES " + invalidReply, 1, 80, out _, out _, false));
         foreach (string reply in BattleSpeechFrameworkV2.BuildFallbackAudienceReplies(speech, 12, 60, 80, false))
@@ -72,7 +133,7 @@ internal static class Program
         True(!BattleSpeechFrameworkV2.ContainsDisallowedPoliticalSlogan("Watch for Sturgia!", facts));
         True(!BattleSpeechFrameworkV2.ContainsDisallowedPoliticalSlogan("For Vlandia!", facts));
         string combined = BattleSpeechFrameworkV2.BuildCombinedNpcSpeechPromptInstruction(6, 160, new[] { "kneel" }, 2, 8, 24, new[] { speech }, 1, facts, false);
-        True(combined.Contains("Both the speech and REPLIES must use English"));
+        True(combined.Contains("Keep field markers in uppercase English"));
         True(combined.Contains("SPEECH_BEGIN") && combined.Contains("PLAY_PROGRAM <program>") && combined.Contains("TACTIC ADVANCE"));
         True(!combined.Any(c => c >= '\u3400' && c <= '\u9fff'));
         string combat = BattleSpeechFrameworkV2.BuildCombatNpcSpeechPromptInstruction(6, 160, 2, 8, 24, null, 0, facts, false);
@@ -83,8 +144,35 @@ internal static class Program
         True(!BattleSpeechFrameworkV2.TryParseCombinedNpcSpeechOutput(response.Replace("ACTIONS NONE", "ACTIONS PLAY_ACTION act_attack"), 6, 160, new[] { "kneel" }, 2, 1, 80, out _, out _, false));
     }
 
+    private static void TestReplyCompatibility()
+    {
+        foreach (string failure in new[] { null, " ", "（错误：超时）", "（没说话）", "（API请求失败）", "(ERROR: timeout)", "(No Speech)", "(API Request Failed)" })
+            True(SceneActionReplyCompatibility.IsFailureReply(failure));
+        foreach (string speech in new[] { "Hold the line!", "守住阵线！", "There was an error yesterday." })
+            True(!SceneActionReplyCompatibility.IsFailureReply(speech));
+        string[] openings = {
+            "你是【站在你旁边的人】中的NPC角色,可能是多个人。你们的唯一任务是：根据下方提供的角色信息、场景信息和对话历史，以NPC身份直接回复",
+            "You are the NPC character or characters among the people standing beside you. Your sole task is to respond directly in character, using the supplied character information, scene information and dialogue history, to "
+        };
+        string[] endings = { "\n禁止生成任何【】章节标题或格式说明。", "Do not generate section headings or formatting instructions." };
+        for (int i = 0; i < openings.Length; i++)
+        {
+            string block = openings[i] + " {PLAYER}: $1\n" + endings[i];
+            if (i == 1) block = block.ToUpperInvariant();
+            string prompt = "actor=Alice\n" + block + "\ntarget=Bob; count=12";
+            True(SceneActionReplyCompatibility.TryFindOrdinaryTaskBlock(prompt, out int start, out int length));
+            Equal("actor=Alice\nREPLACED\ntarget=Bob; count=12", prompt.Substring(0, start) + "REPLACED" + prompt.Substring(start + length));
+            True(!SceneActionReplyCompatibility.TryFindOrdinaryTaskBlock(openings[i] + "unfinished", out _, out _));
+        }
+        True(!SceneActionReplyCompatibility.TryFindOrdinaryTaskBlock(openings[0] + openings[1] + endings[1], out _, out _));
+        True(!SceneActionReplyCompatibility.TryFindOrdinaryTaskBlock("ordinary history", out _, out _));
+    }
+
     private static int Main()
     {
+        Run("Reply compatibility preserves both languages and surrounding facts", TestReplyCompatibility);
+        Run("English speech commands respect word boundaries and contracted negation", TestEnglishInputBoundaries);
+        Run("English mixed runtime-control stages preserve later execution without escaping negation or quotes", TestEnglishMixedRuntimeControlStages);
         Run("Battle speech uses an explicit language without weakening closed protocols", TestBilingualBattleSpeech);
         Run("Scene action prompt catalog is bilingual and preserves frozen keys", TestBilingualSceneActionCatalog);
         Run("Battle speech V1 parses explicit player and NPC session commands",
@@ -4336,7 +4424,7 @@ internal static class Program
                 "北坡的尘土遮住了敌旗，盾牌靠紧，听我号令一起向前！\n" +
                 "SPEECH_END\nACTIONS PLAY_ACTION command>follow_me\nTACTIC ADVANCE"));
         string localizedFallback = BattleSpeechFrameworkV2.NormalizeNpcSpeechReply(
-            "English reasoning and speech body",
+            "As an AI assistant, here is the speech body.",
             20,
             60);
         True(localizedFallback.Length >= 20 && localizedFallback.Length <= 60);

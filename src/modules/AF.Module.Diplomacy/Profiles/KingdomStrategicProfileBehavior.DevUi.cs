@@ -1,3 +1,4 @@
+using AnimusForge;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -786,50 +787,71 @@ public sealed partial class KingdomStrategicProfileBehavior
 	private static string LocalizeStoredProfileError(string value)
 	{
 		string text = value ?? "";
-		if (string.Equals(text, "事件与叛乱 API 尚未配置。", StringComparison.Ordinal))
+		if (string.Equals(text, DiplomacyMiscPromptTexts.Get("VassalageBehavior_ApiConfigError", "Event and rebellion API not configured."), StringComparison.Ordinal)
+			|| string.Equals(text, "Event and rebellion API not configured.", StringComparison.OrdinalIgnoreCase))
 		{
 			return DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_GenerationConfigError", "Kingdom founding profile generation failed: event/rebellion API is not configured.");
 		}
-		if (string.Equals(text, "LLM 返回内容中没有 JSON 对象。", StringComparison.Ordinal))
+		if (string.Equals(text, DiplomacyMiscPromptTexts.Get("ProfileDevUi_NoJsonObject", "LLM reply contains no JSON object."), StringComparison.Ordinal)
+			|| string.Equals(text, "The LLM response did not contain a JSON object.", StringComparison.OrdinalIgnoreCase)
+			|| string.Equals(text, "No JSON object in LLM response.", StringComparison.OrdinalIgnoreCase))
 		{
 			return DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_NoJsonObject", "The LLM response did not contain a JSON object.");
 		}
-		if (string.Equals(text, "LLM JSON 缺少 national_personality 或 long_term_strategy。", StringComparison.Ordinal))
+		if (string.Equals(text, DiplomacyMiscPromptTexts.Get("ProfileDevUi_MissingFields", "LLM JSON missing national_personality or long_term_strategy."), StringComparison.Ordinal)
+			|| string.Equals(text, "The LLM JSON is missing national_personality or long_term_strategy.", StringComparison.OrdinalIgnoreCase)
+			|| string.Equals(text, "LLM JSON is missing national_personality or long_term_strategy.", StringComparison.OrdinalIgnoreCase))
 		{
 			return DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_MissingFields", "The LLM JSON is missing national_personality or long_term_strategy.");
 		}
-		if (string.Equals(text, "国家已覆灭，已停止自动生成建国卡。", StringComparison.Ordinal))
+		if (string.Equals(text, DiplomacyMiscPromptTexts.Get("VassalageBehavior_KingdomEliminated", "The kingdom has been eliminated; automatic founding card generation stopped."), StringComparison.Ordinal)
+			|| string.Equals(text, "The kingdom was eliminated, so automatic founding profile generation stopped.", StringComparison.OrdinalIgnoreCase)
+			|| string.Equals(text, "The kingdom has been eliminated; automatic founding card generation stopped.", StringComparison.OrdinalIgnoreCase))
 		{
 			return DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_GenerationKingdomEliminated", "The kingdom was eliminated, so automatic founding profile generation stopped.");
 		}
-		if (string.Equals(text, "国家对象已不存在，无法生成建国卡。", StringComparison.Ordinal))
+		if (string.Equals(text, DiplomacyMiscPromptTexts.Get("VassalageBehavior_KingdomMissing", "The kingdom object no longer exists; cannot generate founding card."), StringComparison.Ordinal)
+			|| string.Equals(text, "The kingdom object no longer exists, so the founding profile cannot be generated.", StringComparison.OrdinalIgnoreCase)
+			|| string.Equals(text, "The kingdom object no longer exists; cannot generate founding card.", StringComparison.OrdinalIgnoreCase))
 		{
 			return DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_GenerationKingdomMissing", "The kingdom object no longer exists, so the founding profile cannot be generated.");
 		}
-		if (string.Equals(text, "请检查 MCM 的政策 API 来源或主 API 设置。", StringComparison.Ordinal))
+		if (string.Equals(text, DiplomacyMiscPromptTexts.Get("ProfileDevUi_CheckPolicyApiSettings", "Check policy API source or main API settings in MCM."), StringComparison.Ordinal)
+			|| string.Equals(text, "Check the MCM policy API source or main API settings.", StringComparison.OrdinalIgnoreCase))
 		{
 			return DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_GenerationApiSettingsMissing", "Check the MCM policy API source or main API settings.");
 		}
-		if (string.Equals(text, "主 API 配置不完整，政策生成无法开始。", StringComparison.Ordinal))
+		if (string.Equals(text, DiplomacyMiscPromptTexts.Get("ProfileDevUi_MainApiIncomplete", "Main API configuration is incomplete; policy generation cannot start."), StringComparison.Ordinal)
+			|| string.Equals(text, "The main API configuration is incomplete, so policy generation cannot start.", StringComparison.OrdinalIgnoreCase))
 		{
 			return DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_GenerationApiMainConfigIncomplete", "The main API configuration is incomplete, so policy generation cannot start.");
 		}
-		if (string.Equals(text, "所选政策 API 配置不完整，且主 API 也不完整，政策生成无法开始。", StringComparison.Ordinal))
+		if (string.Equals(text, DiplomacyMiscPromptTexts.Get("ProfileDevUi_PolicyAndMainApiIncomplete", "Selected policy API and main API configurations are both incomplete; policy generation cannot start."), StringComparison.Ordinal)
+			|| string.Equals(text, "The selected policy API configuration is incomplete and the main API is incomplete too, so policy generation cannot start.", StringComparison.OrdinalIgnoreCase))
 		{
 			return DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_GenerationApiSelectedAndMainIncomplete", "The selected policy API configuration is incomplete and the main API is incomplete too, so policy generation cannot start.");
 		}
-		if (string.Equals(text, "API 请求失败。", StringComparison.Ordinal))
+		if (string.Equals(text, DiplomacyMiscPromptTexts.Get("ProfileDevUi_ApiRequestFailed", "API request failed."), StringComparison.Ordinal)
+			|| string.Equals(text, "The API request failed.", StringComparison.OrdinalIgnoreCase)
+			|| string.Equals(text, "API request failed.", StringComparison.OrdinalIgnoreCase))
 		{
 			return DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_ApiRequestFailed", "The API request failed.");
 		}
-		if (string.Equals(text, SaveRuntimeGuard.BuildStaleRequestErrorText(), StringComparison.Ordinal))
+		if (string.Equals(text, SaveRuntimeGuard.BuildStaleRequestErrorText(), StringComparison.Ordinal)
+			|| string.Equals(text, "The request was invalidated by loading a save.", StringComparison.OrdinalIgnoreCase)
+			|| string.Equals(text, "Request discarded because the game was loaded again.", StringComparison.OrdinalIgnoreCase))
 		{
 			return DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_StaleRequest", "Request discarded because the game was loaded again.");
 		}
-		const string parsePrefix = "LLM JSON 解析失败：";
+		string parsePrefix = DiplomacyMiscPromptTexts.Get("ProfileDevUi_LlmJsonParseFailedPrefix", "LLM JSON parse failed: ");
+		const string parsePrefixEn = "LLM JSON parsing failed: ";
 		if (text.StartsWith(parsePrefix, StringComparison.Ordinal))
 		{
 			return DiplomacyUiLocalization.Format("AF_DIP_UI_KingdomProfile_JsonParseFailed", "LLM JSON parsing failed: {ERROR}", ("ERROR", text.Substring(parsePrefix.Length)));
+		}
+		if (text.StartsWith(parsePrefixEn, StringComparison.OrdinalIgnoreCase))
+		{
+			return DiplomacyUiLocalization.Format("AF_DIP_UI_KingdomProfile_JsonParseFailed", "LLM JSON parsing failed: {ERROR}", ("ERROR", text.Substring(parsePrefixEn.Length)));
 		}
 		return value;
 	}
@@ -838,7 +860,8 @@ public sealed partial class KingdomStrategicProfileBehavior
 	// enumerated Chinese diagnostics are translated, everything else keeps its original text.
 	private static string LocalizeExportDetail(string detail)
 	{
-		if (string.Equals(detail, "导出目录无效。", StringComparison.Ordinal))
+		if (string.Equals(detail, DiplomacyMiscPromptTexts.Get("ProfileDevUi_ExportDirectoryInvalid", "Export directory is invalid."), StringComparison.Ordinal)
+			|| string.Equals(detail, "The export directory is invalid.", StringComparison.OrdinalIgnoreCase))
 		{
 			return DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_ExportDirectoryInvalid", "The export directory is invalid.");
 		}
@@ -849,11 +872,11 @@ public sealed partial class KingdomStrategicProfileBehavior
 	// modules, so they are translated here for this menu only; unknown labels stay unchanged.
 	private static string LocalizeImportFolderSourceLabel(string sourceLabel)
 	{
-		if (string.Equals(sourceLabel, "模组目录", StringComparison.Ordinal))
+		if (string.Equals(sourceLabel, "Module directory", StringComparison.Ordinal))
 		{
 			return DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_ImportSourceModDirectory", "Mod directory");
 		}
-		if (string.Equals(sourceLabel, "玩家导出", StringComparison.Ordinal))
+		if (string.Equals(sourceLabel, "Player exports", StringComparison.Ordinal))
 		{
 			return DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_ImportSourcePlayerExports", "Player exports");
 		}

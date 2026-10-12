@@ -2,6 +2,7 @@
 <base type="string">
   <tags><tag language="简体中文" /></tags>
   <strings>
+    <string id="AF_KNOWLEDGE_RuleIndexLabel" text="{NAME} (关键词:{KEYWORDS} 条, RAG短句:{RAG} 条, 提示词:{VARIANTS} 条)" />
     <string id="AF_KNOWLEDGE_DuplicateConditionTitle" text="条件重复" />
     <string id="AF_KNOWLEDGE_DuplicateCondition" text="不允许存在多个条件完全相同的提示词。&#10;&#10;重复对象：{ITEM} 条提示词&#10;&#10;重复条件：&#10;{CONDITION}" />
     <string id="AF_KNOWLEDGE_Back" text="返回" />
@@ -64,10 +65,7 @@
     <string id="AF_KNOWLEDGE_CreateKnowledgeTitle" text="创建新知识" />
     <string id="AF_KNOWLEDGE_CreateKnowledgePrompt" text="请输入该知识的“第一个关键词”（将用于该知识条目的 ID 与导出文件命名，不可重复；后续仍可继续添加更多关键词）：" />
     <string id="AF_KNOWLEDGE_RuleMenuTitle" text="知识 - {LABEL}" />
-    <string id="AF_KNOWLEDGE_RuleMenuDescription" text="关键词：{KEYWORDS} 条
-RAG 专用短句：{RAG} 条
-提示词：{VARIANTS} 条
-词汇映射：{MAPPINGS} 条" />
+    <string id="AF_KNOWLEDGE_RuleMenuDescription" text="关键词：{KEYWORDS} 条&#10;RAG 专用短句：{RAG} 条&#10;提示词：{VARIANTS} 条&#10;词汇映射：{MAPPINGS} 条" />
     <string id="AF_KNOWLEDGE_EditKeywords" text="编辑关键词" />
     <string id="AF_KNOWLEDGE_EditRag" text="编辑 RAG 专用短句" />
     <string id="AF_KNOWLEDGE_GenerateRag" text="一键生成 RAG 专用短句" />
@@ -97,15 +95,12 @@ RAG 专用短句：{RAG} 条
     <string id="AF_KNOWLEDGE_SetFalseTextPrompt" text="请输入当状态判断结果为假时要替换成的文本。留空表示假时不替换。" />
     <string id="AF_KNOWLEDGE_Finish" text="完成" />
     <string id="AF_KNOWLEDGE_MappingSearchTitle" text="搜索映射类型" />
-    <string id="AF_KNOWLEDGE_MappingSearchPrompt" text="输入关键词，可用空格分隔多个词。
-例如：家族 王国 / 定居点 统治 / 配偶 / 年龄 / 状态 存活 / 王国 灭亡" />
+    <string id="AF_KNOWLEDGE_MappingSearchPrompt" text="输入关键词，可用空格分隔多个词。&#10;例如：家族 王国 / 定居点 统治 / 配偶 / 年龄 / 状态 存活 / 王国 灭亡" />
     <string id="AF_KNOWLEDGE_MappingSearchMenuTitle" text="你想取谁的什么？" />
     <string id="AF_KNOWLEDGE_MappingSearchMenuDescription" text="先选一个方向，或者直接搜索具体映射项。除了普通映射，现在也支持状态判断。组合很多时，优先用搜索会更快。" />
     <string id="AF_KNOWLEDGE_MappingChooseTypeTitle" text="选择映射类型" />
     <string id="AF_KNOWLEDGE_MappingChooseType" text="选择一个具体映射项。" />
-    <string id="AF_KNOWLEDGE_MappingSearchResults" text="输入关键词搜索具体映射项，可用空格分隔多个词。
-例如：家族 王国 / 定居点 统治 / 配偶 / 年龄 / 状态 存活 / 王国 灭亡{QUERY}
-匹配结果：{COUNT} 项{EMPTY}" />
+    <string id="AF_KNOWLEDGE_MappingSearchResults" text="输入关键词搜索具体映射项，可用空格分隔多个词。&#10;例如：家族 王国 / 定居点 统治 / 配偶 / 年龄 / 状态 存活 / 王国 灭亡{QUERY}&#10;匹配结果：{COUNT} 项{EMPTY}" />
     <string id="AF_KNOWLEDGE_KeywordMenuTitle" text="编辑关键词" />
     <string id="AF_KNOWLEDGE_KeywordMenuDescription" text="一次输入一个关键词，确定后会加入列表。" />
     <string id="AF_KNOWLEDGE_AddKeyword" text="添加关键词（一次一个）" />
@@ -467,8 +462,7 @@ RAG 专用短句：{RAG} 条
     <string id="AF_KNOWLEDGE_VariantDelete" text="删除此提示词" />
     <string id="AF_KNOWLEDGE_VariantCurrentCondition" text="当前条件：{CONDITION}" />
     <string id="AF_KNOWLEDGE_VariantContentPrompt" text="请输入内容。" />
-    <string id="AF_KNOWLEDGE_VariantTruncated" text="
-……（内容过长，仅显示前 220 字）" />
+    <string id="AF_KNOWLEDGE_VariantTruncated" text="&#10;……（内容过长，仅显示前 220 字）" />
     <string id="AF_KNOWLEDGE_WhenCulture" text="文化（CultureId）" />
     <string id="AF_KNOWLEDGE_WhenKingdom" text="势力/王国（KingdomId）" />
     <string id="AF_KNOWLEDGE_WhenSettlement" text="定居点（SettlementId）" />
@@ -482,10 +476,7 @@ RAG 专用短句：{RAG} 条
     <string id="AF_KNOWLEDGE_RoleClearSearch" text="清除搜索" />
     <string id="AF_KNOWLEDGE_RoleClearSpecificOption" text="清空本类细分已选（{COUNT}）" />
     <string id="AF_KNOWLEDGE_RoleToggleAll" text="整类生效：{ROLE}" />
-    <string id="AF_KNOWLEDGE_RoleDescription" text="{ROLE}：可直接勾整类，也可只勾本类里的具体 NPC。
-当前整类：{SELECTED}
-当前细分已选：{SPECIFIC}
-结果总数：{TOTAL}，第 {PAGE}/{PAGES} 页" />
+    <string id="AF_KNOWLEDGE_RoleDescription" text="{ROLE}：可直接勾整类，也可只勾本类里的具体 NPC。&#10;当前整类：{SELECTED}&#10;当前细分已选：{SPECIFIC}&#10;结果总数：{TOTAL}，第 {PAGE}/{PAGES} 页" />
     <string id="AF_KNOWLEDGE_RoleEditorTitle" text="身份条件" />
     <string id="AF_KNOWLEDGE_RoleEditorDescription" text="先选一个大类，再进入该类选择具体 NPC。整类勾选继续保留；细分选择会在当前大类内搜索和分页。" />
     <string id="AF_KNOWLEDGE_RoleClearAllSpecific" text="清空全部细分身份" />
@@ -548,15 +539,7 @@ RAG 专用短句：{RAG} 条
     <string id="AF_KNOWLEDGE_WhenSkillLabel" text="技能" />
     <string id="AF_KNOWLEDGE_WhenLabelExclusive" text="专属({CATEGORIES})" />
     <string id="AF_KNOWLEDGE_WhenDetailGeneral" text="当前：通用（无条件）" />
-    <string id="AF_KNOWLEDGE_WhenDetail" text="当前条件：
-CultureId: {CULTURE}
-KingdomId: {KINGDOM}
-SettlementId: {SETTLEMENT}
-Roles: {ROLES}
-细分身份: {IDENTITIES}
-SkillMin: {SKILLS}
-Gender: {GENDER}
-ClanLeader: {CLAN_LEADER}" />
+    <string id="AF_KNOWLEDGE_WhenDetail" text="当前条件：&#10;CultureId: {CULTURE}&#10;KingdomId: {KINGDOM}&#10;SettlementId: {SETTLEMENT}&#10;Roles: {ROLES}&#10;细分身份: {IDENTITIES}&#10;SkillMin: {SKILLS}&#10;Gender: {GENDER}&#10;ClanLeader: {CLAN_LEADER}" />
     <string id="AF_KNOWLEDGE_WhenEmpty" text="（空）" />
     <string id="AF_KNOWLEDGE_WhenAny" text="不限" />
     <string id="AF_KNOWLEDGE_WhenFemale" text="女" />
@@ -596,14 +579,11 @@ ClanLeader: {CLAN_LEADER}" />
     <string id="AF_KNOWLEDGE_PickerKindHero" text="英雄" />
     <string id="AF_KNOWLEDGE_PickerKindClan" text="家族" />
     <string id="AF_KNOWLEDGE_RoleSpecificCount" text="（细分已选 {COUNT}）" />
-    <string id="AF_KNOWLEDGE_PrototypeCurrentSearch" text="
-搜索：{QUERY}" />
-    <string id="AF_KNOWLEDGE_PrototypeNoContent" text="
-当前页无内容。" />
+    <string id="AF_KNOWLEDGE_PrototypeCurrentSearch" text="&#10;搜索：{QUERY}" />
+    <string id="AF_KNOWLEDGE_PrototypeNoContent" text="&#10;当前页无内容。" />
     <string id="AF_KNOWLEDGE_RoleSelected" text="已选中" />
     <string id="AF_KNOWLEDGE_RoleNotSelected" text="未选中" />
-    <string id="AF_KNOWLEDGE_PickerCurrentSearch" text="
-当前搜索：{QUERY}" />
+    <string id="AF_KNOWLEDGE_PickerCurrentSearch" text="&#10;当前搜索：{QUERY}" />
     <string id="AF_KNOWLEDGE_PickerSelectOneSuffix" text=" 选择一个后会加入列表。" />
 
     <string id="AF_KNOWLEDGE_BulkDeleteMore" text="……以及另外 {COUNT} 条" />
@@ -671,5 +651,215 @@ ClanLeader: {CLAN_LEADER}" />
     <string id="AF_KNOWLEDGE_RagParseFailureTitle" text="RAG 专用短句解析失败" />
     <string id="AF_KNOWLEDGE_RagParseFailureReason" text="模型回复无法解析为 RAG 专用短句，系统将使用确定性兜底。" />
     <string id="AF_KNOWLEDGE_RagGenerationFailureTitle" text="生成RAG专用短句失败" />
+
+    <string id="AF_KNOWLEDGE_UI_EntityPromptHeader" text="你和{PLAYER}交流可用的实体信息：" />
+    <string id="AF_KNOWLEDGE_UI_ResidentPlayerClan" text="常驻：玩家当前家族" />
+    <string id="AF_KNOWLEDGE_UI_ResidentPlayerKingdom" text="常驻：玩家当前王国" />
+    <string id="AF_KNOWLEDGE_UI_ResidentContextHeroSelf" text="常驻：{NAME}本人" />
+    <string id="AF_KNOWLEDGE_UI_ResidentContextHeroClan" text="常驻：{NAME}家族" />
+    <string id="AF_KNOWLEDGE_UI_ResidentContextHeroKingdom" text="常驻：{NAME}当前王国" />
+    <string id="AF_KNOWLEDGE_UI_PostprocessResidentContextHeroOfClan" text="常驻：{NAME}的家族" />
+    <string id="AF_KNOWLEDGE_UI_PostprocessResidentContextHeroOfKingdom" text="常驻：{NAME}的王国" />
+    <string id="AF_KNOWLEDGE_UI_DefaultHeroName" text="人物" />
+    <string id="AF_KNOWLEDGE_UI_DefaultSettlementName" text="地点" />
+    <string id="AF_KNOWLEDGE_UI_DefaultClanName" text="家族" />
+    <string id="AF_KNOWLEDGE_UI_DefaultKingdomName" text="王国" />
+    <string id="AF_KNOWLEDGE_UI_Player" text="玩家" />
+    <string id="AF_KNOWLEDGE_UI_PostprocessInfoHeader" text="可能有效的信息：" />
+    <string id="AF_KNOWLEDGE_UI_PostprocessSectionHeroes" text="【人物】" />
+    <string id="AF_KNOWLEDGE_UI_PostprocessSectionSettlements" text="【地点】" />
+    <string id="AF_KNOWLEDGE_UI_PostprocessSectionClans" text="【家族】" />
+    <string id="AF_KNOWLEDGE_UI_PostprocessSectionKingdoms" text="【王国】" />
+    <string id="AF_KNOWLEDGE_UI_PostprocessSectionVisibleParties" text="【附近可见部队】" />
+    <string id="AF_KNOWLEDGE_UI_PostprocessHeroEntry" text="{INDEX}. 名称：{NAME}；位置：{LOCATION}；ID：{ID}{HINT}" />
+    <string id="AF_KNOWLEDGE_UI_PostprocessSettlementEntry" text="{INDEX}. 名称：{NAME}；ID：{ID}{HINT}" />
+    <string id="AF_KNOWLEDGE_UI_PostprocessClanEntry" text="{INDEX}. 名称：{NAME}；ID：{ID}{HINT}" />
+    <string id="AF_KNOWLEDGE_UI_PostprocessKingdomEntry" text="{INDEX}. 名称：{NAME}；ID：{ID}{HINT}" />
+    <string id="AF_KNOWLEDGE_UI_PostprocessMentionHint" text="；提示：{MENTION}" />
+    <string id="AF_KNOWLEDGE_UI_MainPromptPlayerSelf" text="【玩家本人】" />
+    <string id="AF_KNOWLEDGE_UI_MainPromptPlayerInstruction" text="1. 名称：{NAME}；固定ID：{ID}；用于FOLLOW玩家时目标类型写hero，id填写{ID}。" />
+    <string id="AF_KNOWLEDGE_UI_MainPromptVisiblePartiesHeader" text="【附近可见部队】" />
+    <string id="AF_KNOWLEDGE_UI_VisiblePartyUnknown" text="{INDEX}. 名称：未知；数量：0" />
+    <string id="AF_KNOWLEDGE_UI_VisiblePartyShip" text="；舰船：{INFO}" />
+    <string id="AF_KNOWLEDGE_UI_VisiblePartyEntry" text="{INDEX}. 名称：{NAME}；数量：{COUNT}{SHIP}；部队ID：{ID}；从属：{AFFILIATION}{RELATION}；方位：{DIRECTION}；距离：{DISTANCE}" />
+    <string id="AF_KNOWLEDGE_UI_VisiblePartyContextRelation" text="与NPC关系：{RELATION}" />
+    <string id="AF_KNOWLEDGE_UI_VisiblePartyPlayerRelation" text="与玩家关系：{RELATION}" />
+    <string id="AF_KNOWLEDGE_UI_MainPromptSectionHeroes" text="【人物】" />
+    <string id="AF_KNOWLEDGE_UI_MainPromptHeroEntry" text="{INDEX}. {NAME}（编号：{ID}；匹配分：{SCORE}；提及：{MENTION}）" />
+    <string id="AF_KNOWLEDGE_UI_MainPromptHeroClan" text="所属家族：{CLAN}；王国：{KINGDOM}" />
+    <string id="AF_KNOWLEDGE_UI_MainPromptHeroTraits" text="特质：{TRAITS}；亲属：{RELATIVES}" />
+    <string id="AF_KNOWLEDGE_UI_MainPromptHeroLocation" text="位置：{LOCATION}；状态：{STATUS}" />
+    <string id="AF_KNOWLEDGE_UI_MainPromptHeroAge" text="年龄：{AGE}；生死：{ALIVE}；性别：{GENDER}；职业/头衔：{OCCUPATION}" />
+    <string id="AF_KNOWLEDGE_UI_MainPromptSectionSettlements" text="【地点】" />
+    <string id="AF_KNOWLEDGE_UI_MainPromptSettlementEntry" text="{INDEX}. {NAME}（编号：{ID}；匹配分：{SCORE}；提及：{MENTION}）" />
+    <string id="AF_KNOWLEDGE_UI_MainPromptSettlementOwner" text="所属家族：{CLAN}；王国：{KINGDOM}；文化：{CULTURE}" />
+    <string id="AF_KNOWLEDGE_UI_MainPromptSettlementStrength" text="兵力：{STRENGTH}；繁荣度：{PROSPERITY}；人口：{POPULATION}；忠诚度：{LOYALTY}" />
+    <string id="AF_KNOWLEDGE_UI_MainPromptSettlementVillages" text="下属村庄：{VILLAGES}；当前状态：{STATUS}" />
+    <string id="AF_KNOWLEDGE_UI_MainPromptSectionClans" text="【家族】" />
+    <string id="AF_KNOWLEDGE_UI_MainPromptClanEntry" text="{INDEX}. {NAME}（编号：{ID}；匹配分：{SCORE}；提及：{MENTION}）" />
+    <string id="AF_KNOWLEDGE_UI_MainPromptClanLeader" text="族长：{LEADER}；主要成员：{MEMBERS}" />
+    <string id="AF_KNOWLEDGE_UI_MainPromptClanKingdom" text="所属王国：{KINGDOM}；影响力：{INFLUENCE}；文化：{CULTURE}" />
+    <string id="AF_KNOWLEDGE_UI_MainPromptClanWealth" text="财富：{WEALTH}；等级：{TIER}；是否灭亡：{ELIMINATED}；主要定居点：{SETTLEMENTS}" />
+    <string id="AF_KNOWLEDGE_UI_MainPromptSectionKingdoms" text="【王国】" />
+    <string id="AF_KNOWLEDGE_UI_MainPromptKingdomEntry" text="{INDEX}. {NAME}（编号：{ID}；匹配分：{SCORE}；提及：{MENTION}）" />
+    <string id="AF_KNOWLEDGE_UI_MainPromptKingdomLeader" text="国王：{LEADER}；总兵力：{STRENGTH}；文化：{CULTURE}" />
+    <string id="AF_KNOWLEDGE_UI_MainPromptKingdomEncyclopedia" text="百科背景：{BACKGROUND}" />
+    <string id="AF_KNOWLEDGE_UI_MainPromptKingdomSettlements" text="王国定居点概览：{SETTLEMENTS}" />
+    <string id="AF_KNOWLEDGE_UI_MainPromptKingdomClans" text="主要家族：{CLANS}" />
+    <string id="AF_KNOWLEDGE_UI_MainPromptKingdomStatus" text="王国当前状态：{STATUS}" />
+    <string id="AF_KNOWLEDGE_UI_RelationToContext" text="与{NAME}的关系：{RELATION}。" />
+    <string id="AF_KNOWLEDGE_UI_RelationSelf" text="与{NAME}的关系：本人" />
+    <string id="AF_KNOWLEDGE_UI_RelationPersonal" text="原版个人关系值：{VALUE}（{BAND}）" />
+    <string id="AF_KNOWLEDGE_UI_Unknown" text="未知" />
+    <string id="AF_KNOWLEDGE_UI_NoTraits" text="无显著特质" />
+    <string id="AF_KNOWLEDGE_UI_HeroRelativeSummaryHeader" text="【NPC当前亲属与家族状态】\n人物：{NAME}\n{CONTENT}" />
+    <string id="AF_KNOWLEDGE_UI_HeroRelativeSummaryFooter" text="\n以上为本轮游戏状态；若旧个性、背景或历史对话与此处生死状态冲突，以此处为准。已故者只能作为往事提及，不能描述为仍在活动或安排与其见面；未列出不代表已故，不得编造死因、时间或凶手。" />
+    <string id="AF_KNOWLEDGE_UI_NotRecorded" text="未记录" />
+    <string id="AF_KNOWLEDGE_UI_HeroAlive" text="（在世）" />
+    <string id="AF_KNOWLEDGE_UI_HeroDead" text="（已故）" />
+    <string id="AF_KNOWLEDGE_UI_HeroLocationSettlement" text="（定居点内）" />
+    <string id="AF_KNOWLEDGE_UI_HeroLocationPrisoner" text="（被俘）" />
+    <string id="AF_KNOWLEDGE_UI_HeroLocationPrisonerParty" text="（被俘，关押于：{HOLDER}）" />
+    <string id="AF_KNOWLEDGE_UI_HeroStatusDead" text="已故" />
+    <string id="AF_KNOWLEDGE_UI_HeroStatusCaptive" text="被俘；关押于：{HOLDER}" />
+    <string id="AF_KNOWLEDGE_UI_HeroStatusLocation" text="在定居点：{SETTLEMENT}" />
+    <string id="AF_KNOWLEDGE_UI_HeroStatusTarget" text="队伍目标：{TARGET}" />
+    <string id="AF_KNOWLEDGE_UI_HeroStatusNearby" text="附近：{LOCATION}" />
+    <string id="AF_KNOWLEDGE_UI_HeroStatusArmy" text="在军队中：{ARMY}" />
+    <string id="AF_KNOWLEDGE_UI_HeroStatusBehavior" text="行为：{BEHAVIOR}" />
+    <string id="AF_KNOWLEDGE_UI_NoSpecialStatus" text="无特殊状态" />
+    <string id="AF_KNOWLEDGE_UI_OccupationKingdomLeader" text="王国统治者" />
+    <string id="AF_KNOWLEDGE_UI_OccupationKingOrLeader" text="国王/领袖" />
+    <string id="AF_KNOWLEDGE_UI_OccupationClanLeader" text="家族族长" />
+    <string id="AF_KNOWLEDGE_UI_OccupationLord" text="领主" />
+    <string id="AF_KNOWLEDGE_UI_OccupationWanderer" text="流浪者" />
+    <string id="AF_KNOWLEDGE_UI_OccupationNotable" text="要人" />
+    <string id="AF_KNOWLEDGE_UI_SettlementTypeVillage" text="村庄" />
+    <string id="AF_KNOWLEDGE_UI_SettlementTypeTown" text="城镇" />
+    <string id="AF_KNOWLEDGE_UI_SettlementTypeCastle" text="城堡" />
+    <string id="AF_KNOWLEDGE_UI_SettlementTypeHideout" text="藏身处" />
+    <string id="AF_KNOWLEDGE_UI_SettlementTypeFort" text="堡垒" />
+    <string id="AF_KNOWLEDGE_UI_SettlementTypeGeneric" text="定居点" />
+    <string id="AF_KNOWLEDGE_UI_SettlementStrengthMilitia" text="民兵：{COUNT}" />
+    <string id="AF_KNOWLEDGE_UI_SettlementStrengthGarrison" text="驻军：{COUNT}" />
+    <string id="AF_KNOWLEDGE_UI_SettlementStrengthTownGarrison" text="城镇驻军：{COUNT}" />
+    <string id="AF_KNOWLEDGE_UI_SettlementProsperityVillage" text="户数：{COUNT}" />
+    <string id="AF_KNOWLEDGE_UI_SettlementPopulationVillage" text="约{COUNT}人" />
+    <string id="AF_KNOWLEDGE_UI_SettlementPopulationNoField" text="无人口数据" />
+    <string id="AF_KNOWLEDGE_UI_SettlementVillagesNone" text="无" />
+    <string id="AF_KNOWLEDGE_UI_SettlementVillagesSummary" text="{COUNT}个村庄" />
+    <string id="AF_KNOWLEDGE_UI_SettlementStatusBesieged" text="被围攻中" />
+    <string id="AF_KNOWLEDGE_UI_SettlementStatusVillageState" text="村庄状态：{STATE}" />
+    <string id="AF_KNOWLEDGE_UI_SettlementStatusSecurity" text="安全度：{SECURITY}" />
+    <string id="AF_KNOWLEDGE_UI_ClanFiefsNone" text="无" />
+    <string id="AF_KNOWLEDGE_UI_ClanFiefsSummary" text="{SETTLEMENTS}" />
+    <string id="AF_KNOWLEDGE_UI_KingdomClansNone" text="无" />
+    <string id="AF_KNOWLEDGE_UI_KingdomClansSummary" text="{CLANS}" />
+    <string id="AF_KNOWLEDGE_UI_KingdomSettlementsNone" text="无" />
+    <string id="AF_KNOWLEDGE_UI_KingdomSettlementsSample" text="{SAMPLE}等" />
+    <string id="AF_KNOWLEDGE_UI_KingdomSettlementsSummary" text="{TOWNS}座城镇，{CASTLES}座城堡，{VILLAGES}个村庄" />
+    <string id="AF_KNOWLEDGE_UI_KingdomStatusEliminated" text="已灭亡" />
+    <string id="AF_KNOWLEDGE_UI_KingdomStatusWars" text="交战中：{FACTIONS}" />
+    <string id="AF_KNOWLEDGE_UI_KingdomStatusAlliances" text="盟友：{KINGDOMS}" />
+    <string id="AF_KNOWLEDGE_UI_KingdomStatusTrades" text="贸易协定：{FACTIONS}" />
+    <string id="AF_KNOWLEDGE_UI_KingdomStatusEliminatedFlag" text="；已灭亡" />
+    <string id="AF_KNOWLEDGE_UI_KingdomStatusNone" text="无" />
+    <string id="AF_KNOWLEDGE_UI_PartyAffiliationVillage" text="村庄：{VILLAGE}" />
+    <string id="AF_KNOWLEDGE_UI_PartyAffiliationFaction" text="势力：{FACTION}" />
+    <string id="AF_KNOWLEDGE_UI_PartyAffiliationOwner" text="所属：{OWNER}" />
+    <string id="AF_KNOWLEDGE_UI_DirectionHere" text="当前位置" />
+    <string id="AF_KNOWLEDGE_UI_DirectionE" text="东" />
+    <string id="AF_KNOWLEDGE_UI_DirectionNE" text="东北" />
+    <string id="AF_KNOWLEDGE_UI_DirectionN" text="北" />
+    <string id="AF_KNOWLEDGE_UI_DirectionNW" text="西北" />
+    <string id="AF_KNOWLEDGE_UI_DirectionW" text="西" />
+    <string id="AF_KNOWLEDGE_UI_DirectionSW" text="西南" />
+    <string id="AF_KNOWLEDGE_UI_DirectionS" text="南" />
+    <string id="AF_KNOWLEDGE_UI_DirectionSE" text="东南" />
+    <string id="AF_KNOWLEDGE_UI_DistanceKm" text="{DISTANCE}千米" />
+    <string id="AF_KNOWLEDGE_UI_GenderMale" text="男" />
+    <string id="AF_KNOWLEDGE_UI_GenderFemale" text="女" />
+    <string id="AF_KNOWLEDGE_UI_EliminatedTrue" text="是" />
+    <string id="AF_KNOWLEDGE_UI_EliminatedFalse" text="否" />
+    <string id="AF_KNOWLEDGE_UI_RelationSpouse" text="配偶" />
+    <string id="AF_KNOWLEDGE_UI_RelationFather" text="父亲" />
+    <string id="AF_KNOWLEDGE_UI_RelationMother" text="母亲" />
+    <string id="AF_KNOWLEDGE_UI_RelationDaughter" text="女儿" />
+    <string id="AF_KNOWLEDGE_UI_RelationSon" text="儿子" />
+    <string id="AF_KNOWLEDGE_UI_RelationSister" text="姐妹" />
+    <string id="AF_KNOWLEDGE_UI_RelationBrother" text="兄弟" />
+    <string id="AF_KNOWLEDGE_UI_RelationSameClan" text="同一家族：{CLAN}" />
+    <string id="AF_KNOWLEDGE_UI_RelationContextIsClanLeader" text="该人物是{NAME}的家族族长" />
+    <string id="AF_KNOWLEDGE_UI_RelationTargetIsClanLeader" text="{NAME}是该人物的家族族长" />
+    <string id="AF_KNOWLEDGE_UI_RelationSameFaction" text="同一阵营：{FACTION}" />
+    <string id="AF_KNOWLEDGE_UI_RelationHostileFaction" text="敌对阵营：{CONTEXT_FACTION} vs {TARGET_FACTION}" />
+    <string id="AF_KNOWLEDGE_UI_RelationDifferentFaction" text="不同阵营：{CONTEXT_FACTION} vs {TARGET_FACTION}" />
+    <string id="AF_KNOWLEDGE_UI_RelationBandDeadly" text="死敌" />
+    <string id="AF_KNOWLEDGE_UI_RelationBandHostile" text="敌对" />
+    <string id="AF_KNOWLEDGE_UI_RelationBandUnfriendly" text="反感" />
+    <string id="AF_KNOWLEDGE_UI_RelationBandNeutral" text="中立" />
+    <string id="AF_KNOWLEDGE_UI_RelationBandFriendly" text="友好" />
+    <string id="AF_KNOWLEDGE_UI_RelationBandClose" text="亲近" />
+    <string id="AF_KNOWLEDGE_UI_RelationBandIntimate" text="至交" />
+    <string id="AF_KNOWLEDGE_UI_PartyRelationOwnParty" text="自己的队伍" />
+    <string id="AF_KNOWLEDGE_UI_PartyRelationFriendly" text="友好" />
+    <string id="AF_KNOWLEDGE_UI_PartyRelationHostile" text="敌对" />
+    <string id="AF_KNOWLEDGE_UI_PartyRelationNeutral" text="中立" />
+    <string id="AF_KNOWLEDGE_UI_PartyRelationPersonal" text="个人关系：{VALUE}" />
+    <string id="AF_KNOWLEDGE_UI_MapLocationSettlement" text="在{SETTLEMENT}" />
+    <string id="AF_KNOWLEDGE_UI_MapLocationBesiege" text="围攻{SETTLEMENT}" />
+    <string id="AF_KNOWLEDGE_UI_MapLocationMapNearby" text="靠近{SETTLEMENT}" />
+    <string id="AF_KNOWLEDGE_UI_MapLocationMapTarget" text="前往{SETTLEMENT}" />
+    <string id="AF_KNOWLEDGE_UI_MapLocationMapTerrain" text="地图上{TERRAIN}" />
+    <string id="AF_KNOWLEDGE_UI_MapLocationMapRecent" text="最近靠近{SETTLEMENT}" />
+    <string id="AF_KNOWLEDGE_UI_MapLocationMapParty" text="随队伍{PARTY}" />
+    <string id="AF_KNOWLEDGE_UI_MapLocationMapFallback" text="世界地图" />
+    <string id="AF_KNOWLEDGE_UI_MapTerrainSuffix" text="（{TERRAIN}）" />
+    <string id="AF_KNOWLEDGE_UI_MapTerrainWater" text="海上" />
+    <string id="AF_KNOWLEDGE_UI_PrisonerHolder" text="关押者：{HOLDER}" />
+    <string id="AF_KNOWLEDGE_UI_PrisonerHolderParty" text="关押队伍：{PARTY}" />
+    <string id="AF_KNOWLEDGE_UI_RelativeExSpouses" text="已故前配偶" />
+    <string id="AF_KNOWLEDGE_UI_RelativeChildren" text="子女" />
+    <string id="AF_KNOWLEDGE_UI_RelativeSiblings" text="兄弟姐妹" />
+    <string id="AF_KNOWLEDGE_UI_RelativeClanMembers" text="本家族成员" />
+    <string id="AF_KNOWLEDGE_BulkDeleteNoMatches" text="&#10;&#10;没有匹配项。" />
+    <string id="AF_KNOWLEDGE_MappingSearchNoMatches" text="&#10;&#10;没有匹配项，请尝试其他关键词。" />
+    <string id="AF_KNOWLEDGE_RoleSearchOptionQuery" text="搜索：{QUERY}" />
+    <string id="AF_KNOWLEDGE_Occupation_NotAssigned" text="未指定" />
+    <string id="AF_KNOWLEDGE_Occupation_Tavernkeeper" text="酒馆老板" />
+    <string id="AF_KNOWLEDGE_Occupation_Mercenary" text="雇佣兵" />
+    <string id="AF_KNOWLEDGE_Occupation_Lord" text="领主" />
+    <string id="AF_KNOWLEDGE_Occupation_GoodsTrader" text="杂货商" />
+    <string id="AF_KNOWLEDGE_Occupation_ArenaMaster" text="竞技场主管" />
+    <string id="AF_KNOWLEDGE_Occupation_Villager" text="村民" />
+    <string id="AF_KNOWLEDGE_Occupation_Soldier" text="士兵" />
+    <string id="AF_KNOWLEDGE_Occupation_Townsfolk" text="市民" />
+    <string id="AF_KNOWLEDGE_Occupation_RansomBroker" text="赎金经纪人" />
+    <string id="AF_KNOWLEDGE_Occupation_Weaponsmith" text="武器商" />
+    <string id="AF_KNOWLEDGE_Occupation_Armorer" text="盔甲商" />
+    <string id="AF_KNOWLEDGE_Occupation_HorseTrader" text="马商" />
+    <string id="AF_KNOWLEDGE_Occupation_TavernWench" text="酒馆女侍" />
+    <string id="AF_KNOWLEDGE_Occupation_TavernGameHost" text="酒馆游戏主持人" />
+    <string id="AF_KNOWLEDGE_Occupation_Bandit" text="强盗" />
+    <string id="AF_KNOWLEDGE_Occupation_Wanderer" text="流浪者" />
+    <string id="AF_KNOWLEDGE_Occupation_Artisan" text="工匠" />
+    <string id="AF_KNOWLEDGE_Occupation_Merchant" text="商人" />
+    <string id="AF_KNOWLEDGE_Occupation_Preacher" text="传教士" />
+    <string id="AF_KNOWLEDGE_Occupation_Headman" text="村长" />
+    <string id="AF_KNOWLEDGE_Occupation_GangLeader" text="帮派头目" />
+    <string id="AF_KNOWLEDGE_Occupation_RuralNotable" text="乡村名人" />
+    <string id="AF_KNOWLEDGE_Occupation_PrisonGuard" text="监狱守卫" />
+    <string id="AF_KNOWLEDGE_Occupation_Guard" text="守卫" />
+    <string id="AF_KNOWLEDGE_Occupation_ShopWorker" text="店员" />
+    <string id="AF_KNOWLEDGE_Occupation_Musician" text="乐师" />
+    <string id="AF_KNOWLEDGE_Occupation_Gangster" text="帮派成员" />
+    <string id="AF_KNOWLEDGE_Occupation_Blacksmith" text="铁匠" />
+    <string id="AF_KNOWLEDGE_Occupation_BannerBearer" text="旗手" />
+    <string id="AF_KNOWLEDGE_Occupation_CaravanGuard" text="商队护卫" />
+    <string id="AF_KNOWLEDGE_Occupation_Special" text="特殊身份" />
+    <string id="AF_KNOWLEDGE_Occupation_ShipWright" text="造船匠" />
+    <string id="AF_KNOWLEDGE_RagApiKeyMissing" text="尚未配置 API 密钥。" />
+    <string id="AF_KNOWLEDGE_RagApiUrlMissing" text="API 地址为空。" />
+    <string id="AF_KNOWLEDGE_RagRequestFailed" text="RAG API 请求失败：{DETAIL}" />
 </strings>
 </base>

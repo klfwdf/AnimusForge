@@ -453,7 +453,7 @@ public static partial class TroopInspectionBehavior
 			out int attackerCount)
 			? TroopInspectionPrisonerSlaughterProfile.BuildRuntimeInstruction(
 				regularPrisonerCount,
-				attackerCount)
+				attackerCount, textCatalog: GcczTownPromptResourceProvider.GetCatalog())
 			: string.Empty;
 	}
 
@@ -465,7 +465,7 @@ public static partial class TroopInspectionBehavior
 			out int attackerCount)
 			? TroopInspectionPrisonerSlaughterProfile.BuildPostprocessRuleDescription(
 				regularPrisonerCount,
-				attackerCount)
+				attackerCount, textCatalog: GcczTownPromptResourceProvider.GetCatalog())
 			: string.Empty;
 	}
 
@@ -502,7 +502,7 @@ public static partial class TroopInspectionBehavior
 					? "not_normal_inspection"
 					: reason;
 				InformationManager.DisplayMessage(new InformationMessage(
-					TroopInspectionPrisonerSlaughterProfile.BuildUnavailableMessage(blockedReason),
+					TroopInspectionPrisonerSlaughterProfile.BuildUnavailableMessage(blockedReason, isEnglish: !GcczLocalizedResourceLoader.UseChineseInterface),
 					Color.FromUint(TroopInspectionPrisonerSlaughterProfile.WarningMessageColor)));
 				Log("inspection_slaughter_tag blocked agent=" + speakerAgentIndex
 					+ " reason=" + blockedReason);
@@ -512,7 +512,7 @@ public static partial class TroopInspectionBehavior
 			InformationManager.DisplayMessage(new InformationMessage(
 				TroopInspectionPrisonerSlaughterProfile.BuildStartedMessage(
 					attackerCount,
-					targetCount),
+					targetCount, isEnglish: !GcczLocalizedResourceLoader.UseChineseInterface),
 				Color.FromUint(TroopInspectionPrisonerSlaughterProfile.StartMessageColor)));
 			Log("inspection_slaughter_tag started agent=" + speakerAgentIndex
 				+ " attackers=" + attackerCount
@@ -522,7 +522,7 @@ public static partial class TroopInspectionBehavior
 		catch (Exception ex)
 		{
 			InformationManager.DisplayMessage(new InformationMessage(
-				TroopInspectionPrisonerSlaughterProfile.BuildUnavailableMessage("exception"),
+				TroopInspectionPrisonerSlaughterProfile.BuildUnavailableMessage("exception", isEnglish: !GcczLocalizedResourceLoader.UseChineseInterface),
 				Color.FromUint(TroopInspectionPrisonerSlaughterProfile.WarningMessageColor)));
 			Log("inspection_slaughter_tag failed agent=" + speakerAgentIndex + " error=" + ex);
 			return false;

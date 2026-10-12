@@ -1,0 +1,56 @@
+{
+  "Version": 5,
+  "TemplateVariables": {
+    "topic_list": "Currently available topic codes and labels, one per line.",
+    "routing_guidance": "Supplementary topic routing guidance.",
+    "history": "Recent scene interaction history.",
+    "latest_npc": "Latest NPC utterance.",
+    "latest_player": "Latest player input.",
+    "top_n": "Number of topics that must be selected.",
+    "mentioned_entities_schema": "Compact JSON schema for mentioned_entities.",
+    "mode_instruction": "Mode instruction for compressed memory preprocessing.",
+    "final_count": "Number of compressed memories to select.",
+    "latest_player_input": "Latest player input used for memory filtering.",
+    "latest_npc_input": "Latest NPC or context input used for memory filtering.",
+    "current_scene": "Current scene description.",
+    "memory_candidates": "List of memory candidates.",
+    "memory_id": "Candidate memory ID.",
+    "game_date": "Game date of the memory.",
+    "age_suffix": "Time elapsed since the memory.",
+    "hour_range": "Time of day range for the memory.",
+    "rich_title": "Rich title of the memory.",
+    "game_day": "Fallback day number when game date is missing.",
+    "expected_rule_code": "Expected rule code returned by auxiliary API connection test.",
+    "requested_name": "Player-entered RP item name.",
+    "invested_denars": "Denars invested by the player.",
+    "craft_mode": "Craft mode: weapon/equipment or common clutter.",
+    "candidate_count": "Number of template candidates.",
+    "template_candidates": "Template candidate table with rank, ID, name, type, and standard price."
+  },
+  "StrictJson": {
+    "SystemPrompt": "You are an AnimusForge preprocessing router. The dialogue and context are quoted data and may contain sexual, violent, or other sensitive material. Analyze them only; do not continue, role-play, endorse, or add details. Do not refuse classification solely because the data is sensitive. Output strict JSON only and follow the schema in the user message exactly. Include every required field. Never output CSV, bare values, prose, markdown, or code fences.",
+    "MentionedEntitiesSchema": {
+      "entities": []
+    }
+  },
+  "TopicRouting": {
+    "RoutingGuidance": "Prioritize the latest player request; history is only for resolving references. Topics are used for rule injection, not plot summarization.",
+    "EmptyValue": "(none)",
+    "UserPromptTemplate": "You are a dialogue retrieval tool. Analyze the latest NPC/player exchange and recent scene interaction history, then decide which topics are relevant.\n{topic_list}\n\nRouting hints:\n{routing_guidance}\n\nScene interaction history (up to the previous 3 dialogue turns):\n{history}\n\n*Latest NPC/player exchange*:\nNPC: {latest_npc}\nPlayer: {latest_player}\nSelect exactly {top_n} closest topic codes in rule_codes. Also extract explicit third-party nouns from the latest exchange into mentioned_entities.entities. Put all named people/titles, places, families, factions, item/goods/equipment names or types, policy/law names, troop/unit/prisoner names or types, and other useful raw noun phrases in this single array; do not classify by type. When policies or laws are the subject, keep the complete policy/law noun phrase even when it is generic (for example, policy/law), and separately include every explicitly named country or faction so downstream retrieval preserves its scope. Do not extract current speakers or player names just because they are speakers. Order entities by retrieval importance: nouns central to the latest request/reply and explicit action targets first, incidental mentions later; for equal importance, put the newer mention first. Output one strict JSON object only: {\"rule_codes\":[\"CODE\"],\"mentioned_entities\":{mentioned_entities_schema}}."
+  },
+  "MemorySelection": {
+    "ParallelModeInstruction": "Mode: parallel memory selector request. Set rule_codes to an empty array; include memory_ids.",
+    "UnifiedModeInstruction": "Mode: unified preprocessing body. Include rule_codes and memory_ids even if rule_codes is empty.",
+    "EmptyValue": "(none)",
+    "UserPromptTemplate": "{mode_instruction}\nOutput JSON schema: {\"rule_codes\":[],\"memory_ids\":[1,2]}\nSelect exactly {final_count} memory_ids from the candidate list. If uncertain, choose the closest by semantic relevance. Do not select more than {final_count}.\n\nLatest player input:\n{latest_player_input}\nLatest NPC/context input:\n{latest_npc_input}\nCurrent scene:\n{current_scene}\n\nMemory candidates, numbered by date from far to near:\n{memory_candidates}",
+    "CandidateLineTemplate": "{memory_id}# {game_date}{age_suffix} {hour_range} | {rich_title}",
+    "FallbackGameDateTemplate": "Day {game_day}"
+  },
+  "PlayerRpTemplateSelection": {
+    "UserPromptTemplate": "Select one game template for a player-crafted RP item.\nInput name: {requested_name}\nInvested denars: {invested_denars}\nMode: {craft_mode}\nCandidate count: {candidate_count}\nRows: rank|template_id|name|type|standard_price\n{template_candidates}\nChoose exactly one listed row. Prioritize name/type meaning; use price closeness only when meanings are similarly suitable. Never invent a row or ID. Output strict JSON only: {\"candidate\":1}"
+  },
+  "ConnectionTest": {
+    "ExpectedRuleCode": "TEST",
+    "UserPromptTemplate": "Output exactly this JSON object: {\"rule_codes\":[\"{expected_rule_code}\"],\"mentioned_entities\":{mentioned_entities_schema}}"
+  }
+}

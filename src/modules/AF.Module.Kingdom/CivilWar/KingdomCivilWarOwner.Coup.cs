@@ -45,7 +45,7 @@ internal sealed partial class KingdomCivilWarOwner
             // Display-only field: the match value is TargetId. Left hardcoded because the coup demand is always
             // `usurp`, whose catalog text has no {target} placeholder, and the same literal is written by
             // KingdomCivilWarOwner.cs:422 for the non-coup path (cross-file decision, reported).
-            LeaderClanId = leader.StringId, TargetName = request.RestoreDynasty ? "旧王朝复位" : "王位",
+            LeaderClanId = leader.StringId, TargetName = request.RestoreDynasty ? KingdomCivilWarTexts.Raw("KW_Raw_109") : KingdomCivilWarTexts.Raw("KW_Raw_110"),
             CreatedWeek = week, StageWeek = week, WarRequestWeek = week, WarStartWeek = week,
             WarRequestDay = day, WarStartDay = day, WarEvaluationDay = day,
             RebelKingdomId = rebel.StringId,
@@ -66,7 +66,7 @@ internal sealed partial class KingdomCivilWarOwner
         // `message` must stay a stable rule string: it is the saved receipt replayed on load (line 32) and the
         // LLM/AFEF material published below. `display` is its panel-only projection, so the saved receipt and
         // the published facts keep the raw value while the chronicle entry renders English.
-        message = request.RestoreDynasty ? "复位内战已登记：仅叛军战胜才恢复旧王朝与原国名，和平谈判不会复位。" : "政变后内战已登记：被扣押旧王及其家族不加入本次叛军。";
+        message = request.RestoreDynasty ? KingdomCivilWarTexts.Raw("KW_Raw_111") : KingdomCivilWarTexts.Raw("KW_Raw_112");
         string display = request.RestoreDynasty
             ? CivilWarUiText.T("AF_KINGDOM_CW_Coup_ChronicleRestoration", "Restoration civil war registered: only a rebel victory restores the old dynasty and the original kingdom name; a negotiated peace will not restore them.")
             : CivilWarUiText.T("AF_KINGDOM_CW_Coup_ChronicleCoup", "Civil war registered after the coup: the deposed king and his clan do not join this rebellion.");

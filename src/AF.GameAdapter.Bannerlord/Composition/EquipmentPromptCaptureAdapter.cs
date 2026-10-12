@@ -22,7 +22,7 @@ internal static string BuildHeroEquipmentSummaryForPrompt(Hero hero, HeroEquipme
 	{
 		if (hero == null)
 		{
-			return "未知";
+			return AdapterPromptCaptureTexts.PcapText("Project_Unknown");
 		}
 		bool useCivilianEquipment = false;
 		port.ResolveContext(hero, out useCivilianEquipment);
@@ -61,14 +61,14 @@ internal static string BuildHeroEquipmentSummaryForPrompt(Hero hero, HeroEquipme
 		}
 		catch
 		{
-			return text + "：赤身裸体";
+			return text + PromptComposerTexts.Get("equipment_colon") + PromptComposerTexts.Get("equipment_naked");
 		}
 	}
 internal static string BuildNonHeroEquipmentSummaryForPrompt(NpcDataPacket npc, int maxEntries = 8)
 	{
 		if (npc == null)
 		{
-			return "未知";
+			return AdapterPromptCaptureTexts.PcapText("Project_Unknown");
 		}
 		Agent agent = null;
 		try
@@ -81,7 +81,7 @@ internal static string BuildNonHeroEquipmentSummaryForPrompt(NpcDataPacket npc, 
 		}
 		if (agent == null || !agent.IsActive())
 		{
-			return "未知";
+			return AdapterPromptCaptureTexts.PcapText("Project_Unknown");
 		}
 		bool useCivilianEquipment = false;
 		try
@@ -101,7 +101,7 @@ internal static string BuildNonHeroEquipmentSummaryForPrompt(NpcDataPacket npc, 
 		{
 			useCivilianEquipment = false;
 		}
-		string contextLabel = useCivilianEquipment ? "常服" : "战斗装";
+		string contextLabel = PersonaIntroTextRules.GetEquipmentContextLabelForPrompt(useCivilianEquipment);
 		try
 		{
 			Dictionary<string, int> wornCounts = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
@@ -156,7 +156,7 @@ internal static string BuildNonHeroEquipmentSummaryForPrompt(NpcDataPacket npc, 
 		}
 		catch
 		{
-			return contextLabel + "：赤身裸体";
+			return contextLabel + PromptComposerTexts.Get("equipment_colon") + PromptComposerTexts.Get("equipment_naked");
 		}
 	}
 }

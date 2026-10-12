@@ -1,5 +1,76 @@
+<a id="bilingual-runtime-maintenance-20261012"></a>
+## 2026-10-12 双语回归、长期规范、EN修正版与main融合预审
+
+本轮当前有效条目，接续下方此前EN部署记录。实施切片`1ffb30f620594bebfdc1955f59fe86df97e89487`，本地主main/index不变；双Release0error/既有363warning、Bootstrap0/0、双Coup、8664输入SHA、实际双API双包原生UI及339检查/次、43prefab×2019绑定/版、完整两投影3519文件和修正版EN安装验证PASS。
+
+后续内容必须中英同步；默认包文件与CustomPrompts用户编辑分开，AF数据按用途在模组内；CN/EN打包规范与成对碰撞事务保持。远端main64提交/104路径已预审，R01/P1同意授权、R02/P2取消请求、R03双语/规则同步是融合前队列；没有执行pull/merge/push。实机/provider、旧档/真实迁移、逐条语义和官方双ZIP仍未验，不能把静态/回放当这些验收。详见[交付报告](handoffs/2026-10-12-bilingual-runtime-maintenance.md)及[精确职责图](architecture/af-framework-code-scope.md#bilingual-runtime-maintenance-20261012)，报告链接完整命令、SHA、原失败、专项边界和focused inverse。
+
+<a id="en-deployment-20261012"></a>
+## EN 版编译产物部署（2026-10-12，DEPLOYED_EN / IN_GAME_NOT_VERIFIED）
+
+阶段：总结。当前 `F:/AnimusForge-main` / `main` / `a911d4d0de8964a393b6bdc6eaa83705b5218b02`。用户在离线审查后要求编译部署，继而明确选择EN并要求“不用备份”；本条仅接续下方“未部署”状态，不把之前未验的实机/全句/旧档写为已通过。原119暂存、真实索引和main均保持。原r4编译双API各0错误/363警告，Bootstrap0/0；当前9个构建产物SHA不变，十二源XML不参与嵌入/C#编译，复用已验产物。
+
+正式完整EN投影揭示10个原抽样未覆盖阻断：9个GUI XML仅中文开发注释，1处Item.name固定中文。修123条注释、在既有两表增 `SAX_Item_DaimaoHead_Name`，默认英文 `Daimao`、中文 `呆喵`。控件全部非注释字节、物品 `af_xihai_daimao_head` 的ID/mesh/数值/flags、原UI键不变；canonical内容映射及注册已存在，无新增映射/编译入口。真实TW1.3/1.4既有native runner各632（EN→CN→French→EN）PASS，完整原EN资产投影 3518 文件PASS，未放宽门禁。
+
+目标 `F:/SteamLibrary/steamapps/common/Mount & Blade II Bannerlord/Modules/AnimusForge`，单模块 `v1.5.7`，XML只加载Bootstrap，双实现保 `versions/1.3`/`versions/1.4`。EN替换 3203 文件（世界书 3131、其他 72），UI 80 语言文件保留双语。实际直接覆盖 3353 文件，全部 3518 标准文件哈希匹配，2561 个原未列入部署文件hash无变更，私有依赖/模型/用户资料未镜像清除。未自动启动游戏、生成ZIP、改版本、推送或GCCZ外仓镜像。
+
+原部署入口强制Recovery，用户此次明确拒绝备份，故任务内复用原路径/FeatureBridges/Stage/版别校验与原EN投影，再以同卷候选及真正null备份路径直接原子替换；原构建/一键/部署/打包脚本SHA不变。第一次准备在用户新指令后停止，尚未写游戏；原旧Stage已在此之前本地移位保留。PowerShell普通null会被转为空路径，真实双宿主试验修为 `NullString.Value`；原失败/中止日志全部保留。本轮未新增游戏Recovery备份，记录old/new hash的direct plan不等于旧文件备份。
+
+详细命令、冻结输入、原失败、安装/未列入文件SHA、native结果及本地切片在 [部署报告](handoffs/2026-10-12-en-deployment.md) / `artifacts/en-deploy-20261012/verification.json`。[职责图](architecture/af-framework-code-scope.md#en-deployment-20261012)绑定三真实一基源锚点；资源切片 `bb386814eea315adba5bd39c986f007e9064cb41` 与十二文件 [源码inverse](../artifacts/en-deploy-20261012/resource-source-rollback.diff)只回滚源码，不还原旧游戏安装。实机UI、战役/LLM/旧档、全量语义、正式双包均未验。
+
+<a id="policy-bilingual-closeout-20261012"></a>
+## Policy 接手修复与全仓双语化验收接续（2026-10-12，OFFLINE_VERIFIED / NOT_RELEASE_READY）
+
+阶段：总结。用户明确授权 Policy 外部停止后接手修复；本条接续并取代下方 `bilingual-full-audit-20261012` 的 `POLICY_BLOCKED` 判断，原证据与权限历史保留。工作区 `F:/AnimusForge-main` / `main` / HEAD `a911d4d0de8964a393b6bdc6eaa83705b5218b02`，本轮 intent `7c045c5fcfd0afe20fc474c61e866be3119a38ac`；工作树存在其他作者交付，被验源码以每文件 SHA 绑定，不以 HEAD 冒充。
+
+已修：Policy 542 个解码后汉字位置（Core194 / Npc182 / 根166），按 UI / 固定包 Prompt / 原值兼容外置；typed 目标显示不猜译动态名，目标目录保语义名；治理知识英语词边界与单字母原文保全；legacy 请求按包；日期展示与发布/草拟 raw 分离；待审事实与政策周报在请求副本投影，存档/AFEF 身份不改。修 216 个英文说明缺陷、根额外 Token 显示问题及真实消费者 fallback，3 条新资源映射（总3502）。性能保持一次加载/词表与正则缓存，无新增 Tick I/O 或游戏全量扫描。完整变更、逐文件边界和证据见[验收报告](handoffs/2026-10-12-policy-bilingual-closeout.md)及[本轮职责图](architecture/af-framework-code-scope.md#policy-bilingual-closeout-20261012)。
+
+最终验证：原统一 Release 双 API1.3.15/1.4.6各363警告/0错误，Bootstrap0/0、双Coup gate PASS，8897产品输入SHA0漂移；原 English Source + 两实际 DLL gate PASS；产品源码汉字运行字面量0，仅非产品 StaticVerifier79；44静态契约全PASS。原 AllModules18模块在两API×英文/中文各1491（5964总）PASS；真实政策消费者18248、UI/date6904、MCM metadata220、终端16656正控及10有效负控 PASS。39 UI对/12741 ID，两API各50964 native解析；3263真实资产合同、6330世界书JSON/3133映射身份审查 PASS，未发生不同正文丢失。实际冻结收据与完整命令/失败日志在 `artifacts/policy-bilingual-closeout-20261012/`，没有为了通过删业务断言、屏蔽警告或放宽门禁。
+
+Jev依用户“启用jev”在本会话持续启用：一次model=jev请求、14个Choice，受限金标14/14；低置信俘虏说明经真实实现人工复核。报告usage5851/693、cost0.0035106但币种未声明；不推断账单/固定底层版本，不用概率代替验收，不授权子智能体自动请求。[脱敏复核收据](../artifacts/policy-bilingual-closeout-20261012/outputs/jev-reviewed-result-01.json)。
+
+未验实机 UI/战役玩法、真实provider、旧档、所有三渠道动作、234588个文本叶逐句语义及正式CN/EN分发包；无Campaign的16次完整地方历史调用NRE，typed边界不代表整方法通过。未Stage、打包、部署、镜像工作区外或推送。只在本地 `codex/policy-bilingual-closeout-20261012` 保存 intent、原字节checkpoint与验证切片；[切片及原119暂存保全收据](../artifacts/policy-bilingual-closeout-20261012/local-slice-commits.json)、[focused inverse](../artifacts/policy-bilingual-closeout-20261012/rollback-focused.diff)。baseline只保存本轮涉及文件的原始dirty交付，不是完整WIP或可构建快照；回滚只逆本轮增量，不hard reset。
+
+<a id="bilingual-full-audit-20261012"></a>
+## 全仓双语化复核与修复（2026-10-12，OFFLINE_VERIFIED / POLICY_BLOCKED / NOT_RELEASE_READY）
+
+当前工作区 `F:/AnimusForge-main` / `main`，intent修订 `a911d4d0de8964a393b6bdc6eaa83705b5218b02` 加dirty交付。用户授权两子智能体，GCCZ停止后授权修复；Policy外部施工保持只读。该条替代上方历史完成率/“全仓零汉字/零警告”等当前状态判断，历史证据仍原样保留。
+
+已修实际缺键、UI slot丢原因、canonical事实与execution标记、请求边界记忆投影、动态文本二次替换、发行包Prompt选择、Voice注册、Memory空姓名/字段组漏译；GCCZ修解码CJK外置、真实JSON reader、中文复合计划、旧值字符守恒、21key/104段真实资源消费、150重复UI定义及28宿主选版。所有细项、负控与未覆盖范围见[审查报告](handoffs/2026-10-12-full-bilingual-audit.md)，源码导航见[职责图](architecture/af-framework-code-scope.md#bilingual-full-audit-20261012)。
+
+最终r6原统一Release入口：1.3/1.4各363警告/0错误，Bootstrap0警告/0错误、双Coup门禁PASS，8887输入SHA0漂移；39资源对两版各50940原生解析、44静态合同、3262实际资产及69隔离ZIP检查PASS。GCCZ两框架各493218兼容/原值断言＋35负控、1709Prompt probe及原703断言PASS；动态模板32224＋12负控、Duel9572＋24负控、Memory/Voice88+174通过。不是实机/正式包/完整provider或逐句语义验收。
+
+当前全量词法621/36文件＝Policy542/35文件＋非产品StaticVerifier79；src/GCCZ及其他可写生产模块0。56候选中Memory25已逐项追踪（2真漏口已修），Policy31只读登记。英源码门禁实际exit1，不能移除Policy或放宽门禁制造全仓PASS。39UI资源对/3499映射/3133世界书源映射结构完整，不将这些当完成率；未做233939字符串叶人工语义审校。
+
+本轮代码/资源/测试133文件＋4文档；仅本地 `codex/bilingual-audit-20261012-slices` 保存逐before→after切片，原119暂存文件保全，不checkout或push。入口证据 `artifacts/localization-audit-repair-20261012/`：`build-unified-verified-final-r6.json`、`resources-verified-final-r6/`、`review-slice-inventory.json`、`formatting-receipt.json`、`local-slice-commits.json`、`rollback-focused.diff`。格式9文件保token/AST；agent旧SHA通过格式收据显式接续。下一步为Policy正式停止后的缺陷修复/重验、实机与经授权正式双包；本轮未部署/打包/推送/工作区外镜像。
+
+Policy只读PR01地方历史TargetText、PR02目标description进EN效果请求已登记；13旧错误/9称谓别名保原，不把其计为漏译。两盘点工具已修CRCRLF定位，保旧lfLine，652原生定位校验PASS；r7清册621/56及分类不变、44静态合同重跑通过。产品构建仍绑定r6无漂移源码。
+
 <a id="full-english-release-20261010"></a>
 ## 全英文发行与 CN/EN 双包（2026-10-10，ACTIVE / NOT RELEASE READY）
+
+### 2026-10-11 接管与恢复（ACTIVE，基线 97ad1ed14）
+
+**本批最终验证**：`.tmp_audit/takeover-final-acceptance.log` 的原统一脚本返回0，1.3/1.4各363警告/0错误，Bootstrap及两版Coup门禁PASS。`verify-policy-display.ps1` 对最终两份实现各16政策显示+548真实嵌入值PASS；真实本地化DLL各37对/48,384解析PASS。4个活跃包Prompt目录的真实JSON契约、英文正文与唯一content-map目标检查PASS；整体diff检查PASS。后文“最新整合待构建”为过程记录，已由本段替代；实机、旧档、全部网络链路及正式双包仍未验。本目标仍ACTIVE，不能用本批结果宣称全量英文化完成。
+
+工作树 `F:/AnimusForge-main` / `main`；stash `0af20986a1a21defd73020dfa9a1301d04b479b7` 保留。Claude在创建stash后又恢复content，其“工作树干净”和69.3%完成率不能作为当前证据。185个生产C#差异中27个仅有批量引号损坏，另有事实丢失、历史标记改名、未接线加载器和占位符冲突，详见 [只读审计](../artifacts/localization-takeover-20261011/stash-audit.md)。
+
+- 资源恢复：修8个JSON/2个XML转义；恢复Knowledge英文640旧键；Duel中英各去10重复UI键；Policy去尾部重复键。119个原暂存资源解析、37对XML契约PASS；两版真实本地化DLL各48,380解析PASS。
+- 编译及显示：修外交错误实参、经济两个非法const；侍女名称接已有双语键；附庸政策4种失败显示接双语资源。Generation30处有效英文诊断恢复，原事实/状态保持，接手前2处英文异常保留。此前整片提取再撤销的临时状态已纠正，不将有效日志翻译退回中文。
+- 验证基线：上述修复后的1.3/1.4/Bootstrap与两版Coup门禁PASS（参考1.3.15.110062、1.4.6.115628）；四种政策失败显示在两份当时新DLL中各16例PASS。日志 `.tmp_audit/takeover-dual-build-final.log`。后续新片尚需统一重建，不复用此构建作最终验收。
+- 新片：DuelSettings48条诊断；Coup8UI（合同145/结算重试22/胜利61 PASS）；Knowledge RAG及活跃上下文23对包模板+1UI，CN/EN真实加载各30例；WorldMap当前任务/藏身处候选/MERGE说明23对包模板，CN/EN各25+19例；Records四采集器548处兼容原值外置，逆替换等价PASS。资源按包内标准文件缓存，不随游戏界面语言改变提示词；未新增Tick扫描/轮询。
+- 打包：B四套世界书显式映射接线，EN投影保留原规则Id及包内路径；英文门禁区分已验证身份/协议与自然语言正文。50项无ZIP投影测试PASS，真实全量映射检查在途。B后续任务单 [agent-b-next-task-20261011.md](../artifacts/localization/agent-b-next-task-20261011.md) 已生成供用户转交，未声称已发送。
+- 盘点：[快照报告](../artifacts/localization-takeover-20261011/inventory/REPORT.md) 1843文件/16752中文运行时字面量；1194是待消费者核查项，不是漏译总数。63英文JSON警报分31图库标记/19协议标签示意/2说明/11需接线自然语言，见 [逐项复核](../artifacts/localization-takeover-20261011/inventory/ENGLISH-WARNINGS.md)。世界书旧索引未命中不等于英文资产缺失。
+
+未验：最新整合DLL、实机/旧档、全量实际LLM请求与正式CN/EN包。无部署/推送/正式ZIP。目标继续ACTIVE；回滚仅focused inverse，保留原暂存119文件及外部B提交，Generation接手副本 `.tmp_audit/CustomPolicyBehavior.Generation.cs.before_takeover`。
+
+本轮收口补充：Records的4个候选文本经真实消费者复核，最终为1条预览UI与3条包语言Prompt。Scope两键复用WeeklyMaterialTexts，技能空值复用PersonaPromptTexts；补齐此前PersonaPromptTexts.json缺失的content-map注册，兼容548原值保持。两发行包×两UI语言实测harness共2192原值、900定性分支、4UI、16包Prompt检查PASS。Knowledge模板键`RuleId`重命名为`RuleIdLabel`，避免被JSON合同误作业务身份；不改变业务RuleId。
+
+世界书真实解析及契约检查：3133条映射首次3132 PASS，唯一失败为轻量版英文KingdomProfiles的导出时间不同；已将其元数据对齐中文源，单项复验PASS。3133中文路径实际对应3123英文目标、10组多对一，不能称严格一对一；内容合并语义仍按B后续任务逐组复核。真实测试ZIP投影62项PASS（仅artifacts中的隔离fixture，不是正式包），覆盖原身份保留、协议保真、双语UI共存、漏译正文拒绝、源/Stage保持及双ZIP事务。
+
+稳定盘点 `artifacts/localization-takeover-20261011/inventory/runtime-verified-batch.json`：1846文件、16028中文运行时字面量、550含中文文件、11674去重值，0扫描问题/0扫描中变化；`untranslated-verified-batch.json`：1072待消费者核查、37资源对、25个未证实英文的非世界书内容/配置文件。扫描已读取显式世界书映射，不再把旧索引未命中当缺译；身份映射元数据本身不作为待翻译Prompt。63英文JSON警报保留逐项解释，不以退出码0当全量发行通过。
+
+本轮核心代码坐标（均基于97ad1ed14工作树差异）：`CustomPolicyBehavior.Generation.cs:2641`失败显示映射；`NobleGatheringBehavior.cs:176`Agent名称；`WorldDiplomacyPromptContractRules.cs:409`重载转发；`EconomyRecruitmentDetailTexts.cs:196`资源前缀；`KnowledgeLibraryBehavior.cs:650/8059`知识/RAG模板消费者及`KnowledgePromptTexts.cs:9`缓存；`WorldMapPromptTexts.cs:10`包模板入口；`AdapterRecordTexts.cs:9`嵌入原值缓存；`package_localization.ps1:17/146`映射/正文校验；`inventory_untranslated.py:284`映射盘点。覆盖责任与未覆盖状态详见本节及对应独立专项报告，不声明三渠道全部Prompt已英化。
 
 下一批整片集成：外交TextRules的262处原值外置、50条决策描述包选翻译及17消费者接通；Weekly Materials原918处源码归零、101提示词+2UI实际双语、888条兼容原值；Social由b412ae0d3提交，604完整token清理、88提示词+32UI实际双语、444兼容原值。主线接共享注册；三包schema/协议/英文语料、专项源码等价、29资源对通过，既有双API各Weekly36/Social568资源解析通过。未编译/游戏/正式出包；自由历史SnapshotText等不算已译。[证据](handoffs/2026-10-10-localization-mainline-integration.md#外交描述weekly素材与social整片集成2026-10-11)。
 

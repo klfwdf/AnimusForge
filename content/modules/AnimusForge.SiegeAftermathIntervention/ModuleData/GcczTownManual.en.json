@@ -1,0 +1,46 @@
+{
+  "Version": 2,
+  "ManualTitle": "GCCZ Town Settlement Manual",
+  "WindowTitleTemplate": "{manual_title} | {page_title} ({page}/{total})",
+  "PreviousButtonText": "Previous",
+  "NextButtonText": "Next",
+  "CloseButtonText": "Close",
+  "OpenFailedMessage": "The GCCZ town manual cannot be opened right now; please check diagnostic logs.",
+  "Pages": [
+    {
+      "Id": "entry_roles_memory",
+      "Title": "Entering and Issuing Orders",
+      "Body": "After winning a siege, choose 'Enter town to decide in person' on the aftermath menu, select followers as prompted, and enter the settlement.\n\nYou can also enter GCCZ after defeating the garrison via SETS. If you are handling a settlement belonging to yourself or a vassal, inhabitants treat you as their liege rather than an enemy conqueror.\n\nOnce inside, speak with characters using AF dialogue:\n· Issue orders like pillage, slaughter, or halt to your soldiers.\n· Negotiate relief, pacification, and allegiance with civilians, headmen, or notables.\n· Converse with accompanying nobles, companions, or noble captives to hear their counsel.\n\nState clearly what you want done without typing codes or tags. For example, 'Begin pillaging the city' is an order; 'What are the consequences of pillage?' is merely an inquiry. NPC suggestions are not executed automatically on your behalf.\n\nSuccess depends on actual game prompts and state changes, not merely whether the AI replies 'it is done'."
+    },
+    {
+      "Id": "constructive_actions_hidden_residents",
+      "Title": "Mercy, Relief, and Pacification",
+      "Body": "For a peaceful settlement, you may speak as follows:\n\n· Spare inhabitants: 'Spare the people of this city; no further looting.'\n· Relief: First give gold, food, or goods using the AF Give feature, then speak with civilians, headmen, or notables about relief. Merely stating 'I will give you grain' does not count as payment.\n· Inspire: Explain to residents how you will protect them and encourage them to resume daily life.\n· Accept fealty: Discuss submission and allegiance; validity depends on conditions and settlement.\n· Summon residents: Order those in hiding to come forth. Only a small group emerges per order.\n\nIn this scene, gold and supplies given via AF Give count toward settlement-wide relief, not personal gifts.\n\nIf soldiers express severe discontent over your orders, appease them separately through discipline or compensation. Unresolved discontent deducts 20 morale upon leaving; routine grumbling does not deduct morale per line."
+    },
+    {
+      "Id": "plunder",
+      "Title": "Extortion and Pillage",
+      "Body": "You may demand property from specific inhabitants or order soldiers to pillage the entire settlement.\n\nFor example:\n· To a resident: 'Hand over your purse.'\n· To your soldier: 'Begin pillaging the entire city.'\n\nConsequences correspond to the loot obtained. Taking partial wealth is not treated as a full pillage, nor are past gains redelivered on subsequent orders.\n\nBefore escalating to slaughter, you may explicitly order mercy and halt looting.\n\nHalting only stops future looting; property already seized and consequences caused are not rolled back."
+    },
+    {
+      "Id": "massacre_colonization",
+      "Title": "Slaughter, Halting, and Colonization",
+      "Body": "To initiate slaughter, order your soldiers explicitly, e.g.: 'Begin the slaughter.'\n\nBefore all targets are dead, you can command: 'Everyone hold, stop the killing.'\n\nHalting will not resurrect the dead or undo consequences. Survivors will not act as if nothing happened.\n\nColonization is not routine cultural governance. It initiates a purge and changes local culture upon completion.\n\nAfter ordering colonization:\n· Remaining on-scene until targets perish completes colonization.\n· Halting before completion cancels colonization, retaining partial slaughter consequences.\n· Exiting the scene directly does not cancel: incomplete colonization submits upon departure.\n\nTo cancel colonization, order soldiers to halt and confirm before leaving."
+    },
+    {
+      "Id": "culture_and_ai_tags",
+      "Title": "Cultural Governance Without Slaughter",
+      "Body": "If you merely want the settlement to adopt your culture, state clearly that it is administrative governance, not colonization.\n\nFor example: 'Transition this city to my culture, but spare the inhabitants without killing or expulsion.'\n\nRoutine cultural governance only changes the current town's culture without causing slaughter or replacing local notables.\n\nIf you demand 'clearing out native residents and moving in our people', that is colonization, not routine governance.\n\nKeep commands clear and distinct. If halting and changing culture, confirm the halt first before discussing cultural administration."
+    },
+    {
+      "Id": "npc_response_budget",
+      "Title": "How Inhabitants and Soldiers Respond",
+      "Body": "Commoners and soldiers possess distinct personalities; not everyone speaks identically.\n\nDefiant commoners may curse you, while the timid beg. Seeing continued killing, some shift from defiance to terror, while others remain unyielding.\n\nNPCs perceive arrivals, departures, and witnessed deaths within ~24 meters subject to line of sight. It is not global information; newcomers do not know what happened earlier.\n\n'I will kneel to you' or 'Stop the killing' are lines of dialogue; they do not trigger mechanical kneeling or loyalty on words alone. Insults and threats likewise do not trigger attacks without physical actions.\n\nIf too many nearby NPCs chime in, lower the 'NPC Response Limit' in MCM. Enabling unlimited responses increases model requests and token usage."
+    },
+    {
+      "Id": "exit_and_diagnostics",
+      "Title": "Pre-Departure Checklist",
+      "Body": "Before leaving, verify three things:\n\n1. Whether pillage or slaughter you intended to halt has actually stopped.\n2. Whether severe soldier discontent has been appeased.\n3. Whether unfinished colonization remains—exiting directly will submit, not cancel.\n\nUpon leaving, temporary memories accumulated by ordinary soldiers and commoners are cleared. Personal memories of named characters and town rule memories persist.\n\nTown rule memory is viewable in the town encyclopedia under the native description, retaining up to three past rulers.\n\nWhen reporting issues, note the city, target, words spoken, game prompts, savegame, and GCCZ diagnostic logs."
+    }
+  ]
+}

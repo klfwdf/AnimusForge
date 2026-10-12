@@ -230,12 +230,12 @@ internal static class PolicyEffectModuleRetrievalSettings
 				FileInfo info = new FileInfo(path);
 				if (info.Length < 0 || info.Length > MaxJsonBytes)
 				{
-					throw new InvalidOperationException("政策效果模块检索设置文件大小无效。");
+					throw new InvalidOperationException("Policy effect module retrieval settings file size is invalid.");
 				}
 				JObject document = JObject.Parse(File.ReadAllText(path, StrictUtf8));
 				if (document.Value<int?>("Version") != CurrentVersion || document["Modules"] is not JObject modules)
 				{
-					throw new InvalidOperationException("政策效果模块检索设置版本或 Modules 结构无效。");
+					throw new InvalidOperationException("Policy effect module retrieval settings version or Modules structure is invalid.");
 				}
 				rawDocuments = ReadRawModuleDocuments(modules);
 				foreach (IPolicyEffectModule module in PolicyEffectModuleCatalog.Modules)
@@ -369,7 +369,7 @@ internal static class PolicyEffectModuleRetrievalSettings
 		{
 			if (requireDirectory)
 			{
-				throw new InvalidOperationException("无法定位政策效果模块检索设置目录。");
+				throw new InvalidOperationException("Cannot locate policy effect module retrieval settings directory.");
 			}
 			return string.Empty;
 		}
@@ -381,7 +381,7 @@ internal static class PolicyEffectModuleRetrievalSettings
 		string directory = Path.GetDirectoryName(path);
 		if (string.IsNullOrWhiteSpace(directory))
 		{
-			throw new InvalidOperationException("政策效果模块检索设置目录为空。");
+			throw new InvalidOperationException("Policy effect module retrieval settings directory is empty.");
 		}
 		Directory.CreateDirectory(directory);
 		string tempPath = path + ".tmp-" + Guid.NewGuid().ToString("N");

@@ -425,14 +425,14 @@ internal sealed class SceneMovementController
 		string text = (location?.StringId ?? "").Trim().ToLowerInvariant();
 		return text switch
 		{
-			"center" => "城镇街道",
-			"village_center" => "村庄中心",
-			"tavern" => "酒馆",
-			"lordshall" => "领主大厅",
-			"prison" => "地牢",
-			"arena" => "竞技场",
-			"alley" => "小巷",
-			"port" => "港口",
+			"center" => AdapterSceneTexts.Raw("Scene_Location_TownCenter"),
+			"village_center" => AdapterSceneTexts.Raw("Scene_Location_VillageCenter"),
+			"tavern" => AdapterSceneTexts.Raw("Scene_Location_Tavern"),
+			"lordshall" => AdapterSceneTexts.Raw("Scene_Location_LordsHall"),
+			"prison" => AdapterSceneTexts.Raw("Scene_Location_Prison"),
+			"arena" => AdapterSceneTexts.Raw("Scene_Location_Arena"),
+			"alley" => AdapterSceneTexts.Raw("Scene_Location_Alley"),
+			"port" => AdapterSceneTexts.Raw("Scene_Location_Port"),
 			_ => GetSceneLocationDisplayName(location),
 		};
 	}
@@ -625,20 +625,20 @@ internal sealed class SceneMovementController
 	{
 		return occupation switch
 		{
-			Occupation.Armorer => "盔甲匠",
-			Occupation.Weaponsmith => "武器匠",
-			Occupation.Blacksmith => "铁匠",
-			Occupation.HorseTrader => "马匹贩子",
-			Occupation.Merchant => "商贩",
-			Occupation.GoodsTrader => "商贩",
-			Occupation.ArenaMaster => "竞技场老板",
-			Occupation.Tavernkeeper => "酒馆老板",
-			Occupation.RansomBroker => "赎金经纪人",
-			Occupation.TavernGameHost => "棋局主持",
-			Occupation.TavernWench => "酒馆女侍",
-			Occupation.Musician => "乐师",
-			Occupation.Mercenary => "雇佣兵",
-			Occupation.ShopWorker => "工坊工人",
+			Occupation.Armorer => AdapterSceneTexts.Raw("Scene_Guide_Armorer"),
+			Occupation.Weaponsmith => AdapterSceneTexts.Raw("Scene_Guide_Weaponsmith"),
+			Occupation.Blacksmith => AdapterSceneTexts.Raw("Scene_Guide_Blacksmith"),
+			Occupation.HorseTrader => AdapterSceneTexts.Raw("Scene_Guide_HorseTrader"),
+			Occupation.Merchant => AdapterSceneTexts.Raw("Scene_Guide_Merchant"),
+			Occupation.GoodsTrader => AdapterSceneTexts.Raw("Scene_Guide_Merchant"),
+			Occupation.ArenaMaster => AdapterSceneTexts.Raw("Scene_Guide_ArenaHost"),
+			Occupation.Tavernkeeper => AdapterSceneTexts.Raw("Scene_Guide_Tavernkeeper"),
+			Occupation.RansomBroker => AdapterSceneTexts.Raw("Scene_Guide_RansomBroker"),
+			Occupation.TavernGameHost => AdapterSceneTexts.Raw("Scene_Guide_Gambler"),
+			Occupation.TavernWench => AdapterSceneTexts.Raw("Scene_Guide_TavernWench"),
+			Occupation.Musician => AdapterSceneTexts.Raw("Scene_Guide_Musician"),
+			Occupation.Mercenary => AdapterSceneTexts.Raw("Scene_Guide_Mercenary"),
+			Occupation.ShopWorker => AdapterSceneTexts.Raw("Scene_Guide_WorkshopWorker"),
 			_ => ""
 		};
 	}
@@ -664,7 +664,7 @@ internal sealed class SceneMovementController
 		{
 			if (string.IsNullOrWhiteSpace(displayName) && locationCharacter?.Character is CharacterObject characterObject && Settlement.CurrentSettlement?.Culture?.Barber == characterObject)
 			{
-				displayName = "理发师";
+				displayName = AdapterSceneTexts.Raw("Scene_Guide_Barber");
 			}
 		}
 		catch
@@ -732,7 +732,7 @@ internal sealed class SceneMovementController
 			{
 				return;
 			}
-			if (targetsByLabel.TryGetValue("酒馆老板", out var existingTargets) && existingTargets != null && existingTargets.Any((LocationCharacter x) => x != null && locationComplex.GetLocationOfCharacter(x) == tavernLocation))
+			if (targetsByLabel.TryGetValue(AdapterSceneTexts.Raw("Scene_Guide_Tavernkeeper"), out var existingTargets) && existingTargets != null && existingTargets.Any((LocationCharacter x) => x != null && locationComplex.GetLocationOfCharacter(x) == tavernLocation))
 			{
 				return;
 			}
@@ -758,7 +758,7 @@ internal sealed class SceneMovementController
 				{
 				}
 			}
-			if (!TryGetSceneGuideTargetLabel(locationCharacter, out var displayName, out var _) || !string.Equals(displayName, "酒馆老板", StringComparison.OrdinalIgnoreCase))
+			if (!TryGetSceneGuideTargetLabel(locationCharacter, out var displayName, out var _) || !string.Equals(displayName, AdapterSceneTexts.Raw("Scene_Guide_Tavernkeeper"), StringComparison.OrdinalIgnoreCase))
 			{
 				return;
 			}
@@ -800,7 +800,7 @@ internal sealed class SceneMovementController
 			{
 				continue;
 			}
-			if (string.Equals(displayName, "商贩", StringComparison.OrdinalIgnoreCase) && (item.Character?.IsHero ?? false))
+			if (string.Equals(displayName, AdapterSceneTexts.Raw("Scene_Guide_Merchant"), StringComparison.OrdinalIgnoreCase) && (item.Character?.IsHero ?? false))
 			{
 				continue;
 			}
@@ -823,7 +823,7 @@ internal sealed class SceneMovementController
 		}
 		EnsureSceneGuideTavernkeeperTarget(locationComplex, location, dictionary);
 		Vec3 vec = guideAgent?.Position ?? Agent.Main?.Position ?? Vec3.Zero;
-		string[] array = new string[14] { "盔甲匠", "武器匠", "铁匠", "马匹贩子", "商贩", "工坊工人", "理发师", "竞技场老板", "酒馆老板", "赎金经纪人", "棋局主持", "酒馆女侍", "乐师", "雇佣兵" };
+		string[] array = new string[14] { AdapterSceneTexts.Raw("Scene_Guide_Armorer"), AdapterSceneTexts.Raw("Scene_Guide_Weaponsmith"), AdapterSceneTexts.Raw("Scene_Guide_Blacksmith"), AdapterSceneTexts.Raw("Scene_Guide_HorseTrader"), AdapterSceneTexts.Raw("Scene_Guide_Merchant"), AdapterSceneTexts.Raw("Scene_Guide_WorkshopWorker"), AdapterSceneTexts.Raw("Scene_Guide_Barber"), AdapterSceneTexts.Raw("Scene_Guide_ArenaHost"), AdapterSceneTexts.Raw("Scene_Guide_Tavernkeeper"), AdapterSceneTexts.Raw("Scene_Guide_RansomBroker"), AdapterSceneTexts.Raw("Scene_Guide_Gambler"), AdapterSceneTexts.Raw("Scene_Guide_TavernWench"), AdapterSceneTexts.Raw("Scene_Guide_Musician"), AdapterSceneTexts.Raw("Scene_Guide_Mercenary") };
 		foreach (string text in array)
 		{
 			if (!dictionary.TryGetValue(text, out var value2) || value2 == null || value2.Count == 0)
@@ -831,7 +831,7 @@ internal sealed class SceneMovementController
 				continue;
 			}
 			LocationCharacter locationCharacter = value2[0];
-			if (string.Equals(text, "商贩", StringComparison.OrdinalIgnoreCase))
+			if (string.Equals(text, AdapterSceneTexts.Raw("Scene_Guide_Merchant"), StringComparison.OrdinalIgnoreCase))
 			{
 				locationCharacter = value2.OrderBy(delegate(LocationCharacter x)
 				{
@@ -843,7 +843,7 @@ internal sealed class SceneMovementController
 					return float.MaxValue;
 				}).ThenBy((LocationCharacter x) => (x.Character?.Name?.ToString() ?? "").Trim(), StringComparer.CurrentCulture).FirstOrDefault();
 			}
-			else if (string.Equals(text, "酒馆老板", StringComparison.OrdinalIgnoreCase))
+			else if (string.Equals(text, AdapterSceneTexts.Raw("Scene_Guide_Tavernkeeper"), StringComparison.OrdinalIgnoreCase))
 			{
 				Location tavernLocation = locationComplex.GetLocationWithId("tavern");
 				bool currentIsTavern = IsSceneLocation(location, "tavern");
@@ -921,12 +921,12 @@ internal sealed class SceneMovementController
 		{
 			return;
 		}
-		prompt.AppendLine("【可召目标】：");
+		prompt.AppendLine(AdapterSceneTexts.Get("Scene_Summon_Header"));
 		foreach (SceneSummonPromptTarget target in targets)
 		{
 			if (target != null && target.PromptId > 0 && !string.IsNullOrWhiteSpace(target.DisplayName))
 			{
-				prompt.AppendLine(target.PromptId + " " + target.DisplayName.Trim() + " " + (target.LocationCode ?? "处"));
+				prompt.AppendLine(target.PromptId + " " + target.DisplayName.Trim() + " " + AdapterSceneTexts.ProjectLabelForPrompt(target.LocationCode ?? AdapterSceneTexts.Get("Scene_Fallback_LocationCode")));
 			}
 		}
 	}
@@ -1140,7 +1140,7 @@ internal sealed class SceneMovementController
 				}
 			}
 		}
-		return fallbackTargetName ?? "那个人";
+		return fallbackTargetName ?? AdapterSceneTexts.Raw("SceneMovementRaw_042");
 	}
 
 	internal void TryRecordSceneSummonBatchCompletionFact(ActiveSceneSummonRequest request)
@@ -1170,9 +1170,9 @@ internal sealed class SceneMovementController
 		string text2 = GetPlayerDisplayNameForShout();
 		if (string.IsNullOrWhiteSpace(text2))
 		{
-			text2 = "此人";
+			text2 = AdapterSceneTexts.Raw("SceneMovementRaw_043");
 		}
-		_ports.AppendTargetedSceneNpcFact("你已将" + text2 + "要求召集的" + text + "都带到了" + text2 + "身边。", request.SpeakerAgentIndex, persistHeroPrivateHistory: true);
+		_ports.AppendTargetedSceneNpcFact(AdapterSceneTexts.Raw("SceneMovementRaw_044") + text2 + AdapterSceneTexts.Raw("SceneMovementRaw_045") + text + AdapterSceneTexts.Raw("SceneMovementRaw_046") + text2 + AdapterSceneTexts.Raw("SceneMovementRaw_047"), request.SpeakerAgentIndex, persistHeroPrivateHistory: true);
 		value.CompletionFactRecorded = true;
 	}
 
@@ -1190,7 +1190,7 @@ internal sealed class SceneMovementController
 			}
 			if (TryGetSceneSummonConversationSessionForAgentIndex(participant.AgentIndex) != null)
 			{
-				return "【当前是传唤后的会面】若你明确同意之后跟随此人，系统会记录你开始跟随；若你明确表示这次会面到此结束，系统会结束会面；若此人改让你去叫【带路与传唤NPC清单】中的人，系统会记录传唤；若此人改让你带路去找【带路与传唤NPC清单】中的目标，系统会记录带路。正文只自然说话，不要自己写标签。";
+				return AdapterSceneTexts.Get("SceneLive_000");
 			}
 		}
 		return "";
@@ -1206,16 +1206,16 @@ internal sealed class SceneMovementController
 		if (IsPrisonBreakRescuePrisonerAgent(agent))
 		{
 			return IsPrisonBreakPrisonerFollowing(agent)
-				? "【当前正按原版营救跟随玩家】若此人明确让你停下且你同意，系统会记录停止营救跟随。正文只自然说话，不要自己写标签。"
-				: "【营救跟随】若此人明确让你跟随一起逃离且你同意，系统会记录原版营救跟随。正文只自然说话，不要自己写标签。";
+				? AdapterSceneTexts.Get("SceneLive_001")
+				: AdapterSceneTexts.Get("SceneLive_002");
 		}
 		if (TryGetSceneSummonConversationSessionForAgentIndex(agent.Index) != null)
 		{
-			return "【当前是传唤后的会面】若玩家明确要求你在当前场景跟随、陪同或保护玩家，且你在正文明确同意，系统会记录开始跟随；若玩家明确表示会面结束或要求你回去，系统会记录停止跟随并恢复岗位。若玩家改让你去叫【带路与传唤NPC清单】中的人，系统会记录传唤；若玩家改让你带路去找【带路与传唤NPC清单】中的目标，系统会记录带路。正文只自然说话，不要自己写标签。";
+			return AdapterSceneTexts.Get("SceneLive_003");
 		}
 		return IsAgentFollowingPlayerBySceneCommand(agent)
-			? "【当前正跟随玩家】若玩家明确要求你停止跟随、退下或回到岗位，且你在正文明确同意，系统会记录停止跟随；若玩家改让你去叫【带路与传唤NPC清单】中的人，系统会记录传唤；若玩家改让你带路去找【带路与传唤NPC清单】中的目标，系统会记录带路。正文只自然说话，不要自己写标签。"
-			: "【场景跟随】若玩家明确要求你在当前场景跟随、陪同、保护或随行，且你在正文明确无条件同意，系统会记录开始跟随；若你当前已经跟随，玩家明确要求停止跟随、退下或回到岗位，且你明确同意，系统会记录停止跟随。这里的跟随只适用于当前场景，不是大地图队伍命令。正文只自然说话，不要自己写标签。";
+			? AdapterSceneTexts.Get("SceneLive_004")
+			: AdapterSceneTexts.Get("SceneLive_005");
 	}
 
 	internal static Agent ResolveAgentForLocationCharacter(LocationCharacter locationCharacter)
@@ -1908,10 +1908,10 @@ internal sealed class SceneMovementController
 		string text = GetPlayerDisplayNameForShout();
 		if (string.IsNullOrWhiteSpace(text))
 		{
-			text = "玩家";
+			text = AdapterSceneTexts.Raw("ExternalObservation_069");
 		}
-		string extraFactLine = request.SpeakerName + "将你带到了" + text + "面前，" + text + "找你有些事。";
-		string singleReplyUserContent = "请只根据【当前场景公共对话与互动】和上面的【AFEF玩家行为补充】，以你的身份主动开口问" + text + "找你有什么事。控制在 18-40 字之间，只输出你说出口的话。";
+		string extraFactLine = request.SpeakerName + AdapterSceneTexts.Raw("SceneMovementRaw_049") + text + AdapterSceneTexts.Raw("SceneMovementRaw_050") + text + AdapterSceneTexts.Raw("SceneMovementRaw_051");
+		string singleReplyUserContent = AdapterSceneTexts.Format("SceneLive_ArrivalSpeech", "Using only the current scene's public dialogue and interactions and the player-action facts above, speak in character and ask {PLAYER} what they want. Use 18-40 characters and output only your spoken words.", ("PLAYER", text));
         Mission sourceMission = Mission.Current;
         long generation = _generation;
         bool IsCurrent() => generation == Volatile.Read(ref _generation) && ReferenceEquals(sourceMission, Mission.Current) && _activeSceneSummonRequests.Contains(request);
@@ -3161,7 +3161,7 @@ internal sealed class SceneMovementController
 		{
 			BatchId = _nextSceneSummonBatchId++,
 			SpeakerAgentIndex = npc.AgentIndex,
-			SpeakerName = (string.IsNullOrWhiteSpace(npc.Name) ? (agent.Name?.ToString() ?? "有人") : npc.Name),
+			SpeakerName = (string.IsNullOrWhiteSpace(npc.Name) ? (agent.Name?.ToString() ?? AdapterSceneTexts.Raw("SceneMovementRaw_052")) : npc.Name),
 			SpeakerLocationCharacter = locationCharacter,
 			OriginalSpeakerLocation = originalSpeakerLocation,
 			OriginalSpeakerPosition = originalSpeakerPosition
@@ -3277,7 +3277,7 @@ internal sealed class SceneMovementController
 		preparedRequest = new ActiveSceneGuideRequest
 		{
 			GuideAgentIndex = npc.AgentIndex,
-			GuideName = (string.IsNullOrWhiteSpace(npc.Name) ? (agent.Name?.ToString() ?? "有人") : npc.Name),
+			GuideName = (string.IsNullOrWhiteSpace(npc.Name) ? (agent.Name?.ToString() ?? AdapterSceneTexts.Raw("SceneMovementRaw_052")) : npc.Name),
 			TargetName = target.DisplayName,
 			TargetPromptId = target.PromptId,
 			GuideLocationCharacter = locationCharacter,
@@ -3842,7 +3842,7 @@ internal sealed class SceneMovementController
 		{
 			return null;
 		}
-		string text = string.IsNullOrWhiteSpace(target.DisplayName) ? (target.LocationCharacter.Character.Name?.ToString() ?? "那个人") : target.DisplayName;
+		string text = string.IsNullOrWhiteSpace(target.DisplayName) ? (target.LocationCharacter.Character.Name?.ToString() ?? AdapterSceneTexts.Raw("SceneMovementRaw_042")) : target.DisplayName;
 		string text2 = BuildSceneSummonBatchTargetSummary(batch, target);
 		LocationCharacter locationCharacter = batch.SpeakerLocationCharacter ?? locationComplex.FindCharacter(speakerAgent);
 		if (locationCharacter == null)
@@ -4079,9 +4079,9 @@ internal sealed class SceneMovementController
 		string text = GetPlayerDisplayNameForShout();
 		if (string.IsNullOrWhiteSpace(text))
 		{
-			text = "此人";
+			text = AdapterSceneTexts.Raw("SceneMovementRaw_043");
 		}
-		string factText = reachedDoor ? ("[AFEF NPC行为补充] 你已把" + text + "带到了前往人物" + request.TargetName + "所在之处的门口。") : ("[AFEF NPC行为补充] 你已把" + text + "带到了" + request.TargetName + "身边。");
+		string factText = reachedDoor ? (AdapterSceneTexts.Raw("SceneMovementRaw_056") + text + AdapterSceneTexts.Raw("SceneMovementRaw_057") + request.TargetName + AdapterSceneTexts.Raw("SceneMovementRaw_058")) : (AdapterSceneTexts.Raw("SceneMovementRaw_056") + text + AdapterSceneTexts.Raw("SceneMovementRaw_060") + request.TargetName + AdapterSceneTexts.Raw("SceneMovementRaw_047"));
 		ScheduleSceneGuideReturnAfterNextSpeech(request);
 		_ports.TriggerImmediateSceneBehaviorReaction(factText, request.GuideAgentIndex, persistHeroPrivateHistory: true, suppressStare: true, postSpeechLeaveSeconds: 0.5f, skipSceneFactRecord: false, returnSceneSummonOnTimeout: false);
 	}
@@ -4097,9 +4097,9 @@ internal sealed class SceneMovementController
 		string text = GetPlayerDisplayNameForShout();
 		if (string.IsNullOrWhiteSpace(text))
 		{
-			text = "此人";
+			text = AdapterSceneTexts.Raw("SceneMovementRaw_043");
 		}
-		string factText = "[AFEF NPC行为补充] " + text + "长时间没有跟上你，你决定不再继续带路，先回去忙自己的事。";
+		string factText = AdapterSceneTexts.Raw("AfefNpcPrefix") + text + AdapterSceneTexts.Raw("SceneMovementRaw_064");
 		ScheduleSceneGuideReturnAfterNextSpeech(request);
 		_ports.TriggerImmediateSceneBehaviorReaction(factText, request.GuideAgentIndex, persistHeroPrivateHistory: true, suppressStare: true, postSpeechLeaveSeconds: 0.5f, skipSceneFactRecord: false, returnSceneSummonOnTimeout: false);
 	}
@@ -4622,12 +4622,12 @@ internal sealed class SceneMovementController
 		{
 			return;
 		}
-		prompt.AppendLine("【可带路目标】：");
+		prompt.AppendLine(AdapterSceneTexts.Get("Scene_Guide_Header"));
 		foreach (SceneGuidePromptTarget target in targets)
 		{
 			if (target != null && target.PromptId > 0)
 			{
-				prompt.AppendLine(target.PromptId + " " + target.DisplayName.Trim() + " " + (target.LocationCode ?? "处"));
+				prompt.AppendLine(target.PromptId + " " + AdapterSceneTexts.ProjectLabelForPrompt(target.DisplayName.Trim()) + " " + AdapterSceneTexts.ProjectLabelForPrompt(target.LocationCode ?? AdapterSceneTexts.Get("Scene_Fallback_LocationCode")));
 			}
 		}
 	}

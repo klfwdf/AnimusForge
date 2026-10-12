@@ -33,6 +33,16 @@ internal static class PersonaMenuLifecycleReplay
         };
         var editor = new PersonaEditorController(port);
         editor.SynchronizeGeneration(generation);
+        foreach (bool chinese in new[] { false, true })
+        {
+            TaleWorlds.Localization.TextObject.UseLanguage(chinese);
+            editor.OpenDevPersonaMenuFromExternal(a, () => closesA++);
+            check(MBInformationManager.Selection.Options.Single(o => Equals(o.Identifier, "set_personality")).Title
+                == (chinese ? "设置/修改个性" : "Set or edit personality"), "actual Persona menu follows selected XML display language");
+            check(profiles.Get(a.StringId, false).Personality == "A personality" && saveCalls == 0 && closesA == 0,
+                "Persona language switch preserves authoritative profile and completion callback");
+        }
+        TaleWorlds.Localization.TextObject.UseLanguage(false);
         editor.OpenDevPersonaMenuFromExternal(a, () => closesA++);
         var old = MBInformationManager.Selection;
         editor.OpenDevPersonaMenuFromExternal(b, () => closesB++);

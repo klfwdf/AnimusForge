@@ -1488,10 +1488,16 @@ internal static partial class Program
 			20f,
 			targetSet);
 		List<string> display = PolicyEffectSaveCodec.DescribePlayerVisibleInstances(new[] { displayInstance });
+		string expectedVolunteer = FormatExpectedPolicyUi("AFPOL_UI_EffectNameValue", "{NAME}：{VALUE}", "{NAME}: {VALUE}",
+			"NAME", ExpectedPolicyUi("AFPOL_UI_Effect_VolunteerProductionGrowthName", "志愿兵补充与成长", "Volunteer replenishment and growth"),
+			"VALUE", FormatExpectedPolicyUi("AFPOL_UI_RelativeVolunteerDailyChancePercent", "相对原版每日志愿兵检查频率 {VALUE}%", "Relative to native daily volunteer check frequency {VALUE}%", "VALUE", "+20"));
 		Check(display.Count == 1
-			&& display[0].Contains("志愿兵补充与成长：相对原版每日判定频率 +20%")
+			&& string.Equals(display[0], expectedVolunteer, StringComparison.Ordinal)
 			&& display[0].IndexOf("招募池刷新", StringComparison.Ordinal) < 0,
-			"Volunteer player text must expose the abstract supplement/growth result and relative-frequency semantics.");
+			"Volunteer player text must expose the abstract supplement/growth result and relative-frequency semantics. actual=" + string.Join(" | ", display));
+		Check(PolicyEffectSaveCodec.DescribeRawPlayerVisibleInstances(new[] { displayInstance })
+			.SequenceEqual(new[] { "志愿兵补充与成长：相对原版每日判定频率 +20%" }, StringComparer.Ordinal),
+			"Historical raw volunteer wording, daily cadence, and +20% must remain unchanged.");
 
 		string repositoryRoot = FindRepositoryRoot(AppDomain.CurrentDomain.BaseDirectory);
 		string promptPath = Path.Combine(repositoryRoot, "content", "modules", "PolicySystem", "CustomPrompts", "Policy", "Effects", module.Id + ".json");
@@ -1712,10 +1718,16 @@ internal static partial class Program
 			20f,
 			targetSet);
 		List<string> display = PolicyEffectSaveCodec.DescribePlayerVisibleInstances(new[] { displayInstance });
+		string expectedVillage = FormatExpectedPolicyUi("AFPOL_UI_EffectNameValue", "{NAME}：{VALUE}", "{NAME}: {VALUE}",
+			"NAME", ExpectedPolicyUi("AFPOL_UI_Effect_VillageProductionName", "村庄商品产量", "Village goods production"),
+			"VALUE", FormatExpectedPolicyUi("AFPOL_UI_RelativeVillageGoodsProductionPercent", "相对原版村庄货物产出 {VALUE}%", "Relative to native village goods production {VALUE}%", "VALUE", "+20"));
 		Check(display.Count == 1
-			&& display[0].Contains("村庄商品产量：相对原版村庄商品产量 +20%")
+			&& string.Equals(display[0], expectedVillage, StringComparison.Ordinal)
 			&& display[0].IndexOf("候选分数", StringComparison.Ordinal) < 0,
-			"Village production player text must expose relative original-production semantics.");
+			"Village production player text must expose relative original-production semantics. actual=" + string.Join(" | ", display));
+		Check(PolicyEffectSaveCodec.DescribeRawPlayerVisibleInstances(new[] { displayInstance })
+			.SequenceEqual(new[] { "村庄商品产量：相对原版村庄商品产量 +20%" }, StringComparer.Ordinal),
+			"Historical raw village-production wording and +20% must remain unchanged.");
 
 		string repositoryRoot = FindRepositoryRoot(AppDomain.CurrentDomain.BaseDirectory);
 		string promptPath = Path.Combine(repositoryRoot, "content", "modules", "PolicySystem", "CustomPrompts", "Policy", "Effects", module.Id + ".json");
@@ -1909,10 +1921,16 @@ internal static partial class Program
 			50f,
 			prepared.Instance.TargetSet);
 		List<string> display = PolicyEffectSaveCodec.DescribePlayerVisibleInstances(new[] { displayInstance });
+		string expectedArmy = FormatExpectedPolicyUi("AFPOL_UI_EffectNameValue", "{NAME}：{VALUE}", "{NAME}: {VALUE}",
+			"NAME", ExpectedPolicyUi("AFPOL_UI_Effect_ArmyFormationTendencyName", "军团组建倾向", "Army formation tendency"),
+			"VALUE", FormatExpectedPolicyUi("AFPOL_UI_RelativeCandidateScorePercent", "相对原版候选分数 {VALUE}%", "Relative to native candidate score {VALUE}%", "VALUE", "+50"));
 		Check(display.Count == 1
-			&& display[0].Contains("军团组建倾向：相对原版候选分数 +50%")
+			&& string.Equals(display[0], expectedArmy, StringComparison.Ordinal)
 			&& display[0].IndexOf("税收", StringComparison.Ordinal) < 0,
-			"RelativePercent player text must describe candidate-score scaling without reusing tax wording.");
+			"RelativePercent player text must describe candidate-score scaling without reusing tax wording. actual=" + string.Join(" | ", display));
+		Check(PolicyEffectSaveCodec.DescribeRawPlayerVisibleInstances(new[] { displayInstance })
+			.SequenceEqual(new[] { "军团组建倾向：相对原版候选分数 +50%" }, StringComparer.Ordinal),
+			"Historical raw army-candidate wording and +50% must remain unchanged.");
 
 		string repositoryRoot = FindRepositoryRoot(AppDomain.CurrentDomain.BaseDirectory);
 		string promptPath = Path.Combine(repositoryRoot, "content", "modules", "PolicySystem", "CustomPrompts", "Policy", "Effects", module.Id + ".json");
@@ -2290,8 +2308,12 @@ internal static partial class Program
 		displayInstance.SourceModuleId = source.Id;
 		displayInstance.Payload["value"] = new JValue(40);
 		List<string> display = PolicyEffectSaveCodec.DescribePlayerVisibleInstances(new[] { displayInstance });
-		Check(display.Count == 1 && display[0].Contains("领主部队上限：+40"),
-			"Hidden party-size descendants must render as one visible source capability.");
+		string expectedPartySize = FormatExpectedPolicyUi("AFPOL_UI_PartySizeLimitValue", "领主部队上限：{VALUE}", "Lords' party size limit: {VALUE}", "VALUE", "+40");
+		Check(display.Count == 1 && string.Equals(display[0], expectedPartySize, StringComparison.Ordinal),
+			"Hidden party-size descendants must render as one visible source capability. actual=" + string.Join(" | ", display));
+		Check(PolicyEffectSaveCodec.DescribeRawPlayerVisibleInstances(new[] { displayInstance })
+			.SequenceEqual(new[] { "领主部队上限：+40" }, StringComparer.Ordinal),
+			"Historical raw party-size wording and exact +40 troop limit must remain unchanged.");
 
 		string repositoryRoot = FindRepositoryRoot(AppDomain.CurrentDomain.BaseDirectory);
 		string promptPath = Path.Combine(repositoryRoot, "content", "modules", "PolicySystem", "CustomPrompts", "Policy", "Effects", source.Id + ".json");
@@ -4775,6 +4797,35 @@ internal static partial class Program
 	/// changes, while exact equality retains counts, repeated legs, units, cadence and punctuation.
 	/// Expected text is explicit and independent of production formatters; mixed languages fail.
 	/// </summary>
+	// UI expectations are explicit semantic templates and independent of production formatters.
+	// Validate both resource bodies before selecting the real native locale; historical raw text
+	// is asserted separately in each caller rather than weakening the check to a number substring.
+	private static string ExpectedPolicyUi(string id, string chineseTemplate, string englishTemplate)
+	{
+		string repositoryRoot = FindRepositoryRoot(AppDomain.CurrentDomain.BaseDirectory);
+		string languages = Path.Combine(repositoryRoot, "content", "modules", "PolicySystem", "ModuleData", "Languages");
+		var chinese = new System.Xml.XmlDocument();
+		chinese.Load(Path.Combine(languages, "CNs", "afpol_ui_strings-zh-CN.xml"));
+		var english = new System.Xml.XmlDocument();
+		english.Load(Path.Combine(languages, "afpol_ui_strings.xml"));
+		Check(chinese.SelectSingleNode("//string[@id='" + id + "']")?.Attributes?["text"]?.Value == chineseTemplate,
+			"Chinese UI semantic template must retain its exact cadence, unit and value slots: " + id);
+		Check(english.SelectSingleNode("//string[@id='" + id + "']")?.Attributes?["text"]?.Value == englishTemplate,
+			"English UI semantic template must retain its exact cadence, unit and value slots: " + id);
+		Type nativeManager = RequireType("TaleWorlds.Localization.MBTextManager, TaleWorlds.Localization");
+		string language = (string)nativeManager.GetProperty("ActiveTextLanguage", All).GetValue(null, null);
+		return string.Equals(language, "简体中文", StringComparison.Ordinal) ? chineseTemplate : englishTemplate;
+	}
+
+	private static string FormatExpectedPolicyUi(string id, string chineseTemplate, string englishTemplate, params string[] values)
+	{
+		string template = ExpectedPolicyUi(id, chineseTemplate, englishTemplate);
+		var replacements = new Dictionary<string, string>(StringComparer.Ordinal);
+		for (int index = 0; index < values.Length; index += 2) replacements.Add(values[index], values[index + 1]);
+		return System.Text.RegularExpressions.Regex.Replace(template, @"\{([A-Z][A-Z0-9_]*)\}",
+			match => replacements.TryGetValue(match.Groups[1].Value, out string value) ? value : match.Value);
+	}
+
 	private static bool MatchesCompletePolicyLines(IEnumerable<string> actual, string[] chineseLines, string[] englishLines)
 	{
 		string[] lines = (actual ?? Enumerable.Empty<string>()).OrderBy(line => line, StringComparer.Ordinal).ToArray();
@@ -5952,7 +6003,7 @@ internal static partial class Program
 		JObject duplicateMapping = (JObject)validMapping.DeepClone();
 		((JArray)duplicateMapping["assignments"]).Add(duplicateMapping["assignments"][0].DeepClone());
 		Check(!TryExpandSemanticMappingForContract(duplicateMapping, semanticPlan, false, out _, out string duplicateError)
-			&& duplicateError.Contains("重复"),
+			&& string.Equals(duplicateError, "assignment[4] Duplicate of previous assignment: I0L0", StringComparison.Ordinal),
 			"An exact duplicate assignment must fail closed.");
 		JObject multipleModulesForOneLeg = (JObject)validMapping.DeepClone();
 		((JArray)multipleModulesForOneLeg["assignments"]).Add(
@@ -5995,7 +6046,7 @@ internal static partial class Program
 				"subject", "target", "effect", "small", "reason")));
 		}
 		Check(!TryNormalizeSemanticPlanForContract(tooManyIntents, out _, out string limitError)
-			&& limitError.Contains("最大机制数量"),
+			&& string.Equals(limitError, "effectIntents exceeds maximum mechanism count 6。", StringComparison.Ordinal),
 			"Semantic ledgers must enforce the six-intent limit.");
 	}
 
@@ -6310,7 +6361,7 @@ internal static partial class Program
 		((JObject)mixedLinkedLabels["effects"][1]).Remove("mechanismId");
 		Check(!PolicyEffectPlanWireNormalizer.TryParseDirectPlayerEffectPlan(
 			mixedLinkedLabels, out _, out _, out _, out string mixedLinkedLabelError)
-			&& mixedLinkedLabelError.Contains("有标签和无标签"),
+			&& string.Equals(mixedLinkedLabelError, "linked effects mixed tagged and untagged mechanismId; cannot safely determine grouping.", StringComparison.Ordinal),
 			"A partially labeled linked group must remain fail-closed because its grouping is ambiguous.");
 		JObject missingExecutableField = (JObject)tolerantExecutable.DeepClone();
 		((JObject)missingExecutableField["effects"][0]).Remove("moduleId");
@@ -6322,7 +6373,7 @@ internal static partial class Program
 		conflictingExecutableField["effects"][0]["ModuleId"] = "forgedAlias";
 		Check(!PolicyEffectPlanWireNormalizer.TryParseDirectPlayerEffectPlan(
 			conflictingExecutableField, out _, out _, out _, out string conflictingExecutableFieldError)
-			&& conflictingExecutableFieldError.Contains("冲突"),
+			&& string.Equals(conflictingExecutableFieldError, "EffectPlan effect 1 Contains duplicate or casing-conflicting known fields.", StringComparison.Ordinal),
 			"Harmless unknown metadata may be stripped, but aliases that conflict with executable fields must fail closed.");
 		foreach (string disposition in new[] { "narrativeOnly", "unsupported" })
 		{
@@ -7814,7 +7865,7 @@ internal static partial class Program
 				new[] { "foreign-kingdom" },
 				out _,
 				out string domesticMarkerError)
-			&& domesticMarkerError.IndexOf("未开放跨国", StringComparison.Ordinal) >= 0,
+			&& string.Equals(domesticMarkerError, "Module contractDummy.jurisdiction.domestic does not allow cross-kingdom targets.", StringComparison.Ordinal),
 			"A forged CrossKingdom marker must fail when the module descriptor has not opted in.");
 		Check(!PolicyEffectTargetJurisdiction.TryAuthorizeExplicitKingdomTargets(
 				crossModule,
@@ -7828,7 +7879,7 @@ internal static partial class Program
 				new[] { "other-kingdom" },
 				out _,
 				out string staleMarkerError)
-			&& staleMarkerError.IndexOf("未被当前政策请求授权", StringComparison.Ordinal) >= 0,
+			&& string.Equals(staleMarkerError, "Target kingdom foreign-kingdom is not authorized by the current policy request as an executable cross-kingdom target.", StringComparison.Ordinal),
 			"A forged or stale CrossKingdom marker must be bounded by the current request authorization set.");
 	}
 
@@ -7893,8 +7944,8 @@ internal static partial class Program
 		string playerMainPrompt = playerMainMessages.ToString(Formatting.None);
 		string playerMappingPrompt = playerMappingMessages.ToString(Formatting.None);
 		string playerStableCausalTemplate = (string)playerBehavior
-			.GetField("PlayerPolicyMainStableSystemPrefix", All)
-			.GetRawConstantValue()
+			.GetProperty("PlayerPolicyMainStableSystemPrefix", All)
+			.GetValue(null, null)
 			+ (string)InvokeStatic(playerBehavior, "BuildPlayerPolicySemanticIntentExamples", Array.Empty<object>(), 0);
 		Check(playerMainPrompt.Contains("只冻结政策正文明确表达或由同一措施直接因果推出的机械腿")
 			&& playerMainPrompt.Contains("禁止为了平衡、对称或模块配对而虚构")
@@ -8395,8 +8446,8 @@ internal static partial class Program
 	private static void TestPlayerPolicyExecutableCostProjectionContract()
 	{
 		Type behavior = SutType("AnimusForge.CustomPolicyBehavior");
-		string mainPrompt = (string)behavior.GetField("PlayerPolicyMainStableSystemPrefix", All).GetRawConstantValue();
-		string effectPrompt = (string)behavior.GetField("PlayerPolicyEffectStableSystemPrefix", All).GetRawConstantValue();
+		string mainPrompt = (string)behavior.GetProperty("PlayerPolicyMainStableSystemPrefix", All).GetValue(null, null);
+		string effectPrompt = (string)behavior.GetProperty("PlayerPolicyEffectStableSystemPrefix", All).GetValue(null, null);
 		Check(mainPrompt.Contains("通用政策评议阶段")
 			&& mainPrompt.IndexOf("source", StringComparison.OrdinalIgnoreCase) < 0
 			&& mainPrompt.IndexOf("beneficiary", StringComparison.OrdinalIgnoreCase) < 0
@@ -8519,8 +8570,8 @@ internal static partial class Program
 			"Postprocessing must not be able to reintroduce a projected-out player Cost leg.");
 		Type behavior = SutType("AnimusForge.CustomPolicyBehavior");
 		string playerMainPrompt = (string)behavior
-			.GetField("PlayerPolicyMainStableSystemPrefix", All)
-			.GetRawConstantValue();
+			.GetProperty("PlayerPolicyMainStableSystemPrefix", All)
+			.GetValue(null, null);
 		Check(playerMainPrompt.Contains("cost 是非执行性的政策支出")
 			&& playerMainPrompt.Contains("真实可执行资源减少必须写为 source")
 			&& playerMainPrompt.Contains("粮食调拨、税收转移")
@@ -8533,8 +8584,8 @@ internal static partial class Program
 	{
 		Type behavior = SutType("AnimusForge.CustomPolicyBehavior");
 		string playerMainPrompt = (string)behavior
-			.GetField("PlayerPolicyMainStableSystemPrefix", All)
-			.GetRawConstantValue();
+			.GetProperty("PlayerPolicyMainStableSystemPrefix", All)
+			.GetValue(null, null);
 		Check(playerMainPrompt.Contains("通用政策评议阶段")
 			&& playerMainPrompt.Contains("不决定后续可执行能力、具体目标或最终执行值")
 			&& !playerMainPrompt.Contains("定居点当前所有者家族领袖")
@@ -8639,8 +8690,8 @@ internal static partial class Program
 			Score = 1f,
 			Margin = 1f
 		});
-		string playerMainStable = (string)behavior.GetField("PlayerPolicyMainStableSystemPrefix", All).GetRawConstantValue();
-		string playerEffectStable = (string)behavior.GetField("PlayerPolicyEffectStableSystemPrefix", All).GetRawConstantValue();
+		string playerMainStable = (string)behavior.GetProperty("PlayerPolicyMainStableSystemPrefix", All).GetValue(null, null);
+		string playerEffectStable = (string)behavior.GetProperty("PlayerPolicyEffectStableSystemPrefix", All).GetValue(null, null);
 		Check(playerMainStable.IndexOf("ONNX", StringComparison.OrdinalIgnoreCase) < 0
 			&& playerMainStable.IndexOf("mechanism", StringComparison.OrdinalIgnoreCase) < 0
 			&& playerMainStable.IndexOf("moduleId", StringComparison.OrdinalIgnoreCase) < 0
@@ -9478,10 +9529,10 @@ internal static partial class Program
 		string dataRoot = (string)InvokeStatic(SutType("AnimusForge.AnimusForgeDataPaths"), "GetCurrentRoot", Array.Empty<object>(), 0);
 		string ordinaryOverrideDirectory = (string)InvokeStatic(settingsType, "GetCustomPromptTextStoreDirectory", Array.Empty<object>(), 0);
 		string cachePath = (string)InvokeStatic(settingsType, "GetModelDropdownCachePath", Array.Empty<object>(), 0);
-		Check(string.Equals(ordinaryOverrideDirectory, Path.Combine(dataRoot, "UserData", "Overrides", "CustomPrompts"), StringComparison.OrdinalIgnoreCase)
+		Check(string.Equals(ordinaryOverrideDirectory, Path.Combine(dataRoot, "CustomPrompts"), StringComparison.OrdinalIgnoreCase)
 			&& string.Equals(AnimusForgeModulePaths.GetLogsDirectory(), Path.Combine(dataRoot, "Logs"), StringComparison.OrdinalIgnoreCase)
 			&& string.Equals(cachePath, Path.Combine(dataRoot, "Cache", "ModelDropdownCache.json"), StringComparison.OrdinalIgnoreCase),
-			"Production prompt overrides, logs and model dropdown cache must resolve under the typed user data root, never the module or CWD.");
+			"Production prompt overrides, logs and model dropdown cache must resolve by purpose under the active module root, never CWD or AppData.");
 		string packagedOrdinaryDirectory = Path.Combine(tempRoot, "packaged-ordinary");
 		string overrideOrdinaryDirectory = Path.Combine(tempRoot, "override-ordinary");
 		Directory.CreateDirectory(packagedOrdinaryDirectory);
@@ -9709,20 +9760,20 @@ internal static partial class Program
 				"An atomic replacement failure must preserve the original bytes and clean its temporary file.");
 
 			string previousAutoDraftGenericExpansion = (string)typeof(PolicyEffectPromptService)
-				.GetField("PreviousDefaultAutoDraftPromptGenericExpansion", All)
-				.GetRawConstantValue();
+				.GetProperty("PreviousDefaultAutoDraftPromptGenericExpansion", All)
+				.GetValue(null, null);
 			string previousAutoDraftDefault = (string)typeof(PolicyEffectPromptService)
-				.GetField("PreviousDefaultAutoDraftPromptWithEditableTransport", All)
-				.GetRawConstantValue();
+				.GetProperty("PreviousDefaultAutoDraftPromptWithEditableTransport", All)
+				.GetValue(null, null);
 			string previousAutoDraftWithoutActionableMeasures = (string)typeof(PolicyEffectPromptService)
-				.GetField("PreviousDefaultAutoDraftPromptWithoutActionableMeasures", All)
-				.GetRawConstantValue();
+				.GetProperty("PreviousDefaultAutoDraftPromptWithoutActionableMeasures", All)
+				.GetValue(null, null);
 			string previousCommonDefault = (string)typeof(PolicyEffectPromptService)
-				.GetField("PreviousDefaultCommonEvaluationPromptWithFixedEffects", All)
-				.GetRawConstantValue();
+				.GetProperty("PreviousDefaultCommonEvaluationPromptWithFixedEffects", All)
+				.GetValue(null, null);
 			string previousCommonBeforeReasonableInference = (string)typeof(PolicyEffectPromptService)
-				.GetField("PreviousDefaultCommonEvaluationPromptBeforeReasonableInference", All)
-				.GetRawConstantValue();
+				.GetProperty("PreviousDefaultCommonEvaluationPromptBeforeReasonableInference", All)
+				.GetValue(null, null);
 			File.WriteAllText(autoDraftPath, new JObject
 			{
 				["Version"] = 1,

@@ -81,6 +81,14 @@ internal static class IssueDisplayTexts
 			: heroName;
 	}
 
+	internal static string CompanionNameForPrompt(string heroName)
+	{
+		return IssueDisplayMatchCatalog.TryGet(UnknownCompanionFallbackSourceId, out string fallback)
+			&& string.Equals(heroName, fallback, StringComparison.Ordinal)
+			? IssuePromptTexts.Text("AF_CONV_UI_Issue_UnknownCompanion", "an unknown companion")
+			: heroName;
+	}
+
 	/// <summary>
 	/// Projects one producer reason into player-facing bilingual text.  Returns
 	/// the input unchanged when nothing is recognised.
@@ -91,6 +99,9 @@ internal static class IssueDisplayTexts
 	/// recognised.  Never returns null for a non-null input.
 	/// </returns>
 	internal static string ForDisplay(string reason)
+		=> Project(reason, false);
+
+	private static string Project(string reason, bool forPrompt)
 	{
 		if (string.IsNullOrWhiteSpace(reason))
 		{
@@ -98,17 +109,17 @@ internal static class IssueDisplayTexts
 		}
 		if (reason.IndexOf('\n') < 0)
 		{
-			return ProjectLine(reason);
+			return ProjectLine(reason, forPrompt);
 		}
 		string[] lines = reason.Split('\n');
 		for (int i = 0; i < lines.Length; i++)
 		{
-			lines[i] = ProjectLine(lines[i]);
+			lines[i] = ProjectLine(lines[i], forPrompt);
 		}
 		return string.Join("\n", lines);
 	}
 
-	internal static string FailureReasonForPrompt(string reason) => ForDisplay(reason);
+	internal static string FailureReasonForPrompt(string reason) => Project(reason, true);
 
 	internal static string IssueTitleForPrompt(string title)
 	{
@@ -142,7 +153,7 @@ internal static class IssueDisplayTexts
 		bool changed = false;
 		if (fields[0].StartsWith("- ", StringComparison.Ordinal))
 		{
-			string name = CompanionNameForDisplay(fields[0].Substring(2));
+			string name = CompanionNameForPrompt(fields[0].Substring(2));
 			if (!string.Equals(name, fields[0].Substring(2), StringComparison.Ordinal))
 			{
 				fields[0] = "- " + name;
@@ -218,7 +229,7 @@ internal static class IssueDisplayTexts
 	/// Projects a single line, preserving the caller's surrounding whitespace so
 	/// the shape of a multi-line producer message is not silently rewritten.
 	/// </summary>
-	private static string ProjectLine(string line)
+	private static string ProjectLine(string line, bool forPrompt)
 	{
 		if (line == null)
 		{
@@ -229,7 +240,7 @@ internal static class IssueDisplayTexts
 		{
 			return line;
 		}
-		string body = ProjectBody(trimmed);
+		string body = ProjectBody(trimmed, forPrompt);
 		if (string.Equals(body, trimmed, StringComparison.Ordinal))
 		{
 			return line;
@@ -241,11 +252,15 @@ internal static class IssueDisplayTexts
 			+ line.Substring(line.Length - trailing);
 	}
 
-	private static string ProjectBody(string value)
+	private static string ProjectBody(string value, bool forPrompt)
 	{
 		if (IssueDisplayMatchCatalog.TryGet(TurnInProbeExceptionPrefixSourceId, out string prefix)
 			&& value.StartsWith(prefix, StringComparison.Ordinal))
 		{
+			if (forPrompt) return IssuePromptTexts.Format(
+				"AF_CONV_UI_Issue_TurnInProbeException",
+				"An error occurred while turning in the vanilla quest: {REASON}",
+				("REASON", value.Substring(prefix.Length)));
 			return ConversationUiLocalization.Text(
 				"AF_CONV_UI_Issue_TurnInProbeException",
 				"An error occurred while turning in the vanilla quest: {REASON}",
@@ -257,7 +272,7 @@ internal static class IssueDisplayTexts
 			if (IssueDisplayMatchCatalog.TryGet(sourceId, out string literal)
 				&& string.Equals(value, literal, StringComparison.Ordinal))
 			{
-				return ConversationUiLocalization.Text(key, english);
+				return forPrompt ? IssuePromptTexts.Text(key, english) : ConversationUiLocalization.Text(key, english);
 			}
 		}
 

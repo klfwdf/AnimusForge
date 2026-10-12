@@ -26,13 +26,13 @@ public static class ProcessPartnerSentenceSafePatch
 					HarmonyMethod finalizer = new HarmonyMethod(typeof(ProcessPartnerSentenceSafePatch).GetMethod("Finalizer", BindingFlags.Static | BindingFlags.Public));
 					harmony.Patch(methodInfo, null, null, null, finalizer);
 					_patched = true;
-					Logger.LogTrace("System", "✅ ProcessPartnerSentenceSafePatch 已打补丁。");
+					Logger.LogTrace("System", "✅ ProcessPartnerSentenceSafePatch Patched.");
 				}
 			}
 		}
 		catch (Exception ex)
 		{
-			Logger.LogTrace("System", "❌ ProcessPartnerSentenceSafePatch 打补丁失败: " + ex.Message);
+			Logger.LogTrace("System", "❌ ProcessPartnerSentenceSafePatch patch failed: " + ex.Message);
 		}
 	}
 

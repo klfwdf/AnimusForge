@@ -9,6 +9,18 @@ namespace AnimusForge;
 // Resolve at list/detail/export boundaries; raw snapshot values remain unchanged.
 internal static class TagCatalogUiText
 {
+    // Resolve the template once, then insert display data without re-parsing its braces.
+    private static readonly System.Text.RegularExpressions.Regex LiteralValues = new System.Text.RegularExpressions.Regex(@"AFSWEEPLITERAL([0-9]+)END", System.Text.RegularExpressions.RegexOptions.CultureInvariant);
+    private static string RenderLiteral(TextObject text, params (string Name, object Value)[] values)
+    {
+        for (int i = 0; i < values.Length; i++)
+            if (values[i].Value is TextObject nested)
+                text.SetTextVariable(values[i].Name, nested);
+            else
+                text.SetTextVariable(values[i].Name, "AFSWEEPLITERAL" + i.ToString(System.Globalization.CultureInfo.InvariantCulture) + "END");
+        return LiteralValues.Replace(text.ToString(), match => values[int.Parse(match.Groups[1].Value, System.Globalization.CultureInfo.InvariantCulture)].Value?.ToString() ?? string.Empty);
+    }
+
     private static readonly HashSet<string> VillageActions = CreateVillageActions();
 
     private static HashSet<string> CreateVillageActions()
@@ -22,47 +34,65 @@ internal static class TagCatalogUiText
 
     private static string Format(string id, string fallback, string name, string value)
     {
-        var text = new TextObject("{=" + id + "}" + fallback);
-        text.SetTextVariable(name, value ?? string.Empty);
-        return text.ToString();
+        return RenderLiteral(new TextObject("{=" + id + "}" + fallback), (name, value ?? string.Empty));
     }
 
     internal static string Category(string raw)
     {
-        switch (raw)
-        {
-            case "正文": return Text("AF_UI_TagCatalog_CategoryBody", "Body text");
-            case "正文/历史": return Text("AF_UI_TagCatalog_CategoryHistory", "Body/history");
-            case "正文/事实": return Text("AF_UI_TagCatalog_CategoryFacts", "Body/facts");
-            case "后处理": return Text("AF_UI_TagCatalog_CategoryPostprocess", "Postprocessing");
-            case "后处理/规则表": return Text("AF_UI_TagCatalog_CategoryRules", "Postprocessing/rule table");
-            case "后处理/接力": return Text("AF_UI_TagCatalog_CategoryRelay", "Postprocessing/relay");
-            case "后处理/GCCZ": return Text("AF_UI_TagCatalog_CategoryGccz", "Postprocessing/GCCZ");
-            case "后处理/GCCZ村庄": return Text("AF_UI_TagCatalog_CategoryVillage", "Postprocessing/GCCZ villages");
-            case null:
-            case "标签": return Text("AF_UI_Terminal_Tag", "Tag");
-            default: return raw;
-        }
+        if (raw == AdapterPromptCaptureTexts.PcapCompat("TagCat_CategoryBody")) return Text("AF_UI_TagCatalog_CategoryBody", "Body text");
+        if (raw == AdapterPromptCaptureTexts.PcapCompat("TagCat_CategoryHistory")) return Text("AF_UI_TagCatalog_CategoryHistory", "Body/history");
+        if (raw == AdapterPromptCaptureTexts.PcapCompat("TagCat_CategoryFacts")) return Text("AF_UI_TagCatalog_CategoryFacts", "Body/facts");
+        if (raw == AdapterPromptCaptureTexts.PcapCompat("TagCat_CategoryPostprocess")) return Text("AF_UI_TagCatalog_CategoryPostprocess", "Postprocessing");
+        if (raw == AdapterPromptCaptureTexts.PcapCompat("TagCat_CategoryRules")) return Text("AF_UI_TagCatalog_CategoryRules", "Postprocessing/rule table");
+        if (raw == AdapterPromptCaptureTexts.PcapCompat("TagCat_CategoryRelay")) return Text("AF_UI_TagCatalog_CategoryRelay", "Postprocessing/relay");
+        if (raw == AdapterPromptCaptureTexts.PcapCompat("TagCat_CategoryGccz")) return Text("AF_UI_TagCatalog_CategoryGccz", "Postprocessing/GCCZ");
+        if (raw == AdapterPromptCaptureTexts.PcapCompat("TagCat_CategoryVillage")) return Text("AF_UI_TagCatalog_CategoryVillage", "Postprocessing/GCCZ villages");
+        if (raw == null || raw == AdapterPromptCaptureTexts.PcapCompat("TagCat_CategoryTag")) return Text("AF_UI_Terminal_Tag", "Tag");
+        return raw;
     }
 
     internal static string Tag(string raw)
-        => raw == "正文（自然语言）" ? Text("AF_UI_TagCatalog_NaturalLanguage", "Body text (natural language)") : raw ?? string.Empty;
+        => raw == AdapterPromptCaptureTexts.PcapCompat("TagCat_NaturalLanguage") ? Text("AF_UI_TagCatalog_NaturalLanguage", "Body text (natural language)") : raw ?? string.Empty;
 
     internal static string Description(string raw)
     {
         string description = (raw ?? string.Empty).Trim();
         switch (description)
         {
-            case "不是动作标签。标签测试输入框里除动作标签外的文本会作为 NPC 可见正文显示或写入历史。":
-                return Text("AF_UI_TagCatalog_DescriptionBody", "This is not an action tag. Text other than action tags in the tag-test input is displayed as NPC-visible body text or written to history.");
-            case "内部正文分隔标记。通常不是玩家手写动作标签。":
-                return Text("AF_UI_TagCatalog_DescriptionContent", "Internal body-text delimiter. Players normally do not enter this as an action tag.");
-            case "玩家行为事实写入标记，用于告诉 LLM 已实际发生的玩家行为。":
-                return Text("AF_UI_TagCatalog_DescriptionPlayerFact", "Player-action fact marker informing the LLM of player actions that have actually occurred.");
-            case "NPC行为事实写入标记，用于告诉 LLM 已实际发生的 NPC 行为。":
-                return Text("AF_UI_TagCatalog_DescriptionNpcFact", "NPC-action fact marker informing the LLM of NPC actions that have actually occurred.");
+            case "Use when an eligible speaker on either side directly acknowledges the player's current mercy decision. Soldier complaints do not cancel a valid player order.":
+                return Text("AF_UI_GcczRule_Mercy", "Use when an eligible speaker on either side directly acknowledges the player's current mercy decision. Soldier complaints do not cancel a valid player order.");
+            case "Use only when a settlement notable/headman or ordinary civilian directly accepts the player's current relief, protection, discipline, food, gold, or supply arrangement. Other roles may only suggest it.":
+                return Text("AF_UI_GcczRule_Relief", "Use only when a settlement notable/headman or ordinary civilian directly accepts the player's current relief, protection, discipline, food, gold, or supply arrangement. Other roles may only suggest it.");
+            case "Use only when a settlement notable/headman or ordinary civilian directly accepts the player's current public reassurance, speech, stabilization, or cooperation plan. Other roles may only suggest it.":
+                return Text("AF_UI_GcczRule_Inspire", "Use only when a settlement notable/headman or ordinary civilian directly accepts the player's current public reassurance, speech, stabilization, or cooperation plan. Other roles may only suggest it.");
+            case "Use only when a settlement notable/headman or ordinary civilian directly accepts the player's current public oath or civilian allegiance arrangement. Other roles may only suggest it.":
+                return Text("AF_UI_GcczRule_RallyOath", "Use only when a settlement notable/headman or ordinary civilian directly accepts the player's current public oath or civilian allegiance arrangement. Other roles may only suggest it.");
+            case "Use only when appeasement is pending and an allied ordinary soldier directly accepts the player's current compensation, discipline explanation, or loot arrangement.":
+                return Text("AF_UI_GcczRule_SoldierAppeasement", "Use only when appeasement is pending and an allied ordinary soldier directly accepts the player's current compensation, discipline explanation, or loot arrangement.");
+            case "Use when an eligible responder directly accepts, relays, or executes the player's current order to gather hidden residents. Decide from full semantics, never fixed words.":
+                return Text("AF_UI_GcczRule_GatherCivilians", "Use when an eligible responder directly accepts, relays, or executes the player's current order to gather hidden residents. Decide from full semantics, never fixed words.");
+            case "Use only when a defeated civilian, merchant, artisan, headman, or notable directly responds to the player's current demand for gold or goods. This is partial robbery, not full-town plunder.":
+                return Text("AF_UI_GcczRule_CivilianRobbery", "Use only when a defeated civilian, merchant, artisan, headman, or notable directly responds to the player's current demand for gold or goods. This is partial robbery, not full-town plunder.");
+            case "Use only when an allied ordinary soldier directly receives the player's current full-town plunder order. The soldier may complain but cannot refuse, delay, redirect, or replace a valid order.":
+                return Text("AF_UI_GcczRule_Plunder", "Use only when an allied ordinary soldier directly receives the player's current full-town plunder order. The soldier may complain but cannot refuse, delay, redirect, or replace a valid order.");
+            case "Use only when an allied ordinary soldier directly receives the player's current massacre order. Negative wording does not cancel a valid order; a later eligible order may stop before all captured targets die.":
+                return Text("AF_UI_GcczRule_Massacre", "Use only when an allied ordinary soldier directly receives the player's current massacre order. Negative wording does not cancel a valid order; a later eligible order may stop before all captured targets die.");
+            case "Use only when an allied ordinary soldier directly receives the player's current order to kill the original residents and repopulate with the player's culture. Suggestions and NPC-to-NPC speech never execute it.":
+                return Text("AF_UI_GcczRule_CulturalRepopulation", "Use only when an allied ordinary soldier directly receives the player's current order to kill the original residents and repopulate with the player's culture. Suggestions and NPC-to-NPC speech never execute it.");
+            case "Use only when an allied ordinary soldier directly receives the player's current order to stop an active incomplete massacre. Existing deaths, loot, and consequences remain.":
+                return Text("AF_UI_GcczRule_StopMassacre", "Use only when an allied ordinary soldier directly receives the player's current order to stop an active incomplete massacre. Existing deaths, loot, and consequences remain.");
+            case "Use only when an authorized responder directly accepts the player's current non-destructive town culture decree. It changes only town culture and never means killing, expulsion, repopulation, or colonization.":
+                return Text("AF_UI_GcczRule_ConstructiveCultureChange", "Use only when an authorized responder directly accepts the player's current non-destructive town culture decree. It changes only town culture and never means killing, expulsion, repopulation, or colonization.");
         }
-        const string villagePrefix = "仅在有权限的普通村庄场景中，由玩家明确命令触发：";
+        if (description == AdapterPromptCaptureTexts.PcapCompat("TagCat_DescBody"))
+            return Text("AF_UI_TagCatalog_DescriptionBody", "This is not an action tag. Text other than action tags in the tag-test input is displayed as NPC-visible body text or written to history.");
+        if (description == AdapterPromptCaptureTexts.PcapCompat("TagCat_DescContent"))
+            return Text("AF_UI_TagCatalog_DescriptionContent", "Internal body-text delimiter. Players normally do not enter this as an action tag.");
+        if (description == AdapterPromptCaptureTexts.PcapCompat("TagCat_DescPlayerFact"))
+            return Text("AF_UI_TagCatalog_DescriptionPlayerFact", "Player-action fact marker informing the LLM of player actions that have actually occurred.");
+        if (description == AdapterPromptCaptureTexts.PcapCompat("TagCat_DescNpcFact"))
+            return Text("AF_UI_TagCatalog_DescriptionNpcFact", "NPC-action fact marker informing the LLM of NPC actions that have actually occurred.");
+        string villagePrefix = AdapterPromptCaptureTexts.PcapCompat("TagCat_VillagePrefix");
         if (description.StartsWith(villagePrefix, StringComparison.Ordinal))
         {
             string action = description.Substring(villagePrefix.Length);
@@ -96,8 +126,8 @@ internal static class TagCatalogUiText
 
     internal static string Source(string raw)
     {
-        if (raw == "内置说明") return Text("AF_UI_TagCatalog_SourceBuiltIn", "Built-in documentation");
-        const string prefix = "程序集:";
+        if (raw == AdapterPromptCaptureTexts.PcapCompat("TagCat_BuiltInSource")) return Text("AF_UI_TagCatalog_SourceBuiltIn", "Built-in documentation");
+        string prefix = AdapterPromptCaptureTexts.PcapCompat("TagCat_AssemblyPrefix");
         return raw != null && raw.StartsWith(prefix, StringComparison.Ordinal)
             ? Format("AF_UI_TagCatalog_SourceAssembly", "Assembly: {SOURCE}", "SOURCE", raw.Substring(prefix.Length))
             : raw ?? string.Empty;

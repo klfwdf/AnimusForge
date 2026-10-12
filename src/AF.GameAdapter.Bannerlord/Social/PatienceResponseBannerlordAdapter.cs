@@ -30,8 +30,8 @@ internal PatienceSnapshot GetHeroSnapshot(Hero hero)
 			PrivateLove = 0,
 			Max = 30,
 			Current = 30f,
-			PatienceLevel = "一般",
-			RelationLevel = "中立",
+			PatienceLevel = PromptComposerTexts.Get("patience_default_level"),
+			RelationLevel = PromptComposerTexts.Get("relation_default_level"),
 			TrustLevel = RewardSystemBehavior.GetTrustLevelText(0),
 			PublicTrustLevel = RewardSystemBehavior.GetTrustLevelText(0),
 			PrivateLoveLevel = RomanceSystemBehavior.GetPrivateLoveLevelText(0)

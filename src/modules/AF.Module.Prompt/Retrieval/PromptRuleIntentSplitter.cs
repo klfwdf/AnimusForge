@@ -46,8 +46,8 @@ internal static class PromptRuleIntentSplitter
 			List<string> list3 = new List<string>();
 			string[] array = new string[13]
 			{
-				"然后", "顺便", "另外", "再说", "并且", "而且", "以及", "同时", "还有", "再加上",
-				"顺带", "并且还", "以及还"
+				PromptRetrievalTexts.Raw("Raw_ca4f5ee82e28"), PromptRetrievalTexts.Raw("Raw_2e331dc332df"), PromptRetrievalTexts.Raw("Raw_3d90e73b8904"), PromptRetrievalTexts.Raw("Raw_65e02db56393"), PromptRetrievalTexts.Raw("Raw_8913b8b6e1ef"), PromptRetrievalTexts.Raw("Raw_c193ed92f77d"), PromptRetrievalTexts.Raw("Raw_5b77181bd648"), PromptRetrievalTexts.Raw("Raw_b9a6fa173c48"), PromptRetrievalTexts.Raw("Raw_83eec76b3911"), PromptRetrievalTexts.Raw("Raw_d5b0967855f4"),
+				PromptRetrievalTexts.Raw("Raw_3e67a4cf9e15"), PromptRetrievalTexts.Raw("Raw_7e74d007fe67"), PromptRetrievalTexts.Raw("Raw_1c3b3b6448fd")
 			};
 			for (int j = 0; j < list2.Count; j++)
 			{

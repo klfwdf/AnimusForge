@@ -60,10 +60,10 @@ public class VanillaIssuePromptBehavior : CampaignBehaviorBase
 				return;
 			}
 			string playerIntro = (ShoutBehavior.BuildPlayerSceneIntroForExternal(newCompanion) ?? "").Trim();
-			string factText = "你已经加入了玩家队伍，成为了玩家的同伴。";
+			string factText = IssueDisplayMatchCatalog.Get("Raw_047");
 			if (!string.IsNullOrWhiteSpace(playerIntro))
 			{
-				factText = factText + " 你对玩家的认识如下：" + playerIntro;
+				factText = factText + IssueDisplayMatchCatalog.Get("Raw_048") + playerIntro;
 			}
 			MyBehavior.AppendExternalNpcFact(newCompanion, factText);
 		}

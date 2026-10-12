@@ -1,4 +1,6 @@
 using System;
+using System.Globalization;
+using System.Text.RegularExpressions;
 using TaleWorlds.Localization;
 
 namespace AnimusForge;
@@ -9,6 +11,7 @@ namespace AnimusForge;
 /// </summary>
 internal static class KnowledgeUiTexts
 {
+    private static readonly Regex LiteralValues = new Regex(@"AFKNOWLEDGELITERAL([0-9]+)END", RegexOptions.CultureInvariant);
 	public static string Ui(string id, string fallback)
 	{
 		return Text(id, fallback);
@@ -40,12 +43,13 @@ internal static class KnowledgeUiTexts
 
 	public static string RuleListTitle(int count, int page, int pages) => Ui("AF_KNOWLEDGE_RuleListTitle", "Edit existing knowledge ({COUNT} entries, page {PAGE}/{PAGES})", ("COUNT", count.ToString()), ("PAGE", page.ToString()), ("PAGES", pages.ToString()));
 	public static string RuleListEmptyTitle => Ui("AF_KNOWLEDGE_RuleListEmptyTitle", "Edit existing knowledge (0 entries)");
+	public static string RuleIndexLabel(string name, int keywords, int rag, int variants) => Ui("AF_KNOWLEDGE_RuleIndexLabel", "{NAME} (Keywords: {KEYWORDS}, RAG short texts: {RAG}, Prompts: {VARIANTS})", ("NAME", name), ("KEYWORDS", keywords.ToString()), ("RAG", rag.ToString()), ("VARIANTS", variants.ToString()));
 	public static string RuleListChoose => Ui("AF_KNOWLEDGE_RuleListChoose", "Choose a knowledge entry to edit:");
 	public static string RuleListSearch(string query) => Ui("AF_KNOWLEDGE_RuleListSearch", "Current search: {QUERY}", ("QUERY", query));
 	public static string RuleListNoMatches => Ui("AF_KNOWLEDGE_RuleListNoMatches", "No matches. Use \"Search\" or \"Create new knowledge\".");
 	public static string BulkDeleteTitle(int count, int page, int pages) => Ui("AF_KNOWLEDGE_BulkDeleteTitle", "Bulk delete knowledge ({COUNT} entries, page {PAGE}/{PAGES})", ("COUNT", count.ToString()), ("PAGE", page.ToString()), ("PAGES", pages.ToString()));
 	public static string BulkDeleteEmptyTitle => Ui("AF_KNOWLEDGE_BulkDeleteEmptyTitle", "Bulk delete knowledge (0 entries)");
-	public static string BulkDeleteDescription(string query, bool empty) => Ui("AF_KNOWLEDGE_BulkDeleteDescription", "Select knowledge entries on the current page to delete them together.{QUERY}{EMPTY}", ("QUERY", string.IsNullOrWhiteSpace(query) ? "" : "\nCurrent search: " + query), ("EMPTY", empty ? "\n\nNo matches." : ""));
+	public static string BulkDeleteDescription(string query, bool empty) => Ui("AF_KNOWLEDGE_BulkDeleteDescription", "Select knowledge entries on the current page to delete them together.{QUERY}{EMPTY}", ("QUERY", string.IsNullOrWhiteSpace(query) ? "" : Ui("AF_KNOWLEDGE_PickerCurrentSearch", "\nCurrent search: {QUERY}", ("QUERY", query))), ("EMPTY", empty ? Ui("AF_KNOWLEDGE_BulkDeleteNoMatches", "\n\nNo matches.") : ""));
 	public static string DeleteSelected => Ui("AF_KNOWLEDGE_DeleteSelected", "Delete selected");
 	public static string BulkDelete => Ui("AF_KNOWLEDGE_BulkDelete", "Bulk delete knowledge");
 	public static string SearchKnowledgeTitle => Ui("AF_KNOWLEDGE_SearchKnowledgeTitle", "Search knowledge");
@@ -91,7 +95,7 @@ internal static class KnowledgeUiTexts
 	public static string MappingSearchMenuDescription => Ui("AF_KNOWLEDGE_MappingSearchMenuDescription", "Choose a category, or search for a specific mapping. Status checks are supported as well. When there are many options, searching is faster.");
 	public static string MappingChooseTypeTitle => Ui("AF_KNOWLEDGE_MappingChooseTypeTitle", "Choose mapping type");
 	public static string MappingChooseType => Ui("AF_KNOWLEDGE_MappingChooseType", "Choose a mapping type.");
-	public static string MappingSearchResults(string query, int count, bool empty) => Ui("AF_KNOWLEDGE_MappingSearchResults", "Enter keywords to search mapping types.\nExamples: clan kingdom / settlement ruler / spouse / age / status alive / kingdom eliminated{QUERY}\nMatches: {COUNT}{EMPTY}", ("QUERY", string.IsNullOrWhiteSpace(query) ? "" : "\nCurrent search: " + query), ("COUNT", count.ToString()), ("EMPTY", empty ? "\n\nNo matches. Try another keyword." : ""));
+	public static string MappingSearchResults(string query, int count, bool empty) => Ui("AF_KNOWLEDGE_MappingSearchResults", "Enter keywords to search mapping types.\nExamples: clan kingdom / settlement ruler / spouse / age / status alive / kingdom eliminated{QUERY}\nMatches: {COUNT}{EMPTY}", ("QUERY", string.IsNullOrWhiteSpace(query) ? "" : Ui("AF_KNOWLEDGE_PickerCurrentSearch", "\nCurrent search: {QUERY}", ("QUERY", query))), ("COUNT", count.ToString()), ("EMPTY", empty ? Ui("AF_KNOWLEDGE_MappingSearchNoMatches", "\n\nNo matches. Try another keyword.") : ""));
 
 	public static string KeywordMenuTitle => Ui("AF_KNOWLEDGE_KeywordMenuTitle", "Edit keywords");
 	public static string KeywordMenuDescription => Ui("AF_KNOWLEDGE_KeywordMenuDescription", "Enter one keyword at a time; it is added after confirmation.");
@@ -179,11 +183,13 @@ internal static class KnowledgeUiTexts
 	private static string Text(string id, string fallback, params (string Name, string Value)[] variables)
 	{
 		TextObject text = new TextObject("{=" + id + "}" + fallback);
-		foreach ((string name, string value) in variables)
+		for (int i = 0; i < variables.Length; i++)
 		{
-			text.SetTextVariable(name, value ?? string.Empty);
+			text.SetTextVariable(variables[i].Name, "AFKNOWLEDGELITERAL" + i.ToString(CultureInfo.InvariantCulture) + "END");
 		}
-		return text.ToString();
+		// Knowledge previews and entity names are literal data, not localization markup.
+		return LiteralValues.Replace(text.ToString(), match =>
+			variables[int.Parse(match.Groups[1].Value, CultureInfo.InvariantCulture)].Value ?? string.Empty);
 	}
 
 	public static string ImportRuleEmpty => Text("AF_KNOWLEDGE_ImportRuleEmpty", "Rule is empty.");
@@ -273,6 +279,57 @@ internal static class KnowledgeUiTexts
 	public static string RagGenerationFailureTitle => Text("AF_KNOWLEDGE_RagGenerationFailureTitle", "RAG short-text generation failed");
 	public static string PrototypeDisabled => Text("AF_KNOWLEDGE_PrototypeDisabled", "[Knowledge] Prototype sentences are disabled. Maintain keywords, RAG short texts and prompts directly.");
 
+	public static string Occupation(string occupation)
+	{
+		return (occupation ?? "") switch
+		{
+			"NotAssigned" => Ui("AF_KNOWLEDGE_Occupation_NotAssigned", "Unassigned"),
+			"Tavernkeeper" => Ui("AF_KNOWLEDGE_Occupation_Tavernkeeper", "Tavernkeeper"),
+			"Mercenary" => Ui("AF_KNOWLEDGE_Occupation_Mercenary", "Mercenary"),
+			"Lord" => Ui("AF_KNOWLEDGE_Occupation_Lord", "Lord"),
+			"GoodsTrader" => Ui("AF_KNOWLEDGE_Occupation_GoodsTrader", "Goods trader"),
+			"ArenaMaster" => Ui("AF_KNOWLEDGE_Occupation_ArenaMaster", "Arena master"),
+			"Villager" => Ui("AF_KNOWLEDGE_Occupation_Villager", "Villager"),
+			"Soldier" => Ui("AF_KNOWLEDGE_Occupation_Soldier", "Soldier"),
+			"Townsfolk" => Ui("AF_KNOWLEDGE_Occupation_Townsfolk", "Townsfolk"),
+			"RansomBroker" => Ui("AF_KNOWLEDGE_Occupation_RansomBroker", "Ransom broker"),
+			"Weaponsmith" => Ui("AF_KNOWLEDGE_Occupation_Weaponsmith", "Weaponsmith"),
+			"Armorer" => Ui("AF_KNOWLEDGE_Occupation_Armorer", "Armorer"),
+			"HorseTrader" => Ui("AF_KNOWLEDGE_Occupation_HorseTrader", "Horse trader"),
+			"TavernWench" => Ui("AF_KNOWLEDGE_Occupation_TavernWench", "Tavern server"),
+			"TavernGameHost" => Ui("AF_KNOWLEDGE_Occupation_TavernGameHost", "Tavern game host"),
+			"Bandit" => Ui("AF_KNOWLEDGE_Occupation_Bandit", "Bandit"),
+			"Wanderer" => Ui("AF_KNOWLEDGE_Occupation_Wanderer", "Wanderer"),
+			"Artisan" => Ui("AF_KNOWLEDGE_Occupation_Artisan", "Artisan"),
+			"Merchant" => Ui("AF_KNOWLEDGE_Occupation_Merchant", "Merchant"),
+			"Preacher" => Ui("AF_KNOWLEDGE_Occupation_Preacher", "Preacher"),
+			"Headman" => Ui("AF_KNOWLEDGE_Occupation_Headman", "Headman"),
+			"GangLeader" => Ui("AF_KNOWLEDGE_Occupation_GangLeader", "Gang leader"),
+			"RuralNotable" => Ui("AF_KNOWLEDGE_Occupation_RuralNotable", "Rural notable"),
+			"PrisonGuard" => Ui("AF_KNOWLEDGE_Occupation_PrisonGuard", "Prison guard"),
+			"Guard" => Ui("AF_KNOWLEDGE_Occupation_Guard", "Guard"),
+			"ShopWorker" => Ui("AF_KNOWLEDGE_Occupation_ShopWorker", "Shop worker"),
+			"Musician" => Ui("AF_KNOWLEDGE_Occupation_Musician", "Musician"),
+			"Gangster" => Ui("AF_KNOWLEDGE_Occupation_Gangster", "Gangster"),
+			"Blacksmith" => Ui("AF_KNOWLEDGE_Occupation_Blacksmith", "Blacksmith"),
+			"BannerBearer" => Ui("AF_KNOWLEDGE_Occupation_BannerBearer", "Banner bearer"),
+			"CaravanGuard" => Ui("AF_KNOWLEDGE_Occupation_CaravanGuard", "Caravan guard"),
+			"Special" => Ui("AF_KNOWLEDGE_Occupation_Special", "Special"),
+			"ShipWright" => Ui("AF_KNOWLEDGE_Occupation_ShipWright", "Shipwright"),
+			_ => occupation ?? "",
+		};
+	}
+
+	public static string RagFailureDetail(string raw)
+	{
+		if (raw == "API key is not configured.") return Ui("AF_KNOWLEDGE_RagApiKeyMissing", "API key is not configured.");
+		if (raw == "API URL is empty.") return Ui("AF_KNOWLEDGE_RagApiUrlMissing", "API URL is empty.");
+		const string requestPrefix = "RAG API request failed: ";
+		if (raw != null && raw.StartsWith(requestPrefix, StringComparison.Ordinal))
+			return Ui("AF_KNOWLEDGE_RagRequestFailed", "RAG API request failed: {DETAIL}", ("DETAIL", raw.Substring(requestPrefix.Length)));
+		return raw;
+	}
+
 	public static string PrototypeCountSummary(int count, string query, int page, int pages, bool empty)
 		=> Ui("AF_KNOWLEDGE_PrototypeCountSummary", "{COUNT} entries, page {PAGE}/{PAGES}.{SEARCH}{EMPTY}",
 			("COUNT", count.ToString()), ("PAGE", page.ToString()), ("PAGES", pages.ToString()),
@@ -283,7 +340,7 @@ internal static class KnowledgeUiTexts
 			("CONDITION", condition), ("PREVIEW", string.IsNullOrEmpty(preview) ? NoValue : preview),
 			("TRUNCATED", truncated ? Ui("AF_KNOWLEDGE_VariantTruncated", "\n... (content too long; showing the first 220 characters)") : ""));
 	public static string RoleSearchOption(string query)
-		=> Ui("AF_KNOWLEDGE_RoleSearchOption", string.IsNullOrWhiteSpace(query) ? "Search specific NPCs in this category..." : "Search: {QUERY}", ("QUERY", query ?? ""));
+		=> Ui(string.IsNullOrWhiteSpace(query) ? "AF_KNOWLEDGE_RoleSearchOption" : "AF_KNOWLEDGE_RoleSearchOptionQuery", string.IsNullOrWhiteSpace(query) ? "Search specific NPCs in this category..." : "Search: {QUERY}", ("QUERY", query ?? ""));
 	public static string RoleClearSpecificOption(int count)
 		=> Ui("AF_KNOWLEDGE_RoleClearSpecificOption", "Clear selected specific entries in this category ({COUNT})", ("COUNT", count.ToString()));
 	public static string RoleDescription(string role, bool selected, int selectedSpecific, int total, int page, int pages)
@@ -291,14 +348,14 @@ internal static class KnowledgeUiTexts
 			("ROLE", role), ("SELECTED", selected ? Ui("AF_KNOWLEDGE_RoleSelected", "selected") : Ui("AF_KNOWLEDGE_RoleNotSelected", "not selected")), ("SPECIFIC", selectedSpecific.ToString()),
 			("TOTAL", total.ToString()), ("PAGE", page.ToString()), ("PAGES", pages.ToString()));
 	public static string PickerNoMatch(string kind, string query)
-		=> Ui("AF_KNOWLEDGE_PickerNoMatch", string.IsNullOrWhiteSpace(query) ? "No selectable {KIND} found." : "No matching {KIND} found: {QUERY}", ("KIND", kind), ("QUERY", query ?? ""));
+		=> Ui(string.IsNullOrWhiteSpace(query) ? "AF_KNOWLEDGE_PickerNoMatch" : "AF_KNOWLEDGE_PickerNoMatchQuery", string.IsNullOrWhiteSpace(query) ? "No selectable {KIND} found." : "No matching {KIND} found: {QUERY}", ("KIND", kind), ("QUERY", query ?? ""));
 	public static string PickerPageSummary(string kind, int count, int page, int pages, string query, string suffix)
 		=> Ui("AF_KNOWLEDGE_PickerPageSummary", "{COUNT} {KIND}, page {PAGE}/{PAGES}.{SUFFIX}{SEARCH}",
 			("COUNT", count.ToString()), ("KIND", kind), ("PAGE", page.ToString()), ("PAGES", pages.ToString()),
 			("SUFFIX", suffix), ("SEARCH", string.IsNullOrWhiteSpace(query) ? "" : Ui("AF_KNOWLEDGE_PickerCurrentSearch", "\nCurrent search: {QUERY}", ("QUERY", query))));
 	public static string PickerEntryWithLeader(string name, string id, string leaderLabel, string leader)
-		=> Ui("AF_KNOWLEDGE_PickerEntryWithLeader", string.IsNullOrWhiteSpace(leader) ? "{NAME} ({ID})" : "{NAME} ({LEADER_LABEL}: {LEADER})",
-			("NAME", name), ("ID", id), ("LEADER_LABEL", leaderLabel), ("LEADER", leader));
+		=> Ui(string.IsNullOrWhiteSpace(leader) ? "AF_KNOWLEDGE_PickerEntryWithLeader" : "AF_KNOWLEDGE_PickerEntryWithLeaderNamed", string.IsNullOrWhiteSpace(leader) ? "{NAME} ({ID})" : "{NAME} ({LABEL}: {LEADER})",
+			("NAME", name), ("ID", id), ("LABEL", leaderLabel), ("LEADER", leader));
 	public static string PickerSearchPrompt(string kind, string idName)
 		=> Ui("AF_KNOWLEDGE_PickerSearchPrompt", "Enter {KIND} name or {ID}: ", ("KIND", kind), ("ID", idName));
 	public static string PickerRoleSearchPrompt(string role)

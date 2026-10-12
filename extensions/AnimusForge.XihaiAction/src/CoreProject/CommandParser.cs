@@ -8,7 +8,7 @@ namespace AnimusForge.SceneActions.Core
 {
     public sealed class CommandParser
     {
-        private const string ForceFramedPrefix = "强制";
+        private static readonly string ForceFramedPrefix = SceneActionVocabulary.Text("CommandParser.ForceFramedPrefix");
         private static readonly Regex ClassifierOutputPattern = new Regex(
             "^PLAY_ACTION ([a-z0-9][a-z0-9_-]*)$",
             RegexOptions.CultureInvariant);
@@ -19,10 +19,16 @@ namespace AnimusForge.SceneActions.Core
             "(?:\\*\\*(?<stage>[^*]{1,512})\\*\\*|(?<!\\*)\\*(?<stage>[^*]{1,512})\\*(?!\\*))",
             RegexOptions.CultureInvariant);
         private static readonly Regex PostposedKneelActorPattern = new Regex(
-            "(?:跪在|跪坐在|单膝跪在|双膝跪在)[^，。；！？]{0,24}的(?<actor>[\\p{L}·“”]{1,24})",
+            SceneActionVocabulary.Text("CommandParser.Raw0001"),
             RegexOptions.CultureInvariant);
         private static readonly Regex NpcClauseBoundaryPattern = new Regex(
-            "[。！？；;!?]+|(?:然后|随后|随即|接着|继而|转而|而是|反而|但是|不过|却|但)",
+            SceneActionVocabulary.Text("CommandParser.Raw0002"),
+            RegexOptions.CultureInvariant);
+        private static readonly Regex EnglishRuntimeControlClauseBoundaryPattern = new Regex(
+            @"[,;.!?]\s*(?:then|but|however|afterwards|subsequently)\b\s*",
+            RegexOptions.CultureInvariant);
+        private static readonly Regex EnglishConditionalClausePattern = new Regex(
+            @"\b(?:if|suppose|whether|in\s+case)\b",
             RegexOptions.CultureInvariant);
         private static readonly Regex RawActionIdPattern = new Regex(
             "act_",
@@ -68,6 +74,18 @@ namespace AnimusForge.SceneActions.Core
                 {
                     return ParseForcedFramedImmediate(
                         forcedText.Substring(ForceFramedPrefix.Length),
+                        settings);
+                }
+                if (forcedText.StartsWith("force ", StringComparison.OrdinalIgnoreCase))
+                {
+                    return ParseForcedFramedImmediate(
+                        forcedText.Substring(6),
+                        settings);
+                }
+                if (forcedText.StartsWith("force:", StringComparison.OrdinalIgnoreCase))
+                {
+                    return ParseForcedFramedImmediate(
+                        forcedText.Substring(6),
                         settings);
                 }
 
@@ -329,8 +347,11 @@ namespace AnimusForge.SceneActions.Core
                     continue;
                 }
                 if (candidateIntents.Count == 0 &&
-                    IsClearlyNonPerformedNpcAction(stageText) &&
-                    ContainsNaturalActionReference(stageText))
+                    ((IsClearlyNonPerformedNpcAction(stageText) && ContainsNaturalActionReference(stageText)) ||
+                     (ContainsAny(stageText, RuntimeControlNonPerformedMarkers) &&
+                      (ContainsAny(stageText, DrawWeaponCues) ||
+                       ContainsAny(stageText, SheatheWeaponCues) ||
+                       ContainsAny(stageText, StopOwnedActionCues)))))
                 {
                     continue;
                 }
@@ -472,7 +493,7 @@ namespace AnimusForge.SceneActions.Core
                     int recipientStart = verbIndex + verb.Length;
                     while (recipientStart < stageText.Length &&
                            (char.IsWhiteSpace(stageText[recipientStart]) ||
-                            stageText[recipientStart] == '着'))
+                            stageText[recipientStart] == SceneActionVocabulary.Text("CommandParser.AspectParticle")[0]))
                     {
                         recipientStart++;
                     }
@@ -543,8 +564,8 @@ namespace AnimusForge.SceneActions.Core
             string withoutContextMovement = stageText ?? string.Empty;
             foreach (string cue in new[]
             {
-                "转身", "走路", "走了两步", "走了过去", "走过去",
-                "走向", "走到", "走去", "迈步走向"
+                SceneActionVocabulary.Text("CommandParser.Raw0003"), SceneActionVocabulary.Text("CommandParser.Raw0004"), SceneActionVocabulary.Text("CommandParser.Raw0005"), SceneActionVocabulary.Text("CommandParser.Raw0006"), SceneActionVocabulary.Text("CommandParser.Raw0007"),
+                SceneActionVocabulary.Text("CommandParser.Raw0008"), SceneActionVocabulary.Text("CommandParser.Raw0009"), SceneActionVocabulary.Text("CommandParser.Raw0010"), SceneActionVocabulary.Text("CommandParser.Raw0011")
             })
             {
                 withoutContextMovement = withoutContextMovement.Replace(cue, string.Empty);
@@ -561,11 +582,11 @@ namespace AnimusForge.SceneActions.Core
             {
                 bool hasExplicitDance = ContainsAny(stageText, new[]
                 {
-                    "跳舞", "舞蹈", "舞动", "起舞", "跳起舞", "翩翩"
+                    SceneActionVocabulary.Text("CommandParser.Raw0012"), SceneActionVocabulary.Text("CommandParser.Raw0013"), SceneActionVocabulary.Text("CommandParser.Raw0014"), SceneActionVocabulary.Text("CommandParser.Raw0015"), SceneActionVocabulary.Text("CommandParser.Raw0016"), SceneActionVocabulary.Text("CommandParser.Raw0017")
                 });
                 if (!hasExplicitDance && ContainsAny(stageText, new[]
                 {
-                    "转了半圈", "转半圈", "旋转半圈"
+                    SceneActionVocabulary.Text("CommandParser.Raw0018"), SceneActionVocabulary.Text("CommandParser.Raw0019"), SceneActionVocabulary.Text("CommandParser.Raw0020")
                 }))
                 {
                     return true;
@@ -576,13 +597,13 @@ namespace AnimusForge.SceneActions.Core
             {
                 bool hasExplicitApplause = ContainsAny(stageText, new[]
                 {
-                    "鼓掌", "拍手叫好", "拍手喝彩", "拍起手来", "鼓起掌", "抚掌"
+                    SceneActionVocabulary.Text("CommandParser.Raw0021"), SceneActionVocabulary.Text("CommandParser.Raw0022"), SceneActionVocabulary.Text("CommandParser.Raw0023"), SceneActionVocabulary.Text("CommandParser.Raw0024"), SceneActionVocabulary.Text("CommandParser.Raw0025"), SceneActionVocabulary.Text("CommandParser.Raw0026")
                 });
                 if (!hasExplicitApplause && ContainsAny(stageText, new[]
                 {
-                    "拍了拍手上的灰", "拍掉手上的灰", "拍去手上的灰",
-                    "拍了拍衣服", "拍了拍胸口", "拍了拍肩膀",
-                    "拍了拍马鞍", "拍了拍桌子", "拍了拍脸"
+                    SceneActionVocabulary.Text("CommandParser.Raw0027"), SceneActionVocabulary.Text("CommandParser.Raw0028"), SceneActionVocabulary.Text("CommandParser.Raw0029"),
+                    SceneActionVocabulary.Text("CommandParser.Raw0030"), SceneActionVocabulary.Text("CommandParser.Raw0031"), SceneActionVocabulary.Text("CommandParser.Raw0032"),
+                    SceneActionVocabulary.Text("CommandParser.Raw0033"), SceneActionVocabulary.Text("CommandParser.Raw0034"), SceneActionVocabulary.Text("CommandParser.Raw0035")
                 }))
                 {
                     return true;
@@ -592,8 +613,8 @@ namespace AnimusForge.SceneActions.Core
             if (string.Equals(intentKey, SceneActionFrameworkV3.Disagree, StringComparison.Ordinal) &&
                 ContainsAny(stageText, new[]
                 {
-                    "不是否认", "并非否认", "不是拒绝", "并非拒绝",
-                    "不是不同意", "并非不同意"
+                    SceneActionVocabulary.Text("CommandParser.Raw0036"), SceneActionVocabulary.Text("CommandParser.Raw0037"), SceneActionVocabulary.Text("CommandParser.Raw0038"), SceneActionVocabulary.Text("CommandParser.Raw0039"),
+                    SceneActionVocabulary.Text("CommandParser.Raw0040"), SceneActionVocabulary.Text("CommandParser.Raw0041")
                 }))
             {
                 return true;
@@ -602,22 +623,22 @@ namespace AnimusForge.SceneActions.Core
             if (string.Equals(intentKey, SceneActionFrameworkV1.StandUp, StringComparison.Ordinal) &&
                 ContainsAny(stageText, new[]
                 {
-                    "站直身体", "站直身子", "挺直身躯", "挺直腰背", "站直腰背"
+                    SceneActionVocabulary.Text("CommandParser.Raw0042"), SceneActionVocabulary.Text("CommandParser.Raw0043"), SceneActionVocabulary.Text("CommandParser.Raw0044"), SceneActionVocabulary.Text("CommandParser.Raw0045"), SceneActionVocabulary.Text("CommandParser.Raw0046")
                 }) &&
                 !ContainsAny(stageText, new[]
                 {
-                    "站起来", "站起身", "站了起来", "从跪姿", "从地上",
-                    "撑地", "爬起", "起身", "重新起立"
+                    SceneActionVocabulary.Text("CommandParser.Raw0047"), SceneActionVocabulary.Text("CommandParser.Raw0048"), SceneActionVocabulary.Text("CommandParser.Raw0049"), SceneActionVocabulary.Text("CommandParser.Raw0050"), SceneActionVocabulary.Text("CommandParser.Raw0051"),
+                    SceneActionVocabulary.Text("CommandParser.Raw0052"), SceneActionVocabulary.Text("CommandParser.Raw0053"), SceneActionVocabulary.Text("CommandParser.Raw0054"), SceneActionVocabulary.Text("CommandParser.Raw0055")
                 }))
             {
                 return true;
             }
 
             if (string.Equals(intentKey, SceneActionFrameworkV2.Challenge, StringComparison.Ordinal) &&
-                ContainsAny(stageText, new[] { "挑衅的姿态", "充满挑衅" }) &&
+                ContainsAny(stageText, new[] { SceneActionVocabulary.Text("CommandParser.Raw0056"), SceneActionVocabulary.Text("CommandParser.Raw0057") }) &&
                 !ContainsAny(stageText, new[]
                 {
-                    "勾手", "招手挑衅", "拍胸叫阵", "叫阵", "勾了勾手指"
+                    SceneActionVocabulary.Text("CommandParser.Raw0058"), SceneActionVocabulary.Text("CommandParser.Raw0059"), SceneActionVocabulary.Text("CommandParser.Raw0060"), SceneActionVocabulary.Text("CommandParser.Raw0061"), SceneActionVocabulary.Text("CommandParser.Raw0062")
                 }))
             {
                 return true;
@@ -634,11 +655,11 @@ namespace AnimusForge.SceneActions.Core
             return (rawCandidateIntents ?? Enumerable.Empty<string>()).Contains(
                        SceneActionFrameworkV3.Disagree,
                        StringComparer.Ordinal) &&
-                   ContainsAny(stageText, new[] { "摇头", "摇了摇头", "摇摇头" }) &&
+                   ContainsAny(stageText, new[] { SceneActionVocabulary.Text("CommandParser.Raw0063"), SceneActionVocabulary.Text("CommandParser.Raw0064"), SceneActionVocabulary.Text("CommandParser.Raw0065") }) &&
                    !ContainsAny(stageText, new[]
                    {
-                       "不是否认", "并非否认", "不是拒绝", "并非拒绝",
-                       "不是不同意", "并非不同意"
+                       SceneActionVocabulary.Text("CommandParser.Raw0036"), SceneActionVocabulary.Text("CommandParser.Raw0037"), SceneActionVocabulary.Text("CommandParser.Raw0038"), SceneActionVocabulary.Text("CommandParser.Raw0039"),
+                       SceneActionVocabulary.Text("CommandParser.Raw0040"), SceneActionVocabulary.Text("CommandParser.Raw0041")
                    });
         }
 
@@ -649,12 +670,12 @@ namespace AnimusForge.SceneActions.Core
 
         private static bool IsAmbiguousPerformedHeadShake(string stageText)
         {
-            return ContainsAny(stageText, new[] { "摇头", "摇了摇头", "摇摇头" }) &&
+            return ContainsAny(stageText, new[] { SceneActionVocabulary.Text("CommandParser.Raw0063"), SceneActionVocabulary.Text("CommandParser.Raw0064"), SceneActionVocabulary.Text("CommandParser.Raw0065") }) &&
                    !IsClearlyNonPerformedNpcAction(stageText) &&
                    !ContainsAny(stageText, new[]
                    {
-                       "不是否认", "并非否认", "不是拒绝", "并非拒绝",
-                       "不是不同意", "并非不同意"
+                       SceneActionVocabulary.Text("CommandParser.Raw0036"), SceneActionVocabulary.Text("CommandParser.Raw0037"), SceneActionVocabulary.Text("CommandParser.Raw0038"), SceneActionVocabulary.Text("CommandParser.Raw0039"),
+                       SceneActionVocabulary.Text("CommandParser.Raw0040"), SceneActionVocabulary.Text("CommandParser.Raw0041")
                    });
         }
 
@@ -666,10 +687,10 @@ namespace AnimusForge.SceneActions.Core
             {
                 string actor = match.Groups["actor"].Value.Trim('“', '”');
                 if (string.IsNullOrEmpty(actor) ||
-                    actor.StartsWith("我", StringComparison.Ordinal) ||
-                    actor.StartsWith("自己", StringComparison.Ordinal) ||
-                    actor.StartsWith("他", StringComparison.Ordinal) ||
-                    actor.StartsWith("她", StringComparison.Ordinal) ||
+                    actor.StartsWith(SceneActionVocabulary.Text("CommandParser.Raw0066"), StringComparison.Ordinal) ||
+                    actor.StartsWith(SceneActionVocabulary.Text("CommandParser.Raw0067"), StringComparison.Ordinal) ||
+                    actor.StartsWith(SceneActionVocabulary.Text("CommandParser.Raw0068"), StringComparison.Ordinal) ||
+                    actor.StartsWith(SceneActionVocabulary.Text("CommandParser.Raw0069"), StringComparison.Ordinal) ||
                     actor.StartsWith("NPC", StringComparison.OrdinalIgnoreCase))
                 {
                     continue;
@@ -705,15 +726,15 @@ namespace AnimusForge.SceneActions.Core
             }
 
             bool stopsNamedAction =
-                (normalized.StartsWith("停止", StringComparison.Ordinal) ||
-                 normalized.StartsWith("别再", StringComparison.Ordinal) ||
-                 normalized.StartsWith("不要再", StringComparison.Ordinal) ||
-                 normalized.StartsWith("不再", StringComparison.Ordinal)) &&
+                (normalized.StartsWith(SceneActionVocabulary.Text("CommandParser.Raw0070"), StringComparison.Ordinal) ||
+                 normalized.StartsWith(SceneActionVocabulary.Text("CommandParser.Raw0071"), StringComparison.Ordinal) ||
+                 normalized.StartsWith(SceneActionVocabulary.Text("CommandParser.Raw0072"), StringComparison.Ordinal) ||
+                 normalized.StartsWith(SceneActionVocabulary.Text("CommandParser.Raw0073"), StringComparison.Ordinal)) &&
                 (ContainsAny(normalized, DrawWeaponCues) ||
                  ContainsAny(normalized, SheatheWeaponCues) ||
-                 normalized.IndexOf("欢呼", StringComparison.Ordinal) >= 0 ||
-                 normalized.IndexOf("跳舞", StringComparison.Ordinal) >= 0 ||
-                 normalized.IndexOf("动作", StringComparison.Ordinal) >= 0);
+                 normalized.IndexOf(SceneActionVocabulary.Text("CommandParser.Raw0074"), StringComparison.Ordinal) >= 0 ||
+                 normalized.IndexOf(SceneActionVocabulary.Text("CommandParser.Raw0012"), StringComparison.Ordinal) >= 0 ||
+                 normalized.IndexOf(SceneActionVocabulary.Text("CommandParser.Raw0075"), StringComparison.Ordinal) >= 0);
             if (stopsNamedAction || ContainsAny(normalized, StopOwnedActionCues))
             {
                 intentKey = SceneActionRuntimeControlsV1.StopAction;
@@ -744,22 +765,86 @@ namespace AnimusForge.SceneActions.Core
                 StringComparison.Ordinal);
         }
 
+        // Only recover an explicit later English clause. The original whole-stage
+        // path and Chinese clause behavior stay unchanged; hypothetical scope and
+        // open quotation must never become executable merely because of "then".
+        private static bool TryResolveIndependentRuntimeControlClause(
+            string stageText,
+            out string intentKey)
+        {
+            intentKey = null;
+            MatchCollection boundaries = EnglishRuntimeControlClauseBoundaryPattern.Matches(stageText);
+            for (int index = 0; index < boundaries.Count; index++)
+            {
+                Match boundary = boundaries[index];
+                int start = boundary.Index + boundary.Length;
+                if (HasOpenRuntimeControlQuote(stageText, start) ||
+                    EnglishConditionalClausePattern.IsMatch(stageText.Substring(0, start)))
+                {
+                    continue;
+                }
+                int end = index + 1 < boundaries.Count ? boundaries[index + 1].Index : stageText.Length;
+                string clause = stageText.Substring(start, end - start).Trim();
+                if (ContainsAny(clause, RuntimeControlNonPerformedMarkers) ||
+                    HasOpenRuntimeControlQuote(clause, clause.Length, rejectClosedQuotes: true) ||
+                    !TryResolveNpcRuntimeControlDescription(clause, out string resolved))
+                {
+                    continue;
+                }
+                if (intentKey != null && !string.Equals(intentKey, resolved, StringComparison.Ordinal))
+                {
+                    intentKey = null;
+                    return false;
+                }
+                intentKey = resolved;
+            }
+            return intentKey != null;
+        }
+
+        private static bool HasOpenRuntimeControlQuote(string text, int end, bool rejectClosedQuotes = false)
+        {
+            char closing = '\0';
+            for (int index = 0; index < end; index++)
+            {
+                char value = text[index];
+                // Apostrophes inside can't/don't and other words are not quotes.
+                if ((value == '\'' || value == '\u2019') && index > 0 && index + 1 < text.Length &&
+                    char.IsLetter(text[index - 1]) && char.IsLetter(text[index + 1]))
+                {
+                    continue;
+                }
+                if (closing != '\0')
+                {
+                    if (value == closing) closing = '\0';
+                }
+                else if (value == '\'' || value == '"' || value == '\u2018' || value == '\u201c')
+                {
+                    if (rejectClosedQuotes) return true;
+                    closing = value == '\u2018' ? '\u2019' : value == '\u201c' ? '\u201d' : value;
+                }
+            }
+            return closing != '\0';
+        }
+
         private static bool TryResolveNpcRuntimeControlDescription(
             string stageText,
             out string intentKey)
         {
             intentKey = null;
-            if (string.IsNullOrEmpty(stageText) ||
-                ContainsAny(stageText, RuntimeControlNonPerformedMarkers))
+            if (string.IsNullOrEmpty(stageText))
             {
                 return false;
+            }
+            if (ContainsAny(stageText, RuntimeControlNonPerformedMarkers))
+            {
+                return TryResolveIndependentRuntimeControlClause(stageText, out intentKey);
             }
 
             bool stop = ContainsAny(stageText, StopOwnedActionCues);
             bool sheathe = ContainsAny(stageText, SheatheWeaponCues);
             bool draw = ContainsAny(stageText, DrawWeaponCues) ||
-                        (stageText.IndexOf("握住剑柄", StringComparison.Ordinal) >= 0 &&
-                         ContainsAny(stageText, new[] { "抽出", "拔出", "出鞘" }));
+                        (stageText.IndexOf(SceneActionVocabulary.Text("CommandParser.Raw0076"), StringComparison.Ordinal) >= 0 &&
+                         ContainsAny(stageText, new[] { SceneActionVocabulary.Text("CommandParser.Raw0077"), SceneActionVocabulary.Text("CommandParser.Raw0078"), SceneActionVocabulary.Text("CommandParser.Raw0079") }));
             int count = (stop ? 1 : 0) + (sheathe ? 1 : 0) + (draw ? 1 : 0);
             if (count != 1)
             {
@@ -1018,7 +1103,7 @@ namespace AnimusForge.SceneActions.Core
                 }
 
                 string actionText = Normalize(forcedText.Substring(1));
-                if (!actionText.StartsWith("我", StringComparison.Ordinal) &&
+                if (!actionText.StartsWith(SceneActionVocabulary.Text("CommandParser.Raw0066"), StringComparison.Ordinal) &&
                     _catalog.TryGetForceAlias(actionText, out alias))
                 {
                     target = TargetMode.Player;
@@ -1033,7 +1118,7 @@ namespace AnimusForge.SceneActions.Core
         private static bool HasPlayerTargetPrefix(string text)
         {
             return !string.IsNullOrEmpty(text) &&
-                   text.StartsWith("我", StringComparison.Ordinal) &&
+                   text.StartsWith(SceneActionVocabulary.Text("CommandParser.Raw0066"), StringComparison.Ordinal) &&
                    !Array.Exists(
                        NonSelfPlayerPrefixes,
                        prefix => text.StartsWith(prefix, StringComparison.Ordinal));

@@ -130,6 +130,8 @@ function Get-AnimusForgeContentLayout {
         $target = [string]$entry.target
         $logicalNameProperty = $entry.PSObject.Properties["logicalName"]
         $logicalName = if ($null -eq $logicalNameProperty) { "" } else { [string]$logicalNameProperty.Value }
+        $roleProperty = $entry.PSObject.Properties['localizationRole']
+        $localizationRole = if ($null -eq $roleProperty) { '' } else { [string]$roleProperty.Value }
         if ([string]::IsNullOrWhiteSpace($owner)) {
             throw "Content map owner is required."
         }
@@ -155,6 +157,7 @@ function Get-AnimusForgeContentLayout {
             SourcePath = $sourcePath
             Target = $target
             LogicalName = $logicalName
+            LocalizationRole = $localizationRole
         })
     }
 
@@ -290,6 +293,17 @@ function Assert-AnimusForgeCleanStage {
     }
 
     $allowedDirs = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
+    # User override folders may remain empty after immutable defaults move under
+    # ModuleData. Derive their exact directory tree; unknown files stay forbidden.
+    $defaultsPrefix = 'ModuleData/Defaults/'
+    foreach ($relative in $expected.Keys) {
+        if (-not $relative.StartsWith($defaultsPrefix + 'CustomPrompts/', [StringComparison]::OrdinalIgnoreCase)) { continue }
+        $parent = [IO.Path]::GetDirectoryName($relative.Substring($defaultsPrefix.Length).Replace('/', [IO.Path]::DirectorySeparatorChar))
+        while (-not [string]::IsNullOrEmpty($parent)) {
+            $null = $allowedDirs.Add($parent.Replace('\', '/'))
+            $parent = [IO.Path]::GetDirectoryName($parent)
+        }
+    }
     foreach ($relative in $expected.Keys) {
         $parent = [System.IO.Path]::GetDirectoryName($relative.Replace('/', [System.IO.Path]::DirectorySeparatorChar))
         while (-not [string]::IsNullOrEmpty($parent)) {

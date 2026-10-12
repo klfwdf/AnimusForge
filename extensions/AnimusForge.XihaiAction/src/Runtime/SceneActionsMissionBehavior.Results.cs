@@ -90,8 +90,7 @@ namespace AnimusForge.XihaiAction
             if (SceneActionsRuntimeHost.Settings.ScreenBatchSummary)
             {
                 InformationManager.DisplayMessage(new InformationMessage(
-                    "SceneActions: " + tracker.Accepted + " accepted, " +
-                    tracker.Failed + " failed, " + tracker.Skipped + " skipped.",
+                    SceneActionsText.BatchSummary(tracker.Accepted, tracker.Failed, tracker.Skipped).ToString(),
                     new Color(0.7f, 0.7f, 0.7f, 1f)));
             }
         }

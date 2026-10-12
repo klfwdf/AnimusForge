@@ -168,12 +168,12 @@ class Program {
         F.Reset(); await Play();
         Check(F.Speakers.SequenceEqual(new[] {17,27,17,27,17,27,17,27}), "two people can alternate eight utterances");
         Check(F.CandidateSets[1].Contains(17), "A remains eligible after A to B");
-        Check(Stops == 1 && F.Messages.Last().Contains("发言次数上限"), "one limit stop notification");
+        Check(Stops == 1 && F.Messages.Last().Contains("speaking turn limit"), "one limit stop notification");
         F.Reset(town:true); await Play();
         Check(F.Speakers.Count == 8 && F.Claims.SequenceEqual(new[] {17,27}), "town repeat speakers consume no new-person claim");
         F.Reset(3, true, "third"); await Play();
         Check(F.Speakers.SequenceEqual(new[] {17,27,17}) && F.Claims.SequenceEqual(new[] {17,27,37}), "town rejects new C after A B A");
-        Check(Stops == 1 && F.Messages.Last().Contains("回应人数预算"), "town budget stop is shown once");
+        Check(Stops == 1 && F.Messages.Last().Contains("participant budget"), "town budget stop is shown once");
         F.Reset(town:true); F.EmptyHistory = true; await Play();
         Check(F.Claims.Count == 2 && F.Speakers.Count == 8, "budget admission does not depend on visible history count");
         foreach (var mode in new[] {"self", "missing", "invalid", "failed", "target-unavailable"}) {

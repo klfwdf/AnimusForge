@@ -1,5 +1,6 @@
 using System;
 using System.Text;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using TaleWorlds.Core;
@@ -31,10 +32,10 @@ public static class LlmRetryPrompt
 		{
 			return false;
 		}
-		if (text.StartsWith("（API请求失败", StringComparison.Ordinal)
-			|| text.StartsWith("（程序错误", StringComparison.Ordinal)
-			|| text.StartsWith("（API响应格式错误", StringComparison.Ordinal)
-			|| text.StartsWith("（错误", StringComparison.Ordinal)
+		if (text.StartsWith(LlmSourceTexts.Get("RetryableApiRequestPrefix"), StringComparison.Ordinal)
+			|| text.StartsWith(LlmSourceTexts.Get("RetryableProgramErrorPrefix"), StringComparison.Ordinal)
+			|| text.StartsWith(LlmSourceTexts.Get("RetryableApiResponsePrefix"), StringComparison.Ordinal)
+			|| text.StartsWith(LlmSourceTexts.Get("RetryableErrorPrefix"), StringComparison.Ordinal)
 			|| text.StartsWith("timeout_", StringComparison.OrdinalIgnoreCase)
 			|| text.StartsWith("http_", StringComparison.OrdinalIgnoreCase)
 			|| text.EndsWith("_config_invalid", StringComparison.OrdinalIgnoreCase)
@@ -53,7 +54,7 @@ public static class LlmRetryPrompt
 	public static string BuildRetryDescription(string stageName, string error)
 	{
 		string stage = RetryStageDisplay(stageName);
-		// 重试窗口只承载“重试/放弃”这个必要决策；完整诊断已在 ShowRetryPrompt 中转到左下角和日志。
+		// The inquiry only owns retry/abort; full diagnostics are reported separately.
 		var text = new TextObject("{=AF_UI_Retry_Description}{STAGE} failed. The full error was shown in the lower-left message feed and written to the log.\n\nRetry now?");
 		text.SetTextVariable("STAGE", stage);
 		return text.ToString();
@@ -62,59 +63,116 @@ public static class LlmRetryPrompt
 	private static string RetryStageDisplay(string stageName)
 	{
 		string stage = (stageName ?? "").Trim();
-		switch (stage)
-		{
-			case "": case "LLM请求": return new TextObject("{=AF_UI_Retry_StageRequest}LLM request").ToString();
-			case "动作后处理": return new TextObject("{=AF_UI_Retry_StagePostprocess}Action postprocessing").ToString();
-			case "辅助对话": return new TextObject("{=AF_UI_Retry_StageAuxiliary}Auxiliary conversation").ToString();
-			case "前处理规则选择": return new TextObject("{=AF_UI_Retry_StagePreprocess}Preprocessing rule selection").ToString();
-			case "正文生成": return new TextObject("{=AF_UI_Retry_StageReply}Reply generation").ToString();
-			case "信使回信正文生成": return new TextObject("{=AF_UI_Retry_StageCourierReply}Courier reply generation").ToString();
-			case "信使来信正文生成": return new TextObject("{=AF_UI_Retry_StageCourierLetter}Courier letter generation").ToString();
-			default: return stage;
-		}
+		if (stage.Length == 0 || stage == LlmSourceTexts.Get("RetryStageRequest")) return new TextObject("{=AF_UI_Retry_StageRequest}LLM request").ToString();
+		if (stage == LlmSourceTexts.Get("RetryStagePostprocess")) return new TextObject("{=AF_UI_Retry_StagePostprocess}Action postprocessing").ToString();
+		if (stage == LlmSourceTexts.Get("RetryStageAuxiliary")) return new TextObject("{=AF_UI_Retry_StageAuxiliary}Auxiliary conversation").ToString();
+		if (stage == LlmSourceTexts.Get("RetryStagePreprocess")) return new TextObject("{=AF_UI_Retry_StagePreprocess}Preprocessing rule selection").ToString();
+		if (stage == LlmSourceTexts.Get("RetryStageReply")) return new TextObject("{=AF_UI_Retry_StageReply}Reply generation").ToString();
+		if (stage == LlmSourceTexts.Get("RetryStageCourierReply")) return new TextObject("{=AF_UI_Retry_StageCourierReply}Courier reply generation").ToString();
+		if (stage == LlmSourceTexts.Get("RetryStageCourierLetter")) return new TextObject("{=AF_UI_Retry_StageCourierLetter}Courier letter generation").ToString();
+		return stage;
 	}
 
 	private static string RetryFailureDisplay(string stageName, string error)
 	{
 		var text = new TextObject("{=AF_UI_Retry_FailureDetail}{STAGE} failed:\n\n{DETAIL}");
 		text.SetTextVariable("STAGE", RetryStageDisplay(stageName));
-		text.SetTextVariable("DETAIL", NormalizeFullText(error, new TextObject("{=AF_UI_Retry_UnknownError}Unknown error").ToString()));
-		return text.ToString();
+		text.SetTextVariable("DETAIL", "AFRETRYDETAILEND");
+		return text.ToString().Replace("AFRETRYDETAILEND", NormalizeFullText(ProjectKnownErrorForUi(error), new TextObject("{=AF_UI_Retry_UnknownError}Unknown error").ToString()));
 	}
 
 	public static string BuildFailureDetail(string reason, string modelReply, string rawResponse = null)
 	{
 		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.Append(NormalizeFullText(reason, "未知错误"));
+		string fullReason = NormalizeFullText(reason, LlmSourceTexts.Get("RetryUnknownError"));
+		stringBuilder.Append(fullReason);
 		string fullModelReply = NormalizeFullText(modelReply, "");
 		string fullRawResponse = NormalizeFullText(rawResponse, "");
 		stringBuilder.AppendLine();
 		stringBuilder.AppendLine();
-		stringBuilder.AppendLine("【模型回复（完整）】");
-		stringBuilder.Append(string.IsNullOrWhiteSpace(fullModelReply) ? "（未收到或未能解析出模型回复）" : fullModelReply);
+		stringBuilder.AppendLine(LlmSourceTexts.Get("LegacyErrorDetailMarker"));
+		stringBuilder.Append(string.IsNullOrWhiteSpace(fullModelReply) ? LlmSourceTexts.Get("RetryNoModelReply") : fullModelReply);
 		if (!string.IsNullOrWhiteSpace(fullRawResponse) && !string.Equals(fullRawResponse, fullModelReply, StringComparison.Ordinal))
 		{
 			stringBuilder.AppendLine();
 			stringBuilder.AppendLine();
-			stringBuilder.AppendLine("【API原始响应（完整）】");
+			stringBuilder.AppendLine(LlmSourceTexts.Get("RetryRawResponseMarker"));
 			stringBuilder.Append(fullRawResponse);
 		}
-		return stringBuilder.ToString().TrimEnd();
+		string detail = stringBuilder.ToString().TrimEnd();
+		RetryErrorProjection.Remember(detail, fullReason, fullModelReply, fullRawResponse);
+		return detail;
 	}
+
+    internal static string ProjectKnownErrorForUi(string value)
+    {
+        return RetryErrorProjection.Project(value);
+    }
 
 	public static void ShowFailurePopup(string title, string message)
 	{
 		void Show()
 		{
-			// 纯 LLM 失败报告改走左下角消息，避免完整 API 响应覆盖正在操作的菜单。
 			NonBlockingErrorReport.Show(
 				string.IsNullOrWhiteSpace(title) ? new TextObject("{=AF_UI_Retry_RequestFailed}AnimusForge request failed").ToString() : title.Trim(),
-				NormalizeFullText(message, new TextObject("{=AF_UI_Retry_UnknownError}Unknown error").ToString()));
+				NormalizeFullText(message, new TextObject("{=AF_UI_Retry_UnknownError}Unknown error").ToString()), true,
+				ProjectKnownErrorForUi(message));
 		}
-
 		PostToMainThread(Show);
 	}
+
+    // Failure-only weak metadata preserves field boundaries without parsing model/provider bodies.
+    // A copied or unrelated diagnostic has no metadata and only exact known reasons are projected.
+    private static class RetryErrorProjection
+    {
+        private sealed class Parts
+        {
+            internal readonly string Reason, Reply, Response;
+            internal Parts(string reason, string reply, string response) { Reason = reason; Reply = reply; Response = response; }
+        }
+        private static readonly ConditionalWeakTable<string, Parts> Details = new ConditionalWeakTable<string, Parts>();
+
+        internal static void Remember(string detail, string reason, string reply, string response)
+            => Details.Add(detail, new Parts(reason, reply, response));
+
+        internal static string Project(string value)
+        {
+            if (value == null) return null;
+            if (!Details.TryGetValue(value, out Parts parts)) return Reason(value);
+            StringBuilder text = new StringBuilder();
+            text.Append(Reason(parts.Reason));
+            text.AppendLine(); text.AppendLine();
+            text.AppendLine(new TextObject("{=AF_UI_Retry_FullModelReply}Model reply (complete)").ToString());
+            text.Append(parts.Reply.Length == 0 ? new TextObject("{=AF_UI_Retry_NoModelReply}(No model reply was received or could be parsed)").ToString() : parts.Reply);
+            if (parts.Response.Length != 0 && !string.Equals(parts.Response, parts.Reply, StringComparison.Ordinal))
+            {
+                text.AppendLine(); text.AppendLine();
+                text.AppendLine(new TextObject("{=AF_UI_Retry_FullRawResponse}Raw API response (complete)").ToString());
+                text.Append(parts.Response);
+            }
+            return text.ToString().TrimEnd();
+        }
+
+        private static string Reason(string value)
+        {
+            string reason = (value ?? "").Trim();
+            if (reason == SaveRuntimeGuard.BuildStaleRequestErrorText()) return new TextObject("{=AF_UI_Retry_StaleRequest}The request was invalidated by loading a save.").ToString();
+            if (reason == LlmSourceTexts.Get("RetryCheckMcm")) return new TextObject("{=AF_UI_Retry_CheckMcm}Please check MCM settings.").ToString();
+            if (reason == LlmSourceTexts.Get("RetryUnknownError")) return new TextObject("{=AF_UI_Retry_UnknownError}Unknown error").ToString();
+            if (reason == LlmSourceTexts.Get("LegacyErrorPrefixMissingApiKey")) return new TextObject("{=AF_UI_Retry_MissingApiKey}(Error: API Key is not configured)").ToString();
+            if (reason == LlmSourceTexts.Get("LegacyErrorPrefixMissingModel")) return new TextObject("{=AF_UI_Retry_MissingModel}(Error: Model name is not configured)").ToString();
+            if (reason == LlmSourceTexts.Get("RetryActionTagsMissing")) return new TextObject("{=AF_UI_Retry_ActionTagsMissing}(API response format error) Action postprocessing returned no parseable [ACTION:...] tags.").ToString();
+            string prefix = LlmSourceTexts.Get("RetryPreprocessFormatPrefix");
+            string suffix = LlmSourceTexts.Get("RetryPreprocessFormatSuffix");
+            if (reason.StartsWith(prefix, StringComparison.Ordinal) && reason.EndsWith(suffix, StringComparison.Ordinal) && reason.Length >= prefix.Length + suffix.Length)
+            {
+                var text = new TextObject("{=AF_UI_Retry_PreprocessFormatInvalid}(API response format error) Preprocessing rule selection returned an invalid format: {REASON}. Output exactly one JSON object containing the rule_codes string array and the mentioned_entities.entities string array.");
+                text.SetTextVariable("REASON", "AFRETRYREASONEND");
+                return text.ToString().Replace("AFRETRYREASONEND", reason.Substring(prefix.Length, reason.Length - prefix.Length - suffix.Length));
+            }
+            return value;
+        }
+    }
 
 	// Inputs are detached strings. Native localization runs only inside the existing dispatcher.
 	internal static void ShowLocalizedFailurePopup(string titleTemplate, string diagnostic,
@@ -124,7 +182,7 @@ public static class LlmRetryPrompt
 		void Show()
 		{
 			string title = ResolveFailureTemplate(titleTemplate, "SOURCE", titleSource);
-			string display = reasonTemplate == null ? null : FailureDetailForDisplay(reasonTemplate, modelReply, rawResponse, reasonCode);
+			string display = reasonTemplate == null ? ProjectKnownErrorForUi(diagnostic) : FailureDetailForDisplay(reasonTemplate, modelReply, rawResponse, reasonCode);
 			NonBlockingErrorReport.Show(
 				string.IsNullOrWhiteSpace(title) ? new TextObject("{=AF_UI_Retry_RequestFailed}AnimusForge request failed").ToString() : title,
 				NormalizeFullText(diagnostic, new TextObject("{=AF_UI_Retry_UnknownError}Unknown error").ToString()), true, display);
@@ -137,8 +195,9 @@ public static class LlmRetryPrompt
 		string raw = (template ?? "").Trim();
 		if (!raw.StartsWith("{=", StringComparison.Ordinal)) return raw;
 		var text = new TextObject(raw);
-		if (value != null) text.SetTextVariable(variableName, value);
-		return text.ToString();
+		if (value == null) return text.ToString();
+		text.SetTextVariable(variableName, "AFRETRYTEMPLATEVALUEEND");
+		return text.ToString().Replace("AFRETRYTEMPLATEVALUEEND", value);
 	}
 
 	private static string FailureDetailForDisplay(string reasonTemplate, string modelReply, string rawResponse, string reasonCode)
@@ -183,7 +242,7 @@ public static class LlmRetryPrompt
 		}
 		if (_mainThreadId != 0 && Thread.CurrentThread.ManagedThreadId == _mainThreadId)
 		{
-			ShowFailurePopup(new TextObject("{=AF_UI_Retry_RequestFailed}AnimusForge request failed").ToString(), RetryFailureDisplay(stageName, error));
+			NonBlockingErrorReport.Show(new TextObject("{=AF_UI_Retry_RequestFailed}AnimusForge request failed").ToString(), error, true, RetryFailureDisplay(stageName, error));
 			return false;
 		}
 		using ManualResetEventSlim waitHandle = new ManualResetEventSlim(false);
@@ -212,10 +271,10 @@ public static class LlmRetryPrompt
 		{
 			try
 			{
-				// 保留重试决策窗口，但把可能很长的接口响应从窗口主体迁到非阻塞消息。
+				// Preserve retry decisions while reporting full API diagnostics outside the inquiry.
 				NonBlockingErrorReport.Show(
 					new TextObject("{=AF_UI_Retry_RequestFailed}AnimusForge request failed").ToString(),
-					RetryFailureDisplay(stageName, error));
+					error, true, RetryFailureDisplay(stageName, error));
 				InformationManager.ShowInquiry(new InquiryData(
 					new TextObject("{=AF_UI_Retry_RequestFailed}AnimusForge request failed").ToString(),
 					BuildRetryDescription(stageName, error),

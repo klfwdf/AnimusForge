@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" type="string">
+  <tags><tag language="简体中文" /></tags>
+  <strings>
+    <!-- CivilWarUiText 界面文本 -->
+    <string id="AF_KINGDOM_CW_FactionTag_make_peace" text="反战派" />
+    <string id="AF_KINGDOM_CW_FactionTag_continue_war" text="主战派" />
+    <string id="AF_KINGDOM_CW_FactionTag_revoke_policy" text="改革派" />
+    <string id="AF_KINGDOM_CW_FactionTag_redress" text="复仇派" />
+    <string id="AF_KINGDOM_CW_FactionTag_autonomy" text="分离派" />
+    <string id="AF_KINGDOM_CW_FactionTag_usurp" text="宣权派" />
+    <string id="AF_KINGDOM_CW_FactionTag_unknown" text="反对派" />
+
+    <string id="AF_KINGDOM_CW_Demand_make_peace" text="停止与{TARGET}的战争并议和" />
+    <string id="AF_KINGDOM_CW_Demand_continue_war" text="对{TARGET}战事不许议和" />
+    <string id="AF_KINGDOM_CW_Demand_revoke_policy" text="废除{TARGET}" />
+    <string id="AF_KINGDOM_CW_Demand_redress" text="赔偿损失并追究责任" />
+    <string id="AF_KINGDOM_CW_Demand_autonomy" text="承认本派封地自治" />
+    <string id="AF_KINGDOM_CW_Demand_usurp" text="国王退位，由本派领袖继位" />
+    <string id="AF_KINGDOM_CW_Demand_unknown" text="追求派系诉求" />
+    <string id="AF_KINGDOM_CW_Target" text="目标" />
+
+    <string id="AF_KINGDOM_CW_Source_royal_execution" text="王室处决" />
+    <string id="AF_KINGDOM_CW_Source_fief_denied" text="封地落选" />
+    <string id="AF_KINGDOM_CW_Source_policy_imposed" text="政策强推" />
+    <string id="AF_KINGDOM_CW_Source_war_imposed" text="强行开战" />
+    <string id="AF_KINGDOM_CW_Source_peace_imposed" text="强行议和" />
+    <string id="AF_KINGDOM_CW_Source_lands_raided" text="领地遭劫" />
+    <string id="AF_KINGDOM_CW_Source_fief_lost" text="失守封地" />
+    <string id="AF_KINGDOM_CW_Source_broken_pledge" text="国王背诺" />
+    <string id="AF_KINGDOM_CW_Source_demand_refused" text="诉求被拒" />
+    <string id="AF_KINGDOM_CW_Source_royal_suppression" text="王室打压" />
+    <string id="AF_KINGDOM_CW_Source_unknown" text="不满" />
+
+    <string id="AF_KINGDOM_CW_Role_King" text="国王" />
+    <string id="AF_KINGDOM_CW_Role_Crown" text="王室阵营" />
+    <string id="AF_KINGDOM_CW_Role_Member" text="{TAG}成员" />
+    <string id="AF_KINGDOM_CW_Role_Leader" text="{TAG}领袖" />
+    <string id="AF_KINGDOM_CW_Role_Middle" text="中立" />
+
+    <string id="AF_KINGDOM_CW_Stability_ExtremelyHigh" text="极高" />
+    <string id="AF_KINGDOM_CW_Stability_High" text="高" />
+    <string id="AF_KINGDOM_CW_Stability_FairlyHigh" text="较高" />
+    <string id="AF_KINGDOM_CW_Stability_Average" text="一般" />
+    <string id="AF_KINGDOM_CW_Stability_Poor" text="差" />
+    <string id="AF_KINGDOM_CW_Stability_VeryPoor" text="很差" />
+    <string id="AF_KINGDOM_CW_Stability_ExtremelyPoor" text="极差" />
+
+    <!-- 操作结果通知（采样，完整集合在 CivilWarUiText.cs） -->
+    <string id="AF_KINGDOM_CW_Action_NoOperation" text="操作不存在。" />
+    <string id="AF_KINGDOM_CW_Action_Disabled" text="内战派系已禁用，或王国已失效。" />
+    <string id="AF_KINGDOM_CW_CampCrown" text="王室阵营" />
+
+    <!-- 核心事件编年史 -->
+    <string id="AF_KINGDOM_CW_Core_RebellionCooldown" text="王国刚经历一场叛乱；{WEEKS}周内不会形成新派系。" />
+    <string id="AF_KINGDOM_CW_Core_PledgeBroken" text="国王违背承诺，与{OTHER}议和" />
+    <string id="AF_KINGDOM_CW_Core_EnemyKingdom" text="敌对王国" />
+    <string id="AF_KINGDOM_CW_Core_UltimatumDelivered" text="{FACTION}递交了最后通牒：{DEMAND}" />
+    <string id="AF_KINGDOM_CW_Core_UltimatumStatus" text="\n\n已被拒绝{COUNT}次。若不作答将在第{DAY}天自动决定。拒绝可能导致内战。" />
+    <string id="AF_KINGDOM_CW_Chronicle_SupportWithdrawn" text="{CLANS}因{SOURCE}等事件积累不满，撤回对王室的支持，转为中立" />
+  </strings>
+</base>

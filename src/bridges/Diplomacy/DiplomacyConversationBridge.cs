@@ -28,7 +28,9 @@ internal static class DiplomacyConversationBridge
         DiplomacyModuleServices.Conversation.CanUseIndependentClanPeace((hero ?? character?.HeroObject)?.StringId);
     internal static bool IsIndependentClanPeacePostprocessTag(string tag) => DiplomacyModuleServices.Conversation.IsIndependentClanPeacePostprocessTag(tag);
     internal static string BuildDiplomacyPostprocessContext(Hero hero) => DiplomacyModuleServices.Conversation.BuildDiplomacyPostprocessContext(hero?.StringId);
-    internal static void ProcessDiplomacyTagsDispatch(Hero hero, ref string text) => DiplomacyModuleServices.Conversation.ProcessDiplomacyTags(hero?.StringId, ref text);
+    internal static void ProcessDiplomacyTagsDispatch(Hero hero, ref string text, System.Collections.Generic.List<string> receipts = null) => DiplomacyModuleServices.Conversation.ProcessDiplomacyTags(hero?.StringId, ref text, receipts);
+    internal static string ComposeReply(string body, System.Collections.Generic.IReadOnlyList<string> receipts, bool forUi = false) =>
+        DiplomacyModuleServices.Conversation.ComposeDialogueReply(body, receipts, forUi);
     internal static bool CanDiscussWorldDiplomacyForExternal(Hero hero) => DiplomacyModuleServices.World.CanDiscuss(hero?.StringId);
     internal static bool TryBuildProactiveDiscussionForExternal(Hero hero, out string key, out string fact, out float urgency) =>
         DiplomacyModuleServices.World.TryBuildProactiveDiscussion(hero?.StringId, out key, out fact, out urgency);

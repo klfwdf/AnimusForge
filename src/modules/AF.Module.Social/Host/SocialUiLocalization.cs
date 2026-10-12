@@ -1,5 +1,6 @@
-using TaleWorlds.Localization;
+﻿using TaleWorlds.Localization;
 using System;
+using System.Globalization;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
@@ -7,6 +8,7 @@ namespace AnimusForge;
 
 internal static class SocialUiLocalization
 {
+    private static readonly Regex LiteralValues = new Regex(@"AFSOCIALUILITERAL([0-9]+)END", RegexOptions.CultureInvariant);
 	internal static string Text(string id, string englishFallback)
 	{
 		return new TextObject("{=" + id + "}" + englishFallback).ToString();
@@ -16,13 +18,12 @@ internal static class SocialUiLocalization
 	{
 		TextObject text = new TextObject("{=" + id + "}" + englishFallback);
 		if (variables != null)
-		{
-			foreach ((string key, object value) in variables)
-			{
-				text.SetTextVariable(key, value?.ToString() ?? string.Empty);
-			}
-		}
-		return text.ToString();
+        {
+            for (int i = 0; i < variables.Length; i++)
+                text.SetTextVariable(variables[i].Key, "AFSOCIALUILITERAL" + i.ToString(CultureInfo.InvariantCulture) + "END");
+        }
+        return LiteralValues.Replace(text.ToString(), match =>
+            variables[int.Parse(match.Groups[1].Value, CultureInfo.InvariantCulture)].Value?.ToString() ?? string.Empty);
 	}
 
 	/// <summary>

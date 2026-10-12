@@ -1,0 +1,12 @@
+<?xml version='1.0' encoding='utf-8'?>
+<base type="string">
+  <tags>
+    <tag language="English" />
+  </tags>
+  <strings>
+    <string id="AF_REC_BulletinScopeFallbackArea" text="the player's region" />
+    <string id="AF_REC_BulletinScopeLine" text="Bulletin perspective: major world events, organized around what readers in {AREA} care about; facts involving the player or that realm come first" />
+    <string id="AF_REC_PromotedSkillNone" text="(none)" />
+    <string id="AF_REC_WorldPreviewSummary" text="World events use the world opening overview plus the week's major actions, leadership upheavals and world-level shared material that best represent shifts across the continent. Minor actions such as army members joining or leaving are condensed." />
+  </strings>
+</base>

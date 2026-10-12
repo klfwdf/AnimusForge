@@ -16,6 +16,7 @@
   <LanguageFile xml_path="afeconomy_strings.xml" />
   <LanguageFile xml_path="afknowledge_strings.xml" />
   <LanguageFile xml_path="afmemory_ui_strings.xml" />
+  <LanguageFile xml_path="afllm_ui_strings.xml" />
   <LanguageFile xml_path="afworldmap_strings.xml" />
   <LanguageFile xml_path="afdip_ui_strings.xml" />
   <LanguageFile xml_path="afconv_ui_strings.xml" />
@@ -29,4 +30,13 @@
   <LanguageFile xml_path="af_runtime_strings.xml" />
   <LanguageFile xml_path="afscene_catalog_strings.xml" />
   <LanguageFile xml_path="afscene_speech_strings.xml" />
+  <LanguageFile xml_path="afissue_prompt_strings.xml" />
+  <LanguageFile xml_path="afadapter_records_strings.xml" />
+  <LanguageFile xml_path="afadapter_scene_strings.xml" />
+  <LanguageFile xml_path="afweekly_bulletin_strings.xml" />
+  <LanguageFile xml_path="afpol_misc_strings.xml" />
+  <LanguageFile xml_path="afdip_misc_strings.xml" />
+  <LanguageFile xml_path="afduel_strings.xml" />
+  <LanguageFile xml_path="afcoup_strings.xml" />
+  <LanguageFile xml_path="afpersona_ui_strings.xml" />
 </LanguageData>

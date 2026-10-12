@@ -1,3 +1,4 @@
+using AnimusForge;
 using System;
 using System.Collections.Generic;
 using AnimusForge.DiplomacyDialogue;
@@ -47,7 +48,7 @@ public sealed class WorldDiplomacyDialogueMemoryReceipt
 {
     public string SourceId { get; set; } = ""; public string RulerId { get; set; } = "";
     public string Fact { get; set; } = ""; public int Day { get; set; }
-    public int Hour { get; set; } public string NpcName { get; set; } = "统治者";
+    public int Hour { get; set; } public string NpcName { get; set; } = DiplomacyMiscPromptTexts.Get("Prompt_RulerFallback", "Ruler");
     public string GameDate { get; set; } = "";
     public string LocationId { get; set; } = ""; public bool Delivered { get; set; }
     public string LastError { get; set; } = "";

@@ -50,7 +50,7 @@ internal sealed class MemorySummaryApplicationAdapter
                     bool current = await _dispatch(run, generation, delegate
                     {
                         if (!_inputCurrent(input)) return false;
-                        if (!api.Success) { result.Error = api.ErrorMessage ?? "API请求失败"; result.ErrorDisplay = api.ErrorMessage == null
+                        if (!api.Success) { result.Error = api.ErrorMessage ?? "API request failed"; result.ErrorDisplay = api.ErrorMessage == null
                             ? MemoryFailureUiText.T("AF_MEMORY_UI_ApiRequestFailed", "API request failed") : MemoryFailureUiText.Error(api.ErrorMessage); return true; }
                         var hero = _findHero(input.HeroId);
                         string error;
@@ -58,20 +58,20 @@ internal sealed class MemorySummaryApplicationAdapter
                         {
                             parsed = TryParseMemorySummaryResponse(api.Content, hero, input.Draft, line => BuildDailyMemoryLineForPrompt(line, _resolveScene), out var block, out error);
                             result.Value = block;
-                            if (!parsed) { result.Error = MemoryBusinessStateOwner.BuildSummaryJsonParseFailureMessage("总结格式解析失败", error, api.Content); result.ErrorDisplay = MemoryFailureUiText.ParseFailure(error, api.Content); }
+                            if (!parsed) { result.Error = MemoryBusinessStateOwner.BuildSummaryJsonParseFailureMessage("Summary format parsing failed", error, api.Content); result.ErrorDisplay = MemoryFailureUiText.ParseFailure(error, api.Content); }
                         }
                         else if (input.Job is MajorActionSummaryJob major)
                         {
                             parsed = TryParseMajorActionSummaryResponse(api.Content, hero, major, input.Actions, out var state, out error);
                             result.Value = state;
-                            if (!parsed) { result.Error = MemoryBusinessStateOwner.BuildSummaryJsonParseFailureMessage("重大履历总结格式解析失败", error, api.Content); result.ErrorDisplay = MemoryFailureUiText.ParseFailure(error, api.Content); }
+                            if (!parsed) { result.Error = MemoryBusinessStateOwner.BuildSummaryJsonParseFailureMessage("Major career summary format parsing failed", error, api.Content); result.ErrorDisplay = MemoryFailureUiText.ParseFailure(error, api.Content); }
                         }
                         else
                         {
                             parsed = TryParseMemoryOverviewResponse(api.Content, hero, (MemoryOverviewJob)input.Job,
                                 input.Overview, input.Blocks, out var state, out error);
                             result.Value = state;
-                            if (!parsed) { result.Error = MemoryBusinessStateOwner.BuildSummaryJsonParseFailureMessage("记忆总览格式解析失败", error, api.Content); result.ErrorDisplay = MemoryFailureUiText.ParseFailure(error, api.Content); }
+                            if (!parsed) { result.Error = MemoryBusinessStateOwner.BuildSummaryJsonParseFailureMessage("Memory overview format parsing failed", error, api.Content); result.ErrorDisplay = MemoryFailureUiText.ParseFailure(error, api.Content); }
                         }
                         return true;
                     });
@@ -242,10 +242,10 @@ internal sealed class MemorySummaryApplicationAdapter
 		{
 			return "";
 		}
-		string text = (string.IsNullOrWhiteSpace(line.GameDate) ? ("第" + line.GameDayIndex + "日") : line.GameDate.Trim());
+		string text = (string.IsNullOrWhiteSpace(line.GameDate) ? AdapterPromptCaptureTexts.PcapFormat("memory_capture_day", "Day {DAY}", ("DAY", line.GameDayIndex)) : line.GameDate.Trim());
 		string text2 = resolveScene(line);
-		string text3 = string.IsNullOrWhiteSpace(line.Speaker) ? (line.IsAfef ? "AFEF" : "对话") : line.Speaker.Trim();
-		return "[" + text + " " + MBMath.ClampInt(line.GameHour, 0, 23) + "时｜" + text2 + "｜" + text3 + "] " + line.Text.Trim();
+		string text3 = string.IsNullOrWhiteSpace(line.Speaker) ? (line.IsAfef ? "AFEF" : AdapterPromptCaptureTexts.PcapText("memory_capture_1")) : line.Speaker.Trim();
+		return AdapterPromptCaptureTexts.PcapFormat("memory_capture_line", "[{DATE} hour {HOUR} | {SCENE} | {SPEAKER}] {TEXT}", ("DATE", text), ("HOUR", MBMath.ClampInt(line.GameHour, 0, 23)), ("SCENE", text2), ("SPEAKER", text3), ("TEXT", line.Text.Trim()));
 	}
 internal static string BuildMajorActionSummarySourceLine(Hero hero, NpcActionEntry entry)
 	{
@@ -253,8 +253,10 @@ internal static string BuildMajorActionSummarySourceLine(Hero hero, NpcActionEnt
 		{
 			return "";
 		}
-		string date = !string.IsNullOrWhiteSpace(entry.GameDate) ? entry.GameDate.Trim() : ("第 " + entry.Day + " 日");
-		string text = NpcActionRecordOwner.RenderText(hero?.Name?.ToString()?.Trim(), entry.Text, CampaignBattleRecordCaptureAdapter.StripBattlePlayerMarker) + CampaignCharacterRecordCaptureAdapter.BuildNpcActionMetadataNarrativeSuffix(entry);
+		string date = !string.IsNullOrWhiteSpace(entry.GameDate) ? entry.GameDate.Trim() : AdapterPromptCaptureTexts.PcapFormat("memory_capture_spaced_day", "Day {DAY}", ("DAY", entry.Day));
+		string actorName = hero?.Name?.ToString()?.Trim();
+		if (string.IsNullOrWhiteSpace(actorName)) actorName = MemoryTextResources.Prompt("AF_MEM_Prompt_DefaultActor");
+		string text = NpcActionRecordOwner.RenderText(actorName, entry.Text, CampaignBattleRecordCaptureAdapter.StripBattlePlayerMarker) + CampaignCharacterRecordCaptureAdapter.BuildNpcActionMetadataNarrativeSuffix(entry);
 		return (date + "｜" + text).Trim();
 	}
 
@@ -282,26 +284,26 @@ internal static string BuildMemoryOverviewBlockSourceText(CompressedMemoryBlock 
 		{
 			return "";
 		}
-		string date = string.IsNullOrWhiteSpace(block.GameDate) ? ("第" + block.GameDayIndex + "日") : block.GameDate.Trim();
+		string date = string.IsNullOrWhiteSpace(block.GameDate) ? AdapterPromptCaptureTexts.PcapFormat("memory_capture_day", "Day {DAY}", ("DAY", block.GameDayIndex)) : block.GameDate.Trim();
 		string title = MemoryRecordRules.StripMemoryTitleDateTime(block.RichTitle);
 		if (string.IsNullOrWhiteSpace(title))
 		{
-			title = "往日对话记忆";
+			title = AdapterPromptCaptureTexts.PcapText("memory_capture_2");
 		}
-		string scenes = block.Scenes != null && block.Scenes.Count > 0 ? string.Join(" / ", block.Scenes.Select((string x) => (x ?? "").Trim()).Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase)) : "地点未知";
+		string scenes = block.Scenes != null && block.Scenes.Count > 0 ? string.Join(" / ", block.Scenes.Select((string x) => (x ?? "").Trim()).Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase)) : AdapterPromptCaptureTexts.PcapText("memory_capture_3");
 		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.AppendLine("- 记忆块ID：" + ((block.Id ?? MemoryRecordRules.BuildCompressedMemoryBlockId(block.HeroId, block.GameDayIndex)).Trim()));
-		stringBuilder.AppendLine("  日期时间地点：" + date + " " + MemoryRecallContextOwner.FormatMemoryHourRange(block.StartHour, block.EndHour) + "｜" + scenes);
-		stringBuilder.AppendLine("  标题：" + title);
-		stringBuilder.AppendLine("  内容：" + (block.Summary ?? "").Trim());
+		stringBuilder.AppendLine(AdapterPromptCaptureTexts.PcapText("memory_capture_4") + ((block.Id ?? MemoryRecordRules.BuildCompressedMemoryBlockId(block.HeroId, block.GameDayIndex)).Trim()));
+		stringBuilder.AppendLine(AdapterPromptCaptureTexts.PcapText("memory_capture_5") + date + " " + MemoryRecallContextOwner.FormatMemoryHourRange(block.StartHour, block.EndHour) + "｜" + scenes);
+		stringBuilder.AppendLine(AdapterPromptCaptureTexts.PcapText("memory_capture_6") + title);
+		stringBuilder.AppendLine(AdapterPromptCaptureTexts.PcapText("memory_capture_7") + (block.Summary ?? "").Trim());
 		if (block.AfefLines != null && block.AfefLines.Count > 0)
 		{
-			stringBuilder.AppendLine("  AFEF事实参考：");
+			stringBuilder.AppendLine(AdapterPromptCaptureTexts.PcapText("memory_capture_8"));
 			foreach (string line in block.AfefLines)
 			{
 				if (!string.IsNullOrWhiteSpace(line))
 				{
-					stringBuilder.AppendLine("  " + line.Trim());
+					stringBuilder.AppendLine("  " + MemorySystemFactProjection.ProjectRecordedFactForPrompt(line.Trim()));
 				}
 			}
 		}
@@ -391,17 +393,17 @@ internal static string BuildMemoryOverviewContextById(MemoryBusinessStateOwner m
 		MemoryOverviewState state = memory.GetMemoryOverviewState(heroId);
 		if (state != null && !string.IsNullOrWhiteSpace(state.LastError) && blocks != null && blocks.Count >= overviewStartCount() && memory.HasMemoryOverviewPendingBlocks(heroId, blocks))
 		{
-			return "【过往记忆总览】\n过往记忆总览正在整理，暂不可引用总览细节。";
+			return AdapterPromptCaptureTexts.PcapText("memory_capture_9");
 		}
 		if (state != null && !string.IsNullOrWhiteSpace(state.Summary))
 		{
-			return "【过往记忆总览】\n" + state.Summary.Trim();
+			return AdapterPromptCaptureTexts.PcapText("memory_overview_header") + state.Summary.Trim();
 		}
 		if (blocks == null || blocks.Count < overviewStartCount())
 		{
 			return "";
 		}
-		return "【过往记忆总览】\n过往记忆总览正在整理，暂不可引用总览细节。";
+		return AdapterPromptCaptureTexts.PcapText("memory_capture_9");
 	}
 
 internal static void TryStartMemorySummaryQueue(MemoryBusinessStateOwner memory, MemorySummaryRunOwner runs, Func<bool> isBusy, Func<bool,Task> processQueue, double throttleSeconds, bool forceOverviewCandidateScan = false)

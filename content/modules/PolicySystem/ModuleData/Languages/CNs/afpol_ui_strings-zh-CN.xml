@@ -4,6 +4,76 @@
     <tag language="简体中文" />
   </tags>
   <strings>
+    <string id="AFPOL_UI_PayloadOnceDaily" text="一次 {ONCE} / 每日 {DAILY}" />
+    <string id="AFPOL_UI_PayloadXpPerSoldier" text=" XP/兵" />
+    <string id="AFPOL_UI_PayloadPartyMembers" text="{VALUE} 人" />
+    <string id="AFPOL_UI_PayloadVillageRaidBan" text="发布者本国领主禁止劫掠村庄" />
+    <string id="AFPOL_UI_Management_error_request_empty_0" text="政策请求为空。" />
+    <string id="AFPOL_UI_Management_error_policy_record_not_exist_0" text="地方政策记录不存在。" />
+    <string id="AFPOL_UI_Management_error_cannot_extend_0" text="该地方政策当前不能延长效果。" />
+    <string id="AFPOL_UI_Management_error_all_fiefs_lost_0" text="原目标封地已经全部失去。" />
+    <string id="AFPOL_UI_Management_error_no_executable_target_0" text="发布地政策效果已经没有可执行目标。" />
+    <string id="AFPOL_UI_Management_error_cannot_recover_effect_0" text="发布地政策效果已经无法恢复。" />
+    <string id="AFPOL_UI_Management_error_cannot_merge_multi_target_0" text="地方政策多目标效果无法合并：" />
+    <string id="AFPOL_UI_Management_error_lifecycle_prepare_failed_0" text="延长效果的模块生命周期准备失败：" />
+    <string id="AFPOL_UI_Management_error_shell_sync_failed_0" text="延长效果的 record shell 同步失败：" />
+    <string id="AFPOL_UI_Management_error_validation_failed_0" text="延长效果状态验证失败：" />
+    <string id="AFPOL_UI_Management_error_vassal_record_not_exist_0" text="附庸国政策记录不存在。" />
+    <string id="AFPOL_UI_Management_error_vassal_cannot_renew_0" text="该政策当前不能续约。" />
+    <string id="AFPOL_UI_Management_error_no_ruler_authority_0" text="当前没有原发布王国的统治者权限。" />
+    <string id="AFPOL_UI_Management_error_no_longer_direct_vassal_0" text="目标国家已不再是玩家王国的直属附庸国。" />
+    <string id="AFPOL_UI_Management_error_renewal_external_prepare_failed_0" text="续约外部提交准备失败：" />
+    <string id="AFPOL_UI_Management_error_vassal_effect_cannot_recover_0" text="目标附庸国的政策效果已经无法恢复。" />
+    <string id="AFPOL_UI_Management_error_vassal_cannot_merge_0" text="附庸国政策多目标效果无法合并：" />
+    <string id="AFPOL_UI_Management_error_renewal_lifecycle_failed_0" text="续约模块生命周期准备失败：" />
+    <string id="AFPOL_UI_Management_error_renewal_shell_sync_failed_0" text="续约 record shell 同步失败：" />
+    <string id="AFPOL_UI_Management_error_renewal_validation_failed_0" text="续约状态验证失败：" />
+    <string id="AFPOL_UI_Management_error_renewal_breakaway_validation_failed_0" text="脱离后的续约状态验证失败：" />
+    <string id="AFPOL_UI_Management_error_renewal_commit_not_observable_0" text="续约独立度提交结果暂不可观察，已保留 externalCommitPending 供每日幂等对账。" />
+    <string id="AFPOL_UI_Management_error_renewal_commit_not_happened_0" text="续约独立度外部提交未发生，已恢复提交前 AF 状态。" />
+    <string id="AFPOL_UI_Management_error_no_merge_target_0" text="没有可合并的续约 target shell" />
+    <string id="AFPOL_UI_Management_error_shell_inconsistent_0" text="target shell 的 record/scope/duration/progress 不一致" />
+    <string id="AFPOL_UI_Management_error_shell_empty_or_duplicate_id_0" text="target shell 包含空或重复的 InstanceId" />
+    <string id="AFPOL_UI_Management_error_invalid_merged_instance_count_0" text="合并后的逻辑模块实例数量无效" />
+    <string id="AFPOL_UI_Management_error_instance_incompatible_2" text=" 的 target shell 不兼容：" />
+    <string id="AFPOL_UI_Management_error_instance_empty_0" text="实例为空" />
+    <string id="AFPOL_UI_Management_error_module_payload_inconsistent_0" text="module/payload 不一致" />
+    <string id="AFPOL_UI_Management_error_policy_runtime_inconsistent_0" text="policy/runtime/lifecycle/timeline 不一致" />
+    <string id="AFPOL_UI_Management_error_renewal_instance_invalid_2" text=" 续约实例无效：" />
+    <string id="AFPOL_UI_Management_error_renewal_prepare_failed_2" text=" 续约 Prepare 失败：" />
+    <string id="AFPOL_UI_Management_error_renewal_onrenewed_failed_2" text=" OnRenewed 失败：" />
+    <string id="AFPOL_UI_Management_error_renewal_invalid_receipt_2" text=" OnRenewed 返回了无效回执" />
+    <string id="AFPOL_UI_Management_error_active_v8_incomplete_0" text="Active v8 延长效果结构不完整" />
+    <string id="AFPOL_UI_Management_error_local_renewal_no_target_0" text="地方续约 Active 缺少当前定居点目标" />
+    <string id="AFPOL_UI_Management_error_vassal_renewal_invalid_target_0" text="附庸国续约 Active 的目标王国无效" />
+    <string id="AFPOL_UI_Management_error_renewal_module_invalid_0" text="续约模块实例无效：" />
+    <string id="AFPOL_UI_Management_error_renewal_payload_too_large_0" text="续约模块 payload 总量超过 32KiB" />
+    <string id="AFPOL_UI_Management_error_unknown_module_no_target_0" text="未知模块续约实例缺少可保留的规范目标：" />
+    <string id="AFPOL_UI_Management_error_renewal_payload_not_executable_2" text=" 续约 payload 无法执行：" />
+    <string id="AFPOL_UI_Management_error_renewal_target_scope_invalid_2" text=" 续约目标或作用域无效：" />
+    <string id="AFPOL_UI_Management_error_renewal_cannot_replay_oneshot_2" text=" 续约时不得重放 OneShot" />
+    <string id="AFPOL_UI_Management_error_renewal_invalid_receipt_set_0" text="续约 Active 包含无效、重复或孤立的执行回执" />
+    <string id="AFPOL_UI_Management_error_target_empty_2" text=" 目标为空" />
+    <string id="AFPOL_UI_Management_error_target_not_exist_2" text=" 目标不存在：" />
+    <string id="AFPOL_UI_Management_error_shell_active_not_exist_0" text="record shell 引用了不存在的 Active：" />
+    <string id="AFPOL_UI_Management_error_shell_empty_or_duplicate_instance_0" text="record shell 包含空或重复的 InstanceId" />
+    <string id="AFPOL_UI_Management_error_shell_instance_not_in_active_0" text="record shell 的逻辑实例未进入 Active：" />
+    <string id="AFPOL_UI_Management_error_shell_instance_no_target_0" text="record shell 的逻辑实例缺少目标：" />
+    <string id="AFPOL_UI_Management_error_shell_no_instance_0" text="record shell 不包含模块实例" />
+    <string id="AFPOL_UI_Management_error_renewal_active_serialize_failed_0" text="续约 Active 序列化结果超过限制或无法规范化" />
+    <string id="AFPOL_UI_Management_error_renewal_active_duplicate_id_0" text="续约 Active effectId 重复：" />
+    <string id="AFPOL_UI_Management_error_renewal_record_v6_incomplete_0" text="续约 record v6 结构不完整" />
+    <string id="AFPOL_UI_Management_error_renewal_record_active_mismatch_0" text="续约 record 与 Active 引用集合不一致" />
+    <string id="AFPOL_UI_Management_error_renewal_record_serialize_failed_0" text="续约 record 序列化结果超过限制或无法规范化" />
+    <string id="AFPOL_UI_Management_error_renewal_state_serialize_exception_0" text="续约状态序列化失败：" />
+    <string id="AFPOL_UI_Management_error_renewal_commit_incomplete_0" text="续约提交数据不完整。" />
+    <string id="AFPOL_UI_Management_error_renewal_effectid_conflict_0" text="续约 effectId 与现有 Active 冲突：" />
+    <string id="AFPOL_UI_Management_error_vassal_effect_record_invalid_0" text="附庸国政策效果记录无效。" />
+    <string id="AFPOL_UI_Management_MissingPrepared" text="未返回 prepared instance" />
+    <string id="AFPOL_UI_Management_MissingRenewed" text="未返回成功结果" />
+    <string id="AFPOL_UI_Management_CommitFailed" text="续约状态提交失败；" />
+    <string id="AFPOL_UI_Management_SnapshotRestored" text="已恢复旧快照。" />
+    <string id="AFPOL_UI_Management_SnapshotRestoreFailed" text="旧快照恢复也失败。" />
     <string id="AFPOL_UI_BalanceDescription" text="每日按原版＋政策的净变化结算：正数最多加到总量上限；负数照常扣除，超额旧存量不削减。" />
     <string id="AFPOL_UI_BalanceFoodRule" text="玩家和 NPC 全部适用。默认仅开启城市／城堡粮仓容量1000，其余六项默认关闭；粮仓不叠加城堡、建筑加成。&#10;繁荣度耗粮由 MCM“取消繁荣度耗粮”独立开关控制，默认关闭并保留原版；与本窗口各项开关无关。驻军耗粮、围城、供粮和政策粮食变化保留。" />
     <string id="AFPOL_UI_BalanceInitialStatus" text="未开启的预填数值不生效。保存后应用；取消或 Esc 丢弃编辑；恢复默认后需保存。" />
@@ -626,5 +696,38 @@
     <string id="AFPOL_UI_Effect_HearthPerDaySummary" text="村庄每日户数变化" />
     <string id="AFPOL_UI_Effect_ConstructionPerDayName" text="设施建造力" />
     <string id="AFPOL_UI_Effect_ConstructionPerDaySummary" text="城镇或城堡每日建造力点数变化" />
+    <string id="AFPOL_UI_PromptAutoDraftFileCorrupt" text="已有玩家AI编写提示词文件损坏；请先备份或修复原件，未覆盖原件。" />
+    <string id="AFPOL_UI_PromptCommonEffectFileCorrupt" text="已有政策效果共同要求文件损坏；未覆盖原件。" />
+    <string id="AFPOL_UI_PromptModuleFileCorrupt" text="已有政策效果要求文件损坏；未覆盖原件。" />
+    <string id="AFPOL_UI_PromptEffectNotEditable" text="所选政策效果已不可编辑。" />
+    <string id="AFPOL_UI_PromptStorageFolderUnavailable" text="无法定位政策提示词文件夹。" />
+    <string id="AFPOL_UI_PromptTargetDirectoryEmpty" text="政策提示词目标目录为空。" />
+    <string id="AFPOL_UI_PromptModuleIdUnsafe" text="政策效果 ModuleId 不能安全映射为提示词文件名。" />
+    <string id="AFPOL_UI_VassalPolicyPrepareFailed" text="附庸关系无法冻结为可提交状态，政策未生效、独立度未变更。" />
+    <string id="AFPOL_UI_VassalPolicyCommitRolledBack" text="政策提交失败，已撤销效果与本地/统一记录；独立度尚未变更。" />
+    <string id="AFPOL_UI_VassalPolicyCommitUnconfirmed" text="独立度提交结果暂时无法确认；政策已保留为外部提交待对账状态，不会重复增加独立度。" />
+    <string id="AFPOL_UI_VassalPolicyCommitUnchanged" text="独立度提交前置状态已变化或提交未发生；AF 效果与记录已安全撤销。" />
+    <!-- Player policy autodraft UI notices -->
+    <string id="AFPOL_UI_AutoDraft_MissingDescription" text="缺少政策描述。" />
+    <string id="AFPOL_UI_AutoDraft_NeedTitleOrContent" text="请先填写政策标题或政策内容。" />
+    <string id="AFPOL_UI_AutoDraft_EvaluatingPrevious" text="上一份政策仍在评议，暂时不能使用AI编写。" />
+    <string id="AFPOL_UI_AutoDraft_AlreadyDrafting" text="已有一份内容正在AI编写，请稍候。" />
+    <string id="AFPOL_UI_AutoDraft_ApiUnavailable" text="AI服务配置不可用，请检查模型、密钥与连接设置。" />
+    <string id="AFPOL_UI_AutoDraft_Failed" text="AI编写失败。" />
+    <!-- LocalPolicyUi autodraft error mapping -->
+    <string id="AFPOL_UI_AutoDraft_RequestFailed" text="AI编写请求失败，请检查连接设置并查看日志。" />
+    <string id="AFPOL_UI_AutoDraft_StaleDraft" text="政策草案请求已因读档失效。" />
+    <string id="AFPOL_UI_AutoDraft_NoStructuredResult" text="AI编写没有返回有效的结构化结果。" />
+    <string id="AFPOL_UI_AutoDraft_CannotParseStructuredResult" text="AI编写返回的结构化结果无法解析。" />
+    <string id="AFPOL_UI_AutoDraft_OnlyTwoFieldsAllowed" text="AI编写只能返回政策名和政策正文两个字段。" />
+    <string id="AFPOL_UI_AutoDraft_FieldsMustBeText" text="AI编写返回的政策名和政策正文必须是文本。" />
+    <string id="AFPOL_UI_AutoDraft_FieldsCannotBeEmpty" text="AI编写返回了空的政策名或政策正文。" />
+    <string id="AFPOL_UI_AutoDraft_CannotModifyExistingName" text="AI编写修改了玩家已指定的政策名。" />
+      <string id="AFPOL_UI_CampaignDate" text="{YEAR}年{SEASON}季{DAY}日" />
+    <string id="AFPOL_UI_NoAvailablePolicySummary" text="该政策尚无可用摘要。" />
+    <string id="AFPOL_UI_SeasonSpring" text="春" />
+    <string id="AFPOL_UI_SeasonSummer" text="夏" />
+    <string id="AFPOL_UI_SeasonAutumn" text="秋" />
+    <string id="AFPOL_UI_SeasonWinter" text="冬" />
   </strings>
 </base>

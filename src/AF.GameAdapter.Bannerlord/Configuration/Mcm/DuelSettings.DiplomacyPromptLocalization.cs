@@ -23,9 +23,9 @@ public partial class DuelSettings
     internal static string LocalizeWorldDiplomacyContractForPrompt(string contract)
     {
         string core = DiplomacyPromptTexts.Get("AF_DIP_Prompt_CommonCore", EnglishWorldDiplomacyContractCore);
-        if (string.Equals(contract, DefaultWorldDiplomacyContractCore, StringComparison.Ordinal)) return core;
+        if ((string.Equals(contract, DefaultWorldDiplomacyContractCore, StringComparison.Ordinal) || string.Equals(contract, SourceDefaultWorldDiplomacyContractCore, StringComparison.Ordinal))) return core;
         if (!TryExtractWorldDiplomacyPreference(contract, out string preference)) return contract;
-        if (string.Equals(preference, DefaultWorldDiplomacyPreference, StringComparison.Ordinal))
+        if ((string.Equals(preference, DefaultWorldDiplomacyPreference, StringComparison.Ordinal) || string.Equals(preference, SourceDefaultWorldDiplomacyPreference, StringComparison.Ordinal)))
             preference = DiplomacyPromptTexts.Get("AF_DIP_Prompt_DefaultPreference", EnglishWorldDiplomacyPreference);
         return core + "\n"
             + DiplomacyPromptTexts.Get("AF_DIP_Prompt_PreferenceSection", "[Player-defined AI diplomacy preferences]") + "\n"

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Drawing2D;
@@ -763,7 +763,7 @@ namespace AnimusForge.Illustrator.Engine
                     // cancelled caller must still receive ownership of a created stage.
                     try { tcs.TrySetResult(work()); }
                     catch (Exception ex) { tcs.TrySetException(ex); }
-                })) throw new InvalidOperationException("游戏线程任务队列已满，无法执行插画采集操作。");
+                })) throw new InvalidOperationException("The game-thread task queue is full. Illustration capture could not run.");
                 return await tcs.Task.ConfigureAwait(false);
             }
         }

@@ -1,20 +1,20 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 
 namespace AnimusForge;
 
-// Original fact wording for weekly Prompt material; UI projection is separate.
+// Package-language grammar for transient weekly Prompt material; saved facts and UI projection stay separate.
 internal static class NpcActionMaterialPreviewProjection
 {
 	internal static string Build(NpcActionEditorDisplayPort port, NpcActionEntry entry)
 	{
 		if (entry == null)
 		{
-			return "无效行动";
+			return AdapterRecordTexts.Prompt("InvalidAction");
 		}
 		List<string> list = new List<string>();
 		string text = port.BuildNpcActionActorNarrativeText(entry);
-		string text2 = port.TranslateNpcActionKindForPrompt(entry.ActionKind);
+		string text2 = AdapterRecordTexts.PromptActionKind(entry.ActionKind, port.TranslateNpcActionKindForPrompt(entry.ActionKind));
 		string text3 = port.ResolveDisplayNameBySettlementEntry(entry);
 		string text4 = port.ResolveKingdomDisplay(entry.SettlementOwnerKingdomId);
 		string text5 = port.ResolveClanDisplay(entry.SettlementOwnerClanId);
@@ -29,65 +29,65 @@ internal static class NpcActionMaterialPreviewProjection
 		}
 		else if (!string.IsNullOrWhiteSpace(text2))
 		{
-			list.Add("这是一条" + text2);
+			list.Add(AdapterRecordTexts.PromptFormat("ActionKind", ("KIND", text2)));
 		}
 		if (!string.IsNullOrWhiteSpace(text3) && string.IsNullOrWhiteSpace(entry.SettlementId) && !text.Contains(text3))
 		{
-			list.Add("地点在" + text3);
+			list.Add(AdapterRecordTexts.PromptFormat("Location", ("LOCATION", text3)));
 		}
 		if (!string.IsNullOrWhiteSpace(text9) && !string.IsNullOrWhiteSpace(text10))
 		{
-			list.Add("其所属家族是" + text9 + "，隶属于" + text10);
+			list.Add(AdapterRecordTexts.PromptFormat("ActorClanKingdom", ("CLAN", text9), ("KINGDOM", text10)));
 		}
 		else if (!string.IsNullOrWhiteSpace(text9))
 		{
-			list.Add("其所属家族是" + text9);
+			list.Add(AdapterRecordTexts.PromptFormat("ActorClan", ("CLAN", text9)));
 		}
 		else if (!string.IsNullOrWhiteSpace(text10))
 		{
-			list.Add("其隶属于" + text10);
+			list.Add(AdapterRecordTexts.PromptFormat("ActorKingdom", ("KINGDOM", text10)));
 		}
 		if (!string.IsNullOrWhiteSpace(text5) && !string.IsNullOrWhiteSpace(text4))
 		{
-			list.Add("当时该地由" + text5 + "掌控，隶属于" + text4);
+			list.Add(AdapterRecordTexts.PromptFormat("OwnerClanKingdom", ("CLAN", text5), ("KINGDOM", text4)));
 		}
 		else if (!string.IsNullOrWhiteSpace(text4))
 		{
-			list.Add("当时该地隶属于" + text4);
+			list.Add(AdapterRecordTexts.PromptFormat("OwnerKingdom", ("KINGDOM", text4)));
 		}
 		else if (!string.IsNullOrWhiteSpace(text5))
 		{
-			list.Add("当时该地由" + text5 + "掌控");
+			list.Add(AdapterRecordTexts.PromptFormat("OwnerClan", ("CLAN", text5)));
 		}
 		if (!string.IsNullOrWhiteSpace(text8))
 		{
-			list.Add("涉及人物是" + text8);
+			list.Add(AdapterRecordTexts.PromptFormat("TargetHero", ("HERO", text8)));
 		}
 		else if (!string.IsNullOrWhiteSpace(text7))
 		{
-			list.Add("涉及家族是" + text7);
+			list.Add(AdapterRecordTexts.PromptFormat("TargetClan", ("CLAN", text7)));
 		}
 		else if (!string.IsNullOrWhiteSpace(text6))
 		{
-			list.Add("涉及王国是" + text6);
+			list.Add(AdapterRecordTexts.PromptFormat("TargetKingdom", ("KINGDOM", text6)));
 		}
 		if (entry.Won.HasValue)
 		{
-			list.Add("结果是" + (entry.Won.Value ? "获胜" : "失利"));
+			list.Add(AdapterRecordTexts.PromptFormat("Result", ("OUTCOME", AdapterRecordTexts.Prompt(entry.Won.Value ? "Victory" : "Defeat"))));
 		}
 		if (entry.IsMajor)
 		{
-			list.Add("属于重大行动");
+			list.Add(AdapterRecordTexts.Prompt("MajorAction"));
 		}
 		if (list.Count == 0)
 		{
-			return "这条记录暂时没有可读摘要。";
+			return AdapterRecordTexts.Prompt("NoSummary");
 		}
 		if (!port.HasStructuredNpcActionMetadata(entry))
 		{
-			list.Add("这条记录的结构化信息较少");
+			list.Add(AdapterRecordTexts.Prompt("SparseMetadata"));
 		}
-		return string.Join("；", list) + "。";
+		return string.Join(AdapterRecordTexts.Prompt("Separator"), list) + AdapterRecordTexts.Prompt("Period");
 	}
 }
 

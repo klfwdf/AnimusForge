@@ -1,5 +1,6 @@
 """Static UI boundary/resource evidence. Current C# and in-game refresh are NOT-RUN."""
 import importlib.util
+import json
 import re
 import subprocess
 import xml.etree.ElementTree as ET
@@ -48,7 +49,17 @@ restored = restored.replace(new_helper + "\n\n\t", "", 1)
 array = r"private static readonly string\[\] NotorietyLevelTexts = new string\[11\]\s*\{[\s\S]*?\};"
 old_array, new_array = re.search(array, baseline)[0], re.search(array, host)[0]
 restored = restored.replace(new_array, old_array, 1)
-assert restored == baseline, "A non-display producer/Prompt/save/rule changed"
+source_values = json.loads((ROOT / "content/modules/AF.Module.Social/ModuleData/SocialSourceTexts.json").read_text(encoding="utf-8"))
+prompt_values = json.loads((ROOT / "content/modules/AF.Module.Social/ModuleData/SocialPromptTexts.json").read_text(encoding="utf-8"))
+prompt_english = json.loads((ROOT / "content/modules/AF.Module.Social/ModuleData/SocialPromptTexts.en.json").read_text(encoding="utf-8"))
+assert prompt_values.keys() == prompt_english.keys()
+for key in prompt_values:
+    assert re.findall(r"\d+", prompt_values[key]) == re.findall(r"\d+", prompt_english[key]), key
+    assert re.findall(r"\{[^{}]+\}|\[[A-Z_]+\]", prompt_values[key]) == re.findall(r"\{[^{}]+\}|\[[A-Z_]+\]", prompt_english[key]), key
+for reader, values in (("SocialSourceTexts", source_values), ("SocialPromptTexts", prompt_values)):
+    restored = re.sub(reader + r'\.Get\("([^"\n]+)"\)', lambda match: json.dumps(values[match[1]], ensure_ascii=False), restored)
+restored = restored.replace('SocialUiLocalization.Format("AF_SOCIAL_UI_Century", "Century {NUMBER}", ("NUMBER", ((year + 99) / 100).ToString()))', '((year + 99) / 100).ToString() + "世纪"')
+assert restored == baseline, "A non-display producer/Prompt/save/rule changed after exact resource restoration"
 assert host.count("BuildPlayerNotorietyDisplayText(") == 2  # Declaration + sole encyclopedia caller.
 assert "BuildPlayerNotorietyPopupData" in host and "HistoryText = BuildPlayerNotorietyHistoryText" in host
 assert ".Take(20)" in method(host, signatures[0]) and ".Take(30)" in method(host, signatures[0])
@@ -59,6 +70,7 @@ assert "Math.Floor(ClampPercentDouble(score) / 10.0)" in level and "index = 10" 
 en_path = ROOT / "content/modules/AF.Module.Social/ModuleData/Languages/afsocial_ui_strings.xml"
 en = {n.get("id"): n.get("text") for n in ET.parse(en_path).iter("string")}
 cn = {n.get("id"): n.get("text") for n in ET.parse(en_path.parent / "CNs/afsocial_ui_strings-zh-CN.xml").iter("string")}
+assert en["AF_SOCIAL_UI_Century"] == "Century {NUMBER}" and cn["AF_SOCIAL_UI_Century"] == "{NUMBER}世纪"
 keys = {key for key in en if key.startswith("AF_SOCIAL_UI_Notoriety_")}
 assert len(keys) == 24 and keys <= cn.keys(), keys
 for match in re.finditer(r'(?:UiText|SocialUiLocalization\.Format)\("(AF_SOCIAL_UI_Notoriety_[^"]+)",\s*("(?:[^"\\]|\\.)*")', host):
@@ -82,8 +94,16 @@ assert "EndsWith(previousBlock, StringComparison.Ordinal)" in remove
 find = method(patch, "private static int FindNotorietyHeading(")
 assert "text[found - 1] == '\\n'" in find and "text[end] == '\\n'" in find
 before_patch = original(patch_path)
+def code_tokens(text):
+    result, cursor = [], 0
+    for token in audit.LEX.finditer(text):
+        result.append(re.sub(r'\s+', '', text[cursor:token.start()]))
+        result.append(token[0])
+        cursor = token.end()
+    result.append(re.sub(r'\s+', '', text[cursor:]))
+    return ''.join(result)
 for signature in ("public static bool EncyclopediaDataOnTickPrefix(", "public static void OnApplicationTick("):
     # The existing input guard and update loop must stay intact; no new Tick translation.
-    assert method(patch, signature) == method(before_patch, signature), signature
+    assert code_tokens(method(patch, signature)) == code_tokens(method(before_patch, signature)), signature
 assert set(audit.TRACED_UI_METHODS[host_path]) >= {"BuildPlayerNotorietyDisplayText", "BuildPlayerNotorietyHistoryText"}
 print("PASS static notoriety UI: 24 paired keys, 11 unchanged tier meanings, raw producers/Prompt/save/rules identical, encyclopedia/popup wiring and refresh suffix/input/Tick guards; C# and game NOT-RUN")

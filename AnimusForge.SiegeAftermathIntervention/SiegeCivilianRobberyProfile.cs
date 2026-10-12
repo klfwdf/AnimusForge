@@ -6,7 +6,19 @@ namespace AnimusForge.SiegeAftermathIntervention;
 /// </summary>
 public static class SiegeCivilianRobberyProfile
 {
-    public const string ActionName = "抢钱";
+    public const string ActionName = "Extortion";
+    public const string ActionNameEn = "Extortion";
+    
+    public const string MarketInventoryLootReasonEn = "demand supplies by robbery";
+    public const string MemoryTitleEn = "Robbery";
+    public const string GoldMemoryTextEn = "The player demanded denars from the defeated civilians or notables; this is local robbery and does not trigger native pillage.";
+    public const string GoodsMemoryTextEn = "The player demanded goods from the defeated civilians or notables; this is local supply seizure and does not trigger native pillage.";
+
+    public static string GetActionName(bool isEnglish) => isEnglish ? ActionNameEn : ActionName;
+    public static string GetMarketInventoryLootReason(bool isEnglish) => isEnglish ? MarketInventoryLootReasonEn : MarketInventoryLootReason;
+    public static string GetMemoryTitle(bool isEnglish) => isEnglish ? MemoryTitleEn : MemoryTitle;
+    public static string GetGoldMemoryText(bool isEnglish) => isEnglish ? GoldMemoryTextEn : GoldMemoryText;
+    public static string GetGoodsMemoryText(bool isEnglish) => isEnglish ? GoodsMemoryTextEn : GoodsMemoryText;
 
     public const int CommonerMinGold = SiegeLootAccountingProfile.NonHeroPlunderMinGold;
 
@@ -28,12 +40,12 @@ public static class SiegeCivilianRobberyProfile
 
     public const float MarketInventoryMaxRatio = 0.30f;
 
-    public const string MarketInventoryLootReason = "抢钱索取物资";
+    public const string MarketInventoryLootReason = "Extortion of supplies";
 
-    public const string MemoryTitle = "抢钱";
+    public const string MemoryTitle = "Extortion";
+    
+    public const string GoldMemoryText = "The player demanded denars from the defeated civilian or notable; this is local extortion, not vanilla plunder.";
 
-    public const string GoldMemoryText = "玩家向当前战败民众或要人索取第纳尔；这是局部抢钱，不触发原版掠夺。";
-
-    public const string GoodsMemoryText = "玩家向当前战败民众或要人索取物资；这是局部抢物资，不触发原版掠夺。";
+    public const string GoodsMemoryText = "The player demanded supplies from the defeated civilian or notable; this is local extortion, not vanilla plunder.";
 
 }

@@ -1,3 +1,4 @@
+using AnimusForge;
 using System;
 using System.Collections.Generic;
 using AnimusForge.Refactor.Domain;
@@ -58,7 +59,7 @@ internal static class WorldDiplomacyOfferActionApplication
         {
             if (!TryResolveTradeAcceptanceTerms(source, offer.SourceActionId, response.TreatyTerms, out var terms, out string reason))
             {
-                response.MechanicalResult = "贸易接受未执行：" + WorldDiplomacyAnalysisApplication.DescribeRejectedPlayerMechanic(reason);
+                response.MechanicalResult = DiplomacyMiscPromptTexts.Get("Offer_TradeAcceptNotExecutedPrefix", "Trade acceptance not executed: ") + WorldDiplomacyAnalysisApplication.DescribeRejectedPlayerMechanic(reason);
                 return WorldDiplomacyOfferOutcome.Failed;
             }
             response.TreatyTerms = terms == null ? null : WorldDiplomacyDialogueTerms.From(terms.ToTerms());
@@ -118,7 +119,7 @@ internal static class WorldDiplomacyOfferApplication
             (bool blocked, string blockReason) = proposalViolation(intent, document);
             if (blocked)
             {
-                document.MechanicalResult = "提议未登记：" + blockReason;
+                document.MechanicalResult = DiplomacyMiscPromptTexts.Get("Offer_NotRegisteredPrefix", "Proposal not registered: ") + blockReason;
                 return WorldDiplomacyOfferOutcome.Failed;
             }
             WorldDiplomacyRoundLifecycleRules.RegisterRelayProposalOffer(round, document, intent);
@@ -128,14 +129,14 @@ internal static class WorldDiplomacyOfferApplication
         if (string.IsNullOrWhiteSpace(proposalIntent)) return WorldDiplomacyOfferOutcome.None;
         if (string.IsNullOrWhiteSpace(document.RespondingToOfferDocumentId))
         {
-            document.MechanicalResult = "答复未执行：缺少唯一来源提议";
+            document.MechanicalResult = DiplomacyMiscPromptTexts.Get("Offer_ReplyMissingUniqueSource", "Reply not executed: missing unique source proposal");
             return WorldDiplomacyOfferOutcome.Failed;
         }
         List<WorldDiplomacyRoundOffer> matchingOffers =
             WorldDiplomacyRoundLifecycleRules.SelectMatchingRelayResponseOffers(round, document, proposalIntent);
         if (matchingOffers.Count != 1)
         {
-            document.MechanicalResult = "答复未执行：来源提议已关闭、失效或不唯一";
+            document.MechanicalResult = DiplomacyMiscPromptTexts.Get("Offer_ReplySourceClosedOrInvalid", "Reply not executed: source proposal is closed, invalid, or not unique");
             return WorldDiplomacyOfferOutcome.Failed;
         }
         WorldDiplomacyRoundOffer resolvedOffer = matchingOffers[0];
@@ -148,7 +149,7 @@ internal static class WorldDiplomacyOfferApplication
         if (source == null || !resolveParties(resolvedOffer))
         {
             resolvedOffer.Status = "invalidated";
-            document.MechanicalResult = "接受未执行：原提议或当事国已失效";
+            document.MechanicalResult = DiplomacyMiscPromptTexts.Get("Offer_AcceptSourceOrKingdomInvalid", "Acceptance not executed: original proposal or involved kingdom is invalid");
             return WorldDiplomacyOfferOutcome.Failed;
         }
         WorldDiplomacyOfferOutcome outcome;
@@ -158,7 +159,7 @@ internal static class WorldDiplomacyOfferApplication
             if (outcome == WorldDiplomacyOfferOutcome.Invalidated)
             {
                 resolvedOffer.Status = "invalidated";
-                document.MechanicalResult = "接受未执行：和平原案条款已无法原样履行";
+                document.MechanicalResult = DiplomacyMiscPromptTexts.Get("Offer_AcceptPeaceTermsCannotFulfill", "Acceptance not executed: original peace terms can no longer be fulfilled as proposed");
                 return WorldDiplomacyOfferOutcome.Invalidated;
             }
         }
@@ -167,12 +168,12 @@ internal static class WorldDiplomacyOfferApplication
             if (hasProposalTakenEffect(proposalIntent, resolvedOffer))
             {
                 document.ChangedDiplomaticState = true;
-                document.MechanicalResult = "部分外交变化已确认；其余执行结果无法确认";
+                document.MechanicalResult = DiplomacyMiscPromptTexts.Get("Offer_PartialChangesConfirmedRemainderUnknown", "Partial diplomatic changes confirmed; remaining execution outcome cannot be confirmed");
                 resolvedOffer.Status = "partially_executed";
             }
             else
             {
-                document.MechanicalResult = "接受未执行：" + WorldDiplomacyTextRules.Limit(ex.Message, 180);
+                document.MechanicalResult = DiplomacyMiscPromptTexts.Get("Offer_AcceptNotExecutedPrefix", "Acceptance not executed: ") + WorldDiplomacyTextRules.Limit(ex.Message, 180);
                 resolvedOffer.Status = "execution_failed";
             }
             log("offer acceptance execution failed document=" + document.DocumentId

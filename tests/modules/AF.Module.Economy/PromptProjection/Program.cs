@@ -15,9 +15,9 @@ internal static class Program
         _checks++;
     }
 
-    private static void Main()
+    private static void Main(string[] args)
     {
-        try { RunBody(); }
+        try { AnimusForge.AnimusForgeModulePaths.Root = args[0]; if (args[1] == "EN") RunEnglish(); else RunBody(); }
         catch (Exception error) { Console.Error.WriteLine(error); Environment.ExitCode = 1; }
     }
 
@@ -68,5 +68,20 @@ internal static class Program
         Check(!merchant.EndsWith("\n", StringComparison.Ordinal), "trimmed output");
 
         Console.WriteLine($"PASS economyPromptProjection checks={_checks}");
+    }
+    private static void RunEnglish()
+    {
+        Check(EconomyTrustPolicy.Clamp(-101) == -100 && EconomyTrustPolicy.Clamp(101) == 100, "trust clamp");
+        Check(EconomyTrustPolicy.GetLevelIndex(-100) == 1 && EconomyTrustPolicy.GetLevelIndex(-99) == 1 && EconomyTrustPolicy.GetLevelIndex(0) == 6 && EconomyTrustPolicy.GetLevelIndex(100) == 10, "trust level boundaries");
+        Check(EconomyTrustPolicy.GetLevelText(0) == "Neutral and watchful", "EN actual package trust level");
+        Check(EconomyPromptProjection.BuildTrustStatus(0, EconomyTrustPolicy.GetLevelText(0), 6) == "Effective trust 0 (Neutral and watchful, 6/10)", "EN trust status");
+        Check(EconomyTrustPolicy.GetBehaviorText(100).Contains("nearly unlimited ceiling") && EconomyTrustPolicy.GetActionGuideText(-100).StartsWith("L1:"), "EN trust semantics/rules");
+        var lines = new List<EconomyDebtPromptLine>{new EconomyDebtPromptLine("debt{NAME}$1", 75, "", "")};
+        string debt = EconomyPromptProjection.BuildHeroDebtHint(true, lines);
+        Check(debt.Contains("debt{NAME}$1") && debt.Contains("75") && debt.Contains("not set") && debt.Contains("none"), "EN debt identity/amount/defaults");
+        string merchant = EconomyPromptProjection.BuildSettlementMerchantDebtHint("Smith{NAME}", true, lines);
+        Check(merchant.Contains("Smith{NAME}") && merchant.Contains("repayment") && merchant.Contains("system facts"), "EN merchant confirmation");
+        Check(EconomyPromptProjection.BuildHeroDebtHint(false, Array.Empty<EconomyDebtPromptLine>()) == string.Empty, "EN empty debt");
+        Console.WriteLine($"PASS economyPromptProjection EN checks={_checks}");
     }
 }

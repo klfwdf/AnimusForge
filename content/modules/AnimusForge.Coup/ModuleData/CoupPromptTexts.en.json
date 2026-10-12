@@ -1,0 +1,21 @@
+{
+  "NamingContext": "\nRebellion background: the player has just seized the throne through an armed coup. The rebelling clan is the former ruler's clan or a clan that supports the former ruler more strongly. This is a rebellion against usurpation and does not require negative relations with the new ruler. Use this as the background for the kingdom's name and description.",
+  "RestorationContext": "\nThe former ruler has been released. This war seeks to restore the former dynasty; restoration requires a rebel victory and cannot result from peace negotiations.",
+  "CapturedContext": "\nThe former ruler is held captive. Neither the former ruler nor their clan participates in this civil war; do not claim that the former ruler personally raised the rebellion.",
+  "ReportIntro": "{0} launched an armed coup against {3} in {2} of {1} with {4} assault troops.",
+  "ReportProcessLabel": "Process: ",
+  "ReportNoEntry": "The assault party was assembled, but no actual scene entry was recorded.",
+  "ReportStreet": "entered the town street",
+  "ReportGate": "breached the hall entrance",
+  "ReportHall": "led {0} assault troops into the lord's hall",
+  "ReportSubdued": "subdued the ruler",
+  "ReportResultLabel": "Result: ",
+  "ReportSuccessCaptured": "The coup succeeded: {0} took the throne of {1} and seized {2}; the former ruler was captured.",
+  "ReportSuccessReleased": "The coup succeeded: {0} took the throne of {1} and seized {2}; you chose not to capture the former ruler.",
+  "ReportFailureWar": "The coup failed; the throne was not taken. The clan left the former kingdom with its existing land and went to war with it.",
+  "ReportCasualties": "Recorded casualties: assault party {0} killed, {1} wounded; defenders {2} killed, {3} wounded.",
+  "ReportFailureNoWar": "The coup failed; the throne was not taken. The clan left the former kingdom with its existing land.",
+  "ReportListSeparator": ", ",
+  "ReportSentenceEnd": ".",
+  "BulletinTimeLabel": "Occurred: {0}"
+}

@@ -43,7 +43,7 @@ public static bool HasStaleDiplomaticActionPresentation(
             source => orchestration.CaptureCanonicalHistoryForJob(source, syncSources: false),
             orchestration.BuildAnalysisPrompt, orchestration.BuildRoundPlanSystemPrompt, orchestration.BuildRoundPlanPrompt, localize);
 
-    internal static bool EnsureGenerationJobHasKingdomStrategicProfile(IWorldDiplomacyJobPreparationPort port, WorldDiplomacyJob job)
+    internal static bool EnsureGenerationJobHasKingdomStrategicProfile(IWorldDiplomacyJobPreparationPort port, WorldDiplomacyJob job, Func<string, string, string> localize = null)
 	{
 		if (job == null || !WorldDiplomacyRoundLifecycleRules.IsJobOfKind(job, "generate")) return true;
 		string authorId = (job.AuthorKingdomId ?? "").Trim();
@@ -64,7 +64,7 @@ public static bool HasStaleDiplomaticActionPresentation(
 			{
 				WorldDiplomacyLlmMessage message = job.LlmMessages[index];
 				if (message == null || !string.Equals(message.Role, "user", StringComparison.OrdinalIgnoreCase)) continue;
-				message.Content = WorldDiplomacyPromptContractRules.UpsertKingdomStrategicProfilePrompt(message.Content, profilePrompt, authorId);
+				message.Content = WorldDiplomacyPromptContractRules.UpsertKingdomStrategicProfilePrompt(message.Content, profilePrompt, authorId, localize);
 				message.StrategicProfileKingdomId = authorId;
 				job.UserPrompt = message.Content;
 				job.StrategicProfileKingdomId = authorId;
@@ -77,7 +77,7 @@ public static bool HasStaleDiplomaticActionPresentation(
 			port.LogProfile(job, profilePrompt);
 			return true;
 		}
-		job.UserPrompt = WorldDiplomacyPromptContractRules.UpsertKingdomStrategicProfilePrompt(job.UserPrompt, profilePrompt, authorId);
+		job.UserPrompt = WorldDiplomacyPromptContractRules.UpsertKingdomStrategicProfilePrompt(job.UserPrompt, profilePrompt, authorId, localize);
 		job.StrategicProfileKingdomId = authorId;
 		port.LogProfile(job, profilePrompt);
 		return true;

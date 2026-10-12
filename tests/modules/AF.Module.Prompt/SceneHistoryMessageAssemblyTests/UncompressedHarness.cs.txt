@@ -2,6 +2,11 @@ using System;using System.Collections.Generic;using System.Linq;using System.Thr
 namespace TaleWorlds.Library { internal static class TWParallel { internal static bool IsMainThread()=>true; } internal static class MBMath { internal static int ClampInt(int x,int a,int b)=>Math.Max(a,Math.Min(b,x)); } }
 namespace TaleWorlds.CampaignSystem { public sealed class Hero {public object Name;public string StringId;} }
 namespace AnimusForge {
+internal static class AnimusForgeModulePaths {
+ internal static string PackageRoot;
+ internal static string GetModuleDataFilePath(string filename)=>System.IO.Path.Combine(PackageRoot,filename);
+}
+
 internal static class DuelSettings {internal const int DailyConversationHistoryLineLimitMin=10,DailyConversationHistoryLineLimitMax=500;internal static int Limit=10;internal static Action OnReadLimit;internal static int GetDailyConversationHistoryLineLimitForExternal(){OnReadLimit?.Invoke();return Limit;} }
 internal static class Logger {internal static List<string> Lines=new();internal static void Log(string c,string s)=>Lines.Add(s);}
 public class FixtureState {
@@ -57,7 +62,26 @@ internal static class Program {
  var old=new LegacyUncompressed{Drafts=drafts,Compressed=compressed??new()};var current=new MyBehavior{Drafts=drafts,Compressed=compressed??new()};
  C(old.Build(id:id,include:include).Select(Message).SequenceEqual(current.Build(id:id,include:include).Select(Message)),"same input old/full owner equality");
  }
- static async Task Main(){
+ static async Task Main(string[] args){
+ C(args.Length==2,"real selected package path and language supplied");
+ AnimusForgeModulePaths.PackageRoot=args[0];
+ C(MemoryTextResources.Prompt("MEM_Prompt_073")== (args[1]=="CN"?"这属于":"This was "),"real MemoryTextResources reads selected CN/EN package corpus");
+ C(DialogueHistoryLedger.AfefPlayerPrefix=="[AFEF玩家行为补充]" && DialogueHistoryLedger.AfefNpcPrefix=="[AFEF NPC行为补充]" && DialogueHistoryLedger.SceneShoutPrefix=="[场景喊话]","embedded canonical history prefixes invariant in both packages");
+ C(DialogueHistoryLedger.NormalizeAfefFact("confirmed") == "[AFEF玩家行为补充] confirmed","raw AFEF prefix writes invariant original fact");
+ C(DialogueHistoryLedger.NormalizeNpcLine("Ada", "[场景喊话] Ada：original") == "[场景喊话] Ada：original","legacy scene shout identity preserved by real resource consumer");
+
+ C(UncompressedMemoryMessageAssemblyOwner.TryParseDailyMemorySceneShoutLine("[Scene shout] Alice: Hold position!",out var englishSpeaker,out var englishContent)
+   && englishSpeaker=="Alice" && englishContent=="Hold position!","English scene shout preserves speaker and content");
+ foreach(string scene in new[]{"unknown scene","world map or unknown scene","somewhere"})
+  C(UncompressedMemoryMessageAssemblyOwner.IsUnknownMemorySceneLabel(scene),"English unknown scene alias");
+ foreach(string label in new[]{"Player","The player","You","PLAYER"}) {
+  C(ConversationRoleClassificationOwner.IsLikelyPlayerHistorySpeaker(label),"English player metadata recognized");
+  C(UncompressedMemoryMessageAssemblyOwner.BuildUncompressedMemoryConversationMessage(L(label,"I agree"),"NPC",7,5,"street").Role=="user","English player metadata retains user role");
+ }
+ foreach(string body in new[]{"Player: Hello","You：Hello","PLAYER said to NPC: Hello","The player shouted to NPC: Hello"})
+  C(UncompressedMemoryMessageAssemblyOwner.IsDailyMemoryLinePlayerSpeech(L("",body),"NPC"),"anchored English player header recognized");
+ foreach(string body in new[]{"Alice said to NPC: hello","I heard Alice said to NPC yesterday.","The player army arrived.","Younger: hello"})
+  C(!UncompressedMemoryMessageAssemblyOwner.IsDailyMemoryLinePlayerSpeech(L("Alice",body),"NPC"),"NPC or narrative mention is not player speech");
  var rows=new List<DailyMemoryLine>{L("玩家","玩家说"),L("NPC","回复"),L("路人","旁听"),L("","[场景喊话] 其他人：听到的话"),L("","[场景喊话]"),L("","玩家对NPC喊：你好"),L("","NPC:名称前缀"),L("ignored","事实",fact:true),L("玩家","suppressed",key:" ACTIVE "),L("玩家","旧日同key",day:3,key:"active")};
  Same(new(){new(){GameDayIndex=5,HasLlmDialogue=true,Lines=rows},new(){GameDayIndex=3,HasLlmDialogue=true,Lines=new(){rows[^1]}}});
  var p=new MyBehavior{Drafts=new(){new(){GameDayIndex=5,HasLlmDialogue=true,Lines=rows}}};var messages=p.Build();
@@ -90,7 +114,7 @@ internal static class Program {
  C(editEntries.All(x=>x.Scene==FixtureState.Scene&&x.GameHour==23),"actual Daily edit consumer current scene fallback and hour cap");
  FixtureState.SceneFails=true;editEntries=MyBehavior.BuildNativeConversationHistoryEntriesForDailyMemoryEdit(null,editRows);FixtureState.SceneFails=false;
  C(editEntries.Count==3&&editEntries.All(x=>x.Scene=="未知场景"),"actual Daily edit consumer failed live scene remains unknown");
- Console.WriteLine("PASS uncompressed prompt same-input checks="+count+" live=NOT_RUN");
+ Console.WriteLine("PASS uncompressed prompt package="+args[1]+" same-input checks="+count+" live=NOT_RUN");
  }
 }}
 

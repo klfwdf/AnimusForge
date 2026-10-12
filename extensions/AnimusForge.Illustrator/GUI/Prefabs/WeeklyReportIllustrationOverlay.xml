@@ -2,27 +2,27 @@
   <Window>
     <Widget Id="CardPanel" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="420" SuggestedHeight="640" HorizontalAlignment="Right" VerticalAlignment="Center" MarginRight="36" DoNotAcceptEvents="false" DoNotPassEventsToChildren="false">
       <Children>
-        <!-- 背景底板 -->
+        <!-- Background -->
         <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="StdAssets\Popup\canvas" AlphaFactor="0.95" DoNotAcceptEvents="true" />
         <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="frame_9" ExtendLeft="8" ExtendTop="8" ExtendRight="8" ExtendBottom="8" AlphaFactor="0.6" DoNotAcceptEvents="true" />
 
-        <!-- 标题栏 (拖拽手柄) -->
+        <!-- Title bar and drag handle -->
         <Widget Id="TitleBar" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="50" VerticalAlignment="Top" MarginTop="10" MarginLeft="14" MarginRight="14" DoNotAcceptEvents="false">
           <Children>
             <RichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" VerticalAlignment="Center" Brush="Popup.Title.Text" Brush.FontSize="22" Brush.TextHorizontalAlignment="Center" Text="@TitleText" DoNotAcceptEvents="true" />
           </Children>
         </Widget>
 
-        <!-- 图像展示区域 -->
+        <!-- Image area -->
         <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="380" SuggestedHeight="380" HorizontalAlignment="Center" VerticalAlignment="Top" MarginTop="66" DoNotAcceptEvents="true">
           <Children>
-            <!-- 画框边框 -->
+            <!-- Picture frame border -->
             <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="frame_9" ExtendLeft="6" ExtendTop="6" ExtendRight="6" ExtendBottom="6" AlphaFactor="0.8" DoNotAcceptEvents="true" />
 
-            <!-- 插画材质 -->
+            <!-- Illustration material -->
             <Widget IsVisible="@HasIllustration" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="@SpriteName" ImageFit.Type="Contain" DoNotAcceptEvents="true" />
 
-            <!-- 加载状态与占位提示 -->
+            <!-- Loading status and placeholder hint -->
             <Widget IsVisible="@IsLoading" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Sprite="StdAssets\Popup\canvas_gradient" AlphaFactor="0.5" DoNotAcceptEvents="true">
               <Children>
                 <RichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" HorizontalAlignment="Center" VerticalAlignment="Center" MarginLeft="20" MarginRight="20" Brush="Popup.Description.Text" Brush.FontSize="18" Brush.TextHorizontalAlignment="Center" Text="@StatusText" DoNotAcceptEvents="true" />
@@ -31,7 +31,7 @@
           </Children>
         </Widget>
 
-        <!-- 提示词与状态信息 -->
+        <!-- Prompt and status information -->
         <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="80" VerticalAlignment="Top" MarginTop="456" MarginLeft="16" MarginRight="16" DoNotAcceptEvents="true">
           <Children>
             <RichTextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="CoverChildren" VerticalAlignment="Top" Brush="Popup.Description.Text" Brush.FontSize="15" Brush.TextHorizontalAlignment="Center" Text="@StatusText" DoNotAcceptEvents="true" />
@@ -39,7 +39,7 @@
           </Children>
         </Widget>
 
-        <!-- 底部功能按钮条 -->
+        <!-- Bottom action buttons -->
         <ListPanel WidthSizePolicy="CoverChildren" HeightSizePolicy="Fixed" SuggestedHeight="44" HorizontalAlignment="Center" VerticalAlignment="Bottom" MarginBottom="62" LayoutImp.LayoutMethod="HorizontalLeftToRight"><Children>
 <ButtonWidget DoNotPassEventsToChildren="true" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="68" SuggestedHeight="42" MarginRight="8" Brush="Popup.Done.Button" Command.Click="ExecuteRegenerate" UpdateChildrenStates="true">
               <Children>

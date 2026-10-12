@@ -20,13 +20,13 @@ public static class SiegeCastleLordRecruitmentBranchProfile
 {
     private static readonly string[] IntroduceClanLeaderTerms =
     {
-        "引见族长", "引荐族长", "写信给族长", "写信给你的族长", "写信通知族长", "通知你的族长", "联络族长",
+        CastleAftermathCompatibilityTexts.Raw("compat_siege_castle_lord_recruitment_branch_profile_09adaf08767b"), CastleAftermathCompatibilityTexts.Raw("compat_siege_castle_lord_recruitment_branch_profile_401efcab3e3f"), CastleAftermathCompatibilityTexts.Raw("compat_siege_castle_lord_recruitment_branch_profile_58860af02718"), CastleAftermathCompatibilityTexts.Raw("compat_siege_castle_lord_recruitment_branch_profile_ae3d12cba9d4"), CastleAftermathCompatibilityTexts.Raw("compat_siege_castle_lord_recruitment_branch_profile_066c215fe364"), CastleAftermathCompatibilityTexts.Raw("compat_siege_castle_lord_recruitment_branch_profile_ff1e764ef32f"), CastleAftermathCompatibilityTexts.Raw("compat_siege_castle_lord_recruitment_branch_profile_e606892d2e08"),
         "introduce your clan leader", "write to your clan leader", "contact your clan leader"
     };
 
     private static readonly string[] JoinAsCompanionTerms =
     {
-        "背叛家族", "离开家族", "加入我的家族", "成为我的同伴", "做我的同伴", "跟随我", "投靠我个人",
+        CastleAftermathCompatibilityTexts.Raw("compat_siege_castle_lord_recruitment_branch_profile_4a380322b7bf"), CastleAftermathCompatibilityTexts.Raw("compat_siege_castle_lord_recruitment_branch_profile_38fe457a363e"), CastleAftermathCompatibilityTexts.Raw("compat_siege_castle_lord_recruitment_branch_profile_5f0b61751015"), CastleAftermathCompatibilityTexts.Raw("compat_siege_castle_lord_recruitment_branch_profile_e25da682b745"), CastleAftermathCompatibilityTexts.Raw("compat_siege_castle_lord_recruitment_branch_profile_31f0799d19c4"), CastleAftermathCompatibilityTexts.Raw("compat_siege_castle_lord_recruitment_branch_profile_1ee6d83190ac"), CastleAftermathCompatibilityTexts.Raw("compat_siege_castle_lord_recruitment_branch_profile_9438f053d1af"),
         "betray your clan", "leave your clan", "join my clan", "become my companion", "follow me"
     };
 
@@ -69,14 +69,31 @@ public static class SiegeCastleLordRecruitmentBranchProfile
 
     public static string Describe(SiegeCastleLordRecruitmentBranch branch)
     {
+        return Describe(branch, isEnglish: false);
+    }
+
+    public static string Describe(SiegeCastleLordRecruitmentBranch branch, bool isEnglish)
+    {
+        if (isEnglish)
+        {
+            return branch switch
+            {
+                SiegeCastleLordRecruitmentBranch.ClanLeaderJoinPlayerKingdom => "The clan leader brings the entire clan into the player\u0027s kingdom",
+                SiegeCastleLordRecruitmentBranch.ClanLeaderRequestRulerAudience => "The clan leader asks the player for an audience with their ruler",
+                SiegeCastleLordRecruitmentBranch.ClanLeaderSupportPlayerClaim => "The clan leader expresses support for crowning the independent player",
+                SiegeCastleLordRecruitmentBranch.IntroduceClanLeaderByLetter => "A clan member writes an introduction letter to their clan leader",
+                SiegeCastleLordRecruitmentBranch.JoinPlayerAsCompanion => "A clan member leaves their former clan and becomes the player\u0027s companion",
+                _ => "Lord recruitment branch is not yet determined"
+            };
+        }
         return branch switch
         {
-            SiegeCastleLordRecruitmentBranch.ClanLeaderJoinPlayerKingdom => "族长率全族加入玩家统治的王国",
-            SiegeCastleLordRecruitmentBranch.ClanLeaderRequestRulerAudience => "族长请求玩家引见本国统治者",
-            SiegeCastleLordRecruitmentBranch.ClanLeaderSupportPlayerClaim => "族长表达拥立独立玩家为王的政治意向",
-            SiegeCastleLordRecruitmentBranch.IntroduceClanLeaderByLetter => "非族长写信引见本族族长",
-            SiegeCastleLordRecruitmentBranch.JoinPlayerAsCompanion => "非族长背叛原家族并成为玩家同伴",
-            _ => "尚未明确领主收编分支"
+            SiegeCastleLordRecruitmentBranch.ClanLeaderJoinPlayerKingdom => CastleAftermathCompatibilityTexts.Raw("compat_siege_castle_lord_recruitment_branch_profile_7bfbe3f8923d"),
+            SiegeCastleLordRecruitmentBranch.ClanLeaderRequestRulerAudience => CastleAftermathCompatibilityTexts.Raw("compat_siege_castle_lord_recruitment_branch_profile_b9c9a87aeb8f"),
+            SiegeCastleLordRecruitmentBranch.ClanLeaderSupportPlayerClaim => CastleAftermathCompatibilityTexts.Raw("compat_siege_castle_lord_recruitment_branch_profile_a4deb8ec2430"),
+            SiegeCastleLordRecruitmentBranch.IntroduceClanLeaderByLetter => CastleAftermathCompatibilityTexts.Raw("compat_siege_castle_lord_recruitment_branch_profile_1116df118f02"),
+            SiegeCastleLordRecruitmentBranch.JoinPlayerAsCompanion => CastleAftermathCompatibilityTexts.Raw("compat_siege_castle_lord_recruitment_branch_profile_cb1e609988ae"),
+            _ => CastleAftermathCompatibilityTexts.Raw("compat_siege_castle_lord_recruitment_branch_profile_6277bebf2ec5")
         };
     }
 

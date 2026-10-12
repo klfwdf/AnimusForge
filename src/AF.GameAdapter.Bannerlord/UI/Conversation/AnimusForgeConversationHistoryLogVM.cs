@@ -14,12 +14,7 @@ public sealed class AnimusForgeConversationHistoryLogVM : ViewModel
 
 	private static string Localize(string id, string fallback, params (string Name, string Value)[] variables)
 	{
-		TextObject text = new TextObject("{=" + id + "}" + fallback);
-		foreach ((string Name, string Value) variable in variables ?? Array.Empty<(string Name, string Value)>())
-		{
-			text.SetTextVariable(variable.Name, variable.Value ?? string.Empty);
-		}
-		return text.ToString();
+		return EventEditorUiText.T(id, fallback, variables);
 	}
 
 	// Keeping the Gauntlet tree at this bounded size prevents large linked histories from updating hundreds of RichText widgets every frame.
@@ -95,6 +90,12 @@ public sealed class AnimusForgeConversationHistoryLogVM : ViewModel
 
 	[DataSourceProperty]
 	public bool CanToggleDelete => _tryDeleteEntry != null;
+
+	[DataSourceProperty]
+	public string EditButtonText => Localize("AF_UI_ConversationHistory_Edit", "Edit");
+
+	[DataSourceProperty]
+	public string DeleteText => Localize("AF_UI_ConversationHistory_Delete", "Delete");
 
 	[DataSourceProperty]
 	public bool IsEditMode => _isEditMode;
@@ -472,7 +473,7 @@ public sealed class AnimusForgeConversationHistoryLogVM : ViewModel
 			return cachedEntry;
 		}
 		AnimusForgeDialogueHistoryEntry entry = _historyEntries[entryIndex];
-		string speaker = string.IsNullOrWhiteSpace(entry.Speaker) ? Localize("AF_UI_ConversationHistory_SpeakerFallback", "Record") : entry.Speaker.Trim();
+		string speaker = AnimusForgeConversationHistoryLogItemVM.LocalizeSpeakerForDisplay(entry.Speaker, entry.Kind);
 		// Only the disposable UI copy contains native RichText links; persisted dialogue stays untouched for memory and LLM reuse.
 		string rawDisplayText = "(" + speaker + ")" + (entry.Text ?? string.Empty);
 		string formattedText;

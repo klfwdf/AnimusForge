@@ -22,7 +22,10 @@ public static class SiegeLocalAttackProfile
 
     public const string LocalDefiantSource = "local_player_attack_defiant";
 
-    public const string MemoryTitle = "局部冲突";
+    public const string MemoryTitle = "Local skirmish";
+    public const string MemoryTitleEn = "Local Conflict";
+
+    public static string GetMemoryTitle(bool isEnglish) => isEnglish ? MemoryTitleEn : MemoryTitle;
 
     public static bool ShouldNormalizeCivilianHealth(float currentHealthLimit, float normalHealthLimit)
     {
@@ -31,15 +34,31 @@ public static class SiegeLocalAttackProfile
     }
 
     public static string BuildPlayerHitMessage(string targetName, bool targetWillDefy)
+        => BuildPlayerHitMessage(targetName, targetWillDefy, false);
+
+    public static string BuildPlayerHitMessage(string targetName, bool targetWillDefy, bool isEnglish)
     {
-        string reaction = targetWillDefy ? "目标喝止/对峙，不攻士兵" : "目标逃跑、附近恐慌";
-        return "【局部冲突】击中" + NormalizeTargetName(targetName, "一名NPC") + "，" + reaction + "。";
+        if (isEnglish)
+        {
+            string reactionEn = targetWillDefy ? "target calls for restraint/stands defiant without attacking soldiers" : "target flees, nearby panicked";
+            return "[Local conflict] Hit " + NormalizeTargetName(targetName, "an NPC") + "; " + reactionEn + ".";
+        }
+        string reaction = targetWillDefy ? SiegeAftermathCompatibilityTexts.Raw("attack_defy_reaction") : SiegeAftermathCompatibilityTexts.Raw("attack_flee_reaction");
+        return SiegeAftermathCompatibilityTexts.Raw("attack_hit_prefix") + NormalizeTargetName(targetName, SiegeAftermathCompatibilityTexts.Raw("attack_npc_fallback")) + SiegeAftermathCompatibilityTexts.Raw("attack_semi") + reaction + SiegeAftermathCompatibilityTexts.Raw("attack_period");
     }
 
     public static string BuildPlayerHitMemoryText(string targetName, bool targetWillDefy)
+        => BuildPlayerHitMemoryText(targetName, targetWillDefy, false);
+
+    public static string BuildPlayerHitMemoryText(string targetName, bool targetWillDefy, bool isEnglish)
     {
-        string reaction = targetWillDefy ? "该目标被标记为局部对峙/喝止者，不得接入血洗式敌对" : "该目标被标记为局部逃散者";
-        return "玩家在攻城后处置场景中攻击了 " + NormalizeTargetName(targetName, "一名NPC") + "，这只造成局部冲突；" + reaction + "，不得因此自动升级为全城血洗。";
+        if (isEnglish)
+        {
+            string reactionEn = targetWillDefy ? "target marked as local defiance/calling restraint, cannot link to massacre hostility" : "target marked as local fleeing civilian";
+            return "The player attacked " + NormalizeTargetName(targetName, "an NPC") + " in the post-siege scene; this caused only local conflict. " + reactionEn + "; must not automatically escalate to full-city massacre.";
+        }
+        string reaction = targetWillDefy ? SiegeAftermathCompatibilityTexts.Raw("attack_memory_defy") : SiegeAftermathCompatibilityTexts.Raw("attack_memory_flee");
+        return SiegeAftermathCompatibilityTexts.Raw("attack_memory_prefix") + NormalizeTargetName(targetName, SiegeAftermathCompatibilityTexts.Raw("attack_npc_fallback")) + SiegeAftermathCompatibilityTexts.Raw("attack_memory_middle") + reaction + SiegeAftermathCompatibilityTexts.Raw("attack_memory_suffix");
     }
 
     private static string NormalizeTargetName(string targetName, string fallback)

@@ -60,6 +60,18 @@ restored = restored.replace('prompt.IndexOf(familyHeading, institutionalIndex + 
 def normalize(s):
     s = LEX.sub(lambda m: json.dumps(decode(m[0]), ensure_ascii=False) if m.lastgroup == 'string' else m[0], s)
     return re.sub(r'\n[ \t]*\n+', '\n\n', s)
+upsert_signature = 'public static string UpsertKingdomStrategicProfilePrompt(string existing, string profilePrompt, string authorId, Func<string, string, string> localize = null)'
+assert restored.count(upsert_signature) == 1, 'legacy 3-argument call remains valid'
+restored = restored.replace(upsert_signature, upsert_signature.replace(', Func<string, string, string> localize = null', ''), 1)
+end_rule = 'string endRule = ContractText(localize, "AF_DIP_Compatibility_008", ' + json.dumps(en['AF_DIP_Compatibility_008'], ensure_ascii=False) + ');'
+assert restored.count(end_rule) == 1
+restored = restored.replace(end_rule, 'string endRule = KingdomStrategicIntentRule;', 1)
+fallback_branch = '\n\t\tif (ruleIndex < 0 && localize != null)\n\t\t{\n\t\t\tendRule = KingdomStrategicIntentRule;\n\t\t\truleIndex = existing.IndexOf(endRule, markerIndex, StringComparison.Ordinal);\n\t\t}'
+assert restored.count(fallback_branch) == 1, 'old CN end marker remains recognized in localized existing profiles'
+restored = restored.replace(fallback_branch, '', 1)
+assert restored.count('ruleIndex + endRule.Length') == 1, 'suffix uses the length of the marker actually matched'
+restored = restored.replace('ruleIndex + endRule.Length', 'ruleIndex + KingdomStrategicIntentRule.Length', 1)
+restored = restored.replace('string endRule = KingdomStrategicIntentRule;\n\t\tint ruleIndex = existing.IndexOf(endRule,', 'int ruleIndex = existing.IndexOf(KingdomStrategicIntentRule,', 1)
 assert normalize(restored) == normalize(old), 'complete original Chinese algorithm/contract restored'
 assert len(used) == 118 and set(used) == keys
 assert json.loads(en['AF_DIP_Contract_026'])['actions'][0]['peace_terms'] == {}
@@ -67,7 +79,21 @@ assert json.loads(en['AF_DIP_Contract_030'].split(': ', 1)[1])['covered_through_
 
 app = ROOT / 'src/modules/AF.Module.Diplomacy/Application'
 orch = (app / 'WorldDiplomacyOrchestration.cs').read_text(encoding='utf-8-sig')
-assert orch.count('_host.PromptWorld().LocalizePrompt') == 6, 'new, rebuild, two refreshes, compression, analysis'
+expected_wiring = {
+    'TryRebuildPendingJob': 1, 'BuildCanonicalHistoryBlock': 1,
+    'EnqueueCompressionJob': 1, 'EnqueueGeneration': 1,
+    'EnsureGenerationJobHasKingdomStrategicProfile': 1, 'RefreshDiplomaticActionPresentationAndPrompt': 1,
+    'RefreshDiplomaticThreatPresentationAndPrompt': 1, 'EnqueueAnalysisJob': 1,
+}
+masked_orch = LEX.sub(lambda match: ' ' * len(match[0]), orch)
+for symbol, count in expected_wiring.items():
+    declaration = re.search(r'\b(?:private|public|internal) [^\n]+ ' + symbol + r'\(', masked_orch)
+    assert declaration, symbol
+    opening = masked_orch.index('{', declaration.end()); depth = 1; end = opening + 1
+    while depth:
+        depth += (masked_orch[end] == '{') - (masked_orch[end] == '}'); end += 1
+    assert orch[opening:end].count('_host.PromptWorld().LocalizePrompt') == count, symbol + ': actual resolver consumer'
+assert orch.count('_host.PromptWorld().LocalizePrompt') == sum(expected_wiring.values()), 'no unidentified resolver consumer'
 schedule = (app / 'WorldDiplomacyOrchestration.Scheduling.cs').read_text(encoding='utf-8-sig')
 assert 'BuildDeclareModePrompt(basePrompt + tail, _host.PromptWorld().LocalizePrompt)' in schedule
 prep = (app / 'WorldDiplomacyJobPreparationApplication.cs').read_text(encoding='utf-8-sig')

@@ -147,8 +147,8 @@ internal static class SettlementEntryTroopSelectionBehavior
     // reports casualties back by record id, so roles and source parties never diverge.
     internal static void QueueArmedCoup(string settlementId, string locationId, TroopRoster roster, IEnumerable<CoupTroopRecord> defenders, CoupBattleOptions options)
     {
-        if (!IsAvailable) throw new InvalidOperationException("AF SETS兼容桥未就绪。");
-        if (options == null || !options.IsValid()) throw new InvalidOperationException("政变战斗参数损坏。");
+        if (!IsAvailable) throw new InvalidOperationException(CoupSourceTexts.Get("SetsSeamNotReady"));
+        if (options == null || !options.IsValid()) throw new InvalidOperationException(CoupSourceTexts.Get("CoupOptionsCorrupted"));
         var records = new List<string[]>();
         if (defenders != null)
             foreach (CoupTroopRecord record in defenders)
@@ -182,7 +182,7 @@ internal static class SettlementEntryTroopSelectionBehavior
 
     internal static Agent SpawnCoupKing(Mission mission, CharacterObject character, MatrixFrame frame)
     {
-        object logic = FindSetsLogic(mission) ?? throw new InvalidOperationException("SETS 进城逻辑不在当前场景。");
+        object logic = FindSetsLogic(mission) ?? throw new InvalidOperationException(CoupSourceTexts.Get("SetsLogicNotInScene"));
         return _spawnKing?.Invoke(logic, new object[] { character, frame }) as Agent;
     }
 
@@ -195,7 +195,7 @@ internal static class SettlementEntryTroopSelectionBehavior
 
     internal static TroopRoster BuildCoupSelectableRoster(TroopRoster source)
     {
-        if (!IsAvailable) throw new InvalidOperationException("AF SETS兼容桥未就绪。");
+        if (!IsAvailable) throw new InvalidOperationException(CoupSourceTexts.Get("SetsSeamNotReady"));
         return _buildSelectable(source);
     }
 

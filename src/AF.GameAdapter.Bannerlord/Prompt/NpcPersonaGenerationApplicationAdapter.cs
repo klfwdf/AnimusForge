@@ -44,15 +44,15 @@ internal bool IsNpcPersonaGenerationInFlight(Hero hero)
     internal void SaveNpcPersonaProfile(Hero hero,NpcPersonaProfile profile) => _profiles.Save(hero?.StringId,profile,_stampProfile);
     internal NpcPersonaGenerationWork CaptureNpcPersonaGeneration(Hero hero, bool ignoreRetryCooldown, bool overwriteExisting)
     {
-        if (hero == null) return new NpcPersonaGenerationWork { Failure = overwriteExisting ? "找不到要重新生成人设的 NPC。" : "" };
+        if (hero == null) return new NpcPersonaGenerationWork { Failure = overwriteExisting ? AdapterRecordTexts.T("AF_UI_PersonaGeneration_MissingNpc", "The NPC whose persona should be regenerated could not be found.") : "" };
         string id = hero.StringId;
-        if (string.IsNullOrEmpty(id)) return new NpcPersonaGenerationWork { Failure = overwriteExisting ? "该 NPC 没有有效的 HeroId，无法重新生成人设。" : "" };
+        if (string.IsNullOrEmpty(id)) return new NpcPersonaGenerationWork { Failure = overwriteExisting ? AdapterRecordTexts.T("AF_UI_PersonaGeneration_MissingHeroId", "This NPC has no valid HeroId; their persona cannot be regenerated.") : "" };
         GetNpcPersonaStrings(hero, out string personality, out string background);
         if (!overwriteExisting && !string.IsNullOrWhiteSpace(personality) && !string.IsNullOrWhiteSpace(background))
             return new NpcPersonaGenerationWork();
         NpcPersonaGenerationOwner.Lease lease = _reservations.TryBegin(id, ignoreRetryCooldown, out bool coolingDown);
         if (lease == null) return new NpcPersonaGenerationWork { Failure = !overwriteExisting ? "" : coolingDown
-            ? "该 NPC 的上次生成请求刚刚失败，请稍后再试。" : "该 NPC 的个性与背景正在生成，请等待当前请求完成后再试。" };
+            ? AdapterRecordTexts.T("AF_UI_PersonaGeneration_RecentFailure", "This NPC's last generation request just failed. Please try again later.") : AdapterRecordTexts.T("AF_UI_PersonaGeneration_AlreadyGenerating", "This NPC's personality and background are being generated. Wait for the current request to finish before trying again.") };
         try
         {
             var work = new NpcPersonaGenerationWork
@@ -94,7 +94,7 @@ internal bool IsNpcPersonaGenerationInFlight(Hero hero)
                 work = CaptureNpcPersonaGeneration(hero, ignoreRetryCooldown, overwriteExisting);
                 return true;
             }).ConfigureAwait(false);
-            if (!captured || work == null) return overwriteExisting ? "请求已失效，未保存新的人设。" : "";
+            if (!captured || work == null) return overwriteExisting ? AdapterRecordTexts.T("AF_UI_PersonaGeneration_InvalidatedNotSaved", "The request was invalidated; the new persona was not saved.") : "";
             if (work.Reservation == null) return work.Failure ?? "";
             KnowledgeLibraryBehavior.LoreRule loreRule = null;
             if (work.Mentions != null && work.LoreRuleVersion > 0L)
@@ -111,7 +111,7 @@ internal bool IsNpcPersonaGenerationInFlight(Hero hero)
                 if (!_reservations.IsCurrent(work.Reservation) || !ReferenceEquals(_findHero(work.Id), hero))
                 {
                     retired = true;
-                    work.Failure = overwriteExisting ? "请求已因数据清理或人物变更失效，未生成新的人设。" : "";
+                    work.Failure = overwriteExisting ? AdapterRecordTexts.T("AF_UI_PersonaGeneration_InvalidatedNotGenerated", "The request was invalidated by data cleanup or a character change; no new persona was generated.") : "";
                     return true;
                 }
                 if (overwriteExisting)
@@ -121,7 +121,7 @@ internal bool IsNpcPersonaGenerationInFlight(Hero hero)
                         || !string.Equals(currentBackground, work.OriginalBackground, StringComparison.Ordinal))
                     {
                         retired = true;
-                        work.Failure = "生成期间人设已被修改，未覆盖最新的个性与历史背景。请确认后重新生成。";
+                        work.Failure = AdapterRecordTexts.T("AF_UI_PersonaGeneration_ChangedDuringGeneration", "The persona changed during generation; the latest personality and historical background were not overwritten. Review the changes before regenerating.");
                         return true;
                     }
                 }
@@ -134,7 +134,7 @@ internal bool IsNpcPersonaGenerationInFlight(Hero hero)
                 work.Response = ConfiguredChatApplicationAdapter.CallAuxiliaryGatewayDetailed(prompt.System, prompt.User, "NpcPersona", 0, forceThinkingDisabled: false);
                 return true;
             }).ConfigureAwait(false);
-            if (!started) { retired = true; return overwriteExisting ? "请求已失效，未保存新的人设。" : ""; }
+            if (!started) { retired = true; return overwriteExisting ? AdapterRecordTexts.T("AF_UI_PersonaGeneration_InvalidatedNotSaved", "The request was invalidated; the new persona was not saved.") : ""; }
             if (work.Response == null) return work.Failure ?? "";
             ApiCallResult response = await work.Response.ConfigureAwait(false);
             if (!_ownerCurrent() || !SaveRuntimeGuard.IsCurrentGeneration(generation)) return "";
@@ -149,7 +149,7 @@ internal bool IsNpcPersonaGenerationInFlight(Hero hero)
             bool accepted = await _dispatch(generation, () =>
             {
                 if (!_reservations.IsCurrent(work.Reservation) || !ReferenceEquals(_findHero(work.Id), hero))
-                { retired = true; failure = overwriteExisting ? "请求已因数据清理或人物变更失效，未保存新的人设。" : ""; return true; }
+                { retired = true; failure = overwriteExisting ? AdapterRecordTexts.T("AF_UI_PersonaGeneration_CleanupInvalidatedNotSaved", "The request was invalidated by data cleanup or a character change; the new persona was not saved.") : ""; return true; }
                 if (parsed)
                 {
                     GetNpcPersonaStrings(hero, out string curP, out string curB);
@@ -157,7 +157,7 @@ internal bool IsNpcPersonaGenerationInFlight(Hero hero)
                         curP, curB, genP, genB, out string nextPersonality, out string nextBackground))
                     {
                         retired = true;
-                        failure = "生成期间人设已被修改，未覆盖最新的个性与历史背景。请确认后重新生成。";
+                        failure = AdapterRecordTexts.T("AF_UI_PersonaGeneration_ChangedDuringGeneration", "The persona changed during generation; the latest personality and historical background were not overwritten. Review the changes before regenerating.");
                         return true;
                     }
                     NpcPersonaProfile current = GetNpcPersonaProfile(hero, createIfMissing: true) ?? new NpcPersonaProfile();
@@ -171,13 +171,14 @@ internal bool IsNpcPersonaGenerationInFlight(Hero hero)
                 if (!saved)
                 {
                     failure = response.Success
-                        ? LlmRetryPrompt.BuildFailureDetail("NPC 个性与背景模型回复解析失败，未保存人设。", resp, response.ResponseBody)
-                        : (response.ErrorMessage ?? LlmRetryPrompt.BuildFailureDetail("NPC 个性与背景生成失败。", resp, response.ResponseBody));
+                        ? LlmRetryPrompt.BuildFailureDetail("NPC personality and background response parsing failed; the persona was not saved.", resp, response.ResponseBody)
+                        : (response.ErrorMessage ?? LlmRetryPrompt.BuildFailureDetail("NPC personality and background generation failed.", resp, response.ResponseBody));
                     Logger.Log("NpcPersona", "[WARN] AutoGen did not save profile for " + work.Id + ": " + failure);
+                    failure = PersonaFailureUiText.ProjectFailureDetail(failure);
                 }
                 return true;
             }).ConfigureAwait(false);
-            return accepted ? failure ?? "" : overwriteExisting ? "请求已失效，未保存新的人设。" : "";
+            return accepted ? failure ?? "" : overwriteExisting ? AdapterRecordTexts.T("AF_UI_PersonaGeneration_InvalidatedNotSaved", "The request was invalidated; the new persona was not saved.") : "";
         }
         catch (Exception error)
         {
@@ -218,7 +219,7 @@ internal static string BuildRebelSettlementSummaryForNamingPrompt(IEnumerable<Se
 	{
 		if (settlements == null)
 		{
-			return "无";
+			return AdapterPromptCaptureTexts.PcapText("rebel_no_summary");
 		}
 		List<string> list = new List<string>();
 		foreach (Settlement settlement in settlements.Where((Settlement x) => x != null && (x.IsTown || x.IsCastle)).Take(4))
@@ -233,7 +234,7 @@ internal static string BuildRebelFollowerSummaryForNamingPrompt(IEnumerable<Clan
 	{
 		if (followerClans == null)
 		{
-			return "无";
+			return AdapterPromptCaptureTexts.PcapText("rebel_no_summary");
 		}
 		List<string> list = new List<string>();
 		foreach (Clan followerClan in followerClans)
@@ -244,10 +245,10 @@ internal static string BuildRebelFollowerSummaryForNamingPrompt(IEnumerable<Clan
 			}
 			string clanDisplayName = MemoryEntityIdentityBannerlordAdapter.GetClanDisplayName(followerClan);
 			string heroDisplayName = MemoryEntityIdentityBannerlordAdapter.GetHeroDisplayName(followerClan.Leader);
-			string text = KingdomStabilityGameAdapter.BuildClanFortificationSummary(followerClan);
+			string text = KingdomStabilityGameAdapter.BuildClanFortificationSummaryForPrompt(followerClan);
 			if (string.IsNullOrWhiteSpace(text))
 			{
-				text = "暂无可用封地摘要";
+				text = AdapterPromptCaptureTexts.PcapText("rebel_no_fief_summary");
 			}
 			list.Add(RebellionNamingRules.FollowerLine(clanDisplayName, heroDisplayName, text));
 		}

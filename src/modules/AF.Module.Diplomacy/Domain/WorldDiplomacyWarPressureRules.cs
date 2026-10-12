@@ -1,3 +1,4 @@
+using AnimusForge;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -93,7 +94,7 @@ public static class WorldDiplomacyWarPressureRules
 			entry.Value = 0;
 			entry.IsEscalationArmed = false;
 			entry.LastUpdatedDay = currentDay;
-			entry.LastReason = "外交行动完成，压力清空";
+			entry.LastReason = DiplomacyMiscPromptTexts.Get("WarPressure_ClearedOnCompletion", "Diplomatic action completed, pressure cleared");
 		}
 	}
 	public static void DecayWarPressure(List<WarPressureEntry> warPressure, int currentDay)

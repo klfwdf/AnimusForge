@@ -350,5 +350,173 @@
     <string id="AF_ILL_UI_GALLERY_LEGACY_DEFAULT_TITLE" text="卡拉迪亚历史画卷" />
     <string id="AF_ILL_UI_DEFAULT_HERO_NAME" text="英雄" />
     <string id="AF_ILL_UI_DEFAULT_PARTNER_NAME" text="对方" />
+    <string id="AF_ILL_ERROR_GEMINI_NON_STREAMING" text="原生谷歌生图请使用 :generateContent 非流式端点；未发送请求。" />
+    <string id="AF_ILL_ERROR_GEMINI_EXACT_URL" text="已勾选完整URL，请填写 /models/模型名:generateContent；未发送请求。" />
+    <string id="AF_ILL_ERROR_GEMINI_MODEL_MISSING" text="原生谷歌生图需要模型名称；未发送请求。" />
+    <string id="AF_ILL_ERROR_GEMINI_MODEL_INVALID" text="原生谷歌模型名称格式无效；未发送请求。" />
+    <string id="AF_ILL_ERROR_GEMINI_USER_CONTENT" text="原生谷歌生图请求缺少完整的用户内容；未发送请求。" />
+    <string id="AF_ILL_ERROR_GEMINI_PNG_REFERENCE" text="原生谷歌参考图必须为已验证的PNG数据；未发送请求。" />
+    <string id="AF_ILL_ERROR_GEMINI_CONTENT_BLOCK" text="原生谷歌生图包含未支持的内容块；未发送请求。" />
+    <string id="AF_ILL_ERROR_GEMINI_EMPTY_CONTENT" text="原生谷歌生图内容为空；未发送请求。" />
+    <string id="AF_ILL_ERROR_HTTP_ENDPOINT" text="生图端点必须是完整的 HTTP/HTTPS URL。" />
+    <string id="AF_ILL_ERROR_EDITS_ENDPOINT" text="标准生图编辑端点是 /images/edits（images复数），不是 /image/edits；特殊服务路径请使用完整URL模式。" />
+    <string id="AF_ILL_ERROR_REFERENCE_DECODE" text="图片解码或格式转换失败" />
+    <string id="AF_ILL_ERROR_REFERENCE_EMPTY" text="图片数据为空" />
+    <string id="AF_ILL_ERROR_REFERENCE_DATA_URI" text="data URI 格式错误" />
+    <string id="AF_ILL_ERROR_REFERENCE_SINGLE_LIMIT" text="超过单图24 MiB限制" />
+    <string id="AF_ILL_ERROR_REFERENCE_TOTAL_LIMIT" text="参考图累计超过48 MiB限制" />
+    <string id="AF_ILL_ERROR_PLAYER2_UNCONFIRMED" text="Player2接口未确认，请稍后检查应用状态；未发送生图请求。" />
+    <string id="AF_ILL_ERROR_PLAYER2_UNAVAILABLE" text="无法确认Player2图片接口，请检查应用已运行并登录，以及端口是否正确；未发送生图请求。" />
+    <string id="AF_ILL_ERROR_PLAYER2_UPLOAD_BUDGET" text="Player2请求体仍超过上传预算；已保留全部参考图且不再降低细节，请求未发送。请缩短提示词或自定义规则。" />
+    <string id="AF_ILL_ERROR_GROK_REFERENCE_LIMIT" text="Grok 图片编辑最多支持5张参考图；未丢弃参考图，请求未发送。" />
+    <string id="AF_ILL_ERROR_REFERENCE_UNAVAILABLE" text="没有可用的参考图；请求未发送。" />
+    <string id="AF_ILL_ERROR_SCREENSHOT_COUNT" text="自由取景生图必须取得一至两张现场截图，未发送请求。" />
+    <string id="AF_ILL_ERROR_SCREENSHOT_KIND" text="现场截图参考缺失或类型错误，未发送请求。" />
+    <string id="AF_ILL_ERROR_SCREENSHOT_DUPLICATE" text="两张截图相同，请重新取景；已停止生成。" />
+    <string id="AF_ILL_ERROR_IMAGE_NOT_RETURNED" text="生图未返回图像。" />
+    <string id="AF_ILL_ERROR_GALLERY_SAVE" text="成图未能保存到画廊。" />
+    <string id="AF_ILL_ERROR_IMAGE_SAVE" text="成图保存失败。" />
+    <string id="AF_ILL_ERROR_RESPONSE_EMPTY_BODY" text="服务端返回空响应体" />
+    <string id="AF_ILL_ERROR_RESPONSE_UNRECOGNIZED" text="响应未包含可识别的图片数据" />
+    <string id="AF_ILL_ERROR_RESPONSE_FILTERED" text="服务端拒绝生成图片或触发内容过滤" />
+    <string id="AF_ILL_ERROR_RESPONSE_LENGTH_LIMIT" text="服务端输出达到长度上限，未取得图片" />
+    <string id="AF_ILL_ERROR_RESPONSE_EMPTY_REPLY" text="服务端返回空回复，未提供文字或图片" />
+    <string id="AF_ILL_ERROR_RESPONSE_EXTRACTION" text="服务端返回了内容，但未能提取图片；请检查响应格式或模型输出" />
+    <string id="AF_ILL_ERROR_IMAGE_ENCODING_LIMIT" text="图片编码超过限制。" />
+    <string id="AF_ILL_ERROR_DIRECTOR_DISABLED" text="导演已关闭" />
+    <string id="AF_ILL_ERROR_DIRECTOR_UNCONFIGURED" text="导演接口未配置" />
+    <string id="AF_ILL_ERROR_DIRECTOR_REDRAW_UNAVAILABLE" text="导演未启用或接口未配置，未开始带提示词重绘。" />
+    <string id="AF_ILL_ERROR_DIRECTOR_CAPTURE_UNAVAILABLE" text="现场截图生图需要启用并配置识图导演，未开始采集。" />
+    <string id="AF_ILL_ERROR_DIRECTOR_INCOMPLETE" text="导演未返回完整画面方案" />
+    <string id="AF_ILL_ERROR_DIRECTOR_UNSUPPORTED_FACTS" text="导演输出含无依据盾牌、旗帜或不合要求的肖像动作" />
+    <string id="AF_ILL_ERROR_DIRECTOR_NARRATIVE" text="导演输出复述叙事原文，未转化为画面" />
+    <string id="AF_ILL_ERROR_DIRECTOR_EMPTY" text="导演返回空正文" />
+    <string id="AF_ILL_ERROR_DIRECTOR_SCENE_INCOMPLETE" text="导演正文缺少完整场景、光线与空间描述，或构图不合要求" />
+    <string id="AF_ILL_ERROR_DIRECTOR_TRUNCATED" text="导演输出达到令牌上限而截断，未采用残缺正文" />
+    <string id="AF_ILL_ERROR_DIRECTOR_FILTERED" text="导演拒绝或过滤了本次输出" />
+    <string id="AF_ILL_ERROR_DIRECTOR_UNFINISHED" text="导演未正常结束正文" />
+    <string id="AF_ILL_ERROR_DIRECTOR_TIMEOUT" text="导演请求超时" />
+    <string id="AF_ILL_ERROR_DIRECTOR_QUOTA" text="导演接口限流或额度不足（HTTP 429）" />
+    <string id="AF_ILL_ERROR_GENERATION_STOPPED" text="{REASON}，已停止生图" />
+    <string id="AF_ILL_ERROR_DIAGNOSTIC" text=" 诊断：{ID}" />
+    <string id="AF_ILL_ERROR_NO_AUTOMATIC_RETRY" text="；未自动重试，可稍后手动重绘。" />
+    <string id="AF_ILL_ERROR_REFERENCE_INVALID" text="参考图 {INDEX}（{KIND}）无效：{DETAIL}；已停止生成，未发送请求。" />
+    <string id="AF_ILL_ERROR_FREE_CAMERA_DIRECTOR" text="自由取景模式必须由识图导演完成画面推演：{DETAIL}" />
+    <string id="AF_ILL_ERROR_REDRAW_DIRECTOR" text="带提示词重绘不能使用本地构图：{DETAIL}" />
+    <string id="AF_ILL_ERROR_DIRECTOR_REQUEST_FAILED" text="导演请求失败（{DETAIL}）" />
+    <string id="AF_ILL_ERROR_DIRECTOR_PARSE_FAILED" text="导演请求或响应解析失败（{DETAIL}）" />
+    <string id="AF_ILL_ERROR_DIRECTOR_REGION" text="导演服务拒绝当前区域访问（HTTP {DETAIL}）" />
+    <string id="AF_ILL_ERROR_DIRECTOR_ACCESS" text="导演接口认证或访问权限失败（HTTP {DETAIL}）" />
+    <string id="AF_ILL_ERROR_DIRECTOR_UPSTREAM" text="导演上游服务暂不可用（HTTP {DETAIL}）" />
+    <string id="AF_ILL_ERROR_DIRECTOR_HTTP" text="导演接口返回 HTTP {DETAIL}" />
+    <string id="AF_ILL_UI_DEFAULT_THEME" text="人物与情境" />
+    <string id="AF_ILL_ERROR_PAYLOAD_SIZE" text="图片为空或超过24 MiB限制。" />
+    <string id="AF_ILL_ERROR_PAYLOAD_FORMAT" text="仅接受可解码的PNG或JPEG图片。" />
+    <string id="AF_ILL_ERROR_NORMALIZED_SIZE" text="规范化图片超过24 MiB限制。" />
+    <string id="AF_ILL_ERROR_PAIR_SIZE" text="双视角参考图超过上传图片大小限制；未丢弃参考图。" />
+    <string id="AF_ILL_ERROR_CACHE_SIZE" text="缓存图片超过大小限制。" />
+    <string id="AF_ILL_ERROR_IMAGE_DIMENSIONS" text="图片尺寸超过8192边长或1600万像素限制。" />
+    <string id="AF_ILL_ERROR_RESPONSE_SIZE" text="服务端响应超过大小限制。" />
+    <string id="AF_ILL_ERROR_CAPTURE_SIZE" text="原生截图超过96 MiB采集上限。" />
+    <string id="AF_ILL_ERROR_CAPTURE_BMP_INVALID" text="原生截图不是完整有效的 BMP。" />
+    <string id="AF_ILL_ERROR_CAPTURE_HEIGHT" text="截图高度无效。" />
+    <string id="AF_ILL_ERROR_CAPTURE_BMP_INCOMPLETE" text="原生 BMP 尚不完整或像素格式不受支持。" />
+    <string id="AF_ILL_ERROR_CAPTURE_DIMENSIONS" text="截图像素尺寸无效或超过24百万像素上限。" />
+    <string id="AF_ILL_ERROR_CAPTURE_BLACK" text="现场截图几乎全黑，无法识别人物与环境；已停止生成，未发送导演或生图请求。" />
+    <string id="AF_ILL_ERROR_CAPTURE_MISSION" text="当前任务尚无可采集的单人游戏画面。" />
+    <string id="AF_ILL_ERROR_CAPTURE_PHOTO_MODE" text="请先退出原版摄影模式，再从生图按钮开始取景。" />
+    <string id="AF_ILL_ERROR_CAPTURE_ACTIVE" text="原生图片采集正在进行，请等待后再点击。" />
+    <string id="AF_ILL_ERROR_CAPTURE_PAUSE_OWNER" text="截图暂停请求已被占用。" />
+    <string id="AF_ILL_ERROR_CAPTURE_LEFT_SCENE" text="取景尚未完成时已离开场景，采集已终止。" />
+    <string id="AF_ILL_ERROR_CAPTURE_CAMERA_OWNER" text="取景期间相机被其他功能接管，已终止采集。" />
+    <string id="AF_ILL_ERROR_CAPTURE_TIMEOUT" text="截图导出超时，已恢复原画面；未发送生图请求。" />
+    <string id="AF_ILL_ERROR_CONTEXT_CHANGED" text="本次插画对应的对话或场景已结束、切换，请重新打开场景插画。" />
+    <string id="AF_ILL_ERROR_CONTEXT_STOPPED" text="场景上下文校验已停止，请重新打开场景插画。" />
+    <string id="AF_ILL_ERROR_CONTEXT_MISSING" text="当前没有正在显示的任务场景或地图对话，请在会话中重新打开场景插画。" />
+    <string id="AF_ILL_ERROR_PANORAMA_PROJECTION_BUDGET" text="场景全景超过投影预算，已停止生图。" />
+    <string id="AF_ILL_ERROR_PANORAMA_DUPLICATE" text="前后两张环境图近乎相同，未确认取得不同方向，已停止生成。" />
+    <string id="AF_ILL_ERROR_REFERENCE_UNKNOWN_KIND" text="未知用途" />
+    <string id="AF_ILL_ERROR_PANORAMA_NAME" text="原生全景渲染名称超过安全长度。" />
+    <string id="AF_ILL_ERROR_PANORAMA_BATCH_ACTIVE" text="已有环境快照批次正在执行。" />
+    <string id="AF_ILL_ERROR_LIGHTING_SCENE" text="观察补光需要有效的独立场景副本。" />
+    <string id="AF_ILL_ERROR_LIGHTING_POSITION_MISSING" text="观察补光缺少离屏镜头位置。" />
+    <string id="AF_ILL_ERROR_LIGHTING_POSITION_INVALID" text="观察补光的离屏镜头坐标无效。" />
+    <string id="AF_ILL_ERROR_LIGHTING_COVERAGE" text="观察补光的覆盖范围无效。" />
+    <string id="AF_ILL_ERROR_LIGHTING_CREATE" text="无法在独立场景创建观察灯。" />
+    <string id="AF_ILL_ERROR_LIGHTING_NAME" text="原生观察灯名称超过安全长度。" />
+    <string id="AF_ILL_ERROR_LIGHTING_NATIVE" text="引擎未创建有效的观察灯。" />
+    <string id="AF_ILL_ERROR_LIGHTING_ATTACH" text="无法将观察灯挂载到独立场景。" />
+    <string id="AF_ILL_ERROR_LIGHTING_OWNER" text="观察灯未归属于独立场景实体。" />
+    <string id="AF_ILL_ERROR_SUPPLEMENT_CANCELLED" text="资源补齐已取消。" />
+    <string id="AF_ILL_ERROR_TEMPLATE_NAME" text="资源模板场景名称过长。" />
+    <string id="AF_ILL_ERROR_SUPPLEMENT_ENTITY_BUDGET" text="资源补齐超过实体遍历预算，已停止采集。" />
+    <string id="AF_ILL_ERROR_TEMPLATE_DEPTH" text="资源模板层级超过遍历预算。" />
+    <string id="AF_ILL_ERROR_TEMPLATE_OWNER" text="资源模板不属于自有场景，拒绝设置其变换。" />
+    <string id="AF_ILL_ERROR_TEMPLATE_CREATE" text="无法创建静态资源模板。" />
+    <string id="AF_ILL_ERROR_TEMPLATE_LOAD" text="无法在独立模板场景加载资源几何。" />
+    <string id="AF_ILL_ERROR_RESOURCE_COPY" text="无法取得资源网格的独立副本。" />
+    <string id="AF_ILL_ERROR_RESOURCE_SCENE" text="资源几何未正确进入独立渲染场景。" />
+    <string id="AF_ILL_ERROR_RESOURCE_BOUNDS" text="资源副本网格边界无效。" />
+    <string id="AF_ILL_ERROR_SNAPSHOT_ISOLATION" text="全景快照未获得独立场景，拒绝操作当前任务场景。" />
+    <string id="AF_ILL_ERROR_SCENE_CHANGED" text="当前场景已切换，不能读取其资源。" />
+    <string id="AF_ILL_ERROR_SCENE_RESOURCE_RESOLVE" text="未能解析当前场景实际资源文件，已停止环境重建。" />
+    <string id="AF_ILL_ERROR_SCENE_READ_SCHEDULER" text="场景资源读取调度已停止。" />
+    <string id="AF_ILL_ERROR_SCENE_READ_CHANGED" text="场景或可见等级在资源读取期间改变，请重新采集。" />
+    <string id="AF_ILL_ERROR_SNAPSHOT_CREATE" text="无法在游戏线程创建环境快照。" />
+    <string id="AF_ILL_ERROR_SNAPSHOT_SCHEDULER" text="环境快照分帧调度已停止。" />
+    <string id="AF_ILL_ERROR_SUPPLEMENT_SCHEDULER" text="场景资源补齐调度已停止。" />
+    <string id="AF_ILL_ERROR_SUPPLEMENT_FRAME_SCHEDULER" text="场景资源补齐分帧调度已停止。" />
+    <string id="AF_ILL_ERROR_TEMPLATE_CLEANUP_SCHEDULER" text="场景模板清理调度已停止。" />
+    <string id="AF_ILL_ERROR_SNAPSHOT_GEOMETRY_EMPTY" text="现场与资源中均没有可用静态几何，不能生成空白环境参考。" />
+    <string id="AF_ILL_ERROR_SCENE_VISIBLE_LEVEL" text="场景可见等级在采集期间改变，请重新采集。" />
+    <string id="AF_ILL_ERROR_SNAPSHOT_NAME" text="原生全景场景名称超过安全长度。" />
+    <string id="AF_ILL_ERROR_SNAPSHOT_CENTER_MISSING" text="无法确定玩家附近环境的采集中心。" />
+    <string id="AF_ILL_ERROR_SNAPSHOT_CENTER_INVALID" text="环境采集中心无效。" />
+    <string id="AF_ILL_ERROR_SNAPSHOT_SCENE_ENDED" text="环境快照对应的场景已退出或切换。" />
+    <string id="AF_ILL_ERROR_SNAPSHOT_CANCELLED" text="环境快照已取消。" />
+    <string id="AF_ILL_ERROR_STATIC_COPY" text="无法取得独立的现场静态网格副本。" />
+    <string id="AF_ILL_ERROR_STATIC_SCENE" text="静态网格没有正确进入独立场景。" />
+    <string id="AF_ILL_ERROR_STATIC_BOUNDS" text="静态副本网格边界无效。" />
+    <string id="AF_ILL_ERROR_RESOURCE_PATH_MISSING" text="未取得当前场景资源文件的实际路径。" />
+    <string id="AF_ILL_ERROR_RESOURCE_FILE_MISSING" text="当前场景资源文件不存在。" />
+    <string id="AF_ILL_ERROR_RESOURCE_READ_BUDGET" text="场景资源为空或超过8MiB读取预算。" />
+    <string id="AF_ILL_ERROR_RESOURCE_CHANGED_BEFORE" text="场景资源在读取前发生了变化，请重新采集。" />
+    <string id="AF_ILL_ERROR_RESOURCE_CHANGED_DURING" text="场景资源在读取期间发生了变化，请重新采集。" />
+    <string id="AF_ILL_ERROR_RESOURCE_ACCESS" text="无法读取当前场景资源文件，访问被拒绝。" />
+    <string id="AF_ILL_ERROR_RESOURCE_SCENE_XML" text="当前资源不是有效的scene XML。" />
+    <string id="AF_ILL_ERROR_RESOURCE_ENTITIES_DUPLICATE" text="场景资源包含重复的entities节点。" />
+    <string id="AF_ILL_ERROR_RESOURCE_LEVELS_DUPLICATE" text="场景资源包含重复的levels节点。" />
+    <string id="AF_ILL_ERROR_RESOURCE_NODES_MISSING" text="当前场景资源缺少scene或entities节点。" />
+    <string id="AF_ILL_ERROR_RESOURCE_XML_DEPTH" text="场景XML层级超过64层预算。" />
+    <string id="AF_ILL_ERROR_RESOURCE_XML_ELEMENTS" text="场景XML流式扫描超过524288个元素预算。" />
+    <string id="AF_ILL_ERROR_RESOURCE_XML_NAMESPACE" text="场景XML使用了不支持的命名空间。" />
+    <string id="AF_ILL_ERROR_RESOURCE_SUBTREE_ELEMENTS" text="单个场景实体子树超过32768个元素内存预算。" />
+    <string id="AF_ILL_ERROR_RESOURCE_SUBTREE_END" text="场景实体子树意外结束。" />
+    <string id="AF_ILL_ERROR_RESOURCE_LEVEL_DEFINITION" text="场景升级层级定义无效。" />
+    <string id="AF_ILL_ERROR_RESOURCE_LEVEL_MASK" text="场景升级层级名称或mask定义无效。" />
+    <string id="AF_ILL_ERROR_RESOURCE_GEOMETRY_BUDGET" text="场景静态几何计划超过32768项预算。" />
+    <string id="AF_ILL_ERROR_PANORAMA_NOT_RENDERED" text="当前任务场景尚未完成渲染，暂时无法采集附近环境，请稍后重试。" />
+    <string id="AF_ILL_ERROR_PANORAMA_SCHEDULE" text="无法调度全景采集。" />
+    <string id="AF_ILL_ERROR_PANORAMA_RENDERER_MISSING" text="全景渲染器未建立。" />
+    <string id="AF_ILL_ERROR_PANORAMA_EXPORT_ACTIVE" text="全景镜头切换被未完成的导出阻止。" />
+    <string id="AF_ILL_ERROR_PANORAMA_WAIT_FRAME" text="无法等待全景渲染帧。" />
+    <string id="AF_ILL_ERROR_PANORAMA_RENDER_INCOMPLETE" text="全景镜头未完成渲染，没有发送不完整参考图。" />
+    <string id="AF_ILL_ERROR_PANORAMA_EXPORT_NOT_READY" text="全景导出未就绪。" />
+    <string id="AF_ILL_ERROR_PANORAMA_EXPORT_INCOMPLETE" text="全景导出未取得完整图片，没有用重复视角代替。" />
+    <string id="AF_ILL_ERROR_SCENE_VALIDATION_SCHEDULER" text="场景状态校验调度已停止，不能继续本次插画。" />
+    <string id="AF_ILL_ERROR_PANORAMA_TIMEOUT" text="环境全景采集超过时间预算，已停止；没有发送不完整环境图。" />
+    <string id="AF_ILL_ERROR_RESOURCE_XML_PARSE" text="无法解析当前场景XML资源：{DETAIL}" />
+    <string id="AF_ILL_ERROR_RESOURCE_READ_FAILED" text="读取当前场景资源失败：{DETAIL}" />
+    <string id="AF_ILL_ERROR_RESOURCE_NODE_DUPLICATE" text="场景资源包含重复的{DETAIL}节点。" />
+    <string id="AF_ILL_ERROR_LIGHTING_SCENE_DETAIL" text="观察补光需要有效的独立场景副本。{DETAIL}" />
+    <string id="AF_ILL_ERROR_LIGHTING_POSITION_DETAIL" text="观察补光缺少离屏镜头位置。{DETAIL}" />
+    <string id="AF_ILL_ERROR_EDITS_UNSUPPORTED" text="images/edits 不支持当前参考图请求；为避免静默丢失人物/场景参考，已停止生成。请开启“优先对话多模态生图通道”或配置可用的 /images/edits 端点。" />
+    <string id="AF_ILL_ERROR_DIRECTOR_TEXT_ONLY_ATTEMPT" text="接口明确不支持图片输入，已尝试一次文字构思" />
+    <string id="AF_ILL_ERROR_DIRECTOR_TEXT_ONLY_DETAIL" text="{SUMMARY}；{DETAIL}" />
+      <string id="AF_ILL_MISSION_SHOUT_TITLE" text="场景喊话" />
+    <string id="AF_ILL_ERROR_PANORAMA_ROOTS_BUDGET" text="当前场景根实体超过32768个遍历预算，已停止环境快照，不能将截断副本标为完整全景。" />
+    <string id="AF_ILL_ERROR_PANORAMA_NODES_BUDGET" text="当前环境实体层级超过32768个节点，已停止快照，不能将不完整副本标为完整全景。" />
+    <string id="AF_ILL_ERROR_IMAGE_PROMPT_BUDGET" text="生图提示词超过{LIMIT}字符预算，无法在保留事实、参考图约束和完整段落的前提下缩短；请求未发送。请缩短自定义画风/要求或减少本次素材。" />
+      <string id="AF_ILL_UI_LOCAL_CACHE_PROMPT" text="（本地已留存历史画卷）" />
   </strings>
 </base>

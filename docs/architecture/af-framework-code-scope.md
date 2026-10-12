@@ -1,3 +1,94 @@
+<a id="bilingual-runtime-maintenance-20261012"></a>
+## 双语运行修复与维护责任（2026-10-12，revision 1ffb30f62059）
+
+本条接续此前部署职责；准确当前源码SHA/一基锚点见`artifacts/bilingual-maintenance-skill-20261012/verified-code-map.json`。同DLL内部helper未扩展外部公共API，游戏对象和实际执行owner保持原边界。
+
+| 源码锚点 | 符号 | 覆盖责任 |
+| --- | --- | --- |
+| `src/modules/AF.Module.Prompt/Runtime/PromptComposerTexts.cs:25–30` | `ApplyOutputLanguage` | 固定内容包的新自然语言输出约束；缓存资源、尾部幂等，不改输入/协议 |
+| `src/modules/AF.Module.Prompt/Composition/PromptRuleBlockText.cs:25–25` | `HeaderPrefix` | 固定原附加规则分隔协议，两包同识别，不将协议翻成显示文案 |
+| `PolicySystem/Npc/PolicyLlmClient.cs:51–65` | `FreezePolicyMessages` | 克隆实际政策messages，收口最后system，重试复用，不修改玩家正文 |
+| `src/modules/AF.Module.Knowledge/Entities/WorldEntityRetrievalService.cs:1392–1401` | `requireExactDisplayName` | 共享同步/脱离对象检索的裸lord/lords窄限制，保名称和明确ID |
+| `src/AF.GameAdapter.Bannerlord/UI/Common/McmDropdownRuntimeRefresh.cs:777–797` | `LocalizeOptionForDisplay` | DialogueUI五个选项仅投影显示，选择索引及未知设置保留 |
+| `src/AF.GameAdapter.Bannerlord/UI/Conversation/AnimusForgeConversationHistoryLogItemVM.cs:15–29` | `LocalizeSpeakerForDisplay` | 已知AFEF标签在真正显示边界双语；历史原值不改 |
+| `src/AF.GameAdapter.Bannerlord/UI/Weekly/TerminalWeeklyReportBrowserPopupVM.cs:23–23` | `AF_UI_Terminal_Prefab_008Text` | 实际WeeklyReportVm十个筛选/分页/阅读文字getter及DataSource |
+| `src/AF.Persistence/AnimusForgeDataPaths.cs:16–16` | `GetCurrentRoot` | 安装模组身份、用途目录、旧路径兼容与完整reparse校验 |
+| `src/AF.GameAdapter.Bannerlord/Configuration/Mcm/McmSettingsStorage.cs:53–76` | `RouteJson` | 只路由3个AF-owned MCM ID；formatter、字段和preset身份保持；完整路径校验 |
+| `scripts/build/package_mod.ps1:784–869` | `Write-ZipFromModule` | CN/EN同版本和本机MMdd_HHmm、成对碰撞尾号与原发布事务 |
+
+其他确认writer在最终system调用同一语言收口；43prefab/2019绑定每API当前DLL属性/命令/作用域闭包PASS；当前getter/请求/实体原生回放339/次PASS。存储真实serializer/reparse/TTS/导入专项与完整两投影3519 PASS。Gauntlet绘制/点击、provider、旧档、真实迁移权限、全量语义未验；1.3 CoreVM使用原项目真实混合来源。远端main融合尚未实施，业务新增不属于本切片，具体P1/P2及配对语义队列见远端报告。统一状态见[主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#bilingual-runtime-maintenance-20261012)。
+
+<a id="en-deployment-20261012"></a>
+### 当前部署接续：EN 完整投影的资源缺口
+
+本轮源码边界为12个非嵌入XML，验证修订 `bb386814eea315adba5bd39c986f007e9064cb41`；C#与Bootstrap/两实现SHA未改。9个prefab只英译123条注释，精确非注释字节和XML树守恒；3个显示入口锚点如下，文件SHA/物理CR/LF行号/消费者与未覆盖职责见 `artifacts/en-deploy-20261012/verified-code-map.json`。[唯一主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#en-deployment-20261012)；[部署报告](../handoffs/2026-10-12-en-deployment.md)。
+
+| 真实源（一基行/符号） | 已覆盖责任 |
+| --- | --- |
+| `content/modules/AnimusForge.XihaiAction/ModuleData/sceneactions_items.xml:5`；`{=SAX_Item_DaimaoHead_Name}` | XML identity/stat/mesh/flag parity, one paired key, real TW1.3/1.4 native locale resolution |
+| `content/modules/AnimusForge.XihaiAction/ModuleData/Languages/sceneactions_strings.xml:162`；`id="SAX_Item_DaimaoHead_Name"` | XML identity/stat/mesh/flag parity, one paired key, real TW1.3/1.4 native locale resolution |
+| `content/modules/AnimusForge.XihaiAction/ModuleData/Languages/CNs/sceneactions_strings-zh-CN.xml:162`；`id="SAX_Item_DaimaoHead_Name"` | XML identity/stat/mesh/flag parity, one paired key, real TW1.3/1.4 native locale resolution |
+
+原完整EN内容投影、安装完整集合和双API native解析通过；真正Game.ItemObject/mission/UI渲染、Campaign/旧档/真实provider仍未验。下方Policy代码导航仍保留其冻结修订和验证范围，不把资源部署扩成整文件或全部玩法验收。
+
+<a id="policy-bilingual-closeout-20261012"></a>
+### 当前职责导航：Policy 接手双语化与全仓验收接续
+
+本条以实际 `main` / `a911d4d0de8964a393b6bdc6eaa83705b5218b02` 上的 dirty 工作树为准，接续下方上一轮审查；逐文件 SHA、19 个一基锚点、14 个源文件及覆盖/未覆盖责任见 `artifacts/policy-bilingual-closeout-20261012/verified-code-map.json`（SHA `9081465314b4c960d77f1221d92c7f2827fa8d1b7a891eef95adcd899d856488`），绑定最终 `build-unified-final-r4.json` 两份实际 DLL。行号按物理 CR/LF，另保 LF 行号，既有混合换行未批量规范化。锚点只证明列明消费者边界，不等于整文件/全部玩法验收；完整验收和回滚见[唯一主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#policy-bilingual-closeout-20261012)及[报告](../handoffs/2026-10-12-policy-bilingual-closeout.md)。
+
+| 真实源代码（一基锚点/符号） | owner / 已覆盖边界 |
+| --- | --- |
+| `PolicySystem/Core/PolicyDateTextProjection.cs:24`；`internal static string ForUi(` | Canonical date projection；UI current locale; Prompt fixed package; saved date never changed |
+| `PolicySystem/Core/PolicyCoreManagementTexts.cs:99`；`internal static string ProjectDirectoryForPrompt(` | Target directory provenance；Semantic names are data; only selector/plan wrappers are translated |
+| `PolicySystem/Core/PolicyCoreManagementTexts.cs:64`；`internal static string ProjectDiagnosticForPrompt(` | Generation diagnostic projection；Known full errors translated; unknown values unchanged |
+| `PolicySystem/Core/CustomPolicyBehavior.Targets.cs:1247`；`private static string SerializePlayerPolicyTargetHandleDirectory(` | Directory request boundary；Mandatory request conveys semantic target identity |
+| `PolicySystem/Core/CustomPolicyBehavior.Effects.cs:3641`；`private static string BuildPolicyTargetDisplayLabel(` | Typed target UI；Raw/Prompt defaults preserved; native labels, opaque names and known counts |
+| `PolicySystem/Core/CustomPolicyBehavior.Management.cs:2475`；`private static string MapPolicyTargetLabelTargetsToDisplay(` | Opaque stored names；No shell/overflow guesses inside dynamic names |
+| `PolicySystem/Core/CustomPolicyBehavior.Management.cs:2643,3164`；`private List<LocalPolicyHistoryItemData> BuildLocalPolicyHistoryData(` | History source and mentioned UI；Current target labels use typed UI projection; date uses UI projection |
+| `PolicySystem/Npc/NpcRulerPolicyBehavior.Generation.cs:5123`；`private static string CompressNpcPolicyKnowledgeContext(` | Governance knowledge filtering；English boundaries; original Chinese cues, qualifiers and budgets; letters preserved |
+| `PolicySystem/Npc/PolicyLlmClient.cs:451,461,2119`；`private static JArray BuildMessageArray(` | Legacy string request；Package-selected policy user message; ordinary JArray unchanged |
+| `PolicySystem/UI/LocalPolicyUi.cs:391`；`private readonly string _rawDateText;` | Local compose callbacks；Display date separate from publish/AutoDraft source |
+| `PolicySystem/UI/KingdomPolicyUi.cs:260`；`private readonly string _rawDateText;` | Kingdom/vassal compose callbacks；Display date separate from publish/AutoDraft source |
+| `src/modules/AF.Module.Prompt/Composition/MemorySystemFactProjection.cs:24`；`new Template("memory_policy_agenda_submission"` | Policy pending fact；AFEF prefix and metadata unchanged; no enacted effects invented |
+| `src/modules/AF.Module.Prompt/Composition/PolicyWeeklyFactPromptProjection.cs:36`；`internal static string Snapshot(` | Policy weekly facts；Known wrappers projected; actual cap and ambiguous/unknown tails retained |
+| `src/modules/AF.Module.Weekly/Materials/WeeklyPromptMaterialOwner.cs:13`；`internal static void Prepare(` | Weekly prompt copy boundary；Source/save material unchanged; Full and Short detached copies |
+| `src/AF.GameAdapter.Bannerlord/UI/Terminal/TerminalSettingsLocalization.cs:1067`；`private static string Resolve(` | Native terminal descriptions；Accurate fallback dictionaries and one literal token guard |
+| `src/AF.GameAdapter.Bannerlord/Configuration/Mcm/DuelSettings.cs:1723`；`{=AF_MCM_Tts_Token_Hint}` | MCM token documentation；Bearer semicolon maintained; no unbound token placeholder consumed |
+
+原 AllModules runner 的过期 UI/技术诊断预期只做11处精确迁移；全部原业务解析拒绝、数值、目标、授权、执行与rollback断言保留，两API×两UI语言各1491断言PASS。独立 locale UI oracle 和完整字节逆恢复见 `agent-core/ui-validation/allmodules-ui-migration-hunks.json` / `final-validation-freeze.json`（相对本轮证据根）。完整地方历史16次调用缺Campaign的NRE未标PASS；实机/真实provider/旧档/全句语义/正式分发包仍未验，下方原Policy阻断状态属于被本条接续的历史。
+
+<a id="bilingual-full-audit-20261012"></a>
+### 当前职责导航：双语化审查修复
+
+当前intent修订 `a911d4d0de8964a393b6bdc6eaa83705b5218b02` 加审查工作树；每文件SHA、符号及一基单行范围绑定于 `artifacts/localization-audit-repair-20261012/verified-code-map.json`，SHA **dbefcd4d4edb34196dd72ddc95e5e4114d957f432ae2d4bc411e5830cf851c60**。全部22锚点经当前字节/行校验，相关文件LF与CR/LF物理行位置相同。覆盖是下列消费者/边界，不是整文件/全仓语义验收；当前交付/未验/回滚见[唯一主台账](../animusforge-refactoring-and-repository-reorganization-plan.md#bilingual-full-audit-20261012)、[完整报告](../handoffs/2026-10-12-full-bilingual-audit.md)。
+
+| 实际源码（一基锚点/符号） | owner / 消费者 / 覆盖边界 |
+| --- | --- |
+| `src/modules/AF.Module.Prompt/Composition/HistorySectionProjectionOwner.cs:5,366`；`PlayerHistoryPrefixes` | 既有 raw 前缀缓存；历史区块分组 |
+| `src/modules/AF.Module.Prompt/Composition/MemorySystemFactProjection.cs:119,130,131`；`ProjectRecordedFactForPrompt(` | 固定事实在请求边界显示；存档与普通文本保留 |
+| `src/modules/AF.Module.WorldMap/Runtime/WorldMapFactPromptProjection.cs:226`；`ProjectBodyForPrompt(` | 191 大地图模板；未知和歧义保原 |
+| `src/modules/AF.Module.Diplomacy/Presentation/DiplomacyDialogueStatusUi.cs:42`；`internal static string Project(` | 先原生模板后 literal reason |
+| `src/modules/AF.Module.Diplomacy/Profiles/KingdomStrategicProfileBehavior.cs:1673`；`ProfileDevUi_ExportDirectoryInvalid` | 已有双语错误键；DevUI实际识别 |
+| `src/modules/AF.Module.Conversation/Ambient/Host/TownAmbientDialogueBehavior.cs:1181,1211`；`LocalizeAmbientTemplate(` | 原生模板保留slots后单次动态替换 |
+| `src/modules/AF.Module.Prompt/Configuration/AIConfigHandler.cs:248,830,864`；`FormatTemplate(` | 三处真实消费者使用 PromptComposerTexts 缓存 Regex 的单次格式化 |
+| `src/modules/AF.Module.Duel/Host/DuelFactTexts.cs:20`；`Format(` | raw事实单次展开 |
+| `src/modules/AF.Module.Duel/Host/DuelBehavior.cs:5740`；`AF_UI_Duel_StakeGold` | 先本地化后literal动态值；业务等价 |
+| `src/modules/AF.Module.Weekly/Generation/WeeklyGenerationRules.cs:180`；`NeutralizeWeeklyReportScenarioName(string` | 大陆名称按发行包选择 |
+| `src/modules/AF.Module.Onboarding/Host/OnboardingUiText.cs:17`；`ImportFolderDisplayName(string` | 仅映射已知世界书文件夹显示 |
+| `src/modules/AF.Module.Llm/Tts/VoiceMapper.cs:140`；`AF_LLM_UI_VoiceGroup_MaleYoung` | 六实际UI消费者通过已注册XML切语言 |
+| `src/AF.GameAdapter.Bannerlord/Memory/MemorySummaryApplicationAdapter.cs:250,272`；`BuildMajorActionSummarySourceLine(` | 空actor默认在Prompt边界选包；raw未变 |
+| `src/modules/AF.Module.Memory/Summary/MemoryFailureUiText.cs:41`；`RequiredFieldsForDisplay(string` | 仅固定None组显示投影；worker不解析原生UI |
+| `AnimusForge.SiegeAftermathIntervention/CompatibilityFlatJson.cs:11`；`Parse(string json)` | 标准JSON一次解码；原612键逐值不变 |
+| `AnimusForge.SiegeAftermathIntervention/TownPromptTextCatalog.cs:313,714,722,730`；`Resolve(` | 21键+104原段真实消费 |
+| `AnimusForge.SiegeAftermathIntervention/TownPromptCatalogResources.cs:19`；`Get(bool` | 显式语言两份Lazy；深目录嵌入读取 |
+| `src/bridges/Siege/Resources/GcczTownPromptResourceProvider.cs:73`；`GetFactCatalog` | 发行包Prompt/当前UI/固定事实三缓存 |
+| `src/AF.GameAdapter.Bannerlord/Composition/SiegeAftermath/SiegeAiInterventionBehavior.cs:5626`；`textCatalog: GcczTownPromptResourceProvider.GetFactCatalog` | 固定历史fact目录，不随UI切换 |
+| `scripts/build/package_localization.ps1:334`；`Assert-AnimusForgeEnglishRuntimeSource` | 源码门禁仍因Policy阻断；不放宽绕过 |
+| `tools/localization/inventory_runtime_literals.py:44`；`line = bisect.bisect_right(` | 全量运行字面量的真实CR/LF行列与sourceLine；保留lfLine历史坐标 |
+| `tools/localization/inventory_untranslated.py:34`；`def source_line_index(` | 候选真实CR/LF定位；分类规则不变，652原生Get-Content检查 |
+
+root共享资源/宿主与GCCZ独占职责分别记录；新增词表/Regex/reader只在首次初始化缓存与既有文本生成边界执行，无Tick IO/反射/全量游戏扫描。PolicySystem保持只读，由外部停止后的后续切片负责。实际实机/完整provider/旧档/正式CNEN包未验证；原始用户文本、事实与存档身份不作为可自由英译数据。下方历史代码图保留其原修订和范围。
+
 <a id="mcm-model-preset-continuation-20261009"></a>
 ### MCM 模型预设与快报战事修复接续
 

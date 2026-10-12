@@ -360,5 +360,58 @@
     <string id="AF_ECO_UI_RpForgeRollbackIssueRecordCleanupFailed" text="清理记录或缓存失败：{ERROR}" />
     <string id="AF_ECO_UI_RpForgeRollbackIssueUnregisterFailed" text="注销已生成对象失败：{ERROR}" />
     <string id="AF_ECO_UI_RpForgeLabelUnknownType" text="未知" />
+    <string id="AF_ECO_UI_ItemType_S285" text="鞭" />
+    <string id="AF_ECO_UI_ItemType_S286" text="匕首" />
+    <string id="AF_ECO_UI_ItemType_S287" text="剑" />
+    <string id="AF_ECO_UI_ItemType_S288" text="斧" />
+    <string id="AF_ECO_UI_ItemType_S289" text="锤" />
+    <string id="AF_ECO_UI_ItemType_S290" text="镐" />
+    <string id="AF_ECO_UI_ItemType_S291" text="长柄" />
+    <string id="AF_ECO_UI_ItemType_S292" text="箭" />
+    <string id="AF_ECO_UI_ItemType_S293" text="弩矢" />
+    <string id="AF_ECO_UI_ItemType_S294" text="石弹" />
+    <string id="AF_ECO_UI_ItemType_S295" text="弹药" />
+    <string id="AF_ECO_UI_ItemType_S296" text="弓" />
+    <string id="AF_ECO_UI_ItemType_S297" text="弩" />
+    <string id="AF_ECO_UI_ItemType_S298" text="投石索" />
+    <string id="AF_ECO_UI_ItemType_S299" text="投斧" />
+    <string id="AF_ECO_UI_ItemType_S300" text="飞刀" />
+    <string id="AF_ECO_UI_ItemType_S301" text="标枪" />
+    <string id="AF_ECO_UI_ItemType_S302" text="火器" />
+    <string id="AF_ECO_UI_ItemType_S303" text="盾牌" />
+    <string id="AF_ECO_UI_ItemType_S304" text="旗帜" />
+    <string id="AF_ECO_UI_ItemType_S305" text="酒类" />
+    <string id="AF_ECO_UI_ItemType_S306" text="食物" />
+    <string id="AF_ECO_UI_ItemType_S307" text="驮兽" />
+    <string id="AF_ECO_UI_ItemType_S308" text="牲畜" />
+    <string id="AF_ECO_UI_ItemType_S309" text="木材" />
+    <string id="AF_ECO_UI_ItemType_S310" text="铁料" />
+    <string id="AF_ECO_UI_ItemType_S311" text="盐" />
+    <string id="AF_ECO_UI_ItemType_S312" text="工具" />
+    <string id="AF_ECO_UI_ItemType_S313" text="陶器" />
+    <string id="AF_ECO_UI_ItemType_S314" text="布料" />
+    <string id="AF_ECO_UI_ItemType_S315" text="原料" />
+    <string id="AF_ECO_UI_ItemType_S316" text="油料" />
+    <string id="AF_ECO_UI_ItemType_S317" text="贵重品" />
+    <string id="AF_ECO_UI_ItemType_S318" text="货物" />
+    <string id="AF_ECO_UI_ItemType_S319" text="马匹" />
+    <string id="AF_ECO_UI_ItemType_S320" text="单手武器" />
+    <string id="AF_ECO_UI_ItemType_S321" text="双手武器" />
+    <string id="AF_ECO_UI_ItemType_S322" text="长柄武器" />
+    <string id="AF_ECO_UI_ItemType_S323" text="投掷武器" />
+    <string id="AF_ECO_UI_ItemType_S324" text="头盔" />
+    <string id="AF_ECO_UI_ItemType_S325" text="身甲" />
+    <string id="AF_ECO_UI_ItemType_S326" text="腿甲" />
+    <string id="AF_ECO_UI_ItemType_S327" text="手甲" />
+    <string id="AF_ECO_UI_ItemType_S328" text="书籍" />
+    <string id="AF_ECO_UI_ItemType_S329" text="披风" />
+    <string id="AF_ECO_UI_ItemType_S330" text="马具" />
+    <string id="AF_ECO_UI_ItemType_S028" text="物品" />
+      <string id="AF_ECO_UI_PartyAsset_Other" text="对方" />
+    <string id="AF_ECO_UI_PartyAsset_Unknown" text="未知" />
+    <string id="AF_ECO_UI_PartyAsset_UnknownAsset" text="未知资产" />
+    <string id="AF_ECO_UI_PartyAsset_UnknownSettlement" text="未知定居点" />
+    <string id="AF_ECO_UI_PartyAsset_Workshop" text="工坊" />
+    <string id="AF_ECO_UI_PartyAsset_Caravan" text="商队" />
   </strings>
 </base>

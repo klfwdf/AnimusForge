@@ -230,7 +230,7 @@ public sealed partial class CourierDeliveryBehavior
 		if (!session.DeliveryApplied)
 		{
 			string deliveryFact = BuildInboundDeliveryFactText(session, delivered: true, sender);
-			string historyLine = "【" + GetInboundLetterKindDisplayText(session) + "】" + senderName + "通过信使写道：" + visibleLetter;
+			string historyLine = "【" + GetInboundLetterKindDisplayText(session) + "】" + senderName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0618") + visibleLetter;
 			if (!TryReserveInboundDeliveredMemoryIntent(session, sender, historyLine, deliveryFact))
 			{
 				// No memory-only intent means delivery could be lost after the party is destroyed.

@@ -14,9 +14,7 @@ internal sealed class KingdomRebellionEditorController
  private static string Ui(string id, string fallback) => new TextObject("{=" + id + "}" + fallback).ToString();
  private static string Ui(string id, string fallback, string variableName, string variableValue)
  {
-  var text = new TextObject("{=" + id + "}" + fallback);
-  text.SetTextVariable(variableName, variableValue ?? string.Empty);
-  return text.ToString();
+  return DeveloperUiText.Format(id, fallback, (variableName, (object)variableValue));
  }
  internal KingdomRebellionEditorController(Func<KingdomRebellionRuntimeController> runtime,
   Func<AutomaticKingdomRebellionOwner<PendingAutomaticKingdomRebellionContext>> automatic,
@@ -236,7 +234,7 @@ internal void StartDevForcedKingdomRebellionAsync(Kingdom kingdom, Clan clan, in
 		PendingDevContext = null;
 		InformationManager.ShowInquiry(new InquiryData(Ui("AF_UI_KingdomRebellion_GeneratingTitle", "Generating rebel kingdom name"), Ui("AF_UI_KingdomRebellion_GeneratingBody", "The system is requesting a new kingdom name and encyclopedia description from the LLM in the background.\n\nThe clan departure and kingdom founding will run only after this step finishes.\nPlease wait; the result will open automatically."), isAffirmativeOptionShown: false, isNegativeOptionShown: false, "", "", null, null), pauseGameActiveState: true);
 		long runtimeGeneration = _captureGeneration();
-		string logTarget = "叛乱建国命名 - " + MemoryEntityIdentityBannerlordAdapter.GetClanId(clan);
+		string logTarget = "Rebellion kingdom naming - " + MemoryEntityIdentityBannerlordAdapter.GetClanId(clan);
 		PendingDevForcedKingdomRebellionContext pendingContext = new PendingDevForcedKingdomRebellionContext
 		{
 			KingdomId = MemoryEntityIdentityBannerlordAdapter.GetKingdomId(kingdom),

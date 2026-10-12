@@ -8,4 +8,8 @@
 <Compile Include="../../../../src/AF.GameAdapter.Bannerlord/UI/Editors/EventEditorUiText.cs" Link="Production/EventEditorUiText.cs"/>
 <Compile Include="../EditorLifecycleTests/TextObjectFixture.cs" Link="Fixture/TextObjectFixture.cs"/>
 <Compile Include="../../../../src/modules/AF.Module.Weekly/Models/WeeklyLegacyDtos.cs" Link="Production/WeeklyLegacyDtos.cs"/>
+<Content Include="../../../../content/modules/AF.Module.UI/ModuleData/Languages/af_ui_strings.xml" Link="ui-en.xml" CopyToOutputDirectory="PreserveNewest"/>
+<Content Include="../../../../content/modules/AF.Module.UI/ModuleData/Languages/CNs/af_ui_strings-zh-CN.xml" Link="ui-zh.xml" CopyToOutputDirectory="PreserveNewest"/>
+<Content Include="../../../../content/modules/AF.Module.UI/ModuleData/Languages/afevent_ui_strings.xml" Link="event-en.xml" CopyToOutputDirectory="PreserveNewest"/>
+<Content Include="../../../../content/modules/AF.Module.UI/ModuleData/Languages/CNs/afevent_ui_strings-zh-CN.xml" Link="event-zh.xml" CopyToOutputDirectory="PreserveNewest"/>
 </ItemGroup></Project>

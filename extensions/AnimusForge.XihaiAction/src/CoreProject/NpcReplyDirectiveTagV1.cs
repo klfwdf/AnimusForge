@@ -14,7 +14,7 @@ namespace AnimusForge.SceneActions.Core
     public static class NpcReplyDirectiveTagV1
     {
         public const string TagPrefix = "[ACTION:SCENE_ACT:";
-        public const string RuleTemplateTag = "[ACTION:SCENE_ACT:动作程序]";
+        public static readonly string RuleTemplateTag = SceneActionVocabulary.Text("NpcReplyDirectiveTagV1.RuleTemplateTag");
         public const string NoneValue = "NONE";
         public const string CatalogPlaceholder = "{scene_action_catalog}";
 

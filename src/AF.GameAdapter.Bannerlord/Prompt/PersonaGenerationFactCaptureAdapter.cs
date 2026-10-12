@@ -16,7 +16,7 @@ namespace AnimusForge.Refactor.Adapters;
 // into the detached generation attempt.
 internal static class PersonaGenerationFactCaptureAdapter
 {
-	private const string NpcSkillLevelReference = "技能水平参考: 0-49平庸，50-99一般，100-149良好，150-199极佳，200-274大师，275以上传奇。";
+	private static string NpcSkillLevelReference => AdapterPromptCaptureTexts.PcapText("persona_generation_1");
 	internal static string GetHeroEncyclopediaBackgroundForPersonaPrompt(Hero hero, int maxLength = 1000)
 	{
 		if (hero == null)
@@ -107,11 +107,11 @@ internal static class PersonaGenerationFactCaptureAdapter
 		string heroDisplayName = GetHeroDisplayName(hero);
 		if (!string.IsNullOrWhiteSpace(heroDisplayName))
 		{
-			list.Add("姓名=" + heroDisplayName);
+			list.Add(AdapterPromptCaptureTexts.PcapText("persona_generation_2") + heroDisplayName);
 		}
 		try
 		{
-			list.Add("身份=" + PersonaIdentityPromptCaptureAdapter.CaptureHeroIdentityTitle(hero));
+			list.Add(AdapterPromptCaptureTexts.PcapText("persona_generation_3") + PersonaIdentityPromptCaptureAdapter.CaptureHeroIdentityTitle(hero));
 		}
 		catch
 		{
@@ -121,7 +121,7 @@ internal static class PersonaGenerationFactCaptureAdapter
 			string heroCultureNameForPrompt = PersonaIdentityPromptCaptureAdapter.GetHeroCultureNameForPrompt(hero);
 			if (!string.IsNullOrWhiteSpace(heroCultureNameForPrompt))
 			{
-				list.Add("文化=" + heroCultureNameForPrompt);
+				list.Add(AdapterPromptCaptureTexts.PcapText("persona_generation_4") + heroCultureNameForPrompt);
 			}
 		}
 		catch
@@ -131,7 +131,7 @@ internal static class PersonaGenerationFactCaptureAdapter
 		{
 			if (hero.Clan != null)
 			{
-				list.Add("家族=" + GetClanDisplayName(hero.Clan));
+				list.Add(AdapterPromptCaptureTexts.PcapText("persona_generation_5") + GetClanDisplayName(hero.Clan));
 			}
 		}
 		catch
@@ -141,7 +141,7 @@ internal static class PersonaGenerationFactCaptureAdapter
 		{
 			if (hero.Clan?.Kingdom != null)
 			{
-				list.Add("势力=" + GetKingdomDisplayName(hero.Clan.Kingdom, "某个势力"));
+				list.Add(AdapterPromptCaptureTexts.PcapText("persona_generation_6") + GetKingdomDisplayName(hero.Clan.Kingdom, AdapterPromptCaptureTexts.PcapText("persona_generation_7")));
 			}
 		}
 		catch
@@ -153,13 +153,13 @@ internal static class PersonaGenerationFactCaptureAdapter
 	{
 		if (clan == null)
 		{
-			return "无家族";
+			return AdapterPromptCaptureTexts.PcapText("persona_generation_8");
 		}
 		List<string> list = new List<string>();
-		list.Add("家族名=" + GetClanDisplayName(clan));
+		list.Add(AdapterPromptCaptureTexts.PcapText("persona_generation_9") + GetClanDisplayName(clan));
 		try
 		{
-			list.Add("家族等级=" + Math.Max(0, clan.Tier));
+			list.Add(AdapterPromptCaptureTexts.PcapText("persona_generation_10") + Math.Max(0, clan.Tier));
 		}
 		catch
 		{
@@ -169,7 +169,7 @@ internal static class PersonaGenerationFactCaptureAdapter
 			Hero leader = clan.Leader;
 			if (leader != null)
 			{
-				list.Add("族长=" + GetHeroDisplayName(leader));
+				list.Add(AdapterPromptCaptureTexts.PcapText("persona_generation_11") + GetHeroDisplayName(leader));
 			}
 		}
 		catch
@@ -179,16 +179,16 @@ internal static class PersonaGenerationFactCaptureAdapter
 		{
 			if (clan.Kingdom != null)
 			{
-				string text = GetKingdomDisplayName(clan.Kingdom, "某个势力");
+				string text = GetKingdomDisplayName(clan.Kingdom, AdapterPromptCaptureTexts.PcapText("persona_generation_7"));
 				if (clan.IsUnderMercenaryService)
 				{
-					text += "（佣兵服务）";
+					text += AdapterPromptCaptureTexts.PcapText("persona_generation_12");
 				}
-				list.Add("所属势力=" + text);
+				list.Add(AdapterPromptCaptureTexts.PcapText("persona_generation_13") + text);
 			}
 			else
 			{
-				list.Add("所属势力=无（独立）");
+				list.Add(AdapterPromptCaptureTexts.PcapText("persona_generation_14"));
 			}
 		}
 		catch
@@ -199,7 +199,7 @@ internal static class PersonaGenerationFactCaptureAdapter
 			Settlement settlement = clan.HomeSettlement ?? clan.InitialHomeSettlement;
 			if (settlement != null)
 			{
-				list.Add("家族根据地=" + GetSettlementDisplayName(settlement));
+				list.Add(AdapterPromptCaptureTexts.PcapText("persona_generation_15") + GetSettlementDisplayName(settlement));
 			}
 		}
 		catch
@@ -210,7 +210,7 @@ internal static class PersonaGenerationFactCaptureAdapter
 			List<string> list2 = clan.Settlements?.Where((Settlement x) => x != null && (x.IsTown || x.IsCastle)).Select(GetSettlementDisplayName).Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).Take(6).ToList() ?? new List<string>();
 			if (list2.Count > 0)
 			{
-				list.Add("主要封地=" + string.Join("、", list2));
+				list.Add(AdapterPromptCaptureTexts.PcapText("persona_generation_16") + string.Join("、", list2));
 			}
 		}
 		catch
@@ -220,7 +220,7 @@ internal static class PersonaGenerationFactCaptureAdapter
 		{
 			if (clan.IsEliminated)
 			{
-				list.Add("状态=已灭亡或不可用");
+				list.Add(AdapterPromptCaptureTexts.PcapText("persona_generation_17"));
 			}
 		}
 		catch
@@ -235,11 +235,11 @@ internal static class PersonaGenerationFactCaptureAdapter
 			return "";
 		}
 		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.AppendLine($"姓名: {hero.Name}");
-		stringBuilder.AppendLine($"年龄: {hero.Age:F0}");
+		stringBuilder.AppendLine(AdapterPromptCaptureTexts.PcapFormat("persona_generation_name", "Name: {NAME}", ("NAME", hero.Name)));
+		stringBuilder.AppendLine(AdapterPromptCaptureTexts.PcapFormat("persona_generation_age", "Age: {AGE}", ("AGE", hero.Age.ToString("F0"))));
 		try
 		{
-			stringBuilder.AppendLine("性别: " + (hero.IsFemale ? "女" : "男"));
+			stringBuilder.AppendLine(AdapterPromptCaptureTexts.PcapText("persona_generation_18") + (hero.IsFemale ? AdapterPromptCaptureTexts.PcapText("persona_generation_19") : AdapterPromptCaptureTexts.PcapText("persona_generation_20")));
 		}
 		catch
 		{
@@ -251,7 +251,7 @@ internal static class PersonaGenerationFactCaptureAdapter
 				string heroCultureNameForPrompt = PersonaIdentityPromptCaptureAdapter.GetHeroCultureNameForPrompt(hero);
 				if (!string.IsNullOrWhiteSpace(heroCultureNameForPrompt))
 				{
-					stringBuilder.AppendLine("文化: " + heroCultureNameForPrompt);
+					stringBuilder.AppendLine(AdapterPromptCaptureTexts.PcapText("persona_generation_21") + heroCultureNameForPrompt);
 				}
 			}
 		}
@@ -265,7 +265,7 @@ internal static class PersonaGenerationFactCaptureAdapter
 				string clanDisplayName = GetClanDisplayName(hero.Clan);
 				if (!string.IsNullOrWhiteSpace(clanDisplayName))
 				{
-					stringBuilder.AppendLine("家族: " + clanDisplayName);
+					stringBuilder.AppendLine(AdapterPromptCaptureTexts.PcapText("persona_generation_22") + clanDisplayName);
 				}
 			}
 		}
@@ -276,10 +276,10 @@ internal static class PersonaGenerationFactCaptureAdapter
 		{
 			if (hero.Clan != null && hero.Clan.Kingdom != null)
 			{
-				string kingdomDisplayName = GetKingdomDisplayName(hero.Clan.Kingdom, "某个势力");
+				string kingdomDisplayName = GetKingdomDisplayName(hero.Clan.Kingdom, AdapterPromptCaptureTexts.PcapText("persona_generation_7"));
 				if (!string.IsNullOrWhiteSpace(kingdomDisplayName))
 				{
-					stringBuilder.AppendLine("势力: " + kingdomDisplayName);
+					stringBuilder.AppendLine(AdapterPromptCaptureTexts.PcapText("persona_generation_23") + kingdomDisplayName);
 				}
 			}
 		}
@@ -291,51 +291,51 @@ internal static class PersonaGenerationFactCaptureAdapter
 			Kingdom kingdom = hero.Clan?.Kingdom;
 			if (kingdom != null && kingdom.Leader != null)
 			{
-				stringBuilder.AppendLine("势力领袖: " + (kingdom.Leader.Name?.ToString() ?? "未知"));
+				stringBuilder.AppendLine(AdapterPromptCaptureTexts.PcapText("persona_generation_24") + (kingdom.Leader.Name?.ToString() ?? AdapterPromptCaptureTexts.PcapText("persona_generation_25")));
 				if (PersonaIdentityPromptCaptureAdapter.TryResolveActiveKingdomRuledByHeroForPrompt(hero, out Kingdom ruledKingdom) && ruledKingdom == kingdom)
 				{
-					stringBuilder.AppendLine("效忠: 你本人即该势力领袖");
+					stringBuilder.AppendLine(AdapterPromptCaptureTexts.PcapText("persona_generation_26"));
 				}
 				else
 				{
-					stringBuilder.AppendLine($"效忠: {kingdom.Leader.Name}");
+					stringBuilder.AppendLine(AdapterPromptCaptureTexts.PcapFormat("persona_generation_allegiance", "Allegiance: {NAME}", ("NAME", kingdom.Leader.Name)));
 				}
 			}
 		}
 		catch
 		{
 		}
-		string text = "英雄";
+		string text = AdapterPromptCaptureTexts.PcapText("persona_generation_27");
 		try
 		{
 			if (PersonaIdentityPromptCaptureAdapter.TryResolveActiveKingdomRuledByHeroForPrompt(hero, out Kingdom ruledKingdom))
 			{
-				text = "统治者/派系领袖";
+				text = AdapterPromptCaptureTexts.PcapText("persona_generation_28");
 			}
 			else if (hero.Clan?.Leader == hero)
 			{
-				text = "家族族长";
+				text = AdapterPromptCaptureTexts.PcapText("persona_generation_29");
 			}
 			else if (hero.IsLord)
 			{
-				text = "领主";
+				text = AdapterPromptCaptureTexts.PcapText("persona_generation_30");
 			}
 			else if (hero.IsWanderer)
 			{
-				text = "流浪者";
+				text = AdapterPromptCaptureTexts.PcapText("persona_generation_31");
 			}
 			else if (hero.IsNotable)
 			{
-				text = "要人";
+				text = AdapterPromptCaptureTexts.PcapText("persona_generation_32");
 			}
 		}
 		catch
 		{
 		}
-		stringBuilder.AppendLine("身份: " + text);
+		stringBuilder.AppendLine(AdapterPromptCaptureTexts.PcapText("persona_generation_33") + text);
 		try
 		{
-			stringBuilder.AppendLine($"特质: Mercy={hero.GetTraitLevel(DefaultTraits.Mercy)}, Valor={hero.GetTraitLevel(DefaultTraits.Valor)}, Honor={hero.GetTraitLevel(DefaultTraits.Honor)}, Generosity={hero.GetTraitLevel(DefaultTraits.Generosity)}, Calculating={hero.GetTraitLevel(DefaultTraits.Calculating)}");
+			stringBuilder.AppendLine(AdapterPromptCaptureTexts.PcapText("persona_generation_traits") + $"Mercy={hero.GetTraitLevel(DefaultTraits.Mercy)}, Valor={hero.GetTraitLevel(DefaultTraits.Valor)}, Honor={hero.GetTraitLevel(DefaultTraits.Honor)}, Generosity={hero.GetTraitLevel(DefaultTraits.Generosity)}, Calculating={hero.GetTraitLevel(DefaultTraits.Calculating)}");
 		}
 		catch
 		{
@@ -354,7 +354,7 @@ internal static class PersonaGenerationFactCaptureAdapter
 				select x).ToList();
 			if (list.Count > 0)
 			{
-				stringBuilder.AppendLine("技能(最高8项): " + string.Join(", ", list.Select(x => $"{x.Skill.StringId}={x.Value}")));
+				stringBuilder.AppendLine(AdapterPromptCaptureTexts.PcapText("persona_generation_34") + string.Join(", ", list.Select(x => $"{x.Skill.StringId}={x.Value}")));
 				stringBuilder.AppendLine(NpcSkillLevelReference);
 			}
 		}
@@ -363,7 +363,7 @@ internal static class PersonaGenerationFactCaptureAdapter
 		}
 		try
 		{
-			stringBuilder.AppendLine("家族成员: " + WorldEntityRetrievalService.FormatHeroRelatives(hero, int.MaxValue));
+			stringBuilder.AppendLine(AdapterPromptCaptureTexts.PcapText("persona_generation_35") + WorldEntityRetrievalService.FormatHeroRelatives(hero, int.MaxValue));
 		}
 		catch
 		{
@@ -371,7 +371,7 @@ internal static class PersonaGenerationFactCaptureAdapter
 		try
 		{
 			string heroEncyclopediaBackground = GetHeroEncyclopediaBackgroundForPersonaPrompt(hero, 1200);
-			stringBuilder.AppendLine("人物百科背景: " + (string.IsNullOrWhiteSpace(heroEncyclopediaBackground) ? "无可用人物百科背景" : heroEncyclopediaBackground));
+			stringBuilder.AppendLine(AdapterPromptCaptureTexts.PcapText("persona_generation_36") + (string.IsNullOrWhiteSpace(heroEncyclopediaBackground) ? AdapterPromptCaptureTexts.PcapText("persona_generation_37") : heroEncyclopediaBackground));
 		}
 		catch
 		{
@@ -381,7 +381,7 @@ internal static class PersonaGenerationFactCaptureAdapter
 			string clanOverviewBackground = BuildClanOverviewForPersonaPrompt(hero.Clan);
 			if (!string.IsNullOrWhiteSpace(clanOverviewBackground))
 			{
-				stringBuilder.AppendLine("家族背景: " + clanOverviewBackground);
+				stringBuilder.AppendLine(AdapterPromptCaptureTexts.PcapText("persona_generation_38") + clanOverviewBackground);
 			}
 		}
 		catch
@@ -390,7 +390,7 @@ internal static class PersonaGenerationFactCaptureAdapter
 		try
 		{
 			string clanEncyclopediaBackground = GetClanEncyclopediaBackgroundForPersonaPrompt(hero.Clan, 1200);
-			stringBuilder.AppendLine("所在家族百科背景: " + (string.IsNullOrWhiteSpace(clanEncyclopediaBackground) ? "无可用家族百科背景" : clanEncyclopediaBackground));
+			stringBuilder.AppendLine(AdapterPromptCaptureTexts.PcapText("persona_generation_39") + (string.IsNullOrWhiteSpace(clanEncyclopediaBackground) ? AdapterPromptCaptureTexts.PcapText("persona_generation_40") : clanEncyclopediaBackground));
 		}
 		catch
 		{
@@ -401,12 +401,12 @@ internal static class PersonaGenerationFactCaptureAdapter
 			string kingdomEncyclopediaBackground = GetKingdomEncyclopediaBackgroundForPersonaPrompt(personaKingdom, 1400);
 			if (personaKingdom != null)
 			{
-				string kingdomName = GetKingdomDisplayName(personaKingdom, "某个王国");
-				stringBuilder.AppendLine("王国百科背景: " + kingdomName + "：" + (string.IsNullOrWhiteSpace(kingdomEncyclopediaBackground) ? "无可用王国百科背景" : kingdomEncyclopediaBackground));
+				string kingdomName = GetKingdomDisplayName(personaKingdom, AdapterPromptCaptureTexts.PcapText("persona_generation_41"));
+				stringBuilder.AppendLine(AdapterPromptCaptureTexts.PcapText("persona_generation_42") + kingdomName + "：" + (string.IsNullOrWhiteSpace(kingdomEncyclopediaBackground) ? AdapterPromptCaptureTexts.PcapText("persona_generation_43") : kingdomEncyclopediaBackground));
 			}
 			else
 			{
-				stringBuilder.AppendLine("王国百科背景: 无可用王国百科背景");
+				stringBuilder.AppendLine(AdapterPromptCaptureTexts.PcapText("persona_generation_44"));
 			}
 		}
 		catch
@@ -417,7 +417,7 @@ internal static class PersonaGenerationFactCaptureAdapter
 			Hero clanLeader = hero.Clan?.Leader;
 			if (clanLeader == hero)
 			{
-				stringBuilder.AppendLine("家族族长背景: 族长即本人，参见人物百科背景。");
+				stringBuilder.AppendLine(AdapterPromptCaptureTexts.PcapText("persona_generation_45"));
 			}
 			else if (clanLeader != null)
 			{
@@ -426,11 +426,11 @@ internal static class PersonaGenerationFactCaptureAdapter
 				{
 					leaderBackground = BuildHeroBasicBackgroundForPersonaPrompt(clanLeader);
 				}
-				stringBuilder.AppendLine("家族族长背景: " + GetHeroDisplayName(clanLeader) + "：" + (string.IsNullOrWhiteSpace(leaderBackground) ? "无可用族长背景" : leaderBackground));
+				stringBuilder.AppendLine(AdapterPromptCaptureTexts.PcapText("persona_generation_46") + GetHeroDisplayName(clanLeader) + "：" + (string.IsNullOrWhiteSpace(leaderBackground) ? AdapterPromptCaptureTexts.PcapText("persona_generation_47") : leaderBackground));
 			}
 			else
 			{
-				stringBuilder.AppendLine("家族族长背景: 无可用族长背景");
+				stringBuilder.AppendLine(AdapterPromptCaptureTexts.PcapText("persona_generation_no_leader"));
 			}
 		}
 		catch
@@ -441,28 +441,28 @@ internal static class PersonaGenerationFactCaptureAdapter
 	internal static string BuildPromotedNonHeroCompanionFactsForPersonaGeneration(Hero hero, string personalName, string originalFullName, string originalTroopName, string originalTroopId, string cultureName, string sceneLabel, string joinEventFact, string equipmentSummary)
 	{
 		StringBuilder stringBuilder = new StringBuilder();
-		string name = string.IsNullOrWhiteSpace(personalName) ? (hero?.Name?.ToString() ?? "新家族成员") : personalName.Trim();
+		string name = string.IsNullOrWhiteSpace(personalName) ? (hero?.Name?.ToString() ?? AdapterPromptCaptureTexts.PcapText("persona_generation_48")) : personalName.Trim();
 		string fullName = string.IsNullOrWhiteSpace(originalFullName) ? name : originalFullName.Trim();
-		string troopName = string.IsNullOrWhiteSpace(originalTroopName) ? "非英雄NPC" : originalTroopName.Trim();
+		string troopName = string.IsNullOrWhiteSpace(originalTroopName) ? AdapterPromptCaptureTexts.PcapText("persona_generation_49") : originalTroopName.Trim();
 		string troopId = (originalTroopId ?? "").Trim();
-		string culture = string.IsNullOrWhiteSpace(cultureName) ? "未知文化" : cultureName.Trim();
-		string scene = string.IsNullOrWhiteSpace(sceneLabel) ? "当前场景" : sceneLabel.Trim();
-		string joinFact = string.IsNullOrWhiteSpace(joinEventFact) ? (name + "同意追随玩家，成为玩家家族成员并加入玩家队伍。") : joinEventFact.Trim();
-		string equipment = string.IsNullOrWhiteSpace(equipmentSummary) ? "（无装备）" : equipmentSummary.Trim();
-		stringBuilder.AppendLine("升格来源: 该角色原本是非 Hero NPC/士兵，现在因为当前加入事件才被创建为玩家家族 Hero。");
-		stringBuilder.AppendLine("出身约束: 不要把升格后加入玩家队伍、玩家家族或玩家阵营理解为其原生家族、贵族血统、出生背景或旧效忠对象；若没有对话事实支持，背景不得写成其本来就出身于玩家家族/玩家势力。");
-		stringBuilder.AppendLine("个人名: " + name);
-		stringBuilder.AppendLine("原完整称呼: " + fullName);
-		stringBuilder.AppendLine("原兵种/职业: " + troopName + (string.IsNullOrWhiteSpace(troopId) ? "" : (" (StringId=" + troopId + ")")));
-		stringBuilder.AppendLine("原文化: " + culture);
-		stringBuilder.AppendLine("升格场景: " + scene);
-		stringBuilder.AppendLine("加入事件: " + joinFact);
-		stringBuilder.AppendLine("装备: " + equipment);
+		string culture = string.IsNullOrWhiteSpace(cultureName) ? AdapterPromptCaptureTexts.PcapText("persona_generation_50") : cultureName.Trim();
+		string scene = string.IsNullOrWhiteSpace(sceneLabel) ? AdapterPromptCaptureTexts.PcapText("persona_generation_51") : sceneLabel.Trim();
+		string joinFact = string.IsNullOrWhiteSpace(joinEventFact) ? (name + AdapterPromptCaptureTexts.PcapText("persona_generation_52")) : joinEventFact.Trim();
+		string equipment = string.IsNullOrWhiteSpace(equipmentSummary) ? AdapterPromptCaptureTexts.PcapText("persona_generation_53") : equipmentSummary.Trim();
+		stringBuilder.AppendLine(AdapterPromptCaptureTexts.PcapText("persona_generation_54"));
+		stringBuilder.AppendLine(AdapterPromptCaptureTexts.PcapText("persona_generation_55"));
+		stringBuilder.AppendLine(AdapterPromptCaptureTexts.PcapText("persona_generation_56") + name);
+		stringBuilder.AppendLine(AdapterPromptCaptureTexts.PcapText("persona_generation_57") + fullName);
+		stringBuilder.AppendLine(AdapterPromptCaptureTexts.PcapText("persona_generation_58") + troopName + (string.IsNullOrWhiteSpace(troopId) ? "" : (" (StringId=" + troopId + ")")));
+		stringBuilder.AppendLine(AdapterPromptCaptureTexts.PcapText("persona_generation_59") + culture);
+		stringBuilder.AppendLine(AdapterPromptCaptureTexts.PcapText("persona_generation_60") + scene);
+		stringBuilder.AppendLine(AdapterPromptCaptureTexts.PcapText("persona_generation_61") + joinFact);
+		stringBuilder.AppendLine(AdapterPromptCaptureTexts.PcapText("persona_generation_62") + equipment);
 		try
 		{
 			if (hero != null)
 			{
-				stringBuilder.AppendLine($"年龄: {hero.Age:F0}");
+				stringBuilder.AppendLine(AdapterPromptCaptureTexts.PcapFormat("persona_generation_age", "Age: {AGE}", ("AGE", hero.Age.ToString("F0"))));
 			}
 		}
 		catch
@@ -472,7 +472,7 @@ internal static class PersonaGenerationFactCaptureAdapter
 		{
 			if (hero != null)
 			{
-				stringBuilder.AppendLine("性别: " + (hero.IsFemale ? "女" : "男"));
+				stringBuilder.AppendLine(AdapterPromptCaptureTexts.PcapText("persona_generation_18") + (hero.IsFemale ? AdapterPromptCaptureTexts.PcapText("persona_generation_19") : AdapterPromptCaptureTexts.PcapText("persona_generation_20")));
 			}
 		}
 		catch
@@ -482,7 +482,7 @@ internal static class PersonaGenerationFactCaptureAdapter
 		{
 			if (hero != null)
 			{
-				stringBuilder.AppendLine($"特质: Mercy={hero.GetTraitLevel(DefaultTraits.Mercy)}, Valor={hero.GetTraitLevel(DefaultTraits.Valor)}, Honor={hero.GetTraitLevel(DefaultTraits.Honor)}, Generosity={hero.GetTraitLevel(DefaultTraits.Generosity)}, Calculating={hero.GetTraitLevel(DefaultTraits.Calculating)}");
+				stringBuilder.AppendLine(AdapterPromptCaptureTexts.PcapText("persona_generation_traits") + $"Mercy={hero.GetTraitLevel(DefaultTraits.Mercy)}, Valor={hero.GetTraitLevel(DefaultTraits.Valor)}, Honor={hero.GetTraitLevel(DefaultTraits.Honor)}, Generosity={hero.GetTraitLevel(DefaultTraits.Generosity)}, Calculating={hero.GetTraitLevel(DefaultTraits.Calculating)}");
 			}
 		}
 		catch
@@ -504,7 +504,7 @@ internal static class PersonaGenerationFactCaptureAdapter
 					select x).ToList();
 				if (list.Count > 0)
 				{
-					stringBuilder.AppendLine("技能(最高8项): " + string.Join(", ", list.Select(x => $"{x.Skill.StringId}={x.Value}")));
+					stringBuilder.AppendLine(AdapterPromptCaptureTexts.PcapText("persona_generation_34") + string.Join(", ", list.Select(x => $"{x.Skill.StringId}={x.Value}")));
 					stringBuilder.AppendLine(NpcSkillLevelReference);
 				}
 			}

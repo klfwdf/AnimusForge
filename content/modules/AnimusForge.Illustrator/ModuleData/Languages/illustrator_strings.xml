@@ -25,7 +25,7 @@
     <string id="AF_ILL_DIRECTOR_MODEL" text="Director model name (Model)" />
     <string id="AF_ILL_DIRECTOR_MODEL_HINT" text="Visual Director model name. Leave blank to reuse the main conversation model." />
     <string id="AF_ILL_DIRECTOR_REFERENCE_TOKENS" text="Director prompt reference length (approx. tokens)" />
-    <string id="AF_ILL_DIRECTOR_REFERENCE_TOKENS_HINT" text="A soft length reference, not the API output limit. The full four sections are retained without padding." />
+    <string id="AF_ILL_DIRECTOR_REFERENCE_TOKENS_HINT" text="A soft length reference, not the API output limit. When forced reduction is enabled, the character budget takes priority; otherwise the complete reply may contain at most 30000 characters. The full four sections are retained without padding." />
     <string id="AF_ILL_DISPLAY" text="AnimusForge - AI Illustrator" />
     <string id="AF_ILL_DISPLAY_MODE" text="Illustration display mode" />
     <string id="AF_ILL_DISPLAY_MODE_HINT" text="Standalone panel uses the scene illustration panel. Fullscreen overlay fills the conversation background while preserving controls and input. It hides automatically for encyclopedia and menus. Automatic redraw uses this choice." />
@@ -52,9 +52,9 @@
     <string id="AF_ILL_IMAGE_MODEL" text="Image model name (Model)" />
     <string id="AF_ILL_IMAGE_MODEL_HINT" text="Image model name. Supports standard image models and native multimodal conversation image models; the channel is detected automatically." />
     <string id="AF_ILL_IMAGE_SIZE" text="Image resolution (Size)" />
-    <string id="AF_ILL_IMAGE_SIZE_HINT" text="Bulletin and fullscreen scene illustrations convert presets to 16:9. Encyclopedia and standalone-panel illustrations use the selected size. The image service must support the size." />
+    <string id="AF_ILL_IMAGE_SIZE_HINT" text="Bulletin and fullscreen scene illustrations convert presets to 16:9: the 1024 square and 1280/720 presets become 1280×720; the 1344/1536 presets become 1536×864; the 2048 square becomes 2048×1152. Encyclopedia and standalone-panel scene illustrations use the selected size. The image service must support the corresponding size." />
     <string id="AF_ILL_IMAGE_TIMEOUT" text="Image request timeout" />
-    <string id="AF_ILL_IMAGE_TIMEOUT_HINT" text="Maximum wait for one image request, including edits, conversation fallback, and download. Applies to the next request and does not affect director or off-screen capture timeouts." />
+    <string id="AF_ILL_IMAGE_TIMEOUT_HINT" text="Maximum total wait for one image request; the default is 240 seconds. Includes Edits attempts, conversation-channel fallback, and downloading the result image. Increase it for high-quality redraws with multiple reference images or a slow relay. Applies to the next image request and does not affect visual director requests or off-screen capture timeouts." />
     <string id="AF_ILL_NEGATIVE_PROMPT" text="Negative prompt (Negative Prompt)" />
     <string id="AF_ILL_NEGATIVE_PROMPT_HINT" text="Open the long-text editor and list elements to exclude from the image. Active only for the custom prompt style; appended after preset negative terms." />
     <string id="AF_ILL_OFFSCREEN_ENV" text="Enable off-screen scene rendering (environment panorama)" />
@@ -350,5 +350,173 @@
     <string id="AF_ILL_UI_GALLERY_LEGACY_DEFAULT_TITLE" text="Calradia history illustration" />
     <string id="AF_ILL_UI_DEFAULT_HERO_NAME" text="Hero" />
     <string id="AF_ILL_UI_DEFAULT_PARTNER_NAME" text="the other person" />
+    <string id="AF_ILL_ERROR_GEMINI_NON_STREAMING" text="Native Gemini image generation requires the non-streaming :generateContent endpoint. No request was sent." />
+    <string id="AF_ILL_ERROR_GEMINI_EXACT_URL" text="The complete URL option requires /models/MODEL:generateContent. No request was sent." />
+    <string id="AF_ILL_ERROR_GEMINI_MODEL_MISSING" text="Native Gemini image generation requires a model name. No request was sent." />
+    <string id="AF_ILL_ERROR_GEMINI_MODEL_INVALID" text="The native Gemini model name is invalid. No request was sent." />
+    <string id="AF_ILL_ERROR_GEMINI_USER_CONTENT" text="The native Gemini image request is missing complete user content. No request was sent." />
+    <string id="AF_ILL_ERROR_GEMINI_PNG_REFERENCE" text="Native Gemini reference images must be validated PNG data. No request was sent." />
+    <string id="AF_ILL_ERROR_GEMINI_CONTENT_BLOCK" text="The native Gemini image request contains an unsupported content block. No request was sent." />
+    <string id="AF_ILL_ERROR_GEMINI_EMPTY_CONTENT" text="The native Gemini image request is empty. No request was sent." />
+    <string id="AF_ILL_ERROR_HTTP_ENDPOINT" text="The image endpoint must be a complete HTTP/HTTPS URL." />
+    <string id="AF_ILL_ERROR_EDITS_ENDPOINT" text="The standard image editing endpoint is /images/edits (plural), not /image/edits. Use complete URL mode for special service paths." />
+    <string id="AF_ILL_ERROR_REFERENCE_DECODE" text="Image decoding or format conversion failed" />
+    <string id="AF_ILL_ERROR_REFERENCE_EMPTY" text="Image data is empty" />
+    <string id="AF_ILL_ERROR_REFERENCE_DATA_URI" text="The data URI format is invalid" />
+    <string id="AF_ILL_ERROR_REFERENCE_SINGLE_LIMIT" text="The image exceeds the 24 MiB per-image limit" />
+    <string id="AF_ILL_ERROR_REFERENCE_TOTAL_LIMIT" text="Reference images exceed the combined 48 MiB limit" />
+    <string id="AF_ILL_ERROR_PLAYER2_UNCONFIRMED" text="The Player2 interface is unconfirmed. Check the application status later. No image request was sent." />
+    <string id="AF_ILL_ERROR_PLAYER2_UNAVAILABLE" text="The Player2 image interface could not be confirmed. Check that the application is running and signed in and that the port is correct. No image request was sent." />
+    <string id="AF_ILL_ERROR_PLAYER2_UPLOAD_BUDGET" text="The Player2 payload still exceeds its upload budget. All reference images were retained without further loss of detail. No request was sent. Shorten the prompt or custom rules." />
+    <string id="AF_ILL_ERROR_GROK_REFERENCE_LIMIT" text="Grok image editing supports at most 5 reference images. No references were discarded and no request was sent." />
+    <string id="AF_ILL_ERROR_REFERENCE_UNAVAILABLE" text="No usable reference image is available. No request was sent." />
+    <string id="AF_ILL_ERROR_SCREENSHOT_COUNT" text="Free-camera generation requires one or two scene captures. No request was sent." />
+    <string id="AF_ILL_ERROR_SCREENSHOT_KIND" text="Scene capture references are missing or have the wrong type. No request was sent." />
+    <string id="AF_ILL_ERROR_SCREENSHOT_DUPLICATE" text="The two captures are identical. Capture the scene again. Generation stopped." />
+    <string id="AF_ILL_ERROR_IMAGE_NOT_RETURNED" text="Image generation did not return an image." />
+    <string id="AF_ILL_ERROR_GALLERY_SAVE" text="The generated image could not be saved to the gallery." />
+    <string id="AF_ILL_ERROR_IMAGE_SAVE" text="The generated image could not be saved." />
+    <string id="AF_ILL_ERROR_RESPONSE_EMPTY_BODY" text="The server returned an empty response body" />
+    <string id="AF_ILL_ERROR_RESPONSE_UNRECOGNIZED" text="The response contains no recognizable image data" />
+    <string id="AF_ILL_ERROR_RESPONSE_FILTERED" text="The server refused image generation or applied content filtering" />
+    <string id="AF_ILL_ERROR_RESPONSE_LENGTH_LIMIT" text="The server output reached its length limit; no image was obtained" />
+    <string id="AF_ILL_ERROR_RESPONSE_EMPTY_REPLY" text="The server returned an empty reply without text or images" />
+    <string id="AF_ILL_ERROR_RESPONSE_EXTRACTION" text="The server returned content, but no image could be extracted. Check the response format or model output" />
+    <string id="AF_ILL_ERROR_IMAGE_ENCODING_LIMIT" text="The encoded image exceeds the limit." />
+    <string id="AF_ILL_ERROR_DIRECTOR_DISABLED" text="The director is disabled" />
+    <string id="AF_ILL_ERROR_DIRECTOR_UNCONFIGURED" text="The director interface is not configured" />
+    <string id="AF_ILL_ERROR_DIRECTOR_REDRAW_UNAVAILABLE" text="The director is disabled or unconfigured. Redrawing with a prompt did not start." />
+    <string id="AF_ILL_ERROR_DIRECTOR_CAPTURE_UNAVAILABLE" text="Scene capture generation requires an enabled and configured vision director. Capture did not start." />
+    <string id="AF_ILL_ERROR_DIRECTOR_INCOMPLETE" text="The director did not return a complete visual plan" />
+    <string id="AF_ILL_ERROR_DIRECTOR_UNSUPPORTED_FACTS" text="The director output contains unsupported shields, flags, or an unsuitable portrait action" />
+    <string id="AF_ILL_ERROR_DIRECTOR_NARRATIVE" text="The director repeated the narrative instead of translating it into a visual plan" />
+    <string id="AF_ILL_ERROR_DIRECTOR_EMPTY" text="The director returned an empty body" />
+    <string id="AF_ILL_ERROR_DIRECTOR_SCENE_INCOMPLETE" text="The director body lacks complete scene, lighting, or spatial details, or the composition does not meet the requirements" />
+    <string id="AF_ILL_ERROR_DIRECTOR_TRUNCATED" text="The director output was truncated at the token limit. The incomplete body was not used" />
+    <string id="AF_ILL_ERROR_DIRECTOR_FILTERED" text="The director refused or filtered this output" />
+    <string id="AF_ILL_ERROR_DIRECTOR_UNFINISHED" text="The director did not finish the body normally" />
+    <string id="AF_ILL_ERROR_DIRECTOR_TIMEOUT" text="The director request timed out" />
+    <string id="AF_ILL_ERROR_DIRECTOR_QUOTA" text="The director interface was rate-limited or has insufficient quota (HTTP 429)" />
+    <string id="AF_ILL_ERROR_GENERATION_STOPPED" text="{REASON} Image generation stopped." />
+    <string id="AF_ILL_ERROR_DIAGNOSTIC" text=" Diagnostic: {ID}" />
+    <string id="AF_ILL_ERROR_NO_AUTOMATIC_RETRY" text="; no automatic retry was made. You may redraw manually later." />
+    <string id="AF_ILL_ERROR_REFERENCE_INVALID" text="Reference image {INDEX} ({KIND}) is invalid: {DETAIL}. Generation stopped; no request was sent." />
+    <string id="AF_ILL_ERROR_FREE_CAMERA_DIRECTOR" text="Free-camera generation requires the vision director to plan the scene: {DETAIL}" />
+    <string id="AF_ILL_ERROR_REDRAW_DIRECTOR" text="Redrawing with a prompt cannot use a local composition: {DETAIL}" />
+    <string id="AF_ILL_ERROR_DIRECTOR_REQUEST_FAILED" text="The director request failed ({DETAIL})" />
+    <string id="AF_ILL_ERROR_DIRECTOR_PARSE_FAILED" text="The director request or response parsing failed ({DETAIL})" />
+    <string id="AF_ILL_ERROR_DIRECTOR_REGION" text="The director service denied access from the current region (HTTP {DETAIL})" />
+    <string id="AF_ILL_ERROR_DIRECTOR_ACCESS" text="Director authentication or access failed (HTTP {DETAIL})" />
+    <string id="AF_ILL_ERROR_DIRECTOR_UPSTREAM" text="The upstream director service is temporarily unavailable (HTTP {DETAIL})" />
+    <string id="AF_ILL_ERROR_DIRECTOR_HTTP" text="The director interface returned HTTP {DETAIL}" />
+    <string id="AF_ILL_UI_DEFAULT_THEME" text="Characters and circumstances" />
+    <string id="AF_ILL_ERROR_PAYLOAD_SIZE" text="The image is empty or exceeds the 24 MiB limit." />
+    <string id="AF_ILL_ERROR_PAYLOAD_FORMAT" text="Only decodable PNG or JPEG images are accepted." />
+    <string id="AF_ILL_ERROR_NORMALIZED_SIZE" text="The normalized image exceeds the 24 MiB limit." />
+    <string id="AF_ILL_ERROR_PAIR_SIZE" text="The two-view reference image exceeds the upload size limit. No reference images were discarded." />
+    <string id="AF_ILL_ERROR_CACHE_SIZE" text="The cached image exceeds the size limit." />
+    <string id="AF_ILL_ERROR_IMAGE_DIMENSIONS" text="The image exceeds the 8192-pixel edge or 16-million-pixel limit." />
+    <string id="AF_ILL_ERROR_RESPONSE_SIZE" text="The server response exceeds the size limit." />
+    <string id="AF_ILL_ERROR_CAPTURE_SIZE" text="The native capture exceeds the 96 MiB capture limit." />
+    <string id="AF_ILL_ERROR_CAPTURE_BMP_INVALID" text="The native capture is not a complete, valid BMP." />
+    <string id="AF_ILL_ERROR_CAPTURE_HEIGHT" text="The capture height is invalid." />
+    <string id="AF_ILL_ERROR_CAPTURE_BMP_INCOMPLETE" text="The native BMP is incomplete or its pixel format is unsupported." />
+    <string id="AF_ILL_ERROR_CAPTURE_DIMENSIONS" text="The capture dimensions are invalid or exceed the 24-million-pixel limit." />
+    <string id="AF_ILL_ERROR_CAPTURE_BLACK" text="The scene capture is almost entirely black; characters and surroundings cannot be identified. Generation stopped. No director or image request was sent." />
+    <string id="AF_ILL_ERROR_CAPTURE_MISSION" text="The current mission has no single-player frame available for capture." />
+    <string id="AF_ILL_ERROR_CAPTURE_PHOTO_MODE" text="Exit the native photo mode before starting capture from the illustration button." />
+    <string id="AF_ILL_ERROR_CAPTURE_ACTIVE" text="A native image capture is in progress. Wait before clicking again." />
+    <string id="AF_ILL_ERROR_CAPTURE_PAUSE_OWNER" text="The capture pause request is already in use." />
+    <string id="AF_ILL_ERROR_CAPTURE_LEFT_SCENE" text="The scene was left before capture finished. Capture was terminated." />
+    <string id="AF_ILL_ERROR_CAPTURE_CAMERA_OWNER" text="Another feature took control of the camera during capture. Capture was terminated." />
+    <string id="AF_ILL_ERROR_CAPTURE_TIMEOUT" text="Capture export timed out. The original view was restored; no image request was sent." />
+    <string id="AF_ILL_ERROR_CONTEXT_CHANGED" text="The conversation or scene for this illustration ended or changed. Reopen the scene illustration." />
+    <string id="AF_ILL_ERROR_CONTEXT_STOPPED" text="Scene context validation stopped. Reopen the scene illustration." />
+    <string id="AF_ILL_ERROR_CONTEXT_MISSING" text="No mission scene or map conversation is currently displayed. Reopen the scene illustration during a conversation." />
+    <string id="AF_ILL_ERROR_PANORAMA_PROJECTION_BUDGET" text="The scene panorama exceeds its projection budget. Image generation stopped." />
+    <string id="AF_ILL_ERROR_PANORAMA_DUPLICATE" text="The front and rear environment images are nearly identical. Different directions were not confirmed. Generation stopped." />
+    <string id="AF_ILL_ERROR_REFERENCE_UNKNOWN_KIND" text="unknown purpose" />
+    <string id="AF_ILL_ERROR_PANORAMA_NAME" text="The native panorama render name exceeds the safe length." />
+    <string id="AF_ILL_ERROR_PANORAMA_BATCH_ACTIVE" text="An environment snapshot batch is already running." />
+    <string id="AF_ILL_ERROR_LIGHTING_SCENE" text="Observation lighting requires a valid isolated scene copy." />
+    <string id="AF_ILL_ERROR_LIGHTING_POSITION_MISSING" text="Observation lighting has no off-screen camera position." />
+    <string id="AF_ILL_ERROR_LIGHTING_POSITION_INVALID" text="The off-screen observation lighting camera position is invalid." />
+    <string id="AF_ILL_ERROR_LIGHTING_COVERAGE" text="The observation lighting coverage is invalid." />
+    <string id="AF_ILL_ERROR_LIGHTING_CREATE" text="Observation lights could not be created in the isolated scene." />
+    <string id="AF_ILL_ERROR_LIGHTING_NAME" text="The native observation light name exceeds the safe length." />
+    <string id="AF_ILL_ERROR_LIGHTING_NATIVE" text="The engine did not create a valid observation light." />
+    <string id="AF_ILL_ERROR_LIGHTING_ATTACH" text="The observation light could not be attached to the isolated scene." />
+    <string id="AF_ILL_ERROR_LIGHTING_OWNER" text="The observation light does not belong to an isolated scene entity." />
+    <string id="AF_ILL_ERROR_SUPPLEMENT_CANCELLED" text="Resource supplementation was cancelled." />
+    <string id="AF_ILL_ERROR_TEMPLATE_NAME" text="The resource template scene name is too long." />
+    <string id="AF_ILL_ERROR_SUPPLEMENT_ENTITY_BUDGET" text="Resource supplementation exceeded its entity traversal budget. Capture stopped." />
+    <string id="AF_ILL_ERROR_TEMPLATE_DEPTH" text="The resource template hierarchy exceeds the traversal budget." />
+    <string id="AF_ILL_ERROR_TEMPLATE_OWNER" text="The resource template does not belong to the owned scene. Its transform was not changed." />
+    <string id="AF_ILL_ERROR_TEMPLATE_CREATE" text="A static resource template could not be created." />
+    <string id="AF_ILL_ERROR_TEMPLATE_LOAD" text="Resource geometry could not be loaded into the isolated template scene." />
+    <string id="AF_ILL_ERROR_RESOURCE_COPY" text="An independent resource mesh copy could not be obtained." />
+    <string id="AF_ILL_ERROR_RESOURCE_SCENE" text="Resource geometry did not correctly enter the isolated render scene." />
+    <string id="AF_ILL_ERROR_RESOURCE_BOUNDS" text="The resource copy mesh bounds are invalid." />
+    <string id="AF_ILL_ERROR_SNAPSHOT_ISOLATION" text="The panorama snapshot has no isolated scene. The current mission scene was not modified." />
+    <string id="AF_ILL_ERROR_SCENE_CHANGED" text="The current scene changed. Its resources cannot be read." />
+    <string id="AF_ILL_ERROR_SCENE_RESOURCE_RESOLVE" text="The current scene&apos;s actual resource file could not be resolved. Environment reconstruction stopped." />
+    <string id="AF_ILL_ERROR_SCENE_READ_SCHEDULER" text="Scene resource read scheduling stopped." />
+    <string id="AF_ILL_ERROR_SCENE_READ_CHANGED" text="The scene or visible level changed while reading resources. Capture again." />
+    <string id="AF_ILL_ERROR_SNAPSHOT_CREATE" text="The environment snapshot could not be created on the game thread." />
+    <string id="AF_ILL_ERROR_SNAPSHOT_SCHEDULER" text="Environment snapshot frame scheduling stopped." />
+    <string id="AF_ILL_ERROR_SUPPLEMENT_SCHEDULER" text="Scene resource supplementation scheduling stopped." />
+    <string id="AF_ILL_ERROR_SUPPLEMENT_FRAME_SCHEDULER" text="Scene resource supplementation frame scheduling stopped." />
+    <string id="AF_ILL_ERROR_TEMPLATE_CLEANUP_SCHEDULER" text="Scene template cleanup scheduling stopped." />
+    <string id="AF_ILL_ERROR_SNAPSHOT_GEOMETRY_EMPTY" text="Neither the scene nor its resources contains usable static geometry. A blank environment reference will not be generated." />
+    <string id="AF_ILL_ERROR_SCENE_VISIBLE_LEVEL" text="The scene&apos;s visible level changed during capture. Capture again." />
+    <string id="AF_ILL_ERROR_SNAPSHOT_NAME" text="The native panorama scene name exceeds the safe length." />
+    <string id="AF_ILL_ERROR_SNAPSHOT_CENTER_MISSING" text="The capture center for the surroundings near the player could not be determined." />
+    <string id="AF_ILL_ERROR_SNAPSHOT_CENTER_INVALID" text="The environment capture center is invalid." />
+    <string id="AF_ILL_ERROR_SNAPSHOT_SCENE_ENDED" text="The scene for the environment snapshot ended or changed." />
+    <string id="AF_ILL_ERROR_SNAPSHOT_CANCELLED" text="The environment snapshot was cancelled." />
+    <string id="AF_ILL_ERROR_STATIC_COPY" text="An independent copy of the scene&apos;s static mesh could not be obtained." />
+    <string id="AF_ILL_ERROR_STATIC_SCENE" text="The static mesh did not correctly enter the isolated scene." />
+    <string id="AF_ILL_ERROR_STATIC_BOUNDS" text="The static copy mesh bounds are invalid." />
+    <string id="AF_ILL_ERROR_RESOURCE_PATH_MISSING" text="The actual path of the current scene resource file was not obtained." />
+    <string id="AF_ILL_ERROR_RESOURCE_FILE_MISSING" text="The current scene resource file does not exist." />
+    <string id="AF_ILL_ERROR_RESOURCE_READ_BUDGET" text="The scene resource is empty or exceeds the 8 MiB read budget." />
+    <string id="AF_ILL_ERROR_RESOURCE_CHANGED_BEFORE" text="The scene resource changed before reading. Capture again." />
+    <string id="AF_ILL_ERROR_RESOURCE_CHANGED_DURING" text="The scene resource changed during reading. Capture again." />
+    <string id="AF_ILL_ERROR_RESOURCE_ACCESS" text="Access to the current scene resource file was denied." />
+    <string id="AF_ILL_ERROR_RESOURCE_SCENE_XML" text="The current resource is not valid scene XML." />
+    <string id="AF_ILL_ERROR_RESOURCE_ENTITIES_DUPLICATE" text="The scene resource contains duplicate entities nodes." />
+    <string id="AF_ILL_ERROR_RESOURCE_LEVELS_DUPLICATE" text="The scene resource contains duplicate levels nodes." />
+    <string id="AF_ILL_ERROR_RESOURCE_NODES_MISSING" text="The current scene resource lacks a scene or entities node." />
+    <string id="AF_ILL_ERROR_RESOURCE_XML_DEPTH" text="The scene XML hierarchy exceeds the 64-level budget." />
+    <string id="AF_ILL_ERROR_RESOURCE_XML_ELEMENTS" text="Scene XML streaming exceeded the 524288-element budget." />
+    <string id="AF_ILL_ERROR_RESOURCE_XML_NAMESPACE" text="The scene XML uses an unsupported namespace." />
+    <string id="AF_ILL_ERROR_RESOURCE_SUBTREE_ELEMENTS" text="A scene entity subtree exceeds the 32768-element memory budget." />
+    <string id="AF_ILL_ERROR_RESOURCE_SUBTREE_END" text="The scene entity subtree ended unexpectedly." />
+    <string id="AF_ILL_ERROR_RESOURCE_LEVEL_DEFINITION" text="The scene upgrade level definition is invalid." />
+    <string id="AF_ILL_ERROR_RESOURCE_LEVEL_MASK" text="The scene upgrade level name or mask definition is invalid." />
+    <string id="AF_ILL_ERROR_RESOURCE_GEOMETRY_BUDGET" text="The static scene geometry plan exceeds the 32768-item budget." />
+    <string id="AF_ILL_ERROR_PANORAMA_NOT_RENDERED" text="The current mission scene has not finished rendering. Nearby surroundings cannot be captured yet. Try again later." />
+    <string id="AF_ILL_ERROR_PANORAMA_SCHEDULE" text="Panorama capture could not be scheduled." />
+    <string id="AF_ILL_ERROR_PANORAMA_RENDERER_MISSING" text="The panorama renderer was not created." />
+    <string id="AF_ILL_ERROR_PANORAMA_EXPORT_ACTIVE" text="An unfinished export prevented switching the panorama camera." />
+    <string id="AF_ILL_ERROR_PANORAMA_WAIT_FRAME" text="The panorama render frame could not be awaited." />
+    <string id="AF_ILL_ERROR_PANORAMA_RENDER_INCOMPLETE" text="The panorama camera did not finish rendering. No incomplete reference image was sent." />
+    <string id="AF_ILL_ERROR_PANORAMA_EXPORT_NOT_READY" text="The panorama export is not ready." />
+    <string id="AF_ILL_ERROR_PANORAMA_EXPORT_INCOMPLETE" text="Panorama export did not produce a complete image. Repeated viewpoints were not substituted." />
+    <string id="AF_ILL_ERROR_SCENE_VALIDATION_SCHEDULER" text="Scene state validation scheduling stopped. This illustration cannot continue." />
+    <string id="AF_ILL_ERROR_PANORAMA_TIMEOUT" text="Environment panorama capture exceeded its time budget and stopped. No incomplete environment image was sent." />
+    <string id="AF_ILL_ERROR_RESOURCE_XML_PARSE" text="The current scene XML resource could not be parsed: {DETAIL}" />
+    <string id="AF_ILL_ERROR_RESOURCE_READ_FAILED" text="Reading the current scene resource failed: {DETAIL}" />
+    <string id="AF_ILL_ERROR_RESOURCE_NODE_DUPLICATE" text="The scene resource contains duplicate {DETAIL} nodes." />
+    <string id="AF_ILL_ERROR_LIGHTING_SCENE_DETAIL" text="Observation lighting requires a valid isolated scene copy.{DETAIL}" />
+    <string id="AF_ILL_ERROR_LIGHTING_POSITION_DETAIL" text="Observation lighting has no off-screen camera position.{DETAIL}" />
+    <string id="AF_ILL_ERROR_EDITS_UNSUPPORTED" text="The images/edits endpoint does not support this reference image request. Generation stopped to avoid silently losing character or scene references. Enable the preferred conversation multimodal image channel or configure a usable /images/edits endpoint." />
+    <string id="AF_ILL_ERROR_DIRECTOR_TEXT_ONLY_ATTEMPT" text="The interface explicitly does not support image input; one text-only conception attempt was made" />
+    <string id="AF_ILL_ERROR_DIRECTOR_TEXT_ONLY_DETAIL" text="{SUMMARY}; {DETAIL}" />
+      <string id="AF_ILL_MISSION_SHOUT_TITLE" text="Scene shout" />
+    <string id="AF_ILL_ERROR_PANORAMA_ROOTS_BUDGET" text="The current scene has more than 32768 root entities to traverse. The environment snapshot stopped; a truncated copy must not be marked as a complete panorama." />
+    <string id="AF_ILL_ERROR_PANORAMA_NODES_BUDGET" text="The current environment hierarchy has more than 32768 nodes. The snapshot stopped; an incomplete copy must not be marked as a complete panorama." />
+    <string id="AF_ILL_ERROR_IMAGE_PROMPT_BUDGET" text="The image prompt exceeds the {LIMIT}-character budget and cannot be shortened while preserving facts, reference-image constraints and complete paragraphs. No request was sent. Shorten custom styles or requirements, or reduce the material for this request." />
+      <string id="AF_ILL_UI_LOCAL_CACHE_PROMPT" text="(A visual chronicle is retained locally)" />
   </strings>
 </base>

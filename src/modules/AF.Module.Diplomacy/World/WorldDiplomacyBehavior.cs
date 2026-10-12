@@ -1,3 +1,4 @@
+using AnimusForge;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -544,13 +545,13 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 	{
 		if (mapEvent?.IsSiegeAssault == true || mapEvent?.IsSiegeOutside == true || mapEvent?.IsSallyOut == true)
 		{
-			return "攻守战";
+			return DiplomacyCompatibilityTexts.Get("Battle_Siege");
 		}
 		if (mapEvent?.IsRaid == true)
 		{
-			return "袭掠战";
+			return DiplomacyCompatibilityTexts.Get("Battle_Raid");
 		}
-		return "野外战斗";
+		return DiplomacyCompatibilityTexts.Get("Battle_Field");
 	}
 
 	private void ResetTransientRuntime(string reason)
@@ -614,10 +615,10 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 		}
 		StringBuilder sb = new StringBuilder();
 		sb.AppendLine(marker);
-		sb.AppendLine("档案版本=" + WorldDiplomacyPromptContractRules.StablePromptHash((nationalPersonality ?? "") + "\n" + (longTermStrategy ?? "")));
-		sb.AppendLine("国家性格=" + (nationalPersonality ?? ""));
-		sb.AppendLine("长期战略=" + (longTermStrategy ?? ""));
-		sb.Append(WorldDiplomacyPromptContractRules.KingdomStrategicIntentRule);
+		sb.AppendLine(DiplomacyPromptTexts.Get("StrategicProfileVersion", "Profile version=") + WorldDiplomacyPromptContractRules.StablePromptHash((nationalPersonality ?? "") + "\n" + (longTermStrategy ?? "")));
+		sb.AppendLine(DiplomacyPromptTexts.Get("StrategicProfilePersonality", "National personality=") + (nationalPersonality ?? ""));
+		sb.AppendLine(DiplomacyPromptTexts.Get("StrategicProfileStrategy", "Long-term strategy=") + (longTermStrategy ?? ""));
+		sb.Append(DiplomacyPromptTexts.Get("AF_DIP_Compatibility_008", "Find reasons for the long-term strategy, especially war, based on current circumstances; use real interests, disputes or security concerns as public reasons."));
 		prompt = sb.ToString();
 		return true;
 	}
@@ -1062,7 +1063,7 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 	{
 		return (settlements ?? Enumerable.Empty<Settlement>())
 			.Where(x => x != null)
-			.Select(x => (x.StringId ?? "") + "=" + (x.Name?.ToString() ?? "未知"));
+			.Select(x => (x.StringId ?? "") + "=" + (x.Name?.ToString() ?? DiplomacyMiscPromptTexts.Get("WorldDiplomacy_Unknown", "Unknown")));
 	}
 
 	private static WorldDiplomacyRulerCaptivity ResolveAuthorRulerCaptivity(Kingdom author)
@@ -1088,7 +1089,7 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 		Hero ruler = kingdom?.Leader ?? kingdom?.RulingClan?.Leader;
 		if (ruler == null)
 		{
-			return "RulerPersona{name=未知统治者,culture=" + (kingdom?.Culture?.Name?.ToString() ?? "未知") + ",note=没有可用人物档案，不得编造个人经历}";
+			return DiplomacyPromptTexts.Get("RulerVoicePrompt_000", "RulerPersona{name=Unknown ruler,culture=") + (kingdom?.Culture?.Name?.ToString() ?? DiplomacyPromptTexts.Get("RulerVoicePrompt_002", "Unknown")) + DiplomacyPromptTexts.Get("RulerVoicePrompt_001", ",note=No usable character profile; do not invent personal experiences}");
 		}
 		MyBehavior.GetNpcPersonaForExternal(ruler, out string personality, out string background);
 		string compactPersonality = WorldDiplomacyTextRules.CompactPromptFact(personality, 280);
@@ -1096,15 +1097,15 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 		string title = WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(
 			kingdom?.EncyclopediaRulerTitle?.ToString(),
 			ruler.Clan?.Name?.ToString(),
-			"未知");
+			DiplomacyPromptTexts.Get("RulerVoicePrompt_002", "Unknown"));
 
-		return "RulerPersona{name=" + (ruler.Name?.ToString() ?? "未知")
+		return "RulerPersona{name=" + (ruler.Name?.ToString() ?? DiplomacyPromptTexts.Get("RulerVoicePrompt_002", "Unknown"))
 			+ ",kingdom=" + KingdomName(kingdom)
-			+ ",culture=" + (kingdom?.Culture?.Name?.ToString() ?? ruler.Culture?.Name?.ToString() ?? "未知")
+			+ ",culture=" + (kingdom?.Culture?.Name?.ToString() ?? ruler.Culture?.Name?.ToString() ?? DiplomacyPromptTexts.Get("RulerVoicePrompt_002", "Unknown"))
 			+ ",title=" + WorldDiplomacyTextRules.CompactPromptFact(title, 80)
 			+ ",traits=" + BuildRulerVoiceTraitSummary(ruler)
-			+ ",personality=" + WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(compactPersonality, "未提供专属个性档案")
-			+ ",background=" + WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(compactBackground, "未提供专属背景档案，不得自行补写经历")
+			+ ",personality=" + WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(compactPersonality, DiplomacyPromptTexts.Get("RulerVoicePrompt_004", "No dedicated personality profile supplied"))
+			+ ",background=" + WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(compactBackground, DiplomacyPromptTexts.Get("RulerVoicePrompt_005", "No dedicated background profile supplied; do not invent experiences"))
 			+ "}";
 	}
 	private string BuildRealmInstitutionalVoiceContext(Kingdom kingdom)
@@ -1115,7 +1116,7 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 		}
 		Hero ruler = kingdom.Leader ?? kingdom.RulingClan?.Leader;
 		string kingdomName = KingdomName(kingdom);
-		string cultureName = kingdom.Culture?.Name?.ToString() ?? ruler?.Culture?.Name?.ToString() ?? "未知";
+		string cultureName = kingdom.Culture?.Name?.ToString() ?? ruler?.Culture?.Name?.ToString() ?? DiplomacyPromptTexts.Get("RulerVoicePrompt_002", "Unknown");
 		string rulerTitle = ResolveRealmRulerTitle(kingdom, ruler);
 		string governmentHardFact = BuildCanonicalRealmGovernmentHardFact(kingdom, rulerTitle);
 		string lore = "";
@@ -1151,7 +1152,7 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 					}
 				}
 				string query = kingdomName + " " + cultureName + " " + (ruler.Name?.ToString() ?? "")
-				+ " 统治者";
+				+ " " + DiplomacyMiscPromptTexts.Get("Prompt_RulerFallback", "Ruler");
 
 				lore = library.BuildLoreContextWithoutPlayerContext(query, ruler, "world_diplomacy_realm_voice", entities);
 				string result = WorldDiplomacyPromptContractRules.BuildRealmInstitutionalVoiceText(kingdomName, cultureName, rulerTitle, governmentHardFact, lore, DiplomacyPromptTexts.Get);
@@ -1176,46 +1177,46 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 			|| string.Equals(kingdomId, "empire_w", StringComparison.OrdinalIgnoreCase)
 			|| string.Equals(kingdomId, "empire_s", StringComparison.OrdinalIgnoreCase))
 		{
-			return ruler?.IsFemale == true ? "女皇" : "皇帝";
+			return ruler?.IsFemale == true ? DiplomacyPromptTexts.Get("RulerVoicePrompt_006", "Empress") : DiplomacyPromptTexts.Get("RulerVoicePrompt_007", "Emperor");
 		}
-		return WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(kingdom?.EncyclopediaRulerTitle?.ToString(), "未知");
+		return WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(kingdom?.EncyclopediaRulerTitle?.ToString(), DiplomacyPromptTexts.Get("RulerVoicePrompt_002", "Unknown"));
 
 	}
 	private static string BuildCanonicalRealmGovernmentHardFact(Kingdom kingdom, string rulerTitle)
 	{
-		string title = WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(rulerTitle, "未知统治者");
+		string title = WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(rulerTitle, DiplomacyPromptTexts.Get("RulerVoicePrompt_003", "Unknown ruler"));
 
 		switch ((kingdom?.StringId ?? "").Trim().ToLowerInvariant())
 		{
 			case "empire_n":
-			return "北帝国实行以元老院及元老政治传统为权力基础的帝制；最高统治者个人头衔为" + title + "。元老院是国家机构，不是统治者的个人身份；不得把统治者称为元老、议员或执政官。";
+			return DiplomacyPromptTexts.Get("RulerVoicePrompt_008", "The Northern Empire is an imperial regime based on the senate and senatorial political traditions; the supreme ruler’s personal title is ") + title + DiplomacyPromptTexts.Get("RulerVoicePrompt_009", ". The senate is a state institution, not the ruler’s personal identity; do not call the ruler a senator, legislator or consul.");
 			case "empire_w":
-			return "西帝国实行以军队拥立、军功与军人政治传统为合法性基础的帝制；最高统治者个人头衔为" + title + "，不得改称国王、将军、元老或执政官。西帝国不是元老院制。";
+			return DiplomacyPromptTexts.Get("RulerVoicePrompt_010", "The Western Empire is an imperial regime whose legitimacy rests on military acclamation, military merit and military political traditions; the supreme ruler’s personal title is ") + title + DiplomacyPromptTexts.Get("RulerVoicePrompt_011", "; do not substitute king, general, senator or consul. The Western Empire is not a senatorial regime.");
 			case "empire_s":
-			return "南帝国实行以皇室世袭与君主权威为合法性基础的帝制君主制；最高统治者个人头衔为" + title + "，不得改称国王、女王、元老、议员或执政官。南帝国不是元老院制。";
+			return DiplomacyPromptTexts.Get("RulerVoicePrompt_012", "The Southern Empire is an imperial monarchy whose legitimacy rests on dynastic succession and monarchical authority; the supreme ruler’s personal title is ") + title + DiplomacyPromptTexts.Get("RulerVoicePrompt_013", "; do not substitute king, queen, senator, legislator or consul. The Southern Empire is not a senatorial regime.");
 			default:
-			return "当前游戏身份确认的最高统治者个人头衔为" + title + "；该头衔是硬事实，任何机构称谓或人物背景都不得将其替换。";
+			return DiplomacyPromptTexts.Get("RulerVoicePrompt_014", "The supreme ruler’s personal title confirmed by the current game identity is ") + title + DiplomacyPromptTexts.Get("RulerVoicePrompt_015", "; this title is a hard fact. Institutional terminology or character background must not replace it.");
 		}
 	}
 	private static string BuildRulerVoiceTraitSummary(Hero ruler)
 	{
 		if (ruler == null)
 		{
-			return "未知";
+			return DiplomacyPromptTexts.Get("RulerVoicePrompt_002", "Unknown");
 		}
 		try
 		{
 			List<string> traits = new List<string>();
-			WorldDiplomacyPromptContractRules.AppendVoiceTrait(traits, ruler.GetTraitLevel(DefaultTraits.Mercy), "仁慈", "冷酷");
-			WorldDiplomacyPromptContractRules.AppendVoiceTrait(traits, ruler.GetTraitLevel(DefaultTraits.Valor), "勇敢", "谨慎避险");
-			WorldDiplomacyPromptContractRules.AppendVoiceTrait(traits, ruler.GetTraitLevel(DefaultTraits.Honor), "重视荣誉与承诺", "善用权谋");
-			WorldDiplomacyPromptContractRules.AppendVoiceTrait(traits, ruler.GetTraitLevel(DefaultTraits.Generosity), "慷慨", "看重积蓄与代价");
-			WorldDiplomacyPromptContractRules.AppendVoiceTrait(traits, ruler.GetTraitLevel(DefaultTraits.Calculating), "精于算计", "直率果断");
-			return traits.Count == 0 ? "无明显倾向" : string.Join("、", traits);
+			WorldDiplomacyPromptContractRules.AppendVoiceTrait(traits, ruler.GetTraitLevel(DefaultTraits.Mercy), DiplomacyPromptTexts.Get("RulerVoicePrompt_016", "merciful"), DiplomacyPromptTexts.Get("RulerVoicePrompt_017", "ruthless"));
+			WorldDiplomacyPromptContractRules.AppendVoiceTrait(traits, ruler.GetTraitLevel(DefaultTraits.Valor), DiplomacyPromptTexts.Get("RulerVoicePrompt_018", "brave"), DiplomacyPromptTexts.Get("RulerVoicePrompt_019", "cautious and risk-averse"));
+			WorldDiplomacyPromptContractRules.AppendVoiceTrait(traits, ruler.GetTraitLevel(DefaultTraits.Honor), DiplomacyPromptTexts.Get("RulerVoicePrompt_020", "values honor and commitments"), DiplomacyPromptTexts.Get("RulerVoicePrompt_021", "skilled in political intrigue"));
+			WorldDiplomacyPromptContractRules.AppendVoiceTrait(traits, ruler.GetTraitLevel(DefaultTraits.Generosity), DiplomacyPromptTexts.Get("RulerVoicePrompt_022", "generous"), DiplomacyPromptTexts.Get("RulerVoicePrompt_023", "values savings and weighs costs"));
+			WorldDiplomacyPromptContractRules.AppendVoiceTrait(traits, ruler.GetTraitLevel(DefaultTraits.Calculating), DiplomacyPromptTexts.Get("RulerVoicePrompt_024", "calculating"), DiplomacyPromptTexts.Get("RulerVoicePrompt_025", "direct and decisive"));
+			return traits.Count == 0 ? DiplomacyPromptTexts.Get("RulerVoicePrompt_026", "No clear inclination") : string.Join(DiplomacyPromptTexts.Get("RulerVoicePrompt_028", ", "), traits);
 		}
 		catch
 		{
-			return "读取失败";
+			return DiplomacyPromptTexts.Get("RulerVoicePrompt_027", "Read failed");
 		}
 	}
 	private static string BuildAuthorRulerFamilyContext(Kingdom author)
@@ -1236,16 +1237,16 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 	{
 		if (hero == null)
 		{
-			return "hero=未知,parents=[],spouse=无,children=[]";
+			return DiplomacyPromptTexts.Get("RulerVoicePrompt_029", "hero=Unknown,parents=[],spouse=None,children=[]");
 		}
 		List<string> parents = new List<string>();
 		if (hero.Father != null)
 		{
-			parents.Add("父亲:" + FormatHeroFamilyIdentity(hero.Father));
+			parents.Add(DiplomacyPromptTexts.Get("RulerVoicePrompt_030", "father:") + FormatHeroFamilyIdentity(hero.Father));
 		}
 		if (hero.Mother != null)
 		{
-			parents.Add("母亲:" + FormatHeroFamilyIdentity(hero.Mother));
+			parents.Add(DiplomacyPromptTexts.Get("RulerVoicePrompt_031", "mother:") + FormatHeroFamilyIdentity(hero.Mother));
 		}
 		List<string> children = WorldDiplomacyRoundLifecycleRules.NormalizeIdListPreserveOrder((hero.Children ?? Enumerable.Empty<Hero>())
 			.Where(x => x != null)
@@ -1262,11 +1263,11 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 	{
 		if (hero == null)
 		{
-			return "未知";
+			return DiplomacyPromptTexts.Get("RulerVoicePrompt_002", "Unknown");
 		}
-		return (hero.Name?.ToString() ?? "未知")
+		return (hero.Name?.ToString() ?? DiplomacyPromptTexts.Get("RulerVoicePrompt_002", "Unknown"))
 			+ "(id=" + (hero.StringId ?? "")
-			+ "," + (hero.IsAlive ? "在世" : "已故") + ")";
+			+ "," + (hero.IsAlive ? DiplomacyPromptTexts.Get("RulerVoicePrompt_032", "alive") : DiplomacyPromptTexts.Get("RulerVoicePrompt_033", "deceased")) + ")";
 	}
 	private static string ResolveDirectHeroRelationship(Hero first, Hero second)
 	{
@@ -1315,27 +1316,27 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 			{
 				TextObject reason;
 				float score = Campaign.Current.Models.DiplomacyModel.GetScoreOfDeclaringWar(source, target, source.RulingClan, out reason, true);
-				parts.Add(score > 0f ? "王庭认为宣战有现实理由" : "王庭认为宣战理由不足");
+				parts.Add(score > 0f ? DiplomacyCompatibilityTexts.Get("WarScore_WarReasonSufficient") : DiplomacyCompatibilityTexts.Get("WarScore_WarReasonInsufficient"));
 				if (!string.IsNullOrWhiteSpace(reason?.ToString()))
 				{
-					parts.Add("原版理由=" + reason);
+					parts.Add(DiplomacyCompatibilityTexts.Get("WarScore_NativeReasonPrefix") + reason);
 				}
 			}
 			else if (action == "propose_peace")
 			{
 				float score = Campaign.Current.Models.DiplomacyModel.GetScoreOfDeclaringPeace(source, target);
-				parts.Add(score > 0f ? "王庭倾向寻找和平条件" : "王庭暂不倾向议和");
+				parts.Add(score > 0f ? DiplomacyCompatibilityTexts.Get("PeaceScore_PeaceInclined") : DiplomacyCompatibilityTexts.Get("PeaceScore_PeaceNotInclined"));
 			}
 		}
 		catch
 		{
 		}
 		int relation = GetRulerRelation(source, target);
-		parts.Add("统治者私人关系=" + WorldDiplomacyTextRules.DescribeRulerRelation(relation));
+		parts.Add(DiplomacyCompatibilityTexts.Get("RulerScore_PrivateRelationPrefix") + WorldDiplomacyTextRules.DescribeRulerRelation(relation));
 		int claims = CountCulturalClaims(source, target);
 		if (claims > 0)
 		{
-			parts.Add("对方占有本文化领地=" + claims.ToString(CultureInfo.InvariantCulture));
+			parts.Add(DiplomacyCompatibilityTexts.Get("RulerScore_CultureClaimsPrefix") + claims.ToString(CultureInfo.InvariantCulture));
 		}
 		return string.Join("；", parts);
 	}
@@ -1399,9 +1400,9 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 	{
 		return NormalizeWorldDiplomacyVassalageType(type) switch
 		{
-			AfVassalageType.Tributary => "朝贡国",
-			AfVassalageType.Garrison => "卫戍国",
-			_ => "独立"
+			AfVassalageType.Tributary => DiplomacyPromptTexts.Get("WorldVassalagePrompt_000", "tributary"),
+			AfVassalageType.Garrison => DiplomacyPromptTexts.Get("WorldVassalagePrompt_001", "garrison kingdom"),
+			_ => DiplomacyPromptTexts.Get("WorldVassalagePrompt_002", "independent")
 
 		};
 	}
@@ -1424,22 +1425,22 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 			}
 			string authority = type switch
 			{
-				AfVassalageType.Tributary => "保留自身外交与军事自主，向宗主纳贡换取庇护",
-				AfVassalageType.Garrison => "接受宗主军事号令，但仍可按条约表达本国利益",
-				_ => "完全独立行事"
+				AfVassalageType.Tributary => DiplomacyPromptTexts.Get("WorldVassalagePrompt_003", "Retains diplomatic and military autonomy and pays tribute to the suzerain for protection"),
+				AfVassalageType.Garrison => DiplomacyPromptTexts.Get("WorldVassalagePrompt_004", "Obeys the suzerain's military orders but may still express its own interests under the treaty"),
+				_ => DiplomacyPromptTexts.Get("WorldVassalagePrompt_005", "Acts fully independently")
 
 			};
 			relations.Add("- " + subject.StringId + "=" + KingdomName(subject)
-				+ "宗主=" + suzerain.StringId + "=" + KingdomName(suzerain) + "；类型="
-				+ GetWorldDiplomacyVassalageTypeName(type) + "；权限=" + authority + "。");
+				+ DiplomacyPromptTexts.Get("WorldVassalagePrompt_006", "; suzerain=") + suzerain.StringId + "=" + KingdomName(suzerain) + DiplomacyPromptTexts.Get("WorldVassalagePrompt_007", "; type=")
+				+ GetWorldDiplomacyVassalageTypeName(type) + DiplomacyPromptTexts.Get("WorldVassalagePrompt_008", "; authority=") + authority + DiplomacyPromptTexts.Get("WorldVassalagePrompt_009", "."));
 		}
 		if (relations.Count == 0)
 		{
 			return "";
 		}
-		return "【当前宗主—附属关系硬事实】\n"
+		return DiplomacyPromptTexts.Get("WorldVassalagePrompt_010", "[Current suzerain–subject relationship hard facts]\n")
 			+ string.Join("\n", relations)
-			+ "\n臣属国在涉及宗主国时必须承认现存宗主关系并保持臣属礼制上的恭敬；这不等于每篇公文都要谄媚或放弃条约仍保留的利益表达。";
+			+ DiplomacyPromptTexts.Get("WorldVassalagePrompt_011", "\nSubjects must acknowledge their existing suzerain relationship and maintain the formal respect due from subjects when dealing with the suzerain. This does not require flattery in every declaration or abandoning expressions of interests retained under the treaty.");
 	}
 
 	private List<string> BuildLegalDiplomaticActionIntents(
@@ -2015,24 +2016,24 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 			int normalizedSeason = (season % 4 + 4) % 4;
 			string seasonText = normalizedSeason switch
 			{
-				0 => "春",
-				1 => "夏",
-				2 => "秋",
+				0 => DiplomacyCompatibilityTexts.Get("KingdomProfile_SeasonSpring"),
+				1 => DiplomacyCompatibilityTexts.Get("KingdomProfile_SeasonSummer"),
+				2 => DiplomacyCompatibilityTexts.Get("KingdomProfile_SeasonAutumn"),
 
-				_ => "冬"
+				_ => DiplomacyCompatibilityTexts.Get("KingdomProfile_SeasonWinter")
 
 			};
 			return year.ToString(CultureInfo.InvariantCulture)
-				+ "年"
+				+ DiplomacyCompatibilityTexts.Get("KingdomProfile_YearSuffix")
 				+ seasonText
-				+ "季"
+				+ DiplomacyCompatibilityTexts.Get("KingdomProfile_SeasonSuffix")
 				+ dayOfSeason.ToString(CultureInfo.InvariantCulture)
-				+ "天";
+				+ DiplomacyCompatibilityTexts.Get("KingdomProfile_DaySuffix");
 
 		}
 		catch
 		{
-			return "第" + Math.Max(0, day).ToString(CultureInfo.InvariantCulture) + "天";
+			return DiplomacyCompatibilityTexts.Get("KingdomProfile_DayPrefix") + Math.Max(0, day).ToString(CultureInfo.InvariantCulture) + DiplomacyCompatibilityTexts.Get("KingdomProfile_DaySuffix");
 		}
 	}
 	private static string NewId(string prefix)
@@ -2041,7 +2042,7 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 	}
 	private static string KingdomName(Kingdom kingdom)
 	{
-		return kingdom?.Name?.ToString() ?? kingdom?.StringId ?? "未知王国";
+		return kingdom?.Name?.ToString() ?? kingdom?.StringId ?? DiplomacyMiscPromptTexts.Get("Prompt_UnknownKingdomFallback", "Unknown Kingdom");
 	}
 	private static string ResolveKingdomNameOrEmpty(string kingdomId)
 	{
@@ -2050,7 +2051,7 @@ public sealed partial class WorldDiplomacyBehavior : CampaignBehaviorBase
 	}
 	private static string RulerName(Kingdom kingdom)
 	{
-		return kingdom?.RulingClan?.Leader?.Name?.ToString() ?? "未知统治者";
+		return kingdom?.RulingClan?.Leader?.Name?.ToString() ?? DiplomacyMiscPromptTexts.Get("WorldDiplomacy_UnknownRuler", "Unknown ruler");
 	}
 	private static List<string> NormalizeKingdomIdList(IEnumerable<string> values, string excludedId)
 	{

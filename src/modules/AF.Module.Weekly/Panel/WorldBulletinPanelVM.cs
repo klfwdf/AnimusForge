@@ -403,7 +403,7 @@ public sealed class WorldBulletinPanelVM : ViewModel
 
 	private static bool IsCjk(char c)
 	{
-		return c >= '一' && c <= '鿿';
+		return c >= 0x4E00 && c <= 0x9FFF;
 	}
 
 	private static string Sanitize(string text)

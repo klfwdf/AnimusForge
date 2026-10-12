@@ -1,0 +1,15 @@
+{
+  "RuleGroup": "Rule group: ",
+  "RuleIdLabel": "Rule ID: ",
+  "Purpose": "Purpose: ",
+  "Keywords": "Trigger words: ",
+  "ExtraRuleOpen": "[Extra rule:",
+  "DefaultOwner": "you",
+  "ExtraRuleClose": "]",
+  "NpcItemsHeader": "{npc_name}'s inventory:",
+  "PlayerEquipmentHeader": "Player visible equipment:",
+  "DebtHeader": "Debt hints:",
+  "PlayerMarriageHeader": "Player clan eligible marriage candidates (factual list, existing spouse allowed):",
+  "TargetMarriageHeader": "Target clan eligible marriage candidates (factual list, existing spouse allowed):",
+  "RuntimeFactsHeader": "Runtime supplementary facts:"
+}

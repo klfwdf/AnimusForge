@@ -37,15 +37,15 @@ internal sealed class PromotedPersonaGenerationApplicationAdapter
                 _persona.GetNpcPersonaStrings(hero, out string originalPersonality, out string originalBackground);
                 work.OriginalPersonality = originalPersonality;
                 work.OriginalBackground = originalBackground;
-		name = string.IsNullOrWhiteSpace(personalName) ? (hero.Name?.ToString() ?? "新家族成员") : personalName.Trim();
+		name = string.IsNullOrWhiteSpace(personalName) ? (hero.Name?.ToString() ?? AdapterPromptCaptureTexts.PcapText("persona_generation_48")) : personalName.Trim();
 		fullName = string.IsNullOrWhiteSpace(originalFullName) ? name : originalFullName.Trim();
-		troopName = string.IsNullOrWhiteSpace(originalTroopName) ? "非英雄NPC" : originalTroopName.Trim();
+		troopName = string.IsNullOrWhiteSpace(originalTroopName) ? AdapterPromptCaptureTexts.PcapText("persona_generation_49") : originalTroopName.Trim();
 		troopId = (originalTroopId ?? "").Trim();
-		culture = string.IsNullOrWhiteSpace(cultureName) ? "未知文化" : cultureName.Trim();
-		scene = string.IsNullOrWhiteSpace(sceneLabel) ? "当前场景" : sceneLabel.Trim();
-		joinFact = string.IsNullOrWhiteSpace(joinEventFact) ? (name + "同意追随玩家，成为玩家家族成员并加入玩家队伍。") : joinEventFact.Trim();
-		history = string.IsNullOrWhiteSpace(dialogueHistory) ? "（无可用加入前对话历史）" : dialogueHistory.Trim();
-		equipment = string.IsNullOrWhiteSpace(equipmentSummary) ? "（无装备）" : equipmentSummary.Trim();
+		culture = string.IsNullOrWhiteSpace(cultureName) ? AdapterPromptCaptureTexts.PcapText("persona_generation_50") : cultureName.Trim();
+		scene = string.IsNullOrWhiteSpace(sceneLabel) ? AdapterPromptCaptureTexts.PcapText("persona_generation_51") : sceneLabel.Trim();
+		joinFact = string.IsNullOrWhiteSpace(joinEventFact) ? (name + AdapterPromptCaptureTexts.PcapText("persona_generation_52")) : joinEventFact.Trim();
+		history = string.IsNullOrWhiteSpace(dialogueHistory) ? AdapterPromptCaptureTexts.PcapText("promoted_no_prejoin_history") : dialogueHistory.Trim();
+		equipment = string.IsNullOrWhiteSpace(equipmentSummary) ? AdapterPromptCaptureTexts.PcapText("persona_generation_53") : equipmentSummary.Trim();
 			NpcPersonaPrompt prompt = NpcPersonaTextRules.BuildPromoted(name,fullName,troopName,troopId,culture,scene,joinFact,history,equipment,PersonaGenerationFactCaptureAdapter.BuildPromotedNonHeroCompanionFactsForPersonaGeneration(hero,name,fullName,troopName,troopId,culture,scene,joinFact,equipment),DuelSettings.GetSettings()?.NpcPersonaGenerationRequirements);
                 work.Response = ConfiguredChatApplicationAdapter.CallAuxiliaryGatewayDetailed(prompt.System, prompt.User, "PromotedCompanionPersona", 0, forceThinkingDisabled: false);
                 return true;
@@ -88,10 +88,10 @@ internal sealed class PromotedPersonaGenerationApplicationAdapter
 			if (!personaSaved)
 			{
 				string failureDetail = apiCallResult.Success
-					? LlmRetryPrompt.BuildFailureDetail("升格同伴人设模型回复解析失败，将使用本地后备人设。", resp, apiCallResult.ResponseBody)
-					: (apiCallResult.ErrorMessage ?? LlmRetryPrompt.BuildFailureDetail("升格同伴人设生成失败，将使用本地后备人设。", resp, apiCallResult.ResponseBody));
+					? LlmRetryPrompt.BuildFailureDetail("Promoted companion persona response parsing failed; a local fallback persona will be used.", resp, apiCallResult.ResponseBody)
+					: (apiCallResult.ErrorMessage ?? LlmRetryPrompt.BuildFailureDetail("Promoted companion persona generation failed; a local fallback persona will be used.", resp, apiCallResult.ResponseBody));
 				Logger.Log("NpcPersona", "[WARN] Promoted companion persona fallback hero=" + heroId + ": " + failureDetail);
-				LlmRetryPrompt.ShowFailurePopup(PersonaFailureUiText.PromotedPersonaTitle, failureDetail);
+				LlmRetryPrompt.ShowFailurePopup(PersonaFailureUiText.PromotedPersonaTitle, PersonaFailureUiText.ProjectFailureDetail(failureDetail));
 			}
                 }
                 catch (Exception ex)
@@ -167,9 +167,9 @@ internal sealed class PromotedPersonaGenerationApplicationAdapter
 			{
 				Logger.Log("NpcPersona", "Promoted companion skill generation fallback hero=" + (hero.StringId ?? "") + ": keeping template skills.");
 				string failureDetail = apiCallResult.Success
-					? LlmRetryPrompt.BuildFailureDetail("升格同伴技能模型回复解析失败，将保留兵种模板技能。", resp, apiCallResult.ResponseBody)
-					: (apiCallResult.ErrorMessage ?? LlmRetryPrompt.BuildFailureDetail("升格同伴技能生成失败，将保留兵种模板技能。", resp, apiCallResult.ResponseBody));
-				LlmRetryPrompt.ShowFailurePopup(PersonaFailureUiText.PromotedSkillsTitle, failureDetail);
+					? LlmRetryPrompt.BuildFailureDetail("Promoted companion skill response parsing failed; troop template skills will be kept.", resp, apiCallResult.ResponseBody)
+					: (apiCallResult.ErrorMessage ?? LlmRetryPrompt.BuildFailureDetail("Promoted companion skill generation failed; troop template skills will be kept.", resp, apiCallResult.ResponseBody));
+				LlmRetryPrompt.ShowFailurePopup(PersonaFailureUiText.PromotedSkillsTitle, PersonaFailureUiText.ProjectFailureDetail(failureDetail));
 			}
                 return true;
             }).ConfigureAwait(false);

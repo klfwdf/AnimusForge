@@ -84,14 +84,12 @@
     {
       "owner": "AF.Module.Prompt",
       "source": "content/modules/AF.Module.Prompt/ModuleData/PreprocessPrompts.json",
-      "target": "ModuleData/PreprocessPrompts.json",
-      "logicalName": "AnimusForge.Defaults.PreprocessPrompts.json"
+      "target": "ModuleData/PreprocessPrompts.json"
     },
     {
       "owner": "AF.Module.Economy",
       "source": "content/modules/AF.Module.Economy/ModuleData/RpItemIntroductionPrompts.json",
-      "target": "ModuleData/RpItemIntroductionPrompts.json",
-      "logicalName": "AnimusForge.Defaults.RpItemIntroductionPrompts.json"
+      "target": "ModuleData/RpItemIntroductionPrompts.json"
     },
     {
       "owner": "AF.Module.Economy",
@@ -117,31 +115,36 @@
       "owner": "AnimusForge.SiegeAftermathIntervention",
       "source": "content/modules/AnimusForge.SiegeAftermathIntervention/ModuleData/GcczTownPrompt.zh-CN.json",
       "target": "ModuleData/GcczTownPrompt.zh-CN.json",
-      "logicalName": "AnimusForge.Defaults.GcczTownPrompt.zh-CN.json"
+      "logicalName": "AnimusForge.Defaults.GcczTownPrompt.zh-CN.json",
+      "localizationRole": "bilingual-ui"
     },
     {
       "owner": "AnimusForge.SiegeAftermathIntervention",
       "source": "content/modules/AnimusForge.SiegeAftermathIntervention/ModuleData/GcczTownEntryPresentation.zh-CN.json",
       "target": "ModuleData/GcczTownEntryPresentation.zh-CN.json",
-      "logicalName": "AnimusForge.Defaults.GcczTownEntryPresentation.zh-CN.json"
+      "logicalName": "AnimusForge.Defaults.GcczTownEntryPresentation.zh-CN.json",
+      "localizationRole": "bilingual-ui"
     },
     {
       "owner": "AnimusForge.SiegeAftermathIntervention",
       "source": "content/modules/AnimusForge.SiegeAftermathIntervention/ModuleData/GcczTownActionPresentation.zh-CN.json",
       "target": "ModuleData/GcczTownActionPresentation.zh-CN.json",
-      "logicalName": "AnimusForge.Defaults.GcczTownActionPresentation.zh-CN.json"
+      "logicalName": "AnimusForge.Defaults.GcczTownActionPresentation.zh-CN.json",
+      "localizationRole": "bilingual-ui"
     },
     {
       "owner": "AnimusForge.SiegeAftermathIntervention",
       "source": "content/modules/AnimusForge.SiegeAftermathIntervention/ModuleData/GcczTownHiddenResidents.zh-CN.json",
       "target": "ModuleData/GcczTownHiddenResidents.zh-CN.json",
-      "logicalName": "AnimusForge.Defaults.GcczTownHiddenResidents.zh-CN.json"
+      "logicalName": "AnimusForge.Defaults.GcczTownHiddenResidents.zh-CN.json",
+      "localizationRole": "bilingual-ui"
     },
     {
       "owner": "AnimusForge.SiegeAftermathIntervention",
       "source": "content/modules/AnimusForge.SiegeAftermathIntervention/ModuleData/GcczTownManual.zh-CN.json",
       "target": "ModuleData/GcczTownManual.zh-CN.json",
-      "logicalName": "AnimusForge.Defaults.GcczTownManual.zh-CN.json"
+      "logicalName": "AnimusForge.Defaults.GcczTownManual.zh-CN.json",
+      "localizationRole": "bilingual-ui"
     },
     {
       "owner": "AF.Foundation.UI",
@@ -661,187 +664,187 @@
     {
       "owner": "AF.Module.Memory",
       "source": "content/modules/AF.Module.Memory/CustomPrompts/DailyMemoryCompressionWritingRequirements.json",
-      "target": "CustomPrompts/DailyMemoryCompressionWritingRequirements.json",
+      "target": "ModuleData/Defaults/CustomPrompts/DailyMemoryCompressionWritingRequirements.json",
       "sha256": "F98FDE4FBC3B46AF28360F1878323BA4EC7933C10C2958694BAFC2A16483CDA8"
     },
     {
       "owner": "AF.Module.Kingdom",
       "source": "content/modules/AF.Module.Kingdom/CustomPrompts/KingdomRebellionSystemPrompt.json",
-      "target": "CustomPrompts/KingdomRebellionSystemPrompt.json",
+      "target": "ModuleData/Defaults/CustomPrompts/KingdomRebellionSystemPrompt.json",
       "sha256": "3F09ABD7AEB0BCB6A79A381D5E108754F8C851030939C13E3D5183A15AA628A3"
     },
     {
       "owner": "AF.Module.Memory",
       "source": "content/modules/AF.Module.Memory/CustomPrompts/MajorActionCompressionWritingRequirements.json",
-      "target": "CustomPrompts/MajorActionCompressionWritingRequirements.json",
+      "target": "ModuleData/Defaults/CustomPrompts/MajorActionCompressionWritingRequirements.json",
       "sha256": "76FE731751575BDC20DA2E6D305F673E12E07F60884C85143E848D2B3C9770BB"
     },
     {
       "owner": "AF.Module.Memory",
       "source": "content/modules/AF.Module.Memory/CustomPrompts/MemoryOverviewCompressionWritingRequirements.json",
-      "target": "CustomPrompts/MemoryOverviewCompressionWritingRequirements.json",
+      "target": "ModuleData/Defaults/CustomPrompts/MemoryOverviewCompressionWritingRequirements.json",
       "sha256": "001E824BBE950960C46AAA8106BA4E77DE891111F602818A30CE9BAE5C92427C"
     },
     {
       "owner": "AF.Module.Persona",
       "source": "content/modules/AF.Module.Persona/CustomPrompts/NpcPersonaGenerationRequirements.json",
-      "target": "CustomPrompts/NpcPersonaGenerationRequirements.json",
+      "target": "ModuleData/Defaults/CustomPrompts/NpcPersonaGenerationRequirements.json",
       "sha256": "6600DC9CCAFAC0DF7EDBC92CFE66A4A0FE34DC0D57C29BFCBEC63B013AEC470F"
     },
     {
       "owner": "AF.Module.Prompt",
       "source": "content/modules/AF.Module.Prompt/CustomPrompts/PlayerCustomPromptRule.json",
-      "target": "CustomPrompts/PlayerCustomPromptRule.json",
+      "target": "ModuleData/Defaults/CustomPrompts/PlayerCustomPromptRule.json",
       "sha256": "A1634CE335855F66C209196B2581A2A85FE26A24392F69318F7AA71FDEC38752"
     },
     {
       "owner": "PolicySystem",
       "source": "content/modules/PolicySystem/CustomPrompts/Policy/CustomPolicyEvaluatorPrompt.json",
-      "target": "CustomPrompts/Policy/CustomPolicyEvaluatorPrompt.json",
+      "target": "ModuleData/Defaults/CustomPrompts/Policy/CustomPolicyEvaluatorPrompt.json",
       "sha256": "A3E55780284E374399A5BDC341F04E0DA4B7F8BE3F7AD95DD59DFACFF2FA86C8"
     },
     {
       "owner": "PolicySystem",
       "source": "content/modules/PolicySystem/CustomPrompts/Policy/Effects/_Common.json",
-      "target": "CustomPrompts/Policy/Effects/_Common.json",
+      "target": "ModuleData/Defaults/CustomPrompts/Policy/Effects/_Common.json",
       "sha256": "22DEB7EBB84EEE57759C6F928ADF8C030474AF585E28F464E54DD6FC343542DD"
     },
     {
       "owner": "PolicySystem",
       "source": "content/modules/PolicySystem/CustomPrompts/Policy/Effects/armyFormationTendencyPct.json",
-      "target": "CustomPrompts/Policy/Effects/armyFormationTendencyPct.json",
+      "target": "ModuleData/Defaults/CustomPrompts/Policy/Effects/armyFormationTendencyPct.json",
       "sha256": "06DF8D195219863004845E526E44AE2656CF5D5AC11CF6B5D9E30452B38948FD"
     },
     {
       "owner": "PolicySystem",
       "source": "content/modules/PolicySystem/CustomPrompts/Policy/Effects/clanInfluence.json",
-      "target": "CustomPrompts/Policy/Effects/clanInfluence.json",
+      "target": "ModuleData/Defaults/CustomPrompts/Policy/Effects/clanInfluence.json",
       "sha256": "4C81BD8FD757E5DD2F80DA1037806816415713DF8407EC2BBB092F2EFC70AC54"
     },
     {
       "owner": "PolicySystem",
       "source": "content/modules/PolicySystem/CustomPrompts/Policy/Effects/clanLeaderRelationOnce.json",
-      "target": "CustomPrompts/Policy/Effects/clanLeaderRelationOnce.json",
+      "target": "ModuleData/Defaults/CustomPrompts/Policy/Effects/clanLeaderRelationOnce.json",
       "sha256": "BEA0F61625F44BE055B77653EABDC8115ED5ACBB7496852749A880A1859A021C"
     },
     {
       "owner": "PolicySystem",
       "source": "content/modules/PolicySystem/CustomPrompts/Policy/Effects/constructionPerDay.json",
-      "target": "CustomPrompts/Policy/Effects/constructionPerDay.json",
+      "target": "ModuleData/Defaults/CustomPrompts/Policy/Effects/constructionPerDay.json",
       "sha256": "25AB8E65C8A377DEA734BFC69F7DB67B08654643111A250B730763DF15561AE1"
     },
     {
       "owner": "PolicySystem",
       "source": "content/modules/PolicySystem/CustomPrompts/Policy/Effects/foodPerDay.json",
-      "target": "CustomPrompts/Policy/Effects/foodPerDay.json",
+      "target": "ModuleData/Defaults/CustomPrompts/Policy/Effects/foodPerDay.json",
       "sha256": "E29DD6FCD5C0CB20CA6BE466DF7E848E3B4A0A14C9BCF78B12B17E69C500A3EB"
     },
     {
       "owner": "PolicySystem",
       "source": "content/modules/PolicySystem/CustomPrompts/Policy/Effects/hearthPerDay.json",
-      "target": "CustomPrompts/Policy/Effects/hearthPerDay.json",
+      "target": "ModuleData/Defaults/CustomPrompts/Policy/Effects/hearthPerDay.json",
       "sha256": "C5FDDA6DC400F49941B6BE29702B9E85CE19439F8D6CF310FCAB18C593426BDD"
     },
     {
       "owner": "PolicySystem",
       "source": "content/modules/PolicySystem/CustomPrompts/Policy/Effects/heroGold.json",
-      "target": "CustomPrompts/Policy/Effects/heroGold.json",
+      "target": "ModuleData/Defaults/CustomPrompts/Policy/Effects/heroGold.json",
       "sha256": "E0D279AC34F7541F904368BAE9C397D8049A3AB80BA368C7F54113BF4C06B4B6"
     },
     {
       "owner": "PolicySystem",
       "source": "content/modules/PolicySystem/CustomPrompts/Policy/Effects/kingdomStability.json",
-      "target": "CustomPrompts/Policy/Effects/kingdomStability.json",
+      "target": "ModuleData/Defaults/CustomPrompts/Policy/Effects/kingdomStability.json",
       "sha256": "CD227EF3658CC649C2B9AB5C00D2F2B8A8D5A51F3713D015750554746B6585C2"
     },
     {
       "owner": "PolicySystem",
       "source": "content/modules/PolicySystem/CustomPrompts/Policy/Effects/kingdomVillageRaidBan.json",
-      "target": "CustomPrompts/Policy/Effects/kingdomVillageRaidBan.json",
+      "target": "ModuleData/Defaults/CustomPrompts/Policy/Effects/kingdomVillageRaidBan.json",
       "sha256": "577D9ECAD527CD254958D5329DE601B28671474D7656210381701DD91CA6CC2B"
     },
     {
       "owner": "PolicySystem",
       "source": "content/modules/PolicySystem/CustomPrompts/Policy/Effects/loyaltyPerDay.json",
-      "target": "CustomPrompts/Policy/Effects/loyaltyPerDay.json",
+      "target": "ModuleData/Defaults/CustomPrompts/Policy/Effects/loyaltyPerDay.json",
       "sha256": "48E1378098C69013E1CCFE35A63D3D2E2DBF35CB4A41CA2E88EA049A79D850DC"
     },
     {
       "owner": "PolicySystem",
       "source": "content/modules/PolicySystem/CustomPrompts/Policy/Effects/militiaPerDay.json",
-      "target": "CustomPrompts/Policy/Effects/militiaPerDay.json",
+      "target": "ModuleData/Defaults/CustomPrompts/Policy/Effects/militiaPerDay.json",
       "sha256": "8A3C7D56A49AFD63BCB85C9F64786FFBD6A00E406226FA6E2A89219D7FA6AF6F"
     },
     {
       "owner": "PolicySystem",
       "source": "content/modules/PolicySystem/CustomPrompts/Policy/Effects/partySizeLimit.json",
-      "target": "CustomPrompts/Policy/Effects/partySizeLimit.json",
+      "target": "ModuleData/Defaults/CustomPrompts/Policy/Effects/partySizeLimit.json",
       "sha256": "2CBF42B52B0D7EF271E510B55A2C744923D0F82BC794BD79635E24FBE2ABF9B0"
     },
     {
       "owner": "PolicySystem",
       "source": "content/modules/PolicySystem/CustomPrompts/Policy/Effects/prosperityPerDay.json",
-      "target": "CustomPrompts/Policy/Effects/prosperityPerDay.json",
+      "target": "ModuleData/Defaults/CustomPrompts/Policy/Effects/prosperityPerDay.json",
       "sha256": "8D078E4C87D85B30F56904FF9526E3116C9AA61BEE843892593D08C18254E39C"
     },
     {
       "owner": "PolicySystem",
       "source": "content/modules/PolicySystem/CustomPrompts/Policy/Effects/securityPerDay.json",
-      "target": "CustomPrompts/Policy/Effects/securityPerDay.json",
+      "target": "ModuleData/Defaults/CustomPrompts/Policy/Effects/securityPerDay.json",
       "sha256": "07EF750768E207510B8F2CA199AEF0B3DF3A20C8760C1A31442178EFB1DF3F52"
     },
     {
       "owner": "PolicySystem",
       "source": "content/modules/PolicySystem/CustomPrompts/Policy/Effects/soldierTroopXp.json",
-      "target": "CustomPrompts/Policy/Effects/soldierTroopXp.json",
+      "target": "ModuleData/Defaults/CustomPrompts/Policy/Effects/soldierTroopXp.json",
       "sha256": "3B29F8B387522E947F7E7F0B4BFFFB3B7158FB806C5FADE5C479557E1A5491F2"
     },
     {
       "owner": "PolicySystem",
       "source": "content/modules/PolicySystem/CustomPrompts/Policy/Effects/taxIncomePct.json",
-      "target": "CustomPrompts/Policy/Effects/taxIncomePct.json",
+      "target": "ModuleData/Defaults/CustomPrompts/Policy/Effects/taxIncomePct.json",
       "sha256": "BED00201317CEF2E08261385B220D519435EC4FCFCB7314826C091ABDD0A3E0B"
     },
     {
       "owner": "PolicySystem",
       "source": "content/modules/PolicySystem/CustomPrompts/Policy/Effects/villageProductionPct.json",
-      "target": "CustomPrompts/Policy/Effects/villageProductionPct.json",
+      "target": "ModuleData/Defaults/CustomPrompts/Policy/Effects/villageProductionPct.json",
       "sha256": "1417C3FF9D5A269955C019B3F01268FBADF0E55451BB13CA5C8696B5E1767389"
     },
     {
       "owner": "PolicySystem",
       "source": "content/modules/PolicySystem/CustomPrompts/Policy/Effects/volunteerProductionGrowthPct.json",
-      "target": "CustomPrompts/Policy/Effects/volunteerProductionGrowthPct.json",
+      "target": "ModuleData/Defaults/CustomPrompts/Policy/Effects/volunteerProductionGrowthPct.json",
       "sha256": "949822045EF6089CC3D19470F894811089F72A9B7AC490B77F78C713BF56E2AE"
     },
     {
       "owner": "PolicySystem",
       "source": "content/modules/PolicySystem/CustomPrompts/Policy/NpcRulerPolicyPrompt.json",
-      "target": "CustomPrompts/Policy/NpcRulerPolicyPrompt.json",
+      "target": "ModuleData/Defaults/CustomPrompts/Policy/NpcRulerPolicyPrompt.json",
       "sha256": "9DEECA538F12E9F5A861D1A50554A9A2814FD2FBCF1179CC59B12E0AB28237C1"
     },
     {
       "owner": "PolicySystem",
       "source": "content/modules/PolicySystem/CustomPrompts/Policy/PlayerPolicyAutoDraftPrompt.json",
-      "target": "CustomPrompts/Policy/PlayerPolicyAutoDraftPrompt.json",
+      "target": "ModuleData/Defaults/CustomPrompts/Policy/PlayerPolicyAutoDraftPrompt.json",
       "sha256": "25BA42E2DB584E644CA4C9E223DF27896FD54BBD4898F55EDAB22BE5919AB90D"
     },
     {
       "owner": "AF.Module.Weekly",
       "source": "content/modules/AF.Module.Weekly/CustomPrompts/WorldBulletinWritingRequirements.json",
-      "target": "CustomPrompts/WorldBulletinWritingRequirements.json",
+      "target": "ModuleData/Defaults/CustomPrompts/WorldBulletinWritingRequirements.json",
       "sha256": "A6C6698F890234178A0982630D4E7AB07AF26B56C10E50277B6AEF4F3DBC2934"
     },
     {
       "owner": "AF.Module.Weekly",
       "source": "content/modules/AF.Module.Weekly/CustomPrompts/WeeklyReportWritingRequirements.json",
-      "target": "CustomPrompts/WeeklyReportWritingRequirements.json",
+      "target": "ModuleData/Defaults/CustomPrompts/WeeklyReportWritingRequirements.json",
       "sha256": "8655B07FE203288E3F579A2CB6043EAF711BE263559185272DE224FF10C210DB"
     },
     {
       "owner": "AF.Module.Diplomacy",
       "source": "content/modules/AF.Module.Diplomacy/CustomPrompts/WorldDiplomacyPrompt.json",
-      "target": "CustomPrompts/WorldDiplomacyPrompt.json",
+      "target": "ModuleData/Defaults/CustomPrompts/WorldDiplomacyPrompt.json",
       "sha256": "A447D0691F322388EDF27B9075DCA624414015964BE367D8A379BA78E3EC168A"
     },
     {
@@ -8072,11 +8075,6 @@
     },
     {
       "owner": "AF.Module.Onboarding",
-      "source": "content/modules/AF.Module.Onboarding/PlayerExports/战锤旧世界编年史/keyword_registry.txt",
-      "target": "PlayerExports/战锤旧世界编年史/keyword_registry.txt"
-    },
-    {
-      "owner": "AF.Module.Onboarding",
       "source": "content/modules/AF.Module.Onboarding/PlayerExports/战锤旧世界编年史/kingdom_profiles/KingdomProfiles.json",
       "target": "PlayerExports/战锤旧世界编年史/kingdom_profiles/KingdomProfiles.json"
     },
@@ -9789,11 +9787,6 @@
       "owner": "AF.Module.Onboarding",
       "source": "content/modules/AF.Module.Onboarding/PlayerExports/战锤旧世界编年史/unnamed_persona/UnnamedNpcProfiles.json",
       "target": "PlayerExports/战锤旧世界编年史/unnamed_persona/UnnamedNpcProfiles.json"
-    },
-    {
-      "owner": "AF.Module.Onboarding",
-      "source": "content/modules/AF.Module.Onboarding/PlayerExports/战锤旧世界编年史/validate.py",
-      "target": "PlayerExports/战锤旧世界编年史/validate.py"
     },
     {
       "owner": "AF.Module.Onboarding",
@@ -16282,16 +16275,6 @@
     },
     {
       "owner": "AF.Module.Onboarding",
-      "source": "content/modules/AF.Module.Onboarding/PlayerExports/权游国度编年史-大帝版/personality_background/batch_optimize.py",
-      "target": "PlayerExports/权游国度编年史-大帝版/personality_background/batch_optimize.py"
-    },
-    {
-      "owner": "AF.Module.Onboarding",
-      "source": "content/modules/AF.Module.Onboarding/PlayerExports/权游国度编年史-大帝版/personality_background/batch_optimize_v2.py",
-      "target": "PlayerExports/权游国度编年史-大帝版/personality_background/batch_optimize_v2.py"
-    },
-    {
-      "owner": "AF.Module.Onboarding",
       "source": "content/modules/AF.Module.Onboarding/PlayerExports/权游国度编年史-大帝版/personality_background/beric__贝里·唐德利恩.json",
       "target": "PlayerExports/权游国度编年史-大帝版/personality_background/beric__贝里·唐德利恩.json"
     },
@@ -16304,11 +16287,6 @@
       "owner": "AF.Module.Onboarding",
       "source": "content/modules/AF.Module.Onboarding/PlayerExports/权游国度编年史-大帝版/personality_background/damion_lannister__达米昂·兰尼斯特.json",
       "target": "PlayerExports/权游国度编年史-大帝版/personality_background/damion_lannister__达米昂·兰尼斯特.json"
-    },
-    {
-      "owner": "AF.Module.Onboarding",
-      "source": "content/modules/AF.Module.Onboarding/PlayerExports/权游国度编年史-大帝版/personality_background/enhance_short_files.py",
-      "target": "PlayerExports/权游国度编年史-大帝版/personality_background/enhance_short_files.py"
     },
     {
       "owner": "AF.Module.Onboarding",
@@ -16967,11 +16945,6 @@
     },
     {
       "owner": "AF.Module.Onboarding",
-      "source": "content/modules/AF.Module.Onboarding/PlayerExports/权游国度编年史-大帝版/personality_background/optimize_important_chars.py",
-      "target": "PlayerExports/权游国度编年史-大帝版/personality_background/optimize_important_chars.py"
-    },
-    {
-      "owner": "AF.Module.Onboarding",
       "source": "content/modules/AF.Module.Onboarding/PlayerExports/权游国度编年史-大帝版/personality_background/rodrik_cassel__罗德利克·凯索.json",
       "target": "PlayerExports/权游国度编年史-大帝版/personality_background/rodrik_cassel__罗德利克·凯索.json"
     },
@@ -17036,6 +17009,16 @@
       "target": "ModuleData/Languages/afmemory_ui_strings.xml"
     },
     {
+      "owner": "AF.Module.Llm",
+      "source": "content/modules/AF.Module.Llm/ModuleData/Languages/afllm_ui_strings.xml",
+      "target": "ModuleData/Languages/afllm_ui_strings.xml"
+    },
+    {
+      "owner": "AF.Module.Llm",
+      "source": "content/modules/AF.Module.Llm/ModuleData/Languages/CNs/afllm_ui_strings-zh-CN.xml",
+      "target": "ModuleData/Languages/CNs/afllm_ui_strings-zh-CN.xml"
+    },
+    {
       "owner": "AF.Module.Memory",
       "source": "content/modules/AF.Module.Memory/ModuleData/Languages/CNs/afmemory_ui_strings-zh-CN.xml",
       "target": "ModuleData/Languages/CNs/afmemory_ui_strings-zh-CN.xml"
@@ -17094,55 +17077,64 @@
       "owner": "AF.Module.Economy",
       "source": "content/modules/AF.Module.Economy/ModuleData/GeneratedRpVocabulary.json",
       "target": "ModuleData/GeneratedRpVocabulary.json",
-      "logicalName": "AnimusForge.Defaults.GeneratedRpVocabulary.json"
+      "logicalName": "AnimusForge.Defaults.GeneratedRpVocabulary.json",
+      "localizationRole": "compatibility"
     },
     {
       "owner": "AnimusForge.XihaiAction",
       "source": "content/modules/AnimusForge.XihaiAction/ModuleData/SceneActionVocabulary.xml",
       "target": "ModuleData/SceneActionVocabulary.xml",
-      "logicalName": "AnimusForge.Defaults.SceneActionVocabulary.xml"
+      "logicalName": "AnimusForge.Defaults.SceneActionVocabulary.xml",
+      "localizationRole": "compatibility"
     },
     {
       "owner": "AnimusForge.XihaiAction",
       "source": "content/modules/AnimusForge.XihaiAction/ModuleData/Languages/afscene_catalog_strings.xml",
       "target": "ModuleData/Languages/afscene_catalog_strings.xml",
-      "logicalName": "AnimusForge.SceneActions.Catalog.en.xml"
+      "logicalName": "AnimusForge.SceneActions.Catalog.en.xml",
+      "localizationRole": "bilingual-ui"
     },
     {
       "owner": "AnimusForge.XihaiAction",
       "source": "content/modules/AnimusForge.XihaiAction/ModuleData/Languages/CNs/afscene_catalog_strings-zh-CN.xml",
       "target": "ModuleData/Languages/CNs/afscene_catalog_strings-zh-CN.xml",
-      "logicalName": "AnimusForge.SceneActions.Catalog.zh-CN.xml"
+      "logicalName": "AnimusForge.SceneActions.Catalog.zh-CN.xml",
+      "localizationRole": "bilingual-ui"
     },
     {
       "owner": "AF.Foundation.Localization",
       "source": "content/foundation/AF.Foundation.Localization/ModuleData/LegacySettingsPrompts.json",
       "target": "ModuleData/LegacySettingsPrompts.json",
-      "logicalName": "AnimusForge.Defaults.LegacySettingsPrompts.json"
+      "logicalName": "AnimusForge.Defaults.LegacySettingsPrompts.json",
+      "localizationRole": "compatibility"
     },
     {
       "owner": "AnimusForge.XihaiAction",
       "source": "content/modules/AnimusForge.XihaiAction/ModuleData/Languages/afscene_speech_strings.xml",
       "target": "ModuleData/Languages/afscene_speech_strings.xml",
-      "logicalName": "AnimusForge.SceneActions.Speech.en.xml"
+      "logicalName": "AnimusForge.SceneActions.Speech.en.xml",
+      "localizationRole": "bilingual-ui"
     },
     {
       "owner": "AnimusForge.XihaiAction",
       "source": "content/modules/AnimusForge.XihaiAction/ModuleData/Languages/CNs/afscene_speech_strings-zh-CN.xml",
       "target": "ModuleData/Languages/CNs/afscene_speech_strings-zh-CN.xml",
-      "logicalName": "AnimusForge.SceneActions.Speech.zh-CN.xml"
+      "logicalName": "AnimusForge.SceneActions.Speech.zh-CN.xml",
+      "localizationRole": "bilingual-ui"
     },
     {
       "owner": "AF.Foundation.Localization",
       "source": "content/foundation/AF.Foundation.Localization/ModuleData/TerminalCategories.json",
       "target": "ModuleData/TerminalCategories.json",
-      "logicalName": "AnimusForge.Defaults.TerminalCategories.json"
+      "logicalName": "AnimusForge.Defaults.TerminalCategories.json",
+      "localizationRole": "compatibility"
     },
     {
       "owner": "AF.Module.Economy",
       "source": "content/modules/AF.Module.Economy/ModuleData/EconomyDisplaySources.json",
       "target": "ModuleData/EconomyDisplaySources.json",
-      "logicalName": "AnimusForge.Defaults.EconomyDisplaySources.json"
+      "logicalName": "AnimusForge.Defaults.EconomyDisplaySources.json",
+      "localizationRole": "compatibility"
     },
     {
       "owner": "AF.Module.Diplomacy",
@@ -17158,13 +17150,15 @@
       "owner": "AF.Module.Diplomacy",
       "source": "content/modules/AF.Module.Diplomacy/ModuleData/DiplomacyPromptCompatibility.json",
       "target": "ModuleData/DiplomacyPromptCompatibility.json",
-      "logicalName": "AnimusForge.Diplomacy.PromptCompatibility.json"
+      "logicalName": "AnimusForge.Diplomacy.PromptCompatibility.json",
+      "localizationRole": "compatibility"
     },
     {
       "owner": "AF.Module.Weekly",
       "source": "content/modules/AF.Module.Weekly/ModuleData/WeeklyMaterialCompatibility.json",
       "target": "ModuleData/WeeklyMaterialCompatibility.json",
-      "logicalName": "AnimusForge.Weekly.MaterialCompatibility.json"
+      "logicalName": "AnimusForge.Weekly.MaterialCompatibility.json",
+      "localizationRole": "compatibility"
     },
     {
       "owner": "AF.Module.Weekly",
@@ -17175,12 +17169,471 @@
       "owner": "AF.Module.Social",
       "source": "content/modules/AF.Module.Social/ModuleData/SocialSourceTexts.json",
       "target": "ModuleData/SocialSourceTexts.json",
-      "logicalName": "AnimusForge.Defaults.SocialSourceTexts.json"
+      "logicalName": "AnimusForge.Defaults.SocialSourceTexts.json",
+      "localizationRole": "compatibility"
     },
     {
       "owner": "AF.Module.Social",
       "source": "content/modules/AF.Module.Social/ModuleData/SocialPromptTexts.json",
       "target": "ModuleData/SocialPromptTexts.json"
+    },
+    {
+      "owner": "AF.Module.Conversation",
+      "source": "content/modules/AF.Module.Conversation/ModuleData/ConversationRuntimeCompatibility.json",
+      "target": "ModuleData/ConversationRuntimeCompatibility.json",
+      "logicalName": "AnimusForge.Conversation.RuntimeCompatibility.json",
+      "localizationRole": "compatibility"
+    },
+    {
+      "owner": "AF.Module.Economy",
+      "source": "content/modules/AF.Module.Economy/ModuleData/EconomySourceTexts.json",
+      "target": "ModuleData/EconomySourceTexts.json",
+      "logicalName": "AnimusForge.Defaults.EconomySourceTexts.json",
+      "localizationRole": "compatibility"
+    },
+    {
+      "owner": "AF.Module.Conversation",
+      "source": "content/modules/AF.Module.Conversation/ModuleData/ConversationRuntimePrompts.json",
+      "target": "ModuleData/ConversationRuntimePrompts.json"
+    },
+    {
+      "owner": "AF.Module.Economy",
+      "source": "content/modules/AF.Module.Economy/ModuleData/EconomyPromptTexts.json",
+      "target": "ModuleData/EconomyPromptTexts.json"
+    },
+    {
+      "owner": "AF.Module.Issue",
+      "source": "content/modules/AF.Module.Issue/ModuleData/Languages/afissue_prompt_strings.xml",
+      "target": "ModuleData/Languages/afissue_prompt_strings.xml"
+    },
+    {
+      "owner": "AF.Module.Issue",
+      "source": "content/modules/AF.Module.Issue/ModuleData/Languages/CNs/afissue_prompt_strings-zh-CN.xml",
+      "target": "ModuleData/Languages/CNs/afissue_prompt_strings-zh-CN.xml"
+    },
+    {
+      "owner": "AF.Foundation.Localization",
+      "source": "content/foundation/AF.Foundation.Localization/ModuleData/Languages/afadapter_records_strings.xml",
+      "target": "ModuleData/Languages/afadapter_records_strings.xml"
+    },
+    {
+      "owner": "AF.Foundation.Localization",
+      "source": "content/foundation/AF.Foundation.Localization/ModuleData/Languages/CNs/afadapter_records_strings-zh-CN.xml",
+      "target": "ModuleData/Languages/CNs/afadapter_records_strings-zh-CN.xml"
+    },
+    {
+      "owner": "AF.Foundation.Localization",
+      "source": "content/foundation/AF.Foundation.Localization/ModuleData/Languages/afadapter_scene_strings.xml",
+      "target": "ModuleData/Languages/afadapter_scene_strings.xml"
+    },
+    {
+      "owner": "AF.Foundation.Localization",
+      "source": "content/foundation/AF.Foundation.Localization/ModuleData/Languages/CNs/afadapter_scene_strings-zh-CN.xml",
+      "target": "ModuleData/Languages/CNs/afadapter_scene_strings-zh-CN.xml"
+    },
+    {
+      "owner": "AF.Foundation.Localization",
+      "source": "content/foundation/AF.Foundation.Localization/ModuleData/AdapterSceneTexts.zh-CN.json",
+      "target": "ModuleData/AdapterSceneTexts.json"
+    },
+    {
+      "owner": "AF.Module.Weekly",
+      "source": "content/modules/AF.Module.Weekly/ModuleData/Languages/afweekly_bulletin_strings.xml",
+      "target": "ModuleData/Languages/afweekly_bulletin_strings.xml"
+    },
+    {
+      "owner": "AF.Module.Weekly",
+      "source": "content/modules/AF.Module.Weekly/ModuleData/Languages/CNs/afweekly_bulletin_strings-zh-CN.xml",
+      "target": "ModuleData/Languages/CNs/afweekly_bulletin_strings-zh-CN.xml"
+    },
+    {
+      "owner": "AF.Module.Weekly",
+      "source": "content/modules/AF.Module.Weekly/ModuleData/WorldBulletinPromptTexts.json",
+      "target": "ModuleData/WorldBulletinPromptTexts.json"
+    },
+    {
+      "owner": "PolicySystem",
+      "source": "content/modules/PolicySystem/ModuleData/PolicyMiscPromptTexts.json",
+      "target": "ModuleData/PolicyMiscPromptTexts.json"
+    },
+    {
+      "owner": "PolicySystem",
+      "source": "content/modules/PolicySystem/ModuleData/Languages/afpol_misc_strings.xml",
+      "target": "ModuleData/Languages/afpol_misc_strings.xml"
+    },
+    {
+      "owner": "PolicySystem",
+      "source": "content/modules/PolicySystem/ModuleData/Languages/CNs/afpol_misc_strings-zh-CN.xml",
+      "target": "ModuleData/Languages/CNs/afpol_misc_strings-zh-CN.xml"
+    },
+    {
+      "owner": "AF.Module.Diplomacy",
+      "source": "content/modules/AF.Module.Diplomacy/ModuleData/Languages/afdip_misc_strings.xml",
+      "target": "ModuleData/Languages/afdip_misc_strings.xml"
+    },
+    {
+      "owner": "AF.Module.Diplomacy",
+      "source": "content/modules/AF.Module.Diplomacy/ModuleData/Languages/CNs/afdip_misc_strings-zh-CN.xml",
+      "target": "ModuleData/Languages/CNs/afdip_misc_strings-zh-CN.xml"
+    },
+    {
+      "owner": "AF.Module.Diplomacy",
+      "source": "content/modules/AF.Module.Diplomacy/ModuleData/DiplomacyMiscPromptTexts.json",
+      "target": "ModuleData/DiplomacyMiscPromptTexts.json"
+    },
+    {
+      "owner": "AF.Module.Prompt",
+      "source": "content/modules/AF.Module.Prompt/ModuleData/PromptComposerTexts.zh-CN.json",
+      "target": "ModuleData/PromptComposerTexts.json"
+    },
+    {
+      "owner": "AF.Module.Duel",
+      "source": "content/modules/AF.Module.Duel/ModuleData/Languages/afduel_strings.xml",
+      "target": "ModuleData/Languages/afduel_strings.xml"
+    },
+    {
+      "owner": "AF.Module.Duel",
+      "source": "content/modules/AF.Module.Duel/ModuleData/Languages/CNs/afduel_strings-zh-CN.xml",
+      "target": "ModuleData/Languages/CNs/afduel_strings-zh-CN.xml"
+    },
+    {
+      "owner": "AnimusForge.Coup",
+      "source": "content/modules/AnimusForge.Coup/ModuleData/Languages/afcoup_strings.xml",
+      "target": "ModuleData/Languages/afcoup_strings.xml"
+    },
+    {
+      "owner": "AnimusForge.Coup",
+      "source": "content/modules/AnimusForge.Coup/ModuleData/Languages/CNs/afcoup_strings-zh-CN.xml",
+      "target": "ModuleData/Languages/CNs/afcoup_strings-zh-CN.xml"
+    },
+    {
+      "owner": "AF.Module.WorldMap",
+      "source": "content/modules/AF.Module.WorldMap/ModuleData/WorldMapCommandPromptTexts.json",
+      "target": "ModuleData/WorldMapCommandPromptTexts.json"
+    },
+    {
+      "owner": "AF.Module.Knowledge",
+      "source": "content/modules/AF.Module.Knowledge/ModuleData/KnowledgeRagPromptTexts.json",
+      "target": "ModuleData/KnowledgeRagPromptTexts.json"
+    },
+    {
+      "owner": "AF.Module.Persona",
+      "source": "content/modules/AF.Module.Persona/ModuleData/PersonaPromptTexts.json",
+      "target": "ModuleData/PersonaPromptTexts.json"
+    },
+    {
+      "owner": "AF.Module.Persona",
+      "source": "content/modules/AF.Module.Persona/ModuleData/Languages/afpersona_ui_strings.xml",
+      "target": "ModuleData/Languages/afpersona_ui_strings.xml"
+    },
+    {
+      "owner": "AF.Module.Persona",
+      "source": "content/modules/AF.Module.Persona/ModuleData/Languages/CNs/afpersona_ui_strings-zh-CN.xml",
+      "target": "ModuleData/Languages/CNs/afpersona_ui_strings-zh-CN.xml"
+    },
+    {
+      "owner": "AF.Module.Knowledge",
+      "source": "content/modules/AF.Module.Knowledge/ModuleData/WorldEntityPromptTexts.json",
+      "target": "ModuleData/WorldEntityPromptTexts.json"
+    },
+    {
+      "owner": "AnimusForge.Illustrator",
+      "source": "content/modules/AnimusForge.Illustrator/ModuleData/IllustratorPromptTexts.json",
+      "target": "ModuleData/IllustratorPromptTexts.json"
+    },
+    {
+      "owner": "AnimusForge.Illustrator",
+      "source": "content/modules/AnimusForge.Illustrator/ModuleData/IllustratorCompatibilityTexts.json",
+      "target": "ModuleData/IllustratorCompatibilityTexts.json",
+      "localizationRole": "compatibility"
+    },
+    {
+      "owner": "AF.GameAdapter.Bannerlord",
+      "source": "content/foundation/AF.Foundation.Localization/ModuleData/AdapterRecordPromptTexts.json",
+      "target": "ModuleData/AdapterRecordPromptTexts.json"
+    },
+    {
+      "owner": "AF.GameAdapter.Bannerlord",
+      "source": "content/foundation/AF.Foundation.Localization/ModuleData/AdapterRecordCompatibility.json",
+      "target": "ModuleData/AdapterRecordCompatibility.json",
+      "logicalName": "AnimusForge.Adapter.RecordCompatibility.json",
+      "localizationRole": "compatibility"
+    },
+    {
+      "owner": "PolicySystem",
+      "source": "content/modules/PolicySystem/ModuleData/PolicyGenerationPromptTexts.json",
+      "target": "ModuleData/PolicyGenerationPromptTexts.json"
+    },
+    {
+      "owner": "AF.GameAdapter.Bannerlord",
+      "source": "content/foundation/AF.Foundation.Localization/ModuleData/AdapterSceneCompatibility.json",
+      "target": "ModuleData/AdapterSceneCompatibility.json",
+      "logicalName": "AnimusForge.Adapter.SceneCompatibility.json",
+      "localizationRole": "compatibility"
+    },
+    {
+      "owner": "AF.GameAdapter.Bannerlord",
+      "source": "content/foundation/AF.Foundation.Localization/ModuleData/AdapterPromptCaptureCompatibility.json",
+      "target": "ModuleData/AdapterPromptCaptureCompatibility.json",
+      "logicalName": "AnimusForge.AdapterPromptCapture.Compatibility.json",
+      "localizationRole": "compatibility"
+    },
+    {
+      "owner": "AF.GameAdapter.Bannerlord",
+      "source": "content/foundation/AF.Foundation.Localization/ModuleData/AdapterPromptCapture.zh-CN.json",
+      "target": "ModuleData/AdapterPromptCapture.json"
+    },
+    {
+      "owner": "AnimusForge.SiegeAftermathIntervention",
+      "source": "content/modules/AnimusForge.SiegeAftermathIntervention/ModuleData/GcczTownPrompt.en.json",
+      "target": "ModuleData/GcczTownPrompt.en.json",
+      "logicalName": "AnimusForge.Defaults.GcczTownPrompt.en.json",
+      "localizationRole": "bilingual-ui"
+    },
+    {
+      "owner": "AnimusForge.SiegeAftermathIntervention",
+      "source": "content/modules/AnimusForge.SiegeAftermathIntervention/ModuleData/GcczTownEntryPresentation.en.json",
+      "target": "ModuleData/GcczTownEntryPresentation.en.json",
+      "logicalName": "AnimusForge.Defaults.GcczTownEntryPresentation.en.json",
+      "localizationRole": "bilingual-ui"
+    },
+    {
+      "owner": "AnimusForge.SiegeAftermathIntervention",
+      "source": "content/modules/AnimusForge.SiegeAftermathIntervention/ModuleData/GcczTownActionPresentation.en.json",
+      "target": "ModuleData/GcczTownActionPresentation.en.json",
+      "logicalName": "AnimusForge.Defaults.GcczTownActionPresentation.en.json",
+      "localizationRole": "bilingual-ui"
+    },
+    {
+      "owner": "AnimusForge.SiegeAftermathIntervention",
+      "source": "content/modules/AnimusForge.SiegeAftermathIntervention/ModuleData/GcczTownHiddenResidents.en.json",
+      "target": "ModuleData/GcczTownHiddenResidents.en.json",
+      "logicalName": "AnimusForge.Defaults.GcczTownHiddenResidents.en.json",
+      "localizationRole": "bilingual-ui"
+    },
+    {
+      "owner": "AnimusForge.SiegeAftermathIntervention",
+      "source": "content/modules/AnimusForge.SiegeAftermathIntervention/ModuleData/GcczTownManual.en.json",
+      "target": "ModuleData/GcczTownManual.en.json",
+      "logicalName": "AnimusForge.Defaults.GcczTownManual.en.json",
+      "localizationRole": "bilingual-ui"
+    },
+    {
+      "owner": "AnimusForge.SiegeAftermathIntervention",
+      "source": "content/modules/AnimusForge.SiegeAftermathIntervention/ModuleData/CastleAftermathCompatibility.json",
+      "target": "ModuleData/CastleAftermathCompatibility.json",
+      "logicalName": "AnimusForge.Defaults.CastleAftermathCompatibility.json",
+      "localizationRole": "compatibility"
+    },
+    {
+      "owner": "AnimusForge.SiegeAftermathIntervention",
+      "source": "content/modules/AnimusForge.SiegeAftermathIntervention/ModuleData/SiegeAftermathCompatibility.json",
+      "target": "ModuleData/SiegeAftermathCompatibility.json",
+      "logicalName": "AnimusForge.Defaults.SiegeAftermathCompatibility.json",
+      "localizationRole": "compatibility"
+    },
+    {
+      "owner": "AnimusForge.SiegeAftermathIntervention",
+      "source": "content/modules/AnimusForge.SiegeAftermathIntervention/ModuleData/GcczTownPrompt.zh-CN.json",
+      "target": "ModuleData/GcczTownPrompt.json"
+    },
+    {
+      "owner": "AF.Module.Kingdom",
+      "source": "content/modules/AF.Module.Kingdom/ModuleData/KingdomCivilWarPromptTexts.json",
+      "target": "ModuleData/KingdomCivilWarPromptTexts.json"
+    },
+    {
+      "owner": "AF.Module.Kingdom",
+      "source": "content/modules/AF.Module.Kingdom/ModuleData/KingdomCivilWarCompatibility.json",
+      "target": "ModuleData/KingdomCivilWarCompatibility.json",
+      "localizationRole": "compatibility"
+    },
+    {
+      "owner": "AF.Module.Diplomacy",
+      "source": "content/modules/AF.Module.Diplomacy/ModuleData/DiplomacyMiscCompatibility.json",
+      "target": "ModuleData/DiplomacyMiscCompatibility.json",
+      "localizationRole": "compatibility"
+    },
+    {
+      "owner": "PolicySystem",
+      "source": "content/modules/PolicySystem/ModuleData/PolicyCompatibilityTexts.json",
+      "target": "ModuleData/PolicyCompatibilityTexts.json",
+      "localizationRole": "compatibility"
+    },
+    {
+      "owner": "AF.Module.Weekly",
+      "source": "content/modules/AF.Module.Weekly/ModuleData/WorldBulletinCompatibility.json",
+      "target": "ModuleData/WorldBulletinCompatibility.json",
+      "logicalName": "AnimusForge.Weekly.WorldBulletinCompatibility.json",
+      "localizationRole": "compatibility"
+    },
+    {
+      "owner": "AF.Module.Llm",
+      "source": "content/modules/AF.Module.Llm/ModuleData/LlmPromptTexts.json",
+      "target": "ModuleData/LlmPromptTexts.json"
+    },
+    {
+      "owner": "AF.Module.Llm",
+      "source": "content/modules/AF.Module.Llm/ModuleData/LlmSourceTexts.json",
+      "target": "ModuleData/LlmSourceTexts.json",
+      "logicalName": "AnimusForge.Llm.RuntimeSources.json",
+      "localizationRole": "compatibility"
+    },
+    {
+      "owner": "AF.Module.Issue",
+      "source": "content/modules/AF.Module.Issue/ModuleData/IssuePromptTexts.json",
+      "target": "ModuleData/IssuePromptTexts.json"
+    },
+    {
+      "owner": "AF.Module.Issue",
+      "source": "content/modules/AF.Module.Issue/ModuleData/IssueDisplayMatchSources.xml",
+      "target": "ModuleData/IssueDisplayMatchSources.xml",
+      "logicalName": "AnimusForge.Issue.DisplayMatchSources.xml",
+      "localizationRole": "compatibility"
+    },
+    {
+      "owner": "AF.Module.Memory",
+      "source": "content/modules/AF.Module.Memory/ModuleData/MemorySourceTexts.json",
+      "target": "ModuleData/MemorySourceTexts.json",
+      "logicalName": "AnimusForge.Memory.SourceTexts.json",
+      "localizationRole": "compatibility"
+    },
+    {
+      "owner": "AF.Module.Memory",
+      "source": "content/modules/AF.Module.Memory/ModuleData/MemoryPromptTexts.json",
+      "target": "ModuleData/MemoryPromptTexts.json"
+    },
+    {
+      "owner": "AF.Module.Prompt",
+      "source": "content/modules/AF.Module.Prompt/ModuleData/PromptCompatibility.json",
+      "target": "ModuleData/PromptCompatibility.json",
+      "logicalName": "AnimusForge.Prompt.Compatibility.json",
+      "localizationRole": "compatibility"
+    },
+    {
+      "owner": "AF.Module.Knowledge",
+      "source": "content/modules/AF.Module.Knowledge/ModuleData/KnowledgeSourceTexts.json",
+      "target": "ModuleData/KnowledgeSourceTexts.json",
+      "logicalName": "AnimusForge.Knowledge.SourceTexts.json",
+      "localizationRole": "compatibility"
+    },
+    {
+      "owner": "AF.Module.Onboarding",
+      "source": "content/modules/AF.Module.Onboarding/ModuleData/OnboardingPromptTexts.json",
+      "target": "ModuleData/OnboardingPromptTexts.json"
+    },
+    {
+      "owner": "AF.Module.Prompt",
+      "source": "content/modules/AF.Module.Prompt/ModuleData/ExecutionRulePrompts.json",
+      "target": "ModuleData/ExecutionRulePrompts.json"
+    },
+    {
+      "owner": "AF.Module.Taunt",
+      "source": "content/modules/AF.Module.Taunt/ModuleData/TauntSourceTexts.json",
+      "target": "ModuleData/TauntSourceTexts.json",
+      "logicalName": "AnimusForge.Taunt.RuntimeSources.json",
+      "localizationRole": "compatibility"
+    },
+    {
+      "owner": "AF.Module.Taunt",
+      "source": "content/modules/AF.Module.Taunt/ModuleData/TauntPromptTexts.json",
+      "target": "ModuleData/TauntPromptTexts.json"
+    },
+    {
+      "owner": "AF.Module.Prompt",
+      "source": "content/modules/AF.Module.Prompt/ModuleData/Defaults/PreprocessPrompts.json",
+      "target": "ModuleData/Defaults/PreprocessPrompts.json"
+    },
+    {
+      "owner": "AF.Module.Prompt",
+      "source": "content/modules/AF.Module.Prompt/ModuleData/Defaults/RpItemIntroductionPrompts.json",
+      "target": "ModuleData/Defaults/RpItemIntroductionPrompts.json"
+    },
+    {
+      "owner": "AF.Module.Duel",
+      "source": "content/modules/AF.Module.Duel/ModuleData/DuelPromptTexts.json",
+      "target": "ModuleData/DuelPromptTexts.json"
+    },
+    {
+      "owner": "AF.Module.Encounter",
+      "source": "content/modules/AF.Module.Encounter/ModuleData/EncounterPromptTexts.json",
+      "target": "ModuleData/EncounterPromptTexts.json"
+    },
+    {
+      "owner": "AnimusForge.Coup",
+      "source": "content/modules/AnimusForge.Coup/ModuleData/CoupPromptTexts.json",
+      "target": "ModuleData/CoupPromptTexts.json"
+    },
+    {
+      "owner": "AnimusForge.Coup",
+      "source": "content/modules/AnimusForge.Coup/ModuleData/CoupSourceTexts.json",
+      "target": "ModuleData/CoupSourceTexts.json",
+      "localizationRole": "compatibility"
+    },
+    {
+      "owner": "AF.Foundation.Localization",
+      "source": "content/foundation/AF.Foundation.Localization/ModuleData/McmPromptDefaults.zh-CN.json",
+      "target": "ModuleData/McmPromptDefaults.json"
+    },
+    {
+      "owner": "AF.Foundation.Localization",
+      "source": "content/foundation/AF.Foundation.Localization/ModuleData/McmPromptSourceCompatibility.json",
+      "target": "ModuleData/McmPromptSourceCompatibility.json",
+      "logicalName": "AnimusForge.Mcm.PromptSourceCompatibility.json",
+      "localizationRole": "compatibility"
+    },
+    {
+      "owner": "AF.Foundation.Localization",
+      "source": "content/foundation/AF.Foundation.Localization/ModuleData/RuntimeStaleRequestCompatibility.txt",
+      "target": "ModuleData/RuntimeStaleRequestCompatibility.txt",
+      "logicalName": "AnimusForge.Foundation.StaleRequestError.txt",
+      "localizationRole": "compatibility"
+    },
+    {
+      "owner": "AF.Module.Duel",
+      "source": "content/modules/AF.Module.Duel/ModuleData/DuelFactTexts.json",
+      "target": "ModuleData/DuelFactTexts.json",
+      "localizationRole": "compatibility"
+    },
+    {
+      "owner": "AF.Module.WorldMap",
+      "source": "content/modules/AF.Module.WorldMap/ModuleData/WorldMapCompatibility.json",
+      "target": "ModuleData/WorldMapCompatibility.json",
+      "localizationRole": "compatibility"
+    },
+    {
+      "owner": "AF.Module.Prompt",
+      "source": "content/modules/AF.Module.Prompt/ModuleData/PromptRetrievalCompatibility.json",
+      "target": "ModuleData/PromptRetrievalCompatibility.json",
+      "logicalName": "AnimusForge.Prompt.RetrievalCompatibility.json",
+      "localizationRole": "compatibility"
+    },
+    {
+      "owner": "AF.Module.Prompt",
+      "source": "content/modules/AF.Module.Prompt/ModuleData/PromptRetrievalTexts.json",
+      "target": "ModuleData/PromptRetrievalTexts.json"
+    },
+    {
+      "owner": "PolicySystem",
+      "source": "content/modules/PolicySystem/ModuleData/PolicyNpcCompatibility.json",
+      "target": "ModuleData/PolicyNpcCompatibility.json",
+      "localizationRole": "compatibility"
+    },
+    {
+      "owner": "PolicySystem",
+      "source": "content/modules/PolicySystem/ModuleData/PolicyCoreManagementCompatibility.json",
+      "target": "ModuleData/PolicyCoreManagementCompatibility.json",
+      "localizationRole": "compatibility"
+    },
+    {
+      "owner": "PolicySystem",
+      "source": "content/modules/PolicySystem/ModuleData/PolicyCoreManagementPromptTexts.json",
+      "target": "ModuleData/PolicyCoreManagementPromptTexts.json"
+    },
+    {
+      "owner": "AF.Foundation.Localization",
+      "source": "content/foundation/AF.Foundation.Localization/ModuleData/McmKnownPromptDefaults.json",
+      "target": "ModuleData/McmKnownPromptDefaults.json"
     }
   ]
 }

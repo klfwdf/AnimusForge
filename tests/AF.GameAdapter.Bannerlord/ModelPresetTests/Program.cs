@@ -14,12 +14,6 @@ using HarmonyLib;
 namespace AnimusForge
 {
     internal static class Logger { public static void Log(string area,string text) { throw new Exception(area+": "+text); } }
-    internal static class AnimusForgeDataPaths
-    {
-        public static string GetCurrentRoot()=>Path.Combine(Environment.CurrentDirectory,"data");
-        public static string GetCacheDirectory(string root)=>Path.Combine(root,"Cache");
-        public static void EnsureWritableRoot(string root)=>Directory.CreateDirectory(root);
-    }
 }
 static class Program
 {
@@ -57,6 +51,10 @@ static class Program
     }
     static int Main()
     {
+        string module = Path.Combine(Environment.CurrentDirectory, "module-fixture", "AnimusForge");
+        Directory.CreateDirectory(Path.Combine(module, "ModuleData"));
+        File.WriteAllText(Path.Combine(module, "SubModule.xml"), "<Module><Id value=\"AnimusForge\" /></Module>");
+        Environment.SetEnvironmentVariable("ANIMUSFORGE_DATA_ROOT", module);
         Cache(false);var s=new DuelSettings();
         // Main getter hydrates all five fields before AuxiliaryModelName is loaded.
         _=s.MainModelDropdown;

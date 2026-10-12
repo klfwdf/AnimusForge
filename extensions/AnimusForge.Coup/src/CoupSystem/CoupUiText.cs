@@ -9,18 +9,38 @@ namespace AnimusForge.CoupSystem;
 /// </summary>
 internal static class CoupUiText
 {
+    // Resolve the template once, then insert display data without re-parsing its braces.
+    private static readonly System.Text.RegularExpressions.Regex LiteralValues = new System.Text.RegularExpressions.Regex(@"AFSWEEPLITERAL([0-9]+)END", System.Text.RegularExpressions.RegexOptions.CultureInvariant);
+
     private static string Text(string id, string fallback, params (string Name, object Value)[] variables)
     {
         var text = new TextObject("{=" + id + "}" + fallback);
         if (variables != null)
-        {
-            foreach ((string name, object value) in variables)
-                text.SetTextVariable(name, value?.ToString() ?? string.Empty);
-        }
-        return text.ToString();
+        for (int i = 0; i < variables.Length; i++)
+            if (variables[i].Value is TextObject nested)
+                text.SetTextVariable(variables[i].Name, nested);
+            else
+                text.SetTextVariable(variables[i].Name, "AFSWEEPLITERAL" + i.ToString(System.Globalization.CultureInfo.InvariantCulture) + "END");
+        return LiteralValues.Replace(text.ToString(), match => variables[int.Parse(match.Groups[1].Value, System.Globalization.CultureInfo.InvariantCulture)].Value?.ToString() ?? string.Empty);
     }
 
     internal static string Prefix => Text("AF_COUP_UI_PREFIX", "[Coup] ");
+
+    internal static string MinimumTroopsConflict(int minimumTroops, int streetLimit)
+        => Text("AF_COUPX_MinimumTroopsConflict", "Coup configuration conflict: minimum assault party size {MIN} exceeds street limit {LIMIT}; please adjust in MCM.",
+            ("MIN", minimumTroops), ("LIMIT", streetLimit));
+
+    internal static string InsufficientTier(int current, int required)
+        => Text("AF_COUPX_InsufficientTier", "Clan tier insufficient: {CURRENT}/{REQUIRED} tier.",
+            ("CURRENT", current), ("REQUIRED", required));
+
+    internal static string InsufficientInfluence(string current, int required)
+        => Text("AF_COUPX_InsufficientInfluence", "Influence insufficient: {CURRENT}/{REQUIRED} (checked only, not spent).",
+            ("CURRENT", current), ("REQUIRED", required));
+
+    internal static string InsufficientRegulars(int required, int current)
+        => Text("AF_COUPX_InsufficientTroops", "At least {REQUIRED} healthy regular soldiers needed, with 1 person left as reserve; currently {CURRENT} people.",
+            ("REQUIRED", required), ("CURRENT", current));
 
     internal static string NamingProgressTitle => Text("AF_COUP_UI_NAMING_PROGRESS_TITLE", "Generating post-coup rebellion name");
 
@@ -32,7 +52,7 @@ internal static class CoupUiText
     internal static string NamingFailureBody(string detail)
         => Text("AF_COUP_UI_NAMING_FAILURE_BODY",
             "AF did not return a usable kingdom name and description. No clans have moved or founded a kingdom yet. You can retry the existing naming service or skip this rebellion attempt.{DETAIL}",
-            ("DETAIL", string.IsNullOrEmpty(detail) ? string.Empty : "\n" + detail));
+            ("DETAIL", string.IsNullOrEmpty(detail) ? string.Empty : "\n" + LocalizeReason(detail)));
 
     internal static string NamingRetry => Text("AF_COUP_UI_NAMING_RETRY", "Generate Again");
 
@@ -185,11 +205,209 @@ internal static class CoupUiText
             : "The coup succeeded: {PLAYER} took the throne of {KINGDOM} and seized {TOWN}; you chose not to capture the former ruler.",
             ("PLAYER", player), ("KINGDOM", kingdom), ("TOWN", town));
     internal static string ReportFailure(bool atWar)
-        => Text("AF_COUP_UI_REPORT_FAILURE", atWar
+        => Text(atWar ? "AF_COUP_UI_REPORT_FAILURE" : "AF_COUP_UI_REPORT_FAILURE_NO_WAR", atWar
             ? "The coup failed; the throne was not taken. The clan left the former kingdom with its existing land and went to war with it."
             : "The coup failed; the throne was not taken. The clan left the former kingdom with its existing land.");
     internal static string ReportCasualties(int alliedKilled, int alliedWounded, int defenderKilled, int defenderWounded)
         => Text("AF_COUP_UI_REPORT_CASUALTIES", "Recorded casualties: assault party {ALLY_KILLED} killed, {ALLY_WOUNDED} wounded; defenders {DEF_KILLED} killed, {DEF_WOUNDED} wounded.",
             ("ALLY_KILLED", alliedKilled), ("ALLY_WOUNDED", alliedWounded), ("DEF_KILLED", defenderKilled), ("DEF_WOUNDED", defenderWounded));
 
+
+    internal static string WarRetryHint => Text("AF_COUPX_WarRetryHint", " You can select 'Retry Post-Coup Civil War Registration' from the town menu; the rebel kingdom will not be created again.");
+    internal static string NamingContext => Text("AF_COUPX_NamingContext", "\nRebellion background: the player just seized the throne through armed coup; the rebelling clan is the former ruler's clan or clans more loyal to the former ruler; this is a rebellion against usurpation and does not require negative relations with the new ruler. Use this as the background for kingdom naming and description.");
+    internal static string RestorationContext => Text("AF_COUPX_RestorationContext", "\nFormer ruler has been released; this war's goal is restoration of the old dynasty; only rebel victory can restore, peace negotiations do not restore.");
+    internal static string CapturedContext => Text("AF_COUPX_CapturedContext", "\nFormer ruler is captured; the former ruler and their clan do not participate in this civil war; do not claim the former ruler personally raised rebellion.");
+    internal static string NamingLogTarget(string clan) => Text("AF_COUPX_NamingLogTarget", "Post-coup rebellion kingdom naming - {CLAN}", ("CLAN", clan ?? string.Empty));
+    internal static string NpcFactSuccess(string player, string place) => Text("AF_COUPX_NpcFactSuccess", "{PLAYER} launched an armed coup in {PLACE} and defeated you; this coup has succeeded.", ("PLAYER", player), ("PLACE", place));
+    internal static string NpcFactFailure(string player, string place) => Text("AF_COUPX_NpcFactFailure", "{PLAYER} launched an armed coup against you in {PLACE}, but the assault failed and then withdrew the reserve forces.", ("PLAYER", player), ("PLACE", place));
+    internal static string PlayerFactSuccess(string king, string place) => Text("AF_COUPX_PlayerFactSuccess", "You launched an armed coup against {KING} in {PLACE} and succeeded.", ("KING", king), ("PLACE", place));
+    internal static string PlayerFactFailure(string king, string place) => Text("AF_COUPX_PlayerFactFailure", "You launched an armed coup against {KING} in {PLACE} and failed; reserve forces withdrew.", ("KING", king), ("PLACE", place));
+    internal static string WeeklyTitle(string settlement) => Text("AF_COUPX_WeeklyTitle", "Armed Coup - {SETTLEMENT}", ("SETTLEMENT", settlement));
+    internal static string BulletinTimeLabel(string date) => Text("AF_COUPX_BulletinTimeLabel", "Occurrence time: {DATE}", ("DATE", date));
+    internal static string DefaultOriginalKingdom => Text("AF_COUPX_DefaultOriginalKingdom", "the original kingdom");
+
+        private static readonly (string SourceKey, string UiKey, string Fallback)[] ReasonDefinitions = new[]
+    {
+        ("PoliticalIncomplete", "AF_COUPX_PoliticalIncomplete", "Coup victory status or former ruler's disposition incomplete; political settlement forbidden."),
+        ("CampaignIdentityChanged", "AF_COUPX_CampaignIdentityChanged", "Campaign identity changed; stopping automatic political settlement."),
+        ("ThroneTransferFailed", "AF_COUPX_ThroneTransferFailed", "Throne transfer not effective."),
+        ("TownTransferFailed", "AF_COUPX_TownTransferFailed", "Town transfer not effective."),
+        ("CaptivityUnavailable", "AF_COUPX_CaptivityUnavailable", "Captivity protection unavailable; please restore compatibility components before settlement."),
+        ("KingCaptivityFailed", "AF_COUPX_KingCaptivityFailed", "Former ruler's captivity not effective."),
+        ("EventSeamUnavailable", "AF_COUPX_EventSeamUnavailable", "AF event and rebellion system unavailable."),
+        ("NewBattleStarted", "AF_COUPX_NewBattleStarted", "New campaign battle has started; cannot automatically settle old coup."),
+        ("DefectionInconsistent", "AF_COUPX_DefectionInconsistent", "Defection or war declaration results inconsistent; stopping subsequent settlement."),
+        ("FailureFactUnavailable", "AF_COUPX_FailureFactUnavailable", "Coup failure facts temporarily cannot be written."),
+        ("ReceptionPartyUnavailable", "AF_COUPX_ReceptionPartyUnavailable", "Reception party unavailable; cannot confirm withdrawal."),
+        ("EncounterChanged", "AF_COUPX_EncounterChanged", "Current encounter has changed; cannot execute withdrawal for another encounter."),
+        ("PartyNotExited", "AF_COUPX_PartyNotExited", "Reception party has not completely exited town encounter."),
+        ("BattleEndedEarly", "AF_COUPX_BattleEndedEarly", "Coup battle ended prematurely."),
+        ("PlayerDown", "AF_COUPX_PlayerDown", "Player has fallen."),
+        ("VanillaNoPlayer", "AF_COUPX_VanillaNoPlayer", "Vanilla scene did not spawn player."),
+        ("ExitDefeat", "AF_COUPX_ExitDefeat", "Withdrew from coup battle through scene exit."),
+        ("MissionContextChanged", "AF_COUPX_MissionContextChanged", "Coup mission context has changed."),
+        ("NoHallEntrance", "AF_COUPX_NoHallEntrance", "Street has no usable real lord's hall entrance."),
+        ("NoKingOrThrone", "AF_COUPX_NoKingOrThrone", "Lord's hall has no king or valid throne/guard spawn point."),
+        ("KingSpawnFailed", "AF_COUPX_KingSpawnFailed", "King cannot spawn in hall."),
+        ("KingLeftHall", "AF_COUPX_KingLeftHall", "Target king abnormally left hall; coup result not yet established."),
+        ("CaptivityProtectionUnavailable", "AF_COUPX_CaptivityProtectionUnavailable", "Coup captivity protection unavailable, or target not yet captured by player."),
+        ("SeamNotReady", "AF_COUPX_SeamNotReady", "AF rebellion seam, save, or kingdom not ready."),
+        ("CivilWarDisabled", "AF_COUPX_CivilWarDisabled", "Civil war system is disabled; skipping post-coup civil war."),
+        ("NoEligibleLoyalist", "AF_COUPX_NoEligibleLoyalist", "Among the former ruler's clan and clans more loyal to the former ruler, no candidates currently meet the conditions to raise an armed rebellion with land."),
+        ("StabilityDisabled", "AF_COUPX_StabilityDisabled", "AF kingdom stability and rebellion system is disabled; skipping post-coup rebellion."),
+        ("ImmunityEnabled", "AF_COUPX_ImmunityEnabled", "Player kingdom rebellion immunity is enabled; skipping post-coup rebellion."),
+        ("IdentityMissing", "AF_COUPX_IdentityMissing", "Ruler identity before or after the coup is missing; cannot determine support relationships."),
+        ("FormerClanExcluded", "AF_COUPX_FormerClanExcluded", "Former ruler is captured; their clan will not participate in this civil war."),
+        ("SupportInsufficient", "AF_COUPX_SupportInsufficient", "Support for the former ruler does not exceed support for the new ruler."),
+        ("StabilityEndSession", "AF_COUPX_StabilityEndSession", "AF kingdom stability and rebellion system is disabled; this session ends."),
+        ("ImmunityEndSession", "AF_COUPX_ImmunityEndSession", "Player kingdom rebellion immunity is enabled; this session ends."),
+        ("ContextChanged", "AF_COUPX_ContextChanged", "Kingdom, ruler, or original candidate clan leader has changed; this session ends without re-selecting clans."),
+        ("SupportChanged", "AF_COUPX_SupportChanged", "Original candidate clan has changed support for the new and old rulers; will not raise rebellion this time."),
+        ("CivilWarEndSession", "AF_COUPX_CivilWarEndSession", "Civil war system is disabled; will not create rebels without settlement attribution this time."),
+        ("FormerClanIneligible", "AF_COUPX_FormerClanIneligible", "Former ruler's clan can no longer participate in restoration civil war; will not raise rebellion this time."),
+        ("ParticipantsUnavailable", "AF_COUPX_ParticipantsUnavailable", "Kingdom already founded, but civil war participant records are temporarily unavailable."),
+        ("DynastyNotJoined", "AF_COUPX_DynastyNotJoined", "Former ruler's clan has not yet joined the restoration rebels."),
+        ("NamingEmpty", "AF_COUPX_NamingEmpty", "AF naming result is empty."),
+        ("ExecutionConsumed", "AF_COUPX_ExecutionConsumed", "Post-coup rebellion execution starting; this assessment has been consumed."),
+        ("OutcomeSeamNotReady", "AF_COUPX_OutcomeSeamNotReady", "AF coup fact seam or save not ready."),
+        ("OutcomeIncomplete", "AF_COUPX_OutcomeIncomplete", "Coup result has not completed actual settlement; cannot register final facts."),
+        ("OutcomeMismatch", "AF_COUPX_OutcomeMismatch", "Same coup ID has different facts; refusing to overwrite repeatedly."),
+        ("MemoryIdentityChanged", "AF_COUPX_MemoryIdentityChanged", "Coup memory recovery identity changed; refusing to write repeatedly."),
+        ("BulletinRejected", "AF_COUPX_BulletinRejected", "Coup bulletin fact not yet accepted."),
+        ("FactsRegistered", "AF_COUPX_FactsRegistered", "Coup facts have been registered to action, memory, weekly, and bulletin entries according to current settings."),
+        ("SetsSeamNotReady", "AF_COUPX_SetsSeamNotReady", "AF SETS compatibility bridge not ready."),
+        ("CoupOptionsCorrupted", "AF_COUPX_CoupOptionsCorrupted", "Coup battle parameters corrupted."),
+        ("SetsLogicNotInScene", "AF_COUPX_SetsLogicNotInScene", "SETS town entry logic not in current scene.")
+    };
+
+    private static readonly System.Lazy<System.Collections.Generic.Dictionary<string, (string UiKey, string Fallback)>> ReasonLookup =
+        new System.Lazy<System.Collections.Generic.Dictionary<string, (string UiKey, string Fallback)>>(() =>
+        {
+            var map = new System.Collections.Generic.Dictionary<string, (string UiKey, string Fallback)>(System.StringComparer.Ordinal);
+            foreach (var def in ReasonDefinitions)
+            {
+                string raw = CoupSourceTexts.Get(def.SourceKey);
+                map[raw] = (def.UiKey, def.Fallback);
+                map[def.Fallback] = (def.UiKey, def.Fallback);
+            }
+            return map;
+        });
+
+    private static readonly System.Lazy<string[]> WarRetryHints = new System.Lazy<string[]>(() => new[] {
+            CoupSourceTexts.Get("WarRetryHintCurly"),
+            CoupSourceTexts.Get("WarRetryHintCurlySpaced"),
+            CoupSourceTexts.Get("WarRetryHintAscii"),
+            CoupSourceTexts.Get("WarRetryHintHtml"),
+            "You can select 'Retry Post-Coup Civil War Registration' from the town menu; the rebel kingdom will not be created again.",
+            " You can select 'Retry Post-Coup Civil War Registration' from the town menu; the rebel kingdom will not be created again."
+        });
+
+    private static string StripWarRetryHint(string text)
+    {
+        if (string.IsNullOrWhiteSpace(text)) return text ?? string.Empty;
+        string t = text.TrimEnd();
+        foreach (string hint in WarRetryHints.Value)
+        {
+            if (t.EndsWith(hint, System.StringComparison.Ordinal))
+            {
+                t = t.Substring(0, t.Length - hint.Length).TrimEnd();
+                break;
+            }
+        }
+        return t;
+    }
+
+    internal static string LocalizeReason(string reason)
+    {
+        if (string.IsNullOrWhiteSpace(reason)) return reason ?? string.Empty;
+        string r = reason.Trim();
+
+        if (ReasonLookup.Value.TryGetValue(r, out var matched))
+            return Text(matched.UiKey, matched.Fallback);
+
+        string pScene = CoupSourceTexts.Get("Prefix_SceneHandlingFailed");
+        if (r.StartsWith(pScene, System.StringComparison.Ordinal))
+            return Text("AF_COUPX_SceneHandlingFailed", "Coup scene handling failed: {ERROR}", ("ERROR", LocalizeReason(r.Substring(pScene.Length))));
+        if (r.StartsWith("Coup scene handling failed: ", System.StringComparison.Ordinal))
+            return Text("AF_COUPX_SceneHandlingFailed", "Coup scene handling failed: {ERROR}", ("ERROR", LocalizeReason(r.Substring(28))));
+
+        string pHall = CoupSourceTexts.Get("Prefix_HallTransitionFailed");
+        if (r.StartsWith(pHall, System.StringComparison.Ordinal))
+            return Text("AF_COUPX_HallTransitionFailed", "Hall transition failed: {ERROR}", ("ERROR", LocalizeReason(r.Substring(pHall.Length))));
+        if (r.StartsWith("Hall transition failed: ", System.StringComparison.Ordinal))
+            return Text("AF_COUPX_HallTransitionFailed", "Hall transition failed: {ERROR}", ("ERROR", LocalizeReason(r.Substring(24))));
+
+        string pReg = CoupSourceTexts.Get("Prefix_RegistrationFailed");
+        if (r.StartsWith(pReg, System.StringComparison.Ordinal))
+            return Text("AF_COUPX_RegistrationFailed", "Post-coup rebellion registration failed: {ERROR}", ("ERROR", LocalizeReason(r.Substring(pReg.Length))));
+        if (r.StartsWith("Post-coup rebellion registration failed: ", System.StringComparison.Ordinal))
+            return Text("AF_COUPX_RegistrationFailed", "Post-coup rebellion registration failed: {ERROR}", ("ERROR", LocalizeReason(r.Substring("Post-coup rebellion registration failed: ".Length))));
+
+        string pVal = CoupSourceTexts.Get("Prefix_ValidationFailed");
+        string sVal = CoupSourceTexts.Get("Suffix_ValidationFailed");
+        if (r.StartsWith(pVal, System.StringComparison.Ordinal))
+        {
+            string sub = r.Substring(pVal.Length);
+            int endIdx = sub.IndexOf(sVal, System.StringComparison.Ordinal);
+            string reasonPart = endIdx >= 0 ? sub.Substring(0, endIdx) : sub;
+            return Text("AF_COUPX_ValidationFailed", "Original candidate clan no longer meets AF rules: {REASON}. This session ends.", ("REASON", LocalizeReason(reasonPart)));
+        }
+        if (r.StartsWith("Original candidate clan no longer meets AF rules: ", System.StringComparison.Ordinal))
+        {
+            string sub = r.Substring(50);
+            int endIdx = sub.IndexOf(" This session ends.", System.StringComparison.Ordinal);
+            string reasonPart = endIdx >= 0 ? sub.Substring(0, endIdx) : sub;
+            return Text("AF_COUPX_ValidationFailed", "Original candidate clan no longer meets AF rules: {REASON}. This session ends.", ("REASON", LocalizeReason(reasonPart)));
+        }
+
+        string pWar = CoupSourceTexts.Get("Prefix_WarRegistrationPending");
+        if (r.StartsWith(pWar, System.StringComparison.Ordinal))
+        {
+            string error = StripWarRetryHint(r.Substring(pWar.Length));
+            return Text("AF_COUPX_WarRegistrationPending", "Rebel kingdom established; civil war registration awaiting retry: {ERROR}", ("ERROR", LocalizeReason(error)));
+        }
+        if (r.StartsWith("Rebel kingdom established; civil war registration awaiting retry: ", System.StringComparison.Ordinal))
+        {
+            string error = StripWarRetryHint(r.Substring(66));
+            return Text("AF_COUPX_WarRegistrationPending", "Rebel kingdom established; civil war registration awaiting retry: {ERROR}", ("ERROR", LocalizeReason(error)));
+        }
+
+        string pReb = CoupSourceTexts.Get("Prefix_RebellionIncomplete");
+        if (r.StartsWith(pReb, System.StringComparison.Ordinal))
+            return Text("AF_COUPX_RebellionIncomplete", "Rebellion not completed: {MESSAGE}", ("MESSAGE", LocalizeReason(r.Substring(pReb.Length))));
+        if (r.StartsWith("Rebellion not completed: ", System.StringComparison.Ordinal))
+            return Text("AF_COUPX_RebellionIncomplete", "Rebellion not completed: {MESSAGE}", ("MESSAGE", LocalizeReason(r.Substring(25))));
+
+        string pSet = CoupSourceTexts.Get("Prefix_SettlementException");
+        if (r.StartsWith(pSet, System.StringComparison.Ordinal))
+            return Text("AF_COUPX_SettlementException", "Rebellion settlement exception; changes made were retained and founding will not be repeated: {ERROR}", ("ERROR", LocalizeReason(r.Substring(pSet.Length))));
+        if (r.StartsWith("Rebellion settlement exception; changes made were retained and founding will not be repeated: ", System.StringComparison.Ordinal))
+            return Text("AF_COUPX_SettlementException", "Rebellion settlement exception; changes made were retained and founding will not be repeated: {ERROR}", ("ERROR", LocalizeReason(r.Substring("Rebellion settlement exception; changes made were retained and founding will not be repeated: ".Length))));
+
+        string pSeam = CoupSourceTexts.Get("Prefix_SeamException");
+        if (r.StartsWith(pSeam, System.StringComparison.Ordinal))
+            return Text("AF_COUPX_SeamException", "Post-coup rebellion seam exception; this session ends: {ERROR}", ("ERROR", LocalizeReason(r.Substring(pSeam.Length))));
+        if (r.StartsWith("Post-coup rebellion seam exception; this session ends: ", System.StringComparison.Ordinal))
+            return Text("AF_COUPX_SeamException", "Post-coup rebellion seam exception; this session ends: {ERROR}", ("ERROR", LocalizeReason(r.Substring(55))));
+
+        string pMemRej = CoupSourceTexts.Get("Prefix_MemoryRejected");
+        if (r.StartsWith(pMemRej, System.StringComparison.Ordinal))
+            return Text("AF_COUPX_MemoryRejected", "Coup memory not accepted: {ERROR}", ("ERROR", LocalizeReason(r.Substring(pMemRej.Length))));
+        if (r.StartsWith("Coup memory not accepted: ", System.StringComparison.Ordinal))
+            return Text("AF_COUPX_MemoryRejected", "Coup memory not accepted: {ERROR}", ("ERROR", LocalizeReason(r.Substring(26))));
+
+        string pMemInc = CoupSourceTexts.Get("Prefix_MemoryIncomplete");
+        if (r.StartsWith(pMemInc, System.StringComparison.Ordinal))
+            return Text("AF_COUPX_MemoryIncomplete", "Coup memory not completed: {ERROR}", ("ERROR", LocalizeReason(r.Substring(pMemInc.Length))));
+        if (r.StartsWith("Coup memory not completed: ", System.StringComparison.Ordinal))
+            return Text("AF_COUPX_MemoryIncomplete", "Coup memory not completed: {ERROR}", ("ERROR", LocalizeReason(r.Substring(27))));
+
+        string pFact = CoupSourceTexts.Get("Prefix_FactRegistrationFailed");
+        if (r.StartsWith(pFact, System.StringComparison.Ordinal))
+            return Text("AF_COUPX_FactRegistrationFailed", "Coup fact registration not completed: {ERROR}", ("ERROR", LocalizeReason(r.Substring(pFact.Length))));
+        if (r.StartsWith("Coup fact registration not completed: ", System.StringComparison.Ordinal))
+            return Text("AF_COUPX_FactRegistrationFailed", "Coup fact registration not completed: {ERROR}", ("ERROR", LocalizeReason(r.Substring("Coup fact registration not completed: ".Length))));
+
+        return reason;
+    }
 }

@@ -280,5 +280,55 @@
     <string id="AF_WM_Review_TroopXpInputs" text="Troop XP adjustment parameters are invalid: {TROOP}" />
     <string id="AF_WM_Review_TroopXpWrite" text="Troop XP write verification failed: {TROOP}; context={CONTEXT}" />
     <string id="AF_WM_Review_Attacking" text="attacking" />
+
+    <!-- Command Task Prompt UI (BuildCurrentNpcCommandTasksPromptCore) -->
+    <string id="AF_WM_CurrentNpcCommandTasksHeader" text="【Current NPC Command Tasks】" />
+    <string id="AF_WM_NoTasks" text="None" />
+    <string id="AF_WM_TaskStatusCurrent" text="Current:" />
+    <string id="AF_WM_TaskStatusThen" text="Then:" />
+    <string id="AF_WM_TasksRemaining" text="{COUNT} more" />
+
+    <!-- Command Summary UI (BuildNaturalCommandSummary) -->
+    <string id="AF_WM_CmdMergeToPlayer" text="Return to party {DAYS} days" />
+    <string id="AF_WM_CmdGoToSettlement" text="Go to {TARGET} {DAYS} days" />
+    <string id="AF_WM_CmdClearHideout" text="Clear {TARGET} (time limit {DAYS} days)" />
+    <string id="AF_WM_CmdPatrolSettlement" text="Patrol {TARGET} {DAYS} days" />
+    <string id="AF_WM_CmdFollow" text="Follow {TARGET} {DAYS} days" />
+    <string id="AF_WM_CmdAttack" text="Attack {TARGET} {DAYS} days" />
+    <string id="AF_WM_CmdForceAttack" text="Force attack {TARGET} {DAYS} days" />
+    <string id="AF_WM_CmdUnknown" text="Unknown task {DAYS} days" />
+
+    <!-- LLM Prompt Rule (pure prompt text) -->
+    <string id="AF_WM_PromptReturnToPartyRule" text="When you output other ACTION:WORLDMAP tags, if the player has not actively mentioned no need to return to the party, you must output this tag at the bottom, never omit this tag" />
+    <!-- Additional internal error review strings -->
+    <string id="AF_WM_Review_MergeSourceHasRemainingAssets" text="Source party still has untransferred assets after merging into main party." />
+    <string id="AF_WM_Review_GovernorRecordMissingIdentity" text="Governor expedition record is missing required identity information." />
+    <string id="AF_WM_Review_GovernorRollbackMissingTroop" text="Governor expedition roster rollback is missing troop or roster." />
+    <string id="AF_WM_Review_GovernorRollbackTroopFailed" text="Governor expedition roster exact rollback failed: {TROOP}" />
+    <string id="AF_WM_Review_GarrisonRollbackMissingSnapshot" text="Garrison rollback is missing valid transaction snapshot." />
+    <string id="AF_WM_Review_GarrisonRollbackFailed" text="Garrison transaction snapshot rollback verification failed: {TROOP}" />
+    <string id="AF_WM_Review_GarrisonRosterSnapshotMismatch" text="Full garrison roster does not match pre-creation snapshot." />
+    <string id="AF_WM_Review_GovernorLeaderNotInRoster" text="Expedition leader hero is no longer in member roster." />
+    <string id="AF_WM_Review_MergeChangedHeroIdentity" text="Merge altered accompanying hero's clan, occupation, or companion status: {HERO}" />
+    <string id="AF_WM_Review_MergeCountConservationFailed" text="Roster head count or wounded conservation verification failed: {TROOP}" />
+    <string id="AF_WM_Review_MergeXpBoundaryFailed" text="Roster experience boundary verification failed: {TROOP}" />
+    <string id="AF_WM_Review_MergeTransferFailed" text="Roster transfer failed: troop={TROOP} step={STEP}" />
+    <string id="AF_WM_Review_MergePartiesUnavailable" text="Source party or target party is unavailable during merge." />
+    <string id="AF_WM_Review_MergeHeroPartyChanged" text="Accompanying hero's belonging party has changed: {HERO}" />
+    <string id="AF_WM_Review_MergeHeroNotMerged" text="Accompanying hero failed to merge into player's main party: {HERO}" />
+    <string id="AF_WM_Review_MergeRollbackShipsFailed" text="Merge rollback failed to restore source party ship ownership." />
+    <string id="AF_WM_Review_MergeRollbackAssetsMismatch" text="Source party assets after merge rollback do not match transaction snapshot." />
+    <string id="AF_WM_Review_MergeRollbackMissingRecords" text="Merge roster rollback is missing transaction records." />
+    <string id="AF_WM_Review_MergeRollbackTroopFailed" text="Merge roster transaction snapshot rollback failed: {TROOP}" />
+    <string id="AF_WM_Review_MergeRollbackPrisonerFailed" text="Hero prisoner merge rollback failed: {HERO}" />
+    <string id="AF_WM_Review_MergeRollbackItemsMissing" text="Merge items rollback is missing source, target, or snapshot." />
+    <string id="AF_WM_Review_MergeRollbackItemsDiff" text="Merge items rollback difference inconsistency." />
+    <string id="AF_WM_Review_MergeRollbackItemsFailed" text="Merge items rollback verification failed." />
+    <string id="AF_WM_Review_MergeItemsConservationFailed" text="Item conservation verification failed." />
+    <string id="AF_WM_Review_MergeShipsInvalidSourceTarget" text="Source or target for ship transfer is invalid." />
+    <string id="AF_WM_Review_MergeShipsOwnershipChanged" text="Ship ownership changed before transfer." />
+    <string id="AF_WM_Review_MergeShipsTransferFailed" text="Ship ownership transfer verification failed." />
+    <string id="AF_WM_Review_MergeShipsTransferFailedRollbackFailed" text="Ship transfer failed and could not be fully rolled back." />
+    <string id="AF_WM_Review_MergeShipsTransferFailedRollbackDone" text="Ship transfer failed; ownership has been rolled back." />
   </strings>
 </base>

@@ -282,7 +282,7 @@ internal static class WorldDiplomacyAnalysisApplication
             document.AnalysisStatus = status == "success" ? "success" : "fallback";
             document.Title = !string.IsNullOrWhiteSpace(titleSummary)
                 ? WorldDiplomacyTextRules.Limit(WorldDiplomacyTextRules.SanitizePublicDiplomacyText(titleSummary), 36)
-                : (document.IsPlayerAuthored ? WorldDiplomacyTextRules.BuildFallbackDocumentTitle(document, intent) : document.Title);
+                : (document.IsPlayerAuthored ? WorldDiplomacyTextRules.BuildFallbackDocumentTitle(document, intent, DiplomacyPromptTexts.Get) : document.Title);
             document.Intent = intent;
             document.Commitment = commitment;
             // Player text is immutable once submitted, but publication order is not. A
@@ -527,11 +527,11 @@ internal static class WorldDiplomacyAnalysisApplication
 	// prompts, so the player analysis-failure texts below keep their original wording byte-for-byte.
 	// Only the notification boundary projects them onto localized text; see
 	// ProjectMechanicalResultForDisplay.
-	internal const string PlayerAnalysisTruncatedResult = "宣言已公开；模型输出因长度上限被截断，外交动作尚未执行。请提高对应API的输出上限后选择“重新解析”。";
-	internal const string PlayerAnalysisAcceptAndAmendResult = "宣言已公开；解析同时给出接受原案和修改条款，外交动作未执行。可重新解析原文；修改条件应作为新提案。";
-	internal const string PlayerAnalysisTreatyRolesResult = "宣言已公开；解析未能辨明条约双方角色，提案未执行。可重新解析原文。";
-	internal const string PlayerAnalysisFailedResult = "宣言已公开；分析失败，外交动作未执行。可选择“重新解析”再次处理原文。";
-	internal const string MechanicNotExecutedPrefix = "外交动作未执行：";
+	internal static string PlayerAnalysisTruncatedResult => DiplomacyMiscPromptTexts.Get("Analysis_TruncatedResult", "Declaration published; model output truncated due to token limit, diplomatic action not executed. Increase the API output limit and choose Reparse.");
+	internal static string PlayerAnalysisAcceptAndAmendResult => DiplomacyMiscPromptTexts.Get("Analysis_AcceptAndAmendResult", "Declaration published; analysis returned both acceptance and amendment, diplomatic action not executed. Original text can be reparsed; amended terms should be submitted as a new proposal.");
+	internal static string PlayerAnalysisTreatyRolesResult => DiplomacyMiscPromptTexts.Get("Analysis_TreatyRolesResult", "Declaration published; analysis failed to distinguish party roles, proposal not executed. Original text can be reparsed.");
+	internal static string PlayerAnalysisFailedResult => DiplomacyMiscPromptTexts.Get("Analysis_FailedResult", "Declaration published; analysis failed, diplomatic action not executed. Choose Reparse to process the original text again.");
+	internal static string MechanicNotExecutedPrefix => DiplomacyMiscPromptTexts.Get("Analysis_MechanicNotExecutedPrefix", "Diplomatic action not executed: ");
 
 	// Display projection of a stored player analysis-failure text. Returns false for every value this
 	// class did not write, so the caller can show the real stored text instead of a generic sentence;

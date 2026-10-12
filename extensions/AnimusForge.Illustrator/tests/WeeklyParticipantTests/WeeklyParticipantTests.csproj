@@ -1,9 +1,22 @@
 <Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><EnableDefaultCompileItems>false</EnableDefaultCompileItems></PropertyGroup>
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+  </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <Compile Include="Program.cs" />
+    <Compile Include="PackagePaths.cs" />
+    <Compile Include="../../src/Core/IllustratorText.cs" Link="IllustratorText.cs" />
     <Compile Include="../../src/Context/WeeklyReportContextExtractor.cs" Link="WeeklyReportContextExtractor.cs" />
     <Compile Include="../../src/Context/NarrativeFactRouter.cs" Link="NarrativeFactRouter.cs" />
+    <Compile Include="../../../../extensions/AnimusForge.Coup/src/CoupSystem/CoupSourceTexts.cs" Link="CoupSourceTexts.cs" />
+    <Compile Include="../../../../extensions/AnimusForge.Coup/src/CoupSystem/CoupPromptTexts.cs" Link="CoupPromptTexts.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Weekly/Bulletin/WorldBulletinPolicy.cs" Link="WorldBulletinPolicy.cs" />
+    <Content Include="../../../../content/modules/AnimusForge.Illustrator/ModuleData/IllustratorPromptTexts.json" Link="ModuleData/IllustratorPromptTexts.json" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="../../../../content/modules/AnimusForge.Illustrator/ModuleData/IllustratorCompatibilityTexts.json" Link="ModuleData/IllustratorCompatibilityTexts.json" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="../../../../content/modules/AnimusForge.Coup/ModuleData/CoupSourceTexts.json" Link="ModuleData/CoupSourceTexts.json" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="../../../../content/modules/AnimusForge.Coup/ModuleData/CoupPromptTexts.json" Link="ModuleData/CoupPromptTexts.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 </Project>

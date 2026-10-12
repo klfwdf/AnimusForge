@@ -21,7 +21,9 @@ for key, literal in re.findall(r'MemoryEditorUiText\.[TF]\("(AF_MEMORY_UI_[A-Za-
     assert sorted(re.findall(r"\{([A-Z][A-Z0-9_]*)\}", english[key])) == sorted(re.findall(r"\{([A-Z][A-Z0-9_]*)\}", chinese[key])), key
 assert len(new_keys) == 20, new_keys
 assert source.count("string speaker = SpeakerForDisplay(line);") == 2
-assert 'string.Equals(speaker, "手动", StringComparison.OrdinalIgnoreCase)' in source
+raw = json.loads((ROOT / 'content/modules/AF.Module.Memory/ModuleData/MemorySourceTexts.json').read_text(encoding='utf-8-sig'))
+assert raw['MEM_Raw_007'] == '手动', 'legacy speaker identity remains raw'
+assert 'string.Equals(speaker, MemoryTextResources.Raw("MEM_Raw_007"), StringComparison.OrdinalIgnoreCase)' in source
 assert source.count("HourRangeForDisplay(block.StartHour, block.EndHour)") == 2
 assert source.count("forDisplay: false") == 2
 assert "forDisplay: true" in source and "port.BuildWeeklyMemoryMaterialTagLabel" in source
@@ -37,7 +39,7 @@ for name in ("GetDevCompressedMemoryBlockId", "FindDevCompressedMemoryBlock", "G
              "BuildDevDailyMemoryLineDescription", "NormalizeDevCompressedMemoryMultilineInput", "ParseDevCompressedMemoryLineList"):
     assert body(source, name) == body(baseline, name), name
 controller = (ROOT / "src/AF.GameAdapter.Bannerlord/UI/Editors/MemoryEditorController.cs").read_text(encoding="utf-8-sig")
-assert 'target.Speaker = "手动";' in controller and 'Speaker = isAfef ? "AFEF" : "手动"' in controller
+assert 'target.Speaker = MemoryTextResources.Raw("MEM_Raw_007");' in controller and 'Speaker = isAfef ? "AFEF" : MemoryTextResources.Raw("MEM_Raw_007")' in controller
 assert 'target.Speaker = "AFEF";' in controller
 assert "WeeklyMaterialTagForDisplay" not in controller
 print("PASS Memory projection: 20 keys, fallback/variable parity, display-only speaker/hour/tag conversion, raw search and mutation boundaries retained; C# NOT-RUN")

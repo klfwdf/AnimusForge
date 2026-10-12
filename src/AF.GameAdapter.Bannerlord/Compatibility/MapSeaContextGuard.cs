@@ -143,7 +143,7 @@ internal static class MapSeaContextGuard
 				}
 				if (string.IsNullOrWhiteSpace(name))
 				{
-					name = "未知船只";
+					name = AdapterPromptCaptureTexts.PcapCompat("MapSea_UnknownShipIdentity");
 				}
 				int capacity = 0;
 				try
@@ -167,28 +167,28 @@ internal static class MapSeaContextGuard
 			}
 			if (shipCount <= 0)
 			{
-				return "当前在海上，未识别到舰船记录";
+				return AdapterPromptCaptureTexts.PcapText("MapSea_NoShipRecords");
 			}
 			List<string> shipParts = countByName
 				.OrderByDescending(x => capacityByName.TryGetValue(x.Key, out int capacity) ? capacity : 0)
 				.ThenBy(x => x.Key, StringComparer.Ordinal)
 				.Take(5)
-				.Select(x => x.Key + "x" + x.Value)
+				.Select(x => (x.Key == AdapterPromptCaptureTexts.PcapCompat("MapSea_UnknownShipIdentity") ? AdapterPromptCaptureTexts.PcapText("MapSea_UnknownShip") : x.Key) + "x" + x.Value)
 				.ToList();
 			StringBuilder sb = new StringBuilder();
-			sb.Append(shipCount).Append("艘");
+			sb.Append(shipCount).Append(AdapterPromptCaptureTexts.PcapText("MapSea_ShipCountSuffix"));
 			if (totalCapacity > 0)
 			{
-				sb.Append("，总载员容量").Append(totalCapacity);
+				sb.Append(AdapterPromptCaptureTexts.PcapText("MapSea_CapacityPrefix")).Append(totalCapacity);
 			}
 			if (shipParts.Count > 0)
 			{
-				sb.Append("（").Append(string.Join("、", shipParts));
+				sb.Append(AdapterPromptCaptureTexts.PcapText("MapSea_OpenParenthesis")).Append(string.Join(AdapterPromptCaptureTexts.PcapText("MapSea_ListSeparator"), shipParts));
 				if (countByName.Count > shipParts.Count)
 				{
-					sb.Append("等").Append(countByName.Count).Append("型");
+					sb.Append(AdapterPromptCaptureTexts.PcapText("MapSea_AllTypesPrefix")).Append(countByName.Count).Append(AdapterPromptCaptureTexts.PcapText("MapSea_TypesSuffix"));
 				}
-				sb.Append("）");
+				sb.Append(AdapterPromptCaptureTexts.PcapText("MapSea_CloseParenthesis"));
 			}
 			return sb.ToString();
 		}
@@ -259,7 +259,7 @@ internal static class MapSeaContextGuard
 		{
 			return "";
 		}
-		return name + "（" + FormatSettlementTypeForPrompt(settlement) + "）";
+		return name + AdapterPromptCaptureTexts.PcapText("MapSea_OpenParenthesis") + FormatSettlementTypeForPrompt(settlement) + AdapterPromptCaptureTexts.PcapText("MapSea_CloseParenthesis");
 	}
 
 	internal static string BuildMobilePartyLandTerrainPromptLabel(MobileParty party)
@@ -283,7 +283,7 @@ internal static class MapSeaContextGuard
 		}
 		if (IsMobilePartyAtSeaOrOnWater(party))
 		{
-			return "海上";
+			return AdapterPromptCaptureTexts.PcapText("MapSea_AtSea");
 		}
 		if (!TryResolveMobilePartyTerrainType(party, out TerrainType terrainType))
 		{
@@ -297,50 +297,50 @@ internal static class MapSeaContextGuard
 		switch (terrainType)
 		{
 		case TerrainType.Plain:
-			return "平原";
+			return AdapterPromptCaptureTexts.PcapText("MapSea_Plain");
 		case TerrainType.Forest:
-			return "森林";
+			return AdapterPromptCaptureTexts.PcapText("MapSea_Forest");
 		case TerrainType.Mountain:
-			return "丘陵山地";
+			return AdapterPromptCaptureTexts.PcapText("MapSea_Mountain");
 		case TerrainType.Snow:
-			return "雪原";
+			return AdapterPromptCaptureTexts.PcapText("MapSea_Snow");
 		case TerrainType.Desert:
-			return "沙漠";
+			return AdapterPromptCaptureTexts.PcapText("MapSea_Desert");
 		case TerrainType.Steppe:
-			return "草原";
+			return AdapterPromptCaptureTexts.PcapText("MapSea_Steppe");
 		case TerrainType.Swamp:
-			return "沼泽";
+			return AdapterPromptCaptureTexts.PcapText("MapSea_Swamp");
 		case TerrainType.Canyon:
-			return "峡谷";
+			return AdapterPromptCaptureTexts.PcapText("MapSea_Canyon");
 		case TerrainType.Dune:
-			return "沙丘";
+			return AdapterPromptCaptureTexts.PcapText("MapSea_Dune");
 		case TerrainType.RuralArea:
-			return "乡野";
+			return AdapterPromptCaptureTexts.PcapText("MapSea_RuralArea");
 		case TerrainType.Beach:
-			return "海滩";
+			return AdapterPromptCaptureTexts.PcapText("MapSea_Beach");
 		case TerrainType.Cliff:
-			return "峭壁";
+			return AdapterPromptCaptureTexts.PcapText("MapSea_Cliff");
 		case TerrainType.Fording:
-			return "浅滩";
+			return AdapterPromptCaptureTexts.PcapText("MapSea_Fording");
 		case TerrainType.Bridge:
-			return "桥梁";
+			return AdapterPromptCaptureTexts.PcapText("MapSea_Bridge");
 		case TerrainType.Lake:
-			return "湖面";
+			return AdapterPromptCaptureTexts.PcapText("MapSea_Lake");
 		case TerrainType.River:
 		case TerrainType.NonNavigableRiver:
-			return "河面";
+			return AdapterPromptCaptureTexts.PcapText("MapSea_River");
 		case TerrainType.Water:
-			return "水域";
+			return AdapterPromptCaptureTexts.PcapText("MapSea_Water");
 		case TerrainType.CoastalSea:
-			return "近海";
+			return AdapterPromptCaptureTexts.PcapText("MapSea_CoastalSea");
 		case TerrainType.OpenSea:
-			return "外海";
+			return AdapterPromptCaptureTexts.PcapText("MapSea_OpenSea");
 		case TerrainType.UnderBridge:
-			return "桥下水域";
+			return AdapterPromptCaptureTexts.PcapText("MapSea_UnderBridge");
 		case TerrainType.SeaRestriction:
-			return "海上";
+			return AdapterPromptCaptureTexts.PcapText("MapSea_AtSea");
 		case TerrainType.LandRestriction:
-			return "受限陆地";
+			return AdapterPromptCaptureTexts.PcapText("MapSea_LandRestriction");
 		default:
 			return terrainType.ToString();
 		}
@@ -406,32 +406,32 @@ internal static class MapSeaContextGuard
 		{
 			if (settlement == null)
 			{
-				return "定居点";
+				return AdapterPromptCaptureTexts.PcapText("MapSea_Settlement");
 			}
 			if (settlement.IsTown)
 			{
-				return "城镇";
+				return AdapterPromptCaptureTexts.PcapText("MapSea_Town");
 			}
 			if (settlement.IsCastle)
 			{
-				return "城堡";
+				return AdapterPromptCaptureTexts.PcapText("MapSea_Castle");
 			}
 			if (settlement.IsVillage)
 			{
-				return "村庄";
+				return AdapterPromptCaptureTexts.PcapText("MapSea_Village");
 			}
 			if (settlement.IsFortification)
 			{
-				return "要塞";
+				return AdapterPromptCaptureTexts.PcapText("MapSea_Fortification");
 			}
 			if (settlement.IsHideout)
 			{
-				return "藏身处";
+				return AdapterPromptCaptureTexts.PcapText("MapSea_Hideout");
 			}
 		}
 		catch
 		{
 		}
-		return "定居点";
+		return AdapterPromptCaptureTexts.PcapText("MapSea_Settlement");
 	}
 }

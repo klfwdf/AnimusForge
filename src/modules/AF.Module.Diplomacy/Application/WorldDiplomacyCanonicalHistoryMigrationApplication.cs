@@ -1,3 +1,4 @@
+using AnimusForge;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -122,21 +123,21 @@ internal static class WorldDiplomacyCanonicalHistoryMigrationApplication
             foreach (WorldDiplomacyAnnualSummary summary in (storage.AnnualSummaries ?? new List<WorldDiplomacyAnnualSummary>())
                 .Where(x => x != null && !string.IsNullOrWhiteSpace(x.Summary)).OrderBy(x => x.Year).ThenBy(x => x.CreatedDay))
             {
-                legacy.Add("[旧年度档案 " + summary.Year.ToString(CultureInfo.InvariantCulture) + "]\n" + summary.Summary.Trim());
+                legacy.Add(DiplomacyMiscPromptTexts.Get("History_OldYearArchive", "[Legacy annual archive ") + summary.Year.ToString(CultureInfo.InvariantCulture) + "]\n" + summary.Summary.Trim());
             }
             foreach (WorldDiplomacyCompressionSummary summary in (storage.CompressionSummaries ?? new List<WorldDiplomacyCompressionSummary>())
                 .Where(x => x != null && !string.IsNullOrWhiteSpace(x.Summary)).OrderBy(x => x.CreatedDay).ThenBy(x => x.BatchId, StringComparer.OrdinalIgnoreCase))
             {
-                legacy.Add("[旧压缩档案 " + (summary.BatchId ?? "") + "]\n" + summary.Summary.Trim());
+                legacy.Add(DiplomacyMiscPromptTexts.Get("History_OldCompressedArchive", "[Legacy compressed archive ") + (summary.BatchId ?? "") + "]\n" + summary.Summary.Trim());
             }
             foreach (WorldDiplomacyRoundSummary summary in (storage.RoundSummaries ?? new List<WorldDiplomacyRoundSummary>())
                 .Where(x => x != null && !x.IsTokenCompressed && !string.IsNullOrWhiteSpace(x.Summary)).OrderBy(x => x.CreatedDay).ThenBy(x => x.RoundId, StringComparer.OrdinalIgnoreCase))
             {
-                legacy.Add("[旧回合档案 " + (summary.RoundId ?? "") + "]\n" + summary.Summary.Trim());
+                legacy.Add(DiplomacyMiscPromptTexts.Get("History_OldRoundArchive", "[Legacy round archive ") + (summary.RoundId ?? "") + "]\n" + summary.Summary.Trim());
             }
             if (legacy.Count > 0)
             {
-                history.Snapshot.Content = "【从旧存档恢复的外交摘要；仅作历史背景】\n" + string.Join("\n", legacy.Distinct(StringComparer.Ordinal));
+                history.Snapshot.Content = DiplomacyMiscPromptTexts.Get("History_RecoveredSummaryHeader", "[Diplomatic summary recovered from legacy save; historical context only]\n") + string.Join("\n", legacy.Distinct(StringComparer.Ordinal));
                 history.Snapshot.CoveredThroughSequence = 0L;
                 history.Snapshot.CreatedDay = source.CurrentDay;
                 history.Snapshot.ContentHash = WorldDiplomacyPromptContractRules.StablePromptHash(history.Snapshot.Content);

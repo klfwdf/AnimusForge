@@ -1,0 +1,45 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using AnimusForge;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+
+internal static class ReceiptPersistence
+{
+@@RECORD@@
+    private static int checks;
+    private static void Check(bool condition, string description)
+    {
+        checks++;
+        if (!condition) throw new Exception(description);
+    }
+    private static void Main()
+    {
+        const string legacy = "{\"Key\":\"old\",\"ItemStringId\":\"letter_1\",\"DisplayName\":\"旧信件\",\"LetterBody\":\"原信正文 {NAME} $1\",\"TemplateStringId\":\"book\",\"ObjectId\":42,\"SenderHeroId\":\"hero_1\",\"SenderName\":\"原姓名\",\"IsReply\":true,\"Amount\":1,\"LastSeenDay\":7}";
+        var old = JsonConvert.DeserializeObject<CourierLetterInventoryRecord>(legacy);
+        Check(old.DiplomacyReplyBody == null && old.DiplomacyReplyReceipts == null, "old JSON has absent optional receipt metadata");
+        var oldAgain = JObject.Parse(JsonConvert.SerializeObject(old));
+        foreach (var property in JObject.Parse(legacy).Properties())
+            Check(JToken.DeepEquals(property.Value, oldAgain[property.Name]), "legacy field changed: " + property.Name);
+
+        foreach (int count in new[] { 0, 20, 80000 })
+        {
+            string narrative = new string('信', count) + " {NAME} $1 AFWARSTATSLITERAL0END";
+            var record = JsonConvert.DeserializeObject<CourierLetterInventoryRecord>(legacy);
+            record.LetterBody = narrative + "\n原回执";
+            record.DiplomacyReplyBody = narrative;
+            record.DiplomacyReplyReceipts = new List<string> { "已取消：理由 {0}", "Deferred: still pending", "拒绝 $1" };
+            string json = JsonConvert.SerializeObject(record);
+            var storage = CampaignSaveChunkHelper.FlattenStringDictionary(new Dictionary<string, string> { [record.Key] = json });
+            Check(storage.Values.All(value => Encoding.UTF8.GetByteCount(value) <= 12000), "chunk UTF-8 byte limit");
+            var restored = CampaignSaveChunkHelper.RestoreStringDictionary(storage);
+            Check(restored.Count == 1 && restored[record.Key] == json, "JSON dictionary roundtrip retains every byte");
+            var loaded = JsonConvert.DeserializeObject<CourierLetterInventoryRecord>(restored[record.Key]);
+            Check(loaded.LetterBody == record.LetterBody && loaded.DiplomacyReplyBody == narrative, "raw narrative and full body retained independently");
+            Check(loaded.DiplomacyReplyReceipts.SequenceEqual(record.DiplomacyReplyReceipts), "receipt order, failure state and literal values retained");
+        }
+        Console.WriteLine("PASS courier receipt persistence checks=" + checks + " old JSON + optional metadata + 80k-character body; game save NOT RUN");
+    }
+}

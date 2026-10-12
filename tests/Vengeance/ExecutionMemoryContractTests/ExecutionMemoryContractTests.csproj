@@ -16,10 +16,16 @@
     <Compile Include="../../../src/modules/AF.Module.Prompt/Configuration/GuardrailRulePromptConfig.cs" Link="Production/GuardrailRulePromptConfig.cs" />
     <Compile Include="../../../src/modules/AF.Module.Prompt/Configuration/PostprocessRuleEntry.cs" Link="Production/PostprocessRuleEntry.cs" />
     <Compile Include="../../../src/modules/AF.Module.Prompt/Composition/PromptRuleEligibility.cs" Link="Production/PromptRuleEligibility.cs" />
-    <EmbeddedResource Include="../../../content/modules/AF.Module.Prompt/ModuleData/RuleBehaviorPrompts.json" LogicalName="AnimusForge.Defaults.ExecutionRulePrompts.json" />
+    <Compile Include="../../../src/modules/AF.Module.Llm/Application/LlmPromptTexts.cs" Link="Production/LlmPromptTexts.cs" />
+    <Content Include="../../../content/modules/AF.Module.Prompt/ModuleData/ExecutionRulePrompts.json" Link="ModuleData/ExecutionRulePrompts.json" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="../../../content/modules/AF.Module.Llm/ModuleData/LlmPromptTexts.json" Link="ModuleData/LlmPromptTexts.json" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="../../../content/modules/AF.Module.Prompt/ModuleData/ExecutionRulePrompts.en.json" Link="EnglishFixtures/ExecutionRulePrompts.json" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="../../../content/modules/AF.Module.Llm/ModuleData/LlmPromptTexts.en.json" Link="EnglishFixtures/LlmPromptTexts.json" CopyToOutputDirectory="PreserveNewest" />
     <Compile Include="../../../Vengeance/Source/Core/ExecutionEnums.cs" Link="Production/ExecutionEnums.cs" />
     <Compile Include="../../../Vengeance/Source/Core/ExecutionMethodRules.cs" Link="Production/ExecutionMethodRules.cs" />
     <Compile Include="../../../Vengeance/Source/Scene/Speech/*.cs" Link="Production/%(Filename)%(Extension)" />
+    <Compile Include="../../../src/modules/AF.Module.Llm/Protocol/LlmSourceTexts.cs" Link="Production/LlmSourceTexts.cs" />
+    <EmbeddedResource Include="../../../content/modules/AF.Module.Llm/ModuleData/LlmSourceTexts.json" LogicalName="AnimusForge.Llm.RuntimeSources.json" WithCulture="false" />
     <Reference Include="Newtonsoft.Json"><HintPath>../../../_deps_auto/Newtonsoft.Json.dll</HintPath></Reference>
   </ItemGroup>
 </Project>

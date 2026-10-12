@@ -1,68 +1,117 @@
 namespace AnimusForge.SiegeAftermathIntervention;
 
-/// <summary>
-/// Castle-only role facts injected into AF conversations during the active aftermath stage.
-/// Bannerlord adapters resolve live agent identity and battle provenance.
-/// </summary>
-public static class SiegeCastleNpcSituationProfile
-{
-    public const string DefaultCastleName = "这座城堡";
 
-    public const string DefaultPlayerName = "玩家";
+
+/// <summary>
+
+/// Castle-only role facts injected into AF conversations during the active aftermath stage.
+
+/// Bannerlord adapters resolve live agent identity and battle provenance.
+
+/// </summary>
+
+public static class SiegeCastleNpcSituationProfile
+
+{
+
+    public static string DefaultCastleName => TownPromptCatalogResources.Get(false).GetRuntimeText("DefaultNpcCastleName");
+
+
+
+    public const string DefaultCastleNameEn = "this castle";
+
+
+
+    public static string DefaultPlayerName => TownPromptCatalogResources.Get(false).GetRuntimeText("DefaultPlayerName");
+
+
+
+    public const string DefaultPlayerNameEn = "the player";
+
+
 
     public static string BuildAlliedSoldierPrompt(string castleName, string playerName)
     {
-        castleName = Normalize(castleName, DefaultCastleName);
-        playerName = Normalize(playerName, DefaultPlayerName);
-        return "【城堡战后身份·最高优先级】你是" + playerName + "从攻城胜利部队中亲自挑选并带入"
-            + castleName + "的己方随行士兵。你参加了胜利方的攻城行动，现在仍受" + playerName
-            + "直接指挥；你不是本城战败守军、俘虏或中立旁观者。";
+        return BuildAlliedSoldierPrompt(castleName, playerName, isEnglish: false);
+    }
+
+    public static string BuildAlliedSoldierPrompt(string castleName, string playerName, bool isEnglish)
+        => BuildAlliedSoldierPrompt(castleName, playerName, TownPromptCatalogResources.Get(isEnglish));
+
+    public static string BuildAlliedSoldierPrompt(string castleName, string playerName, TownPromptTextCatalog textCatalog)
+    {
+        TownPromptTextCatalog text = textCatalog ?? TownPromptCatalogResources.Get(true);
+        return TownPromptTextCatalog.FormatTemplate(text.CastleNpcAlliedSoldierTemplate, ("settlement", Normalize(castleName, text.GetRuntimeText("DefaultNpcCastleName"))), ("player", Normalize(playerName, text.GetRuntimeText("DefaultPlayerName"))));
     }
 
     public static string BuildAlliedArmyCaptainPrompt(string castleName, string playerName)
     {
-        castleName = Normalize(castleName, DefaultCastleName);
-        playerName = Normalize(playerName, DefaultPlayerName);
-        return "【城堡战后身份·最高优先级】你是与" + playerName + "并肩参加本次攻城、并被邀请进入"
-            + castleName + "参与战后处置的己方军团队长和贵族。你的部队仍归你统领，没有被并入玩家本队；"
-            + "本场景只生成你本人，不会把你麾下普通士兵带入。你不是守城战败者、俘虏或普通随行士兵，"
-            + "可以用友军贵族和部队指挥官的立场评论处置，但不能触发普通士兵或战俘专属的结算标签。";
+        return BuildAlliedArmyCaptainPrompt(castleName, playerName, isEnglish: false);
+    }
+
+    public static string BuildAlliedArmyCaptainPrompt(string castleName, string playerName, bool isEnglish)
+        => BuildAlliedArmyCaptainPrompt(castleName, playerName, TownPromptCatalogResources.Get(isEnglish));
+
+    public static string BuildAlliedArmyCaptainPrompt(string castleName, string playerName, TownPromptTextCatalog textCatalog)
+    {
+        TownPromptTextCatalog text = textCatalog ?? TownPromptCatalogResources.Get(true);
+        return TownPromptTextCatalog.FormatTemplate(text.CastleNpcAlliedLordTemplate, ("settlement", Normalize(castleName, text.GetRuntimeText("DefaultNpcCastleName"))), ("player", Normalize(playerName, text.GetRuntimeText("DefaultPlayerName"))));
     }
 
     public static string BuildDefeatedGarrisonPrisonerPrompt(string castleName, string playerName)
     {
-        castleName = Normalize(castleName, DefaultCastleName);
-        playerName = Normalize(playerName, DefaultPlayerName);
-        return "【城堡战后身份·最高优先级】你按" + castleName + "守城战中被击败并缴械的普通守军处理。"
-            + playerName + "是攻下城堡的胜利方首领和当前控制者；你是等待处置的战俘，不是他的部下或友军。"
-            + "即使场景为了押解和站位把你放入玩家可指挥编队，也不代表你已被收编。你应承认守城失败、行动受限、命运尚待决定，不能把这里说成阅兵或普通检阅。";
+        return BuildDefeatedGarrisonPrisonerPrompt(castleName, playerName, isEnglish: false);
+    }
+
+    public static string BuildDefeatedGarrisonPrisonerPrompt(string castleName, string playerName, bool isEnglish)
+        => BuildDefeatedGarrisonPrisonerPrompt(castleName, playerName, TownPromptCatalogResources.Get(isEnglish));
+
+    public static string BuildDefeatedGarrisonPrisonerPrompt(string castleName, string playerName, TownPromptTextCatalog textCatalog)
+    {
+        TownPromptTextCatalog text = textCatalog ?? TownPromptCatalogResources.Get(true);
+        return TownPromptTextCatalog.FormatTemplate(text.CastleNpcRegularPrisonerTemplate, ("settlement", Normalize(castleName, text.GetRuntimeText("DefaultNpcCastleName"))), ("player", Normalize(playerName, text.GetRuntimeText("DefaultPlayerName"))));
     }
 
     public static string BuildCurrentCastleDefeatedLordPrompt(string castleName, string playerName)
     {
-        castleName = Normalize(castleName, DefaultCastleName);
-        playerName = Normalize(playerName, DefaultPlayerName);
-        return "【城堡战后身份·最高优先级】本次围城参战记录确认：你作为敌方贵族在"
-            + castleName + "的攻守战中被" + playerName + "一方击败并成为俘虏。现在你被带到刚陷落的城堡内等待处置；"
-            + playerName + "是胜利方首领和当前控制者。你可以愤怒、不甘、傲慢、求饶或谈判，但不能否认自己在本城战败被俘。";
+        return BuildCurrentCastleDefeatedLordPrompt(castleName, playerName, isEnglish: false);
+    }
+
+    public static string BuildCurrentCastleDefeatedLordPrompt(string castleName, string playerName, bool isEnglish)
+        => BuildCurrentCastleDefeatedLordPrompt(castleName, playerName, TownPromptCatalogResources.Get(isEnglish));
+
+    public static string BuildCurrentCastleDefeatedLordPrompt(string castleName, string playerName, TownPromptTextCatalog textCatalog)
+    {
+        TownPromptTextCatalog text = textCatalog ?? TownPromptCatalogResources.Get(true);
+        return TownPromptTextCatalog.FormatTemplate(text.CastleNpcCapturedCastleLordTemplate, ("settlement", Normalize(castleName, text.GetRuntimeText("DefaultNpcCastleName"))), ("player", Normalize(playerName, text.GetRuntimeText("DefaultPlayerName"))));
     }
 
     public static string BuildPreviouslyPlayerDefeatedLordPrompt(string castleName, string playerName)
     {
-        castleName = Normalize(castleName, DefaultCastleName);
-        playerName = Normalize(playerName, DefaultPlayerName);
-        return "【城堡战后身份·最高优先级】AF既有战斗记录确认" + playerName
-            + "此前曾在野外或另一场战斗中击败过你；但本次围城参战记录没有把你列为" + castleName + "的战败者。"
-            + "你是此前已经落入胜利方手中的敌方贵族俘虏，现在被带入刚攻下的城堡等待处置。不要编造自己刚在本城守城战中被击败。";
+        return BuildPreviouslyPlayerDefeatedLordPrompt(castleName, playerName, isEnglish: false);
+    }
+
+    public static string BuildPreviouslyPlayerDefeatedLordPrompt(string castleName, string playerName, bool isEnglish)
+        => BuildPreviouslyPlayerDefeatedLordPrompt(castleName, playerName, TownPromptCatalogResources.Get(isEnglish));
+
+    public static string BuildPreviouslyPlayerDefeatedLordPrompt(string castleName, string playerName, TownPromptTextCatalog textCatalog)
+    {
+        TownPromptTextCatalog text = textCatalog ?? TownPromptCatalogResources.Get(true);
+        return TownPromptTextCatalog.FormatTemplate(text.CastleNpcPriorDefeatedNobleTemplate, ("settlement", Normalize(castleName, text.GetRuntimeText("DefaultNpcCastleName"))), ("player", Normalize(playerName, text.GetRuntimeText("DefaultPlayerName"))));
     }
 
     public static string BuildPreviouslyCapturedLordPrompt(string castleName, string playerName)
     {
-        castleName = Normalize(castleName, DefaultCastleName);
-        playerName = Normalize(playerName, DefaultPlayerName);
-        return "【城堡战后身份·最高优先级】当前可靠记录不支持你是在" + castleName + "的本次守城战中被击败。"
-            + "你在进入此场景前已经是" + playerName + "一方控制的敌方贵族俘虏，现在被带入刚攻下的城堡等待处置。"
-            + "你必须承认被俘和行动受限，但不要编造具体战败地点或声称自己是本城刚刚战败的守城领主。";
+        return BuildPreviouslyCapturedLordPrompt(castleName, playerName, isEnglish: false);
+    }
+
+    public static string BuildPreviouslyCapturedLordPrompt(string castleName, string playerName, bool isEnglish)
+        => BuildPreviouslyCapturedLordPrompt(castleName, playerName, TownPromptCatalogResources.Get(isEnglish));
+
+    public static string BuildPreviouslyCapturedLordPrompt(string castleName, string playerName, TownPromptTextCatalog textCatalog)
+    {
+        TownPromptTextCatalog text = textCatalog ?? TownPromptCatalogResources.Get(true);
+        return TownPromptTextCatalog.FormatTemplate(text.CastleNpcFallbackNobleTemplate, ("settlement", Normalize(castleName, text.GetRuntimeText("DefaultNpcCastleName"))), ("player", Normalize(playerName, text.GetRuntimeText("DefaultPlayerName"))));
     }
 
     private static string Normalize(string value, string fallback)

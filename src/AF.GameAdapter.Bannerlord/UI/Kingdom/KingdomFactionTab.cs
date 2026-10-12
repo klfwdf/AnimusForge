@@ -20,10 +20,7 @@ internal static class KingdomFactionUiText
 
 	internal static string F(string id, string englishFallback, params (string Name, object Value)[] variables)
 	{
-		TextObject text = new TextObject("{=" + id + "}" + englishFallback);
-		if (variables != null)
-			foreach ((string name, object value) in variables) text.SetTextVariable(name, value?.ToString() ?? string.Empty);
-		return text.ToString();
+		return DeveloperUiText.Format(id, englishFallback, variables);
 	}
 }
 

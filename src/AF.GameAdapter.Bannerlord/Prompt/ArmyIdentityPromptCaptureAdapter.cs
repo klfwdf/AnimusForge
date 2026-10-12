@@ -8,6 +8,7 @@ using TaleWorlds.CampaignSystem.Roster;
 using TaleWorlds.CampaignSystem.Settlements;
 using TaleWorlds.MountAndBlade;
 using static AnimusForge.MemoryEntityIdentityBannerlordAdapter;
+using static AnimusForge.AdapterPromptCaptureTexts;
 
 namespace AnimusForge.Refactor.Adapters;
 
@@ -34,8 +35,8 @@ internal static class ArmyIdentityPromptCaptureAdapter
 			MobileParty leaderParty = army.LeaderParty;
 			Hero leaderHero = leaderParty?.LeaderHero ?? army.ArmyOwner;
 			bool isArmyLeader = leaderHero == hero || leaderParty == party;
-			string armyName = GetArmyDisplayName(army);
-			string leaderName = GetHeroDisplayName(leaderHero);
+			string armyName = GetArmyDisplayNameForPrompt(army);
+			string leaderName = GetHeroDisplayNameForPrompt(leaderHero);
 			int partyCount = 0;
 			int totalMen = 0;
 			try
@@ -56,40 +57,40 @@ internal static class ArmyIdentityPromptCaptureAdapter
 			}
 			List<string> heroNames = BuildArmyHeroListForPrompt(army, hero, leaderHero, 18, out int heroCount);
 			StringBuilder stringBuilder = new StringBuilder();
-			stringBuilder.Append("【当前军团事实】");
+			stringBuilder.Append(PcapText("AF_PCAP_Army_Head", "[Current army facts] "));
 			if (isArmyLeader)
 			{
-				stringBuilder.Append("你正在率领").Append(armyName);
+				stringBuilder.Append(PcapFormat("AF_PCAP_Army_HeroLeads", "You are leading {ARMY}", ("ARMY", armyName)));
 			}
 			else
 			{
-				stringBuilder.Append("你现在属于").Append(leaderName).Append("统率的").Append(armyName);
+				stringBuilder.Append(PcapFormat("AF_PCAP_Army_HeroBelongs", "You now belong to {ARMY}, commanded by {LEADER}", ("LEADER", leaderName), ("ARMY", armyName)));
 			}
 			if (partyCount > 0 || totalMen > 0)
 			{
-				stringBuilder.Append("，当前约有");
+				stringBuilder.Append(PcapText("AF_PCAP_Army_SizeLead", ", currently about "));
 				if (partyCount > 0)
 				{
-					stringBuilder.Append(partyCount).Append("支部队");
+					stringBuilder.Append(PcapFormat("AF_PCAP_Army_Parties", "{COUNT} parties", ("COUNT", partyCount)));
 					if (totalMen > 0)
 					{
-						stringBuilder.Append("、");
+						stringBuilder.Append(PcapText("AF_PCAP_Army_SizeJoin", " and "));
 					}
 				}
 				if (totalMen > 0)
 				{
-					stringBuilder.Append(totalMen).Append("名士兵");
+					stringBuilder.Append(PcapFormat("AF_PCAP_Army_Men", "{COUNT} soldiers", ("COUNT", totalMen)));
 				}
 			}
 			if (heroNames.Count > 0)
 			{
-				stringBuilder.Append("。你知道这支军团中的Hero包括：").Append(string.Join("、", heroNames));
+				stringBuilder.Append(PcapText("AF_PCAP_Army_HeroListHero", ". You know the heroes in this army include: ")).Append(string.Join(PcapText("AF_PCAP_Army_ListSep", ", "), heroNames));
 				if (heroCount > heroNames.Count)
 				{
-					stringBuilder.Append("等").Append(heroCount).Append("人");
+					stringBuilder.Append(PcapFormat("AF_PCAP_Army_HeroMore", " and others, {COUNT} in total", ("COUNT", heroCount)));
 				}
 			}
-			stringBuilder.Append("。这是你此刻应当知道的实时事实，不要说自己不清楚是否在军团中。");
+			stringBuilder.Append(PcapText("AF_PCAP_Army_HeroTail", ". This is a real-time fact you should know right now; do not say you are unsure whether you are in an army."));
 			return stringBuilder.ToString().Replace("\r", " ").Replace("\n", " ").Trim();
 		}
 		catch
@@ -130,14 +131,14 @@ internal static class ArmyIdentityPromptCaptureAdapter
 			string playerName = (PersonaIdentityPromptCaptureAdapter.BuildPlayerPublicDisplayNameForPrompt(observerHero, observerCharacter, targetAgentIndex) ?? "").Trim();
 			if (string.IsNullOrWhiteSpace(playerName))
 			{
-				playerName = "玩家";
+				playerName = PcapText("AF_PCAP_Army_PlayerFallback", "Player");
 			}
-			string armyName = GetArmyDisplayName(army);
+			string armyName = GetArmyDisplayNameForPrompt(army);
 			if (leaderHero == playerHero && string.IsNullOrWhiteSpace(army?.Name?.ToString()))
 			{
-				armyName = playerName + "的军团";
+				armyName = PcapFormat("AF_PCAP_Army_PlayerDefaultName", "{PLAYER}'s army", ("PLAYER", playerName));
 			}
-			string leaderName = leaderHero == playerHero ? playerName : GetHeroDisplayName(leaderHero);
+			string leaderName = leaderHero == playerHero ? playerName : GetHeroDisplayNameForPrompt(leaderHero);
 			int partyCount = 0;
 			int totalMen = 0;
 			try
@@ -158,40 +159,40 @@ internal static class ArmyIdentityPromptCaptureAdapter
 			}
 			List<string> heroNames = BuildArmyHeroListForPrompt(army, null, leaderHero, 18, out int heroCount, playerHero, playerName);
 			StringBuilder stringBuilder = new StringBuilder();
-			stringBuilder.Append("【玩家当前军团事实】");
+			stringBuilder.Append(PcapText("AF_PCAP_Army_PlayerHead", "[Player's current army facts] "));
 			if (playerIsArmyLeader)
 			{
-				stringBuilder.Append(playerName).Append("正在率领").Append(armyName);
+				stringBuilder.Append(PcapFormat("AF_PCAP_Army_PlayerLeads", "{PLAYER} is leading {ARMY}", ("PLAYER", playerName), ("ARMY", armyName)));
 			}
 			else
 			{
-				stringBuilder.Append(playerName).Append("现在属于").Append(leaderName).Append("统率的").Append(armyName);
+				stringBuilder.Append(PcapFormat("AF_PCAP_Army_PlayerBelongs", "{PLAYER} now belongs to {ARMY}, commanded by {LEADER}", ("PLAYER", playerName), ("LEADER", leaderName), ("ARMY", armyName)));
 			}
 			if (partyCount > 0 || totalMen > 0)
 			{
-				stringBuilder.Append("，当前约有");
+				stringBuilder.Append(PcapText("AF_PCAP_Army_SizeLead", ", currently about "));
 				if (partyCount > 0)
 				{
-					stringBuilder.Append(partyCount).Append("支部队");
+					stringBuilder.Append(PcapFormat("AF_PCAP_Army_Parties", "{COUNT} parties", ("COUNT", partyCount)));
 					if (totalMen > 0)
 					{
-						stringBuilder.Append("、");
+						stringBuilder.Append(PcapText("AF_PCAP_Army_SizeJoin", " and "));
 					}
 				}
 				if (totalMen > 0)
 				{
-					stringBuilder.Append(totalMen).Append("名士兵");
+					stringBuilder.Append(PcapFormat("AF_PCAP_Army_Men", "{COUNT} soldiers", ("COUNT", totalMen)));
 				}
 			}
 			if (heroNames.Count > 0)
 			{
-				stringBuilder.Append("；军团Hero包括：").Append(string.Join("、", heroNames));
+				stringBuilder.Append(PcapText("AF_PCAP_Army_PlayerHeroList", "; the heroes in the army include: ")).Append(string.Join(PcapText("AF_PCAP_Army_ListSep", ", "), heroNames));
 				if (heroCount > heroNames.Count)
 				{
-					stringBuilder.Append("等").Append(heroCount).Append("人");
+					stringBuilder.Append(PcapFormat("AF_PCAP_Army_HeroMore", " and others, {COUNT} in total", ("COUNT", heroCount)));
 				}
 			}
-			stringBuilder.Append("。");
+			stringBuilder.Append(PcapText("AF_PCAP_Army_End", "."));
 			return stringBuilder.ToString().Replace("\r", " ").Replace("\n", " ").Trim();
 		}
 		catch
@@ -225,18 +226,20 @@ internal static class ArmyIdentityPromptCaptureAdapter
 			}
 			heroes.Add(Tuple.Create(value, role ?? ""));
 		}
-		try
-		{
-			addHero(leaderHero, "军团统帅");
-			IEnumerable<MobileParty> parties = (army?.Parties != null) ? army.Parties : Enumerable.Empty<MobileParty>();
-			foreach (MobileParty mobileParty in parties)
+			try
 			{
-				if (mobileParty == null)
+				string armyCommanderRole = PcapText("AF_PCAP_Army_RoleCommander", "army commander");
+				string partyLeaderRole = PcapText("AF_PCAP_Army_RolePartyLeader", "party leader");
+				addHero(leaderHero, armyCommanderRole);
+				IEnumerable<MobileParty> parties = (army?.Parties != null) ? army.Parties : Enumerable.Empty<MobileParty>();
+				foreach (MobileParty mobileParty in parties)
 				{
-					continue;
+					if (mobileParty == null)
+					{
+						continue;
+					}
+					addHero(mobileParty.LeaderHero, mobileParty == army.LeaderParty ? armyCommanderRole : partyLeaderRole);
 				}
-				addHero(mobileParty.LeaderHero, mobileParty == army.LeaderParty ? "军团统帅" : "部队领袖");
-			}
 			foreach (MobileParty mobileParty2 in parties)
 			{
 				TroopRoster roster = mobileParty2?.MemberRoster;
@@ -260,7 +263,7 @@ internal static class ArmyIdentityPromptCaptureAdapter
 					{
 						continue;
 					}
-					addHero(character.HeroObject, "随队Hero");
+					addHero(character.HeroObject, PcapText("AF_PCAP_Army_RoleMember", "accompanying Hero"));
 				}
 			}
 		}
@@ -276,15 +279,15 @@ internal static class ArmyIdentityPromptCaptureAdapter
 				List<string> tags = new List<string>();
 				if (value == perspectiveHero)
 				{
-					tags.Add("你");
+					tags.Add(PcapText("AF_PCAP_Army_TagYou", "you"));
 				}
 				string role = (item.Item2 ?? "").Trim();
 				if (!string.IsNullOrWhiteSpace(role))
 				{
 					tags.Add(role);
 				}
-				string name = value == displayOverrideHero && !string.IsNullOrWhiteSpace(displayOverrideName) ? displayOverrideName.Trim() : GetHeroDisplayName(value);
-				return tags.Count > 0 ? (name + "（" + string.Join("，", tags.Distinct()) + "）") : name;
+				string name = value == displayOverrideHero && !string.IsNullOrWhiteSpace(displayOverrideName) ? displayOverrideName.Trim() : GetHeroDisplayNameForPrompt(value);
+				return tags.Count > 0 ? PcapFormat("AF_PCAP_Army_NameTags", "{NAME} ({TAGS})", ("NAME", name), ("TAGS", string.Join(PcapText("AF_PCAP_Army_TagSep", ", "), tags.Distinct()))) : name;
 			})
 			.ToList();
 	}
@@ -325,19 +328,19 @@ internal static class ArmyIdentityPromptCaptureAdapter
 			}
 			string[] idioms =
 			{
-				"违法乱纪",
-				"作奸犯科",
-				"为非作歹",
-				"胡作非为",
-				"无法无天",
-				"劣迹昭著",
-				"罪恶昭彰",
-				"罪大恶极",
-				"恶贯满盈",
-				"罪不容诛"
+				PcapText("AF_PCAP_Army_Crime01", "lawless conduct"),
+				PcapText("AF_PCAP_Army_Crime02", "habitual wrongdoing"),
+				PcapText("AF_PCAP_Army_Crime03", "committing evil deeds"),
+				PcapText("AF_PCAP_Army_Crime04", "reckless misconduct"),
+				PcapText("AF_PCAP_Army_Crime05", "utter disregard for the law"),
+				PcapText("AF_PCAP_Army_Crime06", "a notorious record of misdeeds"),
+				PcapText("AF_PCAP_Army_Crime07", "glaringly evident crimes"),
+				PcapText("AF_PCAP_Army_Crime08", "the gravest of crimes"),
+				PcapText("AF_PCAP_Army_Crime09", "a cup of wickedness filled to the brim"),
+				PcapText("AF_PCAP_Army_Crime10", "crimes beyond all forgiveness")
 			};
 			int level = Math.Max(1, Math.Min(idioms.Length, (int)Math.Ceiling(crimeRating / maxCrimeRating * idioms.Length)));
-			return "此人在" + factionName + "的犯罪恶名被评为" + idioms[level - 1] + "。";
+			return PcapFormat("AF_PCAP_Army_CrimeLine", "This person's criminal notoriety in {FACTION} is rated as {IDIOM}.", ("FACTION", factionName), ("IDIOM", idioms[level - 1]));
 		}
 		catch
 		{
@@ -350,11 +353,11 @@ internal static class ArmyIdentityPromptCaptureAdapter
 	}
 	internal static string BuildPlayerCourierSenderIdentityForExternal(Hero observer)
 	{
-		return BuildPlayerCourierIdentityForExternal(observer, "来信者", "正式回信");
+		return BuildPlayerCourierIdentityForExternal(observer, PcapText("AF_PCAP_Army_CourierSender", "the sender"), PcapText("AF_PCAP_Army_CourierSenderContext", "a formal reply"));
 	}
 	internal static string BuildPlayerCourierRecipientIdentityForExternal(Hero observer)
 	{
-		return BuildPlayerCourierIdentityForExternal(observer, "收信者", "正式信件中");
+		return BuildPlayerCourierIdentityForExternal(observer, PcapText("AF_PCAP_Army_CourierRecipient", "the recipient"), PcapText("AF_PCAP_Army_CourierRecipientContext", "a formal letter"));
 	}
 	internal static string BuildPlayerCourierIdentityForExternal(Hero observer, string participantLabel, string formalAddressContext)
 	{
@@ -366,78 +369,81 @@ internal static class ArmyIdentityPromptCaptureAdapter
 				return "";
 			}
 			bool includeFullIdentity = PlayerNotorietyBehavior.DoesObserverKnowPlayerForExternal(observer);
-			string playerDisplayName = (PersonaIdentityPromptCaptureAdapter.BuildPlayerPublicDisplayNameForPrompt(observer) ?? "").Trim();
-			if (string.IsNullOrWhiteSpace(playerDisplayName))
-			{
-				playerDisplayName = includeFullIdentity ? (playerHero.Name?.ToString() ?? "").Trim() : "玩家";
-			}
-			if (string.IsNullOrWhiteSpace(playerDisplayName))
-			{
-				playerDisplayName = "玩家";
-			}
-			int clanTier = 0;
-			string clanName = "无家族";
-			string clanRole = playerHero.IsFemale ? "女性成员" : "男性成员";
-			try
-			{
-				clanTier = playerHero.Clan?.Tier ?? 0;
-				string rawClanName = (playerHero.Clan?.Name?.ToString() ?? "").Trim();
-				if (!string.IsNullOrWhiteSpace(rawClanName))
+				string playerDisplayName = (PersonaIdentityPromptCaptureAdapter.BuildPlayerPublicDisplayNameForPrompt(observer) ?? "").Trim();
+				if (string.IsNullOrWhiteSpace(playerDisplayName))
 				{
-					clanName = rawClanName;
+					playerDisplayName = includeFullIdentity ? (playerHero.Name?.ToString() ?? "").Trim() : PcapText("AF_PCAP_Army_PlayerFallback", "Player");
 				}
-				if (!string.IsNullOrWhiteSpace(clanName) && clanName != "无家族" && !clanName.EndsWith("家族", StringComparison.Ordinal))
+				if (string.IsNullOrWhiteSpace(playerDisplayName))
 				{
-					clanName += "家族";
+					playerDisplayName = PcapText("AF_PCAP_Army_PlayerFallback", "Player");
 				}
-				if (playerHero.Clan?.Leader == playerHero)
+				int clanTier = 0;
+				string noClanText = PcapText("AF_PCAP_Word_NoClan", "no clan");
+				string clanName = noClanText;
+				string clanRole = playerHero.IsFemale ? PcapText("AF_PCAP_Role_FemaleMember", "female member") : PcapText("AF_PCAP_Role_MaleMember", "male member");
+				try
 				{
-					clanRole = "族长";
+					clanTier = playerHero.Clan?.Tier ?? 0;
+					string rawClanName = (playerHero.Clan?.Name?.ToString() ?? "").Trim();
+					if (!string.IsNullOrWhiteSpace(rawClanName))
+					{
+						clanName = rawClanName;
+					}
+					string clanSuffix = PcapText("AF_PCAP_Suffix_Clan", " clan");
+					if (!string.IsNullOrWhiteSpace(clanName) && clanName != noClanText && !clanName.EndsWith(clanSuffix, StringComparison.Ordinal))
+					{
+						clanName += clanSuffix;
+					}
+					if (playerHero.Clan?.Leader == playerHero)
+					{
+						clanRole = PcapText("AF_PCAP_Role_ClanLeader", "clan leader");
+					}
 				}
-			}
 			catch
 			{
 			}
 			PersonaIdentityPromptCaptureAdapter.GetHeroFactionAndLiegeForPrompt(playerHero, out var factionName, out var liegeName);
 			string identityTitle = PersonaIdentityPromptCaptureAdapter.CaptureHeroIdentityTitle(playerHero);
-			string cultureText = PersonaIdentityPromptCaptureAdapter.GetHeroCultureNameForPrompt(playerHero);
-			if (!string.IsNullOrWhiteSpace(cultureText) && !cultureText.EndsWith("人", StringComparison.Ordinal))
-			{
-				cultureText += "人";
-			}
-			string ageText = PersonaIntroTextRules.BuildAgeBracketLabel(playerHero.Age);
-			StringBuilder stringBuilder = new StringBuilder();
-			stringBuilder.AppendLine("【" + participantLabel + "公开身份】");
-			stringBuilder.AppendLine(participantLabel + "公开称呼：" + playerDisplayName);
-			stringBuilder.AppendLine(participantLabel + "文化与年纪：" + cultureText + "，" + ageText);
-			if (includeFullIdentity)
-			{
-				stringBuilder.AppendLine(PersonaIdentityPromptCaptureAdapter.BuildFactionLineForPrompt(participantLabel + "势力：", factionName, liegeName));
-				stringBuilder.AppendLine(participantLabel + "身份：" + identityTitle);
-				stringBuilder.AppendLine(participantLabel + "家族：" + clanName + $"（{Math.Max(0, clanTier)} level，{clanRole}）");
-				try
+				string cultureText = PersonaIdentityPromptCaptureAdapter.GetHeroCultureNameForPrompt(playerHero);
+				string peopleSuffix = PcapText("AF_PCAP_Suffix_People", "");
+				if (!string.IsNullOrWhiteSpace(cultureText) && !cultureText.EndsWith(peopleSuffix, StringComparison.Ordinal))
 				{
-					if (PersonaIdentityPromptCaptureAdapter.TryResolveActiveKingdomRuledByHeroForPrompt(playerHero, out Kingdom ruledKingdom))
+					cultureText += peopleSuffix;
+				}
+				string ageText = PersonaIntroTextRules.BuildAgeBracketLabel(playerHero.Age);
+				StringBuilder stringBuilder = new StringBuilder();
+				stringBuilder.AppendLine(PcapFormat("AF_PCAP_Army_CourierHeader", "[Public identity of {LABEL}]", ("LABEL", participantLabel)));
+				stringBuilder.AppendLine(PcapFormat("AF_PCAP_Army_CourierName", "Public name of {LABEL}: {NAME}", ("LABEL", participantLabel), ("NAME", playerDisplayName)));
+				stringBuilder.AppendLine(PcapFormat("AF_PCAP_Army_CourierCultureAge", "Culture and age of {LABEL}: {CULTURE}, {AGE}", ("LABEL", participantLabel), ("CULTURE", cultureText), ("AGE", ageText)));
+				if (includeFullIdentity)
+				{
+					stringBuilder.AppendLine(PersonaIdentityPromptCaptureAdapter.BuildFactionLineForPrompt(PcapFormat("AF_PCAP_Army_CourierFactionLabel", "Faction of {LABEL}: ", ("LABEL", participantLabel)), factionName, liegeName));
+					stringBuilder.AppendLine(PcapFormat("AF_PCAP_Army_CourierIdentity", "Identity of {LABEL}: {TITLE}", ("LABEL", participantLabel), ("TITLE", identityTitle)));
+					stringBuilder.AppendLine(PcapFormat("AF_PCAP_Army_CourierClan", "Clan of {LABEL}: {CLAN} (level {TIER}, {ROLE})", ("LABEL", participantLabel), ("CLAN", clanName), ("TIER", Math.Max(0, clanTier)), ("ROLE", clanRole)));
+					try
 					{
-						string kingdomName = (ruledKingdom.Name?.ToString() ?? factionName ?? "").Trim();
-						string sovereignTitle = playerHero.IsFemale ? "女王/统治者" : "国王/统治者";
-						string scope = string.IsNullOrWhiteSpace(kingdomName) ? "" : (kingdomName + "的");
-						stringBuilder.AppendLine("称呼要求：" + participantLabel + "是" + scope + sovereignTitle + "，" + formalAddressContext + "应称其为“" + playerDisplayName + "陛下”或使用君主/统治者级称呼；不要把此人降格称为“勋爵”“领主”或普通贵族。");
+						if (PersonaIdentityPromptCaptureAdapter.TryResolveActiveKingdomRuledByHeroForPrompt(playerHero, out Kingdom ruledKingdom))
+						{
+							string kingdomName = (ruledKingdom.Name?.ToString() ?? factionName ?? "").Trim();
+							string sovereignTitle = playerHero.IsFemale ? PcapText("AF_PCAP_Army_TitleQueen", "queen/ruler") : PcapText("AF_PCAP_Army_TitleKing", "king/ruler");
+							string scope = string.IsNullOrWhiteSpace(kingdomName) ? "" : PcapFormat("AF_PCAP_Army_CourierScope", "{KINGDOM}'s ", ("KINGDOM", kingdomName));
+							stringBuilder.AppendLine(PcapFormat("AF_PCAP_Army_CourierSovereign", "Address requirement: {LABEL} is {SCOPE}{TITLE}; in {CONTEXT} address them as \"{NAME}, Your Majesty\" or with another sovereign/ruler-level form of address; do not demote this person to \"lord\", \"baron\" or an ordinary noble.", ("LABEL", participantLabel), ("SCOPE", scope), ("TITLE", sovereignTitle), ("CONTEXT", formalAddressContext), ("NAME", playerDisplayName)));
+						}
+						else if (playerHero.Clan?.Leader == playerHero)
+						{
+							stringBuilder.AppendLine(PcapFormat("AF_PCAP_Army_CourierClanLeader", "Address requirement: {LABEL} is only the leader of {CLAN}, not a kingdom ruler; in {CONTEXT} do not call them \"Your Majesty\"; use their public name or a clan-leader or lord-level form of address.", ("LABEL", participantLabel), ("CLAN", clanName), ("CONTEXT", formalAddressContext)));
+						}
 					}
-					else if (playerHero.Clan?.Leader == playerHero)
+					catch
 					{
-						stringBuilder.AppendLine("称呼要求：" + participantLabel + "只是" + clanName + "的族长，并非王国统治者；" + formalAddressContext + "不得称其为“陛下”，应使用其公开称呼或族长、领主级称呼。");
 					}
 				}
-				catch
+				else
 				{
+					stringBuilder.AppendLine(PcapFormat("AF_PCAP_Army_CourierUnconfirmed", "Detailed identity of {LABEL}: you have not confirmed their real name, clan, faction or titles, and can only judge from their public name, the contents of the letter and the public rumors you already know.", ("LABEL", participantLabel)));
 				}
-			}
-			else
-			{
-				stringBuilder.AppendLine(participantLabel + "详细身份：你尚未确认其真实姓名、家族、势力或头衔，只能依据公开称呼、信件内容和你已知的公开传闻判断。");
-			}
-			string vassalageRelationLine = BuildPlayerVassalageRelationPromptLineForExternal(observer, counterpartKingdomLabel: "玩家所在王国");
+				string vassalageRelationLine = BuildPlayerVassalageRelationPromptLineForExternal(observer);
 			if (!string.IsNullOrWhiteSpace(vassalageRelationLine))
 			{
 				stringBuilder.AppendLine(vassalageRelationLine);
@@ -449,11 +455,12 @@ internal static class ArmyIdentityPromptCaptureAdapter
 			return "";
 		}
 	}
-	internal static string BuildPlayerVassalageRelationPromptLineForExternal(Hero observer, CharacterObject observerCharacter = null, string kingdomIdOverride = null, string counterpartKingdomLabel = "玩家所在王国", int targetAgentIndex = -1)
-	{
-		try
+	internal static string BuildPlayerVassalageRelationPromptLineForExternal(Hero observer, CharacterObject observerCharacter = null, string kingdomIdOverride = null, string counterpartKingdomLabel = null, int targetAgentIndex = -1)
 		{
-			Kingdom observerKingdom = ResolveObserverKingdomForVassalagePrompt(observer, observerCharacter, kingdomIdOverride, targetAgentIndex);
+			try
+			{
+				counterpartKingdomLabel ??= PcapText("AF_PCAP_Army_PlayerKingdomLabel", "the player's kingdom");
+				Kingdom observerKingdom = ResolveObserverKingdomForVassalagePrompt(observer, observerCharacter, kingdomIdOverride, targetAgentIndex);
 			Kingdom playerKingdom = ResolvePlayerKingdomForVassalagePrompt();
 			return VassalageBehavior.BuildKingdomVassalageRelationPromptLineForExternal(observerKingdom, playerKingdom, counterpartKingdomLabel);
 		}

@@ -8,7 +8,7 @@ namespace AnimusForge;
 public partial class DuelSettings
 {
     private const string WorldBulletinWritingRequirementsJsonFileName = "WorldBulletinWritingRequirements.json";
-    private const string DefaultWorldBulletinWritingRequirements = WorldBulletinPolicy.DefaultWritingRequirements;
+    private static readonly string DefaultWorldBulletinWritingRequirements = WorldBulletinPolicy.DefaultWritingRequirements;
     private string _worldBulletinWritingRequirements = LoadWorldBulletinWritingRequirementsFromDiskOrDefault();
 
     public string WorldBulletinWritingRequirements
@@ -34,6 +34,7 @@ public partial class DuelSettings
     private static string MigrateLegacyWorldBulletinWritingRequirements(string input)
         => string.Equals(input, WorldBulletinPolicy.LegacyDefaultWritingRequirements, StringComparison.Ordinal)
             || string.Equals(input, WorldBulletinPolicy.LegacyNarrativeWritingRequirements, StringComparison.Ordinal)
+            || string.Equals(input, WorldBulletinPolicy.LegacyCurrentWritingRequirements, StringComparison.Ordinal)
             ? DefaultWorldBulletinWritingRequirements : input;
 
     private void OpenWorldBulletinWritingRequirementsEditor()

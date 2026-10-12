@@ -54,7 +54,7 @@ internal sealed class PersonaEquipmentPromptCaptureAdapter {
 		{
 			return null;
 		}
-		string clanName = "无家族";
+		string clanName = AdapterPromptCaptureTexts.PcapCompat("Project_Equipment_1");
 		int clanTier = 0;
 		try
 		{
@@ -72,38 +72,40 @@ internal sealed class PersonaEquipmentPromptCaptureAdapter {
 		string factionDisplay = (factionName ?? "").Trim();
 		if (string.IsNullOrWhiteSpace(factionDisplay))
 		{
-			factionDisplay = "无（独立）";
+			factionDisplay = AdapterPromptCaptureTexts.PcapCompat("Project_Equipment_2");
 		}
 		string liegeDisplay = (liegeName ?? "").Trim();
-		if (!string.IsNullOrWhiteSpace(liegeDisplay) && liegeDisplay != "无" && !liegeDisplay.EndsWith("（本人）", StringComparison.Ordinal))
+		if (!string.IsNullOrWhiteSpace(liegeDisplay) && liegeDisplay != AdapterPromptCaptureTexts.PcapCompat("Equipment_LiegeNone") && !liegeDisplay.EndsWith(AdapterPromptCaptureTexts.PcapCompat("Equipment_LiegeSelfSuffix"), StringComparison.Ordinal)
+			&& !liegeDisplay.Equals("None", StringComparison.OrdinalIgnoreCase) && !liegeDisplay.EndsWith("(self)", StringComparison.OrdinalIgnoreCase))
 		{
-			factionDisplay = factionDisplay + "（效忠：" + liegeDisplay + "）";
+			factionDisplay = factionDisplay + AdapterPromptCaptureTexts.PcapText("equipment_liege_prefix") + liegeDisplay + AdapterPromptCaptureTexts.PcapText("equipment_close");
 		}
 		string heroName = (npcHero.Name?.ToString() ?? "").Trim();
 		if (string.IsNullOrWhiteSpace(heroName))
 		{
-			heroName = "未知人物";
+			heroName = AdapterPromptCaptureTexts.PcapCompat("Project_Equipment_3");
 		}
 		string identityTitle = BuildHeroIdentityTitleForPrompt(npcHero);
-		string reputationText = GetClanTierReputationLabel(clanTier) + $"（{Math.Max(0, clanTier)} level）";
+		string reputationText = GetClanTierReputationLabel(clanTier) + AdapterPromptCaptureTexts.PcapFormat("equipment_reputation_level", " ({LEVEL} level)", ("LEVEL", Math.Max(0, clanTier)));
 		string equipmentText = BuildHeroEquipmentSummaryForPrompt(npcHero);
 		string ageText = BuildAgeBracketLabel(npcHero.Age);
 		string cultureText = GetHeroCultureNameForPrompt(npcHero);
-		if (!string.IsNullOrWhiteSpace(cultureText) && !cultureText.EndsWith("人", StringComparison.Ordinal))
+		string cultureSuffix = AdapterPromptCaptureTexts.PcapText("equipment_culture_suffix", "");
+		if (!string.IsNullOrWhiteSpace(cultureText) && !string.IsNullOrEmpty(cultureSuffix) && !cultureText.EndsWith(cultureSuffix, StringComparison.Ordinal))
 		{
-			cultureText += "人";
+			cultureText += cultureSuffix;
 		}
 		GetNpcPersonaStrings(npcHero, out var personality, out var background);
-		string personalityText = string.IsNullOrWhiteSpace(personality) ? "暂无记录" : personality.Trim();
-		string backgroundText = string.IsNullOrWhiteSpace(background) ? "暂无记录" : background.Trim();
+		string personalityText = string.IsNullOrWhiteSpace(personality) ? AdapterPromptCaptureTexts.PcapCompat("Project_Equipment_4") : personality.Trim();
+		string backgroundText = string.IsNullOrWhiteSpace(background) ? AdapterPromptCaptureTexts.PcapCompat("Project_Equipment_4") : background.Trim();
 		string nobleEtiquettePrompt = BuildNobleEtiquettePromptForHero(npcHero);
-		string clanRole = npcHero.IsFemale ? "女性成员" : "男性成员";
+		string clanRole = npcHero.IsFemale ? AdapterPromptCaptureTexts.PcapCompat("Project_Equipment_5") : AdapterPromptCaptureTexts.PcapCompat("Project_Equipment_6");
 		try
 		{
 			Hero leader = npcHero.Clan?.Leader;
 			if (leader != null && leader == npcHero)
 			{
-				clanRole = "族长";
+				clanRole = AdapterPromptCaptureTexts.PcapCompat("Project_Equipment_7");
 			}
 		}
 		catch
@@ -126,18 +128,18 @@ internal sealed class PersonaEquipmentPromptCaptureAdapter {
         string relationshipLine = BuildNpcPlayerKinshipPromptLine(npcHero, includeSameClanFallback: true);
         return new SystemNpcIntroSnapshot {
             Generation = generation,
-            clanName = clanName,
-            factionDisplay = factionDisplay,
-            heroName = heroName,
+            clanName = AdapterPromptCaptureTexts.PcapProjectKnown(clanName),
+            factionDisplay = AdapterPromptCaptureTexts.PcapProjectKnown(factionDisplay),
+            heroName = AdapterPromptCaptureTexts.PcapProjectKnown(heroName),
             identityTitle = identityTitle,
             reputationText = reputationText,
             equipmentText = equipmentText,
             ageText = ageText,
-            cultureText = cultureText,
-            personalityText = personalityText,
-            backgroundText = backgroundText,
+            cultureText = AdapterPromptCaptureTexts.PcapProjectKnown(cultureText),
+            personalityText = AdapterPromptCaptureTexts.PcapProjectKnown(personalityText),
+            backgroundText = AdapterPromptCaptureTexts.PcapProjectKnown(backgroundText),
             nobleEtiquettePrompt = nobleEtiquettePrompt,
-            clanRole = clanRole,
+            clanRole = AdapterPromptCaptureTexts.PcapProjectKnown(clanRole),
             relationshipLine = relationshipLine
         };
  }
@@ -159,17 +161,17 @@ internal string BuildNpcSystemIntro(Hero npcHero, bool includeTradePricing) => C
 		string identity = (npc.RoleDesc ?? "").Trim();
 		if (string.IsNullOrWhiteSpace(identity))
 		{
-			identity = "未知身份";
+			identity = AdapterPromptCaptureTexts.PcapCompat("Project_Equipment_8");
 		}
-		string personality = string.IsNullOrWhiteSpace(npc.PersonalityDesc) ? "暂无记录" : npc.PersonalityDesc.Trim();
-		string background = string.IsNullOrWhiteSpace(npc.BackgroundDesc) ? "暂无记录" : npc.BackgroundDesc.Trim();
-		string faction = "无（独立）";
-		string clan = "无家族";
-		string clanRole = "成员";
-		string reputation = MyBehavior.GetClanTierReputationLabelForExternal(0) + "（0 level）";
+		string personality = string.IsNullOrWhiteSpace(npc.PersonalityDesc) ? AdapterPromptCaptureTexts.PcapCompat("Project_Equipment_4") : npc.PersonalityDesc.Trim();
+		string background = string.IsNullOrWhiteSpace(npc.BackgroundDesc) ? AdapterPromptCaptureTexts.PcapCompat("Project_Equipment_4") : npc.BackgroundDesc.Trim();
+		string faction = AdapterPromptCaptureTexts.PcapCompat("Project_Equipment_2");
+		string clan = AdapterPromptCaptureTexts.PcapCompat("Project_Equipment_1");
+		string clanRole = AdapterPromptCaptureTexts.PcapCompat("Project_Equipment_9");
+		string reputation = MyBehavior.GetClanTierReputationLabelForExternal(0) + AdapterPromptCaptureTexts.PcapFormat("equipment_reputation_level", " ({LEVEL} level)", ("LEVEL", 0));
 		string culture = (npc.CultureId ?? "").Trim();
 		string age = MyBehavior.BuildAgeBracketLabelForExternal(npc.Age);
-		string equipment = "未知";
+		string equipment = AdapterPromptCaptureTexts.PcapCompat("Project_Equipment_10");
 		string inventorySummary = "";
 		string currentDateText = "";
 		if (hero != null)
@@ -181,12 +183,14 @@ internal string BuildNpcSystemIntro(Hero npcHero, bool includeTradePricing) => C
 				{
 					clan = clanName;
 				}
-				if (!string.IsNullOrWhiteSpace(clan) && !clan.EndsWith("家族", StringComparison.Ordinal))
+				string clanSuffix = AdapterPromptCaptureTexts.PcapText("equipment_clan_suffix");
+				if (!string.IsNullOrWhiteSpace(clan) && !clan.EndsWith(AdapterPromptCaptureTexts.PcapCompat("Location_ClanSuffix"), StringComparison.Ordinal)
+					&& !clan.EndsWith(clanSuffix, StringComparison.OrdinalIgnoreCase))
 				{
-					clan += "家族";
+					clan += clanSuffix;
 				}
 				int tier = hero.Clan?.Tier ?? 0;
-				reputation = MyBehavior.GetClanTierReputationLabelForExternal(tier) + $"（{Math.Max(0, tier)} level）";
+				reputation = MyBehavior.GetClanTierReputationLabelForExternal(tier) + AdapterPromptCaptureTexts.PcapFormat("equipment_reputation_level", " ({LEVEL} level)", ("LEVEL", Math.Max(0, tier)));
 				string heroIdentity = MyBehavior.BuildHeroIdentityTitleForExternal(hero);
 				if (!string.IsNullOrWhiteSpace(heroIdentity))
 				{
@@ -207,7 +211,7 @@ internal string BuildNpcSystemIntro(Hero npcHero, bool includeTradePricing) => C
 				}
 				if (hero.Clan?.Leader == hero)
 				{
-					clanRole = "族长";
+					clanRole = AdapterPromptCaptureTexts.PcapCompat("Project_Equipment_7");
 				}
 				string cultureName = (hero.Culture?.Name?.ToString() ?? "").Trim();
 				if (!string.IsNullOrWhiteSpace(cultureName))
@@ -233,9 +237,11 @@ internal string BuildNpcSystemIntro(Hero npcHero, bool includeTradePricing) => C
 			{
 				clan = unnamedRank;
 			}
-			if (!string.IsNullOrWhiteSpace(clan) && clan != "无家族" && !clan.EndsWith("家族", StringComparison.Ordinal))
+			string clanSuffix = AdapterPromptCaptureTexts.PcapText("equipment_clan_suffix");
+			if (!string.IsNullOrWhiteSpace(clan) && clan != AdapterPromptCaptureTexts.PcapCompat("Project_Equipment_1")
+				&& !clan.EndsWith(AdapterPromptCaptureTexts.PcapCompat("Location_ClanSuffix"), StringComparison.Ordinal) && !clan.EndsWith(clanSuffix, StringComparison.OrdinalIgnoreCase))
 			{
-				clan += "家族";
+				clan += clanSuffix;
 			}
 			if (!string.IsNullOrWhiteSpace(culture))
 			{
@@ -262,28 +268,31 @@ internal string BuildNpcSystemIntro(Hero npcHero, bool includeTradePricing) => C
 		}
 		if (string.IsNullOrWhiteSpace(culture))
 		{
-			culture = "未知文化";
+			culture = AdapterPromptCaptureTexts.PcapCompat("Project_Equipment_11");
 		}
-		if (!culture.EndsWith("人", StringComparison.Ordinal))
+		string nonHeroCultureSuffix = AdapterPromptCaptureTexts.PcapText("equipment_culture_suffix", "");
+		if (!string.IsNullOrEmpty(nonHeroCultureSuffix) && !culture.EndsWith(nonHeroCultureSuffix, StringComparison.Ordinal))
 		{
-			culture += "人";
+			culture += nonHeroCultureSuffix;
 		}
 		if (string.IsNullOrWhiteSpace(age))
 		{
-			age = "未知";
+			age = AdapterPromptCaptureTexts.PcapCompat("Project_Equipment_10");
 		}
 		if (string.IsNullOrWhiteSpace(equipment))
 		{
-			equipment = "未知";
+			equipment = AdapterPromptCaptureTexts.PcapCompat("Project_Equipment_10");
 		}
 		try
 		{
 			currentDateText = (MyBehavior.BuildCurrentDateFactForExternal() ?? "").Replace("\r", "").Trim();
-			if (currentDateText.StartsWith("当前游戏日期：", StringComparison.Ordinal))
+			if (currentDateText.StartsWith(AdapterPromptCaptureTexts.PcapCompat("Equipment_CurrentDatePrefix"), StringComparison.Ordinal))
 			{
-				currentDateText = currentDateText.Substring("当前游戏日期：".Length).Trim();
+				currentDateText = currentDateText.Substring(AdapterPromptCaptureTexts.PcapCompat("Equipment_CurrentDatePrefix").Length).Trim();
 			}
-			int parenIndex = currentDateText.IndexOf('（');
+            else if (currentDateText.StartsWith("Current game date: ", StringComparison.OrdinalIgnoreCase))
+                currentDateText = currentDateText.Substring("Current game date: ".Length).Trim();
+			int parenIndex = currentDateText.IndexOfAny(new[] { AdapterPromptCaptureTexts.PcapCompat("Equipment_DateOpenParen")[0], '(' });
 			if (parenIndex >= 0)
 			{
 				currentDateText = currentDateText.Substring(0, parenIndex).Trim();
@@ -296,12 +305,12 @@ internal string BuildNpcSystemIntro(Hero npcHero, bool includeTradePricing) => C
 		bool hideReputation = ShouldHideSceneReputationForPrompt(npc, hero);
         string pregnancySelfKnowledge="",heroJoinPartyRuntimeFact="",partyRepresentativePrompt="",npcTroopsLine="",npcPrisonersLine="";
         bool isFemale=false,heroInPlayerParty=false,hasNonHeroParty=false;
-        if(hero!=null){pregnancySelfKnowledge=BuildHeroPregnancySelfKnowledgeForPrompt(hero);isFemale=clanRole!="族长"&&hero.IsFemale;heroJoinPartyRuntimeFact=AIConfigHandler.BuildRuntimeHeroJoinPartyInstructionForExternal(hero);}
+        if(hero!=null){pregnancySelfKnowledge=BuildHeroPregnancySelfKnowledgeForPrompt(hero);isFemale=clanRole!=AdapterPromptCaptureTexts.PcapCompat("Project_Equipment_7")&&hero.IsFemale;heroJoinPartyRuntimeFact=AIConfigHandler.BuildRuntimeHeroJoinPartyInstructionForExternal(hero);}
         else partyRepresentativePrompt=BuildWildernessNonHeroPartyRepresentativePrompt(npc.AgentIndex);
         string ceremonyRole=BuildCeremonyRoleFactForPrompt(npc.AgentIndex);
         string npcCurrentMountLine=BuildNpcCurrentMountLineForPrompt(npc);
         if(hero!=null){try{heroInPlayerParty=IsHeroInPlayerMainPartyForPrompt(hero);if(!heroInPlayerParty){npcTroopsLine=BuildHeroPartyTroopsLineForPrompt(hero,secondPerson:true);npcPrisonersLine=BuildHeroPartyPrisonersLineForPrompt(hero,secondPerson:true);}}catch{npcTroopsLine="";npcPrisonersLine="";}}
-        else {try{PartyBase party=ResolveWildernessNonHeroPartyBaseForPrompt(npc.AgentIndex);hasNonHeroParty=party!=null;if(hasNonHeroParty){npcTroopsLine=BuildPartyTroopsLineForPrompt(party,"你所属队伍共有","你所属队伍无可战兵力",includeDetails:true);npcPrisonersLine=BuildPartyPrisonersLineForPrompt(party,"你所属队伍","你所属队伍无俘虏",includeDetails:true);}}catch{}}
+        else {try{PartyBase party=ResolveWildernessNonHeroPartyBaseForPrompt(npc.AgentIndex);hasNonHeroParty=party!=null;if(hasNonHeroParty){npcTroopsLine=BuildPartyTroopsLineForPrompt(party,AdapterPromptCaptureTexts.PcapText("equipment_own_party_total"),AdapterPromptCaptureTexts.PcapText("equipment_own_party_none"),includeDetails:true);npcPrisonersLine=BuildPartyPrisonersLineForPrompt(party,AdapterPromptCaptureTexts.PcapText("equipment_own_party"),AdapterPromptCaptureTexts.PcapText("equipment_own_prisoners_none"),includeDetails:true);}}catch{}}
         string nobleEtiquettePrompt=hero!=null?MyBehavior.BuildNobleEtiquettePromptForExternal(hero):"";
         string sceneLocationLine=BuildSceneLocationAndSettlementLineForPrompt(hero);
         string settlementHeroNpcLine=(ShoutUtils.BuildCurrentSettlementHeroNpcLineForPrompt()??"").Replace("\r","").Replace("\n"," ").Trim();
@@ -318,16 +327,16 @@ internal string BuildNpcSystemIntro(Hero npcHero, bool includeTradePricing) => C
             Generation = generation,
             name = name,
             givenName = givenName,
-            identity = identity,
-            personality = personality,
-            background = background,
-            faction = faction,
-            clan = clan,
-            clanRole = clanRole,
+            identity = AdapterPromptCaptureTexts.PcapProjectKnown(identity),
+            personality = AdapterPromptCaptureTexts.PcapProjectKnown(personality),
+            background = AdapterPromptCaptureTexts.PcapProjectKnown(background),
+            faction = AdapterPromptCaptureTexts.PcapProjectKnown(faction),
+            clan = AdapterPromptCaptureTexts.PcapProjectKnown(clan),
+            clanRole = AdapterPromptCaptureTexts.PcapProjectKnown(clanRole),
             reputation = reputation,
-            culture = culture,
-            age = age,
-            equipment = equipment,
+            culture = AdapterPromptCaptureTexts.PcapProjectKnown(culture),
+            age = AdapterPromptCaptureTexts.PcapProjectKnown(age),
+            equipment = AdapterPromptCaptureTexts.PcapProjectKnown(equipment),
             inventorySummary = inventorySummary,
             currentDateText = currentDateText,
             pregnancySelfKnowledge = pregnancySelfKnowledge,
@@ -367,14 +376,14 @@ internal string BuildSceneNpcRoleIntroForPrompt(NpcDataPacket npc, Hero hero, IE
 		{
 			return null;
 		}
-		string culture = "未知文化";
-		string age = "未知";
-		string genderText = playerHero.IsFemale ? "女性" : "男性";
-		string equipment = "未知";
+		string culture = AdapterPromptCaptureTexts.PcapCompat("Project_Equipment_11");
+		string age = AdapterPromptCaptureTexts.PcapCompat("Project_Equipment_10");
+		string genderText = playerHero.IsFemale ? AdapterPromptCaptureTexts.PcapCompat("Project_Equipment_12") : AdapterPromptCaptureTexts.PcapCompat("Project_Equipment_13");
+		string equipment = AdapterPromptCaptureTexts.PcapCompat("Project_Equipment_10");
 		string equipmentValueInline = "";
 		string identitySentence = BuildPlayerSceneIdentitySentenceForPrompt(playerHero);
 		int clanTier = 0;
-		string clanName = "无家族";
+		string clanName = AdapterPromptCaptureTexts.PcapCompat("Project_Equipment_1");
 		bool isClanLeader = false;
 		try
 		{
@@ -387,9 +396,10 @@ internal string BuildSceneNpcRoleIntroForPrompt(NpcDataPacket npc, Hero hero, IE
 		catch
 		{
 		}
-		if (!culture.EndsWith("人", StringComparison.Ordinal))
+		string playerCultureSuffix = AdapterPromptCaptureTexts.PcapText("equipment_culture_suffix", "");
+		if (!string.IsNullOrEmpty(playerCultureSuffix) && !culture.EndsWith(playerCultureSuffix, StringComparison.Ordinal))
 		{
-			culture += "人";
+			culture += playerCultureSuffix;
 		}
 		try
 		{
@@ -397,7 +407,7 @@ internal string BuildSceneNpcRoleIntroForPrompt(NpcDataPacket npc, Hero hero, IE
 		}
 		catch
 		{
-			age = "未知";
+			age = AdapterPromptCaptureTexts.PcapCompat("Project_Equipment_10");
 		}
 		try
 		{
@@ -405,7 +415,7 @@ internal string BuildSceneNpcRoleIntroForPrompt(NpcDataPacket npc, Hero hero, IE
 		}
 		catch
 		{
-			equipment = "未知";
+			equipment = AdapterPromptCaptureTexts.PcapCompat("Project_Equipment_10");
 		}
 		if (includeTradePricing)
 		{
@@ -428,9 +438,11 @@ internal string BuildSceneNpcRoleIntroForPrompt(NpcDataPacket npc, Hero hero, IE
 			{
 				clanName = rawClanName;
 			}
-			if (!string.IsNullOrWhiteSpace(clanName) && clanName != "无家族" && !clanName.EndsWith("家族", StringComparison.Ordinal))
+			string playerClanSuffix = AdapterPromptCaptureTexts.PcapText("equipment_clan_suffix");
+			if (!string.IsNullOrWhiteSpace(clanName) && clanName != AdapterPromptCaptureTexts.PcapCompat("Project_Equipment_1")
+				&& !clanName.EndsWith(AdapterPromptCaptureTexts.PcapCompat("Location_ClanSuffix"), StringComparison.Ordinal) && !clanName.EndsWith(playerClanSuffix, StringComparison.OrdinalIgnoreCase))
 			{
-				clanName += "家族";
+				clanName += playerClanSuffix;
 			}
 			isClanLeader = playerHero.Clan?.Leader == playerHero;
 		}
@@ -440,7 +452,7 @@ internal string BuildSceneNpcRoleIntroForPrompt(NpcDataPacket npc, Hero hero, IE
         bool forceDetailed=ShouldForceDetailedPlayerIntroForObserver(observerHero);
         bool knowsPlayerIdentity=forceDetailed||DoesSceneObserverKnowPlayerIdentityForPrompt(observerHero,observerNpc);
         string playerPublicName="",reputation="";
-        if(knowsPlayerIdentity){playerPublicName=(playerHero.Name?.ToString()??"").Trim();reputation=MyBehavior.GetClanTierReputationLabelForExternal(clanTier)+$"（{Math.Max(0,clanTier)} level）";}
+        if(knowsPlayerIdentity){playerPublicName=(playerHero.Name?.ToString()??"").Trim();reputation=MyBehavior.GetClanTierReputationLabelForExternal(clanTier)+AdapterPromptCaptureTexts.PcapFormat("equipment_reputation_level", " ({LEVEL} level)", ("LEVEL", Math.Max(0,clanTier)));}
         string playerCurrentMountLine=BuildPlayerCurrentMountLineForPrompt();
         bool isCompanion=observerHero!=null&&observerHero.IsPlayerCompanion;
         string companionRole=isCompanion?BuildPlayerCompanionPartyRoleLabelForPrompt(observerHero):"";
@@ -453,13 +465,13 @@ internal string BuildSceneNpcRoleIntroForPrompt(NpcDataPacket npc, Hero hero, IE
         else townPartyStayHint=BuildPlayerTownPartyStayHintForPrompt(playerHero);
         return new ScenePlayerIntroSnapshot {
             Generation = generation,
-            culture = culture,
-            age = age,
-            genderText = genderText,
-            equipment = equipment,
+            culture = AdapterPromptCaptureTexts.PcapProjectKnown(culture),
+            age = AdapterPromptCaptureTexts.PcapProjectKnown(age),
+            genderText = AdapterPromptCaptureTexts.PcapProjectKnown(genderText),
+            equipment = AdapterPromptCaptureTexts.PcapProjectKnown(equipment),
             equipmentValueInline = equipmentValueInline,
             identitySentence = identitySentence,
-            clanName = clanName,
+            clanName = AdapterPromptCaptureTexts.PcapProjectKnown(clanName),
             playerPublicName = playerPublicName,
             reputation = reputation,
             playerCurrentMountLine = playerCurrentMountLine,

@@ -199,7 +199,7 @@ internal static class PolicyEffectModuleCatalog
 			.ToList();
 		if (modules.Count == 0)
 		{
-			throw new InvalidOperationException("契约测试模块集合不能为空。");
+			throw new InvalidOperationException("The contract-test module set must not be empty.");
 		}
 		HashSet<string> knownScopes = new HashSet<string>(new[]
 		{
@@ -214,12 +214,12 @@ internal static class PolicyEffectModuleCatalog
 			ValidateModule(module, knownScopes);
 			if (byAnyId.ContainsKey(module.Id))
 			{
-				throw new InvalidOperationException("政策效果模块 ID 重复: " + module.Id);
+				throw new InvalidOperationException("Duplicate policy effect module ID: " + module.Id);
 			}
 			byAnyId.Add(module.Id, module);
 			if (!orders.Add(module.Order))
 			{
-				throw new InvalidOperationException("政策效果模块 Order 重复: " + module.Order);
+				throw new InvalidOperationException("Duplicate policy effect module Order: " + module.Order);
 			}
 		}
 		foreach (IPolicyEffectModule module in modules)
@@ -228,7 +228,7 @@ internal static class PolicyEffectModuleCatalog
 			{
 				if (byAnyId.ContainsKey(legacyId))
 				{
-					throw new InvalidOperationException("政策效果模块 LegacyId 与现有 ID 冲突: " + module.Id + " / " + legacyId);
+					throw new InvalidOperationException("Policy effect module LegacyId conflicts with an existing ID: " + module.Id + " / " + legacyId);
 				}
 				byAnyId.Add(legacyId, module);
 			}
@@ -423,7 +423,7 @@ internal static class PolicyEffectModuleCatalog
 			return string.Empty;
 		}
 		StringBuilder builder = new StringBuilder();
-		builder.Append("【全部效果共同要求】")
+		builder.Append(PolicyGenerationPromptTexts.Get("AllEffectsRequirements", "[Shared requirements for all effects]"))
 			.Append(PolicyEffectPromptService.GetCommonEvaluationPrompt());
 		foreach (IPolicyEffectModule module in candidates)
 		{
@@ -437,7 +437,7 @@ internal static class PolicyEffectModuleCatalog
 		if (details != null && details.Count > 0)
 		{
 			builder.AppendLine()
-				.Append("【Detail 可编辑效果判定要求】");
+				.Append(PolicyGenerationPromptTexts.Get("DetailEvaluationRequirements", "[Editable detailed effect evaluation requirements]"));
 			foreach (IPolicyEffectModule module in details)
 			{
 				builder.AppendLine()
@@ -457,7 +457,7 @@ internal static class PolicyEffectModuleCatalog
 			return string.Empty;
 		}
 		StringBuilder builder = new StringBuilder();
-		builder.Append("【全部效果共同要求】")
+		builder.Append(PolicyGenerationPromptTexts.Get("AllEffectsRequirements", "[Shared requirements for all effects]"))
 			.Append(PolicyEffectPromptService.GetCommonEvaluationPrompt());
 		foreach (IPolicyEffectModule module in modules)
 		{
@@ -475,7 +475,7 @@ internal static class PolicyEffectModuleCatalog
 			}
 			builder
 				.Append(module.PostprocessRule.Trim())
-				.Append("；【可编辑效果判定要求】")
+				.Append(PolicyGenerationPromptTexts.Get("EditableEvaluationRequirements", "; [Editable effect evaluation requirements]"))
 				.Append(PolicyEffectPromptService.GetEvaluationPrompt(module));
 		}
 		return builder.ToString();
@@ -698,12 +698,12 @@ internal static class PolicyEffectModuleCatalog
 	{
 		if (!TryGet(moduleId, out module))
 		{
-			error = "未注册的政策效果模块: " + ((moduleId ?? string.Empty).Trim());
+			error = "Unregistered policy effect module: " + ((moduleId ?? string.Empty).Trim());
 			return false;
 		}
 		if (requireScope && !IsAllowedForScope(module, scope))
 		{
-			error = "政策效果模块不支持当前作用域: " + module.Id + " / " + ((scope ?? string.Empty).Trim());
+			error = "Policy effect module does not support the current scope: " + module.Id + " / " + ((scope ?? string.Empty).Trim());
 			module = null;
 			return false;
 		}
@@ -721,7 +721,7 @@ internal static class PolicyEffectModuleCatalog
 		preparedPayload = null;
 		if (module == null || rawPayload == null || rawPayload.Type == JTokenType.Null)
 		{
-			error = "效果 payload 不能为空";
+			error = "Effect payload must not be null";
 			return false;
 		}
 		JObject envelope;
@@ -760,7 +760,7 @@ internal static class PolicyEffectModuleCatalog
 	{
 		if (module == null || payload == null || !module.PayloadType.IsInstanceOfType(payload))
 		{
-			error = "效果 payload 类型与模块不匹配";
+			error = "Effect payload type does not match the module";
 			return false;
 		}
 		error = string.Empty;
@@ -779,7 +779,7 @@ internal static class PolicyEffectModuleCatalog
 			.ToList();
 		if (modules.Count <= 0)
 		{
-			throw new InvalidOperationException("没有发现政策效果模块。");
+			throw new InvalidOperationException("No policy effect modules were found.");
 		}
 		HashSet<string> knownScopes = new HashSet<string>(new[]
 		{
@@ -794,12 +794,12 @@ internal static class PolicyEffectModuleCatalog
 			ValidateModule(module, knownScopes);
 			if (byCanonicalId.ContainsKey(module.Id))
 			{
-				throw new InvalidOperationException("政策效果模块 ID 重复: " + module.Id);
+				throw new InvalidOperationException("Duplicate policy effect module ID: " + module.Id);
 			}
 			byCanonicalId.Add(module.Id, module);
 			if (!orders.Add(module.Order))
 			{
-				throw new InvalidOperationException("政策效果模块 Order 重复: " + module.Order);
+				throw new InvalidOperationException("Duplicate policy effect module Order: " + module.Order);
 			}
 		}
 		Dictionary<string, IPolicyEffectModule> byAnyId = new Dictionary<string, IPolicyEffectModule>(byCanonicalId, StringComparer.Ordinal);
@@ -809,7 +809,7 @@ internal static class PolicyEffectModuleCatalog
 			{
 				if (byAnyId.ContainsKey(legacyId))
 				{
-					throw new InvalidOperationException("政策效果模块 LegacyId 与现有 ID 冲突: " + module.Id + " / " + legacyId);
+					throw new InvalidOperationException("Policy effect module LegacyId conflicts with an existing ID: " + module.Id + " / " + legacyId);
 				}
 				byAnyId.Add(legacyId, module);
 			}
@@ -932,7 +932,7 @@ internal static class PolicyEffectModuleCatalog
 			|| module.PayloadType == null
 			|| !typeof(PolicyEffectPayload).IsAssignableFrom(module.PayloadType))
 		{
-			throw new InvalidOperationException("政策效果模块定义不完整: " + (module?.GetType().FullName ?? "(null)"));
+			throw new InvalidOperationException("Incomplete policy effect module definition: " + (module?.GetType().FullName ?? "(null)"));
 		}
 		ValidateStringSet(descriptor.LegacyIds, "LegacyIds", id, allowEmpty: true, knownValues: null);
 		ValidateStringSet(descriptor.CueTerms, "CueTerms", id, allowEmpty: !descriptor.PromptVisible, knownValues: null);
@@ -941,15 +941,15 @@ internal static class PolicyEffectModuleCatalog
 		ValidateEnumSet(descriptor.TargetKinds, "TargetKinds", id);
 		if (!Enum.IsDefined(typeof(PolicyEffectTargetProjectionKind), descriptor.TargetProjection))
 		{
-			throw new InvalidOperationException("政策效果模块目标投影枚举无效: " + id);
+			throw new InvalidOperationException("Invalid policy effect module target projection enum: " + id);
 		}
 		if (!Enum.IsDefined(typeof(PolicyEffectTargetRefreshKind), descriptor.TargetRefresh))
 		{
-			throw new InvalidOperationException("政策效果模块目标刷新枚举无效: " + id);
+			throw new InvalidOperationException("Invalid policy effect module target refresh enum: " + id);
 		}
 		if (!Enum.IsDefined(typeof(PolicyEffectTargetBindingKind), descriptor.TargetBinding))
 		{
-			throw new InvalidOperationException("政策效果模块目标绑定枚举无效: " + id);
+			throw new InvalidOperationException("Invalid policy effect module target binding enum: " + id);
 		}
 		if (descriptor.TargetBinding == PolicyEffectTargetBindingKind.IssuerKingdom
 			&& (descriptor.AllowedScopes.Count != 1
@@ -960,24 +960,24 @@ internal static class PolicyEffectModuleCatalog
 				|| !descriptor.TargetKinds.Contains(PolicyEffectTargetKind.Kingdom)))
 		{
 			throw new InvalidOperationException(
-				"IssuerKingdom 绑定要求 Kingdom-only scope、selector 和 target: " + id);
+				"IssuerKingdom binding requires Kingdom-only scope, selector, and target: " + id);
 		}
 		if (descriptor.AllowIndependentClanTargets
 			&& !descriptor.TargetKinds.Contains(PolicyEffectTargetKind.Clan))
 		{
-			throw new InvalidOperationException("独立家族目标能力要求 Clan target: " + id);
+			throw new InvalidOperationException("Independent clan targeting requires a Clan target: " + id);
 		}
 		if (descriptor.ExcludeActorClanTargets
 			&& !descriptor.TargetKinds.Contains(PolicyEffectTargetKind.Clan))
 		{
-			throw new InvalidOperationException("排除发布者家族目标要求 Clan target: " + id);
+			throw new InvalidOperationException("Excluding the issuer's clan requires a Clan target: " + id);
 		}
 		if (descriptor.TargetProjection == PolicyEffectTargetProjectionKind.SettlementOwnerClanLeader
 			&& (!descriptor.AllowedSelectorKinds.Contains(PolicyEffectTargetKind.Settlement)
 				|| !descriptor.TargetKinds.Contains(PolicyEffectTargetKind.Hero)))
 		{
 			throw new InvalidOperationException(
-				"SettlementOwnerClanLeader 投影要求 Settlement selector 和 Hero target: " + id);
+				"SettlementOwnerClanLeader projection requires a Settlement selector and Hero target: " + id);
 		}
 		if (descriptor.TargetProjection == PolicyEffectTargetProjectionKind.PrimaryFiefAndBoundSettlements
 			&& (!descriptor.AllowedSelectorKinds.Contains(PolicyEffectTargetKind.Settlement)
@@ -985,11 +985,11 @@ internal static class PolicyEffectModuleCatalog
 				|| !descriptor.TargetKinds.Contains(PolicyEffectTargetKind.Settlement)))
 		{
 			throw new InvalidOperationException(
-				"PrimaryFiefAndBoundSettlements 投影要求 Settlement selector 和唯一 Settlement target: " + id);
+				"PrimaryFiefAndBoundSettlements projection requires a Settlement selector and exactly one Settlement target: " + id);
 		}
 		if (descriptor.AllowedSelectorKinds.Contains(PolicyEffectTargetKind.Village))
 		{
-			throw new InvalidOperationException("Village 不能作为一级政策效果 selector: " + id);
+			throw new InvalidOperationException("Village cannot be a primary policy effect selector: " + id);
 		}
 		if (!Enum.IsDefined(typeof(PolicyEffectFamily), descriptor.Family)
 			|| !Enum.IsDefined(typeof(PolicyEffectExecutionKind), descriptor.ExecutionKind)
@@ -999,7 +999,7 @@ internal static class PolicyEffectModuleCatalog
 			|| !Enum.IsDefined(typeof(PolicyEffectFundingMode), descriptor.FundingMode)
 			|| !Enum.IsDefined(typeof(PolicyEffectFundingStrategy), descriptor.FundingStrategy))
 		{
-			throw new InvalidOperationException("政策效果模块枚举元数据无效: " + id);
+			throw new InvalidOperationException("Invalid policy effect module enum metadata: " + id);
 		}
 		ValidatePayloadSchema(descriptor, module.PayloadType);
 		ValidateMigrationContract(module);
@@ -1007,14 +1007,14 @@ internal static class PolicyEffectModuleCatalog
 		ValidateFundingContract(module);
 		if (descriptor.SupportsRollback && !descriptor.SupportsIdempotency)
 		{
-			throw new InvalidOperationException("支持 rollback 的政策效果模块必须支持幂等: " + id);
+			throw new InvalidOperationException("Policy effect modules supporting rollback must also support idempotency: " + id);
 		}
 		if (descriptor.ExecutionKind == PolicyEffectExecutionKind.OneShot
 			&& (!descriptor.SupportsRollback
 				|| !descriptor.SupportsIdempotency
 				|| descriptor.ValueUnit != PolicyEffectValueUnit.PointsOnce))
 		{
-			throw new InvalidOperationException("OneShot 政策效果模块必须声明 rollback、幂等和 PointsOnce: " + id);
+			throw new InvalidOperationException("OneShot policy effect modules must declare rollback, idempotency, and PointsOnce: " + id);
 		}
 		if (descriptor.ExecutionKind == PolicyEffectExecutionKind.ScheduledOnce
 			&& (!descriptor.SupportsRollback
@@ -1041,7 +1041,7 @@ internal static class PolicyEffectModuleCatalog
 			|| isComposite != (descriptor.ExecutionKind == PolicyEffectExecutionKind.Composite)
 			|| isScheduledOnce != (descriptor.ExecutionKind == PolicyEffectExecutionKind.ScheduledOnce))
 		{
-			throw new InvalidOperationException("政策效果模块必须且只能实现与 executionKind 匹配的一个执行接口: " + id);
+			throw new InvalidOperationException("A policy effect module must implement exactly one execution interface matching executionKind: " + id);
 		}
 	}
 
@@ -1057,7 +1057,7 @@ internal static class PolicyEffectModuleCatalog
 		if (descriptor.MinimumReadablePayloadSchemaVersion < descriptor.PayloadSchemaVersion
 			&& !HasModuleOverride(module, "TryMigrateTypedPayload", nameof(IPolicyEffectModule.TryMigratePayload)))
 		{
-			throw new InvalidOperationException("政策效果模块声明了 payload 迁移链但未实现迁移: " + descriptor.Id);
+			throw new InvalidOperationException("Policy effect module declares a payload migration chain but does not implement migration: " + descriptor.Id);
 		}
 
 		ValidateMigrationChain(
@@ -1069,7 +1069,7 @@ internal static class PolicyEffectModuleCatalog
 		if (descriptor.MinimumReadableRuntimeStateSchemaVersion < descriptor.RuntimeStateSchemaVersion
 			&& !HasModuleOverride(module, null, nameof(IPolicyEffectModule.TryMigrateRuntimeState)))
 		{
-			throw new InvalidOperationException("政策效果模块声明了 runtime state 迁移链但未实现迁移: " + descriptor.Id);
+			throw new InvalidOperationException("Policy effect module declares a runtime state migration chain but does not implement migration: " + descriptor.Id);
 		}
 	}
 
@@ -1085,12 +1085,12 @@ internal static class PolicyEffectModuleCatalog
 			|| minimumReadableVersion > currentVersion
 			|| sourceVersions == null)
 		{
-			throw new InvalidOperationException("政策效果模块 " + stateKind + " 版本范围无效: " + moduleId);
+			throw new InvalidOperationException("Policy effect module " + stateKind + " version range is invalid: " + moduleId);
 		}
 		int[] expected = Enumerable.Range(minimumReadableVersion, currentVersion - minimumReadableVersion).ToArray();
 		if (!sourceVersions.SequenceEqual(expected))
 		{
-			throw new InvalidOperationException("政策效果模块 " + stateKind + " 迁移源版本必须连续: " + moduleId);
+			throw new InvalidOperationException("Policy effect module " + stateKind + " migration source versions must be consecutive: " + moduleId);
 		}
 	}
 
@@ -1108,7 +1108,7 @@ internal static class PolicyEffectModuleCatalog
 			|| sourceVersion > currentVersion
 			|| (sourceVersion != currentVersion && sourceVersions?.Contains(sourceVersion) != true))
 		{
-			error = "政策效果模块 " + stateKind + " 版本不受支持: " + moduleId + " / " + sourceVersion;
+			error = "Policy effect module " + stateKind + " version is unsupported: " + moduleId + " / " + sourceVersion;
 			return false;
 		}
 		error = string.Empty;
@@ -1228,7 +1228,7 @@ internal static class PolicyEffectModuleCatalog
 				}
 				throw new InvalidOperationException("DailyScheduler execution kind is unsupported: " + descriptor.Id);
 			default:
-				throw new InvalidOperationException("政策效果模块 hook 未定义 capability: " + descriptor.Id);
+				throw new InvalidOperationException("Policy effect module hook has no defined capability: " + descriptor.Id);
 		}
 		bool targetMatches = targetKind.HasValue
 			? descriptor.TargetKinds.Count == 1 && descriptor.TargetKinds.Contains(targetKind.Value)
@@ -1238,7 +1238,7 @@ internal static class PolicyEffectModuleCatalog
 			|| descriptor.Aggregation != aggregation
 			|| descriptor.ValueUnit != valueUnit)
 		{
-			throw new InvalidOperationException("政策效果模块 hook capability 不匹配: " + descriptor.Id);
+			throw new InvalidOperationException("Policy effect module hook capability mismatch: " + descriptor.Id);
 		}
 	}
 
@@ -1250,7 +1250,7 @@ internal static class PolicyEffectModuleCatalog
 			|| (!numericPayload && descriptor.FundingStrategy != PolicyEffectFundingStrategy.None);
 		if (requiresOverride && !HasModuleOverride(module, "TryApplyTypedFunding", nameof(IPolicyEffectModule.TryApplyFunding)))
 		{
-			throw new InvalidOperationException("政策效果模块 funding 策略要求显式转换实现: " + descriptor.Id);
+			throw new InvalidOperationException("Policy effect module funding strategy requires an explicit conversion implementation: " + descriptor.Id);
 		}
 	}
 
@@ -1293,12 +1293,12 @@ internal static class PolicyEffectModuleCatalog
 			|| !(schema["properties"] is JObject properties)
 			|| !(schema["required"] is JArray required))
 		{
-			throw new InvalidOperationException("政策效果模块 payload prompt schema 无效: " + descriptor.Id);
+			throw new InvalidOperationException("Invalid policy effect module payload prompt schema: " + descriptor.Id);
 		}
 		if (typeof(NumericPolicyEffectPayload).IsAssignableFrom(payloadType)
 			&& (properties["value"] == null || !required.Values<string>().Contains("value", StringComparer.Ordinal)))
 		{
-			throw new InvalidOperationException("数值政策效果模块 schema 必须要求 value: " + descriptor.Id);
+			throw new InvalidOperationException("Numeric policy effect module schema must require value: " + descriptor.Id);
 		}
 	}
 
@@ -1311,7 +1311,7 @@ internal static class PolicyEffectModuleCatalog
 	{
 		if (values == null || (!allowEmpty && values.Count <= 0))
 		{
-			throw new InvalidOperationException("政策效果模块 " + fieldName + " 不能为空: " + moduleId);
+			throw new InvalidOperationException("Policy effect module " + fieldName + " must not be empty: " + moduleId);
 		}
 		HashSet<string> seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 		foreach (string value in values ?? Array.Empty<string>())
@@ -1322,7 +1322,7 @@ internal static class PolicyEffectModuleCatalog
 				|| !seen.Add(normalized)
 				|| (knownValues != null && !knownValues.Contains(normalized)))
 			{
-				throw new InvalidOperationException("政策效果模块 " + fieldName + " 无效或重复: " + moduleId + " / " + normalized);
+				throw new InvalidOperationException("Policy effect module " + fieldName + " is invalid or duplicated: " + moduleId + " / " + normalized);
 			}
 		}
 	}
@@ -1332,14 +1332,14 @@ internal static class PolicyEffectModuleCatalog
 	{
 		if (values == null || values.Count <= 0)
 		{
-			throw new InvalidOperationException("政策效果模块 " + fieldName + " 不能为空: " + moduleId);
+			throw new InvalidOperationException("Policy effect module " + fieldName + " must not be empty: " + moduleId);
 		}
 		HashSet<TEnum> seen = new HashSet<TEnum>();
 		foreach (TEnum value in values)
 		{
 			if (!Enum.IsDefined(typeof(TEnum), value) || !seen.Add(value))
 			{
-				throw new InvalidOperationException("政策效果模块 " + fieldName + " 无效或重复: " + moduleId + " / " + value);
+				throw new InvalidOperationException("Policy effect module " + fieldName + " is invalid or duplicated: " + moduleId + " / " + value);
 			}
 		}
 	}

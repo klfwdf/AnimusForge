@@ -91,7 +91,7 @@ internal static class KingdomNewsArchiveSource
 	{
 		string label = document.IsResponse ? Localize("AF_UI_Timeline_DiplomaticResponse", "Diplomatic response") : document.RequiresResponse ? Localize("AF_UI_Timeline_DiplomaticNote", "Diplomatic note") : document.ChangedDiplomaticState ? Localize("AF_UI_Timeline_DiplomaticResult", "Diplomatic result") : Localize("AF_UI_Timeline_DiplomaticMessage", "Diplomatic message");
 		string author = FirstNonEmpty(document.AuthorKingdomName, document.AuthorKingdomId, Localize("AF_UI_Timeline_UnknownCountry", "Unknown kingdom"));
-		string target = string.Join("、", DiplomacyCountries(document)
+		string target = string.Join(Localize("AF_UI_Scene_NameSeparator", ", "), DiplomacyCountries(document)
 			.Where(p => !string.Equals(p.Key, document.AuthorKingdomId, StringComparison.OrdinalIgnoreCase))
 			.Select(p => FirstNonEmpty(p.Value, p.Key)).Where(x => x.Length > 0).Distinct(StringComparer.OrdinalIgnoreCase).Take(4));
 		string body = Limit(document.Body);

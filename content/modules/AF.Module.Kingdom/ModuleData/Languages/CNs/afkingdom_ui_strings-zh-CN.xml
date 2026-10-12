@@ -116,5 +116,10 @@
     <string id="AF_KINGDOM_CW_Note_CrownSuppressed" text="王室平定叛乱" />
     <string id="AF_KINGDOM_CW_Note_RestorationKingdomRestored" text="叛军战胜，{A}恢复王位，国名恢复为“{B}”；旧王复位" />
     <string id="AF_KINGDOM_CW_Note_RestorationKingdomHeir" text="叛军战胜，{A}恢复王位，国名恢复为“{B}”；旧王已故，由家族现任族长继位" />
+    <string id="AF_UI_KingdomRebellion_FollowerEligible" text="满足联合叛乱跟随条件：对叛乱领袖关系减去对国王关系 = {DIFF}（>= 15）。" />
+    <string id="AF_UI_KingdomRebellion_FollowerIneligible" text="不满足联合叛乱跟随条件：对叛乱领袖关系减去对国王关系 = {DIFF}（需 >= 15）。" />
+    <string id="AF_UI_KingdomRebellion_ForceEligible" text="满足强制触发条件。" />
+    <string id="AF_UI_KingdomRebellion_AutoEligible" text="满足自动叛乱条件。" />
+    <string id="AF_UI_KingdomRebellion_OriginalKingdom" text="原王国" />
 </strings>
 </base>

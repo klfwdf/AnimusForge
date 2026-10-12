@@ -1,7 +1,6 @@
+using System.Linq;
 using System;
-
 namespace AnimusForge;
-
 /// <summary>
 /// Cross-turn carry for the three built-in topics (duel / reward / loan): a short
 /// acknowledgement from the player keeps the previously routed topic alive for a bounded
@@ -11,39 +10,67 @@ namespace AnimusForge;
 /// </summary>
 internal sealed class BuiltInRuleStickyCarry
 {
-	private static readonly string[] ShortAckTokens =
-	{
-		"好", "好的", "行", "可以", "同意", "确认", "就这样", "继续", "嗯", "是",
-		"对", "我选雇佣兵", "雇佣兵", "我选封臣", "封臣", "那就按这个", "那就这么办"
-	};
-
+    private static readonly Lazy<string[]> ShortAckTokens = new Lazy<string[]>(() =>
+        PromptComposerTexts.Raw("StickyCarry_AffirmativeTokens_Cn").Split(','));
+    private static readonly string[] EnglishShortAckTokens =
+    {
+        "yes", "ok", "okay", "sure", "agreed", "i agree", "confirmed", "confirm",
+        "go ahead", "continue", "do it", "that is fine", "mercenary", "vassal",
+        "i choose mercenary", "i choose vassal"
+    };
+    private static readonly Lazy<string[]> NegativeAckTokens = new Lazy<string[]>(() => PromptComposerTexts.Raw("StickyCarry_NegativeTokens_Cn").Split(',').Concat(new[] { "no", "not", "never", "cancel", "stop", "refuse", "decline", "don't", "do not", "disagree", "disagreed", "won't", "would not", "cannot", "can't", "reject", "rejected" }).ToArray());
+    private static bool ContainsEnglishToken(string text, string token)
+    {
+        int offset = 0;
+        while ((offset = text.IndexOf(token, offset, StringComparison.OrdinalIgnoreCase)) >= 0)
+        {
+            int end = offset + token.Length;
+            if ((offset == 0 || !char.IsLetterOrDigit(text[offset - 1]))
+                && (end == text.Length || !char.IsLetterOrDigit(text[end]))) return true;
+            offset = end;
+        }
+        return false;
+    }
 	private string _targetKey;
 	private int _duelRoundsLeft;
 	private int _rewardRoundsLeft;
 	private int _loanRoundsLeft;
-
 	internal int DuelRoundsLeft => _duelRoundsLeft;
 	internal int RewardRoundsLeft => _rewardRoundsLeft;
 	internal int LoanRoundsLeft => _loanRoundsLeft;
 	internal string TargetKey => _targetKey;
-
 	internal static bool IsShortAck(string input)
 	{
 		string text = (input ?? "").Trim();
-		if (string.IsNullOrWhiteSpace(text) || text.Length > 20)
+		if (string.IsNullOrWhiteSpace(text) || text.Length > 20 || text.IndexOf('?') >= 0 || text.IndexOf('？') >= 0)
 		{
 			return false;
 		}
-		for (int i = 0; i < ShortAckTokens.Length; i++)
+if (PromptComposerTexts.Raw("StickyCarry_ConditionPrefixes_Cn").Split(',').Any(cp => text.StartsWith(cp, StringComparison.Ordinal))
+			|| text.StartsWith("if ", StringComparison.OrdinalIgnoreCase)
+			|| text.StartsWith("what if", StringComparison.OrdinalIgnoreCase)
+			|| text.StartsWith("suppose", StringComparison.OrdinalIgnoreCase))
 		{
-			if (text.IndexOf(ShortAckTokens[i], StringComparison.OrdinalIgnoreCase) >= 0)
+			return false;
+		}
+        foreach (string negative in NegativeAckTokens.Value)
+        {
+            bool isEnglish = negative[0] <= 127;
+            if (isEnglish ? ContainsEnglishToken(text, negative) : text.IndexOf(negative, StringComparison.Ordinal) >= 0)
+                return false;
+        }
+        string acknowledgementText = text.TrimEnd('.', '!', ',', ' ', '。', '！', '，');
+        foreach (string acknowledgement in EnglishShortAckTokens)
+            if (string.Equals(acknowledgementText, acknowledgement, StringComparison.OrdinalIgnoreCase)) return true;
+		for (int i = 0; i < ShortAckTokens.Value.Length; i++)
+		{
+			if (string.Equals(acknowledgementText, ShortAckTokens.Value[i], StringComparison.Ordinal))
 			{
 				return true;
 			}
 		}
 		return false;
 	}
-
 	internal static int TurnLimit(string ruleId)
 	{
 		switch ((ruleId ?? "").Trim().ToLowerInvariant())
@@ -57,7 +84,6 @@ internal sealed class BuiltInRuleStickyCarry
 			return 0;
 		}
 	}
-
 	/// <summary>Target key = hero id, else character id, else character's hero id; lower-case trimmed.</summary>
 	internal static string ResolveTargetKey(string heroStringId, string characterStringId, string characterHeroStringId)
 	{
@@ -72,7 +98,6 @@ internal sealed class BuiltInRuleStickyCarry
 		}
 		return (text ?? "").Trim().ToLowerInvariant();
 	}
-
 	internal void Clear()
 	{
 		_targetKey = null;
@@ -80,7 +105,6 @@ internal sealed class BuiltInRuleStickyCarry
 		_rewardRoundsLeft = 0;
 		_loanRoundsLeft = 0;
 	}
-
 	/// <summary>
 	/// Consume one carry round when the same target receives a short acknowledgement.
 	/// Any mismatch (target, input shape, no rounds) clears the carry, matching legacy behavior.
@@ -134,7 +158,6 @@ internal sealed class BuiltInRuleStickyCarry
 		log = $"builtin_rule_sticky_consume target={text} duel={duel} reward={reward} loan={loan} left=({_duelRoundsLeft},{_rewardRoundsLeft},{_loanRoundsLeft})";
 		return true;
 	}
-
 	/// <summary>Prime the carry from live semantic hits; no hit leaves the current carry untouched.</summary>
 	internal bool Prime(string targetKey, bool duel, bool reward, bool loan, out string log)
 	{

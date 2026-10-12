@@ -47,17 +47,17 @@ internal static class WorldDiplomacyPresentationQueries
         if (!string.IsNullOrWhiteSpace(document.MechanicalResult))
         {
             sb.AppendLine(DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_ImpactResultSection", "【Diplomatic result】"));
-            sb.AppendLine(document.MechanicalResult.Trim());
+            sb.AppendLine(WorldDiplomacyAnalysisApplication.ProjectMechanicalResultForDisplay(document.MechanicalResult).Trim());
             sb.AppendLine();
         }
         sb.AppendLine(DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_ImpactReputationSection", "【International reputation】"));
-        sb.AppendLine(DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_ImpactDeltaLabel", "Change: ") + WorldDiplomacyReputationRules.BuildInternationalReputationImpactDeltaText(document, international));
+        sb.AppendLine(DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_ImpactDeltaLabel", "Change: ") + WorldDiplomacyReputationRules.BuildInternationalReputationImpactDeltaText(document, international, DiplomacyUiLocalization.Text));
         sb.AppendLine(DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_ImpactReasonLabel", "Reason: ") + WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(international?.Reason,
             document.InternationalReputationEvaluationReason,
             DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_ImpactNoReputationChange", "This declaration produced no clear change in international reputation.")));
         sb.AppendLine();
         sb.AppendLine(DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_ImpactPrestigeSection", "【National prestige】"));
-        sb.AppendLine(DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_ImpactDeltaLabel", "Change: ") + WorldDiplomacyReputationRules.FormatSignedStandingDelta(prestigeDelta));
+        sb.AppendLine(DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_ImpactDeltaLabel", "Change: ") + WorldDiplomacyReputationRules.FormatSignedStandingDelta(prestigeDelta, DiplomacyUiLocalization.Text));
         sb.AppendLine(DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_ImpactReasonLabel", "Reason: ") + (prestigeChanges.Count == 0 || string.IsNullOrWhiteSpace(prestigeReason)
             ? DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_ImpactNoPrestigeChange", "This declaration triggered no national prestige settlement.")
             : prestigeReason));
@@ -75,7 +75,7 @@ internal static class WorldDiplomacyPresentationQueries
                 + (string.Equals(other.Kind, "national_prestige", StringComparison.OrdinalIgnoreCase)
                     ? DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_ImpactPrestigeSection", "【National prestige】")
                     : DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_ImpactReputationSection", "【International reputation】")));
-            sb.AppendLine(DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_ImpactDeltaLabel", "Change: ") + WorldDiplomacyReputationRules.FormatSignedStandingDelta(other.Delta));
+            sb.AppendLine(DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_ImpactDeltaLabel", "Change: ") + WorldDiplomacyReputationRules.FormatSignedStandingDelta(other.Delta, DiplomacyUiLocalization.Text));
             sb.AppendLine(DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_ImpactReasonLabel", "Reason: ") + WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(other.Reason, DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_ImpactNoReason", "no explanation given")));
         }
         return sb.ToString().TrimEnd();
@@ -101,9 +101,9 @@ internal static class WorldDiplomacyPresentationQueries
     {
         string subtitle = document.AuthorKingdomName + " · " + document.AuthorRulerName + " · "
             + WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(document.GameDate, formatDate(document.Day)) + " · "
-            + WorldDiplomacyTextRules.DocumentTypeLabel(document);
+            + WorldDiplomacyTextRules.DocumentTypeLabel(document, DiplomacyUiLocalization.Text);
         return new WorldDiplomacyDocumentDetail(document.DocumentId, document.RoundId, generation,
-            WorldDiplomacyTextRules.BuildDisplayedDocumentTitle(document), subtitle,
+            WorldDiplomacyTextRules.BuildDisplayedDocumentTitle(document, DiplomacyUiLocalization.Text), subtitle,
             string.IsNullOrWhiteSpace(document.Body) ? DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_BodyArchived", "(This older declaration's body has been compressed into an annual summary.)") : WorldDiplomacyTextRules.FormatDiplomaticBodyForDisplay(document.Body),
             BuildImpactText(document), canReply, canRetryAnalysis);
     }
@@ -123,7 +123,7 @@ internal static class WorldDiplomacyPresentationQueries
             string kingdomId = document.AuthorKingdomId;
             string kingdomName = document.AuthorKingdomName;
             string date = WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(document.GameDate, formatDate(document.Day));
-            string typeLabel = WorldDiplomacyTextRules.DocumentTypeLabel(document);
+            string typeLabel = WorldDiplomacyTextRules.DocumentTypeLabel(document, DiplomacyUiLocalization.Text);
             string eventMeta = WorldDiplomacyTextRules.BuildDocumentEventMeta(document, resolveRound, resolveDocument);
             string targetSummary = document.Actions?.Count > 1
                 ? string.Join("、", document.Actions.Where(x => x != null).Select(x => WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(x.TargetKingdomName, x.TargetKingdomId)))
@@ -133,7 +133,7 @@ internal static class WorldDiplomacyPresentationQueries
                 KindLabel: typeLabel,
                 HeaderRightText: WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(targetSummary, DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_WorldBulletin", "World bulletin")),
                 DateText: date,
-                TitleText: WorldDiplomacyTextRules.BuildDisplayedDocumentTitle(document),
+                TitleText: WorldDiplomacyTextRules.BuildDisplayedDocumentTitle(document, DiplomacyUiLocalization.Text),
                 IndexTitleText: WorldDiplomacyTextRules.BuildArchiveIndexDocumentTitle(document),
                 MetaText: date + "  ·  " + typeLabel + "  ·  " + document.AuthorKingdomName + (string.IsNullOrWhiteSpace(targetSummary) ? "" : " → " + targetSummary) + eventMeta,
                 PolicyNameText: "",

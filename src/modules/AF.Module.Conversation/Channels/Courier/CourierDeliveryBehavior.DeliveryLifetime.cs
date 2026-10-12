@@ -66,7 +66,8 @@ public sealed partial class CourierDeliveryBehavior
 				else FailModuleCourierSession(session, "courier.reply_delivery_unconfirmed");
 				EnqueueMainThreadActionForGeneration(SaveRuntimeGuard.CaptureGeneration(), () =>
 				{
-					ShowCourierReplyNotice(senderHeroId, senderName, reply);
+					ShowCourierReplyNotice(senderHeroId, senderName, session.DiplomacyReplyBody == null ? reply :
+                        CourierVisibleLetterSanitizer.Clean(StripCourierActionTags(DiplomacyConversationBridge.ComposeReply(session.DiplomacyReplyBody, session.DiplomacyReplyReceipts, forUi: true))));
 				}, "reply_notice");
 			}
 			else if (!session.DeliveryApplied)
@@ -376,14 +377,14 @@ public sealed partial class CourierDeliveryBehavior
 			FailModuleCourierSession(session, "courier.transport_destroyed", CoreCourierTransportOutcome.Destroyed);
 			DisplayCourierDestroyedStatus(session, ConversationUiLocalization.Text("AF_CONV_UI_Courier_DestroyerDetail", " Destroyer: {NAME}", "NAME", destroyerName));
 			TryMoveHeroLossesToDestroyer(session, destroyerParty);
-			string fact = "[AFEF玩家行为补充] " + (MyBehavior.BuildPlayerPublicDisplayNameForExternal() ?? "玩家") + "通过信使寄出的信使队在途中被" + destroyerName + "歼灭。";
+			string fact = ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0447") + (MyBehavior.BuildPlayerPublicDisplayNameForExternal() ?? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0448")) + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0449") + destroyerName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0450");
 			if (!session.DeliveryApplied)
 			{
-				fact += "这封信和随信寄出的物品、金钱、部队或俘虏未能送达；固定资产转移没有发生。";
+				fact += ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0451");
 			}
 			else
 			{
-				fact += "该信使队已完成交付，但未能把回信或剩余人员安全带回玩家处。";
+				fact += ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0452");
 			}
 			MyBehavior.AppendExternalDialogueHistory(recipient, null, null, fact);
 			UntrackCourierMapVisual(destroyedParty, "destroyed");
@@ -491,7 +492,7 @@ public sealed partial class CourierDeliveryBehavior
 		FailModuleCourierSession(session, "courier.transport_missing", CoreCourierTransportOutcome.Missing);
 		DisplayCourierDestroyedStatus(session, ConversationUiLocalization.Text("AF_CONV_UI_Courier_LostDetail", " The courier party disappeared from the campaign map."));
 		Hero recipient = ResolveRecipient(session);
-		MyBehavior.AppendExternalDialogueHistory(recipient, null, null, "[AFEF玩家行为补充] 玩家派出的信使队失去踪迹，信件与随信物资未能确认送达。");
+		MyBehavior.AppendExternalDialogueHistory(recipient, null, null, ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0453"));
 		session.Stage = CourierStage.Destroyed.ToString();
 		session.TemporaryShipCreated = false;
 		session.TemporaryShipHullId = "";
@@ -511,7 +512,7 @@ public sealed partial class CourierDeliveryBehavior
 			DisplayCourierDestroyedStatus(session, ConversationUiLocalization.Text("AF_CONV_UI_Courier_DestroyerDetail", " Destroyer: {NAME}", "NAME", destroyerName ?? ConversationUiLocalization.Text("AF_CONV_UI_Courier_UnknownFaction", "unknown faction")));
 			Hero sender = ResolveSender(session);
 			string senderName = string.IsNullOrWhiteSpace(session?.SenderName) ? (sender?.Name?.ToString() ?? "NPC") : session.SenderName.Trim();
-			MyBehavior.AppendExternalDialogueHistory(sender, null, null, "[AFEF NPC行为补充] " + senderName + "派往玩家处的信使队在途中被" + (destroyerName ?? "未知势力") + "歼灭，这封" + GetInboundLetterKindDisplayText(session) + "未能确认送达。");
+			MyBehavior.AppendExternalDialogueHistory(sender, null, null, ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0454") + senderName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0455") + (destroyerName ?? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0456")) + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0457") + GetInboundLetterKindDisplayText(session) + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0458"));
 			UntrackCourierMapVisual(destroyedParty, "destroyed_inbound");
 			DestroyCourierTemporaryShips(session, destroyedParty, "destroyed_inbound");
 			session.Stage = CourierStage.Destroyed.ToString();
@@ -538,7 +539,7 @@ public sealed partial class CourierDeliveryBehavior
 		DisplayCourierDestroyedStatus(session, ConversationUiLocalization.Text("AF_CONV_UI_Courier_LostDetail", " The courier party disappeared from the campaign map."));
 		Hero sender = ResolveSender(session);
 		string senderName = string.IsNullOrWhiteSpace(session.SenderName) ? (sender?.Name?.ToString() ?? "NPC") : session.SenderName.Trim();
-		MyBehavior.AppendExternalDialogueHistory(sender, null, null, "[AFEF NPC行为补充] " + senderName + "派往玩家处的信使队失去踪迹，这封" + GetInboundLetterKindDisplayText(session) + "未能确认送达。");
+		MyBehavior.AppendExternalDialogueHistory(sender, null, null, ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0459") + senderName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0460") + GetInboundLetterKindDisplayText(session) + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0461"));
 		session.Stage = CourierStage.Destroyed.ToString();
 		session.TemporaryShipCreated = false;
 		session.TemporaryShipHullId = "";

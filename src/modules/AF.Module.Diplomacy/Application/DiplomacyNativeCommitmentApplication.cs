@@ -1,3 +1,4 @@
+using AnimusForge;
 using System;
 using System.Globalization;
 using AnimusForge.DiplomacyDialogue;
@@ -14,10 +15,10 @@ internal static class DiplomacyNativeCommitmentApplication
         if (!DialogueTagPayload.TryParse(payload, out var parsed) || string.IsNullOrWhiteSpace(actorId)
             || actorId.IndexOf(':') >= 0 || parsed.TargetKingdomId.IndexOf(':') >= 0
             || parsed.Terms.TributePayerKingdomId.IndexOf(':') >= 0 || parsed.Terms.TributeReceiverKingdomId.IndexOf(':') >= 0)
-            return "外交行动未执行：条款格式无效。";
+            return DiplomacyMiscPromptTexts.Get("Commitment_InvalidTerms", "Diplomatic action not executed: invalid terms format.");
         if (parsed.Move == DialogueDiplomaticMove.Discussion) return "";
         if (parsed.Move != DialogueDiplomaticMove.NewMatter || !string.IsNullOrEmpty(parsed.SupersedesArrangementId))
-            return "AI外交已关闭，不能将原公文的回应或改约直接执行；请重新明确具体行动和条款。";
+            return DiplomacyMiscPromptTexts.Get("Commitment_AiDisabled", "AI diplomacy is disabled; cannot directly execute replies or amendments to earlier documents. Clarify specific actions and terms.");
         var terms = parsed.Terms;
         bool cession = !string.IsNullOrEmpty(terms.CessionFromKingdomId) || !string.IsNullOrEmpty(terms.CessionToKingdomId)
             || !string.IsNullOrEmpty(terms.CessionSettlementId);
@@ -25,7 +26,7 @@ internal static class DiplomacyNativeCommitmentApplication
         bool tribute = terms.DailyTribute > 0 || !string.IsNullOrEmpty(terms.TributePayerKingdomId)
             || !string.IsNullOrEmpty(terms.TributeReceiverKingdomId);
         if (cession || roles || (parsed.Action != DialogueDiplomaticAction.Peace && tribute))
-            return "外交行动未执行：当前原版外交入口无法完整执行这些附加条款，请先重新谈妥受支持的条件。";
+            return DiplomacyMiscPromptTexts.Get("Commitment_UnsupportedAdditionalTerms", "Diplomatic action not executed: native diplomacy cannot fully execute these additional terms. Negotiate supported terms first.");
         string pair = actorId + ":" + parsed.TargetKingdomId;
         string days = terms.DurationDays.ToString(CultureInfo.InvariantCulture);
         switch (parsed.Action)
@@ -35,7 +36,7 @@ internal static class DiplomacyNativeCommitmentApplication
             case DialogueDiplomaticAction.Peace:
                 if (terms.DailyTribute > 0 && (terms.DurationDays <= 0
                     || string.IsNullOrEmpty(terms.TributePayerKingdomId) || string.IsNullOrEmpty(terms.TributeReceiverKingdomId)))
-                    return "外交行动未执行：贡金须明确付款国、收款国、金额和期限。";
+                    return DiplomacyMiscPromptTexts.Get("Commitment_TributeMissingDetails", "Diplomatic action not executed: tribute must specify payer, recipient, amount, and duration.");
                 if (terms.DailyTribute == 0 && terms.DurationDays != 0) return Unsupported();
                 string payer = string.IsNullOrEmpty(terms.TributePayerKingdomId) ? actorId : terms.TributePayerKingdomId;
                 string receiver = string.IsNullOrEmpty(terms.TributeReceiverKingdomId) ? parsed.TargetKingdomId : terms.TributeReceiverKingdomId;
@@ -53,5 +54,5 @@ internal static class DiplomacyNativeCommitmentApplication
         }
     }
 
-    private static string Unsupported() => "外交行动未执行：该行动或条款需要启用AI外交的正式公文流程。";
+    private static string Unsupported() => DiplomacyMiscPromptTexts.Get("Commitment_FormalPipelineRequired", "Diplomatic action not executed: this action or clause requires the formal AI diplomacy document pipeline.");
 }

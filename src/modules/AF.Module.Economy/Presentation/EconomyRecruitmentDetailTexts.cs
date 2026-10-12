@@ -193,7 +193,7 @@ internal static class EconomyRecruitmentDetailTexts
 				("KINGDOM", match.Groups["kingdom"].Value), ("CLAN", match.Groups["clan"].Value));
 		}
 
-		const string repairFailedPrefix = EconomyDisplaySourceTexts.Get("Recruitment.repairFailedPrefix");
+		string repairFailedPrefix = EconomyDisplaySourceTexts.Get("Recruitment.repairFailedPrefix");
 		if (note.StartsWith(repairFailedPrefix, StringComparison.Ordinal))
 		{
 			return EconomyUiTexts.Localized(
@@ -202,7 +202,7 @@ internal static class EconomyRecruitmentDetailTexts
 				("ERROR", note.Substring(repairFailedPrefix.Length)));
 		}
 
-		const string dissolveFailedPrefix = EconomyDisplaySourceTexts.Get("Recruitment.dissolveFailedPrefix");
+		string dissolveFailedPrefix = EconomyDisplaySourceTexts.Get("Recruitment.dissolveFailedPrefix");
 		if (note.StartsWith(dissolveFailedPrefix, StringComparison.Ordinal))
 		{
 			return EconomyUiTexts.Localized(

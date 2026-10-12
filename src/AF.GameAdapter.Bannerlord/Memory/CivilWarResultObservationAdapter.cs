@@ -14,10 +14,10 @@ internal sealed class CivilWarResultObservationAdapter
     internal void Record(Kingdom kingdom,string key,string text,bool bulletin,Hero actor=null,Hero factionLeader=null)
     {
         if(kingdom==null||string.IsNullOrWhiteSpace(text)) return;
-        _material("civil_war","内战政治 - "+kingdom.Name,text,key,kingdom.StringId,true,true);
+        _material("civil_war",AnimusForge.PromptComposerTexts.Raw("weekly_memory_compat_5898349b9786")+kingdom.Name,text,key,kingdom.StringId,true,true);
         string kind=CivilWarPoliticalRules.PoliticalResultKind(key);
         if(bulletin) _bulletin?.Invoke(kind,key,CivilWarPoliticalRules.PoliticalResultPriority,kingdom.Name+"："+text,
             Clan.PlayerClan?.Kingdom==kingdom,"realm:"+kingdom.StringId,text,
-            WorldBulletinEventCaptureAdapter.BulletinParticipants((actor, "本次政治行动方族长"), (factionLeader, "反对派领袖"), (kingdom.Leader, "王国君主，是否亲临现场依事实")), kingdom.StringId);
+            WorldBulletinEventCaptureAdapter.BulletinParticipants((actor, AnimusForge.PromptComposerTexts.Raw("weekly_memory_compat_0d6138e44bcf")), (factionLeader, AnimusForge.PromptComposerTexts.Raw("weekly_memory_compat_97363cc224ea")), (kingdom.Leader, AnimusForge.PromptComposerTexts.Raw("weekly_memory_compat_3ba4b9d2c0d0"))), kingdom.StringId);
     }
 }

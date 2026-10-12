@@ -1,5 +1,6 @@
 from pathlib import Path
-import sys,importlib.util,subprocess,argparse,json,hashlib
+import sys,importlib.util,subprocess,argparse,json,hashlib,shutil
+from xml.sax.saxutils import escape
 R=Path(__file__).resolve().parents[4];H=Path(__file__).parent
 sys.path.insert(0,str(R/'tests'))
 from output_isolation import minimal_test_environment
@@ -14,6 +15,13 @@ golden=(H/'LegacyUncompressed.cs.txt').read_text(encoding='utf-8')
 role=(R/'src/modules/AF.Module.Prompt/Composition/ConversationRoleClassificationOwner.cs').read_text(encoding='utf-8-sig')
 assembly=(R/'src/modules/AF.Module.Prompt/Composition/UncompressedMemoryMessageAssemblyOwner.cs').read_text(encoding='utf-8-sig')
 signatures=['List<ConversationMessage> KeepUncompressedFactsAndRecentConversationMessages(','ConversationMessage BuildUncompressedMemoryConversationMessage(','bool IsDailyMemoryLineNpcSpeech(','bool IsDailyMemoryLinePlayerSpeech(','bool TryParseDailyMemorySceneShoutLine(','bool IsCurrentActiveMemorySessionLine(','bool IsUnknownMemorySceneLabel(','int FindDialogueHistorySpeakerDelimiter(','bool IsLikelyPlayerHistorySpeaker(']
+bilingual_extensions = {
+ 'ConversationMessage BuildUncompressedMemoryConversationMessage(',
+ 'bool IsDailyMemoryLinePlayerSpeech(',
+ 'bool TryParseDailyMemorySceneShoutLine(',
+ 'bool IsUnknownMemorySceneLabel(',
+ 'bool IsLikelyPlayerHistorySpeaker(',
+}
 for sig in signatures:
  original=ex.declaration(golden,'private static '+sig).replace('private static','internal static',1)
  original=original.replace('int maxConversationMessages)','int maxConversationMessages, int minimum, int maximum)').replace('DuelSettings.DailyConversationHistoryLineLimitMin','minimum').replace('DuelSettings.DailyConversationHistoryLineLimitMax','maximum')
@@ -22,7 +30,12 @@ for sig in signatures:
  target=role if sig.startswith('int FindDialogue') or sig.startswith('bool IsLikelyPlayer') else assembly
  # Public role/text behavior is unchanged; prompt-only session provenance is an approved additive scalar.
  comparison=target.replace('PromptMemorySessionKey = line.MemorySessionKey ?? "",\n            ','')
- assert comparison.count(original)==1,sig
+ # These four parsers intentionally accept English input now. The executable
+ # harness still compares legacy Chinese fixtures and exercises the new cases.
+ if sig not in bilingual_extensions:
+  assert comparison.count(original)==1,sig
+ else:
+  assert ex.declaration(target,'internal static '+sig),sig
 assert 'PromptMemorySessionKey = line.MemorySessionKey ?? ""' in assembly
 adapter=(R/'src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.UncompressedMemoryPrompt.cs').read_text(encoding='utf-8-sig')
 history_path='src/AF.GameAdapter.Bannerlord/Memory/MemoryHistoryCommitBannerlordAdapter.cs'
@@ -43,10 +56,31 @@ assert 'MemoryHistoryCommitBannerlordAdapter.BuildNativeConversationHistoryEntri
 assert 'UncompressedMemoryMessageAssemblyOwner.BuildUncompressedMemoryConversationMessage(' in actual_capture
 (out/'Program.cs').write_text((H/'UncompressedHarness.cs.txt').read_text(encoding='utf-8').replace('@@DAY@@',day).replace('@@DAILY_CONSUMER@@',consumer).replace('@@ACTUAL_HISTORY_CAPTURE@@',actual_capture).replace('@@ACTUAL_RECALL_SCENE@@',ex.declaration((R/'src/AF.GameAdapter.Bannerlord/Prompt/MemoryRecallInputCaptureAdapter.cs').read_text(encoding='utf-8-sig'),'internal static string ResolveCapturedMemoryLineSceneForPrompt(')),encoding='utf-8')
 (out/'Legacy.cs').write_text((H/'LegacyUncompressed.cs.txt').read_text(encoding='utf-8'),encoding='utf-8')
-paths=['src/modules/AF.Module.Memory/Records/AnimusForgeDialogueHistoryEntry.cs','src/modules/AF.Module.Prompt/Composition/UncompressedMemoryMessageAssemblyOwner.cs','src/modules/AF.Module.Prompt/Composition/ConversationRoleClassificationOwner.cs','src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.UncompressedMemoryPrompt.cs','src/modules/AF.Module.Memory/Records/MemoryPersistenceModels.cs','src/modules/AF.Module.Memory/Records/DialogueHistoryLedger.cs','src/modules/AF.Module.Memory/Records/NpcActionEntry.cs','src/modules/AF.Module.Conversation/Internal/History/ConversationMessage.cs','src/AF.Foundation.Runtime/Lifecycle/SaveRuntimeGuard.cs']
-(out/'Tests.csproj').write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><LangVersion>latest</LangVersion><NoWarn>CS0649</NoWarn></PropertyGroup><ItemGroup>'+''.join('<Compile Include="'+str(R/x)+'" />' for x in paths)+'</ItemGroup></Project>',encoding='utf-8')
+paths=['src/modules/AF.Module.Memory/Records/AnimusForgeDialogueHistoryEntry.cs','src/modules/AF.Module.Prompt/Composition/UncompressedMemoryMessageAssemblyOwner.cs','src/modules/AF.Module.Prompt/Composition/ConversationRoleClassificationOwner.cs','src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.UncompressedMemoryPrompt.cs','src/modules/AF.Module.Memory/Records/MemoryPersistenceModels.cs','src/modules/AF.Module.Memory/Records/DialogueHistoryLedger.cs','src/modules/AF.Module.Memory/Records/NpcActionEntry.cs','src/modules/AF.Module.Conversation/Internal/History/ConversationMessage.cs','src/AF.Foundation.Runtime/Lifecycle/SaveRuntimeGuard.cs','src/modules/AF.Module.Memory/Runtime/MemoryTextResources.cs']
+paths.append('src/modules/AF.Module.Prompt/Runtime/PromptComposerTexts.cs')
+source_resource=R/'content/modules/AF.Module.Memory/ModuleData/MemorySourceTexts.json'
+newtonsoft=R/'local/dotnet/8.0.425/sdk/8.0.425/Newtonsoft.Json.dll'
+assert newtonsoft.is_file() and source_resource.is_file()
+(out/'Tests.csproj').write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><LangVersion>latest</LangVersion><NoWarn>CS0649</NoWarn></PropertyGroup><ItemGroup>'+''.join('<Compile Include="'+escape(str(R/x))+'" />' for x in paths)+'<EmbeddedResource Include="'+escape(str(source_resource))+'"><LogicalName>AnimusForge.Memory.SourceTexts.json</LogicalName></EmbeddedResource><Reference Include="Newtonsoft.Json"><HintPath>'+escape(str(newtonsoft))+'</HintPath></Reference></ItemGroup></Project>',encoding='utf-8')
+f=out/'Tests.csproj';value=f.read_text('utf-8');value=value.replace('</Project>','<ItemGroup><EmbeddedResource Include="'+escape(str(R/'content/modules/AF.Module.Prompt/ModuleData/PromptCompatibility.json'))+'"><LogicalName>AnimusForge.Prompt.Compatibility.json</LogicalName></EmbeddedResource></ItemGroup></Project>');f.write_text(value,encoding='utf-8')
 (out/'NuGet.Config').write_text('<configuration><packageSources><clear/></packageSources></configuration>',encoding='utf-8')
-d=R/'local/dotnet/8.0.425/dotnet.exe';r=subprocess.run([str(d),'run','--project',str(out/'Tests.csproj'),'-c','Release'],cwd=out,env=minimal_test_environment(d,out),capture_output=True,text=True,encoding='utf-8',errors='replace',timeout=120)
-(out/'run.log').write_text(r.stdout+r.stderr,encoding='utf-8');print(r.stdout+r.stderr,end='')
-(out/'receipt.json').write_text(json.dumps({'exit_code':r.returncode,'sources':{x:hashlib.sha256((R/x).read_bytes()).hexdigest() for x in paths},'test_sha256':hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),'main_sha256':hashlib.sha256((R/'src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs').read_bytes()).hexdigest(),'golden_sha256':hashlib.sha256((H/'LegacyUncompressed.cs.txt').read_bytes()).hexdigest(),'terminal_proof':'6 host algorithms absent; 6 sole forwarding consumers present; 9 pure bodies exact approved substitutions; owner receives only detached values','baseline':'fixed pre-move 9 declarations plus 3 exact pure leaves; complete actual History capture declarations and current My thin wrappers; scalar engine/config and memory-read boundary controlled','live':'NOT_RUN'},indent=2),encoding='utf-8')
+d=R/'local/dotnet/8.0.425/dotnet.exe'
+env=minimal_test_environment(d,out)
+build=subprocess.run([str(d),'build',str(out/'Tests.csproj'),'-c','Release','--nologo'],cwd=out,env=env,capture_output=True,text=True,encoding='utf-8',errors='replace',timeout=120)
+(out/'build.log').write_text(build.stdout+build.stderr,encoding='utf-8')
+if build.returncode:
+ print(build.stdout+build.stderr,end='');sys.exit(build.returncode)
+package_results=[]
+for language, filename in [('CN','MemoryPromptTexts.json'),('EN','MemoryPromptTexts.en.json')]:
+ package=out/language;package.mkdir(exist_ok=True)
+ prompt_source=R/'content/modules/AF.Module.Memory/ModuleData'/filename
+ shutil.copyfile(prompt_source,package/'MemoryPromptTexts.json')
+ shutil.copyfile(R/('content/modules/AF.Module.Prompt/ModuleData/PromptComposerTexts.'+('en' if language=='EN' else 'zh-CN')+'.json'),package/'PromptComposerTexts.json')
+ run=subprocess.run([str(d),str(out/'bin/Release/net8.0/Tests.dll'),str(package),language],cwd=out,env=env,capture_output=True,text=True,encoding='utf-8',errors='replace',timeout=120)
+ (out/(language+'.log')).write_text(run.stdout+run.stderr,encoding='utf-8');print(run.stdout+run.stderr,end='')
+ package_results.append({'language':language,'exit_code':run.returncode,'prompt_sha256':hashlib.sha256(prompt_source.read_bytes()).hexdigest()})
+ if run.returncode:break
+r=run
+(out/'run.log').write_text('\n'.join((out/(item['language']+'.log')).read_text(encoding='utf-8') for item in package_results),encoding='utf-8')
+(out/'receipt.json').write_text(json.dumps({'exit_code':r.returncode,'packages':package_results,'source_resource_sha256':hashlib.sha256(source_resource.read_bytes()).hexdigest(),'sources':{x:hashlib.sha256((R/x).read_bytes()).hexdigest() for x in paths},'test_sha256':hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),'main_sha256':hashlib.sha256((R/'src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.cs').read_bytes()).hexdigest(),'golden_sha256':hashlib.sha256((H/'LegacyUncompressed.cs.txt').read_bytes()).hexdigest(),'terminal_proof':'6 host algorithms absent; 6 sole forwarding consumers present; 9 pure bodies exact approved substitutions; owner receives only detached values','baseline':'fixed pre-move 9 declarations plus 3 exact pure leaves; complete actual History capture declarations and current My thin wrappers; scalar engine/config and memory-read boundary controlled','live':'NOT_RUN'},indent=2),encoding='utf-8')
 sys.exit(r.returncode)

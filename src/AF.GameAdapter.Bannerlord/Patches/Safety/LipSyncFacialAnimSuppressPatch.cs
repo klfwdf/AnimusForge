@@ -21,23 +21,23 @@ public static class LipSyncFacialAnimSuppressPatch
 			Type type = AccessTools.TypeByName("SandBox.Missions.MissionLogics.MissionFacialAnimationHandler");
 			if (type == null)
 			{
-				Logger.LogTrace("System", "❌ LipSyncFacialAnimSuppressPatch: 找不到 MissionFacialAnimationHandler 类型。");
+				Logger.LogTrace("System", "❌ LipSyncFacialAnimSuppressPatch: MissionFacialAnimationHandler type not found.");
 				return;
 			}
 			MethodInfo methodInfo = AccessTools.Method(type, "OnMissionTick");
 			if (methodInfo == null)
 			{
-				Logger.LogTrace("System", "❌ LipSyncFacialAnimSuppressPatch: 找不到 OnMissionTick 方法。");
+				Logger.LogTrace("System", "❌ LipSyncFacialAnimSuppressPatch: OnMissionTick method not found.");
 				return;
 			}
 			Harmony harmony = new Harmony("AnimusForge.lipsync.facialanimsuppress");
 			HarmonyMethod prefix = new HarmonyMethod(typeof(LipSyncFacialAnimSuppressPatch).GetMethod("Prefix", BindingFlags.Static | BindingFlags.Public));
 			harmony.Patch(methodInfo, prefix);
-			Logger.LogTrace("System", "✅ LipSyncFacialAnimSuppressPatch 已对 MissionFacialAnimationHandler.OnMissionTick 打补丁。");
+			Logger.LogTrace("System", "✅ LipSyncFacialAnimSuppressPatch Patched MissionFacialAnimationHandler.OnMissionTick.");
 		}
 		catch (Exception ex)
 		{
-			Logger.LogTrace("System", "❌ LipSyncFacialAnimSuppressPatch 打补丁失败: " + ex.Message);
+			Logger.LogTrace("System", "❌ LipSyncFacialAnimSuppressPatch patch failed: " + ex.Message);
 		}
 	}
 

@@ -24,7 +24,12 @@ internal interface IPromptConfigurationFiles
 
 internal sealed class ProductionPromptConfigurationFiles : IPromptConfigurationFiles
 {
-    public string PathFor(string fileName) => AnimusForgeModulePaths.GetModuleDataFilePath(fileName);
+    public string PathFor(string fileName)
+    {
+        if (fileName == "Defaults/PreprocessPrompts.json" || fileName == "Defaults/RpItemIntroductionPrompts.json")
+            return Path.Combine(AnimusForgeModulePaths.GetCurrentModuleRoot(), "ModuleData", "Defaults", Path.GetFileName(fileName));
+        return AnimusForgeModulePaths.GetModuleDataFilePath(fileName);
+    }
     public bool Exists(string path) => File.Exists(path);
     public string ReadText(string path) => File.ReadAllText(path);
     public string ReadText(string path, Encoding encoding) => File.ReadAllText(path, encoding);
@@ -53,8 +58,8 @@ internal sealed class PromptConfigurationLoadResult
 // A complete replacement value is prepared before the revisioned store publishes it.
 internal sealed class PromptConfigurationLoader
 {
-    private const string PreprocessResource = "AnimusForge.Defaults.PreprocessPrompts.json";
-    private const string RpIntroductionResource = "AnimusForge.Defaults.RpItemIntroductionPrompts.json";
+    private const string PreprocessDefaultsFile = "Defaults/PreprocessPrompts.json";
+    private const string RpIntroductionDefaultsFile = "Defaults/RpItemIntroductionPrompts.json";
     private static readonly Encoding StrictUtf8 = new UTF8Encoding(false, true);
     private static readonly Regex TemplateVariable = new Regex("\\{([a-z][a-z0-9_]*)\\}", RegexOptions.Compiled | RegexOptions.CultureInvariant);
 
@@ -65,8 +70,8 @@ internal sealed class PromptConfigurationLoader
     internal PromptConfigurationLoader(IPromptConfigurationFiles files)
     {
         _files = files ?? throw new ArgumentNullException(nameof(files));
-        _preprocessDefaults = new Lazy<JObject>(LoadEmbeddedPreprocess);
-        _rpDefaults = new Lazy<string>(LoadEmbeddedRpIntroduction);
+        _preprocessDefaults = new Lazy<JObject>(LoadPackagedPreprocess);
+        _rpDefaults = new Lazy<string>(LoadPackagedRpIntroduction);
     }
 
     internal PromptConfigurationLoadResult Load()
@@ -86,7 +91,7 @@ internal sealed class PromptConfigurationLoader
             string mainPath = _files.PathFor("AIConfig.json");
             if (!_files.Exists(mainPath))
             {
-                _files.Log("[错误] 找不到 AIConfig.json");
+                _files.Log("[Error] Missing AIConfig.json");
                 main = new AIConfigModel();
             }
             else main = JsonConvert.DeserializeObject<AIConfigModel>(_files.ReadText(mainPath)) ?? new AIConfigModel();
@@ -98,39 +103,39 @@ internal sealed class PromptConfigurationLoader
             string rpPath = _files.PathFor("RpItemIntroductionPrompts.json");
             if (!_files.Exists(guardrailPath))
             {
-                _files.Log("[错误] 找不到 RuleBehaviorPrompts.json");
+                _files.Log("[Error] Missing RuleBehaviorPrompts.json");
                 guardrail = new GuardrailConfigModel();
             }
             else guardrail = JsonConvert.DeserializeObject<GuardrailConfigModel>(_files.ReadText(guardrailPath)) ?? new GuardrailConfigModel();
             if (!_files.Exists(actionPath))
             {
-                _files.Log("[错误] 找不到 ActionPostprocessPrompts.json");
+                _files.Log("[Error] Missing ActionPostprocessPrompts.json");
                 action = new ActionPostprocessConfigModel();
             }
             else action = JsonConvert.DeserializeObject<ActionPostprocessConfigModel>(_files.ReadText(actionPath)) ?? new ActionPostprocessConfigModel();
 
             try
             {
-                if (!_files.Exists(preprocessPath)) throw new FileNotFoundException("找不到 PreprocessPrompts.json", preprocessPath);
+                if (!_files.Exists(preprocessPath)) throw new FileNotFoundException("Missing PreprocessPrompts.json", preprocessPath);
                 preprocess = LoadPreprocess(preprocessPath, out bool usedDefaults, out int sourceVersion, out int defaultVersion);
                 ValidatePreprocess(preprocess);
                 if (usedDefaults)
-                    _files.Log(string.Format("[兼容] 检测到旧版 PreprocessPrompts.json (v{0})，其输出 schema 与 v{1} 不兼容；本次运行已采用程序集内置 v{1} 默认提示词，磁盘文件未改写。", sourceVersion, defaultVersion));
+                    _files.Log(string.Format("[Compatibility] Detected legacy PreprocessPrompts.json (v{0}); its output schema is incompatible with v{1}. This run uses packaged v{1} defaults; the disk file was not rewritten.", sourceVersion, defaultVersion));
             }
             catch (Exception ex)
             {
                 preprocess = new PreprocessPromptsConfigModel();
                 preprocessError = ex.Message;
-                _files.Log("[错误] 前处理提示词配置加载失败: " + ex.Message);
+                _files.Log("[Error] Preprocess prompt configuration load failed: " + ex.Message);
             }
             try
             {
-                if (!_files.Exists(proactivePath)) throw new FileNotFoundException("找不到 ProactiveNpcRequestPrompts.json", proactivePath);
+                if (!_files.Exists(proactivePath)) throw new FileNotFoundException("Missing ProactiveNpcRequestPrompts.json", proactivePath);
                 proactive = JsonConvert.DeserializeObject<ProactiveNpcRequestPromptsConfigModel>(_files.ReadText(proactivePath, Encoding.UTF8)) ?? new ProactiveNpcRequestPromptsConfigModel();
             }
             catch (Exception ex)
             {
-                _files.Log("[错误] 载入 ProactiveNpcRequestPrompts.json 失败: " + ex.Message);
+                _files.Log("[Error] ProactiveNpcRequestPrompts.json load failed: " + ex.Message);
                 proactive = new ProactiveNpcRequestPromptsConfigModel();
             }
             try
@@ -143,11 +148,11 @@ internal sealed class PromptConfigurationLoader
                 rpBothUnavailable = true;
                 rpFallbackReason = ex.Message;
             }
-            _files.Log("配置文件路径：AIConfig=" + mainPath + " RuleBehavior=" + guardrailPath + " ActionPostprocess=" + actionPath + " PreprocessPrompts=" + preprocessPath + " RpItemIntroductionPrompts=" + rpPath);
+            _files.Log("Configuration paths: AIConfig=" + mainPath + " RuleBehavior=" + guardrailPath + " ActionPostprocess=" + actionPath + " PreprocessPrompts=" + preprocessPath + " RpItemIntroductionPrompts=" + rpPath);
         }
         catch (Exception ex)
         {
-            _files.Log("[错误] 加载失败: " + ex.Message);
+            _files.Log("[Error] Load failed: " + ex.Message);
             main = new AIConfigModel();
             guardrail = new GuardrailConfigModel();
             action = new ActionPostprocessConfigModel();
@@ -165,19 +170,17 @@ internal sealed class PromptConfigurationLoader
         JObject source = JObject.Parse(_files.ReadText(path, StrictUtf8));
         JObject defaults = (JObject)_preprocessDefaults.Value.DeepClone();
         defaultVersion = defaults.Value<int?>("Version").GetValueOrDefault();
-        if (defaultVersion <= 0) throw new InvalidDataException("程序集内置 PreprocessPrompts.json 的 Version 无效");
+        if (defaultVersion <= 0) throw new InvalidDataException("Invalid Version in packaged default PreprocessPrompts.json");
         sourceVersion = source.Value<int?>("Version").GetValueOrDefault();
         usedDefaults = sourceVersion < defaultVersion;
         if (usedDefaults) source = defaults;
         return source.ToObject<PreprocessPromptsConfigModel>() ?? new PreprocessPromptsConfigModel();
     }
 
-    private JObject LoadEmbeddedPreprocess()
+    private JObject LoadPackagedPreprocess()
     {
-        using Stream stream = _files.OpenResource(PreprocessResource);
-        if (stream == null) throw new MissingManifestResourceException("找不到程序集内置前处理提示词资源: " + PreprocessResource);
-        using StreamReader reader = new StreamReader(stream, StrictUtf8, detectEncodingFromByteOrderMarks: true);
-        return JObject.Parse(reader.ReadToEnd());
+        string path = _files.PathFor(PreprocessDefaultsFile);
+        return JObject.Parse(_files.ReadText(path, StrictUtf8));
     }
 
     private RpItemIntroductionPromptsConfigModel LoadRpIntroduction(string path, out bool usedDefaults, out string fallbackReason)
@@ -186,9 +189,9 @@ internal sealed class PromptConfigurationLoader
         fallbackReason = "";
         try
         {
-            if (!_files.Exists(path)) throw new FileNotFoundException("找不到 RpItemIntroductionPrompts.json", path);
+            if (!_files.Exists(path)) throw new FileNotFoundException("Missing RpItemIntroductionPrompts.json", path);
             var config = JsonConvert.DeserializeObject<RpItemIntroductionPromptsConfigModel>(ReadStrictUtf8NoBom(path, "RpItemIntroductionPrompts.json"));
-            if (config == null) throw new InvalidDataException("RpItemIntroductionPrompts.json 内容为空或不是对象");
+            if (config == null) throw new InvalidDataException("RpItemIntroductionPrompts.json is empty or is not an object");
             ValidateRpIntroduction(config, "RpItemIntroductionPrompts.json");
             return config;
         }
@@ -197,33 +200,30 @@ internal sealed class PromptConfigurationLoader
             usedDefaults = true;
             fallbackReason = ex.Message;
             var embedded = JsonConvert.DeserializeObject<RpItemIntroductionPromptsConfigModel>(_rpDefaults.Value);
-            if (embedded == null) throw new InvalidDataException("程序集内置 RpItemIntroductionPrompts.json 内容为空或不是对象");
-            ValidateRpIntroduction(embedded, "程序集内置 RpItemIntroductionPrompts.json");
+            if (embedded == null) throw new InvalidDataException("Packaged default RpItemIntroductionPrompts.json is empty or is not an object");
+            ValidateRpIntroduction(embedded, "Packaged default RpItemIntroductionPrompts.json");
             return embedded;
         }
     }
 
-    private string LoadEmbeddedRpIntroduction()
+    private string LoadPackagedRpIntroduction()
     {
-        using Stream stream = _files.OpenResource(RpIntroductionResource);
-        if (stream == null) throw new MissingManifestResourceException("找不到程序集内置 RP物品介绍提示词资源: " + RpIntroductionResource);
-        using StreamReader reader = new StreamReader(stream, StrictUtf8, detectEncodingFromByteOrderMarks: false);
-        return reader.ReadToEnd();
+        return ReadStrictUtf8NoBom(_files.PathFor(RpIntroductionDefaultsFile), RpIntroductionDefaultsFile);
     }
 
     private string ReadStrictUtf8NoBom(string path, string displayName)
     {
         byte[] bytes = _files.ReadBytes(path);
         if (bytes.Length >= 3 && bytes[0] == 239 && bytes[1] == 187 && bytes[2] == 191)
-            throw new InvalidDataException((displayName ?? "配置文件") + " 必须使用 UTF-8 无 BOM 编码");
+            throw new InvalidDataException((displayName ?? "Configuration file") + " must use UTF-8 without BOM");
         return StrictUtf8.GetString(bytes);
     }
 
     private static void ValidateRpIntroduction(RpItemIntroductionPromptsConfigModel config, string name)
     {
-        if (config == null) throw new InvalidDataException((name ?? "RpItemIntroductionPrompts.json") + " 内容为空");
+        if (config == null) throw new InvalidDataException((name ?? "RpItemIntroductionPrompts.json") + " is empty");
         if (config.Version != 1)
-            throw new InvalidDataException((name ?? "RpItemIntroductionPrompts.json") + " 的 Version 必须为 1，当前为 " + config.Version);
+            throw new InvalidDataException((name ?? "RpItemIntroductionPrompts.json") + " Version must be 1; current value: " + config.Version);
         RequireRpValue(config.SystemPrompt, "SystemPrompt");
         string template = RequireRpValue(config.UserPromptTemplate, "UserPromptTemplate");
         bool item = false, dialogue = false;
@@ -231,18 +231,18 @@ internal sealed class PromptConfigurationLoader
         {
             string variable = match.Groups[1].Value;
             if (variable != "item_name" && variable != "giver_name" && variable != "dialogue")
-                throw new InvalidDataException((name ?? "RpItemIntroductionPrompts.json") + " 的 UserPromptTemplate 包含不支持的占位符: {" + variable + "}。只允许 {item_name}、{giver_name}、{dialogue}");
+                throw new InvalidDataException((name ?? "RpItemIntroductionPrompts.json") + " UserPromptTemplate contains an unsupported placeholder: {" + variable + "}; only {item_name}, {giver_name}, {dialogue} are allowed");
             item |= variable == "item_name";
             dialogue |= variable == "dialogue";
         }
         if (!item || !dialogue)
-            throw new InvalidDataException((name ?? "RpItemIntroductionPrompts.json") + " 的 UserPromptTemplate 必须包含 {item_name} 和 {dialogue}");
+            throw new InvalidDataException((name ?? "RpItemIntroductionPrompts.json") + " UserPromptTemplate must contain {item_name} and {dialogue}");
     }
 
     private static string RequireRpValue(string value, string field)
     {
         string text = (value ?? "").Trim();
-        if (string.IsNullOrWhiteSpace(text)) throw new InvalidDataException("RpItemIntroductionPrompts.json 缺少必填项: " + (field ?? "unknown"));
+        if (string.IsNullOrWhiteSpace(text)) throw new InvalidDataException("RpItemIntroductionPrompts.json is missing a required field: " + (field ?? "unknown"));
         return text;
     }
 
@@ -250,7 +250,7 @@ internal sealed class PromptConfigurationLoader
     {
         RequirePreprocess(config?.StrictJson?.SystemPrompt, "StrictJson.SystemPrompt");
         JObject schema = config?.StrictJson?.MentionedEntitiesSchema;
-        if (!(schema?["entities"] is JArray)) throw new InvalidOperationException("PreprocessPrompts.json schema 缺少数组: StrictJson.MentionedEntitiesSchema.entities");
+        if (!(schema?["entities"] is JArray)) throw new InvalidOperationException("PreprocessPrompts.json schema is missing an array: StrictJson.MentionedEntitiesSchema.entities");
         RequirePreprocess(config?.TopicRouting?.EmptyValue, "TopicRouting.EmptyValue");
         ValidateTemplate(config?.TopicRouting?.UserPromptTemplate, "TopicRouting.UserPromptTemplate", "topic_list", "routing_guidance", "history", "latest_npc", "latest_player", "top_n", "mentioned_entities_schema");
         RequirePreprocess(config?.MemorySelection?.ParallelModeInstruction, "MemorySelection.ParallelModeInstruction");
@@ -266,7 +266,7 @@ internal sealed class PromptConfigurationLoader
     private static string RequirePreprocess(string value, string path)
     {
         string text = (value ?? "").Trim();
-        if (string.IsNullOrWhiteSpace(text)) throw new InvalidOperationException("PreprocessPrompts.json 缺少必填项: " + (path ?? "unknown"));
+        if (string.IsNullOrWhiteSpace(text)) throw new InvalidOperationException("PreprocessPrompts.json is missing a required field: " + (path ?? "unknown"));
         return text;
     }
 
@@ -275,6 +275,6 @@ internal sealed class PromptConfigurationLoader
         string text = RequirePreprocess(template, path);
         var variables = new HashSet<string>(TemplateVariable.Matches(text).Cast<Match>().Select(x => x.Groups[1].Value), StringComparer.Ordinal);
         foreach (string variable in required ?? Array.Empty<string>())
-            if (!variables.Contains(variable)) throw new InvalidOperationException("PreprocessPrompts.json 模板缺少占位符: " + path + ".{" + variable + "}");
+            if (!variables.Contains(variable)) throw new InvalidOperationException("PreprocessPrompts.json template is missing a placeholder: " + path + ".{" + variable + "}");
     }
 }

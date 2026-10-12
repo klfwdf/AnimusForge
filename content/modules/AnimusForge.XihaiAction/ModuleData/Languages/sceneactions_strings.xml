@@ -2,6 +2,27 @@
 <base xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" type="string">
   <tags><tag language="English" /></tags>
   <strings>
+    <string id="SAX_BatchSummary" text="Scene actions: {ACCEPTED} accepted, {FAILED} failed, {SKIPPED} skipped." />
+    <string id="SAX_Reason_UnknownSpeaker" text="Unknown" />
+    <string id="SAX_Reason_UnknownReason" text="Unknown reason" />
+    <string id="SAX_Reason_SpeakerLeft" text="The speaker left the Mission." />
+    <string id="SAX_Reason_SpeakerTeamChanged" text="The speaker changed team." />
+    <string id="SAX_Reason_PlayerCancelled" text="Cancelled by player." />
+    <string id="SAX_Reason_RequestReplaced" text="Replaced by a newer battle speech request." />
+    <string id="SAX_Reason_InvalidSpeech" text="Speech text or speaker is invalid." />
+    <string id="SAX_Reason_PhaseChanged" text="Battle speech phase changed." />
+    <string id="SAX_Reason_SpeakerUnavailable" text="Speaker became unavailable." />
+    <string id="SAX_Reason_PhaseClosed" text="Battle speech phase closed." />
+    <string id="SAX_Reason_RequestTimedOut" text="Battle speech request timed out." />
+    <string id="SAX_Reason_BridgeUnavailable" text="AF dedicated NPC speech bridge is unavailable or the speaker is no longer active." />
+    <string id="SAX_Reason_ShoutUnavailable" text="AF ShoutBehavior instance is unavailable." />
+    <string id="SAX_Reason_PacketUnavailable" text="AF could not build the NPC speech packet." />
+    <string id="SAX_Reason_PromptUnclaimed" text="Dedicated NPC speech session could not claim its prompt." />
+    <string id="SAX_Reason_UnexpectedTask" text="AF returned an unexpected NPC speech task." />
+    <string id="SAX_Reason_ReplayUnavailable" text="Deferred AF reply is no longer replayable." />
+    <string id="SAX_Reason_ReplayNoResult" text="AF replay returned no playback result." />
+    <string id="SAX_Reason_NpcRequestFailed" text="NPC speech request could not start: {DETAIL}" />
+    <string id="SAX_Reason_ReplayFailed" text="Deferred AF reply replay failed: {DETAIL}" />
     <string id="SAX_Loaded" text="AnimusForge Xihai Action loaded (v1.1 / Framework V4 + Battle Speech V2)." />
     <string id="SAX_Disabled" text="AnimusForge Xihai Action disabled: the required AnimusForge runtime contract is unavailable." />
     <string id="SAX_InitializationFailed" text="AnimusForge Xihai Action initialization failed: {REASON}" />
@@ -138,5 +159,6 @@
     <string id="SAX_BattleSpeechInputContentHint" text="Enter text:" />
     <string id="SAX_BattleSpeechInputSubmit" text="Deliver speech" />
     <string id="SAX_BattleSpeechInputCancel" text="Cancel" />
+    <string id="SAX_Item_DaimaoHead_Name" text="Daimao" />
   </strings>
 </base>

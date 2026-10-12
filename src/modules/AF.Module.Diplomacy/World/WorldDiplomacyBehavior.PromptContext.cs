@@ -142,7 +142,7 @@ public sealed partial class WorldDiplomacyBehavior
             _owner._storage?.RecentBattles, authorId, targetId, WorldDiplomacyBehavior.CurrentDay(),
             WorldDiplomacyBehavior.RecentBattleRetentionDays,
             id => WorldDiplomacyBehavior.KingdomName(Resolve(id) ?? ResolveAny(id)),
-            WorldDiplomacyBehavior.FormatCampaignDate);
+            WorldDiplomacyBehavior.FormatCampaignDate, DiplomacyPromptTexts.Get);
         WorldDiplomacyRulerCaptivity IWorldDiplomacyPromptWorld.AuthorRulerCaptivity(string authorId) => WorldDiplomacyBehavior.ResolveAuthorRulerCaptivity(Resolve(authorId));
         string IWorldDiplomacyDraftRepairWorld.BuildGovernmentHardFact(string author) => WorldDiplomacyBehavior.BuildCanonicalRealmGovernmentHardFact(Resolve(author), WorldDiplomacyBehavior.ResolveRealmRulerTitle(Resolve(author), Resolve(author)?.Leader ?? Resolve(author)?.RulingClan?.Leader));
         string IWorldDiplomacyDraftRepairWorld.NewId(string prefix) => WorldDiplomacyBehavior.NewId(prefix);

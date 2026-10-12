@@ -134,7 +134,7 @@ internal sealed class SceneAudioLipSyncController
 				if (_ttsEventSubscribedOwner != null && _ttsEventSubscribedOwner != this)
 				{
 					_ttsEventSubscribedOwner.UnsubscribeTtsPlaybackEventsInternal(instance, clearOwnerIfMatch: false);
-					Logger.Log("LipSync", "[WARN] 检测到旧 ShoutBehavior 残留订阅，已自动解绑旧实例");
+					Logger.Log("LipSync", "[WARN] Detected stale ShoutBehavior subscriptions; the old instance was automatically unsubscribed");
 				}
 				UnsubscribeTtsPlaybackEventsInternal(instance, clearOwnerIfMatch: false);
 				_retired=false;
@@ -234,7 +234,7 @@ internal sealed class SceneAudioLipSyncController
 									SoundEvent soundEvent = SoundEvent.CreateEventFromExternalFile("event:/Extra/voiceover", wavPath, mission.Scene, is3d: false, isBlocking: false);
 									if (soundEvent == null)
 									{
-										Logger.Log("LipSync", $"[WARN] SoundEvent.CreateEventFromExternalFile 返回 null, agentIndex={agentIndex}");
+										Logger.Log("LipSync", $"[WARN] SoundEvent.CreateEventFromExternalFile returned null, agentIndex={agentIndex}");
 										Report("AudioFileReady.CreateSoundEventNull", agentIndex, $"wav={System.IO.Path.GetFileName(wavPath)}");
 										QueueDeferredCleanup(null, wavPath, xmlPath, "OnAudioFileReady.CreateSoundEventNull", agentIndex);
 											}
@@ -277,14 +277,14 @@ internal sealed class SceneAudioLipSyncController
 												}
 												catch (Exception ex2)
 										{
-											Logger.Log("LipSync", "[WARN] 设置 SoundEvent 音量失败(Volume): " + ex2.Message);
+											Logger.Log("LipSync", "[WARN] Failed to set SoundEvent volume (Volume): " + ex2.Message);
 										}
 										LogLipSyncNativeProbe("SoundEvent.GetSoundId.Before", agentIndex);
 										int soundId = soundEvent.GetSoundId();
 										LogLipSyncNativeProbe("SoundEvent.GetSoundId.After", agentIndex, "soundId=" + soundId);
 										if (soundId <= 0)
 										{
-											Logger.Log("LipSync", $"[WARN] SoundEvent.GetSoundId 非法({soundId})，跳过 StartRhubarbRecord, agentIndex={agentIndex}");
+											Logger.Log("LipSync", $"[WARN] Invalid SoundEvent.GetSoundId ({soundId}); skipping StartRhubarbRecord, agentIndex={agentIndex}");
 											SafeStopAndReleaseSoundEvent(soundEvent);
 											QueueDeferredCleanup(null, wavPath, xmlPath, "OnAudioFileReady.InvalidSoundId", agentIndex);
 										}
@@ -313,7 +313,7 @@ internal sealed class SceneAudioLipSyncController
 														LogLipSyncNativeProbe("StartRhubarbRecord.Before", agentIndex, $"soundId={soundId};xml={System.IO.Path.GetFileName(xmlPath)}");
 														agent.AgentVisuals.StartRhubarbRecord(xmlPath, soundId);
 														LogLipSyncNativeProbe("StartRhubarbRecord.After", agentIndex, "soundId=" + soundId);
-														Logger.Log("LipSync", $"[Rhubarb] StartRhubarbRecord 调用成功, agentIndex={agentIndex}, soundId={soundId}");
+														Logger.Log("LipSync", $"[Rhubarb] StartRhubarbRecord call succeeded, agentIndex={agentIndex}, soundId={soundId}");
 													}
 													else
 													{
@@ -334,7 +334,7 @@ internal sealed class SceneAudioLipSyncController
 								catch (Exception ex3)
 								{
 									QueueDeferredCleanup(null, wavPath, xmlPath, "OnAudioFileReady.MainThreadFailed", agentIndex);
-									Logger.Log("LipSync", "[ERROR] OnAudioFileReady 主线程处理失败: " + ex3.Message);
+									Logger.Log("LipSync", "[ERROR] OnAudioFileReady main-thread processing failed: " + ex3.Message);
 									Report("AudioFileReady.MainThreadFailed", agentIndex, "error=" + ex3.Message);
 									BannerlordExceptionSentinel.ReportObservedException("LipSync.OnAudioFileReady.MainThread", ex3, "agentIndex=" + agentIndex);
 								}
@@ -452,7 +452,7 @@ internal sealed class SceneAudioLipSyncController
 				instance.OnRequestPlaybackFinished += _ttsOnPlaybackFinishedHandler;
 				instance.OnRequestPlaybackFailed += _ttsOnPlaybackFailedHandler;
 				_ttsEventSubscribedOwner = this;
-				Logger.Log("LipSync", $"[INFO] TTS 播放事件订阅完成 owner={GetHashCode()}");
+				Logger.Log("LipSync", $"[INFO] TTS playback event subscription completed owner={GetHashCode()}");
 			}
 		}
 		catch (Exception ex)
@@ -490,7 +490,7 @@ internal sealed class SceneAudioLipSyncController
 		}
 		catch (Exception ex)
 		{
-			Logger.Log("LipSync", "[WARN] 取消订阅 TTS 事件失败: " + ex.Message);
+			Logger.Log("LipSync", "[WARN] TTS event unsubscribe failed: " + ex.Message);
 		}
 		if (clearOwnerIfMatch && _ttsEventSubscribedOwner == this)
 		{

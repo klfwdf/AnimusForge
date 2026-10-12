@@ -228,24 +228,25 @@ namespace AnimusForge.SceneActions.Core
 
         private static readonly string[] ForcedPlayerSpeechPrefixes =
         {
-            "强制指令我来演讲",
-            "强制指令我演讲",
-            "强制指令演讲",
-            "强制演讲",
-            "强制我演讲",
-            "强制我来演讲",
-            "我强制演讲",
-            "演讲",
-            "我演讲",
-            "我来演讲"
+            SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0001"),
+            SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0002"),
+            SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0003"),
+            SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0004"),
+            SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0005"),
+            SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0006"),
+            SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0007"),
+            SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0008"),
+            SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0009"),
+            SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0010"),
+            "force speech", "forced speech", "force battle speech", "forced battle speech", "my speech", "speech", "battle speech"
         };
 
         private static readonly string[] SpeechMetaMarkers =
         {
-            "正文如下", "演讲正文", "可用于测试", "测试用",
-            "示例一", "示例1", "第1段", "第1个", "第2段", "第2个", "第3段", "第3个",
-            "第4段", "第4个", "第5段", "第5个", "第6段", "第6个", "第7段", "第7个",
-            "第8段", "第8个", "第9段", "第9个", "第10段", "第10个"
+            SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0011"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0012"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0013"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0014"),
+            SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0015"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0016"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0017"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0018"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0019"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0020"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0021"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0022"),
+            SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0023"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0024"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0025"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0026"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0027"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0028"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0029"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0030"),
+            SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0031"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0032"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0033"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0034"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0035"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0036")
         };
 
 
@@ -771,18 +772,18 @@ namespace AnimusForge.SceneActions.Core
                 }
                 foreach (string phrase in new[]
                 {
-                    candidate + "万岁",
-                    "为了" + candidate,
-                    candidate + "必胜",
-                    candidate + "必将",
-                    candidate + "永存",
-                    candidate + "的荣耀",
-                    "荣耀归于" + candidate,
-                    "效忠" + candidate,
-                    "忠于" + candidate,
-                    "为" + candidate + "而战",
-                    "保卫" + candidate,
-                    "捍卫" + candidate,
+                    candidate + SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0037"),
+                    SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0038") + candidate,
+                    candidate + SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0039"),
+                    candidate + SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0040"),
+                    candidate + SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0041"),
+                    candidate + SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0042"),
+                    SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0043") + candidate,
+                    SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0044") + candidate,
+                    SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0045") + candidate,
+                    SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0046") + candidate + SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0047"),
+                    SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0048") + candidate,
+                    SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0049") + candidate,
                     "Long live " + candidate + "!",
                     "Long live " + candidate + ".",
                     "Glory to " + candidate + "!",
@@ -993,9 +994,9 @@ namespace AnimusForge.SceneActions.Core
             }
             string[] forbidden =
             {
-                "玩家", "您", "听凭您的调遣", "只要您", "请您下达指令",
-                "向您请示", "等待您下令", "我只是个普通士兵", "我只是一个普通士兵",
-                "我嘴拙", "讲不出什么大道理", "无权替您", "不敢替您"
+                SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0050"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0051"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0052"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0053"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0054"),
+                SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0055"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0056"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0057"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0058"),
+                SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0059"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0060"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0061"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0062")
             };
             if (forbidden.Any(value => text.IndexOf(value, StringComparison.Ordinal) >= 0))
             {
@@ -1016,7 +1017,7 @@ namespace AnimusForge.SceneActions.Core
             {
                 return true;
             }
-            string[] titles = { "大人", "阁下", "领主" };
+            string[] titles = { SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0063"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0064"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0065") };
             foreach (string title in titles)
             {
                 int searchStart = 0;
@@ -1043,7 +1044,7 @@ namespace AnimusForge.SceneActions.Core
                     // title is being used to address the player.
                     string[] directPrefixes =
                     {
-                        "请", "求", "让", "叫", "听凭", "向", "对", "给"
+                        SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0066"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0067"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0068"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0069"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0070"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0071"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0072"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0073")
                     };
                     if (directPrefixes.Any(prefix =>
                             index >= prefix.Length &&
@@ -1090,63 +1091,63 @@ namespace AnimusForge.SceneActions.Core
 
         private static readonly string[] NegationCues =
         {
-            "不要", "别让", "不许", "不用", "取消", "停止", "没让", "并未",
+            SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0074"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0075"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0076"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0077"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0078"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0079"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0080"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0081"),
             "not ", "don't", "do not", "never"
         };
 
         private static readonly string[] HypotheticalOrQuotedCues =
         {
-            "如果", "假如", "要是", "比如", "所谓", "这句话", "这几个字",
-            "假设", "if ", "what if", "quote"
+            SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0082"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0083"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0084"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0085"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0086"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0087"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0088"),
+            SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0089"), "if ", "what if", "quote"
         };
 
         private static readonly string[] AudienceCues =
         {
-            "大家", "众人", "士兵", "将士", "弟兄", "兄弟", "队伍", "全军",
-            "部队", "军队", "战士", "troops", "soldiers", "everyone", "army"
+            SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0090"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0091"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0092"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0093"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0094"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0095"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0096"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0097"),
+            SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0098"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0099"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0100"), "troops", "soldiers", "everyone", "army"
         };
 
         private static readonly string[] SpeechCues =
         {
-            "演讲", "训话", "动员", "鼓舞", "讲几句", "讲两句", "讲俩句",
-            "说几句", "说两句", "说俩句", "喊几句", "speech", "address the troops",
+            SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0008"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0101"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0102"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0103"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0104"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0105"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0106"),
+            SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0107"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0108"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0109"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0110"), "speech", "address the troops",
             "rally the troops"
         };
 
         private static readonly string[] SpeechRequestCues =
         {
-            "来给", "去给", "上前", "请你", "让你", "你来", "你去", "劳烦",
-            "麻烦", "替我", "给大家", "跟大家", "向大家", "对大家", "给士兵",
-            "跟士兵", "向士兵", "能不能", "能否", "可否", "give ", "go give",
+            SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0111"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0112"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0113"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0114"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0115"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0116"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0117"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0118"),
+            SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0119"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0120"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0121"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0122"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0123"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0124"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0125"),
+            SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0126"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0127"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0128"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0129"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0130"), "give ", "go give",
             "please give", "address "
         };
 
         private static readonly string[] SelfCues =
         {
-            "我来", "我要", "由我", "我给", "我向", "我跟", "让我来", "my speech",
+            SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0131"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0132"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0133"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0134"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0135"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0136"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0137"), "my speech",
             "i will", "let me"
         };
 
         private static readonly string[] DirectTroopAddressCues =
         {
-            "弟兄们", "兄弟们", "将士们", "战士们", "士兵们", "全军",
-            "各位将士", "各位", "诸位", "同袍们", "同胞们", "大家",
-            "所有人", "伙计们", "troops", "soldiers", "brothers", "everyone"
+            SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0138"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0139"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0140"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0141"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0142"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0097"),
+            SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0143"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0144"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0145"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0146"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0147"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0090"),
+            SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0148"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0149"), "troops", "soldiers", "brothers", "everyone"
         };
 
         private static readonly string[] CollectiveSpeechCues =
         {
-            "我们", "咱们", "吾等", "共同", "一起", "跟我", "听我",
-            "告诉你们", "记住", "let us", "let's", "we must", "we will"
+            SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0150"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0151"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0152"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0153"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0154"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0155"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0156"),
+            SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0157"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0158"), "let us", "let's", "we must", "we will"
         };
 
         private static readonly string[] DirectRallyCues =
         {
-            "家园", "敌人", "该死", "前方", "冲锋", "战斗", "战场", "胜利",
-            "后退", "不能退", "不后退", "阵线", "勇气", "荣耀", "守住", "杀敌",
-            "迎敌", "随我", "为了", "绝不", "必将", "必须", "战争", "进攻",
-            "前进", "自由", "复仇", "报仇", "听我", "听令", "号令", "掠夺",
-            "袭击", "人民", "拼了", "上啊", "杀过去", "保卫", "家人", "家乡",
+            SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0159"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0160"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0161"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0162"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0163"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0164"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0165"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0166"),
+            SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0167"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0168"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0169"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0170"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0171"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0172"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0173"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0174"),
+            SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0175"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0176"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0038"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0177"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0040"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0178"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0179"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0180"),
+            SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0181"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0182"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0183"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0184"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0156"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0185"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0186"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0187"),
+            SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0188"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0189"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0190"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0191"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0192"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0048"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0193"), SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0194"),
             "fight",
             "enemy", "victory", "forward", "retreat", "battle", "hold the line"
         };
@@ -2151,10 +2152,10 @@ namespace AnimusForge.SceneActions.Core
             if (text.Length < 8 ||
                 text.Length > BattleSpeechFrameworkV1.MaximumSpeechChars ||
                 text.IndexOfAny(new[] { '"', '\'', '“', '”', '‘', '’' }) >= 0 ||
-                text.IndexOf("他说", StringComparison.Ordinal) >= 0 ||
-                text.IndexOf("她说", StringComparison.Ordinal) >= 0 ||
-                text.IndexOf("他喊", StringComparison.Ordinal) >= 0 ||
-                text.IndexOf("她喊", StringComparison.Ordinal) >= 0)
+                text.IndexOf(SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0195"), StringComparison.Ordinal) >= 0 ||
+                text.IndexOf(SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0196"), StringComparison.Ordinal) >= 0 ||
+                text.IndexOf(SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0197"), StringComparison.Ordinal) >= 0 ||
+                text.IndexOf(SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0198"), StringComparison.Ordinal) >= 0)
             {
                 return false;
             }
@@ -2168,10 +2169,10 @@ namespace AnimusForge.SceneActions.Core
             if (text.Length < 10 ||
                 text.Length > BattleSpeechFrameworkV1.MaximumSpeechChars ||
                 text.IndexOfAny(new[] { '"', '\'', '“', '”', '‘', '’' }) >= 0 ||
-                text.StartsWith("他说", StringComparison.Ordinal) ||
-                text.StartsWith("她说", StringComparison.Ordinal) ||
-                text.StartsWith("他说道", StringComparison.Ordinal) ||
-                text.StartsWith("她说道", StringComparison.Ordinal))
+                text.StartsWith(SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0195"), StringComparison.Ordinal) ||
+                text.StartsWith(SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0196"), StringComparison.Ordinal) ||
+                text.StartsWith(SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0199"), StringComparison.Ordinal) ||
+                text.StartsWith(SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0200"), StringComparison.Ordinal))
             {
                 return false;
             }
@@ -2186,10 +2187,10 @@ namespace AnimusForge.SceneActions.Core
                 new[] { '!', '！', '?', '？', '.', '。', ';', '；' }) >= 0;
             if (addressesAudience && text.Length >= 10)
             {
-                return !text.StartsWith("不要让", StringComparison.Ordinal) &&
-                       !text.StartsWith("别让", StringComparison.Ordinal) &&
-                       !text.StartsWith("如果", StringComparison.Ordinal) &&
-                       !text.StartsWith("假如", StringComparison.Ordinal);
+                return !text.StartsWith(SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0201"), StringComparison.Ordinal) &&
+                       !text.StartsWith(SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0075"), StringComparison.Ordinal) &&
+                       !text.StartsWith(SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0082"), StringComparison.Ordinal) &&
+                       !text.StartsWith(SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0083"), StringComparison.Ordinal);
             }
             return usesCollectiveVoice && text.Length >= 18 && hasRhetoricalShape;
         }
@@ -2247,16 +2248,24 @@ namespace AnimusForge.SceneActions.Core
             }
         }
 
+        private static readonly Regex EnglishInlineSpeechPattern = new Regex(
+            @"^(?:(?:i\s+will|let\s+me|i\s+want\s+to|i'll)\s+)?(?:(?:give|deliver|make)\s+)?(?:a\s+)?(?:battle\s+)?(?:speech|rally|address)(?=$|[：:\s])(?:\s+to\s+(?:the\s+)?(?:troops|soldiers|men|all)(?=$|[：:\s]))?[：:\s]*(.*)$",
+            RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+
         private static bool TryReadInlinePlayerSpeech(string text, out string speech)
         {
             speech = null;
             Match match = Regex.Match(
                 text,
-                "^(?:我来|我要|由我|我)(?:给|向|跟)?(?:大家|众人|士兵|将士|弟兄|兄弟|队伍|全军)?(?:作)?(?:阵前|战前)?(?:演讲|训话|动员|鼓舞|讲几句|讲两句|讲俩句|说几句|说两句|说俩句)[：:\\s]*(.*)$",
+                SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0202"),
                 RegexOptions.CultureInvariant);
             if (!match.Success)
             {
-                return false;
+                match = EnglishInlineSpeechPattern.Match(text);
+                if (!match.Success)
+                {
+                    return false;
+                }
             }
             speech = match.Groups[1].Value.Trim();
             return true;
@@ -2331,7 +2340,7 @@ namespace AnimusForge.SceneActions.Core
         {
             return AudienceCues.Any(cue => Contains(text, cue)) &&
                    SpeechRequestCues.Any(cue => Contains(text, cue)) &&
-                   (Contains(text, "讲") || Contains(text, "说") || Contains(text, "喊"));
+                   (Contains(text, SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0203")) || Contains(text, SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0204")) || Contains(text, SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0205")));
         }
 
         private static bool LooksLikeActorRerouteSpeech(string text)
@@ -2342,11 +2351,11 @@ namespace AnimusForge.SceneActions.Core
             }
             return Regex.IsMatch(
                        text,
-                       @"^(?:强制(?:指令)?\s*)?(?:(?:框选)?目标|你|他|她)(?:来)?(?:阵前)?(?:演讲|训话|动员|鼓舞)(?:\s*[:：].*)?$",
+                       SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0206"),
                        RegexOptions.CultureInvariant) ||
                    Regex.IsMatch(
                        text,
-                       @"^(?:让|请)(?:当前目标|这位士兵|你|他|她)(?:在)?(?:阵前)?(?:演讲|训话|动员|鼓舞)",
+                       SceneActionVocabulary.Text("BattleSpeechFrameworkV2.Raw0207"),
                        RegexOptions.CultureInvariant);
         }
 

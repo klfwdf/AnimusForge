@@ -28,7 +28,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\build\build_single
 
 Direct `BannerlordApi=1.3` project builds intentionally fail unless the unified script has first verified the pinned 1.3 reference line. A compile symbol must never be treated as reference provenance.
 
-Packaging must produce one client ZIP with one `AnimusForge/...` root. The unified module contains a minimal `AnimusForge.Bootstrap.dll` plus both implementation DLLs:
+Packaging must produce both CN and EN client ZIPs, each with one `AnimusForge/...` root. Names follow `AnimusForge_v1.X.X_CN_MMdd_HHmm.zip` / `AnimusForge_v1.X.X_EN_MMdd_HHmm.zip`; both share the version and local minute stamp, and a collision suffix if needed. The unified module in each archive contains a minimal `AnimusForge.Bootstrap.dll` plus both implementation DLLs:
 
 - `AnimusForge/bin/Win64_Shipping_Client/AnimusForge.Bootstrap.dll`
 - `AnimusForge/bin/Win64_Shipping_Client/versions/1.3/AnimusForge.dll`
@@ -142,7 +142,7 @@ After implementation:
 
 - Build both `BannerlordApi=1.3` and `BannerlordApi=1.4`.
 - Run one-click unified build/output if the change affects deployment.
-- Run one-click packaging if the change affects release packaging; it must produce one ZIP containing both implementation variants.
+- Validate both real archive writers if release packaging changes; a production package run, when authorized, must produce the CN and EN pair, each containing both implementation variants and the shared bilingual UI.
 - In-game, enable the single `AnimusForge` launcher module. The Bootstrap must report that it selected `bin/Win64_Shipping_Client/versions/1.3/AnimusForge.dll` on 1.3.x or `bin/Win64_Shipping_Client/versions/1.4/AnimusForge.dll` on 1.4.x.
 - Do not enable retired `AnimusForge_1_3_x` or `AnimusForge_1_4_5` modules alongside the unified module.
 

@@ -39,7 +39,7 @@ public partial class RewardSystemBehavior
             return null;
         }
         string displayName = string.IsNullOrWhiteSpace(giverName)
-            ? giverCharacter.Name?.ToString() ?? "商人"
+            ? giverCharacter.Name?.ToString() ?? EconomySourceTexts.Get("S038")
             : giverName.Trim();
         return new LegacyEconomyRewardDebtMainThreadPort(
             () => TWParallel.IsMainThread(),
@@ -216,7 +216,7 @@ private bool TryReplayMerchantAction(
         {
             return false;
         }
-        factText = "商人已实际交付 " + actual.ToString(CultureInfo.InvariantCulture) + " 第纳尔。";
+        factText = EconomySourceTexts.Get("S039") + actual.ToString(CultureInfo.InvariantCulture) + EconomySourceTexts.Get("S030");
         return true;
     }
 
@@ -288,7 +288,7 @@ private bool TryReplayMerchantAction(
         {
             return false;
         }
-        factText = "商人已实际交付物品 " + (itemName ?? lookup)
+        factText = EconomySourceTexts.Get("S040") + (itemName ?? lookup)
             + " ×" + actual.ToString(CultureInfo.InvariantCulture) + "。";
         return true;
     }
@@ -313,8 +313,8 @@ private bool TryReplayMerchantAction(
         {
             return false;
         }
-        factText = "已记录市场债务承诺：" + amount.ToString(CultureInfo.InvariantCulture)
-            + " 第纳尔，债务ID=" + line.DebtId + "。";
+        factText = EconomySourceTexts.Get("S041") + amount.ToString(CultureInfo.InvariantCulture)
+            + EconomySourceTexts.Get("S035") + line.DebtId + "。";
         return true;
     }
 
@@ -336,7 +336,7 @@ private bool TryReplayMerchantAction(
             return false;
         }
         if (string.IsNullOrWhiteSpace(statusText)
-            || statusText.IndexOf("已按协商解除", StringComparison.OrdinalIgnoreCase) < 0)
+            || statusText.IndexOf(EconomySourceTexts.Get("S036"), StringComparison.OrdinalIgnoreCase) < 0)
         {
             return false;
         }

@@ -94,7 +94,9 @@ def git_source(relative):
 
 
 def strings(path):
-    nodes = list(ET.parse(path).getroot().findall("./string"))
+    root = ET.parse(path).getroot()
+    assert root.tag == "base" and root.get("type") == "string", path
+    nodes = list(root.findall("./strings/string"))
     result = {node.get("id"): node.get("text", "") for node in nodes}
     assert len(nodes) == len(result), path
     return result
@@ -127,7 +129,12 @@ prompt_en = json.loads(PROMPT_EN.read_text(encoding="utf-8"))
 prompt_zh = json.loads(PROMPT_ZH.read_text(encoding="utf-8"))
 ui_en = strings(UI_EN)
 ui_zh = strings(UI_ZH)
-assert set(prompt_en) == set(prompt_zh) == PROMPT_KEYS
+record_prompt_keys = {"AF_PERSONA_PROMPT_PromotedSkillNone"}
+assert set(prompt_en) == set(prompt_zh) == PROMPT_KEYS | record_prompt_keys
+record_source = read("src/AF.GameAdapter.Bannerlord/Records/CampaignCharacterRecordCaptureAdapter.cs")
+assert record_source.count('PersonaPromptTexts.Get("AF_PERSONA_PROMPT_PromotedSkillNone", "(none)")') == 2
+assert prompt_zh["AF_PERSONA_PROMPT_PromotedSkillNone"] == "（无）"
+assert prompt_en["AF_PERSONA_PROMPT_PromotedSkillNone"] == "(none)"
 assert set(ui_en) == set(ui_zh) == UI_KEYS
 for path in (PROMPT_EN, PROMPT_ZH, UI_EN, UI_ZH):
     raw = path.read_text(encoding="utf-8")
@@ -249,4 +256,5 @@ lang_zh = read("content/foundation/AF.Foundation.Localization/ModuleData/Languag
 lang_en_wired = 'xml_path="afpersona_ui_strings.xml"' in lang_en
 lang_zh_wired = 'xml_path="CNs/afpersona_ui_strings-zh-CN.xml"' in lang_zh
 registration = "WIRED" if all((prompt_wired, ui_en_wired, ui_zh_wired, lang_en_wired, lang_zh_wired)) else "NOT-WIRED"
+assert registration == "WIRED", "Persona UI and Prompt resources must reach the native/package loaders"
 print(f"PASS Persona localization: source baseline Han literals=39 (33 prompt, 5 import UI, 1 fallback UI); package keys={len(PROMPT_KEYS)}; UI keys={len(UI_KEYS)}; registration={registration}; CSharp/runtime/replay=NOT-RUN")

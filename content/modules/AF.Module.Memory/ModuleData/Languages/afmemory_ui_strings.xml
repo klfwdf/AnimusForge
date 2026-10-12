@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <base type="string">
-  <tags><tag language="English" /></tags>
+  <tags>
+    <tag language="English" />
+  </tags>
   <strings>
+    <string id="AF_MEMORY_UI_JsonEmptyFieldGroup" text="(none)" />
+    <string id="AF_MEMORY_UI_JsonFieldGroups" text="{PRIMARY} + {SECONDARY}" />
     <string id="AF_MEMORY_UI_AddAfef" text="Add AFEF line" />
     <string id="AF_MEMORY_UI_AddAfefHint" text="Add an AFEF mechanism line excluded from LLM dialogue compression text." />
     <string id="AF_MEMORY_UI_AddAfefShortHint" text="Add an AFEF mechanism line." />
@@ -16,7 +20,7 @@
     <string id="AF_MEMORY_UI_AfefPreviewLabel" text="AFEF preview: " />
     <string id="AF_MEMORY_UI_Back" text="Back" />
     <string id="AF_MEMORY_UI_BackToDates" text="Back to date list" />
-    <string id="AF_MEMORY_UI_BackToDayMenu" text="Back to this day&#x27;s menu" />
+    <string id="AF_MEMORY_UI_BackToDayMenu" text="Back to this day's menu" />
     <string id="AF_MEMORY_UI_BackToLines" text="Back to line list" />
     <string id="AF_MEMORY_UI_BackToList" text="Back to list" />
     <string id="AF_MEMORY_UI_BlockAfefUpdated" text="Memory-block AFEF lines updated." />
@@ -24,7 +28,7 @@
     <string id="AF_MEMORY_UI_BlockCount" text="Compressed memory blocks:" />
     <string id="AF_MEMORY_UI_BlockDeleteNotFound" text="The compressed memory block to delete could not be found." />
     <string id="AF_MEMORY_UI_BlockDeleted" text="Compressed memory block deleted." />
-    <string id="AF_MEMORY_UI_BlockEditOverviewClearNotice" text="Editing or deleting clears this NPC&#x27;s memory overview and queues organization again." />
+    <string id="AF_MEMORY_UI_BlockEditOverviewClearNotice" text="Editing or deleting clears this NPC's memory overview and queues organization again." />
     <string id="AF_MEMORY_UI_BlockList" text="Compressed memory block list" />
     <string id="AF_MEMORY_UI_BlockListDescription" text="Select a compressed memory block to edit.&#10;Compressed memory blocks: " />
     <string id="AF_MEMORY_UI_BlockListResult" text=" blocks; current results: " />
@@ -41,12 +45,12 @@
     <string id="AF_MEMORY_UI_BodyUpdated" text="Uncompressed memory body updated." />
     <string id="AF_MEMORY_UI_Cancel" text="Cancel" />
     <string id="AF_MEMORY_UI_ClearBodyPrefix" text="Delete " />
-    <string id="AF_MEMORY_UI_ClearBodySuffix" text="&#x27;s today history, pending summary queue, compressed blocks, and memory overview.&#10;This action cannot be undone. Continue?" />
+    <string id="AF_MEMORY_UI_ClearBodySuffix" text="'s today history, pending summary queue, compressed blocks, and memory overview.&#10;This action cannot be undone. Continue?" />
     <string id="AF_MEMORY_UI_ClearLlm" text="Clear LLM dialogue marker" />
-    <string id="AF_MEMORY_UI_ClearNewData" text="Clear this NPC&#x27;s new memory data" />
+    <string id="AF_MEMORY_UI_ClearNewData" text="Clear this NPC's new memory data" />
     <string id="AF_MEMORY_UI_ClearSearch" text="Clear search" />
     <string id="AF_MEMORY_UI_ClearSearchHint" text="Show all uncompressed memory again." />
-    <string id="AF_MEMORY_UI_ClearedNewData" text="This NPC&#x27;s new compressed-memory data was cleared." />
+    <string id="AF_MEMORY_UI_ClearedNewData" text="This NPC's new compressed-memory data was cleared." />
     <string id="AF_MEMORY_UI_CompressedMemoryBlockNotFound" text="Compressed memory block could not be found." />
     <string id="AF_MEMORY_UI_CompressionMenu" text="Compressed memory management - " />
     <string id="AF_MEMORY_UI_ConfirmClear" text="Confirm clearing compressed memory" />
@@ -65,14 +69,14 @@
     <string id="AF_MEMORY_UI_DailyCompressionHeader" text="[Daily dialogue compression]" />
     <string id="AF_MEMORY_UI_DateLabel" text="Date: " />
     <string id="AF_MEMORY_UI_Day" text="Day {DAY}" />
-    <string id="AF_MEMORY_UI_DayDeleted" text="This day&#x27;s uncompressed memory was deleted." />
+    <string id="AF_MEMORY_UI_DayDeleted" text="This day's uncompressed memory was deleted." />
     <string id="AF_MEMORY_UI_DaysComma" text=" days, " />
     <string id="AF_MEMORY_UI_DeleteAllDialogue" text="Delete all dialogue history for this NPC" />
     <string id="AF_MEMORY_UI_DeleteBlock" text="Delete this memory block" />
-    <string id="AF_MEMORY_UI_DeleteBlockBody" text="&#x27;s compressed memory and reorganize the overview.&#10;This action cannot be undone. Continue?" />
+    <string id="AF_MEMORY_UI_DeleteBlockBody" text="'s compressed memory and reorganize the overview.&#10;This action cannot be undone. Continue?" />
     <string id="AF_MEMORY_UI_DeleteBlockBodyPrefix" text="&#10;&#10;Delete this block from " />
-    <string id="AF_MEMORY_UI_DeleteBlockHint" text="Deleting clears this NPC&#x27;s overview and queues organization again." />
-    <string id="AF_MEMORY_UI_DeleteDay" text="Delete this day&#x27;s uncompressed memory" />
+    <string id="AF_MEMORY_UI_DeleteBlockHint" text="Deleting clears this NPC's overview and queues organization again." />
+    <string id="AF_MEMORY_UI_DeleteDay" text="Delete this day's uncompressed memory" />
     <string id="AF_MEMORY_UI_DeleteDayHint" text="Delete all raw history for this day and remove its pending summary job." />
     <string id="AF_MEMORY_UI_DeleteDialogueBody" text="Delete all dialogue history for {HERO} ({COUNT} lines).&#10;This action cannot be undone. Continue?" />
     <string id="AF_MEMORY_UI_DeleteLine" text="Delete line" />
@@ -214,9 +218,9 @@
     <string id="AF_MEMORY_UI_SearchBlocks" text="Search compressed memory blocks" />
     <string id="AF_MEMORY_UI_SearchBlocksPrompt" text="Enter keywords to match title, body, scenes, AFEF, date, or memory-block ID." />
     <string id="AF_MEMORY_UI_SearchDialogue" text="Search dialogue history" />
-    <string id="AF_MEMORY_UI_SearchDialoguePrompt" text="Enter keywords to fuzzy-match this NPC&#x27;s dialogue history by content.&#10;Leave empty to keep the current search." />
+    <string id="AF_MEMORY_UI_SearchDialoguePrompt" text="Enter keywords to fuzzy-match this NPC's dialogue history by content.&#10;Leave empty to keep the current search." />
     <string id="AF_MEMORY_UI_SearchDialogueTitle" text="Search dialogue history - " />
-    <string id="AF_MEMORY_UI_SearchNpcHistory" text="Search this NPC&#x27;s history" />
+    <string id="AF_MEMORY_UI_SearchNpcHistory" text="Search this NPC's history" />
     <string id="AF_MEMORY_UI_SearchRaw" text="Search uncompressed memory" />
     <string id="AF_MEMORY_UI_SearchRawHint" text="Filter by date, scene, speaker, body, or AFEF." />
     <string id="AF_MEMORY_UI_SearchRawPrompt" text="Enter keywords to match dates, scenes, speakers, body text, or AFEF." />
@@ -292,5 +296,25 @@
     <string id="AF_MEMORY_UI_TagDivorce" text="Divorce" />
     <string id="AF_MEMORY_UI_TagAgenda" text="Kingdom agenda commitment" />
     <string id="AF_MEMORY_UI_TagSiege" text="Siege aftermath: {ACTION}" />
+    <string id="AF_MEMORY_UI_ExportInvalid" text="Invalid compressed-memory file. Choose JSON exported from Compressed Memory." />
+    <string id="AF_MEMORY_UI_ExportPersona" text="This is a personality/background file, not compressed memory. Import it under Single Hero NPC &gt; Personality/background. Existing memories were not changed." />
+    <string id="AF_MEMORY_UI_ExportNoFields" text="The file has no compressed-memory fields. Choose JSON exported from Compressed Memory; existing memories were not changed." />
+    <string id="AF_MEMORY_UI_ExportFieldType" text="Compressed-memory field '{FIELD}' has the wrong type. Choose a valid compressed-memory export." />
+    <string id="AF_MEMORY_UI_DeleteUnavailable" text="This record cannot be deleted." />
+    <string id="AF_MEMORY_UI_DeleteChanged" text="The record changed. Reopen the history before deleting it." />
+    <string id="AF_MEMORY_UI_DeleteDone" text="The record was deleted." />
+    <string id="AF_MEMORY_UI_DeleteDoneCompressed" text="The record was deleted. That day was already compressed; compressed memory is unchanged." />
+    <string id="AF_MEMORY_UI_HistoryEditUnavailable" text="This record cannot be edited." />
+    <string id="AF_MEMORY_UI_HistoryEditMainThread" text="Records can only be edited on the game main thread." />
+    <string id="AF_MEMORY_UI_HistoryStoreUnavailable" text="No record storage is currently available." />
+    <string id="AF_MEMORY_UI_HistoryEditFailed" text="Editing failed; the record was not changed." />
+    <string id="AF_MEMORY_UI_HistoryEditEmpty" text="Content cannot be empty; use Delete to remove the record." />
+    <string id="AF_MEMORY_UI_HistoryEditChanged" text="The record changed. Reopen the history before editing it." />
+    <string id="AF_MEMORY_UI_HistoryEditFormat" text="This record's format cannot be edited safely." />
+    <string id="AF_MEMORY_UI_HistoryEditUnchanged" text="The content is unchanged." />
+    <string id="AF_MEMORY_UI_HistoryEditDone" text="The record was edited." />
+    <string id="AF_MEMORY_UI_HistoryEditDoneCompressed" text="The record was edited. That day was already compressed; compressed memory is unchanged." />
+    <string id="AF_MEMORY_UI_HistoryDeleteMainThread" text="Records can only be deleted on the game main thread." />
+    <string id="AF_MEMORY_UI_HistoryDeleteFailed" text="Deletion failed; the record was not changed." />
   </strings>
 </base>

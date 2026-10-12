@@ -9,14 +9,18 @@ namespace AnimusForge;
 /// <summary>Player-facing Civil War panel text. IDs are stable; state and rule values remain owned by the Civil War owner.</summary>
 internal static class CivilWarUiText
 {
+    // Resolve the template once, then insert display data without re-parsing its braces.
+    private static readonly System.Text.RegularExpressions.Regex LiteralValues = new System.Text.RegularExpressions.Regex(@"AFSWEEPLITERAL([0-9]+)END", System.Text.RegularExpressions.RegexOptions.CultureInvariant);
+
     internal static string T(string id, string fallback)
         => new TextObject("{" + "=" + id + "}" + fallback).ToString();
 
     internal static string T(string id, string fallback, params (string Name, string Value)[] variables)
     {
-        TextObject text = new TextObject("{" + "=" + id + "}" + fallback);
-        foreach ((string name, string value) in variables) text.SetTextVariable(name, value ?? "");
-        return text.ToString();
+        var text = new TextObject("{" + "=" + id + "}" + fallback);
+        for (int i = 0; i < variables.Length; i++)
+            text.SetTextVariable(variables[i].Name, "AFSWEEPLITERAL" + i.ToString(System.Globalization.CultureInfo.InvariantCulture) + "END");
+        return LiteralValues.Replace(text.ToString(), match => variables[int.Parse(match.Groups[1].Value, System.Globalization.CultureInfo.InvariantCulture)].Value?.ToString() ?? string.Empty);
     }
 
     internal static string DemandTag(CivilWarDemandDef demand)
@@ -69,16 +73,16 @@ internal static class CivilWarUiText
         });
         fb = fb switch
         {
-            "王室处决" => "Royal execution",
-            "封地落选" => "Fief denied",
-            "政策强推" => "Policy imposed",
-            "强行开战" => "War imposed",
-            "强行议和" => "Peace imposed",
-            "领地遭劫" => "Lands raided",
-            "失守封地" => "Fief lost",
-            "国王背诺" => "Royal pledge broken",
-            "诉求被拒" => "Demand refused",
-            "王室打压" => "Royal suppression",
+            var _ when string.Equals(fb, KingdomCivilWarTexts.Raw("CW_Catalog_Source_royal_execution"), StringComparison.Ordinal) => "Royal execution",
+            var _ when string.Equals(fb, KingdomCivilWarTexts.Raw("CW_Catalog_Source_fief_denied"), StringComparison.Ordinal) => "Fief denied",
+            var _ when string.Equals(fb, KingdomCivilWarTexts.Raw("CW_Catalog_Source_policy_imposed"), StringComparison.Ordinal) => "Policy imposed",
+            var _ when string.Equals(fb, KingdomCivilWarTexts.Raw("CW_Catalog_Source_war_imposed"), StringComparison.Ordinal) => "War imposed",
+            var _ when string.Equals(fb, KingdomCivilWarTexts.Raw("CW_Catalog_Source_peace_imposed"), StringComparison.Ordinal) => "Peace imposed",
+            var _ when string.Equals(fb, KingdomCivilWarTexts.Raw("CW_Catalog_Source_lands_raided"), StringComparison.Ordinal) => "Lands raided",
+            var _ when string.Equals(fb, KingdomCivilWarTexts.Raw("CW_Catalog_Source_fief_lost"), StringComparison.Ordinal) => "Fief lost",
+            var _ when string.Equals(fb, KingdomCivilWarTexts.Raw("CW_Catalog_Source_broken_pledge"), StringComparison.Ordinal) => "Royal pledge broken",
+            var _ when string.Equals(fb, KingdomCivilWarTexts.Raw("CW_Catalog_Source_demand_refused"), StringComparison.Ordinal) => "Demand refused",
+            var _ when string.Equals(fb, KingdomCivilWarTexts.Raw("CW_Catalog_Source_royal_suppression"), StringComparison.Ordinal) => "Royal suppression",
             _ => fb
         };
         return T("AF_KINGDOM_CW_Source_" + (sourceId ?? "unknown"), fb);

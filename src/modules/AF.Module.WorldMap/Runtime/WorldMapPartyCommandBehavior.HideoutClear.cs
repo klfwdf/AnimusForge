@@ -35,7 +35,7 @@ public sealed partial class WorldMapPartyCommandBehavior
 		bool alreadyStopping = IsStopPending(state);
 		SetPendingSafeExit(state, PendingSafeExitStop, reason);
 		if (!alreadyStopping)
-			fact = "[AFEF NPC行为补充] " + GetActorName(state, null, party) + "已停止后续清剿任务；正在进行的原版战斗结算后结束命令，不强制中断战斗。";
+			fact = WorldMapSourceTexts.Get("raw_literals.wm_lit_0001") + GetActorName(state, null, party) + WorldMapSourceTexts.Get("raw_literals.wm_lit_0331");
 		return true; // Keep the saved ownership until the battle has safely finalized.
 	}
 
@@ -73,25 +73,28 @@ public sealed partial class WorldMapPartyCommandBehavior
 
 	private static string BuildKnownHideoutClearTargetsPrompt(Hero hero, CharacterObject character, int agentIndex)
 	{
-		const string header = "\n【可清剿藏身处候选】";
-		if (!WorldMapNpcHideoutCompletionPatch.IsReady || Campaign.Current == null) return header + "无";
+		string header = WorldMapPromptTexts.Get("AF_WM_HideoutTargetsHeader");
+		string noTargets = WorldMapPromptTexts.Get("AF_WM_NoTasks");
+		string idSeparator = WorldMapPromptTexts.Get("AF_WM_HideoutTargetIdSeparator");
+		if (!WorldMapNpcHideoutCompletionPatch.IsReady || Campaign.Current == null) return header + noTargets;
 		hero = hero ?? character?.HeroObject;
-		if (hero == null && !CanUseNonHeroPartyFallbackForExternal(character, agentIndex)) return header + "无";
+		if (hero == null && !CanUseNonHeroPartyFallbackForExternal(character, agentIndex)) return header + noTargets;
 		try
 		{
 			MobileParty observer = ResolveActorParty(hero) ?? MobileParty.MainParty;
-			if (observer == null) return header + "无";
+			if (observer == null) return header + noTargets;
 			// Only prompt preparation enumerates known hideouts; hourly runtime resolves
 			// its one target by ID and never scans every hideout or every queue.
 			var targets = Hideout.All.Where(h => h != null && h.IsSpotted && CanOfferHideoutClearTarget(h.Settlement))
 				.OrderBy(h => observer.Position.DistanceSquared(h.Settlement.GatePosition))
-				.Take(12).Select(h => GetSettlementName(h.Settlement) + "；ID=" + h.Settlement.StringId).ToArray();
-			return header + (targets.Length == 0 ? "无" : "\n" + string.Join("\n", targets));
+				.Take(12).Select(h => (h.Settlement.Name?.ToString() ?? h.Settlement.StringId ?? WorldMapPromptTexts.Get("AF_WM_TargetSettlement")).Trim()
+					+ idSeparator + h.Settlement.StringId).ToArray();
+			return header + (targets.Length == 0 ? noTargets : "\n" + string.Join("\n", targets));
 		}
 		catch (Exception ex)
 		{
 			Log("hideout candidates unavailable: " + ex.Message);
-			return header + "无";
+			return header + noTargets;
 		}
 	}
 
@@ -104,7 +107,7 @@ public sealed partial class WorldMapPartyCommandBehavior
 		}
 		if (state.EngageCommitted)
 		{
-			TryCompleteCurrentAttackResult(state, CommandResultOutcome.Incomplete, "原版战斗已结束，但没有可确认的清剿结算；未重复发动攻击。", "hideout_result_missing");
+			TryCompleteCurrentAttackResult(state, CommandResultOutcome.Incomplete, WorldMapSourceTexts.Get("raw_literals.wm_lit_0332"), "hideout_result_missing");
 			return;
 		}
 		Settlement target = ResolveSettlementById(command.TargetId);
@@ -112,17 +115,17 @@ public sealed partial class WorldMapPartyCommandBehavior
 		if (!WorldMapNpcHideoutCompletionPatch.IsReady || decision == NpcHideoutTargetDecision.Missing || decision == NpcHideoutTargetDecision.Protected)
 		{
 			TryCompleteCurrentAttackResult(state, CommandResultOutcome.Failure, decision == NpcHideoutTargetDecision.Protected
-				? "目标被剧情或任务占用，未发动清剿。" : "目标不可用或安全结算接口未就绪，未发动清剿。", "hideout_unavailable");
+				? WorldMapSourceTexts.Get("raw_literals.wm_lit_0333") : WorldMapSourceTexts.Get("raw_literals.wm_lit_0334"), "hideout_unavailable");
 			return;
 		}
 		if (decision == NpcHideoutTargetDecision.AlreadyCleared)
 		{
-			TryCompleteCurrentAttackResult(state, CommandResultOutcome.Incomplete, "目标已经没有驻扎土匪，未将他人清剿记为本次成功。", "hideout_already_empty");
+			TryCompleteCurrentAttackResult(state, CommandResultOutcome.Incomplete, WorldMapSourceTexts.Get("raw_literals.wm_lit_0335"), "hideout_already_empty");
 			return;
 		}
 		if (party.IsBandit || party.MapFaction == null || target.MapFaction == null || !FactionManager.IsAtWarAgainstFaction(party.MapFaction, target.MapFaction))
 		{
-			TryCompleteCurrentAttackResult(state, CommandResultOutcome.Failure, "执行部队不能与目标土匪交战，未宣战或强制删除目标。", "hideout_actor_ineligible");
+			TryCompleteCurrentAttackResult(state, CommandResultOutcome.Failure, WorldMapSourceTexts.Get("raw_literals.wm_lit_0336"), "hideout_actor_ineligible");
 			return;
 		}
 		if (decision == NpcHideoutTargetDecision.Wait)
@@ -161,7 +164,7 @@ public sealed partial class WorldMapPartyCommandBehavior
 			// Creation may have committed before another mod's callback threw.
 			// Restore ownership rather than detaching/replaying that partial battle.
 			if (party.MapEvent != null && TryGetNpcHideoutClearBattle(party.MapEvent, out _)) return;
-			TryCompleteCurrentAttackResult(state, CommandResultOutcome.Failure, "原版清剿战斗未能建立。", "hideout_create_failed");
+			TryCompleteCurrentAttackResult(state, CommandResultOutcome.Failure, WorldMapSourceTexts.Get("raw_literals.wm_lit_0337"), "hideout_create_failed");
 		}
 	}
 
@@ -213,8 +216,8 @@ public sealed partial class WorldMapPartyCommandBehavior
 			mapEvent.WinningSide == BattleSideEnum.Attacker, HideoutHasBandits(target));
 		if (outcome == NpcHideoutBattleOutcome.Success)
 			target.Hideout.SetNextPossibleAttackTime(Campaign.Current.Models.HideoutModel.HideoutHiddenDuration);
-		string detail = outcome == NpcHideoutBattleOutcome.Success ? "原版战斗获胜，驻扎土匪已被清除。"
-			: outcome == NpcHideoutBattleOutcome.Failure ? "原版战斗判定清剿部队战败。" : "未取得明确清除结果，或目标仍有驻扎土匪。";
+		string detail = outcome == NpcHideoutBattleOutcome.Success ? WorldMapSourceTexts.Get("raw_literals.wm_lit_0338")
+			: outcome == NpcHideoutBattleOutcome.Failure ? WorldMapSourceTexts.Get("raw_literals.wm_lit_0339") : WorldMapSourceTexts.Get("raw_literals.wm_lit_0340");
 		CommandResultOutcome result = outcome == NpcHideoutBattleOutcome.Success ? CommandResultOutcome.Success
 			: outcome == NpcHideoutBattleOutcome.Failure ? CommandResultOutcome.Failure : CommandResultOutcome.Incomplete;
 		if (IsStopPending(state))

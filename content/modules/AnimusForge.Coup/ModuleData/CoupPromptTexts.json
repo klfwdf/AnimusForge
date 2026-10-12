@@ -1,0 +1,21 @@
+{
+  "NamingContext": "\n本次起兵背景：玩家刚通过武装政变夺位，起兵家族属于旧王家族或更支持旧王的家族；这是反对篡位的起兵，不要求与新王关系为负。请以此为建国命名与简介的背景。",
+  "RestorationContext": "\n旧王已获释，本次战争目标为旧王朝复位；仅叛军胜利可复位，和平谈判不复位。",
+  "CapturedContext": "\n旧王被扣押，旧王及其家族不参与本次内战，不要宣称旧王亲自起兵。",
+  "ReportIntro": "{0}在{1}的{2}针对国王{3}发动武装政变，突击队共{4}人。",
+  "ReportProcessLabel": "过程：",
+  "ReportNoEntry": "已集结突击队，未记录到实际进场。",
+  "ReportStreet": "进入城镇街道",
+  "ReportGate": "突破大厅入口",
+  "ReportHall": "率{0}名突击队员攻入领主大厅",
+  "ReportSubdued": "制服国王",
+  "ReportResultLabel": "结果：",
+  "ReportSuccessCaptured": "政变成功，{0}取得{1}王位并接管{2}，旧王被扣押。",
+  "ReportSuccessReleased": "政变成功，{0}取得{1}王位并接管{2}，选择不扣押旧王。",
+  "ReportFailureWar": "政变失败，未夺取王位，家族带原有领地脱离原王国并与之开战。",
+  "ReportCasualties": "已记录伤亡：突击队阵亡{0}、负伤{1}；守军阵亡{2}、负伤{3}。",
+  "ReportFailureNoWar": "政变失败，未夺取王位，家族带原有领地脱离原王国。",
+  "ReportListSeparator": "、",
+  "ReportSentenceEnd": "。",
+  "BulletinTimeLabel": "发生时间：{0}"
+}

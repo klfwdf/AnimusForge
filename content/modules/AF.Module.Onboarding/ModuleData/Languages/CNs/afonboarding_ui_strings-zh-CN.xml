@@ -298,5 +298,9 @@
           <string id="AF_ONBOARDING_INITIAL_GUIDE_TITLE" text="欢迎使用 AnimusForge" />
     <string id="AF_ONBOARDING_INITIAL_GUIDE_BODY" text="若要配置 API 信息，你无需进入 MCM 页面；进入存档之后的首次引导会引导你填写 API 信息。" />
     <string id="AF_COMMON_GOT_IT" text="知道了" />
+    <string id="AF_ONBOARDING_BUILTIN_BOOK_CALRADIA" text="卡拉迪亚编年史" />
+    <string id="AF_ONBOARDING_BUILTIN_BOOK_CALRADIALITE" text="低配版卡拉迪亚编年史（如果你的CPU（比如12400f性能较差，请选择这个。）" />
+    <string id="AF_ONBOARDING_BUILTIN_BOOK_WARHAMMER" text="战锤旧世界编年史" />
+    <string id="AF_ONBOARDING_BUILTIN_BOOK_GAMEOFTHRONES" text="权游国度编年史-大帝版" />
 </strings>
 </base>

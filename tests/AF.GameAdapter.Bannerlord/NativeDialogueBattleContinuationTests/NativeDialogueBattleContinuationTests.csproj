@@ -6,4 +6,7 @@
     <Compile Include="../../../src/modules/AF.Module.Encounter/EncounterPendingReturnOwner.cs" Link="Production/EncounterPendingReturnOwner.cs" />
     <Compile Include="../../../src/AF.Foundation.Runtime/Lifecycle/SaveRuntimeGuard.cs" Link="Production/SaveRuntimeGuard.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="../../../content/foundation/AF.Foundation.Localization/ModuleData/RuntimeStaleRequestCompatibility.txt" LogicalName="AnimusForge.Foundation.StaleRequestError.txt" />
+  </ItemGroup>
 </Project>

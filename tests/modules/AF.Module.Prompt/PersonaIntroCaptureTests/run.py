@@ -1,5 +1,5 @@
 from pathlib import Path
-import sys,re,json,argparse,importlib.util,subprocess,hashlib
+import sys,re,json,argparse,importlib.util,subprocess,hashlib,shutil
 R=Path(__file__).resolve().parents[4];H=Path(__file__).parent
 sys.path.insert(0,str(R/'tests'))
 from output_isolation import minimal_test_environment,new_run_root
@@ -158,12 +158,21 @@ equipment_capture='\n'.join(ex.declaration(identity_source, signature) for signa
 program+='\nnamespace AnimusForge.Refactor.Adapters { internal static class PersonaIdentityPromptCaptureAdapter {\n'+identity_title+'\n'+identity_factory+'\n'+equipment_capture+'\nprivate static bool TryResolveActiveKingdomRuledByHeroForPrompt(Hero hero,out Kingdom kingdom){Leaf.Query("ruled-kingdom");kingdom=hero.RuledKingdom;return kingdom!=null;}\n} }\n'
 (out/'GameLeafStubs.cs').write_text(program,encoding='utf-8');(out/'Program.cs').write_text((H/'Harness.cs.txt').read_text(encoding='utf-8').split('// @@ROSTER_CURRENT_CASES@@',1)[0],encoding='utf-8')
 paths=['src/AF.GameAdapter.Bannerlord/Composition/PersonaIntroLivePorts.cs','src/AF.GameAdapter.Bannerlord/Composition/PersonaEquipmentPromptCaptureAdapter.cs','src/AF.GameAdapter.Bannerlord/Composition/MyBehavior.PersonaEquipmentPromptCapture.cs','src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.PersonaEquipmentPromptCapture.cs','src/AF.GameAdapter.Bannerlord/Composition/EquipmentPromptCaptureAdapter.cs','src/modules/AF.Module.Prompt/Composition/PersonaIntroMessageComposer.cs','src/modules/AF.Module.Prompt/Composition/PersonaIntroTextRules.cs','src/AF.Foundation.Runtime/Lifecycle/SaveRuntimeGuard.cs']
+paths+=['src/AF.GameAdapter.Bannerlord/Prompt/AdapterPromptCaptureTexts.cs','src/modules/AF.Module.Prompt/Runtime/PromptComposerTexts.cs']
 compile_paths=[R/x for x in paths]
+# Compile real package readers and supply the Chinese package for legacy-equivalence cases.
+corpus=R/'content/foundation/AF.Foundation.Localization/ModuleData'
+prompt_corpus=R/'content/modules/AF.Module.Prompt/ModuleData'
+shutil.copyfile(corpus/'AdapterPromptCapture.zh-CN.json',out/'AdapterPromptCapture.json')
+shutil.copyfile(prompt_corpus/'PromptComposerTexts.zh-CN.json',out/'PromptComposerTexts.json')
+(out/'PackagePath.cs').write_text('namespace AnimusForge { internal static class AnimusForgeModulePaths { internal static string GetModuleDataFilePath(string name)=>System.IO.Path.Combine(System.Environment.CurrentDirectory,name); } }',encoding='utf-8')
+resource_links=''.join('<EmbeddedResource Include="'+str(path)+'" LogicalName="'+name+'" />' for path,name in [(corpus/'AdapterPromptCaptureCompatibility.json','AnimusForge.AdapterPromptCapture.Compatibility.json'),(prompt_corpus/'PromptCompatibility.json','AnimusForge.Prompt.Compatibility.json'),(corpus/'RuntimeStaleRequestCompatibility.txt','AnimusForge.Foundation.StaleRequestError.txt')])
+resource_links+='<Reference Include="Newtonsoft.Json"><HintPath>'+str(R/'local/dotnet/8.0.425/sdk/8.0.425/Newtonsoft.Json.dll')+'</HintPath></Reference>'
 if a.mutate:
     index,before,after,count={'ignore_generation':(1,'snapshot != null && SaveRuntimeGuard.IsCurrentGeneration(snapshot.Generation)','snapshot != null',3),'equipment_sort':(6,'orderby x.Count descending','orderby x.Count ascending',1),'known_player_identity':(5,'s.knowsPlayerIdentity','true',1)}[a.mutate]
     source=compile_paths[index].read_text(encoding='utf-8-sig');assert source.count(before)==count
     (out/'MutatedOwner.cs').write_text(source.replace(before,after),encoding='utf-8');compile_paths.pop(index)
-(out/'Tests.csproj').write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><LangVersion>latest</LangVersion><NoWarn>CS0649</NoWarn></PropertyGroup><ItemGroup>'+''.join('<Compile Include="'+str(x)+'" />' for x in compile_paths)+'</ItemGroup></Project>',encoding='utf-8')
+(out/'Tests.csproj').write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><LangVersion>latest</LangVersion><NoWarn>CS0649</NoWarn></PropertyGroup><ItemGroup>'+''.join('<Compile Include="'+str(x)+'" />' for x in compile_paths)+resource_links+'</ItemGroup></Project>',encoding='utf-8')
 (out/'NuGet.Config').write_text('<configuration><packageSources><clear/></packageSources></configuration>',encoding='utf-8')
 d=R/'local/dotnet/8.0.425/dotnet.exe';r=subprocess.run([str(d),'run','--project',str(out/'Tests.csproj'),'-c','Release']+(['-p:DefineConstants=BANNERLORD_1_4_OR_GREATER'] if a.api=='1.4' else []),cwd=out,env=minimal_test_environment(d,out),capture_output=True,text=True,encoding='utf-8',errors='replace',timeout=120)
 (out/'run.log').write_text(r.stdout+r.stderr,encoding='utf-8');print(r.stdout+r.stderr,end='')

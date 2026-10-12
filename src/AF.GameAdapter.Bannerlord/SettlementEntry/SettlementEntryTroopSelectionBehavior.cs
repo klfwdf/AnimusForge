@@ -4460,7 +4460,7 @@ if (_spawnedAlliedCount > 0)
 
 				_ownedSettlementMassacreRequestAgentIndex = requester.Index;
 				InformationManager.DisplayMessage(new InformationMessage(
-					SetsOwnedSettlementMassacreProfile.BuildPendingRequestMessage(_sceneKind, requester.Name ?? ""),
+					SetsOwnedSettlementMassacreProfile.BuildPendingRequestMessage(_sceneKind, requester.Name ?? "", isEnglish: !GcczLocalizedResourceLoader.UseChineseInterface),
 					Color.FromUint(SetsOwnedSettlementMassacreProfile.PendingMessageColor)));
 				SettlementEntryTroopSelectionLog.Log("SETS owned/attached settlement massacre request recorded. settlement=" + _settlementId
 					+ ", scene=" + _sceneKind
@@ -4483,7 +4483,7 @@ if (_spawnedAlliedCount > 0)
 			}
 			ClearOwnedSettlementMassacreRequest(source ?? SetsOwnedSettlementMassacreProfile.CancelRequestSource);
 			InformationManager.DisplayMessage(new InformationMessage(
-				SetsOwnedSettlementMassacreProfile.BuildCancelledRequestMessage(),
+				SetsOwnedSettlementMassacreProfile.BuildCancelledRequestMessage(isEnglish: !GcczLocalizedResourceLoader.UseChineseInterface),
 				Color.FromUint(SetsOwnedSettlementMassacreProfile.StopMessageColor)));
 			return true;
 		}
@@ -4590,7 +4590,7 @@ if (_spawnedAlliedCount > 0)
 				MaintainPlayerEntryFollowersArmedCombatReady();
 				MaintainOwnedSettlementMassacre(force: true);
 				InformationManager.DisplayMessage(new InformationMessage(
-					SetsOwnedSettlementMassacreProfile.BuildStartedMessage(_sceneKind, selectedFollowers.Count, targets.Count),
+					SetsOwnedSettlementMassacreProfile.BuildStartedMessage(_sceneKind, selectedFollowers.Count, targets.Count, isEnglish: !GcczLocalizedResourceLoader.UseChineseInterface),
 					Color.FromUint(SetsOwnedSettlementMassacreProfile.StartMessageColor)));
 				SettlementEntryTroopSelectionLog.Log("SETS owned/attached settlement massacre started. settlement=" + _settlementId
 					+ ", scene=" + _sceneKind
@@ -4648,7 +4648,7 @@ if (_spawnedAlliedCount > 0)
 					FinalizeOwnedSettlementMassacre(stoppedByPlayer: true);
 				}
 				InformationManager.DisplayMessage(new InformationMessage(
-					SetsOwnedSettlementMassacreProfile.BuildStoppedMessage(survivors),
+					SetsOwnedSettlementMassacreProfile.BuildStoppedMessage(survivors, isEnglish: !GcczLocalizedResourceLoader.UseChineseInterface),
 					Color.FromUint(SetsOwnedSettlementMassacreProfile.StopMessageColor)));
 				SettlementEntryTroopSelectionLog.Log("SETS owned/attached settlement massacre stopped. settlement=" + _settlementId
 					+ ", scene=" + _sceneKind
@@ -4675,7 +4675,7 @@ if (_spawnedAlliedCount > 0)
 			if (!stoppedByPlayer && playerSideWon)
 			{
 				InformationManager.DisplayMessage(new InformationMessage(
-					SetsOwnedSettlementMassacreProfile.BuildCompletedMessage(_sceneKind),
+					SetsOwnedSettlementMassacreProfile.BuildCompletedMessage(_sceneKind, isEnglish: !GcczLocalizedResourceLoader.UseChineseInterface),
 					Color.FromUint(SetsOwnedSettlementMassacreProfile.StartMessageColor)));
 			}
 			SettlementEntryTroopSelectionLog.Log("SETS owned/attached settlement massacre fight ended. settlement=" + _settlementId
@@ -5960,8 +5960,8 @@ if (_spawnedAlliedCount > 0)
 				if (spawned > 0)
 				{
 					string message = !_armedCoup ? SiegeAftermathUiText.BuildReserveWaveMessage(_sceneKind, phaseKind, waveNumber, _maxActiveDefenderWaves)
-						: IsCoupHall ? "【宣权篡位】大厅护卫部署：本批 " + spawned + " 人，待部署 " + _remainingDefenderReserve.Count + " 人。"
-						: "【宣权篡位】守军增援第 " + waveNumber + " 批，待入场 " + _remainingDefenderReserve.Count + " 人（场上最多 " + _maxActiveDefenderWaves + " 批；突破大厅入口后停止增援）。";
+						: IsCoupHall ? new TextObject("{=AF_SETS_Coup_HallGuardDeploy}[Usurpation] Hall guard deployment: {SPAWNED} this wave, {REMAINING} awaiting deployment.").SetTextVariable("SPAWNED", spawned).SetTextVariable("REMAINING", _remainingDefenderReserve.Count).ToString()
+						: new TextObject("{=AF_SETS_Coup_DefenderReinforce}[Usurpation] Defender reinforcements wave {WAVE}, {REMAINING} awaiting entry (up to {MAX_WAVES} waves active; reinforcements stop after breaching the hall entrance).").SetTextVariable("WAVE", waveNumber).SetTextVariable("REMAINING", _remainingDefenderReserve.Count).SetTextVariable("MAX_WAVES", _maxActiveDefenderWaves).ToString();
 					InformationManager.DisplayMessage(new InformationMessage(message, Color.FromUint(WarningColor)));
 				}
 				SettlementEntryTroopSelectionLog.Log("Spawned defender reserve wave. settlement=" + _settlementId + ", wave=" + waveNumber + ", activeWaves=" + CountActiveDefenderReserveWaves() + "/" + _maxActiveDefenderWaves + ", phase=" + phaseKind + ", requested=" + troops.Count + ", spawned=" + spawned + ", skipped=" + Math.Max(0, troops.Count - spawned) + ", remainingTotal=" + (_remainingDefenderReserve?.Count ?? 0) + ", nextWaveTime=" + _nextDefenderReserveWaveTime.ToString("0.0"));
@@ -7119,7 +7119,7 @@ if (_spawnedAlliedCount > 0)
             catch (Exception ex) { SettlementEntryTroopSelectionLog.Log("Coup hall position correction failed: " + ex.Message); }
             _coupHallDeploymentFailed = true;
             SettlementEntryTroopSelectionLog.Log("Coup hall actual spawn invalid. requested=" + intended + ", actual=" + agent.Position);
-            try { _coupTechnicalFailure?.Invoke(base.Mission, "大厅人物未能落在有效出生点，已中止本次部署，未判定胜利。"); }
+            try { _coupTechnicalFailure?.Invoke(base.Mission, new TextObject("{=AF_SETS_Coup_HallSpawnInvalid}Hall character failed to land on a valid spawn point. This deployment has been aborted; victory is not granted.").ToString()); }
             finally { base.Mission.EndMission(); }
             return false;
         }
@@ -7134,7 +7134,8 @@ if (_spawnedAlliedCount > 0)
 			if (enemy) _coupHallDefenderBlockedSince = since; else _coupHallAllyBlockedSince = since;
 			if (since < 0f || now - since < ArmedCoupHallDeploymentTimeout) return;
 			_coupHallDeploymentFailed = true;
-			string reason = "领主大厅连续15秒找不到" + (enemy ? "护卫" : "突击队") + "可达落点，已停止本次部署；未授予胜利，已有伤亡保留。";
+			string sideText = enemy ? new TextObject("{=AF_SETS_Coup_HallGuard}defender").ToString() : new TextObject("{=AF_SETS_Coup_HallAssault}assault squad").ToString();
+			string reason = new TextObject("{=AF_SETS_Coup_HallPointUnreachable}No reachable spawn point found in the lord's hall for {SIDE} for 15 consecutive seconds. Deployment has been stopped; victory is not granted, existing casualties retained.").SetTextVariable("SIDE", sideText).ToString();
 			SettlementEntryTroopSelectionLog.Log("Coup hall deployment blocked. side=" + (enemy ? "defender" : "ally") + ", pending=" + _remainingDefenderReserve.Count);
 			try { _coupTechnicalFailure?.Invoke(base.Mission, reason); }
 			finally { base.Mission.EndMission(); }

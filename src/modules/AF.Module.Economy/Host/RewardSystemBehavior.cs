@@ -2445,8 +2445,8 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 
 	private static string BuildSettlementMerchantDebtLabel(Settlement settlement, SettlementMerchantKind kind)
 	{
-		string text = settlement?.Name?.ToString() ?? "这座城镇";
-		return text + "的" + GetSettlementMerchantMarketLabel(kind);
+		string text = settlement?.Name?.ToString() ?? EconomySourceTexts.Get("S148");
+		return text + EconomySourceTexts.Get("S149") + GetSettlementMerchantMarketLabel(kind);
 	}
 
 	private PendingPlayerTransfer GetOrCreatePendingPlayerTransferByKey(string transferKey)
@@ -2630,8 +2630,8 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 				MerchantFactRecord orCreateMerchantFactRecord = GetOrCreateMerchantFactRecord(settlement, kind);
 				if (orCreateMerchantFactRecord != null)
 				{
-					string text2 = (speakerName ?? GetSettlementMerchantRoleLabel(kind) ?? "商贩").Trim();
-					orCreateMerchantFactRecord.Facts.Add("[AFEF NPC行为补充] " + text2 + ": " + text);
+					string text2 = (speakerName ?? GetSettlementMerchantRoleLabel(kind) ?? EconomySourceTexts.Get("S150")).Trim();
+					orCreateMerchantFactRecord.Facts.Add(EconomySourceTexts.Get("S048") + text2 + ": " + text);
 					CleanupMerchantFactRecord(orCreateMerchantFactRecord);
 				}
 			}
@@ -2884,10 +2884,10 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 		}
 		string result = num switch
 		{
-			0 => "春",
-			1 => "夏",
-			2 => "秋",
-			_ => "冬",
+			0 => EconomySourceTexts.Get("S151"),
+			1 => EconomySourceTexts.Get("S152"),
+			2 => EconomySourceTexts.Get("S153"),
+			_ => EconomySourceTexts.Get("S154"),
 		};
 		if (1 == 0)
 		{
@@ -2904,7 +2904,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 		int num3 = num % daysInYearSafe;
 		int seasonIndexZeroBased = num3 / daysInSeasonSafe;
 		int num4 = num3 % daysInSeasonSafe + 1;
-		return $"{num2}年{GetSeasonTextZh(seasonIndexZeroBased)}第{num4}天";
+		return string.Format(EconomySourceTexts.Get("S155"), num2, GetSeasonTextZh(seasonIndexZeroBased), num4);
 	}
 
 	public string BuildDueDateReferenceForAI()
@@ -2914,7 +2914,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 			int daysInSeasonSafe = GetDaysInSeasonSafe();
 			int daysInYearSafe = GetDaysInYearSafe();
 			StringBuilder stringBuilder = new StringBuilder();
-			stringBuilder.AppendLine($"换算：1季={daysInSeasonSafe}天，1年={daysInYearSafe}天。");
+			stringBuilder.AppendLine(string.Format(EconomyPromptTexts.Get("S156"), daysInSeasonSafe, daysInYearSafe));
 			return stringBuilder.ToString().Trim();
 		}
 		catch
@@ -3330,9 +3330,9 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 		int num = RomanceSystemBehavior.TryGetPrivateLoveAsPlayerRelation(hero, out var relation) ? relation : (int)MathF.Round(hero?.GetRelationWithPlayer() ?? 0f);
 		if (settlementTransferTalkTrust < 60)
 		{
-			return $"【固定资产转移谈判提示】综合信任{settlementTransferTalkTrust}<60。本轮可谈清单内固定资产转移，但若你愿意把资产出售或过户给玩家，正文必须按远高于该资产指导价/资产价格的报价出售，或要求等值的明显超额利益；玩家未先付清或交付对价前，不要立即过户。若想不经交易直接白拿，通常只在你与玩家关系达到100时才考虑。当前关系={num}。";
+			return string.Format(EconomyPromptTexts.Get("S157"), settlementTransferTalkTrust, num);
 		}
-		return $"【固定资产转移谈判提示】综合信任{settlementTransferTalkTrust}。本轮可谈清单内固定资产转移，但玩家通常仍得先给出明显利益；若想不经交易直接白拿，通常只在你与玩家关系达到100时才考虑。当前关系={num}。";
+		return string.Format(EconomyPromptTexts.Get("S158"), settlementTransferTalkTrust, num);
 	}
 
 	public bool TryApplyPlayerSettlementTransferForExternal(Hero receiverHero, Settlement settlement, out string statusText)
@@ -3344,8 +3344,8 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 			Settlement = settlement,
 			SettlementId = (settlement?.StringId ?? "").Trim(),
 			AssetId = (settlement?.StringId ?? "").Trim(),
-			DisplayName = settlement?.Name?.ToString() ?? "未知定居点",
-			TypeLabel = settlement?.IsTown == true ? "城市" : "城堡",
+			DisplayName = settlement?.Name?.ToString() ?? EconomySourceTexts.Get("S159"),
+			TypeLabel = settlement?.IsTown == true ? EconomySourceTexts.Get("S160") : EconomySourceTexts.Get("S161"),
 			OwnerClan = Clan.PlayerClan
 		};
 		return TryApplyPlayerSettlementTransferForExternal(receiverHero, entry, out statusText);
@@ -3393,23 +3393,23 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 		{
 			if (giver == null || receiver == null)
 			{
-				statusText = "执行失败：缺少转移双方。";
+				statusText = EconomySourceTexts.Get("S071");
 				return false;
 			}
 			if (AIConfigHandler.IsPlayerCompanionOrFamilyTradeTarget(giver))
 			{
-				statusText = "执行失败：家族成员或同伴不允许通过固定资产转移。";
+				statusText = EconomySourceTexts.Get("S073");
 				return false;
 			}
 			if (!MyBehavior.IsSettlementTransferEntryValidForExternal(entry))
 			{
-				statusText = "执行失败：缺少可转移固定资产。";
+				statusText = EconomySourceTexts.Get("S074");
 				return false;
 			}
 			string direction = (directionToken ?? "").Trim().ToUpperInvariant();
 			if (direction != "TO_PLAYER" && direction != "TO_NPC")
 			{
-				statusText = "执行失败：未知固定资产转移方向 " + directionToken + "。";
+				statusText = EconomySourceTexts.Get("S082") + directionToken + "。";
 				return false;
 			}
 			Hero targetOwner = direction == "TO_PLAYER" ? receiver : giver;
@@ -3433,14 +3433,14 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 			case MyBehavior.SettlementTransferAssetKind.Caravan:
 				return TryApplyCaravanFixedAssetTransfer(giver, receiver, targetOwner, direction, entry.CaravanParty, assetName, allowDirectFixedAssetIdOverride, out statusText);
 			default:
-				statusText = "执行失败：未知固定资产类型。";
+				statusText = EconomySourceTexts.Get("S075");
 				return false;
 			}
 		}
 		catch (Exception ex)
 		{
 			mutationObservation?.MarkUnknown("economy.settlement_transfer_entry_exception");
-			statusText = "执行失败（异常）：" + ex.Message;
+			statusText = EconomySourceTexts.Get("S083") + ex.Message;
 			return false;
 		}
 	}
@@ -3450,44 +3450,44 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 		statusText = "";
 		if (settlement == null || !settlement.IsFortification || settlement.Town == null)
 		{
-			statusText = $"执行失败：{assetName} 不是可转移的城市或城堡。";
+			statusText = string.Format(EconomySourceTexts.Get("S162"), assetName);
 			return false;
 		}
 		if (settlement.OwnerClan == null)
 		{
-			statusText = $"执行失败：{assetName} 当前没有可识别的合法归属。";
+			statusText = string.Format(EconomySourceTexts.Get("S163"), assetName);
 			return false;
 		}
 		if (settlement.IsUnderSiege || settlement.Party?.MapEvent != null)
 		{
-			statusText = $"执行失败：{assetName} 当前处于战事或围攻状态，不能转移。";
+			statusText = string.Format(EconomySourceTexts.Get("S164"), assetName);
 			return false;
 		}
 		if (direction == "TO_PLAYER")
 		{
 			if (!allowDirectFixedAssetIdOverride && settlement.OwnerClan != giver.Clan)
 			{
-				statusText = $"执行失败：{assetName} 不属于 {giver.Name} 的家族，不能由其转给玩家。";
+				statusText = string.Format(EconomySourceTexts.Get("S165"), assetName, giver.Name);
 				return false;
 			}
 		}
 		else if (Clan.PlayerClan == null || settlement.OwnerClan != Clan.PlayerClan)
 		{
-			statusText = $"执行失败：{assetName} 当前不属于玩家家族。";
+			statusText = string.Format(EconomySourceTexts.Get("S166"), assetName);
 			return false;
 		}
 		if (targetOwner?.Clan == null)
 		{
-			statusText = "执行失败：目标接收方没有合法家族。";
+			statusText = EconomySourceTexts.Get("S077");
 			return false;
 		}
 		if (settlement.OwnerClan == targetOwner.Clan)
 		{
-			statusText = $"执行跳过：{assetName} 已经属于目标家族。";
+			statusText = string.Format(EconomySourceTexts.Get("S167"), assetName);
 			return false;
 		}
 		ChangeOwnerOfSettlementAction.ApplyByBarter(targetOwner, settlement);
-		statusText = direction == "TO_PLAYER" ? $"执行成功：{assetName} 已转交给玩家家族（未自动扣款）。" : $"执行成功：玩家已将 {assetName} 转交给 {giver.Name} 的家族（未自动扣款）。";
+		statusText = direction == "TO_PLAYER" ? string.Format(EconomySourceTexts.Get("S168"), assetName) : string.Format(EconomySourceTexts.Get("S169"), assetName, giver.Name);
 		return true;
 	}
 
@@ -3524,51 +3524,51 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 		statusText = "";
 		if (!IsWorkshopFixedAssetStateUsable(workshop))
 		{
-			statusText = $"执行失败：{assetName} 不是可安全转移的工坊。";
+			statusText = string.Format(EconomySourceTexts.Get("S170"), assetName);
 			return false;
 		}
 		Hero oldOwner = workshop.Owner;
 		if (oldOwner == null)
 		{
-			statusText = $"执行失败：{assetName} 当前没有可识别的工坊主人。";
+			statusText = string.Format(EconomySourceTexts.Get("S171"), assetName);
 			return false;
 		}
 		if (!IsValidWorkshopFixedAssetOwner(oldOwner))
 		{
-			statusText = $"执行失败：{assetName} 当前工坊主人无效或已死亡。";
+			statusText = string.Format(EconomySourceTexts.Get("S172"), assetName);
 			return false;
 		}
 		if (direction == "TO_PLAYER")
 		{
 			if (!allowDirectFixedAssetIdOverride && oldOwner != giver)
 			{
-				statusText = $"执行失败：{assetName} 不属于 {giver.Name}，不能由其转给玩家。";
+				statusText = string.Format(EconomySourceTexts.Get("S173"), assetName, giver.Name);
 				return false;
 			}
 		}
 		else if (oldOwner != Hero.MainHero)
 		{
-			statusText = $"执行失败：{assetName} 当前不属于玩家本人。";
+			statusText = string.Format(EconomySourceTexts.Get("S174"), assetName);
 			return false;
 		}
 		if (targetOwner == null)
 		{
-			statusText = "执行失败：缺少工坊接收者。";
+			statusText = EconomySourceTexts.Get("S078");
 			return false;
 		}
 		if (!IsValidWorkshopFixedAssetOwner(targetOwner))
 		{
-			statusText = "执行失败：工坊接收者不是有效存活英雄。";
+			statusText = EconomySourceTexts.Get("S079");
 			return false;
 		}
 		if (oldOwner == targetOwner)
 		{
-			statusText = $"执行跳过：{assetName} 已经属于目标人物。";
+			statusText = string.Format(EconomySourceTexts.Get("S175"), assetName);
 			return false;
 		}
 		workshop.ChangeOwnerOfWorkshop(targetOwner, workshop.WorkshopType, workshop.Capital);
 		CampaignEventDispatcher.Instance.OnWorkshopOwnerChanged(workshop, oldOwner);
-		statusText = direction == "TO_PLAYER" ? $"执行成功：{assetName} 已转交给玩家（未自动扣款）。" : $"执行成功：玩家已将 {assetName} 转交给 {giver.Name}（未自动扣款）。";
+		statusText = direction == "TO_PLAYER" ? string.Format(EconomySourceTexts.Get("S176"), assetName) : string.Format(EconomySourceTexts.Get("S177"), assetName, giver.Name);
 		return true;
 	}
 
@@ -3578,51 +3578,51 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 		CaravanPartyComponent component = caravanParty?.CaravanPartyComponent;
 		if (caravanParty == null || !caravanParty.IsActive || component == null)
 		{
-			statusText = $"执行失败：{assetName} 不是可转移商队。";
+			statusText = string.Format(EconomySourceTexts.Get("S178"), assetName);
 			return false;
 		}
 		if (caravanParty.MapEvent != null)
 		{
-			statusText = $"执行失败：{assetName} 当前处于事件或战斗中，不能转移。";
+			statusText = string.Format(EconomySourceTexts.Get("S179"), assetName);
 			return false;
 		}
 		Hero oldOwner = component.Owner;
 		if (oldOwner == null || !IsValidWorkshopFixedAssetOwner(oldOwner))
 		{
-			statusText = $"执行失败：{assetName} 当前商队主人无效或已死亡。";
+			statusText = string.Format(EconomySourceTexts.Get("S180"), assetName);
 			return false;
 		}
 		if (direction == "TO_PLAYER")
 		{
 			if (!allowDirectFixedAssetIdOverride && oldOwner != giver)
 			{
-				statusText = $"执行失败：{assetName} 不属于 {giver.Name}，不能由其转给玩家。";
+				statusText = string.Format(EconomySourceTexts.Get("S173"), assetName, giver.Name);
 				return false;
 			}
 		}
 		else if (oldOwner != Hero.MainHero)
 		{
-			statusText = $"执行失败：{assetName} 当前不属于玩家本人。";
+			statusText = string.Format(EconomySourceTexts.Get("S174"), assetName);
 			return false;
 		}
 		if (targetOwner == null)
 		{
-			statusText = "执行失败：缺少商队接收者。";
+			statusText = EconomySourceTexts.Get("S080");
 			return false;
 		}
 		if (oldOwner == targetOwner)
 		{
-			statusText = $"执行跳过：{assetName} 已经属于目标人物。";
+			statusText = string.Format(EconomySourceTexts.Get("S175"), assetName);
 			return false;
 		}
 		Settlement homeSettlement = component.Settlement ?? targetOwner.HomeSettlement ?? Settlement.CurrentSettlement ?? MobileParty.MainParty?.CurrentSettlement;
 		if (homeSettlement == null)
 		{
-			statusText = $"执行失败：{assetName} 缺少可用的商队归属定居点。";
+			statusText = string.Format(EconomySourceTexts.Get("S181"), assetName);
 			return false;
 		}
 		CaravanPartyComponent.TransferCaravanOwnership(caravanParty, targetOwner, homeSettlement);
-		statusText = direction == "TO_PLAYER" ? $"执行成功：{assetName} 已转交给玩家（未自动扣款）。" : $"执行成功：玩家已将 {assetName} 转交给 {giver.Name}（未自动扣款）。";
+		statusText = direction == "TO_PLAYER" ? string.Format(EconomySourceTexts.Get("S176"), assetName) : string.Format(EconomySourceTexts.Get("S177"), assetName, giver.Name);
 		return true;
 	}
 
@@ -3709,22 +3709,22 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 	{
 		if (memberCount > 0 && prisonerCount > 0)
 		{
-			return memberCount + " 名非英雄成员及" + prisonerCount + " 名俘虏";
+			return memberCount + EconomySourceTexts.Get("S182") + prisonerCount + EconomySourceTexts.Get("S183");
 		}
 		if (memberCount > 0)
 		{
-			return memberCount + " 名非英雄成员";
+			return memberCount + EconomySourceTexts.Get("S184");
 		}
-		return prisonerCount > 0 ? prisonerCount + " 名俘虏" : "";
+		return prisonerCount > 0 ? prisonerCount + EconomySourceTexts.Get("S183") : "";
 	}
 
 	private static string BuildWildernessHeroPartyTransitionNote(string partyName, int memberCount, int prisonerCount)
 	{
-		string label = string.IsNullOrWhiteSpace(partyName) ? "目标英雄的原野外队伍" : partyName.Trim();
+		string label = string.IsNullOrWhiteSpace(partyName) ? EconomySourceTexts.Get("S185") : partyName.Trim();
 		string countText = BuildWildernessHeroPartyTransferCountText(memberCount, prisonerCount);
 		return string.IsNullOrEmpty(countText)
-			? label + "已随目标英雄归并至玩家主队，没有额外成员或俘虏"
-			: label + "中的 " + countText + "已一并转入玩家主队";
+			? label + EconomySourceTexts.Get("S186")
+			: label + EconomySourceTexts.Get("S187") + countText + EconomySourceTexts.Get("S188");
 	}
 
 	private static string BuildClanRecruitmentFiefSummary(IEnumerable<Settlement> carriedSettlements)
@@ -3742,7 +3742,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 			{
 				return "";
 			}
-			return "，其封地 " + string.Join("、", list) + " 已随家族归入玩家王国";
+			return EconomySourceTexts.Get("S189") + string.Join("、", list) + EconomySourceTexts.Get("S190");
 		}
 		catch
 		{
@@ -3759,22 +3759,22 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 			{
 				return;
 			}
-			string kingdomName = kingdom.Name?.ToString() ?? "旧王国";
+			string kingdomName = kingdom.Name?.ToString() ?? EconomySourceTexts.Get("S191");
 			List<Clan> candidates = FindRulingClanCandidatesForRecruitmentElection(kingdom, departingClan, null);
 			if (candidates.Count == 0)
 			{
 				destroyKingdomAfterDeparture = true;
-				transitionNotes?.Add($"{kingdomName} 已无可接任执政家族，将在目标家族离开后清理旧王国");
+				transitionNotes?.Add(string.Format(EconomySourceTexts.Get("S192"), kingdomName));
 				return;
 			}
 			Clan temporaryRulingClan = candidates[0];
 			ChangeRulingClanAction.Apply(kingdom, temporaryRulingClan);
-			transitionNotes?.Add($"{kingdomName} 已由 {GetClanDisplayNameForNotification(temporaryRulingClan)} 接任执政家族");
+			transitionNotes?.Add(string.Format(EconomySourceTexts.Get("S193"), kingdomName, GetClanDisplayNameForNotification(temporaryRulingClan)));
 		}
 		catch (Exception ex)
 		{
 			Logger.Log("Logic", "[Reward] prepare departing ruling clan transition failed: " + ex.Message);
-			transitionNotes?.Add("旧王国执政家族修复失败：" + ex.Message);
+			transitionNotes?.Add(EconomySourceTexts.Get("S194") + ex.Message);
 		}
 	}
 
@@ -3790,14 +3790,14 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 			{
 				return;
 			}
-			string kingdomName = kingdom.Name?.ToString() ?? "旧王国";
+			string kingdomName = kingdom.Name?.ToString() ?? EconomySourceTexts.Get("S191");
 			DestroyKingdomAction.Apply(kingdom);
-			transitionNotes?.Add($"{kingdomName} 已按原版逻辑解散");
+			transitionNotes?.Add(string.Format(EconomySourceTexts.Get("S195"), kingdomName));
 		}
 		catch (Exception ex)
 		{
 			Logger.Log("Logic", "[Reward] finalize departed ruling clan transition failed: " + ex.Message);
-			transitionNotes?.Add("旧王国解散失败：" + ex.Message);
+			transitionNotes?.Add(EconomySourceTexts.Get("S196") + ex.Message);
 		}
 	}
 
@@ -3809,12 +3809,12 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 			{
 				return;
 			}
-			string kingdomName = kingdom.Name?.ToString() ?? "旧王国";
+			string kingdomName = kingdom.Name?.ToString() ?? EconomySourceTexts.Get("S191");
 			List<Clan> candidates = FindRulingClanCandidatesForRecruitmentElection(kingdom, null, removedLeader);
 			if (candidates.Count == 0)
 			{
 				DestroyKingdomAction.Apply(kingdom);
-				transitionNotes?.Add($"{kingdomName} 已无可接任执政家族，已按原版逻辑解散");
+				transitionNotes?.Add(string.Format(EconomySourceTexts.Get("S197"), kingdomName));
 				return;
 			}
 			if (candidates.Count > 1)
@@ -3824,7 +3824,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 					IsEnforced = true
 				};
 				kingdom.AddDecision(decision, ignoreInfluenceCost: true);
-				transitionNotes?.Add($"{kingdomName} 已因原国王离开触发新统治者选举");
+				transitionNotes?.Add(string.Format(EconomySourceTexts.Get("S198"), kingdomName));
 				return;
 			}
 			Clan onlyCandidate = candidates[0];
@@ -3832,12 +3832,12 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 			{
 				ChangeRulingClanAction.Apply(kingdom, onlyCandidate);
 			}
-			transitionNotes?.Add($"{kingdomName} 已由 {GetClanDisplayNameForNotification(onlyCandidate)} 直接接任执政");
+			transitionNotes?.Add(string.Format(EconomySourceTexts.Get("S199"), kingdomName, GetClanDisplayNameForNotification(onlyCandidate)));
 		}
 		catch (Exception ex)
 		{
 			Logger.Log("Logic", "[Reward] repair ruling clan after leader recruitment failed: " + ex.Message);
-			transitionNotes?.Add("旧王国执政家族修复失败：" + ex.Message);
+			transitionNotes?.Add(EconomySourceTexts.Get("S194") + ex.Message);
 		}
 	}
 
@@ -3917,7 +3917,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 		{
 			if (hero?.CharacterObject == null)
 			{
-				statusText = "执行失败：缺少要解除俘虏身份的目标英雄。";
+				statusText = EconomySourceTexts.Get("S200");
 				return false;
 			}
 			PartyBase captivityParty = hero.PartyBelongedToAsPrisoner ?? originalCaptivityParty;
@@ -3945,17 +3945,17 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 				|| (mainParty != captivityParty && IsHeroInPrisonRoster(hero, mainParty));
 			if (stillCaptive)
 			{
-				statusText = "执行失败：目标英雄的俘虏状态或俘虏名册残留未能清除。";
+				statusText = EconomySourceTexts.Get("S201");
 				Logger.Log("RewardSystemBehavior", "[HeroJoin] captivity_cleanup_incomplete reason=" + (reason ?? "") + " hero=" + (hero.StringId ?? "") + " state=" + hero.HeroState + " prisonerParty=" + (hero.PartyBelongedToAsPrisoner?.Id ?? "") + " residualRemoved=" + residualRemoved);
 				return false;
 			}
-			transitionNotes?.Add("已解除其俘虏身份");
+			transitionNotes?.Add(EconomySourceTexts.Get("S202"));
 			Logger.Log("RewardSystemBehavior", "[HeroJoin] captivity_ended reason=" + (reason ?? "") + " hero=" + (hero.StringId ?? "") + " oldState=" + oldState + " newState=" + hero.HeroState + " source=" + (captivityParty?.Id ?? "") + " residualRemoved=" + residualRemoved);
 			return true;
 		}
 		catch (Exception ex)
 		{
-			statusText = "执行失败（解除俘虏身份异常）：" + ex.Message;
+			statusText = EconomySourceTexts.Get("S203") + ex.Message;
 			Logger.Log("RewardSystemBehavior", "[HeroJoin] captivity_cleanup_failed reason=" + (reason ?? "") + " hero=" + (hero?.StringId ?? "") + " error=" + ex.Message);
 			return false;
 		}
@@ -3970,12 +3970,12 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 			MobileParty mainParty = MobileParty.MainParty;
 			if (hero == null)
 			{
-				statusText = "执行失败：缺少要加入玩家家族的目标英雄。";
+				statusText = EconomySourceTexts.Get("S204");
 				return false;
 			}
 			if (playerClan == null || mainParty == null)
 			{
-				statusText = "执行失败：玩家家族或玩家队伍不可用。";
+				statusText = EconomySourceTexts.Get("S205");
 				return false;
 			}
 			if (hero.CompanionOf != null)
@@ -4012,7 +4012,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 			}
 			if (!hero.IsActive && !hero.IsDead && !TryActivatePromotedCompanionHero(hero, reason))
 			{
-				statusText = "执行失败：目标英雄未能恢复为可加入队伍的活动状态。";
+				statusText = EconomySourceTexts.Get("S206");
 				return false;
 			}
 			if (hero.PartyBelongedTo != mainParty && !IsHeroInParty(hero, mainParty))
@@ -4021,7 +4021,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 			}
 			if (!IsHeroPlayerClanLordInMainParty(hero))
 			{
-				statusText = "执行失败：目标英雄未能完成玩家家族成员身份或玩家主队归属更新。";
+				statusText = EconomySourceTexts.Get("S207");
 				return false;
 			}
 			Logger.Log("RewardSystemBehavior", "[HeroJoin] moved_to_player_clan reason=" + (reason ?? "") + " hero=" + (hero.StringId ?? "") + " clan=" + (hero.Clan?.StringId ?? "") + " occupation=" + hero.Occupation + " party=" + (hero.PartyBelongedTo?.StringId ?? ""));
@@ -4029,7 +4029,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 		}
 		catch (Exception ex)
 		{
-			statusText = "执行失败（加入玩家家族异常）：" + ex.Message;
+			statusText = EconomySourceTexts.Get("S208") + ex.Message;
 			Logger.Log("RewardSystemBehavior", "[HeroJoin] move_to_player_clan_failed reason=" + (reason ?? "") + " hero=" + (hero?.StringId ?? "") + " error=" + ex.Message);
 			return false;
 		}
@@ -4044,12 +4044,12 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 			MobileParty mainParty = MobileParty.MainParty;
 			if (hero == null)
 			{
-				statusText = "执行失败：缺少要成为玩家同伴的目标英雄。";
+				statusText = EconomySourceTexts.Get("S209");
 				return false;
 			}
 			if (playerClan == null || mainParty == null)
 			{
-				statusText = "执行失败：玩家家族或玩家队伍不可用。";
+				statusText = EconomySourceTexts.Get("S205");
 				return false;
 			}
 			if (hero.Clan != null)
@@ -4066,7 +4066,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 			}
 			if (!hero.IsActive && !hero.IsDead && !TryActivatePromotedCompanionHero(hero, reason))
 			{
-				statusText = "执行失败：目标英雄未能恢复为可加入队伍的活动状态。";
+				statusText = EconomySourceTexts.Get("S206");
 				return false;
 			}
 			if (hero.PartyBelongedTo != mainParty && !IsHeroInParty(hero, mainParty))
@@ -4075,7 +4075,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 			}
 			if (!IsHeroPlayerCompanionInMainParty(hero))
 			{
-				statusText = "执行失败：目标英雄未能完成同伴身份或玩家主队归属更新。";
+				statusText = EconomySourceTexts.Get("S210");
 				return false;
 			}
 			Logger.Log("RewardSystemBehavior", "[HeroJoin] moved_to_player_companion reason=" + (reason ?? "") + " hero=" + (hero.StringId ?? "") + " companionOf=" + (hero.CompanionOf?.StringId ?? "") + " occupation=" + hero.Occupation + " party=" + (hero.PartyBelongedTo?.StringId ?? ""));
@@ -4083,7 +4083,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 		}
 		catch (Exception ex)
 		{
-			statusText = "执行失败（成为玩家同伴异常）：" + ex.Message;
+			statusText = EconomySourceTexts.Get("S211") + ex.Message;
 			Logger.Log("RewardSystemBehavior", "[HeroJoin] move_to_player_companion_failed reason=" + (reason ?? "") + " hero=" + (hero?.StringId ?? "") + " error=" + ex.Message);
 			return false;
 		}
@@ -4102,30 +4102,30 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 			{
 				return;
 			}
-			string heroName = hero.Name?.ToString() ?? "该英雄";
+			string heroName = hero.Name?.ToString() ?? EconomySourceTexts.Get("S212");
 			Settlement settlement = Settlement.CurrentSettlement ?? hero.CurrentSettlement ?? MobileParty.MainParty?.CurrentSettlement;
 			string locationText = settlement?.Name?.ToString() ?? "";
 			bool preservedPlayerSpouseIdentity = preservedPlayerFamilyIdentity && (hero.Spouse == Hero.MainHero || Hero.MainHero?.Spouse == hero);
 			string actionType = preservedPlayerFamilyIdentity ? "player_family_party_join" : (asCompanion ? "player_companion_join" : "player_clan_join");
 			string stableKey = actionType + ":" + heroKey + ":" + GetCampaignDayIndex();
 			string npcFact = preservedPlayerFamilyIdentity
-				? (preservedPlayerSpouseIdentity ? "你仍是玩家的配偶，并已加入玩家队伍行动。" : "你仍是玩家家族成员，并已加入玩家队伍行动。")
-				: (asCompanion ? "你成为了玩家的同伴，并随玩家队伍行动。" : "你加入了玩家家族，成为玩家家族成员，并随玩家队伍行动。");
+				? (preservedPlayerSpouseIdentity ? EconomySourceTexts.Get("S213") : EconomySourceTexts.Get("S214"))
+				: (asCompanion ? EconomySourceTexts.Get("S215") : EconomySourceTexts.Get("S216"));
 			string playerFact = preservedPlayerFamilyIdentity
-				? (preservedPlayerSpouseIdentity ? heroName + "仍是你的配偶，并已加入你的队伍。" : heroName + "仍是你的家族成员，并已加入你的队伍。")
-				: (asCompanion ? "你招募了" + heroName + "成为同伴，并随你的队伍行动。" : "你招募了" + heroName + "加入玩家家族，并随你的队伍行动。");
+				? (preservedPlayerSpouseIdentity ? heroName + EconomySourceTexts.Get("S217") : heroName + EconomySourceTexts.Get("S218"))
+				: (asCompanion ? EconomySourceTexts.Get("S219") + heroName + EconomySourceTexts.Get("S220") : EconomySourceTexts.Get("S219") + heroName + EconomySourceTexts.Get("S221"));
 			if (joinedWildernessParty)
 			{
 				string countText = BuildWildernessHeroPartyTransferCountText(joinedWildernessMembers, joinedWildernessPrisoners);
 				if (string.IsNullOrEmpty(countText))
 				{
-					npcFact += " 你的原野外队伍已随你归并至玩家主队，没有额外成员或俘虏。";
-					playerFact += " " + heroName + "的原野外队伍已随本人归并至你的主队，没有额外成员或俘虏。";
+					npcFact += EconomySourceTexts.Get("S222");
+					playerFact += " " + heroName + EconomySourceTexts.Get("S223");
 				}
 				else
 				{
-					npcFact += " 你原野外队伍中的 " + countText + "已一并转入玩家主队。";
-					playerFact += " " + heroName + "原野外队伍中的 " + countText + "已一并转入你的主队。";
+					npcFact += EconomySourceTexts.Get("S224") + countText + EconomySourceTexts.Get("S225");
+					playerFact += " " + heroName + EconomySourceTexts.Get("S226") + countText + EconomySourceTexts.Get("S227");
 				}
 			}
 			MyBehavior.RecordNpcActionForExternal(hero, npcFact, stableKey + ":npc", actionType, isMajor: true, isRecent: true, targetHero: Hero.MainHero, settlement: settlement, locationText: locationText, allowNonLordHero: true, won: true);
@@ -4202,7 +4202,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 		FreezeWatchdog.Mark("NonHeroJoin.result", "target=" + (joiningCharacter.StringId ?? "") + " agent=" + targetAgentIndex + " success=" + flag + " status=" + (statusText ?? ""), immediate: true);
 		if (!string.IsNullOrWhiteSpace(statusText))
 		{
-			bool intercepted = !flag && statusText.StartsWith("执行拦截", StringComparison.Ordinal);
+			bool intercepted = !flag && statusText.StartsWith(EconomySourceTexts.Get("S228"), StringComparison.Ordinal);
 			bool promotedPlayerCompanion = flag && promotedHero != null && promotedHero.CompanionOf == Clan.PlayerClan && promotedHero.Occupation == Occupation.Wanderer;
 			bool promotedPlayerClanLord = flag && promotedHero != null && promotedHero.Clan == Clan.PlayerClan && promotedHero.Occupation == Occupation.Lord;
 			string text = intercepted
@@ -4211,7 +4211,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 			string factName = promotedHero?.Name?.ToString() ?? ResolveNonHeroFullDisplayName(joiningCharacter, promptDisplayName, promptGivenName, targetAgentIndex);
 			if (!intercepted)
 			{
-				generatedFacts.Add("[AFEF NPC行为补充] " + (string.IsNullOrWhiteSpace(factName) ? "NPC" : factName) + ": " + statusText);
+				generatedFacts.Add(EconomySourceTexts.Get("S048") + (string.IsNullOrWhiteSpace(factName) ? "NPC" : factName) + ": " + statusText);
 			}
 			notifications.Add(text);
 		}
@@ -4379,7 +4379,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 		MobileParty mainParty = MobileParty.MainParty;
 		if (sourceParty == null || mainParty == null || sourceParty == mainParty || sourceParty.Party == PartyBase.MainParty)
 		{
-			statusText = "执行失败：野外非英雄队伍目标不可用。";
+			statusText = EconomySourceTexts.Get("S229");
 			return false;
 		}
 		int beforeMembers = Math.Max(0, sourceParty.MemberRoster?.TotalManCount ?? 0);
@@ -4388,18 +4388,18 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 		int movedPrisoners = MoveWildernessNonHeroPartyPrisonersToMainParty(sourceParty);
 		if (movedMembers <= 0 && movedPrisoners <= 0)
 		{
-			statusText = "执行失败：未能从野外非英雄队伍转入任何成员或俘虏。";
+			statusText = EconomySourceTexts.Get("S230");
 			return false;
 		}
 		string targetName = ResolveNonHeroFullDisplayName(joiningCharacter, promptDisplayName, promptGivenName, targetAgentIndex);
 		string partyName = sourceParty.Name?.ToString();
 		if (string.IsNullOrWhiteSpace(partyName))
 		{
-			partyName = string.IsNullOrWhiteSpace(targetName) ? "对方队伍" : (targetName + "所在队伍");
+			partyName = string.IsNullOrWhiteSpace(targetName) ? EconomySourceTexts.Get("S231") : (targetName + EconomySourceTexts.Get("S232"));
 		}
-		string prisonerText = movedPrisoners > 0 ? $"，并移交 {movedPrisoners} 名俘虏" : "";
-		string beforeText = beforeMembers > movedMembers || beforePrisoners > movedPrisoners ? $"（原成员 {beforeMembers}，原俘虏 {beforePrisoners}）" : "";
-		statusText = $"执行成功：{partyName} 已同意加入玩家队伍，已转入 {movedMembers} 名成员{prisonerText}{beforeText}。";
+		string prisonerText = movedPrisoners > 0 ? string.Format(EconomySourceTexts.Get("S233"), movedPrisoners) : "";
+		string beforeText = beforeMembers > movedMembers || beforePrisoners > movedPrisoners ? string.Format(EconomySourceTexts.Get("S234"), beforeMembers, beforePrisoners) : "";
+		statusText = string.Format(EconomySourceTexts.Get("S235"), partyName, movedMembers, prisonerText, beforeText);
 		Logger.Log("RewardSystemBehavior", "[NonHeroJoin] wilderness_party_join source=" + (sourceParty.StringId ?? "") + " members=" + movedMembers + " prisoners=" + movedPrisoners + " target=" + (joiningCharacter?.StringId ?? "") + " agentIndex=" + targetAgentIndex);
 		CloseWildernessNonHeroJoinConversationImmediately(sourcePartyBase, sourceParty, joiningCharacter, targetAgentIndex);
 		return true;
@@ -4985,8 +4985,8 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 		if (troop == null || roster == null)
 		{
 			statusText = isPrisoner
-				? "执行失败：玩家队伍俘虏名册不可用，无法消耗被升格的原俘虏。"
-				: "执行失败：玩家队伍花名册不可用，无法消耗被升格的原士兵。";
+				? EconomySourceTexts.Get("S236")
+				: EconomySourceTexts.Get("S237");
 			return false;
 		}
 		int index = roster.FindIndexOfTroop(troop);
@@ -4996,13 +4996,13 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 		if (total <= 0)
 		{
 			statusText = isPrisoner
-				? $"执行失败：玩家队伍俘虏名册中不存在可被升格的{troop.Name}，已取消生成 Hero。"
-				: $"执行失败：玩家队伍中不存在可被升格的{troop.Name}，已取消生成 Hero。";
+				? string.Format(EconomySourceTexts.Get("S238"), troop.Name)
+				: string.Format(EconomySourceTexts.Get("S239"), troop.Name);
 			return false;
 		}
 		if (!isPrisoner && healthy <= 0)
 		{
-			statusText = $"执行失败：玩家队伍中没有可被升格的健康{troop.Name}，已取消生成 Hero。";
+			statusText = string.Format(EconomySourceTexts.Get("S240"), troop.Name);
 			return false;
 		}
 		bool consumeWounded = isPrisoner && healthy <= 0 && wounded > 0;
@@ -5020,8 +5020,8 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 				roster.AddToCounts(troop, countDelta, insertAtFront: false, woundedCount: woundedDelta, xpChange: 0, removeDepleted: true, index: -1);
 			}
 			statusText = isPrisoner
-				? $"执行失败：未能从玩家队伍俘虏名册扣除被升格的{troop.Name}，已取消生成 Hero。"
-				: $"执行失败：未能从玩家队伍扣除被升格的{troop.Name}，已取消生成 Hero。";
+				? string.Format(EconomySourceTexts.Get("S241"), troop.Name)
+				: string.Format(EconomySourceTexts.Get("S242"), troop.Name);
 			return false;
 		}
 		reservedTroop = new PlayerOwnedTroopPromotionReservation
@@ -5106,13 +5106,13 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 		{
 			if (agent == null || !agent.IsActive())
 			{
-				error = "Agent 不存在或已失效";
+				error = EconomySourceTexts.Get("S243");
 				return false;
 			}
 			bodyProperties = agent.BodyPropertiesValue;
 			if (bodyProperties.StaticProperties.Equals(default(StaticBodyProperties)) && bodyProperties.DynamicProperties.Age <= 0f)
 			{
-				error = "Agent BodyProperties 为空";
+				error = EconomySourceTexts.Get("S244");
 				return false;
 			}
 			return true;
@@ -5132,13 +5132,13 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 		{
 			if (agent == null || !agent.IsActive())
 			{
-				error = "Agent 不存在或已失效";
+				error = EconomySourceTexts.Get("S243");
 				return false;
 			}
 			equipment = agent.SpawnEquipment?.Clone(false);
 			if (equipment == null)
 			{
-				error = "SpawnEquipment 为空";
+				error = EconomySourceTexts.Get("S245");
 				return false;
 			}
 			try
@@ -5158,7 +5158,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 			}
 			if (equipment.IsEmpty())
 			{
-				error = "当前装备为空";
+				error = EconomySourceTexts.Get("S246");
 				return false;
 			}
 			return true;
@@ -5479,11 +5479,11 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 			{
 				parts.Add(scene);
 			}
-			return parts.Count == 0 ? "当前场景" : string.Join(" / ", parts);
+			return parts.Count == 0 ? EconomyPromptTexts.Get("S247") : string.Join(" / ", parts);
 		}
 		catch
 		{
-			return "当前场景";
+			return EconomyPromptTexts.Get("S247");
 		}
 	}
 
@@ -5491,7 +5491,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 	{
 		if (dialogueHistory == null || dialogueHistory.Count == 0)
 		{
-			return "（无可用加入前对话历史）";
+			return EconomyPromptTexts.Get("S248");
 		}
 		StringBuilder stringBuilder = new StringBuilder();
 		foreach (string line in dialogueHistory)
@@ -5507,7 +5507,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 		{
 			result = result.Substring(result.Length - 6000).Trim();
 		}
-		return string.IsNullOrWhiteSpace(result) ? "（无可用加入前对话历史）" : result;
+		return string.IsNullOrWhiteSpace(result) ? EconomyPromptTexts.Get("S248") : result;
 	}
 
 	private static void AppendPromotedHeroPriorHistory(Hero hero, List<string> dialogueHistory)
@@ -5518,7 +5518,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 		}
 		foreach (string line in dialogueHistory.Where((string x) => !string.IsNullOrWhiteSpace(x)).Take(40))
 		{
-			MyBehavior.AppendExternalDialogueHistory(hero, null, null, "[加入前对话] " + line.Trim());
+			MyBehavior.AppendExternalDialogueHistory(hero, null, null, EconomySourceTexts.Get("S249") + line.Trim());
 		}
 	}
 
@@ -5526,7 +5526,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 	{
 		if (equipment == null)
 		{
-			return "（无装备）";
+			return EconomyPromptTexts.Get("S250");
 		}
 		List<string> list = new List<string>();
 		for (int i = 0; i < 12; i++)
@@ -5539,7 +5539,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 				list.Add(index + "=" + itemName);
 			}
 		}
-		return list.Count == 0 ? "（无装备）" : string.Join(", ", list);
+		return list.Count == 0 ? EconomyPromptTexts.Get("S250") : string.Join(", ", list);
 	}
 
 	private static int CountMatchingTavernLocationCharacters(CharacterObject character)
@@ -5708,7 +5708,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 		catch
 		{
 		}
-		return clan?.StringId ?? "未知家族";
+		return clan?.StringId ?? EconomySourceTexts.Get("S251");
 	}
 
 	private static Clan ResolveClanByTag(string clanToken, Hero giver)
@@ -5890,40 +5890,40 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 			Clan playerClan = Clan.PlayerClan;
 			if (playerClan == null || Hero.MainHero == null)
 			{
-				statusText = "执行失败：未找到玩家家族。";
+				statusText = EconomySourceTexts.Get("S110");
 				return false;
 			}
 			if (giver == null || giver == Hero.MainHero || giver.Clan == null)
 			{
-				statusText = "执行失败：当前对话对象不是可让位的王国国王。";
+				statusText = EconomySourceTexts.Get("S111");
 				return false;
 			}
 			Kingdom targetKingdom = giver.Clan.Kingdom ?? giver.MapFaction as Kingdom;
 			if (targetKingdom == null || targetKingdom.IsEliminated)
 			{
-				statusText = "执行失败：当前对话对象没有有效王国。";
+				statusText = EconomySourceTexts.Get("S112");
 				return false;
 			}
-			string kingdomName = targetKingdom.Name?.ToString() ?? targetKingdom.StringId ?? "该王国";
+			string kingdomName = targetKingdom.Name?.ToString() ?? targetKingdom.StringId ?? EconomySourceTexts.Get("S252");
 			string playerClanName = GetClanDisplayNameForNotification(playerClan);
 			string playerDisplayName = MyBehavior.BuildPlayerPublicDisplayNameForExternal(giver);
 			if (string.IsNullOrWhiteSpace(playerDisplayName))
 			{
-				playerDisplayName = "玩家";
+				playerDisplayName = EconomySourceTexts.Get("S068");
 			}
 			if (targetKingdom.RulingClan == playerClan)
 			{
-				statusText = "执行跳过：" + playerClanName + " 已经是 " + kingdomName + " 的执政家族。";
+				statusText = EconomySourceTexts.Get("S091") + playerClanName + EconomySourceTexts.Get("S253") + kingdomName + EconomySourceTexts.Get("S254");
 				return false;
 			}
 			if (targetKingdom.Leader != giver && targetKingdom.RulingClan?.Leader != giver)
 			{
-				statusText = "执行失败：" + (giver.Name?.ToString() ?? "当前NPC") + " 不是 " + kingdomName + " 的国王，不能让出王位。";
+				statusText = EconomySourceTexts.Get("S094") + (giver.Name?.ToString() ?? EconomySourceTexts.Get("S255")) + EconomySourceTexts.Get("S256") + kingdomName + EconomySourceTexts.Get("S257");
 				return false;
 			}
 			if (giver.Clan == playerClan)
 			{
-				statusText = "执行失败：玩家家族不能通过对方让位重复取得王位。";
+				statusText = EconomySourceTexts.Get("S113");
 				return false;
 			}
 			Kingdom oldKingdom = playerClan.Kingdom;
@@ -5941,17 +5941,17 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 			}
 			if (playerClan.Kingdom != targetKingdom)
 			{
-				statusText = "执行失败：玩家家族未能加入 " + kingdomName + "，王位没有转移。";
+				statusText = EconomySourceTexts.Get("S258") + kingdomName + EconomySourceTexts.Get("S259");
 				return false;
 			}
 			ChangeRulingClanAction.Apply(targetKingdom, playerClan);
 			string transitionSummary = BuildRecruitmentTransitionSummary(transitionNotes);
-			statusText = "执行成功：" + (giver.Name?.ToString() ?? "国王") + " 已将 " + kingdomName + " 的王位让给" + playerDisplayName + "，" + playerClanName + " 成为新的执政家族" + transitionSummary + "。";
+			statusText = EconomySourceTexts.Get("S084") + (giver.Name?.ToString() ?? EconomySourceTexts.Get("S260")) + EconomySourceTexts.Get("S261") + kingdomName + EconomySourceTexts.Get("S262") + playerDisplayName + "，" + playerClanName + EconomySourceTexts.Get("S263") + transitionSummary + "。";
 			return true;
 		}
 		catch (Exception ex)
 		{
-			statusText = "执行失败（异常）：" + ex.Message;
+			statusText = EconomySourceTexts.Get("S083") + ex.Message;
 			return false;
 		}
 	}
@@ -5990,24 +5990,24 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 			Kingdom playerKingdom = playerClan?.Kingdom;
 			if (joiningLeader == null || joiningLeader.Clan?.Leader != joiningLeader)
 			{
-				statusText = "执行失败：只有被招揽家族的现任族长才能代表全族归附。";
+				statusText = EconomySourceTexts.Get("S118");
 				return false;
 			}
 			if (playerKingdom == null || playerKingdom.IsEliminated)
 			{
-				statusText = "执行失败：玩家当前没有可接纳该家族的有效王国。";
+				statusText = EconomySourceTexts.Get("S119");
 				return false;
 			}
 			if (playerKingdom.Leader != Hero.MainHero && playerKingdom.RulingClan != playerClan)
 			{
-				statusText = "执行失败：玩家不是所属王国的统治者，不能在城堡现场直接批准全族归附。";
+				statusText = EconomySourceTexts.Get("S120");
 				return false;
 			}
 			return TryApplyClanJoinKingdomAction(joiningLeader, joiningLeader.Clan, playerKingdom, out statusText);
 		}
 		catch (Exception ex)
 		{
-			statusText = "执行失败（族长归附异常）：" + ex.Message;
+			statusText = EconomySourceTexts.Get("S135") + ex.Message;
 			return false;
 		}
 	}
@@ -6019,33 +6019,33 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 		{
 			if (targetKingdom == null || targetKingdom.IsEliminated)
 			{
-				statusText = "执行失败：目标王国无效或已经灭亡。";
+				statusText = EconomySourceTexts.Get("S121");
 				return false;
 			}
 			if (targetClan == null)
 			{
-				statusText = "执行失败：未找到当前NPC所属家族。";
+				statusText = EconomySourceTexts.Get("S122");
 				return false;
 			}
 			string clanDisplayName = GetClanDisplayNameForNotification(targetClan);
 			if (targetClan == Clan.PlayerClan)
 			{
-				statusText = "执行失败：玩家家族不能通过当前NPC重复归附其他王国。";
+				statusText = EconomySourceTexts.Get("S123");
 				return false;
 			}
 			if (targetClan.IsEliminated)
 			{
-				statusText = "执行失败：" + clanDisplayName + " 已经灭亡或不可用。";
+				statusText = EconomySourceTexts.Get("S094") + clanDisplayName + EconomySourceTexts.Get("S264");
 				return false;
 			}
 			if (giver == null || giver.Clan != targetClan || targetClan.Leader != giver)
 			{
-				statusText = "执行失败：只有当前家族族长本人才能代表全族选择效忠王国。";
+				statusText = EconomySourceTexts.Get("S124");
 				return false;
 			}
 			if (targetClan.Kingdom == targetKingdom)
 			{
-				statusText = "执行跳过：" + clanDisplayName + " 已经效力于 " + targetKingdom.Name + "。";
+				statusText = EconomySourceTexts.Get("S091") + clanDisplayName + EconomySourceTexts.Get("S265") + targetKingdom.Name + "。";
 				return false;
 			}
 			Kingdom oldKingdom = targetClan.Kingdom;
@@ -6063,10 +6063,10 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 				FinalizeRulingClanTransitionForDepartedClan(oldKingdom, destroyOldKingdomAfterDeparture, transitionNotes);
 				if (targetClan.Kingdom != targetKingdom)
 				{
-					statusText = "执行失败：" + clanDisplayName + " 未能加入 " + targetKingdom.Name + "。";
+					statusText = EconomySourceTexts.Get("S094") + clanDisplayName + EconomySourceTexts.Get("S266") + targetKingdom.Name + "。";
 					return false;
 				}
-				statusText = "执行成功：" + clanDisplayName + " 已结束旧雇佣关系，并作为领主加入 " + targetKingdom.Name + "（KingdomId=" + (targetKingdom.StringId ?? "") + "）" + carriedFiefSummary + BuildRecruitmentTransitionSummary(transitionNotes) + "。";
+				statusText = EconomySourceTexts.Get("S084") + clanDisplayName + EconomySourceTexts.Get("S267") + targetKingdom.Name + "（KingdomId=" + (targetKingdom.StringId ?? "") + "）" + carriedFiefSummary + BuildRecruitmentTransitionSummary(transitionNotes) + "。";
 				return true;
 			}
 			if (oldKingdom != null)
@@ -6075,24 +6075,24 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 				FinalizeRulingClanTransitionForDepartedClan(oldKingdom, destroyOldKingdomAfterDeparture, transitionNotes);
 				if (targetClan.Kingdom != targetKingdom)
 				{
-					statusText = "执行失败：" + clanDisplayName + " 未能加入 " + targetKingdom.Name + "。";
+					statusText = EconomySourceTexts.Get("S094") + clanDisplayName + EconomySourceTexts.Get("S266") + targetKingdom.Name + "。";
 					return false;
 				}
-				statusText = "执行成功：" + clanDisplayName + " 已脱离 " + oldKingdom.Name + "，并作为领主加入 " + targetKingdom.Name + "（KingdomId=" + (targetKingdom.StringId ?? "") + "）" + carriedFiefSummary + BuildRecruitmentTransitionSummary(transitionNotes) + "。";
+				statusText = EconomySourceTexts.Get("S084") + clanDisplayName + EconomySourceTexts.Get("S268") + oldKingdom.Name + EconomySourceTexts.Get("S269") + targetKingdom.Name + "（KingdomId=" + (targetKingdom.StringId ?? "") + "）" + carriedFiefSummary + BuildRecruitmentTransitionSummary(transitionNotes) + "。";
 				return true;
 			}
 			ChangeKingdomAction.ApplyByJoinToKingdom(targetClan, targetKingdom, default(CampaignTime), showNotification: true);
 			if (targetClan.Kingdom != targetKingdom)
 			{
-				statusText = "执行失败：" + clanDisplayName + " 未能加入 " + targetKingdom.Name + "。";
+				statusText = EconomySourceTexts.Get("S094") + clanDisplayName + EconomySourceTexts.Get("S266") + targetKingdom.Name + "。";
 				return false;
 			}
-			statusText = "执行成功：" + clanDisplayName + " 已作为领主加入 " + targetKingdom.Name + "（KingdomId=" + (targetKingdom.StringId ?? "") + "）" + carriedFiefSummary + BuildRecruitmentTransitionSummary(transitionNotes) + "。";
+			statusText = EconomySourceTexts.Get("S084") + clanDisplayName + EconomySourceTexts.Get("S270") + targetKingdom.Name + "（KingdomId=" + (targetKingdom.StringId ?? "") + "）" + carriedFiefSummary + BuildRecruitmentTransitionSummary(transitionNotes) + "。";
 			return true;
 		}
 		catch (Exception ex)
 		{
-			statusText = "执行失败（异常）：" + ex.Message;
+			statusText = EconomySourceTexts.Get("S083") + ex.Message;
 			return false;
 		}
 	}
@@ -6105,7 +6105,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 			Clan playerClan = Clan.PlayerClan;
 			if (playerClan == null)
 			{
-				statusText = "执行失败：未找到玩家家族。";
+				statusText = EconomySourceTexts.Get("S110");
 				return false;
 			}
 			string text = (serviceType ?? "").Trim().ToUpperInvariant();
@@ -6114,23 +6114,23 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 				Kingdom kingdom = playerClan.Kingdom;
 				if (kingdom == null)
 				{
-					statusText = "执行失败：玩家当前未加入任何势力，无需退出。";
+					statusText = EconomySourceTexts.Get("S125");
 					return false;
 				}
 				if (!CanGiverAuthorizePlayerKingdomLeave(giver, kingdom))
 				{
-					string giverKingdomName = giver?.Clan?.Kingdom?.Name?.ToString() ?? (giver?.MapFaction as Kingdom)?.Name?.ToString() ?? "非当前效力势力";
-					statusText = "执行失败：当前对话对象属于 " + giverKingdomName + "，不能代表 " + kingdom.Name + " 批准玩家退出当前效力。";
+					string giverKingdomName = giver?.Clan?.Kingdom?.Name?.ToString() ?? (giver?.MapFaction as Kingdom)?.Name?.ToString() ?? EconomySourceTexts.Get("S271");
+					statusText = EconomySourceTexts.Get("S130") + giverKingdomName + EconomySourceTexts.Get("S272") + kingdom.Name + EconomySourceTexts.Get("S273");
 					return false;
 				}
 				if (playerClan.IsUnderMercenaryService)
 				{
 					ChangeKingdomAction.ApplyByLeaveKingdomAsMercenary(playerClan);
-					statusText = $"执行成功：玩家已结束与 {kingdom.Name} 的雇佣兵契约。";
+					statusText = string.Format(EconomySourceTexts.Get("S274"), kingdom.Name);
 					return true;
 				}
 				ChangeKingdomAction.ApplyByLeaveKingdom(playerClan);
-				statusText = $"执行成功：玩家已退出 {kingdom.Name}，不再是其正式封臣。";
+				statusText = string.Format(EconomySourceTexts.Get("S275"), kingdom.Name);
 				return true;
 			}
 			if (text == "CLAN_JOIN_PLAYER_KINGDOM")
@@ -6138,7 +6138,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 				Kingdom playerKingdom = playerClan.Kingdom;
 				if (playerKingdom == null || playerKingdom.IsEliminated)
 				{
-					statusText = "执行失败：玩家当前没有可供目标家族加入的王国。";
+					statusText = EconomySourceTexts.Get("S126");
 					return false;
 				}
 				Clan targetClan = ResolveClanByTag(kingdomToken, giver);
@@ -6149,7 +6149,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 				Kingdom targetKingdom = ResolveKingdomByIdTagStrict(kingdomToken);
 				if (targetKingdom == null)
 				{
-					statusText = "执行失败：目标王国ID无效（" + kingdomToken + "）。";
+					statusText = EconomySourceTexts.Get("S276") + kingdomToken + "）。";
 					return false;
 				}
 				return TryApplyClanJoinKingdomAction(giver, giver?.Clan, targetKingdom, out statusText);
@@ -6157,19 +6157,19 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 			Kingdom kingdom2 = ResolveKingdomByTag(kingdomToken, giver);
 			if (kingdom2 == null || kingdom2.IsEliminated)
 			{
-				statusText = "执行失败：目标势力无效（" + kingdomToken + "）。";
+				statusText = EconomySourceTexts.Get("S277") + kingdomToken + "）。";
 				return false;
 			}
 			if (text == "MERCENARY")
 			{
 				if (giver?.Clan == null || giver.Clan.Kingdom != kingdom2 || giver.Clan.IsUnderMercenaryService)
 				{
-					statusText = "执行失败：当前对话对象并非该势力正式封臣，不能签订雇佣兵契约。";
+					statusText = EconomySourceTexts.Get("S127");
 					return false;
 				}
 				if (playerClan.Kingdom != null && !playerClan.IsUnderMercenaryService)
 				{
-					statusText = "执行失败：玩家已是某王国正式封臣，不能再作为雇佣兵加入。";
+					statusText = EconomySourceTexts.Get("S128");
 					return false;
 				}
 				int num2 = 50;
@@ -6182,19 +6182,19 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 					num2 = 50;
 				}
 				ChangeKingdomAction.ApplyByJoinFactionAsMercenary(playerClan, kingdom2, default(CampaignTime), num2);
-				statusText = $"执行成功：玩家已作为雇佣兵加入 {kingdom2.Name}（KingdomId={kingdom2.StringId}）。";
+				statusText = string.Format(EconomySourceTexts.Get("S278"), kingdom2.Name, kingdom2.StringId);
 				return true;
 			}
 			if (text == "VASSAL")
 			{
 				if (giver == null || kingdom2.Leader != giver)
 				{
-					statusText = "执行失败：只有目标王国的国王才能授予正式封臣身份。";
+					statusText = EconomySourceTexts.Get("S129");
 					return false;
 				}
 				if (playerClan.Kingdom == kingdom2 && !playerClan.IsUnderMercenaryService)
 				{
-					statusText = $"执行跳过：玩家已是 {kingdom2.Name} 的正式封臣。";
+					statusText = string.Format(EconomySourceTexts.Get("S279"), kingdom2.Name);
 					return false;
 				}
 				if (playerClan.Kingdom == kingdom2 && playerClan.IsUnderMercenaryService)
@@ -6211,18 +6211,18 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 				}
 				if (playerClan.Kingdom != kingdom2 || playerClan.IsUnderMercenaryService)
 				{
-					statusText = $"执行失败：玩家未能成为 {kingdom2.Name} 的正式封臣。";
+					statusText = string.Format(EconomySourceTexts.Get("S280"), kingdom2.Name);
 					return false;
 				}
-				statusText = $"执行成功：玩家已加入 {kingdom2.Name} 成为正式封臣（KingdomId={kingdom2.StringId}）。";
+				statusText = string.Format(EconomySourceTexts.Get("S281"), kingdom2.Name, kingdom2.StringId);
 				return true;
 			}
-			statusText = "执行失败：未知势力效力类型 " + serviceType + "。";
+			statusText = EconomySourceTexts.Get("S134") + serviceType + "。";
 			return false;
 		}
 		catch (Exception ex)
 		{
-			statusText = "执行失败（异常）：" + ex.Message;
+			statusText = EconomySourceTexts.Get("S083") + ex.Message;
 			return false;
 		}
 	}
@@ -6256,18 +6256,18 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 		{
 			if (giver == null || receiver == null)
 			{
-				statusText = "执行失败：缺少转移双方。";
+				statusText = EconomySourceTexts.Get("S071");
 				return false;
 			}
 			string text = (directionToken ?? "").Trim().ToUpperInvariant();
 			if (!string.Equals(text, "TO_PLAYER", StringComparison.OrdinalIgnoreCase))
 			{
-				statusText = "执行失败：后处理仅允许 NPC 向玩家转移固定资产。";
+				statusText = EconomySourceTexts.Get("S072");
 				return false;
 			}
 			if (!TryResolveFixedAssetTokenForGiveAsset(giver, settlementToken, fixedAssetResolutionCache, unresolvedFixedAssetTokens, out authorizedEntry, out bool isPromptAuthorized))
 			{
-				statusText = "执行失败：未找到可转移的固定资产（" + settlementToken + "）。";
+				statusText = EconomySourceTexts.Get("S081") + settlementToken + "）。";
 				return false;
 			}
 			if (!isPromptAuthorized)
@@ -6287,7 +6287,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 		catch (Exception ex)
 		{
 			mutationObservation?.MarkUnknown("economy.settlement_transfer_exception");
-			statusText = "执行失败（异常）：" + ex.Message;
+			statusText = EconomySourceTexts.Get("S083") + ex.Message;
 			return false;
 		}
 	}
@@ -6480,12 +6480,12 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 
 	private static string GetSettlementMarketTypeLabel(Settlement settlement)
 	{
-		return settlement?.IsVillage == true ? "村庄" : "城镇";
+		return settlement?.IsVillage == true ? EconomySourceTexts.Get("S282") : EconomySourceTexts.Get("S283");
 	}
 
 	private static string GetSettlementMarketItemNamePrefix(Settlement settlement)
 	{
-		return "[" + GetSettlementMarketTypeLabel(settlement) + "市场] ";
+		return "[" + GetSettlementMarketTypeLabel(settlement) + EconomySourceTexts.Get("S284");
 	}
 
 	private static Settlement ResolveSettlementMarketSettlement(Settlement settlement = null)
@@ -7386,7 +7386,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 		AddGeneratedRpTemplateAlias(aliases, seen, item?.Name?.ToString());
 		if (IsGeneratedRpWhipWeaponTemplateItem(item))
 		{
-			AddGeneratedRpTemplateAlias(aliases, seen, "鞭");
+			AddGeneratedRpTemplateAlias(aliases, seen, EconomySourceTexts.Get("S285"));
 			AddGeneratedRpTemplateAlias(aliases, seen, "whip");
 			return aliases.ToArray();
 		}
@@ -7590,7 +7590,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 			return 0f;
 		}
 		string text = lookup.Trim();
-		if (TextContainsAny(text, "\u8089", "\u732a", "\u725b", "\u7f8a", "meat", "pork", "beef", "mutton"))
+		if (TextContainsAny(text, EconomySourceTexts.Get("S729"), EconomySourceTexts.Get("S730"), EconomySourceTexts.Get("S731"), EconomySourceTexts.Get("S732"), "meat", "pork", "beef", "mutton"))
 		{
 			if (ItemCategoryIsAny(item, DefaultItemCategories.Meat) || ContainsGeneratedRewardItemTextAny(item, "meat", "pork", "beef", "mutton"))
 			{
@@ -7601,91 +7601,91 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 				return GeneratedRewardTemplateWeakSemanticHintBonus;
 			}
 		}
-		if (TextContainsAny(text, "\u9152", "\u5564", "\u8461\u8404\u9152", "beer", "wine", "ale", "liquor"))
+		if (TextContainsAny(text, EconomySourceTexts.Get("S733"), EconomySourceTexts.Get("S734"), EconomySourceTexts.Get("S735"), "beer", "wine", "ale", "liquor"))
 		{
 			if (ItemCategoryIsAny(item, DefaultItemCategories.Beer, DefaultItemCategories.Wine) || ContainsGeneratedRewardItemTextAny(item, "beer", "wine", "ale"))
 			{
 				return GeneratedRewardTemplateSemanticHintBonus;
 			}
 		}
-		if (TextContainsAny(text, "\u9c7c", "fish"))
+		if (TextContainsAny(text, EconomySourceTexts.Get("S736"), "fish"))
 		{
 			if (ItemCategoryIsAny(item, DefaultItemCategories.Fish) || ContainsGeneratedRewardItemTextAny(item, "fish"))
 			{
 				return GeneratedRewardTemplateSemanticHintBonus;
 			}
 		}
-		if (TextContainsAny(text, "\u7cae", "\u9ea6", "\u9762\u5305", "\u98df", "food", "grain", "wheat", "bread"))
+		if (TextContainsAny(text, EconomySourceTexts.Get("S737"), EconomySourceTexts.Get("S738"), EconomySourceTexts.Get("S739"), EconomySourceTexts.Get("S740"), "food", "grain", "wheat", "bread"))
 		{
 			if (item.IsFood || ItemCategoryIsAny(item, DefaultItemCategories.Grain) || ContainsGeneratedRewardItemTextAny(item, "grain", "wheat", "bread", "food"))
 			{
 				return GeneratedRewardTemplateSemanticHintBonus;
 			}
 		}
-		if (TextContainsAny(text, "\u4e66", "\u4fe1", "\u624b\u8c15", "\u5377", "\u6587\u4e66", "\u5951\u7ea6", "book", "letter", "scroll", "decree", "paper", "contract"))
+		if (TextContainsAny(text, EconomySourceTexts.Get("S741"), EconomySourceTexts.Get("S742"), EconomySourceTexts.Get("S743"), EconomySourceTexts.Get("S744"), EconomySourceTexts.Get("S745"), EconomySourceTexts.Get("S746"), "book", "letter", "scroll", "decree", "paper", "contract"))
 		{
 			if (item.Type == ItemObject.ItemTypeEnum.Book || ContainsGeneratedRewardItemTextAny(item, "book", "letter", "scroll", "decree", "paper", "parchment", "ledger"))
 			{
 				return GeneratedRewardTemplateSemanticHintBonus;
 			}
 		}
-		if (TextContainsAny(text, "\u5c4e", "\u7caa", "poop", "dung", "shit", "manure"))
+		if (TextContainsAny(text, EconomySourceTexts.Get("S747"), EconomySourceTexts.Get("S748"), "poop", "dung", "shit", "manure"))
 		{
 			if (ItemCategoryIsAny(item, DefaultItemCategories.Clay, DefaultItemCategories.Pottery) || ContainsGeneratedRewardItemTextAny(item, "clay", "pottery"))
 			{
 				return GeneratedRewardTemplateSemanticHintBonus;
 			}
 		}
-		if (TextContainsAny(text, "\u5de5\u5177", "\u5668\u5177", "\u94a5\u5319", "\u9524", "tool", "tools", "key", "hammer"))
+		if (TextContainsAny(text, EconomySourceTexts.Get("S749"), EconomySourceTexts.Get("S750"), EconomySourceTexts.Get("S751"), EconomySourceTexts.Get("S752"), "tool", "tools", "key", "hammer"))
 		{
 			if (ItemCategoryIsAny(item, DefaultItemCategories.Tools) || ContainsGeneratedRewardItemTextAny(item, "tool", "tools", "hammer"))
 			{
 				return GeneratedRewardTemplateSemanticHintBonus;
 			}
 		}
-		if (TextContainsAny(text, "\u5b9d", "\u73e0", "\u94f6", "\u6212", "\u91d1\u5e01", "jewel", "jewelry", "silver", "ring", "coin"))
+		if (TextContainsAny(text, EconomySourceTexts.Get("S753"), EconomySourceTexts.Get("S754"), EconomySourceTexts.Get("S755"), EconomySourceTexts.Get("S756"), EconomySourceTexts.Get("S757"), "jewel", "jewelry", "silver", "ring", "coin"))
 		{
 			if (ItemCategoryIsAny(item, DefaultItemCategories.Jewelry, DefaultItemCategories.Silver) || ContainsGeneratedRewardItemTextAny(item, "jewel", "jewelry", "silver", "ring"))
 			{
 				return GeneratedRewardTemplateSemanticHintBonus;
 			}
 		}
-		if (TextContainsAny(text, "\u6728", "\u67f4", "\u6728\u677f", "wood", "plank"))
+		if (TextContainsAny(text, EconomySourceTexts.Get("S758"), EconomySourceTexts.Get("S759"), EconomySourceTexts.Get("S760"), "wood", "plank"))
 		{
 			if (ItemCategoryIsAny(item, DefaultItemCategories.Wood, DefaultItemCategories.Planks) || ContainsGeneratedRewardItemTextAny(item, "wood", "plank"))
 			{
 				return GeneratedRewardTemplateSemanticHintBonus;
 			}
 		}
-		if (TextContainsAny(text, "\u76d0", "salt"))
+		if (TextContainsAny(text, EconomySourceTexts.Get("S761"), "salt"))
 		{
 			if (ItemCategoryIsAny(item, DefaultItemCategories.Salt) || ContainsGeneratedRewardItemTextAny(item, "salt"))
 			{
 				return GeneratedRewardTemplateSemanticHintBonus;
 			}
 		}
-		if (TextContainsAny(text, "\u6cb9", "oil"))
+		if (TextContainsAny(text, EconomySourceTexts.Get("S762"), "oil"))
 		{
 			if (ItemCategoryIsAny(item, DefaultItemCategories.Oil) || ContainsGeneratedRewardItemTextAny(item, "oil"))
 			{
 				return GeneratedRewardTemplateSemanticHintBonus;
 			}
 		}
-		if (TextContainsAny(text, "\u5e03", "\u8863", "\u4e1d", "\u7ef8", "cloth", "linen", "velvet", "garment", "felt"))
+		if (TextContainsAny(text, EconomySourceTexts.Get("S763"), EconomySourceTexts.Get("S764"), EconomySourceTexts.Get("S765"), EconomySourceTexts.Get("S766"), "cloth", "linen", "velvet", "garment", "felt"))
 		{
 			if (ItemCategoryIsAny(item, DefaultItemCategories.Cloth, DefaultItemCategories.Linen, DefaultItemCategories.Velvet, DefaultItemCategories.Garment, DefaultItemCategories.Felt) || ContainsGeneratedRewardItemTextAny(item, "cloth", "linen", "velvet", "garment", "felt"))
 			{
 				return GeneratedRewardTemplateSemanticHintBonus;
 			}
 		}
-		if (TextContainsAny(text, "\u76ae", "\u6bdb", "hide", "hides", "leather", "fur", "wool"))
+		if (TextContainsAny(text, EconomySourceTexts.Get("S767"), EconomySourceTexts.Get("S768"), "hide", "hides", "leather", "fur", "wool"))
 		{
 			if (ItemCategoryIsAny(item, DefaultItemCategories.Hides, DefaultItemCategories.Leather, DefaultItemCategories.Fur, DefaultItemCategories.Wool) || ContainsGeneratedRewardItemTextAny(item, "hide", "hides", "leather", "fur", "wool"))
 			{
 				return GeneratedRewardTemplateSemanticHintBonus;
 			}
 		}
-		if (TextContainsAny(text, "\u9676", "\u7f50", "\u58f6", "clay", "pottery", "jar"))
+		if (TextContainsAny(text, EconomySourceTexts.Get("S769"), EconomySourceTexts.Get("S770"), EconomySourceTexts.Get("S771"), "clay", "pottery", "jar"))
 		{
 			if (ItemCategoryIsAny(item, DefaultItemCategories.Clay, DefaultItemCategories.Pottery) || ContainsGeneratedRewardItemTextAny(item, "clay", "pottery", "jar"))
 			{
@@ -10209,7 +10209,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 		{
 			return false;
 		}
-		if (text.IndexOf('鞭') >= 0)
+		if (text.IndexOf(EconomySourceTexts.Get("S285")[0]) >= 0)
 		{
 			return true;
 		}
@@ -13398,54 +13398,54 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 		switch (weaponClass)
 		{
 		case WeaponClass.Dagger:
-			return "匕首";
+			return EconomySourceTexts.Get("S286");
 		case WeaponClass.OneHandedSword:
 		case WeaponClass.TwoHandedSword:
-			return "剑";
+			return EconomySourceTexts.Get("S287");
 		case WeaponClass.OneHandedAxe:
 		case WeaponClass.TwoHandedAxe:
-			return "斧";
+			return EconomySourceTexts.Get("S288");
 		case WeaponClass.Mace:
 		case WeaponClass.TwoHandedMace:
-			return "锤";
+			return EconomySourceTexts.Get("S289");
 		case WeaponClass.Pick:
-			return "镐";
+			return EconomySourceTexts.Get("S290");
 		case WeaponClass.OneHandedPolearm:
 		case WeaponClass.TwoHandedPolearm:
 		case WeaponClass.LowGripPolearm:
-			return "长柄";
+			return EconomySourceTexts.Get("S291");
 		case WeaponClass.Arrow:
-			return "箭";
+			return EconomySourceTexts.Get("S292");
 		case WeaponClass.Bolt:
-			return "弩矢";
+			return EconomySourceTexts.Get("S293");
 		case WeaponClass.SlingStone:
 		case WeaponClass.Stone:
 		case WeaponClass.Boulder:
 		case WeaponClass.BallistaStone:
 		case WeaponClass.BallistaBoulder:
-			return "石弹";
+			return EconomySourceTexts.Get("S294");
 		case WeaponClass.Cartridge:
-			return "弹药";
+			return EconomySourceTexts.Get("S295");
 		case WeaponClass.Bow:
-			return "弓";
+			return EconomySourceTexts.Get("S296");
 		case WeaponClass.Crossbow:
-			return "弩";
+			return EconomySourceTexts.Get("S297");
 		case WeaponClass.Sling:
-			return "投石索";
+			return EconomySourceTexts.Get("S298");
 		case WeaponClass.ThrowingAxe:
-			return "投斧";
+			return EconomySourceTexts.Get("S299");
 		case WeaponClass.ThrowingKnife:
-			return "飞刀";
+			return EconomySourceTexts.Get("S300");
 		case WeaponClass.Javelin:
-			return "标枪";
+			return EconomySourceTexts.Get("S301");
 		case WeaponClass.Pistol:
 		case WeaponClass.Musket:
-			return "火器";
+			return EconomySourceTexts.Get("S302");
 		case WeaponClass.SmallShield:
 		case WeaponClass.LargeShield:
-			return "盾牌";
+			return EconomySourceTexts.Get("S303");
 		case WeaponClass.Banner:
-			return "旗帜";
+			return EconomySourceTexts.Get("S304");
 		default:
 			return "";
 		}
@@ -13462,55 +13462,55 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 		{
 			if (itemCategory == DefaultItemCategories.Beer || itemCategory == DefaultItemCategories.Wine)
 			{
-				return "酒类";
+				return EconomySourceTexts.Get("S305");
 			}
-			return "食物";
+			return EconomySourceTexts.Get("S306");
 		}
 		if (item.Type == ItemObject.ItemTypeEnum.Animal)
 		{
 			if (itemCategory == DefaultItemCategories.PackAnimal)
 			{
-				return "驮兽";
+				return EconomySourceTexts.Get("S307");
 			}
-			return "牲畜";
+			return EconomySourceTexts.Get("S308");
 		}
 		if (itemCategory == DefaultItemCategories.Wood || itemCategory == DefaultItemCategories.Planks)
 		{
-			return "木材";
+			return EconomySourceTexts.Get("S309");
 		}
 		if (itemCategory == DefaultItemCategories.Iron)
 		{
-			return "铁料";
+			return EconomySourceTexts.Get("S310");
 		}
 		if (itemCategory == DefaultItemCategories.Salt)
 		{
-			return "盐";
+			return EconomySourceTexts.Get("S311");
 		}
 		if (itemCategory == DefaultItemCategories.Tools)
 		{
-			return "工具";
+			return EconomySourceTexts.Get("S312");
 		}
 		if (itemCategory == DefaultItemCategories.Clay || itemCategory == DefaultItemCategories.Pottery)
 		{
-			return "陶器";
+			return EconomySourceTexts.Get("S313");
 		}
 		if (itemCategory == DefaultItemCategories.Cloth || itemCategory == DefaultItemCategories.Linen || itemCategory == DefaultItemCategories.Velvet)
 		{
-			return "布料";
+			return EconomySourceTexts.Get("S314");
 		}
 		if (itemCategory == DefaultItemCategories.Leather || itemCategory == DefaultItemCategories.Hides || itemCategory == DefaultItemCategories.Fur || itemCategory == DefaultItemCategories.Felt || itemCategory == DefaultItemCategories.Wool || itemCategory == DefaultItemCategories.Flax || itemCategory == DefaultItemCategories.Cotton)
 		{
-			return "原料";
+			return EconomySourceTexts.Get("S315");
 		}
 		if (itemCategory == DefaultItemCategories.Oil)
 		{
-			return "油料";
+			return EconomySourceTexts.Get("S316");
 		}
 		if (itemCategory == DefaultItemCategories.Silver || itemCategory == DefaultItemCategories.Jewelry)
 		{
-			return "贵重品";
+			return EconomySourceTexts.Get("S317");
 		}
-		return "货物";
+		return EconomySourceTexts.Get("S318");
 	}
 
 	private static string GetItemPromptTypeLabel(ItemObject item)
@@ -13521,7 +13521,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 		}
 		if (IsGeneratedRpWhipWeaponTemplateItem(item))
 		{
-			return "鞭";
+			return EconomySourceTexts.Get("S285");
 		}
 		try
 		{
@@ -13541,55 +13541,55 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 		switch (item.Type)
 		{
 		case ItemObject.ItemTypeEnum.Horse:
-			return "马匹";
+			return EconomySourceTexts.Get("S319");
 		case ItemObject.ItemTypeEnum.OneHandedWeapon:
-			return "单手武器";
+			return EconomySourceTexts.Get("S320");
 		case ItemObject.ItemTypeEnum.TwoHandedWeapon:
-			return "双手武器";
+			return EconomySourceTexts.Get("S321");
 		case ItemObject.ItemTypeEnum.Polearm:
-			return "长柄武器";
+			return EconomySourceTexts.Get("S322");
 		case ItemObject.ItemTypeEnum.Arrows:
-			return "箭";
+			return EconomySourceTexts.Get("S292");
 		case ItemObject.ItemTypeEnum.Bolts:
-			return "弩矢";
+			return EconomySourceTexts.Get("S293");
 		case ItemObject.ItemTypeEnum.SlingStones:
 		case ItemObject.ItemTypeEnum.Bullets:
-			return "弹药";
+			return EconomySourceTexts.Get("S295");
 		case ItemObject.ItemTypeEnum.Shield:
-			return "盾牌";
+			return EconomySourceTexts.Get("S303");
 		case ItemObject.ItemTypeEnum.Bow:
-			return "弓";
+			return EconomySourceTexts.Get("S296");
 		case ItemObject.ItemTypeEnum.Crossbow:
-			return "弩";
+			return EconomySourceTexts.Get("S297");
 		case ItemObject.ItemTypeEnum.Sling:
-			return "投石索";
+			return EconomySourceTexts.Get("S298");
 		case ItemObject.ItemTypeEnum.Thrown:
-			return "投掷武器";
+			return EconomySourceTexts.Get("S323");
 		case ItemObject.ItemTypeEnum.Goods:
 		case ItemObject.ItemTypeEnum.Animal:
 			return GetGoodsTypeLabel(item);
 		case ItemObject.ItemTypeEnum.HeadArmor:
-			return "头盔";
+			return EconomySourceTexts.Get("S324");
 		case ItemObject.ItemTypeEnum.BodyArmor:
 		case ItemObject.ItemTypeEnum.ChestArmor:
-			return "身甲";
+			return EconomySourceTexts.Get("S325");
 		case ItemObject.ItemTypeEnum.LegArmor:
-			return "腿甲";
+			return EconomySourceTexts.Get("S326");
 		case ItemObject.ItemTypeEnum.HandArmor:
-			return "手甲";
+			return EconomySourceTexts.Get("S327");
 		case ItemObject.ItemTypeEnum.Pistol:
 		case ItemObject.ItemTypeEnum.Musket:
-			return "火器";
+			return EconomySourceTexts.Get("S302");
 		case ItemObject.ItemTypeEnum.Book:
-			return "书籍";
+			return EconomySourceTexts.Get("S328");
 		case ItemObject.ItemTypeEnum.Cape:
-			return "披风";
+			return EconomySourceTexts.Get("S329");
 		case ItemObject.ItemTypeEnum.HorseHarness:
-			return "马具";
+			return EconomySourceTexts.Get("S330");
 		case ItemObject.ItemTypeEnum.Banner:
-			return "旗帜";
+			return EconomySourceTexts.Get("S304");
 		default:
-			return "物品";
+			return EconomySourceTexts.Get("S028");
 		}
 	}
 
@@ -13601,7 +13601,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 	private static void AppendItemTypeField(StringBuilder stringBuilder, ItemObject item)
 	{
 		string itemPromptTypeLabel = GetItemPromptTypeLabel(item);
-		stringBuilder.Append("type=").Append(string.IsNullOrWhiteSpace(itemPromptTypeLabel) ? "物品" : itemPromptTypeLabel);
+		stringBuilder.Append("type=").Append(EconomyPromptTexts.ProjectSource(string.IsNullOrWhiteSpace(itemPromptTypeLabel) ? EconomySourceTexts.Get("S028") : itemPromptTypeLabel));
 	}
 
 		private static bool MatchesSettlementMerchantPromptStringId(EquipmentElement equipmentElement, string promptStringId)
@@ -13649,16 +13649,16 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 	{
 		if (item == null)
 		{
-			return "个";
+			return EconomySourceTexts.Get("S331");
 		}
 		ItemCategory itemCategory = item.ItemCategory;
 		if (itemCategory == DefaultItemCategories.Beer || itemCategory == DefaultItemCategories.Wine)
 		{
-			return "桶";
+			return EconomySourceTexts.Get("S332");
 		}
 		if (item.IsFood)
 		{
-			return "斤";
+			return EconomySourceTexts.Get("S333");
 		}
 		switch (item.Type)
 		{
@@ -13667,21 +13667,21 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 		case ItemObject.ItemTypeEnum.Thrown:
 		case ItemObject.ItemTypeEnum.SlingStones:
 		case ItemObject.ItemTypeEnum.Bullets:
-			return "袋";
+			return EconomySourceTexts.Get("S334");
 		case ItemObject.ItemTypeEnum.Polearm:
-			return "支";
+			return EconomySourceTexts.Get("S335");
 		case ItemObject.ItemTypeEnum.OneHandedWeapon:
-			return "把";
+			return EconomySourceTexts.Get("S336");
 		case ItemObject.ItemTypeEnum.TwoHandedWeapon:
-			return "柄";
+			return EconomySourceTexts.Get("S337");
 		case ItemObject.ItemTypeEnum.HeadArmor:
 		case ItemObject.ItemTypeEnum.BodyArmor:
 		case ItemObject.ItemTypeEnum.LegArmor:
 		case ItemObject.ItemTypeEnum.HandArmor:
 		case ItemObject.ItemTypeEnum.Cape:
-			return "件";
+			return EconomySourceTexts.Get("S338");
 		default:
-			return "个";
+			return EconomySourceTexts.Get("S331");
 		}
 	}
 
@@ -13699,7 +13699,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 		int num = Math.Max(1, amount);
 		int num2 = Math.Max(1, unitPrice);
 		long num3 = (long)num * (long)num2;
-		return $"（指导单价约 {num2} 第纳尔/{GetItemQuantityUnit(item)}，总值约 {num3} 第纳尔）";
+		return string.Format(EconomySourceTexts.Get("S339"), num2, GetItemQuantityUnit(item), num3);
 	}
 
 	private static int GetInventoryActualItemUnitValueCore(EquipmentElement equipmentElement)
@@ -13738,7 +13738,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 		int num = Math.Max(1, amount);
 		int num2 = Math.Max(1, unitValue);
 		long num3 = (long)num * (long)num2;
-		return $"（库存实际单价约 {num2} 第纳尔/{GetItemQuantityUnit(item)}，该项总值约 {num3} 第纳尔）";
+		return string.Format(EconomySourceTexts.Get("S340"), num2, GetItemQuantityUnit(item), num3);
 	}
 
 	public int GetInventoryActualItemUnitValueForExternal(EquipmentElement equipmentElement)
@@ -14085,12 +14085,12 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 	{
 		return kind switch
 		{
-			SettlementMerchantKind.Weapon => "武器商人",
-			SettlementMerchantKind.Blacksmith => "铁匠",
-			SettlementMerchantKind.Armor => "盔甲商人",
-			SettlementMerchantKind.Horse => "马匹贩子",
-			SettlementMerchantKind.Goods => "杂货商人",
-			_ => "商贩",
+			SettlementMerchantKind.Weapon => EconomySourceTexts.Get("S341"),
+			SettlementMerchantKind.Blacksmith => EconomySourceTexts.Get("S342"),
+			SettlementMerchantKind.Armor => EconomySourceTexts.Get("S343"),
+			SettlementMerchantKind.Horse => EconomySourceTexts.Get("S344"),
+			SettlementMerchantKind.Goods => EconomySourceTexts.Get("S345"),
+			_ => EconomySourceTexts.Get("S150"),
 		};
 	}
 
@@ -14098,12 +14098,12 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 	{
 		return kind switch
 		{
-			SettlementMerchantKind.Weapon => "武器市场",
-			SettlementMerchantKind.Blacksmith => "铁匠铺",
-			SettlementMerchantKind.Armor => "盔甲市场",
-			SettlementMerchantKind.Horse => "马匹市场",
-			SettlementMerchantKind.Goods => "杂货市场",
-			_ => "城镇市场",
+			SettlementMerchantKind.Weapon => EconomySourceTexts.Get("S346"),
+			SettlementMerchantKind.Blacksmith => EconomySourceTexts.Get("S347"),
+			SettlementMerchantKind.Armor => EconomySourceTexts.Get("S348"),
+			SettlementMerchantKind.Horse => EconomySourceTexts.Get("S349"),
+			SettlementMerchantKind.Goods => EconomySourceTexts.Get("S350"),
+			_ => EconomySourceTexts.Get("S351"),
 		};
 	}
 
@@ -14111,11 +14111,11 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 	{
 		return kind switch
 		{
-			SettlementMerchantKind.Weapon => "弓、弩、箭、弩矢、投掷武器和盾牌都归入你的武器市场。",
-			SettlementMerchantKind.Blacksmith => "近战武器、投掷武器和盾牌都归入你的铁匠铺。",
-			SettlementMerchantKind.Armor => "头盔、身甲、臂甲、腿甲、披风等护具都归入你的盔甲市场。",
-			SettlementMerchantKind.Horse => "马匹与马具都归入你的马匹市场。",
-			SettlementMerchantKind.Goods => "粮食、贸易品和一般杂货都归入你的杂货市场。",
+			SettlementMerchantKind.Weapon => EconomyPromptTexts.Get("S352"),
+			SettlementMerchantKind.Blacksmith => EconomyPromptTexts.Get("S353"),
+			SettlementMerchantKind.Armor => EconomyPromptTexts.Get("S354"),
+			SettlementMerchantKind.Horse => EconomyPromptTexts.Get("S355"),
+			SettlementMerchantKind.Goods => EconomyPromptTexts.Get("S356"),
 			_ => "",
 		};
 	}
@@ -14531,31 +14531,31 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 	private static HashSet<ItemCategory> BuildArtisanTitleOutputCategorySet(Hero hero)
 	{
 		string titleText = NormalizeNotableTitleText(hero);
-		if (NotableTitleContainsAny(titleText, "brewer", "酿酒", "酿酒工", "啤酒", "啤酒工"))
+		if (NotableTitleContainsAny(titleText, "brewer", EconomySourceTexts.Get("S357"), EconomySourceTexts.Get("S358"), EconomySourceTexts.Get("S359"), EconomySourceTexts.Get("S360")))
 		{
 			return CreateItemCategorySet(DefaultItemCategories.Beer);
 		}
-		if (NotableTitleContainsAny(titleText, "carpenter", "cooper", "wheeler", "turner", "木匠", "木工", "桶匠", "箍桶", "车轮", "轮匠", "旋木", "车床", "车匠"))
+		if (NotableTitleContainsAny(titleText, "carpenter", "cooper", "wheeler", "turner", EconomySourceTexts.Get("S361"), EconomySourceTexts.Get("S362"), EconomySourceTexts.Get("S363"), EconomySourceTexts.Get("S364"), EconomySourceTexts.Get("S365"), EconomySourceTexts.Get("S366"), EconomySourceTexts.Get("S367"), EconomySourceTexts.Get("S368"), EconomySourceTexts.Get("S369")))
 		{
 			return CreateItemCategorySet(DefaultItemCategories.Wood, DefaultItemCategories.Planks, DefaultItemCategories.Tools);
 		}
-		if (NotableTitleContainsAny(titleText, "chandler", "蜡烛", "蜡烛匠", "皂", "油烛"))
+		if (NotableTitleContainsAny(titleText, "chandler", EconomySourceTexts.Get("S370"), EconomySourceTexts.Get("S371"), EconomySourceTexts.Get("S372"), EconomySourceTexts.Get("S373")))
 		{
 			return CreateItemCategorySet(DefaultItemCategories.Oil);
 		}
-		if (NotableTitleContainsAny(titleText, "dyer", "weaver", "织布", "织布工", "纺织", "染工", "染匠", "染织"))
+		if (NotableTitleContainsAny(titleText, "dyer", "weaver", EconomySourceTexts.Get("S374"), EconomySourceTexts.Get("S375"), EconomySourceTexts.Get("S376"), EconomySourceTexts.Get("S377"), EconomySourceTexts.Get("S378"), EconomySourceTexts.Get("S379")))
 		{
 			return CreateItemCategorySet(DefaultItemCategories.Cloth, DefaultItemCategories.Linen, DefaultItemCategories.Velvet, DefaultItemCategories.Garment, DefaultItemCategories.Felt);
 		}
-		if (NotableTitleContainsAny(titleText, "miller", "磨坊", "磨坊主", "磨工"))
+		if (NotableTitleContainsAny(titleText, "miller", EconomySourceTexts.Get("S380"), EconomySourceTexts.Get("S381"), EconomySourceTexts.Get("S382")))
 		{
 			return CreateItemCategorySet(DefaultItemCategories.Grain);
 		}
-		if (NotableTitleContainsAny(titleText, "smith", "铁匠", "锻工", "锻造"))
+		if (NotableTitleContainsAny(titleText, "smith", EconomySourceTexts.Get("S342"), EconomySourceTexts.Get("S383"), EconomySourceTexts.Get("S384")))
 		{
 			return CreateItemCategorySet(DefaultItemCategories.Tools, DefaultItemCategories.MeleeWeapons1, DefaultItemCategories.MeleeWeapons2, DefaultItemCategories.MeleeWeapons3, DefaultItemCategories.MeleeWeapons4, DefaultItemCategories.MeleeWeapons5, DefaultItemCategories.RangedWeapons1, DefaultItemCategories.RangedWeapons2, DefaultItemCategories.RangedWeapons3, DefaultItemCategories.RangedWeapons4, DefaultItemCategories.RangedWeapons5, DefaultItemCategories.Arrows, DefaultItemCategories.Shield1, DefaultItemCategories.Shield2, DefaultItemCategories.Shield3, DefaultItemCategories.Shield4, DefaultItemCategories.Shield5, DefaultItemCategories.LightArmor, DefaultItemCategories.MediumArmor, DefaultItemCategories.HeavyArmor, DefaultItemCategories.UltraArmor, DefaultItemCategories.HorseEquipment, DefaultItemCategories.HorseEquipment2, DefaultItemCategories.HorseEquipment3, DefaultItemCategories.HorseEquipment4, DefaultItemCategories.HorseEquipment5);
 		}
-		if (NotableTitleContainsAny(titleText, "tanner", "鞣皮", "鞣皮匠", "揉皮", "揉皮匠", "制革", "制革匠", "皮革", "皮匠"))
+		if (NotableTitleContainsAny(titleText, "tanner", EconomySourceTexts.Get("S385"), EconomySourceTexts.Get("S386"), EconomySourceTexts.Get("S387"), EconomySourceTexts.Get("S388"), EconomySourceTexts.Get("S389"), EconomySourceTexts.Get("S390"), EconomySourceTexts.Get("S391"), EconomySourceTexts.Get("S392")))
 		{
 			return CreateItemCategorySet(DefaultItemCategories.Leather);
 		}
@@ -14656,14 +14656,14 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 		{
 			return "";
 		}
-		string text = Settlement.CurrentSettlement?.Name?.ToString() ?? "当前城镇";
-		string settlementMerchantRoleLabel = GetSettlementMerchantRoleLabel(kind);
-		string settlementMerchantMarketLabel = GetSettlementMerchantMarketLabel(kind);
+		string text = Settlement.CurrentSettlement?.Name?.ToString() ?? EconomyPromptTexts.Get("S393");
+		string settlementMerchantRoleLabel = EconomyPromptTexts.ProjectSource(GetSettlementMerchantRoleLabel(kind));
+		string settlementMerchantMarketLabel = EconomyPromptTexts.ProjectSource(GetSettlementMerchantMarketLabel(kind));
 		string settlementMerchantSpecialHint = GetSettlementMerchantSpecialHint(kind);
 		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.AppendLine("【城镇商贩补充】你不是在卖你个人的私人物品。");
-		stringBuilder.AppendLine("你是" + text + "里的" + settlementMerchantRoleLabel + "，代表这座城镇当前的" + settlementMerchantMarketLabel + "与玩家进行即时交易。");
-		stringBuilder.AppendLine("你的真实可售货物只以你当前摊位资产清单中的内容为准。");
+		stringBuilder.AppendLine(EconomyPromptTexts.Get("S394"));
+		stringBuilder.AppendLine(EconomyPromptTexts.Get("S395") + text + EconomyPromptTexts.Get("S396") + settlementMerchantRoleLabel + EconomyPromptTexts.Get("S397") + settlementMerchantMarketLabel + EconomyPromptTexts.Get("S398"));
+		stringBuilder.AppendLine(EconomyPromptTexts.Get("S399"));
 		if (!string.IsNullOrWhiteSpace(settlementMerchantSpecialHint))
 		{
 			stringBuilder.AppendLine(settlementMerchantSpecialHint);
@@ -14678,22 +14678,22 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 		{
 			return "";
 		}
-		string settlementTypeLabel = GetSettlementMarketTypeLabel(settlement);
+		string settlementTypeLabel = EconomyPromptTexts.ProjectSource(GetSettlementMarketTypeLabel(settlement));
 		string marketItemPrefix = GetSettlementMarketItemNamePrefix(settlement).Trim();
-		string text = settlement?.Name?.ToString() ?? ("当前" + settlementTypeLabel);
-		string text2 = settlement?.IsVillage == true ? "村庄头人" : (hero.IsArtisan ? "工匠要人" : "商人要人");
+		string text = settlement?.Name?.ToString() ?? (EconomyPromptTexts.Get("S400") + settlementTypeLabel);
+		string text2 = settlement?.IsVillage == true ? EconomyPromptTexts.Get("S401") : (hero.IsArtisan ? EconomyPromptTexts.Get("S402") : EconomyPromptTexts.Get("S403"));
 		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.AppendLine("【要人市场补充】你是" + text + "的" + text2 + "，商铺清单中的 " + marketItemPrefix + " 条目来自当前" + settlementTypeLabel + "市场总库存，不是你的私人财物。");
-		stringBuilder.AppendLine("后处理清单中内部 token 以 market@ 开头的条目，成交时扣当前" + settlementTypeLabel + "市场库存；普通物品条目仍扣你的个人库存或装备。");
+		stringBuilder.AppendLine(EconomyPromptTexts.Get("S404") + text + EconomyPromptTexts.Get("S149") + text2 + EconomyPromptTexts.Get("S405") + marketItemPrefix + EconomyPromptTexts.Get("S406") + settlementTypeLabel + EconomyPromptTexts.Get("S407"));
+		stringBuilder.AppendLine(EconomyPromptTexts.Get("S408") + settlementTypeLabel + EconomyPromptTexts.Get("S409"));
 		if (settlement?.IsVillage == true)
 		{
-			stringBuilder.AppendLine("作为村庄头人，你可以代表本村市场出售当前村庄市场清单中的全部真实货物；清单无货时你什么都不卖，请不要虚构任何物品。");
+			stringBuilder.AppendLine(EconomyPromptTexts.Get("S410"));
 		}
 		else
 		{
-			stringBuilder.AppendLine("如果你的称号或工坊有强专精，你只能从商铺清单里出售符合该专精的货物；专精无货时你什么都不卖，请不要虚构任何物品。");
+			stringBuilder.AppendLine(EconomyPromptTexts.Get("S411"));
 		}
-		stringBuilder.AppendLine("金币交易代表" + settlementTypeLabel + "市场现金，优先从当前" + settlementTypeLabel + "金库扣除；债务、信任和事实仍记在你这个要人名下。");
+		stringBuilder.AppendLine(EconomyPromptTexts.Get("S412") + settlementTypeLabel + EconomyPromptTexts.Get("S413") + settlementTypeLabel + EconomyPromptTexts.Get("S414"));
 		return stringBuilder.ToString().Trim();
 	}
 
@@ -14741,12 +14741,12 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 		}
 		StringBuilder stringBuilder = new StringBuilder();
 		int value2 = GetSettlementMarketTradeGold(settlement);
-		stringBuilder.Append("第纳尔: ").Append(value2).AppendLine();
+		stringBuilder.Append(EconomyPromptTexts.Get("S415")).Append(value2).AppendLine();
 		if (includeGuidePrice)
 		{
-			stringBuilder.AppendLine("【价格说明】每个物品后面的 guidePrice 为当前城镇市场的即时指导单价（第纳尔/当前单位；箭矢、弩矢、标枪、飞刀等远程弹药按袋计）。");
+			stringBuilder.AppendLine(EconomyPromptTexts.Get("S416"));
 		}
-		stringBuilder.AppendLine("库存物品：");
+		stringBuilder.AppendLine(EconomyPromptTexts.Get("S417"));
 		foreach (RewardItemInfo item2 in dictionary.Values.OrderByDescending((RewardItemInfo x) => x.Count).ThenBy((RewardItemInfo x) => x.Name, StringComparer.Ordinal))
 		{
 			stringBuilder.Append(item2.Name)
@@ -14763,7 +14763,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 		}
 		if (dictionary.Count == 0)
 		{
-			stringBuilder.AppendLine("（当前没有可售货物）");
+			stringBuilder.AppendLine(EconomyPromptTexts.Get("S418"));
 		}
 		return stringBuilder.ToString().Trim();
 	}
@@ -15014,7 +15014,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 			{
 				return "";
 			}
-			return "这身当前可见装备按玩家库存中的实际价值计算，总值约 " + num + " 第纳尔";
+			return EconomyPromptTexts.Get("S419") + num + EconomyPromptTexts.Get("S027");
 		}
 		catch
 		{
@@ -15035,7 +15035,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 		}
 		long num = 0L;
 		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.AppendLine("【玩家可见装备实际估值】以下为玩家当前穿戴/携行装备按库存实际价值计算（第纳尔）：");
+		stringBuilder.AppendLine(EconomyPromptTexts.Get("S420"));
 		int num2 = 0;
 		List<RewardItemInfo> selectedItems = heroVisibleEquipmentItemsForPrompt
 			.Where((RewardItemInfo x) => x != null && x.Item != null)
@@ -15056,7 +15056,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 			num += num4;
 			stringBuilder.Append(item.StringId).Append("|").Append(item.Name ?? item.StringId)
 				.Append("|type=")
-				.Append(GetItemPromptTypeLabel(item.Item))
+				.Append(EconomyPromptTexts.ProjectSource(GetItemPromptTypeLabel(item.Item)))
 				.Append("|")
 				.Append(num3)
 				.Append(GetItemQuantityUnit(item.Item))
@@ -15071,7 +15071,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 				break;
 			}
 		}
-		stringBuilder.AppendLine("总估值约 " + Math.Max(0L, num) + " 第纳尔。");
+		stringBuilder.AppendLine(EconomyPromptTexts.Get("S421") + Math.Max(0L, num) + EconomyPromptTexts.Get("S030"));
 		return stringBuilder.ToString().Trim();
 	}
 
@@ -15088,7 +15088,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 		}
 		Dictionary<string, ItemGuidePriceInfo> dictionary = new Dictionary<string, ItemGuidePriceInfo>(StringComparer.OrdinalIgnoreCase);
 		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.AppendLine("以下为玩家当前穿戴的装备和携带的武器：");
+		stringBuilder.AppendLine(EconomyPromptTexts.Get("S422"));
 		List<RewardItemInfo> selectedItems = heroVisibleEquipmentItemsForPrompt
 			.Where((RewardItemInfo x) => x != null && x.Item != null)
 			.OrderByDescending((RewardItemInfo x) => x.Count)
@@ -15226,9 +15226,9 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 			{
 				continue;
 			}
-			stringBuilder.Append(item.Name ?? item.PromptStringId ?? item.StringId ?? "未知物品")
+			stringBuilder.Append(item.Name ?? item.PromptStringId ?? item.StringId ?? EconomyPromptTexts.Get("S423"))
 				.Append(" | type=")
-				.Append(GetItemPromptTypeLabel(item.Item))
+				.Append(EconomyPromptTexts.ProjectSource(GetItemPromptTypeLabel(item.Item)))
 				.Append(" | ")
 				.Append(Math.Max(1, item.Count))
 				.Append(GetItemQuantityUnit(item.Item));
@@ -15254,19 +15254,19 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 		List<RewardItemInfo> notableMarketItems = isNotableMarketHero ? BuildNotableMarketItems(hero, notableMarketSettlement, notableMarketPromptMaxItems) : new List<RewardItemInfo>();
 		List<RewardItemInfo> heroInventoryItems = GetHeroInventoryItems(hero);
 		List<RewardItemInfo> heroBattleEquipmentItems = GetHeroBattleEquipmentItems(hero);
-		string text = hero?.Name?.ToString() ?? "该NPC";
+		string text = hero?.Name?.ToString() ?? EconomyPromptTexts.Get("S010");
 		Dictionary<string, ItemGuidePriceInfo> dictionary = (includeGuidePrice ? new Dictionary<string, ItemGuidePriceInfo>(StringComparer.OrdinalIgnoreCase) : null);
 		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.Append("第纳尔: ").Append(heroGold).AppendLine();
+		stringBuilder.Append(EconomyPromptTexts.Get("S415")).Append(heroGold).AppendLine();
 		if (includeGuidePrice)
 		{
-			stringBuilder.AppendLine(isNotableMarketHero ? ("【价格说明】市场物品后面的 guidePrice 为当前" + notableMarketTypeLabel + "市场即时指导单价；个人物品仍按目标附近价格估算（第纳尔/当前单位；箭矢、弩矢、标枪、飞刀等远程弹药按袋计）。") : "【价格说明】每个物品后面的 guidePrice 为指导单价（第纳尔/当前单位；箭矢、弩矢、标枪、飞刀等远程弹药按袋计）。");
+			stringBuilder.AppendLine(isNotableMarketHero ? (EconomyPromptTexts.Get("S424") + notableMarketTypeLabel + EconomyPromptTexts.Get("S425")) : EconomyPromptTexts.Get("S426"));
 		}
 		int num = 0;
 		if (isNotableMarketHero)
 		{
-			stringBuilder.AppendLine("【要人市场说明】以下市场库存来自当前" + notableMarketTypeLabel + "市场总库存，不是私人财物；成交时扣" + notableMarketTypeLabel + "库存。");
-			stringBuilder.AppendLine("库存物品：");
+			stringBuilder.AppendLine(EconomyPromptTexts.Get("S427") + notableMarketTypeLabel + EconomyPromptTexts.Get("S428") + notableMarketTypeLabel + EconomyPromptTexts.Get("S429"));
+			stringBuilder.AppendLine(EconomyPromptTexts.Get("S417"));
 			if (notableMarketItems != null && notableMarketItems.Count > 0)
 			{
 				foreach (RewardItemInfo marketItem in notableMarketItems)
@@ -15295,12 +15295,12 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 			}
 			if (notableMarketItems == null || notableMarketItems.Count == 0)
 			{
-				stringBuilder.AppendLine("（你什么都不卖，请不要虚构任何物品。）");
+				stringBuilder.AppendLine(EconomyPromptTexts.Get("S430"));
 			}
 		}
 		if (heroInventoryItems != null && heroInventoryItems.Count > 0)
 		{
-			stringBuilder.AppendLine(isNotableMarketHero ? "个人库存物品：" : "库存物品：");
+			stringBuilder.AppendLine(isNotableMarketHero ? EconomyPromptTexts.Get("S431") : EconomyPromptTexts.Get("S417"));
 			foreach (RewardItemInfo item in heroInventoryItems.OrderByDescending((RewardItemInfo i) => i.Count))
 			{
 				stringBuilder.Append(item.Name)
@@ -15330,7 +15330,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 		if (includePrivateBattleEquipment && heroBattleEquipmentItems != null && heroBattleEquipmentItems.Count > 0)
 		{
 			int num2 = 0;
-			stringBuilder.AppendLine(text + "的私人战斗装备:");
+			stringBuilder.AppendLine(text + EconomyPromptTexts.Get("S432"));
 			foreach (RewardItemInfo item2 in heroBattleEquipmentItems.OrderByDescending((RewardItemInfo i) => i.Count))
 			{
 				stringBuilder.Append(item2.Name)
@@ -15371,7 +15371,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 				case "center":
 				case "lordshall":
 				case "castle":
-					stringBuilder.AppendLine("【" + text + "的战斗装备栏说明】当前" + text + "所在的是城镇、领主大厅或城堡等日常场景，外表通常只穿着日常衣物，玩家无法直接看见这些战斗装备。你可以把这些武器盔甲理解为" + text + "随身携带的备用武装，可结合当下关系与谈判情况，酌情决定是否将其作为赌注或交易物品。");
+					stringBuilder.AppendLine("【" + text + EconomyPromptTexts.Get("S433") + text + EconomyPromptTexts.Get("S434") + text + EconomyPromptTexts.Get("S435"));
 					break;
 				}
 			}
@@ -15444,21 +15444,21 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 			{
 				return "";
 			}
-			return "【可作为决斗赌注的物品】\n当前没有可用于赌注的财物。";
+			return EconomyPromptTexts.Get("S436");
 		}
 		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.AppendLine("【可作为决斗赌注的物品】");
+		stringBuilder.AppendLine(EconomyPromptTexts.Get("S437"));
 		List<DuelStakeOption> list = options.Where((DuelStakeOption x) => x != null && !x.IsPrivateEquipment).ToList();
 		List<DuelStakeOption> list2 = options.Where((DuelStakeOption x) => x != null && x.IsPrivateEquipment).ToList();
 		if (list.Count > 0)
 		{
-			stringBuilder.AppendLine("库存物品：");
+			stringBuilder.AppendLine(EconomyPromptTexts.Get("S417"));
 			foreach (DuelStakeOption option in list)
 			{
 				stringBuilder.Append("- ")
-					.Append(option.Name ?? option.ItemId ?? "未知物品")
+					.Append(option.Name ?? option.ItemId ?? EconomyPromptTexts.Get("S423"))
 					.Append(" | type=")
-					.Append(GetItemPromptTypeLabel(option.Item))
+					.Append(EconomyPromptTexts.ProjectSource(GetItemPromptTypeLabel(option.Item)))
 					.Append(" | guidePrice=")
 					.Append(System.Math.Max(1, option.GuidePrice))
 					.Append(" | ")
@@ -15469,13 +15469,13 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 		}
 		if (list2.Count > 0)
 		{
-			stringBuilder.AppendLine("私人装备：");
+			stringBuilder.AppendLine(EconomyPromptTexts.Get("S438"));
 			foreach (DuelStakeOption option2 in list2)
 			{
 				stringBuilder.Append("- ")
-					.Append(option2.Name ?? option2.ItemId ?? "未知物品")
+					.Append(option2.Name ?? option2.ItemId ?? EconomyPromptTexts.Get("S423"))
 					.Append(" | type=")
-					.Append(GetItemPromptTypeLabel(option2.Item))
+					.Append(EconomyPromptTexts.ProjectSource(GetItemPromptTypeLabel(option2.Item)))
 					.Append(" | guidePrice=")
 					.Append(System.Math.Max(1, option2.GuidePrice))
 					.Append(" | ")
@@ -15823,8 +15823,8 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 				}
 			}
 			responseText = regex21.Replace(responseText, string.Empty);
-			string giverName = giver?.Name?.ToString() ?? "某人";
-			string receiverName = receiver?.Name?.ToString() ?? "某人";
+			string giverName = giver?.Name?.ToString() ?? EconomySourceTexts.Get("S439");
+			string receiverName = receiver?.Name?.ToString() ?? EconomySourceTexts.Get("S439");
 			List<string> giverFacts = new List<string>();
 			List<string> receiverFacts = new List<string>();
 			bool anyActualGiveToPlayer = false;
@@ -15855,7 +15855,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 			HashSet<string> unresolvedFixedAssetTokens = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 			Settlement notableMarketSettlement = ResolveNotableMarketSettlement(giver);
 			bool giverUsesNotableMarket = IsNotableMarketHero(giver, notableMarketSettlement);
-			string notableMarketLabel = GetSettlementMarketTypeLabel(notableMarketSettlement) + "市场";
+			string notableMarketLabel = GetSettlementMarketTypeLabel(notableMarketSettlement) + EconomySourceTexts.Get("S440");
 			responseText = GiveAssetTagCodec.ReplaceTags(responseText, delegate(GiveAssetTag tag)
 			{
 				if (!IsGoldAssetTokenForExternal(tag.AssetToken))
@@ -15865,20 +15865,20 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 				if (int.TryParse(tag.QuantityToken, out var result8))
 				{
 					goldTransferAttempted++;
-					Logger.Log("Logic", $"[Reward] GIVE_ASSET gold 捕获: giver={giver?.Name} receiver={receiver?.Name} amount={result8}");
+					Logger.Log("Logic", string.Format("[Reward] GIVE_ASSET gold captured: giver={0} receiver={1} amount={2}", giver?.Name, receiver?.Name, result8));
 					bool forceCompleteGoldTransfer = receiver == Hero.MainHero && giver != Hero.MainHero;
 					int num4 = giverUsesNotableMarket ? TransferGoldFromSettlement(notableMarketSettlement, receiver, result8, giverName, giver?.CharacterObject, forceComplete: forceCompleteGoldTransfer) : TransferGold(giver, receiver, result8, forceComplete: forceCompleteGoldTransfer);
 					if (num4 > 0)
 					{
 						goldTransferSucceeded++;
 						goldTransferActualAmount = TransferQuantitySpec.AddValue(goldTransferActualAmount, num4);
-						giverFacts.Add(giverUsesNotableMarket ? $"你已经代表{notableMarketLabel}将 {num4} 第纳尔交给 {receiverName}。并进入了{receiverName}的库存" : $"你已经将 {num4} 第纳尔交给 {receiverName}。并进入了{receiverName}的库存");
-						receiverFacts.Add(giverUsesNotableMarket ? $"你从 {giverName} 代表的{notableMarketLabel}收到了 {num4} 第纳尔。" : $"你从 {giverName} 收到了 {num4} 第纳尔。");
+						giverFacts.Add(giverUsesNotableMarket ? string.Format(EconomySourceTexts.Get("S442"), notableMarketLabel, num4, receiverName, receiverName) : string.Format(EconomySourceTexts.Get("S443"), num4, receiverName, receiverName));
+						receiverFacts.Add(giverUsesNotableMarket ? string.Format(EconomySourceTexts.Get("S444"), giverName, notableMarketLabel, num4) : string.Format(EconomySourceTexts.Get("S445"), giverName, num4));
 						if (num4 < result8)
 						{
 							goldTransferFailedOrPartial++;
-							giverFacts.Add($"你原计划交付 {result8} 第纳尔，但余额变化后实际只交付了 {num4} 第纳尔。");
-							receiverFacts.Add($"{giverName} 原计划交付 {result8} 第纳尔，但实际只交付了 {num4} 第纳尔。");
+							giverFacts.Add(string.Format(EconomySourceTexts.Get("S446"), result8, num4));
+							receiverFacts.Add(string.Format(EconomySourceTexts.Get("S447"), giverName, result8, num4));
 						}
 						if (giver != Hero.MainHero && receiver == Hero.MainHero)
 						{
@@ -15889,20 +15889,20 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 					else if (giverUsesNotableMarket)
 					{
 						goldTransferFailedOrPartial++;
-						giverFacts.Add($"你试图代表{notableMarketLabel}交付 {result8} 第纳尔，但当前{notableMarketLabel}现钱不足，本轮未实际支付。");
+						giverFacts.Add(string.Format(EconomySourceTexts.Get("S448"), notableMarketLabel, result8, notableMarketLabel));
 					}
 					else
 					{
 						goldTransferFailedOrPartial++;
-						giverFacts.Add($"你试图交付 {result8} 第纳尔，但当前余额不足，本轮未实际支付。");
-						receiverFacts.Add($"{giverName} 试图交付 {result8} 第纳尔，但当前余额不足，本轮未实际支付。");
+						giverFacts.Add(string.Format(EconomySourceTexts.Get("S449"), result8));
+						receiverFacts.Add(string.Format(EconomySourceTexts.Get("S450"), giverName, result8));
 					}
 				}
 				return string.Empty;
 			});
 			if (goldTransferAttempted > 0)
 			{
-				string goldBatchSummary = "金币转移汇总：尝试项" + goldTransferAttempted + "，成功项" + goldTransferSucceeded + "，失败或不足项" + goldTransferFailedOrPartial + "，实际转移" + goldTransferActualAmount + "第纳尔，实际价值" + goldTransferActualAmount + "第纳尔。";
+				string goldBatchSummary = EconomySourceTexts.Get("S451") + goldTransferAttempted + EconomySourceTexts.Get("S043") + goldTransferSucceeded + EconomySourceTexts.Get("S044") + goldTransferFailedOrPartial + EconomySourceTexts.Get("S045") + goldTransferActualAmount + EconomySourceTexts.Get("S452") + goldTransferActualAmount + EconomySourceTexts.Get("S047");
 				giverFacts.Add(goldBatchSummary);
 				receiverFacts.Add(goldBatchSummary);
 				Logger.Log("Logic", "[Reward] gold_batch_done attempted=" + goldTransferAttempted + " succeeded=" + goldTransferSucceeded + " failedOrPartial=" + goldTransferFailedOrPartial + " actualAmount=" + goldTransferActualAmount);
@@ -15961,7 +15961,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 					{
 						result8 = ResolveAllRewardItemAmount(itemIdForFacts, authorizedItems);
 					}
-					Logger.Log("Logic", $"[Reward] GIVE_ASSET item 捕获: giver={giver?.Name} receiver={receiver?.Name} itemId={value4} amount={(quantity.IsAll ? "ALL" : result8.ToString())} resolvedAmount={result8}");
+					Logger.Log("Logic", string.Format("[Reward] GIVE_ASSET item captured: giver={0} receiver={1} itemId={2} amount={3} resolvedAmount={4}", giver?.Name, receiver?.Name, value4, (quantity.IsAll ? "ALL" : result8.ToString()), result8));
 					if (result8 <= 0)
 					{
 						itemTransferFailedOrPartial++;
@@ -15988,14 +15988,14 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 							itemObject3 = generatedFactItem.Item;
 						}
 						string text5 = isNotableMarketItem ? BuildSettlementItemValueFactSuffixForExternal(notableMarketSettlement, itemObject3, num4) : BuildItemValueFactSuffixForExternal(giver ?? receiver, itemObject3, num4);
-						giverFacts.Add(isNotableMarketItem ? $"你已经代表{notableMarketLabel}将 {FormatItemAmount(num4, itemObject3, text4)} 交给 {receiverName}{text5}。并进入了{receiverName}的库存" : $"你已经将 {FormatItemAmount(num4, itemObject3, text4)} 交给 {receiverName}{text5}。并进入了{receiverName}的库存");
-						receiverFacts.Add(isNotableMarketItem ? $"你从 {giverName} 代表的{notableMarketLabel}收到了 {FormatItemAmount(num4, itemObject3, text4)}{text5}。" : $"你从 {giverName} 收到了 {FormatItemAmount(num4, itemObject3, text4)}{text5}。");
+						giverFacts.Add(isNotableMarketItem ? string.Format(EconomySourceTexts.Get("S454"), notableMarketLabel, FormatItemAmount(num4, itemObject3, text4), receiverName, text5, receiverName) : string.Format(EconomySourceTexts.Get("S455"), FormatItemAmount(num4, itemObject3, text4), receiverName, text5, receiverName));
+						receiverFacts.Add(isNotableMarketItem ? string.Format(EconomySourceTexts.Get("S456"), giverName, notableMarketLabel, FormatItemAmount(num4, itemObject3, text4), text5) : string.Format(EconomySourceTexts.Get("S457"), giverName, FormatItemAmount(num4, itemObject3, text4), text5));
 						if (num4 < result8)
 						{
 							itemTransferFailedOrPartial++;
 							string text6 = isNotableMarketItem ? BuildSettlementItemValueFactSuffixForExternal(notableMarketSettlement, itemObject3, result8) : BuildItemValueFactSuffixForExternal(giver ?? receiver, itemObject3, result8);
-							giverFacts.Add(isGeneratedRpItem ? $"你本轮原计划交付 {FormatItemAmount(result8, itemObject3, text4)}{text6}，但实际仅生成并交付 {FormatItemAmount(num4, itemObject3, text4)}{text5}。" : $"你本轮原计划交付 {FormatItemAmount(result8, itemObject3, text4)}{text6}，但实际仅交付 {FormatItemAmount(num4, itemObject3, text4)}{text5}（库存不足）。");
-							receiverFacts.Add($"{giverName} 原计划交付 {FormatItemAmount(result8, itemObject3, text4)}{text6}，实际仅交付 {FormatItemAmount(num4, itemObject3, text4)}{text5}。");
+							giverFacts.Add(isGeneratedRpItem ? string.Format(EconomySourceTexts.Get("S458"), FormatItemAmount(result8, itemObject3, text4), text6, FormatItemAmount(num4, itemObject3, text4), text5) : string.Format(EconomySourceTexts.Get("S459"), FormatItemAmount(result8, itemObject3, text4), text6, FormatItemAmount(num4, itemObject3, text4), text5));
+							receiverFacts.Add(string.Format(EconomySourceTexts.Get("S460"), giverName, FormatItemAmount(result8, itemObject3, text4), text6, FormatItemAmount(num4, itemObject3, text4), text5));
 						}
 						if (giver != Hero.MainHero && receiver == Hero.MainHero)
 						{
@@ -16010,11 +16010,11 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 					{
 						itemTransferFailedOrPartial++;
 						string text5 = isGeneratedRpItem ? value4 : ResolveItemById(itemIdForFacts.Split('@')[0])?.Name?.ToString();
-						string text6 = (string.IsNullOrWhiteSpace(text5) ? "该物品" : text5);
+						string text6 = (string.IsNullOrWhiteSpace(text5) ? EconomySourceTexts.Get("S461") : text5);
 						ItemObject itemObject2 = ResolveItemById(itemIdForFacts.Split('@')[0]);
 						string text7 = isNotableMarketItem ? BuildSettlementItemValueFactSuffixForExternal(notableMarketSettlement, itemObject2, result8) : BuildItemValueFactSuffixForExternal(giver ?? receiver, itemObject2, result8);
-						giverFacts.Add(isGeneratedRpItem ? $"你尝试交付 RP 物品 {FormatItemAmount(result8, itemObject2, text6)}，但生成失败，本轮未实际交付。" : (isNotableMarketItem ? $"你尝试代表{notableMarketLabel}交付 {FormatItemAmount(result8, itemObject2, text6)}{text7}，但当前{notableMarketLabel}库存不足，本轮未实际交付。" : $"你尝试交付 {FormatItemAmount(result8, itemObject2, text6)}{text7}，但库存不足，本轮未实际交付。"));
-						receiverFacts.Add(isGeneratedRpItem ? $"{giverName} 试图交付 RP 物品 {FormatItemAmount(result8, itemObject2, text6)}，但生成失败，本轮未实际交付。" : (isNotableMarketItem ? $"{giverName} 试图代表{notableMarketLabel}交付 {FormatItemAmount(result8, itemObject2, text6)}{text7}，但市场库存不足，本轮未实际交付。" : $"{giverName} 试图交付 {FormatItemAmount(result8, itemObject2, text6)}{text7}，但其库存不足，本轮未实际交付。"));
+						giverFacts.Add(isGeneratedRpItem ? string.Format(EconomySourceTexts.Get("S462"), FormatItemAmount(result8, itemObject2, text6)) : (isNotableMarketItem ? string.Format(EconomySourceTexts.Get("S463"), notableMarketLabel, FormatItemAmount(result8, itemObject2, text6), text7, notableMarketLabel) : string.Format(EconomySourceTexts.Get("S464"), FormatItemAmount(result8, itemObject2, text6), text7)));
+						receiverFacts.Add(isGeneratedRpItem ? string.Format(EconomySourceTexts.Get("S465"), giverName, FormatItemAmount(result8, itemObject2, text6)) : (isNotableMarketItem ? string.Format(EconomySourceTexts.Get("S466"), giverName, notableMarketLabel, FormatItemAmount(result8, itemObject2, text6), text7) : string.Format(EconomySourceTexts.Get("S467"), giverName, FormatItemAmount(result8, itemObject2, text6), text7)));
 					}
 				}
 				else
@@ -16025,7 +16025,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 			});
 			if (itemTransferAttempted > 0)
 			{
-				string itemBatchSummary = "物品转移汇总：尝试项" + itemTransferAttempted + "，成功项" + itemTransferSucceeded + "，失败或不足项" + itemTransferFailedOrPartial + "，实际转移" + itemTransferActualQuantity + "件，实际指导总值约" + itemTransferActualValue + "第纳尔。";
+				string itemBatchSummary = EconomySourceTexts.Get("S468") + itemTransferAttempted + EconomySourceTexts.Get("S043") + itemTransferSucceeded + EconomySourceTexts.Get("S044") + itemTransferFailedOrPartial + EconomySourceTexts.Get("S045") + itemTransferActualQuantity + EconomySourceTexts.Get("S469") + itemTransferActualValue + EconomySourceTexts.Get("S047");
 				giverFacts.Add(itemBatchSummary);
 				receiverFacts.Add(itemBatchSummary);
 				Logger.Log("Logic", "[Reward] item_batch_done attempted=" + itemTransferAttempted + " succeeded=" + itemTransferSucceeded + " failedOrPartial=" + itemTransferFailedOrPartial + " actualQuantity=" + itemTransferActualQuantity + " actualValue=" + itemTransferActualValue);
@@ -16049,13 +16049,13 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 						{
 							DuelBehavior.CachePendingDuelDebtTag(giver, result8, result9, text3);
 						}
-						Logger.Log("Logic", "[Reward] AD 标签与 [ACTION:DUEL] 同轮出现，已延后到决斗结算后再判定。");
+						Logger.Log("Logic", "[Reward] AD and [ACTION:DUEL] occurred in the same turn; deferred until duel settlement.");
 						return string.Empty;
 					}
 					bool flag2 = DuelBehavior.TryConsumeDuelDebtTagPermission(giver, out var allowDebtTag);
 					if (flag2 && !allowDebtTag)
 					{
-						Logger.Log("Logic", "[Reward] AD 标签被决斗门控阻止：仅在玩家战败后才允许触发。");
+						Logger.Log("Logic", "[Reward] AD blocked by duel gate: only allowed after player defeat.");
 						return string.Empty;
 					}
 					if (result8 > 0)
@@ -16068,9 +16068,9 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 						anyDebtRecorded = true;
 						string text4 = BuildDebtPromiseDeadlineText(debtLine.DueDay, debtLine.IsDueUnlimited);
 						string text5 = debtLine.DebtId ?? "";
-						string text6 = string.IsNullOrWhiteSpace(text3) ? "无" : text3;
-						giverFacts.Add($"你已经记下：玩家的承诺或欠款价值 {result8} 第纳尔，达成期限为：{text4}，备注：{text6}（债务ID:{text5}）。");
-						receiverFacts.Add($"你对 {giverName} 的承诺或欠款价值 {result8} 第纳尔，达成期限为：{text4}，备注：{text6}（债务ID:{text5}）。");
+						string text6 = string.IsNullOrWhiteSpace(text3) ? EconomySourceTexts.Get("S013") : text3;
+						giverFacts.Add(string.Format(EconomySourceTexts.Get("S472"), result8, text4, text6, text5));
+						receiverFacts.Add(string.Format(EconomySourceTexts.Get("S473"), giverName, result8, text4, text6, text5));
 						ShowRewardMessage(EconomyUiTexts.PromiseRecorded(text6, result8.ToString()), Color.FromUint(4294936576u), giver);
 					}
 				}
@@ -16083,12 +16083,12 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 				{
 					if (hasDuelActionTagInCurrentReply)
 					{
-						Logger.Log("Logic", "[Reward] ADP 标签与 [ACTION:DUEL] 同轮出现，已延后到决斗结算后再判定。");
+						Logger.Log("Logic", "[Reward] ADP and [ACTION:DUEL] occurred in the same turn; deferred until duel settlement.");
 						return string.Empty;
 					}
 					if (!string.IsNullOrWhiteSpace(value4) && !settledDebtIdsThisRound.Add(value4))
 					{
-						Logger.Log("Logic", "[Reward] 跳过重复债务解除标签: debtId=" + value4 + " tag=ADP");
+						Logger.Log("Logic", "[Reward] Skipping duplicate debt-release tag: debtId=" + value4 + " tag=ADP");
 						return string.Empty;
 					}
 					string statusText;
@@ -16096,9 +16096,9 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 					if (!string.IsNullOrWhiteSpace(statusText))
 					{
 						anyDebtPaymentApplied = true;
-						giverFacts.Add($"你确认债务ID {value4} 已解除。{statusText}");
-						receiverFacts.Add($"你的债务ID {value4} 已解除。{statusText}");
-						bool flag3 = statusText.IndexOf("已按协商解除", StringComparison.OrdinalIgnoreCase) >= 0;
+						giverFacts.Add(string.Format(EconomySourceTexts.Get("S476"), value4, statusText));
+						receiverFacts.Add(string.Format(EconomySourceTexts.Get("S477"), value4, statusText));
+						bool flag3 = statusText.IndexOf(EconomySourceTexts.Get("S036"), StringComparison.OrdinalIgnoreCase) >= 0;
 						ShowRewardMessage(EconomyUiTexts.DebtRelease(EconomyUiTexts.DebtStatusForDisplay(statusText), flag3), flag3 ? Color.FromUint(4278255360u) : Color.FromUint(4294923605u), giver);
 						if (flag2)
 						{
@@ -16252,10 +16252,10 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 					}
 					else
 					{
-						statusText = "执行失败：固定资产数量必须为 1。";
+						statusText = EconomySourceTexts.Get("S076");
 					}
 					string text3 = MyBehavior.GetSettlementTransferAssetDisplayNameForExternal(entry);
-					if (string.IsNullOrWhiteSpace(text3) || text3 == "未知资产")
+					if (string.IsNullOrWhiteSpace(text3) || text3 == EconomySourceTexts.Get("S478"))
 					{
 						text3 = settlementToken;
 					}
@@ -16265,8 +16265,8 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 						settlementTransferActualValue = TransferQuantitySpec.AddValue(settlementTransferActualValue, Math.Max(0L, entry?.GuidePriceDenars ?? 0L));
 						anySettlementTransferApplied = true;
 						anySettlementTransferToPlayerApplied = true;
-						giverFacts.Add($"你已经将固定资产 {text3} 转交给玩家。");
-						receiverFacts.Add($"你已经从 {giverName} 那里取得了固定资产 {text3}。");
+						giverFacts.Add(string.Format(EconomySourceTexts.Get("S479"), text3));
+						receiverFacts.Add(string.Format(EconomySourceTexts.Get("S480"), giverName, text3));
 					}
 					else if (!string.IsNullOrWhiteSpace(statusText))
 					{
@@ -16288,7 +16288,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 			responseText = GiveAssetTagCodec.StripTags(responseText);
 			if (settlementTransferAttempted > 0)
 			{
-				string settlementBatchSummary = "固定资产转移汇总：尝试项" + settlementTransferAttempted + "，成功项" + settlementTransferSucceeded + "，失败项" + settlementTransferFailed + "，实际转移" + settlementTransferSucceeded + "项，实际指导总值约" + settlementTransferActualValue + "第纳尔。";
+				string settlementBatchSummary = EconomySourceTexts.Get("S481") + settlementTransferAttempted + EconomySourceTexts.Get("S043") + settlementTransferSucceeded + EconomySourceTexts.Get("S482") + settlementTransferFailed + EconomySourceTexts.Get("S045") + settlementTransferSucceeded + EconomySourceTexts.Get("S483") + settlementTransferActualValue + EconomySourceTexts.Get("S047");
 				giverFacts.Add(settlementBatchSummary);
 				receiverFacts.Add(settlementBatchSummary);
 				Logger.Log("Logic", "[Reward] settlement_batch_done attempted=" + settlementTransferAttempted + " succeeded=" + settlementTransferSucceeded + " failed=" + settlementTransferFailed + " actualValue=" + settlementTransferActualValue);
@@ -16309,20 +16309,20 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 						{
 							anyHeroJoinPlayerPartyApplied = true;
 							string giverJoinFact = preservePlayerFamilyIdentity
-								? (preservePlayerSpouseIdentity ? $"你仍是 {receiverName} 的配偶，并已随玩家队伍行动。" : $"你仍是 {receiverName} 家族的成员，并已随玩家队伍行动。")
-								: (joinedAsCompanion ? $"你已经成为 {receiverName} 的同伴，并随玩家队伍行动。" : $"你已经加入了 {receiverName} 的家族，并随玩家队伍行动。");
+								? (preservePlayerSpouseIdentity ? string.Format(EconomySourceTexts.Get("S484"), receiverName) : string.Format(EconomySourceTexts.Get("S485"), receiverName))
+								: (joinedAsCompanion ? string.Format(EconomySourceTexts.Get("S486"), receiverName) : string.Format(EconomySourceTexts.Get("S487"), receiverName));
 							string receiverJoinFact = preservePlayerFamilyIdentity
-								? (preservePlayerSpouseIdentity ? $"{giverName} 仍是你的配偶，并已加入你的队伍。" : $"{giverName} 仍是你的家族成员，并已加入你的队伍。")
-								: (joinedAsCompanion ? $"{giverName} 已成为你的同伴，并随你的队伍行动。" : $"{giverName} 已加入你的家族，并随你的队伍行动。");
+								? (preservePlayerSpouseIdentity ? string.Format(EconomySourceTexts.Get("S488"), giverName) : string.Format(EconomySourceTexts.Get("S489"), giverName))
+								: (joinedAsCompanion ? string.Format(EconomySourceTexts.Get("S490"), giverName) : string.Format(EconomySourceTexts.Get("S491"), giverName));
 							if (joinedWildernessParty)
 							{
 								string countText = BuildWildernessHeroPartyTransferCountText(joinedWildernessMembers, joinedWildernessPrisoners);
 								giverJoinFact += string.IsNullOrEmpty(countText)
-									? " 你的原野外队伍已随你归并至玩家主队，没有额外成员或俘虏。"
-									: " 你原野外队伍中的 " + countText + "已一并转入玩家主队。";
+									? EconomySourceTexts.Get("S222")
+									: EconomySourceTexts.Get("S224") + countText + EconomySourceTexts.Get("S225");
 								receiverJoinFact += string.IsNullOrEmpty(countText)
-									? " " + giverName + "的原野外队伍已随本人归并至你的主队，没有额外成员或俘虏。"
-									: " " + giverName + "原野外队伍中的 " + countText + "已一并转入你的主队。";
+									? " " + giverName + EconomySourceTexts.Get("S223")
+									: " " + giverName + EconomySourceTexts.Get("S226") + countText + EconomySourceTexts.Get("S227");
 							}
 							giverFacts.Add(giverJoinFact);
 							receiverFacts.Add(receiverJoinFact);
@@ -16340,7 +16340,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 			});
 			if (num2.HasValue)
 			{
-				Logger.Log("Logic", "[Reward] 提示: 检测到 [ACTION:TRADE_TRUST]，但即时交易信任现已改为按NPC实际交付价值自动累计，本标签已忽略。");
+				Logger.Log("Logic", "[Reward] [ACTION:TRADE_TRUST] ignored: immediate trade trust now accrues from the actual value delivered by the NPC.");
 			}
 			responseText = responseText.Trim();
 			stopwatch.Stop();
@@ -16366,7 +16366,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 			Logger.Metric("action.apply_reward_tags", ok: true, stopwatch.Elapsed.TotalMilliseconds);
 			if (giverFacts.Count > 0)
 			{
-				SetLastGeneratedNpcFactLines(new string[1] { "[AFEF NPC行为补充] " + giverName + ": " + string.Join(" ", giverFacts) });
+				SetLastGeneratedNpcFactLines(new string[1] { EconomySourceTexts.Get("S048") + giverName + ": " + string.Join(" ", giverFacts) });
 				MyBehavior.AppendExternalNpcFact(giver, string.Join(" ", giverFacts));
 			}
 			if (receiverFacts.Count > 0)
@@ -16386,7 +16386,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 		{
 			SetLastGeneratedNpcFactLines(null);
 			stopwatch.Stop();
-			Logger.Log("Logic", "[ERROR] ApplyRewardTags 异常: " + ex.ToString());
+			Logger.Log("Logic", "[ERROR] ApplyRewardTags exception: " + ex.ToString());
 			Logger.Obs("Action", "apply_reward_tags_error", new Dictionary<string, object>
 			{
 				["giverId"] = giver?.StringId ?? "",
@@ -16419,10 +16419,10 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 			string summary = BuildRewardActionHistorySummary(giverFacts, receiverFacts);
 			if (string.IsNullOrWhiteSpace(summary))
 			{
-				summary = politicalAction ? "双方完成了一项政治承诺。" : "双方完成了一项交易或债务约定。";
+				summary = politicalAction ? EconomySourceTexts.Get("S494") : EconomySourceTexts.Get("S495");
 			}
-			string npcName = string.IsNullOrWhiteSpace(giverName) ? (npc.Name?.ToString() ?? "对方") : giverName.Trim();
-			string playerName = string.IsNullOrWhiteSpace(receiverName) ? (player.Name?.ToString() ?? "玩家") : receiverName.Trim();
+			string npcName = string.IsNullOrWhiteSpace(giverName) ? (npc.Name?.ToString() ?? EconomySourceTexts.Get("S066")) : giverName.Trim();
+			string playerName = string.IsNullOrWhiteSpace(receiverName) ? (player.Name?.ToString() ?? EconomySourceTexts.Get("S068")) : receiverName.Trim();
 			string npcText = BuildRewardNpcActionHistoryText(actionKind, playerName, summary);
 			string playerText = BuildRewardPlayerActionHistoryText(actionKind, npcName, summary);
 			Settlement settlement = ResolveRewardActionSettlement(npc);
@@ -16478,25 +16478,25 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 		case "kingdom_annexation":
 		case "royal_abdication":
 		case "persuasion_defection":
-			prefix = "你与" + playerName + "完成了一项势力归附或政治承诺：";
+			prefix = EconomySourceTexts.Get("S496") + playerName + EconomySourceTexts.Get("S497");
 			break;
 		case "asset_transfer_to_player":
-			prefix = "你将固定资产转交给" + playerName + "：";
+			prefix = EconomySourceTexts.Get("S498") + playerName + "：";
 			break;
 		case "asset_transfer_to_npc":
-			prefix = "玩家将固定资产转交给你或你的家族：";
+			prefix = EconomySourceTexts.Get("S499");
 			break;
 		case "asset_transfer":
-			prefix = "你与" + playerName + "完成了一项固定资产转移：";
+			prefix = EconomySourceTexts.Get("S496") + playerName + EconomySourceTexts.Get("S500");
 			break;
 		case "debt_payment":
-			prefix = "你确认了" + playerName + "的一项债务履约：";
+			prefix = EconomySourceTexts.Get("S501") + playerName + EconomySourceTexts.Get("S502");
 			break;
 		case "debt_recorded":
-			prefix = "你与" + playerName + "确立了一项债务约定：";
+			prefix = EconomySourceTexts.Get("S496") + playerName + EconomySourceTexts.Get("S503");
 			break;
 		default:
-			prefix = "你与" + playerName + "完成了一项重要交易或交付：";
+			prefix = EconomySourceTexts.Get("S496") + playerName + EconomySourceTexts.Get("S504");
 			break;
 		}
 		return LimitRewardHistoryText(prefix + summary, 260);
@@ -16510,25 +16510,25 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 		case "kingdom_annexation":
 		case "royal_abdication":
 		case "persuasion_defection":
-			prefix = "你与" + npcName + "完成了一项势力归附或政治承诺：";
+			prefix = EconomySourceTexts.Get("S496") + npcName + EconomySourceTexts.Get("S497");
 			break;
 		case "asset_transfer_to_player":
-			prefix = "你从" + npcName + "那里取得了固定资产：";
+			prefix = EconomySourceTexts.Get("S505") + npcName + EconomySourceTexts.Get("S506");
 			break;
 		case "asset_transfer_to_npc":
-			prefix = "你主动将固定资产交给" + npcName + "：";
+			prefix = EconomySourceTexts.Get("S507") + npcName + "：";
 			break;
 		case "asset_transfer":
-			prefix = "你与" + npcName + "完成了一项固定资产转移：";
+			prefix = EconomySourceTexts.Get("S496") + npcName + EconomySourceTexts.Get("S500");
 			break;
 		case "debt_payment":
-			prefix = "你完成了与" + npcName + "有关的一项债务履约：";
+			prefix = EconomySourceTexts.Get("S508") + npcName + EconomySourceTexts.Get("S509");
 			break;
 		case "debt_recorded":
-			prefix = "你与" + npcName + "确立了一项债务约定：";
+			prefix = EconomySourceTexts.Get("S496") + npcName + EconomySourceTexts.Get("S503");
 			break;
 		default:
-			prefix = "你与" + npcName + "完成了一项重要交易或交付：";
+			prefix = EconomySourceTexts.Get("S496") + npcName + EconomySourceTexts.Get("S504");
 			break;
 		}
 		return LimitRewardHistoryText(prefix + summary, 260);
@@ -16601,8 +16601,8 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 				return;
 			}
 			string actionKind = ResolveNonHeroRewardActionKind(summary, sourceKind);
-			string displayName = string.IsNullOrWhiteSpace(giverName) ? "对方" : giverName.Trim();
-			string text = "你与" + displayName + "完成了一项交易、交付或债务履约：" + summary;
+			string displayName = string.IsNullOrWhiteSpace(giverName) ? EconomySourceTexts.Get("S066") : giverName.Trim();
+			string text = EconomySourceTexts.Get("S496") + displayName + EconomySourceTexts.Get("S510") + summary;
 			string stableKey = "nonhero_reward_action:" + NormalizeRewardActionKeyPart(sourceKind) + ":" + NormalizeRewardActionKeyPart(displayName) + ":" + NormalizeRewardActionKeyPart(summary);
 			MyBehavior.RecordPlayerActionForExternal(LimitRewardHistoryText(text, 260), stableKey, actionKind, isMajor: true, targetHero: null, settlement: settlement, locationText: settlement?.Name?.ToString() ?? displayName, won: true);
 		}
@@ -16615,11 +16615,11 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 	private static string ResolveNonHeroRewardActionKind(string summary, string sourceKind)
 	{
 		string text = (summary ?? "").Trim();
-		if (text.IndexOf("还款", StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf("偿还", StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf("已解除", StringComparison.OrdinalIgnoreCase) >= 0)
+		if (text.IndexOf(EconomySourceTexts.Get("S511"), StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf(EconomySourceTexts.Get("S512"), StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf(EconomySourceTexts.Get("S513"), StringComparison.OrdinalIgnoreCase) >= 0)
 		{
 			return "debt_payment";
 		}
-		if (text.IndexOf("欠", StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf("债务", StringComparison.OrdinalIgnoreCase) >= 0)
+		if (text.IndexOf(EconomySourceTexts.Get("S514"), StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf(EconomySourceTexts.Get("S515"), StringComparison.OrdinalIgnoreCase) >= 0)
 		{
 			return "debt_recorded";
 		}
@@ -16633,7 +16633,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 		{
 			return;
 		}
-		string text = string.IsNullOrWhiteSpace(giverName) ? "对方部队" : giverName.Trim();
+		string text = string.IsNullOrWhiteSpace(giverName) ? EconomySourceTexts.Get("S063") : giverName.Trim();
 		List<string> npcFacts = new List<string>();
 		List<string> playerFacts = new List<string>();
 		int itemTransferAttempted = 0;
@@ -16661,27 +16661,27 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 					{
 						goldTransferSucceeded++;
 						goldTransferActualAmount = TransferQuantitySpec.AddValue(goldTransferActualAmount, num);
-						npcFacts.Add($"你已经将 {num} 第纳尔交给玩家，并从你所在部队的资金中扣除。");
-						playerFacts.Add($"你从 {text} 收到了 {num} 第纳尔。");
+						npcFacts.Add(string.Format(EconomySourceTexts.Get("S516"), num));
+						playerFacts.Add(string.Format(EconomySourceTexts.Get("S445"), text, num));
 						if (num < result)
 						{
 							goldTransferFailedOrPartial++;
-							npcFacts.Add($"你原计划交付 {result} 第纳尔，但部队资金变化后实际只交付了 {num} 第纳尔。");
-							playerFacts.Add($"{text} 原计划交付 {result} 第纳尔，但实际只交付了 {num} 第纳尔。");
+							npcFacts.Add(string.Format(EconomySourceTexts.Get("S517"), result, num));
+							playerFacts.Add(string.Format(EconomySourceTexts.Get("S447"), text, result, num));
 						}
 					}
 					else
 					{
 						goldTransferFailedOrPartial++;
-						npcFacts.Add($"你试图交付 {result} 第纳尔，但你所在部队当前资金不足，本轮未实际支付。");
-						playerFacts.Add($"{text} 试图交付 {result} 第纳尔，但部队当前资金不足，本轮未实际支付。");
+						npcFacts.Add(string.Format(EconomySourceTexts.Get("S518"), result));
+						playerFacts.Add(string.Format(EconomySourceTexts.Get("S519"), text, result));
 					}
 				}
 				return string.Empty;
 			});
 			if (goldTransferAttempted > 0)
 			{
-				string goldBatchSummary = "金币转移汇总：尝试项" + goldTransferAttempted + "，成功项" + goldTransferSucceeded + "，失败或不足项" + goldTransferFailedOrPartial + "，实际转移" + goldTransferActualAmount + "第纳尔，实际价值" + goldTransferActualAmount + "第纳尔。";
+				string goldBatchSummary = EconomySourceTexts.Get("S451") + goldTransferAttempted + EconomySourceTexts.Get("S043") + goldTransferSucceeded + EconomySourceTexts.Get("S044") + goldTransferFailedOrPartial + EconomySourceTexts.Get("S045") + goldTransferActualAmount + EconomySourceTexts.Get("S452") + goldTransferActualAmount + EconomySourceTexts.Get("S047");
 				npcFacts.Add(goldBatchSummary);
 				playerFacts.Add(goldBatchSummary);
 				Logger.Log("Logic", "[RewardParty] gold_batch_done attempted=" + goldTransferAttempted + " succeeded=" + goldTransferSucceeded + " failedOrPartial=" + goldTransferFailedOrPartial + " actualAmount=" + goldTransferActualAmount);
@@ -16748,20 +16748,20 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 						itemTransferActualQuantity = TransferQuantitySpec.AddValue(itemTransferActualQuantity, num);
 						itemTransferActualValue = TransferQuantitySpec.AddValue(itemTransferActualValue, GetItemGuideValueForHeroGift(Hero.MainHero, itemObject, num));
 						string text3 = BuildItemValueFactSuffixForExternal(Hero.MainHero, itemObject, num);
-						npcFacts.Add(isGeneratedRpItem ? $"你已经将 RP 物品 {FormatItemAmount(num, itemObject, text2)} 交给玩家{text3}。" : $"你已经将 {FormatItemAmount(num, itemObject, text2)} 交给玩家{text3}，并从你所在部队的库存中扣除。");
-						playerFacts.Add($"你从 {text} 收到了 {FormatItemAmount(num, itemObject, text2)}{text3}。");
+						npcFacts.Add(isGeneratedRpItem ? string.Format(EconomySourceTexts.Get("S520"), FormatItemAmount(num, itemObject, text2), text3) : string.Format(EconomySourceTexts.Get("S521"), FormatItemAmount(num, itemObject, text2), text3));
+						playerFacts.Add(string.Format(EconomySourceTexts.Get("S457"), text, FormatItemAmount(num, itemObject, text2), text3));
 						if (num < result)
 						{
 							itemTransferFailedOrPartial++;
-							npcFacts.Add(isGeneratedRpItem ? $"你原本打算交付 {FormatItemAmount(result, itemObject, text2)}，但实际只生成并交付了 {FormatItemAmount(num, itemObject, text2)}。" : $"你原本打算交付 {FormatItemAmount(result, itemObject, text2)}，但你所在部队库存不足，实际只交付了 {FormatItemAmount(num, itemObject, text2)}。");
-							playerFacts.Add($"{text} 原本打算交付 {FormatItemAmount(result, itemObject, text2)}，但实际只交付了 {FormatItemAmount(num, itemObject, text2)}。");
+							npcFacts.Add(isGeneratedRpItem ? string.Format(EconomySourceTexts.Get("S522"), FormatItemAmount(result, itemObject, text2), FormatItemAmount(num, itemObject, text2)) : string.Format(EconomySourceTexts.Get("S523"), FormatItemAmount(result, itemObject, text2), FormatItemAmount(num, itemObject, text2)));
+							playerFacts.Add(string.Format(EconomySourceTexts.Get("S524"), text, FormatItemAmount(result, itemObject, text2), FormatItemAmount(num, itemObject, text2)));
 						}
 					}
 					else
 					{
 						itemTransferFailedOrPartial++;
 						string text3 = BuildItemValueFactSuffixForExternal(Hero.MainHero, itemObject, result);
-						npcFacts.Add(isGeneratedRpItem ? $"你试图交付 RP 物品 {FormatItemAmount(result, itemObject, text2)}，但生成失败，本轮未实际交付。" : $"你试图交付 {FormatItemAmount(result, itemObject, text2)}{text3}，但你所在部队库存不足，本轮未实际交付。");
+						npcFacts.Add(isGeneratedRpItem ? string.Format(EconomySourceTexts.Get("S525"), FormatItemAmount(result, itemObject, text2)) : string.Format(EconomySourceTexts.Get("S526"), FormatItemAmount(result, itemObject, text2), text3));
 					}
 				}
 				else
@@ -16772,7 +16772,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 			});
 			if (itemTransferAttempted > 0)
 			{
-				string itemBatchSummary = "物品转移汇总：尝试项" + itemTransferAttempted + "，成功项" + itemTransferSucceeded + "，失败或不足项" + itemTransferFailedOrPartial + "，实际转移" + itemTransferActualQuantity + "件，实际指导总值约" + itemTransferActualValue + "第纳尔。";
+				string itemBatchSummary = EconomySourceTexts.Get("S468") + itemTransferAttempted + EconomySourceTexts.Get("S043") + itemTransferSucceeded + EconomySourceTexts.Get("S044") + itemTransferFailedOrPartial + EconomySourceTexts.Get("S045") + itemTransferActualQuantity + EconomySourceTexts.Get("S469") + itemTransferActualValue + EconomySourceTexts.Get("S047");
 				npcFacts.Add(itemBatchSummary);
 				playerFacts.Add(itemBatchSummary);
 				Logger.Log("Logic", "[RewardParty] item_batch_done attempted=" + itemTransferAttempted + " succeeded=" + itemTransferSucceeded + " failedOrPartial=" + itemTransferFailedOrPartial + " actualQuantity=" + itemTransferActualQuantity + " actualValue=" + itemTransferActualValue);
@@ -16782,7 +16782,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 			responseText = Regex.Replace(responseText, "\\[ADP:[^\\]]+\\]", string.Empty, RegexOptions.IgnoreCase).Trim();
 			if (npcFacts.Count > 0)
 			{
-				SetLastGeneratedNpcFactLines(new string[1] { "[AFEF NPC行为补充] " + text + ": " + string.Join(" ", npcFacts) });
+				SetLastGeneratedNpcFactLines(new string[1] { EconomySourceTexts.Get("S048") + text + ": " + string.Join(" ", npcFacts) });
 			}
 			if (playerFacts.Count > 0 && receiver == Hero.MainHero)
 			{
@@ -16793,7 +16793,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 		catch (Exception ex)
 		{
 			SetLastGeneratedNpcFactLines(null);
-			Logger.Log("Logic", "[ERROR] ApplyPartyRewardTags 异常: " + ex);
+			Logger.Log("Logic", "[ERROR] ApplyPartyRewardTags exception: " + ex);
 		}
 	}
 
@@ -16841,28 +16841,28 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 				{
 					goldTransferSucceeded++;
 					goldTransferActualAmount = TransferQuantitySpec.AddValue(goldTransferActualAmount, num);
-					merchantFacts.Add($"你已经将 {num} 第纳尔交给玩家。并进入了玩家的的库存");
-					playerFacts.Add($"你从 {giverName} 收到了 {num} 第纳尔。");
+					merchantFacts.Add(string.Format(EconomySourceTexts.Get("S528"), num));
+					playerFacts.Add(string.Format(EconomySourceTexts.Get("S445"), giverName, num));
 					ApplyAutoTrustGainFromMerchantGiftValue(currentSettlement, kind, num, merchantFacts, playerFacts, giverName, giverCharacter);
 					if (num < result7)
 					{
 						goldTransferFailedOrPartial++;
-						merchantFacts.Add($"你原计划交付 {result7} 第纳尔，但商铺资金变化后实际只交付了 {num} 第纳尔。");
-						playerFacts.Add($"{giverName} 原计划交付 {result7} 第纳尔，但实际只交付了 {num} 第纳尔。");
+						merchantFacts.Add(string.Format(EconomySourceTexts.Get("S529"), result7, num));
+						playerFacts.Add(string.Format(EconomySourceTexts.Get("S447"), giverName, result7, num));
 					}
 				}
 				else
 				{
 					goldTransferFailedOrPartial++;
-					merchantFacts.Add($"你试图交付 {result7} 第纳尔，但当前商铺现钱不足，本轮未实际支付。");
-					playerFacts.Add($"{giverName} 试图交付 {result7} 第纳尔，但当前商铺现钱不足，本轮未实际支付。");
+					merchantFacts.Add(string.Format(EconomySourceTexts.Get("S530"), result7));
+					playerFacts.Add(string.Format(EconomySourceTexts.Get("S531"), giverName, result7));
 				}
 			}
 			return string.Empty;
 		});
 		if (goldTransferAttempted > 0)
 		{
-			string goldBatchSummary = "金币转移汇总：尝试项" + goldTransferAttempted + "，成功项" + goldTransferSucceeded + "，失败或不足项" + goldTransferFailedOrPartial + "，实际转移" + goldTransferActualAmount + "第纳尔，实际价值" + goldTransferActualAmount + "第纳尔。";
+			string goldBatchSummary = EconomySourceTexts.Get("S451") + goldTransferAttempted + EconomySourceTexts.Get("S043") + goldTransferSucceeded + EconomySourceTexts.Get("S044") + goldTransferFailedOrPartial + EconomySourceTexts.Get("S045") + goldTransferActualAmount + EconomySourceTexts.Get("S452") + goldTransferActualAmount + EconomySourceTexts.Get("S047");
 			merchantFacts.Add(goldBatchSummary);
 			playerFacts.Add(goldBatchSummary);
 			Logger.Log("Logic", "[RewardMerchant] gold_batch_done attempted=" + goldTransferAttempted + " succeeded=" + goldTransferSucceeded + " failedOrPartial=" + goldTransferFailedOrPartial + " actualAmount=" + goldTransferActualAmount);
@@ -16937,22 +16937,22 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 					itemTransferActualQuantity = TransferQuantitySpec.AddValue(itemTransferActualQuantity, num);
 					itemTransferActualValue = TransferQuantitySpec.AddValue(itemTransferActualValue, GetItemGuideValueForMerchantGift(currentSettlement, itemObject, num));
 					string text2 = BuildSettlementItemValueFactSuffixForExternal(currentSettlement, itemObject, num);
-					merchantFacts.Add(isGeneratedRpItem ? $"你已经将 RP 物品 {FormatItemAmount(num, itemObject, text)} 交给玩家{text2}，并进入了玩家库存。" : $"你已经将 {FormatItemAmount(num, itemObject, text)} 交给玩家{text2}。并进入了玩家的的库存");
-					playerFacts.Add($"你从 {giverName} 收到了 {FormatItemAmount(num, itemObject, text)}{text2}。");
+					merchantFacts.Add(isGeneratedRpItem ? string.Format(EconomySourceTexts.Get("S532"), FormatItemAmount(num, itemObject, text), text2) : string.Format(EconomySourceTexts.Get("S533"), FormatItemAmount(num, itemObject, text), text2));
+					playerFacts.Add(string.Format(EconomySourceTexts.Get("S457"), giverName, FormatItemAmount(num, itemObject, text), text2));
 					ApplyAutoTrustGainFromMerchantGiftValue(currentSettlement, kind, GetItemTrustValueForMerchantGift(currentSettlement, itemObject, num), merchantFacts, playerFacts, giverName, giverCharacter);
 					if (num < result)
 					{
 						itemTransferFailedOrPartial++;
 						string text3 = BuildSettlementItemValueFactSuffixForExternal(currentSettlement, itemObject, result);
-						merchantFacts.Add(isGeneratedRpItem ? $"你原本打算交付 {FormatItemAmount(result, itemObject, text)}{text3}，但实际只生成并交付了 {FormatItemAmount(num, itemObject, text)}{text2}。" : $"你原本打算交付 {FormatItemAmount(result, itemObject, text)}{text3}，但当前商铺库存不足，实际只交付了 {FormatItemAmount(num, itemObject, text)}{text2}。");
-						playerFacts.Add($"{giverName} 原本打算交付 {FormatItemAmount(result, itemObject, text)}{text3}，但实际只交付了 {FormatItemAmount(num, itemObject, text)}{text2}。");
+						merchantFacts.Add(isGeneratedRpItem ? string.Format(EconomySourceTexts.Get("S534"), FormatItemAmount(result, itemObject, text), text3, FormatItemAmount(num, itemObject, text), text2) : string.Format(EconomySourceTexts.Get("S535"), FormatItemAmount(result, itemObject, text), text3, FormatItemAmount(num, itemObject, text), text2));
+						playerFacts.Add(string.Format(EconomySourceTexts.Get("S536"), giverName, FormatItemAmount(result, itemObject, text), text3, FormatItemAmount(num, itemObject, text), text2));
 					}
 				}
 				else
 				{
 					itemTransferFailedOrPartial++;
 					string text4 = BuildSettlementItemValueFactSuffixForExternal(currentSettlement, itemObject, result);
-					merchantFacts.Add(isGeneratedRpItem ? $"你试图交付 RP 物品 {FormatItemAmount(result, itemObject, text)}，但生成失败，本轮未实际交货。" : $"你试图交付 {FormatItemAmount(result, itemObject, text)}{text4}，但当前商铺库存不足，本轮未实际交货。");
+					merchantFacts.Add(isGeneratedRpItem ? string.Format(EconomySourceTexts.Get("S537"), FormatItemAmount(result, itemObject, text)) : string.Format(EconomySourceTexts.Get("S538"), FormatItemAmount(result, itemObject, text), text4));
 				}
 			}
 			else
@@ -16963,7 +16963,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 		});
 		if (itemTransferAttempted > 0)
 		{
-			string itemBatchSummary = "物品转移汇总：尝试项" + itemTransferAttempted + "，成功项" + itemTransferSucceeded + "，失败或不足项" + itemTransferFailedOrPartial + "，实际转移" + itemTransferActualQuantity + "件，实际指导总值约" + itemTransferActualValue + "第纳尔。";
+			string itemBatchSummary = EconomySourceTexts.Get("S468") + itemTransferAttempted + EconomySourceTexts.Get("S043") + itemTransferSucceeded + EconomySourceTexts.Get("S044") + itemTransferFailedOrPartial + EconomySourceTexts.Get("S045") + itemTransferActualQuantity + EconomySourceTexts.Get("S469") + itemTransferActualValue + EconomySourceTexts.Get("S047");
 			merchantFacts.Add(itemBatchSummary);
 			playerFacts.Add(itemBatchSummary);
 			Logger.Log("Logic", "[RewardMerchant] item_batch_done attempted=" + itemTransferAttempted + " succeeded=" + itemTransferSucceeded + " failedOrPartial=" + itemTransferFailedOrPartial + " actualQuantity=" + itemTransferActualQuantity + " actualValue=" + itemTransferActualValue);
@@ -16990,10 +16990,10 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 					}
 					string debtId = debtLine.DebtId ?? "";
 					string deadline = BuildDebtPromiseDeadlineText(debtLine.DueDay, debtLine.IsDueUnlimited);
-					string note = string.IsNullOrWhiteSpace(text) ? "无" : text;
+					string note = string.IsNullOrWhiteSpace(text) ? EconomySourceTexts.Get("S013") : text;
 					string marketLabel = BuildSettlementMerchantDebtLabel(currentSettlement, kind);
-					merchantFacts.Add($"你已经记下：玩家的承诺或欠款价值 {result8} 第纳尔，达成期限为：{deadline}，备注：{note}（债务ID:{debtId}）。");
-					playerFacts.Add($"你对 {marketLabel} 的承诺或欠款价值 {result8} 第纳尔，达成期限为：{deadline}，备注：{note}（债务ID:{debtId}）。");
+					merchantFacts.Add(string.Format(EconomySourceTexts.Get("S472"), result8, deadline, note, debtId));
+					playerFacts.Add(string.Format(EconomySourceTexts.Get("S473"), marketLabel, result8, deadline, note, debtId));
 				}
 			}
 			return string.Empty;
@@ -17009,7 +17009,7 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 				{
 					merchantFacts.Add(statusText);
 					playerFacts.Add(statusText);
-					bool flag2 = statusText.IndexOf("已按协商解除", StringComparison.OrdinalIgnoreCase) >= 0;
+					bool flag2 = statusText.IndexOf(EconomySourceTexts.Get("S036"), StringComparison.OrdinalIgnoreCase) >= 0;
 					ShowRewardMessage(EconomyUiTexts.MarketDebtRelease(EconomyUiTexts.DebtStatusForDisplay(statusText), flag2), flag2 ? Color.FromUint(4278255360u) : Color.FromUint(4294923605u), giverCharacter);
 					if (flag)
 					{
@@ -17025,14 +17025,14 @@ public partial class RewardSystemBehavior : CampaignBehaviorBase
 			if (matchCollection5 != null && matchCollection5.Count > 0 && int.TryParse(matchCollection5[matchCollection5.Count - 1].Groups[1].Value, out var result8))
 			{
 				_ = NormalizeLlmTrustDeltaValue(result8);
-				Logger.Log("Logic", "[Reward] 提示: 非Hero商贩检测到 [ACTION:TRADE_TRUST]，但即时交易信任现已改为按实际交付价值自动累计，本标签已忽略。");
+				Logger.Log("Logic", "[Reward] Non-hero merchant [ACTION:TRADE_TRUST] ignored: immediate trade trust now accrues from actual delivered value.");
 			}
 			responseText = regex13.Replace(responseText, string.Empty);
 		}
 		responseText = responseText.Trim();
 		if (merchantFacts.Count > 0)
 		{
-			SetLastGeneratedNpcFactLines(new string[1] { "[AFEF NPC行为补充] " + giverName + ": " + string.Join(" ", merchantFacts) });
+			SetLastGeneratedNpcFactLines(new string[1] { EconomySourceTexts.Get("S048") + giverName + ": " + string.Join(" ", merchantFacts) });
 			AppendSettlementMerchantNpcFact(currentSettlement, kind, string.Join(" ", merchantFacts), giverName);
 		}
 		if (playerFacts.Count > 0 && receiver == Hero.MainHero)

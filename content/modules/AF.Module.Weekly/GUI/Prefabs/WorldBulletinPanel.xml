@@ -1,5 +1,5 @@
 <Prefab>
-  <!-- Layout mirrors pencil-new.pen frame sAH0C (1920×1080 新快报面板 v3｜列国邸报 · 铜版雕刻做旧): 1280x814 sheet on the 1730x1100 wide plate (ornaments kept at native ratio). -->
+  <!-- Layout mirrors pencil-new.pen frame sAH0C (1920x1080 bulletin panel v3, kingdom gazette with aged copperplate engraving): 1280x814 sheet on the 1730x1100 wide plate (ornaments kept at native ratio). -->
   <Window>
     <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent">
       <Children>

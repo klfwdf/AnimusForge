@@ -33,9 +33,43 @@ internal static class IssueDisplayMatchCatalog
 		"CandidateTroopsLabel",
 		"CandidateCasualtiesLabel",
 		"UnnamedQuestFallback",
-		"RecentJournalHeading"
+		"RecentJournalHeading",
+		"Raw_023",
+		"Raw_024",
+		"Raw_025",
+		"Raw_026",
+		"Raw_027",
+		"Raw_028",
+		"Raw_029",
+		"Raw_030",
+		"Raw_031",
+		"Raw_032",
+		"Raw_033",
+		"Raw_034",
+		"Raw_035",
+		"Raw_036",
+		"Raw_037",
+		"Raw_038",
+		"Raw_039",
+		"Raw_040",
+		"Raw_041",
+		"Raw_042",
+		"Raw_043",
+		"Raw_044",
+		"Raw_045",
+		"Raw_046",
+		"Raw_047",
+		"Raw_048",
+		"Raw_049",
+		"Raw_050",
+		"Raw_051",
+		"Raw_052",
+		"Raw_053",
+		"Raw_054"
 	};
 	private static readonly Lazy<IReadOnlyDictionary<string, string>> Values = new Lazy<IReadOnlyDictionary<string, string>>(Load, true);
+
+	internal static string Get(string id) => Values.Value[id];
 
 	internal static bool TryGet(string id, out string literal)
 	{

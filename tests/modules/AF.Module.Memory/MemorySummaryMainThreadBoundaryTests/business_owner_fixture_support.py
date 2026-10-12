@@ -92,6 +92,16 @@ def include(root,files,manifest,ex):
  pure_type('src/AF.GameAdapter.Bannerlord/Memory/MemoryHistoryCommitBannerlordAdapter.cs','MemoryHistoryCommitBannerlordAdapter',['internal static bool IsFirstMeetingNpcFactBody(', 'internal static bool IsFirstMeetingNpcFactLine(', 'internal static string BuildFirstMeetingNpcFactText()', 'internal static string BuildFirstMeetingNpcFactText(Hero observer)', 'internal static string NormalizeFirstMeetingNpcFactForPrompt('])
  if 'MemoryHistoryCommitBannerlordAdapter.cs' in files and 'using TaleWorlds.CampaignSystem;' not in files['MemoryHistoryCommitBannerlordAdapter.cs']:
   files['MemoryHistoryCommitBannerlordAdapter.cs']='using TaleWorlds.CampaignSystem;\n'+files['MemoryHistoryCommitBannerlordAdapter.cs']
+ # Link the production system-fact projector and actual JSON reader, never an identity stub.
+ for relative in ['src/modules/AF.Module.Prompt/Composition/MemorySystemFactProjection.cs', 'src/modules/AF.Module.Prompt/Runtime/PromptComposerTexts.cs']:
+  text=(root/relative).read_text(encoding='utf-8-sig')
+  match=re.search(r'^namespace ([\w.]+);',text,re.M)
+  if match:text=text[:match.start()]+'namespace '+match[1]+' {'+text[match.end():]+'\n}'
+  files[Path(relative).name]=text
+  manifest.append(dict(file=relative,sha256=hashlib.sha256(text.encode()).hexdigest(),current_source=True))
+ if not any('class AnimusForgeModulePaths' in value for value in files.values()):
+  package=str(root/'content/modules/AF.Module.Prompt/ModuleData').replace('\\','/')
+  files['ControlledPromptPackagePath.cs']='namespace AnimusForge {internal static class AnimusForgeModulePaths {internal static string GetModuleDataFilePath(string name)=>System.IO.Path.Combine("'+package+'",name);}}'
  # The memory tests observe only these actual maintenance-owned state slots and budget rule.
  # This is not a substitute for the separately executed Daily controller orchestration replay.
  daily_path='src/AF.GameAdapter.Bannerlord/Weekly/CampaignDailyMaintenanceController.cs'

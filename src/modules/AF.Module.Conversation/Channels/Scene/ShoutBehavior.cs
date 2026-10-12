@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -1082,7 +1082,7 @@ _j17SceneTradeController = new SceneTradeController(new SceneTradeControllerPort
 
 	private HashSet<string> _sceneHeroFirstMeetingShownThisSession => _sceneRevisitState.FirstMeetingShownThisSession;
 
-	private const string PlayerCraftedAfefInspectionSuffix = ScenePromptMessageProjectionComposer.PlayerCraftedAfefInspectionSuffix;
+	private static string PlayerCraftedAfefInspectionSuffix => ScenePromptMessageProjectionComposer.PlayerCraftedAfefInspectionSuffix;
 
 	private readonly SceneDeferredHistoryFactOwner _deferredHistoryFacts;
 	private string _pendingHeroHistoryExtraFactAfterSceneReply { get => _deferredHistoryFacts.Fact; set => _deferredHistoryFacts.Fact = value; }
@@ -1202,7 +1202,7 @@ private Dictionary<string, float> _passiveCooldowns { get => _j17ScenePassiveInt
 
 	private const string AutoGroupRelayRuleId = "scene_auto_group_relay";
 
-	private const string AutoGroupRelayTagTemplate = "[RELAY:接力编号]";
+	private static readonly string AutoGroupRelayTagTemplate = ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0676");
 
 	internal const string AutoGroupRelayPositiveSoundEvent = "event:/ui/notification/relation";
 
@@ -4049,7 +4049,7 @@ private bool TryTriggerNativeConversationOpenLordsHallAction(Hero targetHero, Ch
 
 	internal static string BuildNativeConversationPreprocessUnavailableText()
 	{
-		return "（API请求失败: 原生对话前处理超时或上一轮仍在运行，请稍后重试）";
+		return ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0677");
 	}
 
 	public static bool IsNativeConversationPreprocessUnavailableTextForExternal(string text)
@@ -4069,6 +4069,8 @@ private bool TryTriggerNativeConversationOpenLordsHallAction(Hero targetHero, Ch
 	internal sealed class NativeConversationGameActionResult
 	{
 		public string Content;
+        public string DiplomacyReplyBody;
+        public List<string> DiplomacyReplyReceipts;
 		public WorldMapPartyCommandBehavior.WorldMapOrderApplyResult WorldMapResult;
 		public bool ResponseDiscarded;
 		public string FinalVisible;

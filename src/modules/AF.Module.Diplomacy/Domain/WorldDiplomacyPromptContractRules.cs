@@ -264,7 +264,7 @@ public static class WorldDiplomacyPromptContractRules
 		sb.AppendLine(BuildCanonicalHistoryCompressionModeContract(localize));
 		sb.AppendLine(CanonicalHistoryContractMarker);
 		sb.AppendLine(ContractText(localize, "AF_DIP_Contract_034", "The next system message contains historical facts. In MODE=DECLARE it provides only this event and a recent relevant history window, not the complete archive. In MODE=COMPACT it provides the continuous global history prefix to compress. MODE in the final user message determines the sole task and output structure. Current dynamic state takes precedence over conflicting history."));
-		return sb.ToString().TrimEnd();
+		return PromptComposerTexts.ApplyOutputLanguage(sb.ToString().TrimEnd());
 	}
 
 	public static string BuildGenerationSystemPrompt(string commonContract, int minimumCharacters, int maximumCharacters)
@@ -328,7 +328,7 @@ public static class WorldDiplomacyPromptContractRules
 	{
 		StringBuilder sb = CreateSystemPromptBuilder(commonContract);
 		sb.AppendLine(DiplomacyAnalysisTaskMarker + ContractText(localize, "AF_DIP_Contract_103", "MODE=ANALYZE in the final message determines the task and output structure."));
-		return sb.ToString().TrimEnd();
+		return PromptComposerTexts.ApplyOutputLanguage(sb.ToString().TrimEnd());
 	}
 
 	public static string BuildAnalysisModeContract()
@@ -375,8 +375,8 @@ public static class WorldDiplomacyPromptContractRules
 
 	public static string BuildRoundCompressionSystemPrompt(Func<string, string, string> localize)
 	{
-		return ContractText(localize, "AF_DIP_Contract_057", "You are a chronicler of Calradian diplomacy. Compress a diplomatic event that has naturally concluded into a global chronicle summary and atomic facts that can be filtered by source document. Do not invent facts.\n")
-			+ ContractText(localize, "AF_DIP_Contract_058", "Output only JSON: {\"summary\":\"event summary\",\"facts\":[{\"text\":\"atomic fact\",\"source_document_ids\":[\"document ID\"],\"kingdom_ids\":[\"relevant kingdom ID\"]}]}");
+		return PromptComposerTexts.ApplyOutputLanguage(ContractText(localize, "AF_DIP_Contract_057", "You are a chronicler of Calradian diplomacy. Compress a diplomatic event that has naturally concluded into a global chronicle summary and atomic facts that can be filtered by source document. Do not invent facts.\n")
+			+ ContractText(localize, "AF_DIP_Contract_058", "Output only JSON: {\"summary\":\"event summary\",\"facts\":[{\"text\":\"atomic fact\",\"source_document_ids\":[\"document ID\"],\"kingdom_ids\":[\"relevant kingdom ID\"]}]}"));
 	}
 
 	public static string BuildRealmInstitutionalVoiceText(string kingdomName, string cultureName, string rulerTitle, string governmentHardFact, string lore)
@@ -408,7 +408,7 @@ public static class WorldDiplomacyPromptContractRules
 
 	public static string BuildCurrentLegalDiplomaticOptions(
 		IReadOnlyDictionary<string, List<string>> actionsByTarget)
-	    => BuildCurrentLegalDiplomaticOptions(string, actionsByTarget, null);
+		=> BuildCurrentLegalDiplomaticOptions(actionsByTarget, null);
 
 	public static string BuildCurrentLegalDiplomaticOptions(
 		IReadOnlyDictionary<string, List<string>> actionsByTarget, Func<string, string, string> localize)
@@ -462,15 +462,21 @@ public static string BuildKingdomStrategicProfileMarker(string kingdomId)
 	{
 		return KingdomStrategicProfileMarkerPrefix + (kingdomId ?? "").Trim() + "】";
 	}
-public static string UpsertKingdomStrategicProfilePrompt(string existing, string profilePrompt, string authorId)
+public static string UpsertKingdomStrategicProfilePrompt(string existing, string profilePrompt, string authorId, Func<string, string, string> localize = null)
 	{
 		if (string.IsNullOrEmpty(existing)) return profilePrompt ?? "";
 		string marker = BuildKingdomStrategicProfileMarker(authorId);
 		int markerIndex = existing.LastIndexOf(marker, StringComparison.OrdinalIgnoreCase);
 		if (markerIndex < 0) return InsertKingdomStrategicProfilePrompt(existing, profilePrompt, authorId);
-		int ruleIndex = existing.IndexOf(KingdomStrategicIntentRule, markerIndex, StringComparison.Ordinal);
+		string endRule = ContractText(localize, "AF_DIP_Compatibility_008", "Find reasons for the long-term strategy, especially war, based on current circumstances; use real interests, disputes or security concerns as public reasons.");
+		int ruleIndex = existing.IndexOf(endRule, markerIndex, StringComparison.Ordinal);
+		if (ruleIndex < 0 && localize != null)
+		{
+			endRule = KingdomStrategicIntentRule;
+			ruleIndex = existing.IndexOf(endRule, markerIndex, StringComparison.Ordinal);
+		}
 		if (ruleIndex < 0) return InsertKingdomStrategicProfilePrompt(existing, profilePrompt, authorId);
-		int endIndex = ruleIndex + KingdomStrategicIntentRule.Length;
+		int endIndex = ruleIndex + endRule.Length;
 		string prefix = existing.Substring(0, markerIndex);
 		string suffix = existing.Substring(endIndex).TrimStart('\r', '\n');
 		if (!prefix.EndsWith("\n", StringComparison.Ordinal)) prefix += "\n";

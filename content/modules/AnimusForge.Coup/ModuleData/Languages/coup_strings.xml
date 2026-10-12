@@ -139,5 +139,6 @@
     <string id="AF_COUP_UI_AVAILABLE_SOLDIERS" text="Available soldiers" />
     <string id="AF_COUP_UI_SELECTION_PARTY_NAME" text="{TITLE} ({MINIMUM} to {LIMIT} soldiers)" />
     <string id="AF_COUP_UI_SELECTION_COUNT_HINT" text="Select {MINIMUM} to {LIMIT} soldiers." />
+    <string id="AF_COUP_UI_REPORT_FAILURE_NO_WAR" text="The coup failed; the throne was not taken. The clan left the former kingdom with its existing land." />
   </strings>
 </base>

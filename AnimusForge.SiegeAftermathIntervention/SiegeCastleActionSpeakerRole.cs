@@ -32,12 +32,27 @@ public static class SiegeCastleActionSpeakerRoleProfile
 
     public static string Describe(SiegeCastleActionSpeakerRole role)
     {
+        return Describe(role, isEnglish: false);
+    }
+
+    public static string Describe(SiegeCastleActionSpeakerRole role, bool isEnglish)
+    {
+        if (isEnglish)
+        {
+            return role switch
+            {
+                SiegeCastleActionSpeakerRole.AlliedSoldier => "Allied soldier brought into the castle by the player",
+                SiegeCastleActionSpeakerRole.RegularPrisoner => "Defeated regular garrison prisoner",
+                SiegeCastleActionSpeakerRole.CapturedLord => "Captured lord awaiting disposition",
+                _ => "Scene character without castle disposition authority"
+            };
+        }
         return role switch
         {
-            SiegeCastleActionSpeakerRole.AlliedSoldier => "玩家带入城堡的己方士兵",
-            SiegeCastleActionSpeakerRole.RegularPrisoner => "守城战败的普通战俘士兵",
-            SiegeCastleActionSpeakerRole.CapturedLord => "等待处置的被俘领主",
-            _ => "无城堡处置权限的现场角色"
+            SiegeCastleActionSpeakerRole.AlliedSoldier => "Allied soldier brought into the castle by the player",
+            SiegeCastleActionSpeakerRole.RegularPrisoner => "Defeated regular garrison prisoner",
+            SiegeCastleActionSpeakerRole.CapturedLord => "Captured lord awaiting disposition",
+            _ => "Scene character without castle disposition authority"
         };
     }
 }

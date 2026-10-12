@@ -3430,7 +3430,7 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 		string text8 = AIConfigHandler.BuildActionPostprocessUserPrompt(actionPostprocessUserPromptTemplate, text2, speaker?.Name?.ToString() ?? "NPC", SocialPromptTexts.Get("P014"), text, null, null, null, text4, text5);
 		if (!AIConfigHandler.TryCallAuxiliaryActionPostprocess(text7, text8, 5000, 0f, out var content, out var error))
 		{
-			Logger.Log("Romance", SocialSourceTexts.Get("S208") + error);
+			Logger.Log("Romance", "[MarriagePostprocess] Request failed: " + error);
 			return text.Trim();
 		}
 		string text9 = NormalizeMarriagePostprocessTags(content, list, speaker);
@@ -3591,7 +3591,7 @@ public class RomanceSystemBehavior : CampaignBehaviorBase
 		}
 		catch (Exception ex)
 		{
-			Logger.Log("Romance", SocialSourceTexts.Get("S214") + ex);
+			Logger.Log("Romance", "[ERROR] ApplyMarriageTags exception: " + ex);
 		}
 	}
 }

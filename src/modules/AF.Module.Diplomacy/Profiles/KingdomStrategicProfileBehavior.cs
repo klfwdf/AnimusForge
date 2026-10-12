@@ -1,3 +1,4 @@
+using AnimusForge;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -771,7 +772,7 @@ public sealed partial class KingdomStrategicProfileBehavior : CampaignBehaviorBa
 		if (!NpcPolicyLlmClient.IsConfiguredForNpcPolicy(out string configError))
 		{
 			profile.GenerationState = "pending";
-			profile.LastGenerationError = string.IsNullOrWhiteSpace(configError) ? "事件与叛乱 API 尚未配置。" : configError;
+			profile.LastGenerationError = string.IsNullOrWhiteSpace(configError) ? DiplomacyMiscPromptTexts.Get("VassalageBehavior_ApiConfigError", "Event and rebellion API not configured.") : configError;
 			if (showConfigError)
 			{
 				InformationManager.DisplayMessage(new InformationMessage(DiplomacyUiLocalization.Text("AF_DIP_UI_KingdomProfile_GenerationConfigError", "The kingdom founding profile could not be generated because the event/rebellion API is not configured.")));
@@ -819,8 +820,8 @@ public sealed partial class KingdomStrategicProfileBehavior : CampaignBehaviorBa
 			_queuedFoundingKingdomIds.Remove(NormalizeId(request.KingdomId));
 			profile.GenerationState = kingdom?.IsEliminated == true ? "paused_eliminated" : "failed";
 			profile.LastGenerationError = kingdom?.IsEliminated == true
-				? "国家已覆灭，已停止自动生成建国卡。"
-				: "国家对象已不存在，无法生成建国卡。";
+				? DiplomacyMiscPromptTexts.Get("VassalageBehavior_KingdomEliminated", "The kingdom has been eliminated; automatic founding card generation stopped.")
+				: DiplomacyMiscPromptTexts.Get("VassalageBehavior_KingdomMissing", "The kingdom object no longer exists; cannot generate founding card.");
 			return;
 		}
 		request.KingdomName = GetKingdomName(kingdom);
@@ -878,7 +879,7 @@ public sealed partial class KingdomStrategicProfileBehavior : CampaignBehaviorBa
 				NpcPolicyApiCallResult apiResult = LegacyPolicyLlmGateway.ToLegacyResult(gatewayResult);
 				if (!apiResult.Success)
 				{
-					result.ErrorMessage = apiResult.ErrorMessage ?? "API 请求失败。";
+									result.ErrorMessage = apiResult.ErrorMessage ?? DiplomacyMiscPromptTexts.Get("WorldDiplomacy_ApiRequestFailed", "API request failed.");
 				}
 				else if (TryParseFoundingProfile(apiResult.Content, out string personality, out string strategy, out string parseError))
 				{
@@ -1669,7 +1670,7 @@ public sealed partial class KingdomStrategicProfileBehavior : CampaignBehaviorBa
 		string directory = Path.GetDirectoryName(Path.GetFullPath(filePath));
 		if (string.IsNullOrWhiteSpace(directory))
 		{
-			throw new InvalidOperationException("导出目录无效。");
+					throw new InvalidOperationException(DiplomacyMiscPromptTexts.Get("ProfileDevUi_ExportDirectoryInvalid", "Export directory is invalid."));
 		}
 		Directory.CreateDirectory(directory);
 		string tempPath = Path.Combine(directory, "." + Path.GetFileName(filePath) + "." + Guid.NewGuid().ToString("N") + ".tmp");
@@ -1721,7 +1722,7 @@ public sealed partial class KingdomStrategicProfileBehavior : CampaignBehaviorBa
 	private static string BuildFoundingProfilePrompt(Kingdom kingdom)
 	{
 		Hero ruler = GetRuler(kingdom);
-		string settlements = "无领地";
+		string settlements = DiplomacyPromptTexts.Get("FoundingProfileNoFiefs", "No fiefs");
 		try
 		{
 			List<string> names = (kingdom?.Settlements ?? Enumerable.Empty<Settlement>())
@@ -1732,13 +1733,13 @@ public sealed partial class KingdomStrategicProfileBehavior : CampaignBehaviorBa
 				.ToList();
 			if (names.Count > 0)
 			{
-				settlements = string.Join("、", names);
+				settlements = string.Join(DiplomacyPromptTexts.Get("FoundingProfileListSeparator", ", "), names);
 			}
 		}
 		catch
 		{
 		}
-		string enemies = "无明确敌国";
+		string enemies = DiplomacyPromptTexts.Get("FoundingProfileNoEnemies", "No clearly identified enemy kingdoms");
 		try
 		{
 			List<string> names = GetCurrentKingdoms()
@@ -1749,21 +1750,21 @@ public sealed partial class KingdomStrategicProfileBehavior : CampaignBehaviorBa
 				.ToList();
 			if (names.Count > 0)
 			{
-				enemies = string.Join("、", names);
+				enemies = string.Join(DiplomacyPromptTexts.Get("FoundingProfileListSeparator", ", "), names);
 			}
 		}
 		catch
 		{
 		}
 		StringBuilder prompt = new StringBuilder(700);
-		prompt.AppendLine("为新建国家生成一张固定角色卡。只输出一行JSON，不解释：");
+		prompt.AppendLine(DiplomacyPromptTexts.Get("FoundingProfileTask", "Generate a fixed character profile for the newly founded kingdom. Output only one line of JSON, with no explanation:"));
 		prompt.AppendLine("{\"national_personality\":\"...\",\"long_term_strategy\":\"...\"}");
-		prompt.AppendLine("两项各50-160字。性格写决策风格、价值观与底线；战略写长期、可执行的国家目标。不要写数值或系统术语。");
-		prompt.AppendLine("国家：" + GetKingdomName(kingdom) + "（" + (kingdom?.StringId ?? "") + "）");
-		prompt.AppendLine("文化：" + (kingdom?.Culture?.Name?.ToString() ?? kingdom?.Culture?.StringId ?? "未知"));
-		prompt.AppendLine("统治者：" + (ruler?.Name?.ToString() ?? "未知"));
-		prompt.AppendLine("领地：" + settlements);
-		prompt.Append("当前敌国：" + enemies);
+		prompt.AppendLine(DiplomacyPromptTexts.Get("FoundingProfileLengthRule", "Each field must contain 50-160 characters. Personality describes decision style, values and boundaries; strategy describes long-term actionable national goals. Do not include numbers or system terminology."));
+		prompt.AppendLine(DiplomacyPromptTexts.Get("FoundingProfileKingdom", "Kingdom: ") + GetKingdomName(kingdom) + "（" + (kingdom?.StringId ?? "") + "）");
+		prompt.AppendLine(DiplomacyPromptTexts.Get("FoundingProfileCulture", "Culture: ") + (kingdom?.Culture?.Name?.ToString() ?? kingdom?.Culture?.StringId ?? DiplomacyPromptTexts.Get("FoundingProfileUnknown", "Unknown")));
+		prompt.AppendLine(DiplomacyPromptTexts.Get("FoundingProfileRuler", "Ruler: ") + (ruler?.Name?.ToString() ?? DiplomacyPromptTexts.Get("FoundingProfileUnknown", "Unknown")));
+		prompt.AppendLine(DiplomacyPromptTexts.Get("FoundingProfileFiefs", "Fiefs: ") + settlements);
+		prompt.Append(DiplomacyPromptTexts.Get("FoundingProfileEnemies", "Current enemy kingdoms: ") + enemies);
 		return prompt.ToString();
 	}
 
@@ -1779,7 +1780,7 @@ public sealed partial class KingdomStrategicProfileBehavior : CampaignBehaviorBa
 			int end = text.LastIndexOf('}');
 			if (start < 0 || end <= start)
 			{
-				errorMessage = "LLM 返回内容中没有 JSON 对象。";
+							errorMessage = DiplomacyMiscPromptTexts.Get("WorldDiplomacy_MissingJson", "No JSON object in LLM return.");
 				return false;
 			}
 			JObject root = JObject.Parse(text.Substring(start, end - start + 1));
@@ -1787,14 +1788,14 @@ public sealed partial class KingdomStrategicProfileBehavior : CampaignBehaviorBa
 			strategy = CleanProfileText(GetStringPropertyIgnoreCase(root, "long_term_strategy", "LongTermStrategy", "strategy"));
 			if (string.IsNullOrWhiteSpace(personality) || string.IsNullOrWhiteSpace(strategy))
 			{
-				errorMessage = "LLM JSON 缺少 national_personality 或 long_term_strategy。";
+						errorMessage = DiplomacyMiscPromptTexts.Get("WorldDiplomacy_MissingFields", "LLM JSON is missing national_personality or long_term_strategy.");
 				return false;
 			}
 			return true;
 		}
 		catch (Exception ex)
 		{
-			errorMessage = "LLM JSON 解析失败：" + ex.Message;
+					errorMessage = DiplomacyMiscPromptTexts.Get("WorldDiplomacy_ParseFailedPrefix", "LLM JSON parsing failed: ") + ex.Message;
 			return false;
 		}
 	}
@@ -1826,32 +1827,32 @@ public sealed partial class KingdomStrategicProfileBehavior : CampaignBehaviorBa
 		return new Dictionary<string, KingdomStrategicProfileTemplate>(StringComparer.OrdinalIgnoreCase)
 		{
 			["empire"] = new KingdomStrategicProfileTemplate(
-				"以帝国法统、元老院传统和严整秩序为最高准则；自认肩负保存旧帝国制度的责任，善于运用法律与政治联盟，但对割据者长期戒备，不轻易承认分裂政权的正统性。",
-				"以北方帝国的法统重新统一帝国：稳住核心行省，逐步削弱并吞并南方帝国与西方帝国，夺回旧帝国重镇，最终恢复由单一中央政权统治的帝国。"),
+            DiplomacyMiscPromptTexts.Get("StrategicProfile_North_Personality", "Highest principles are imperial law, senatorial tradition, and strict order; considers itself responsible for preserving the old imperial institutions, skilled in law and alliances, wary of warlords, and reluctant to recognize breakaway regimes."),
+            DiplomacyMiscPromptTexts.Get("StrategicProfile_North_Strategy", "Reunify the empire under the Northern Empire's legitimacy: secure core provinces, steadily weaken and annex the Southern and Western Empires, retake key strongholds, and restore an empire under a single central authority.")),
 			["empire_s"] = new KingdomStrategicProfileTemplate(
-				"重视皇室合法性、宫廷秩序与治理连续性；倾向用外交、婚盟和制度吸纳争取支持，一旦皇权受到挑战便表现得坚决而记仇，认为统一必须围绕合法皇位完成。",
-				"以南方帝国皇室的继承权统一帝国：巩固南方富庶行省与盟友，争取旧贵族和城市支持，逐步击败北方帝国与西方帝国，建立获得广泛承认的唯一皇权。"),
+            DiplomacyMiscPromptTexts.Get("StrategicProfile_South_Personality", "Values royal legitimacy, courtly order, and governing continuity; favors diplomacy, marriage alliances, and institutional assimilation, resolute and vengeful when authority is challenged, believing reunification must center on the rightful throne."),
+            DiplomacyMiscPromptTexts.Get("StrategicProfile_South_Strategy", "Reunify the empire through the Southern Empire's dynastic succession: consolidate southern wealthy provinces and allies, win over old nobility and cities, steadily defeat Northern and Western Empires, and establish a widely acknowledged monarchy.")),
 			["empire_w"] = new KingdomStrategicProfileTemplate(
-				"崇尚军功、纪律、实力与能者统治；决策直接强硬，愿意奖励有能力的将领和盟友，也会迅速惩罚软弱与背叛，认为帝国只能由胜利者重新锻造。",
-				"以西方帝国的军政力量统一帝国：整合西部军团和战略要塞，持续压迫北方帝国与南方帝国，夺取关键城市与交通线，最终建立由强势中央和军功集团支撑的新帝国。"),
+            DiplomacyMiscPromptTexts.Get("StrategicProfile_West_Personality", "Values martial prowess, discipline, strength, and meritocracy; decisions are direct and unyielding, quick to reward capable commanders and allies, swift to punish weakness and betrayal, believing the empire can only be reforged by victors."),
+            DiplomacyMiscPromptTexts.Get("StrategicProfile_West_Strategy", "Reunify the empire through the Western Empire's military might: integrate western legions and strategic fortresses, exert relentless pressure on North and South, seize key cities and corridors, and build a new empire backed by a strong central martial elite.")),
 			["vlandia"] = new KingdomStrategicProfileTemplate(
-				"务实、自信而尚武，尊重封建契约、领地回报和贵族荣誉；善于以土地换取效忠，对富庶领土和战略通道有强烈兴趣，面对示弱的邻国往往会步步施压。",
-				"巩固西海岸与既有封臣体系，夺取连接内陆的城堡和商路，优先削弱巴旦尼亚及帝国西境的阻碍者，让瓦兰迪亚的封建领主与骑士势力逐步主导大陆西部。"),
+            DiplomacyMiscPromptTexts.Get("StrategicProfile_Vlandia_Personality", "Pragmatic, confident, and martial, respecting feudal contracts, fief rewards, and noble honor; adept at trading land for loyalty, keenly interested in rich territory and trade routes, pressing neighboring realms when weakness shows."),
+            DiplomacyMiscPromptTexts.Get("StrategicProfile_Vlandia_Strategy", "Consolidate the western seaboard and vassal network, seize inland-connecting castles and trade routes, prioritize weakening Battanian and imperial western frontiers, and let Vlandian lords and knights dominate the continent's west.")),
 			["battania"] = new KingdomStrategicProfileTemplate(
-				"珍视氏族自由、古老森林和本土传统；对外来占领高度敏感，善伏击、善结盟但不喜长期受制于中央权威，面对侵占故土者会保持跨世代的敌意。",
-				"守住并收复巴旦尼亚高地与森林故土，优先驱逐侵入核心山区的瓦兰迪亚和帝国势力，联合可利用的邻国削弱包围，最终恢复一个不受外族支配的高地共同体。"),
+            DiplomacyMiscPromptTexts.Get("StrategicProfile_Battania_Personality", "Treasures clan freedom, ancient forests, and native traditions; intensely sensitive to foreign encroachment, skilled in ambushes and alliances but averse to central authority, harboring generational hostility toward land-grabbers."),
+            DiplomacyMiscPromptTexts.Get("StrategicProfile_Battania_Strategy", "Hold and reclaim the Battanian highlands and ancestral woodlands, expel encroaching Vlandian and imperial forces from core mountains, ally with available neighbors to break encirclement, and restore a free highland realm.")),
 			["sturgia"] = new KingdomStrategicProfileTemplate(
-				"坚韧、重誓言、重家族与战士荣誉，能忍受长期困苦；平时尊重实力与互惠，受到羞辱或边境蚕食时反应强硬，对内部离心和南方扩张保持警惕。",
-				"统一并稳固北方诸地，守住寒地城镇和东西交通，收复被邻国侵占的传统边境；在内部稳定后向富庶南方争取港口、农地与缓冲区，确保斯特吉亚长期强盛。"),
+            DiplomacyMiscPromptTexts.Get("StrategicProfile_Sturgia_Personality", "Hardy, oath-bound, valuing clan and warrior honor, enduring long hardships; respects strength and reciprocity, reacts forcefully to humiliation or border incursions, while guarding against domestic factionalism and southern expansion."),
+            DiplomacyMiscPromptTexts.Get("StrategicProfile_Sturgia_Strategy", "Unite and secure the northern reaches, guard frostbound towns and east-west transit, reclaim lost ancestral borders, and once stable, push southward toward ports, farmland, and buffer zones to guarantee lasting strength.")),
 			["aserai"] = new KingdomStrategicProfileTemplate(
-				"讲求家族声望、互惠、贸易利益与沙漠秩序；擅长耐心议价和多方平衡，但会坚决报复对商路、绿洲与部族尊严的侵犯，通常避免没有收益的消耗战。",
-				"维持纳哈萨各部族团结，控制绿洲、港口与跨沙漠商路，防止帝国和外族进入南方腹地；在贸易与财政稳固后夺取邻近富庶节点，使阿塞莱成为南方不可挑战的强权。"),
+            DiplomacyMiscPromptTexts.Get("StrategicProfile_Aserai_Personality", "Values family prestige, reciprocity, commercial prosperity, and desert order; patient negotiators balancing rival interests, fiercely retaliating against trade, oasis, or tribal indignities, usually avoiding profitless wars of attrition."),
+            DiplomacyMiscPromptTexts.Get("StrategicProfile_Aserai_Strategy", "Maintain unity across Nahasa tribes, control oases, ports, and caravan routes, protect southern depths from foreign incursions, and once trade and finance are secure, seize adjacent wealthy hubs to make the Aserai an unrivaled power.")),
 			["khuzait"] = new KingdomStrategicProfileTemplate(
-				"机动、进取、尊重胜利与服从，善于在实力变化时迅速结盟或转向；把贡赋和臣服视为秩序证明，对软弱边境会主动试探，对反抗者倾向持续施压。",
-				"整合东部草原与各部骑兵，持续向西夺取牧地、城市和交通线，迫使沿途王国臣服或纳贡；逐步击破帝国东境及其他阻碍者，建立横跨草原与大陆腹地的霸权。"),
+            DiplomacyMiscPromptTexts.Get("StrategicProfile_Khuzait_Personality", "Mobile, assertive, respecting triumph and obedience, swift to pivot or ally as fortunes shift; treats tribute and submission as proof of order, probing vulnerable borders and relentlessly pressing defiant adversaries."),
+            DiplomacyMiscPromptTexts.Get("StrategicProfile_Khuzait_Strategy", "Unify eastern steppes and horse archers, push westward to secure pastures, towns, and transit arteries, forcing realms to submit or pay tribute, breaking the eastern empire and rivals to establish steppe-and-heartland hegemony.")),
 			["nord"] = new KingdomStrategicProfileTemplate(
-				"尚武、冒险、重视战利品、声望与首领威望；善于海上远征和突然进攻，尊重勇敢的敌人却轻视软弱与空洞承诺，内部需要持续胜利和分配战果来维持凝聚。",
-				"持续入侵大陆上的各个王国：先夺取沿海港口和可供远征的据点，再轮番劫掠、削弱并征服大陆势力，把诺德人的定居地和统治范围不断向内陆推进。")
+            DiplomacyMiscPromptTexts.Get("StrategicProfile_Nord_Personality", "Martial, daring, prizing plunder, renown, and chieftain prestige; masters of sea expeditions and surprise assaults, respecting brave foes while scorning weakness, relying on repeated victories and spoils to preserve cohesion."),
+            DiplomacyMiscPromptTexts.Get("StrategicProfile_Nord_Strategy", "Continuously assault continental kingdoms: seize coastal ports and raiding footholds, progressively plunder, weaken, and subjugate inland realms, steadily expanding Nord settlements into the interior.")),
 		};
 	}
 
@@ -1862,34 +1863,34 @@ public sealed partial class KingdomStrategicProfileBehavior : CampaignBehaviorBa
 		if (culture.IndexOf("empire", StringComparison.OrdinalIgnoreCase) >= 0)
 		{
 			return new KingdomStrategicProfileTemplate(
-				"重视制度、秩序、法统与城市治理，善于利用官僚、外交和军队维护中央权威；对分裂和失控保持警惕，在合法性受到挑战时会采取强硬行动。",
-				"巩固现有行省和统治合法性，夺取具有政治与交通价值的帝国旧地，削弱竞争性政权，并逐步把周边势力纳入一个稳定、统一的中央秩序。" );
+            DiplomacyMiscPromptTexts.Get("StrategicProfile_GenericEmpire_Personality", "Emphasizes institutions, law, legitimacy, and civic administration, wielding bureaucracy, diplomacy, and legions to uphold central authority, vigilant against rebellion and acting decisively when challenged."),
+            DiplomacyMiscPromptTexts.Get("StrategicProfile_GenericEmpire_Strategy", "Consolidate existing provinces and imperial legitimacy, recapture strategic territories, undermine rival claimants, and integrate neighboring factions into a stable, unified hegemony."));
 		}
 		if (culture.IndexOf("nord", StringComparison.OrdinalIgnoreCase) >= 0 || culture.IndexOf("sturg", StringComparison.OrdinalIgnoreCase) >= 0)
 		{
 			return new KingdomStrategicProfileTemplate(
-				"坚韧尚武，重视誓言、战士声望和共同分配战果；能忍耐艰苦，却不会长期容忍边境蚕食、公开羞辱或软弱的领导。",
-				"先统一并守住本族核心领地与交通节点，再争取富庶边境、港口和缓冲区；通过可持续的胜利扩大影响，确保国家不被更强邻国包围或支配。" );
+            DiplomacyMiscPromptTexts.Get("StrategicProfile_GenericMartial_Personality", "Resilient and martial, valuing oaths, martial renown, and shared spoils; endures hardship but will not abide border encroachment, public insults, or feeble leadership."),
+            DiplomacyMiscPromptTexts.Get("StrategicProfile_GenericMartial_Strategy", "Unify and hold core ancestral lands and transit hubs, then contest fertile borders, harbors, and buffer regions, expanding influence through sustainable triumphs to prevent domination by stronger realms."));
 		}
 		return new KingdomStrategicProfileTemplate(
-			(name + "重视独立、生存、统治合法性与现实利益；会根据实力谨慎结盟和谈判，但在核心领土、政权延续与国家尊严受到威胁时保持明确底线。"),
-			"巩固核心领地与内部团结，保障财政、兵源和关键交通，优先消除直接威胁；在条件有利时争取相邻战略据点和可靠盟友，使国家获得长期生存能力与更大地区影响。" );
+            (name + DiplomacyMiscPromptTexts.Get("StrategicProfile_GenericIndependent_Personality", " values independence, survival, legitimacy, and pragmatic interests; allies and negotiates cautiously based on strength, but maintains firm boundaries when territory, succession, or dignity is threatened.")),
+            DiplomacyMiscPromptTexts.Get("StrategicProfile_GenericIndependent_Strategy", "Consolidate core holdings and internal cohesion, secure revenue, manpower, and critical arteries, neutralizing immediate perils and securing regional allies to ensure enduring survival and prestige."));
 	}
 
 	private static KingdomStrategicProfileTemplate BuildFoundingFallback(Kingdom kingdom)
 	{
-		string ruler = GetRuler(kingdom)?.Name?.ToString() ?? "新统治者";
+        string ruler = GetRuler(kingdom)?.Name?.ToString() ?? DiplomacyMiscPromptTexts.Get("StrategicProfile_NewRulerFallback", "New Ruler");
 		return new KingdomStrategicProfileTemplate(
-			"这是由" + ruler + "领导的新建政权，重视生存、凝聚、建国合法性和摆脱旧秩序控制；实力不足时会务实结盟，遭遇复辟、吞并或公开羞辱时反应强硬。",
-			"巩固建国合法性与现有领地，吸纳支持者并抵御旧宗主或周边强国的压制；站稳后夺取相邻战略据点、建立稳定财政与军队，发展为能够长期存续的独立王国。" );
+            string.Format(DiplomacyMiscPromptTexts.Get("StrategicProfile_Rebel_PersonalityFormat", "This is a newly established realm led by {0}, prioritizing survival, unity, founding legitimacy, and freedom from the old order; allying pragmatically when weak, reacting fiercely to restoration, annexation, or insults."), ruler),
+            DiplomacyMiscPromptTexts.Get("StrategicProfile_Rebel_Strategy", "Consolidate founding legitimacy and territory, recruit adherents, resist suppression from the former sovereign or rivals, secure strategic hubs and armed forces, and grow into an enduring sovereign kingdom."));
 	}
 
 	private static KingdomStrategicProfileTemplate BuildOrphanFallback(string kingdomName)
 	{
-		string name = string.IsNullOrWhiteSpace(kingdomName) ? "该国" : kingdomName;
+        string name = string.IsNullOrWhiteSpace(kingdomName) ? DiplomacyMiscPromptTexts.Get("StrategicProfile_DefaultKingdomFallback", "the kingdom") : kingdomName;
 		return new KingdomStrategicProfileTemplate(
-			name + "重视独立、秩序和政权延续，会在现实利益与国家尊严之间权衡，对直接威胁保持戒备。",
-			"巩固核心领地与内部团结，保障长期生存，消除主要威胁，并在条件成熟时扩大地区影响。" );
+            name + DiplomacyMiscPromptTexts.Get("StrategicProfile_Default_Personality", " values independence, order, and dynastic survival, balancing pragmatic gain and sovereign dignity, watchful against direct threats."),
+            DiplomacyMiscPromptTexts.Get("StrategicProfile_Default_Strategy", "Consolidate core domains and internal harmony, ensure long-term viability, neutralize primary perils, and extend regional influence when conditions ripen."));
 	}
 
 	private static List<Kingdom> GetCurrentKingdoms()
@@ -1921,7 +1922,7 @@ public sealed partial class KingdomStrategicProfileBehavior : CampaignBehaviorBa
 
 	private static string GetKingdomName(Kingdom kingdom)
 	{
-		return kingdom?.Name?.ToString() ?? kingdom?.StringId ?? "国家";
+        return kingdom?.Name?.ToString() ?? kingdom?.StringId ?? DiplomacyMiscPromptTexts.Get("StrategicProfile_GeneralKingdom", "kingdom");
 	}
 
 	private static int GetCurrentCampaignDay()

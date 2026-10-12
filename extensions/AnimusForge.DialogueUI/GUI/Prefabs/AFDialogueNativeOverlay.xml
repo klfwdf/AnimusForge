@@ -204,13 +204,13 @@
                     </Widget>
                     <ButtonWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="108" SuggestedHeight="38" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="0" MarginTop="294" Brush="Popup.Cancel.Button" DoNotAcceptEvents="false" DoNotPassEventsToChildren="true" UpdateChildrenStates="true" Command.Click="LoadOlderPage" IsEnabled="@CanLoadOlderPage">
                       <Children>
-                        <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Text="@LoadOlderText" Brush="Popup.Button.Text" DoNotAcceptEvents="true" Brush.FontSize="15" Brush.FontColor="#3B281BFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" />
+                        <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Text="@OlderPageText" Brush="Popup.Button.Text" DoNotAcceptEvents="true" Brush.FontSize="15" Brush.FontColor="#3B281BFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" />
                       </Children>
                     </ButtonWidget>
                     <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="540" SuggestedHeight="38" MarginLeft="116" MarginTop="294" HorizontalAlignment="Left" VerticalAlignment="Top" Text="@PageStatusText" Brush="Popup.Button.Text" DoNotAcceptEvents="true" Brush.FontSize="14" Brush.FontColor="#765639FF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" />
                     <ButtonWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="108" SuggestedHeight="38" HorizontalAlignment="Left" VerticalAlignment="Top" MarginLeft="666" MarginTop="294" Brush="Popup.Cancel.Button" DoNotAcceptEvents="false" DoNotPassEventsToChildren="true" UpdateChildrenStates="true" Command.Click="LoadNewerPage" IsEnabled="@CanLoadNewerPage">
                       <Children>
-                        <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Text="@LoadNewerText" Brush="Popup.Button.Text" DoNotAcceptEvents="true" Brush.FontSize="15" Brush.FontColor="#3B281BFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" />
+                        <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Text="@NewerPageText" Brush="Popup.Button.Text" DoNotAcceptEvents="true" Brush.FontSize="15" Brush.FontColor="#3B281BFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" />
                       </Children>
                     </ButtonWidget>
                   </Children>

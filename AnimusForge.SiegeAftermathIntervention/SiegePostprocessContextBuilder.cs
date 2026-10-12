@@ -6,15 +6,15 @@ namespace AnimusForge.SiegeAftermathIntervention;
 /// </summary>
 public static class SiegePostprocessContextBuilder
 {
-    public const string DefaultSettlementName = "刚被攻下的定居点";
+    public const string DefaultSettlementName = "the captured settlement";
 
     public const string DefaultSpeakerName = "NPC";
 
-    public const string AlliedSoldierSpeakerIdentity = "玩家己方入城士兵";
+    public const string AlliedSoldierSpeakerIdentity = "Allied soldier inside the town";
 
-    public const string CivilianSpeakerIdentity = "战败定居点普通民众/商人/工匠";
+    public const string CivilianSpeakerIdentity = "Defeated settlement civilian/merchant/artisan";
 
-    public const string DefaultSpeakerIdentity = "其他场景NPC";
+    public const string DefaultSpeakerIdentity = "Other scene NPC";
 
     public static string SelectSpeakerIdentity(bool isAlliedSoldier, bool isCivilian)
     {

@@ -10,6 +10,11 @@
   <ItemGroup>
     <Compile Include="Program.cs" />
     <Compile Include="Stubs.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Prompt/Runtime/PromptComposerTexts.cs" Link="PromptComposerTexts.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Prompt/Retrieval/PromptRetrievalTexts.cs" Link="PromptRetrievalTexts.cs" />
+    <EmbeddedResource Include="../../../../content/modules/AF.Module.Prompt/ModuleData/PromptRetrievalCompatibility.json" LogicalName="AnimusForge.Prompt.RetrievalCompatibility.json" />
+    <Reference Include="Newtonsoft.Json"><HintPath>../../../../local/dotnet/8.0.425/sdk/8.0.425/Newtonsoft.Json.dll</HintPath></Reference>
+    <EmbeddedResource Include="../../../../content/modules/AF.Module.Prompt/ModuleData/PromptCompatibility.json" LogicalName="AnimusForge.Prompt.Compatibility.json" />
     <Compile Include="../../../../src/modules/AF.Module.Prompt/Retrieval/GuardrailRuleHit.cs" Link="GuardrailRuleHit.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Prompt/Composition/PreprocessFormatException.cs" Link="PreprocessFormatException.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Prompt/Composition/PromptTopicRoutingStage.cs" Link="PromptTopicRoutingStage.cs" />

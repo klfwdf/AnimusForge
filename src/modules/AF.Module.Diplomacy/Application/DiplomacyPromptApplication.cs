@@ -56,7 +56,7 @@ internal static class DiplomacyPromptApplication
     {
         try
         {
-            bool topic = (extras ?? "").IndexOf("【附加规则:diplomacy】", StringComparison.OrdinalIgnoreCase) >= 0;
+            bool topic = PromptRuleBlockText.Has(extras, "diplomacy");
             string independent = IndependentInstruction(source);
             if (!topic && string.IsNullOrWhiteSpace(independent)) return "";
             StringBuilder result = new StringBuilder();
@@ -96,19 +96,19 @@ internal static class DiplomacyPromptApplication
         try
         {
             StringBuilder sb = new StringBuilder();
-            sb.AppendLine(); sb.AppendLine("【国王外交规则】");
-            sb.AppendLine("重要：游戏内84天=一年，21天=一季度，没有月和周的概念。谈论时间请用季度或年。");
-            if (e.PlayerIsRuler) sb.AppendLine("你和玩家都是国王，可以讨论宣战、议和、结盟、贸易等外交事务。");
+            sb.AppendLine(); sb.AppendLine(DiplomacyPromptTexts.Get("AF_DIP_ConversationRulesHeader", "[Royal diplomacy rules]"));
+            sb.AppendLine(DiplomacyPromptTexts.Get("AF_DIP_ConversationCalendar", "Important: in this game, 84 days = one year and 21 days = one quarter. There are no months or weeks. Discuss time in quarters or years."));
+            if (e.PlayerIsRuler) sb.AppendLine(DiplomacyPromptTexts.Get("AF_DIP_ConversationBothRulers", "You and the player are both monarchs and may discuss declarations of war, peace, alliances, trade, and other diplomatic matters."));
             else if (IndependentSettlementClan(s))
             {
-                sb.AppendLine("玩家尚未建国，但其独立家族占有城镇/城堡，可与国王谈政治承认、停战、互不侵犯、贡金或建国前条件。正式王国同盟、贸易协议和王国和约需建国后。");
-                sb.AppendLine("【玩家政治身份】独立有城家族：" + s.PlayerClanName + "；据点：" + s.PlayerFiefs + "。");
+                sb.AppendLine(DiplomacyPromptTexts.Get("AF_DIP_ConversationIndependentClan", "The player has not founded a kingdom, but their independent clan holds towns/castles and may discuss political recognition, truces, non-aggression, tribute, or pre-foundation conditions with monarchs. Formal kingdom alliances, trade agreements, and kingdom peace treaties require a founded kingdom."));
+                sb.AppendLine(DiplomacyPromptTexts.Get("AF_DIP_ConversationIdentityPrefix", "[Player political identity] Independent landholding clan: ") + s.PlayerClanName + DiplomacyPromptTexts.Get("AF_DIP_ConversationFiefs", "; Bases: ") + s.PlayerFiefs + DiplomacyPromptTexts.Get("AF_DIP_ConversationFullStop", "."));
             }
-            else sb.AppendLine("玩家不是国王，不能签正式王国外交；可谈政治交涉、觐见、承认、停战或建国前条件。");
+            else sb.AppendLine(DiplomacyPromptTexts.Get("AF_DIP_ConversationNotRuler", "The player is not a monarch and cannot conclude formal kingdom diplomacy; political negotiations, audiences, recognition, truces, or pre-foundation conditions may be discussed."));
             var wars = source.CaptureWars();
             foreach (var war in wars) AppendWar(sb, war, wars);
             if (!string.IsNullOrEmpty(s.PeaceKingdomName))
-            { sb.AppendLine(); sb.AppendLine($"【与{s.PeaceKingdomName}的和平状态】双方目前处于和平状态。"); }
+            { sb.AppendLine(); sb.AppendLine(string.Format(DiplomacyPromptTexts.Get("AF_DIP_PeaceStatus", "[Peace status with {0}] Both sides are currently at peace."), s.PeaceKingdomName)); }
             string annexation = source is IDiplomacyOralPromptSource mode && !mode.UseFormalCommitments
                 ? "" : source.AnnexationInstruction();
             if (!string.IsNullOrWhiteSpace(annexation)) { sb.AppendLine(); sb.AppendLine(annexation); }
@@ -121,7 +121,7 @@ internal static class DiplomacyPromptApplication
         try
         {
             var tokens = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase) {
-                ["playerName"] = string.IsNullOrWhiteSpace(s.PlayerName) ? "玩家" : s.PlayerName };
+                ["playerName"] = string.IsNullOrWhiteSpace(s.PlayerName) ? DiplomacyPromptTexts.Get("AF_DIP_ConversationPlayer", "player") : s.PlayerName };
             string state = !e.NpcKingdomExists ? "no_kingdom" : s.NpcMercenary ? "mercenary" : !e.NpcIsRuler ? "not_king"
                 : !e.PlayerIsRuler ? IndependentSettlementClan(s) ? "player_independent_settlement_clan" : "player_not_king" : "";
             if (state.Length > 0)
@@ -138,19 +138,19 @@ internal static class DiplomacyPromptApplication
     }
     private static void AppendWar(StringBuilder sb, DiplomacyPromptWar war, IReadOnlyList<DiplomacyPromptWar> wars)
     {
-        sb.AppendLine(); sb.AppendLine($"【与{war.Name}的战争局势】（仅供判断谈判立场，勿在正文逐条朗读）");
-        sb.AppendLine($"- 战争已持续：{war.Days} 天");
-        sb.AppendLine($"- 你方战争进展分：{war.OwnProgress:F0} / 750");
-        sb.AppendLine($"- 敌方战争进展分：{war.EnemyProgress:F0} / 750");
-        sb.AppendLine($"  你方击杀：{war.OwnKills}，敌方击杀：{war.EnemyKills}");
-        sb.AppendLine($"  你方占城：{war.Towns}城{war.Castles}堡");
-        sb.AppendLine($"- 你方总战力：{war.OwnStrength:F0}，敌方总战力：{war.EnemyStrength:F0}");
-        sb.AppendLine($"- 敌方繁荣度：{war.EnemyProsperity:F0}，参考贡金范围 0 ~ {(int)(war.EnemyProsperity*0.15f*0.35f)} 第纳尔/天（仅供谈判参考，不是系统上限；双方可商定任意非负整数金额）");
+        sb.AppendLine(); sb.AppendLine(string.Format(DiplomacyPromptTexts.Get("AF_DIP_WarHeader", "[War situation against {0}] (Only for judging the negotiating position; do not recite these details one by one in the reply.)"), war.Name));
+        sb.AppendLine(string.Format(DiplomacyPromptTexts.Get("AF_DIP_WarDays", "- War duration: {0} days"), war.Days));
+        sb.AppendLine(string.Format(DiplomacyPromptTexts.Get("AF_DIP_OwnWarProgress", "- Your war progress score: {0:F0} / 750"), war.OwnProgress));
+        sb.AppendLine(string.Format(DiplomacyPromptTexts.Get("AF_DIP_EnemyWarProgress", "- Enemy war progress score: {0:F0} / 750"), war.EnemyProgress));
+        sb.AppendLine(string.Format(DiplomacyPromptTexts.Get("AF_DIP_WarKills", "  Your kills: {0}; enemy kills: {1}"), war.OwnKills, war.EnemyKills));
+        sb.AppendLine(string.Format(DiplomacyPromptTexts.Get("AF_DIP_WarConquests", "  Your conquests: {0} towns, {1} castles"), war.Towns, war.Castles));
+        sb.AppendLine(string.Format(DiplomacyPromptTexts.Get("AF_DIP_WarStrength", "- Your total strength: {0:F0}; enemy total strength: {1:F0}"), war.OwnStrength, war.EnemyStrength));
+        sb.AppendLine(string.Format(DiplomacyPromptTexts.Get("AF_DIP_WarTribute", "- Enemy prosperity: {0:F0}; reference tribute range 0 ~ {1} denars/day (a negotiating reference, not a system limit; both parties may agree to any nonnegative integer amount)"), war.EnemyProsperity, (int)(war.EnemyProsperity*0.15f*0.35f)));
         int count = 0; float strength = 0;
         foreach (var other in wars) if (other.Listed && other.Id != war.Id) { count++; strength += other.EnemyStrength; }
-        if (count > 0) sb.AppendLine($"- 多线作战：同时与 {count} 个敌人交战（总战力 {strength:F0}）");
+        if (count > 0) sb.AppendLine(string.Format(DiplomacyPromptTexts.Get("AF_DIP_WarMultipleFronts", "- Multiple fronts: at war with {0} other enemies (combined strength {1:F0})"), count, strength));
         float diff = war.OwnProgress - war.EnemyProgress;
-        sb.AppendLine(diff > 100 ? "- 【谈判立场】你方明显占优" : diff < -100 ? "- 【谈判立场】你方明显劣势" : "- 【谈判立场】双方大体持平");
+        sb.AppendLine(diff > 100 ? DiplomacyPromptTexts.Get("AF_DIP_ConversationAdvantage", "- [Negotiating position] Your side has a clear advantage") : diff < -100 ? DiplomacyPromptTexts.Get("AF_DIP_ConversationDisadvantage", "- [Negotiating position] Your side has a clear disadvantage") : DiplomacyPromptTexts.Get("AF_DIP_ConversationEven", "- [Negotiating position] Both sides are broadly even"));
     }
 }
 

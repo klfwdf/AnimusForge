@@ -1,3 +1,4 @@
+using AnimusForge;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -73,7 +74,7 @@ internal static class WorldDiplomacyRoundApplication
         };
         JObject json = new JObject
         {
-            ["topic"] = WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(root.PlannedRoundTopic, root.Title, "外交交涉"),
+            ["topic"] = WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(root.PlannedRoundTopic, root.Title, DiplomacyMiscPromptTexts.Get("Round_DefaultTopicNegotiation", "Diplomatic Negotiation")),
             ["selected_kingdom_ids"] = new JArray(root.PlannedKingdomIds ?? new List<string>())
         };
         commitPlan(plan, json.ToString(Formatting.None));

@@ -175,35 +175,35 @@ namespace AnimusForge.SceneActions.Core
 
         private static readonly string[] CancelCommands =
         {
-            "取消阵前演讲", "结束阵前演讲", "停止阵前演讲",
-            "取消战前演讲", "结束战前演讲",
+            SceneActionVocabulary.Text("BattleSpeechFrameworkV1.LegacySource0001"), SceneActionVocabulary.Text("BattleSpeechFrameworkV1.LegacySource0002"), SceneActionVocabulary.Text("BattleSpeechFrameworkV1.LegacySource0003"),
+            SceneActionVocabulary.Text("BattleSpeechFrameworkV1.LegacySource0004"), SceneActionVocabulary.Text("BattleSpeechFrameworkV1.LegacySource0005"),
             "cancel battle speech", "stop battle speech"
         };
 
         private static readonly string[] ArmPlayerCommands =
         {
-            "开始阵前演讲", "我开始阵前演讲", "开始战前演讲",
-            "我开始战前演讲", "我来向士兵们演讲", "我要向士兵们演讲",
+            SceneActionVocabulary.Text("BattleSpeechFrameworkV1.LegacySource0006"), SceneActionVocabulary.Text("BattleSpeechFrameworkV1.LegacySource0007"), SceneActionVocabulary.Text("BattleSpeechFrameworkV1.LegacySource0008"),
+            SceneActionVocabulary.Text("BattleSpeechFrameworkV1.LegacySource0009"), SceneActionVocabulary.Text("BattleSpeechFrameworkV1.LegacySource0010"), SceneActionVocabulary.Text("BattleSpeechFrameworkV1.LegacySource0011"),
             "start battle speech", "begin battle speech"
         };
 
         private static readonly string[] NpcCommands =
         {
-            "让你阵前演讲", "请你阵前演讲", "你来阵前演讲",
-            "让你在阵前演讲", "请你在阵前演讲", "你来向士兵们演讲",
-            "让他阵前演讲", "请他阵前演讲", "让她阵前演讲",
-            "请她阵前演讲", "让当前目标阵前演讲", "请当前目标阵前演讲",
-            "让这位士兵阵前演讲", "请这位士兵阵前演讲",
-            "让你战前动员", "请你战前动员", "让你阵前训话",
-            "请你阵前训话", "ask you to give a battle speech",
+            SceneActionVocabulary.Text("BattleSpeechFrameworkV1.LegacySource0012"), SceneActionVocabulary.Text("BattleSpeechFrameworkV1.LegacySource0013"), SceneActionVocabulary.Text("BattleSpeechFrameworkV1.LegacySource0014"),
+            SceneActionVocabulary.Text("BattleSpeechFrameworkV1.LegacySource0015"), SceneActionVocabulary.Text("BattleSpeechFrameworkV1.LegacySource0016"), SceneActionVocabulary.Text("BattleSpeechFrameworkV1.LegacySource0017"),
+            SceneActionVocabulary.Text("BattleSpeechFrameworkV1.LegacySource0018"), SceneActionVocabulary.Text("BattleSpeechFrameworkV1.LegacySource0019"), SceneActionVocabulary.Text("BattleSpeechFrameworkV1.LegacySource0020"),
+            SceneActionVocabulary.Text("BattleSpeechFrameworkV1.LegacySource0021"), SceneActionVocabulary.Text("BattleSpeechFrameworkV1.LegacySource0022"), SceneActionVocabulary.Text("BattleSpeechFrameworkV1.LegacySource0023"),
+            SceneActionVocabulary.Text("BattleSpeechFrameworkV1.LegacySource0024"), SceneActionVocabulary.Text("BattleSpeechFrameworkV1.LegacySource0025"),
+            SceneActionVocabulary.Text("BattleSpeechFrameworkV1.LegacySource0026"), SceneActionVocabulary.Text("BattleSpeechFrameworkV1.LegacySource0027"), SceneActionVocabulary.Text("BattleSpeechFrameworkV1.LegacySource0028"),
+            SceneActionVocabulary.Text("BattleSpeechFrameworkV1.LegacySource0029"), "ask you to give a battle speech",
             "give the troops a battle speech"
         };
 
         private static readonly string[] InlinePlayerPrefixes =
         {
-            "我阵前演讲", "我在阵前演讲", "我来阵前演讲",
-            "我向士兵们演讲", "我的阵前演讲", "阵前演讲",
-            "我战前演讲", "battle speech"
+            SceneActionVocabulary.Text("BattleSpeechFrameworkV1.LegacySource0030"), SceneActionVocabulary.Text("BattleSpeechFrameworkV1.LegacySource0031"), SceneActionVocabulary.Text("BattleSpeechFrameworkV1.LegacySource0032"),
+            SceneActionVocabulary.Text("BattleSpeechFrameworkV1.LegacySource0033"), SceneActionVocabulary.Text("BattleSpeechFrameworkV1.LegacySource0034"), SceneActionVocabulary.Text("BattleSpeechFrameworkV1.LegacySource0035"),
+            SceneActionVocabulary.Text("BattleSpeechFrameworkV1.LegacySource0036"), "battle speech", "speech", "my battle speech"
         };
 
         public static BattleSpeechCommandDecisionV1 ParsePlayerShout(string rawText)

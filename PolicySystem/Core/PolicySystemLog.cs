@@ -73,6 +73,18 @@ internal static class PolicySystemLog
 	private static readonly string SessionId = Guid.NewGuid().ToString("N");
 	private static long _sequence = DateTime.UtcNow.Ticks;
 	private static bool _sessionStarted;
+	private static readonly Lazy<string[]> LegacyFailureMarkers = new Lazy<string[]>(() => new[]
+	{
+		PolicyCompatibilityTexts.Get("Log_FailureMarker_Failure"),
+		PolicyCompatibilityTexts.Get("Log_FailureMarker_Exception"),
+		PolicyCompatibilityTexts.Get("Log_FailureMarker_Error")
+	});
+	private static readonly Lazy<string[]> LegacyWarningMarkers = new Lazy<string[]>(() => new[]
+	{
+		PolicyCompatibilityTexts.Get("Log_WarningMarker_Warning"),
+		PolicyCompatibilityTexts.Get("Log_WarningMarker_Rejection"),
+		PolicyCompatibilityTexts.Get("Log_WarningMarker_Quarantine")
+	});
 
 	// Detailed stages remain available when verbose mod-logic logging is enabled. WriteRuntime
 	// also uses this set as an upper bound because several adapters call it from recurring paths.
@@ -620,9 +632,7 @@ internal static class PolicySystemLog
 			|| text.IndexOf("missing", StringComparison.OrdinalIgnoreCase) >= 0
 			|| text.IndexOf("timeout", StringComparison.OrdinalIgnoreCase) >= 0
 			|| text.IndexOf("blocked", StringComparison.OrdinalIgnoreCase) >= 0
-			|| text.IndexOf("失败", StringComparison.Ordinal) >= 0
-			|| text.IndexOf("异常", StringComparison.Ordinal) >= 0
-			|| text.IndexOf("错误", StringComparison.Ordinal) >= 0;
+			|| ContainsLegacyMarker(text, LegacyFailureMarkers);
 	}
 
 	private static bool ContainsOperationalWarningMarker(string value)
@@ -639,9 +649,24 @@ internal static class PolicySystemLog
 			|| text.IndexOf("ambiguous", StringComparison.OrdinalIgnoreCase) >= 0
 			|| text.IndexOf("incomplete", StringComparison.OrdinalIgnoreCase) >= 0
 			|| text.IndexOf("not-committed", StringComparison.OrdinalIgnoreCase) >= 0
-			|| text.IndexOf("警告", StringComparison.Ordinal) >= 0
-			|| text.IndexOf("拒绝", StringComparison.Ordinal) >= 0
-			|| text.IndexOf("隔离", StringComparison.Ordinal) >= 0;
+			|| ContainsLegacyMarker(text, LegacyWarningMarkers);
+	}
+
+	private static bool ContainsLegacyMarker(string text, Lazy<string[]> markers)
+	{
+		// Early ASCII diagnostics must not initialize package resources. Legacy markers
+		// load once on the first non-ASCII message and retain exact ordinal matching.
+		bool hasNonAscii = false;
+		for (int index = 0; index < text.Length; index++)
+		{
+			if (text[index] > 127) { hasNonAscii = true; break; }
+		}
+		if (!hasNonAscii) return false;
+		foreach (string marker in markers.Value)
+		{
+			if (text.IndexOf(marker, StringComparison.Ordinal) >= 0) return true;
+		}
+		return false;
 	}
 
 	private static string FirstToken(string message)

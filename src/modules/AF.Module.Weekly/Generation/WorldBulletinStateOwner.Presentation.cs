@@ -14,7 +14,7 @@ internal sealed class WorldBulletinLayout
 }
 internal sealed partial class WorldBulletinStateOwner {
 internal List<EventRecordEntry> CachedRecords;internal int CachedRecordCount=-1,CachedRecordIndex=-1;
-private const int WorldBulletinMaxLayouts=48,WorldBulletinMaxMetaKingdoms=3;private const string WorldBulletinMajorHeader="【大事件】",WorldBulletinMinorHeader="【其他消息】";
+private const int WorldBulletinMaxLayouts=48,WorldBulletinMaxMetaKingdoms=3;private static readonly string WorldBulletinMajorHeader=WorldBulletinPolicyTexts.Raw("BodyMajorHeader"),WorldBulletinMinorHeader=WorldBulletinPolicyTexts.Raw("BodyMinorHeader");
 internal void RecordWorldBulletinLayout(string eventId, WorldBulletinSelection selection)
 	{
 		if (string.IsNullOrWhiteSpace(eventId) || selection?.Major == null)

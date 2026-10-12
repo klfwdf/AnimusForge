@@ -299,7 +299,7 @@
     <string id="REX_Tooltip_No_Jurisdiction" text="You may only hold a public execution in your own town or a town of your current kingdom." />
     <string id="REX_Tooltip_No_Prisoners" text="No eligible adult hero prisoner is available in the permitted custody." />
     <string id="REX_Tooltip_Player_Prisoner" text="You cannot organize a sentence while you are a prisoner." />
-    <string id="REX_Tooltip_Relation_Low" text="The town" />
+    <string id="REX_Tooltip_Relation_Low" text="The town's lord refuses to grant you the square because your relation is below zero." />
     <string id="REX_Tooltip_Under_Siege" text="Public executions are suspended while the town is under siege." />
     <string id="REX_UI_Authority_Cost" text="Authority cost: {COST}" />
     <string id="REX_UI_Close_Hint" text="Esc closes this court without cost or death" />

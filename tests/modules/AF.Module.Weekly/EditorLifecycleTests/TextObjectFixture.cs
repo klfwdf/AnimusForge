@@ -12,14 +12,13 @@ public sealed class TextObject
     private readonly Dictionary<string, string> _variables = new();
     private static readonly Dictionary<string, string> Resources = new();
 
-    public TextObject(string value, object attributes = null) { Value = value ?? ""; }
+    public TextObject(string value, Dictionary<string, object> attributes = null) { Value = value ?? ""; }
 
     public static void UseLanguage(bool chinese)
     {
         Resources.Clear();
-        foreach (string module in new[] { "ui", "weekly" })
+        foreach (string path in Directory.EnumerateFiles(AppContext.BaseDirectory, chinese ? "*-zh.xml" : "*-en.xml"))
         {
-            string path = Path.Combine(AppContext.BaseDirectory, module + (chinese ? "-zh.xml" : "-en.xml"));
             foreach (var node in XDocument.Load(path).Descendants("string"))
                 Resources[(string)node.Attribute("id")] = (string)node.Attribute("text");
         }

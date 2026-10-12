@@ -6,25 +6,35 @@ namespace AnimusForge.SiegeAftermathIntervention;
 /// </summary>
 public static class SiegeMissionExitOutcomeProfile
 {
-    public const string RepopulationExitTriggerSource = "场景离场屠民迁殖";
+    public const string RepopulationExitTriggerSource = "Scene exit colonization";
+    public const string RepopulationExitTriggerSourceEn = "mission_exit_colonization";
 
-    public const string RepopulationExitTriggerDetail = "玩家已触发屠民迁殖处置，本次离场按最高级不可逆处置结算。";
+    public const string RepopulationExitTriggerDetail = "Colonization was triggered; scene departure commits the highest irreversible disposition.";
+    public const string RepopulationExitTriggerDetailEn = "Player triggered colonization disposition; departure settles as highest irreversible outcome.";
 
-    public const string MassacreExitTriggerSource = "场景离场血洗";
+    public const string MassacreExitTriggerSource = "Scene exit massacre";
+    public const string MassacreExitTriggerSourceEn = "mission_exit_massacre";
 
-    public const string MassacreExitTriggerDetail = "玩家已触发血洗，本次离场按毁坏/血洗结算。";
+    public const string MassacreExitTriggerDetail = "Massacre was triggered; scene departure commits devastation/massacre.";
+    public const string MassacreExitTriggerDetailEn = "Player triggered massacre; departure settles as devastation/massacre.";
 
-    public const string PlunderExitTriggerSource = "场景离场搜掠";
+    public const string PlunderExitTriggerSource = "Scene exit plunder";
+    public const string PlunderExitTriggerSourceEn = "mission_exit_pillage";
 
-    public const string PlunderExitTriggerDetail = "玩家已触发搜掠，本次离场按搜掠结算。";
+    public const string PlunderExitTriggerDetail = "Plunder was triggered; scene departure commits plunder.";
+    public const string PlunderExitTriggerDetailEn = "Player triggered pillage; departure settles as plunder.";
 
-    public const string NoDecisionExitTriggerSource = "未选择处置直接离场";
+    public const string NoDecisionExitTriggerSource = "Scene exit without decision";
+    public const string NoDecisionExitTriggerSourceEn = "mission_exit_default_no_decision";
 
-    public const string DefaultPlunderExitTriggerDetail = "玩家进入攻城后定居点场景后未明确安抚、宽恕或升级处置便离场，按默认搜掠结算。";
+    public const string DefaultPlunderExitTriggerDetail = "The player left without an explicit constructive or escalated disposition; commits default plunder.";
+    public const string DefaultPlunderExitTriggerDetailEn = "Player entered siege aftermath scene and departed without explicit mercy or escalation; settles as default pillage.";
 
-    public const string CastleNoDecisionExitTriggerSource = "城堡未选择处置直接离场";
+    public const string CastleNoDecisionExitTriggerSource = "Castle scene exit without decision";
+    public const string CastleNoDecisionExitTriggerSourceEn = "castle_mission_exit_default_no_decision";
 
-    public const string CastleDefaultMercyExitTriggerDetail = "城堡处置场景没有可搜掠的城镇民生目标；玩家未选择其他处置便离场时，按宽恕结算。";
+    public const string CastleDefaultMercyExitTriggerDetail = "Castle scenes have no town plunder targets; departure without other orders commits mercy.";
+    public const string CastleDefaultMercyExitTriggerDetailEn = "Castle scene has no civilian livelihood targets to pillage; leaving without other disposition settles as mercy.";
 
     public static SiegeMissionExitOutcomeDecision Resolve(
         bool culturalRepopulationRequested,
@@ -33,20 +43,36 @@ public static class SiegeMissionExitOutcomeProfile
         bool hasPendingAftermath,
         bool destructiveAllowed,
         bool isCastle = false)
+        => Resolve(culturalRepopulationRequested, massacreStarted, plunderStarted, hasPendingAftermath, destructiveAllowed, isCastle, false);
+
+    public static SiegeMissionExitOutcomeDecision Resolve(
+        bool culturalRepopulationRequested,
+        bool massacreStarted,
+        bool plunderStarted,
+        bool hasPendingAftermath,
+        bool destructiveAllowed,
+        bool isCastle,
+        bool isEnglish)
     {
         if (culturalRepopulationRequested)
         {
-            return Mark(SiegeAftermathResolutionKind.Devastate, RepopulationExitTriggerSource, RepopulationExitTriggerDetail);
+            return Mark(SiegeAftermathResolutionKind.Devastate,
+                isEnglish ? RepopulationExitTriggerSourceEn : RepopulationExitTriggerSource,
+                isEnglish ? RepopulationExitTriggerDetailEn : RepopulationExitTriggerDetail);
         }
 
         if (massacreStarted)
         {
-            return Mark(SiegeAftermathResolutionKind.Devastate, MassacreExitTriggerSource, MassacreExitTriggerDetail);
+            return Mark(SiegeAftermathResolutionKind.Devastate,
+                isEnglish ? MassacreExitTriggerSourceEn : MassacreExitTriggerSource,
+                isEnglish ? MassacreExitTriggerDetailEn : MassacreExitTriggerDetail);
         }
 
         if (plunderStarted)
         {
-            return Mark(SiegeAftermathResolutionKind.Pillage, PlunderExitTriggerSource, PlunderExitTriggerDetail);
+            return Mark(SiegeAftermathResolutionKind.Pillage,
+                isEnglish ? PlunderExitTriggerSourceEn : PlunderExitTriggerSource,
+                isEnglish ? PlunderExitTriggerDetailEn : PlunderExitTriggerDetail);
         }
 
         if (hasPendingAftermath)
@@ -56,10 +82,14 @@ public static class SiegeMissionExitOutcomeProfile
 
         if (isCastle)
         {
-            return Mark(SiegeAftermathResolutionKind.ShowMercy, CastleNoDecisionExitTriggerSource, CastleDefaultMercyExitTriggerDetail);
+            return Mark(SiegeAftermathResolutionKind.ShowMercy,
+                isEnglish ? CastleNoDecisionExitTriggerSourceEn : CastleNoDecisionExitTriggerSource,
+                isEnglish ? CastleDefaultMercyExitTriggerDetailEn : CastleDefaultMercyExitTriggerDetail);
         }
 
-        return StartPlunder(NoDecisionExitTriggerSource, DefaultPlunderExitTriggerDetail);
+        return StartPlunder(
+            isEnglish ? NoDecisionExitTriggerSourceEn : NoDecisionExitTriggerSource,
+            isEnglish ? DefaultPlunderExitTriggerDetailEn : DefaultPlunderExitTriggerDetail);
     }
 
     private static SiegeMissionExitOutcomeDecision Mark(SiegeAftermathResolutionKind aftermathKind, string triggerSource, string triggerDetail)

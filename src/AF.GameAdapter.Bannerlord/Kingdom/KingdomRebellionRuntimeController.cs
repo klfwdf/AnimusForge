@@ -10,9 +10,9 @@ namespace AnimusForge;
 internal sealed class KingdomRebellionRuntimeController
 {
  // Legacy diagnostic prefixes are internal matching values, never localized in workers.
- internal const string AutomaticNamingFailurePrefix = "叛乱建国命名后台任务异常：";
- internal const string NamingRetryFailurePrefix = "叛乱建国命名重试后台任务异常：";
- internal const string ForcedNamingFailurePrefix = "强制叛乱建国命名后台任务异常：";
+ internal const string AutomaticNamingFailurePrefix = "Automatic rebel kingdom naming background task failed: ";
+ internal const string NamingRetryFailurePrefix = "Rebel kingdom naming retry background task failed: ";
+ internal const string ForcedNamingFailurePrefix = "Forced rebel kingdom naming background task failed: ";
  private const int RebelKingdomNamingMaxAttempts=RebellionNamingOwner.MaxAttempts;
  private readonly WeeklyEventRecordStateOwner _records;
  private readonly Func<int> _requestInterval;
@@ -51,7 +51,7 @@ internal string BuildRebelKingdomNamingUserPrompt(Clan clan, Kingdom oldKingdom,
 		}
 		string text2 = string.Join("、", list.Distinct(StringComparer.OrdinalIgnoreCase));
 		List<Settlement> list2 = clan?.Settlements?.Where((Settlement x) => x != null && (x.IsTown || x.IsCastle)).ToList() ?? new List<Settlement>();
-		string text3 = (list2.Count > 0) ? string.Join("、", list2.Select(MemoryEntityIdentityBannerlordAdapter.GetSettlementDisplayName)) : "无";
+		string text3 = (list2.Count > 0) ? string.Join("、", list2.Select(MemoryEntityIdentityBannerlordAdapter.GetSettlementDisplayName)) : AdapterPromptCaptureTexts.PcapText("kingdom_rebel_none");
 		string rebelSettlementSummaryForNamingPrompt = RebelNamingPromptSummaryCaptureAdapter.BuildRebelSettlementSummaryForNamingPrompt(list2);
 		string rebelFollowerSummaryForNamingPrompt = RebelNamingPromptSummaryCaptureAdapter.BuildRebelFollowerSummaryForNamingPrompt(followerClans);
 		string heroBackgroundForRebelNamingPrompt = KingdomRebellionGameAdapter.BuildHeroBackgroundForRebelNamingPrompt(clan?.Leader);
@@ -63,7 +63,7 @@ internal string BuildRebelKingdomNamingUserPrompt(Clan clan, Kingdom oldKingdom,
 		return RebellionNamingRules.BuildUserPrompt(new RebellionNamingFacts
 		{
 			WeekIndex = weekIndex, ClanName = MemoryEntityIdentityBannerlordAdapter.GetClanDisplayName(clan), LeaderName = MemoryEntityIdentityBannerlordAdapter.GetHeroDisplayName(clan?.Leader),
-			CultureName = (clan?.Culture?.Name?.ToString() ?? "").Trim(), KingdomName = MemoryEntityIdentityBannerlordAdapter.GetKingdomDisplayName(oldKingdom, "原王国"),
+			CultureName = (clan?.Culture?.Name?.ToString() ?? "").Trim(), KingdomName = MemoryEntityIdentityBannerlordAdapter.GetKingdomDisplayName(oldKingdom, AdapterPromptCaptureTexts.PcapText("kingdom_rebel_original")),
 			KingName = MemoryEntityIdentityBannerlordAdapter.GetHeroDisplayName(oldKingdom?.Leader), RulingClanName = MemoryEntityIdentityBannerlordAdapter.GetClanDisplayName(oldKingdom?.RulingClan),
 			SettlementNames = text3, RebelBackground = rebelBackgroundForNamingPrompt,
 			SettlementSummary = rebelSettlementSummaryForNamingPrompt, FollowerSummary = rebelFollowerSummaryForNamingPrompt,
@@ -101,7 +101,7 @@ internal RebelKingdomNamingResult GenerateRebelKingdomNamingFromPrompts(string s
 					RetryAfterSeconds = result.RetryAfterSeconds
 				};
 			}, name => names.Contains(name.Trim()), LlmRetryPrompt.BuildFailureDetail,
-			(attempt, total, result) => Logger.LogEventPromptExchange((logTarget ?? "叛乱建国命名") + " [尝试 " + attempt + "/" + total + "]", "【System Prompt】\n" + (systemPrompt ?? "") + "\n\n【User Prompt】\n" + (userPrompt ?? ""), result?.Success == true ? result.Content ?? "" : ("错误: " + (result?.ErrorMessage ?? "未知错误"))),
+			(attempt, total, result) => Logger.LogEventPromptExchange((logTarget ?? "Rebellion kingdom naming") + " [attempt " + attempt + "/" + total + "]", "【System Prompt】\n" + (systemPrompt ?? "") + "\n\n【User Prompt】\n" + (userPrompt ?? ""), result?.Success == true ? result.Content ?? "" : ("Error: " + (result?.ErrorMessage ?? "unknown error"))),
 			(attempt, total, reason) => Logger.Log("KingdomRebellion", "[WARN] Rebel kingdom naming attempt failed; retrying. target=" + (logTarget ?? "") + " attempt=" + attempt + "/" + total + " reason=" + (reason ?? "")),
 			_requestInterval, maxAttempts);
 		return new RebelKingdomNamingResult
@@ -122,7 +122,7 @@ internal RebelKingdomNamingResult GenerateRebelKingdomNaming(Clan clan, Kingdom 
 		}
 		string[] rebellionExistingNames = CaptureRebellionExistingNames();
 		BuildRebelKingdomNamingRequest(clan, oldKingdom, weekIndex, followerClans, out var systemPrompt, out var userPrompt, rebellionExistingNames);
-		return GenerateRebelKingdomNamingFromPrompts(systemPrompt, userPrompt, "叛乱建国命名 - " + MemoryEntityIdentityBannerlordAdapter.GetClanId(clan), maxAttempts, rebellionExistingNames);
+		return GenerateRebelKingdomNamingFromPrompts(systemPrompt, userPrompt, "Rebellion kingdom naming - " + MemoryEntityIdentityBannerlordAdapter.GetClanId(clan), maxAttempts, rebellionExistingNames);
 	}
 
 internal static RebelKingdomNamingResult BuildFailedRebelKingdomNamingResult(string failureReason, int attemptsUsed = 0)
@@ -349,7 +349,7 @@ internal bool TryExecuteKingdomRebellionWithNaming(Clan clan, Kingdom kingdom, i
 			}
 		}
 		KingdomRebellionGameAdapter.MarkClanVisualsDirty(clan);
-		string clanFortificationSummary = KingdomStabilityGameAdapter.BuildClanFortificationSummary(clan);
+		string clanFortificationSummary = KingdomStabilityGameAdapter.BuildClanFortificationSummaryForPrompt(clan);
 		message = KingdomUiText.F("AF_UI_KingdomRebellion_ExecutionSuccess", "{CLAN} left {KINGDOM} and founded {NEW_KINGDOM}.", ("CLAN", clanDisplayName), ("KINGDOM", kingdomDisplayName), ("NEW_KINGDOM", text));
 		if (!string.IsNullOrWhiteSpace(clanFortificationSummary))
 		{
@@ -383,7 +383,7 @@ internal bool ProcessWeeklyKingdomRebellionsSlice(int weekIndex)
 			CancelPendingAutomaticKingdomRebellions("disabled_by_mcm");
 			ResetPendingWeeklyKingdomRebellionMaintenance();
 			LastProcessedWeek = Math.Max(LastProcessedWeek, weekIndex);
-			Logger.Log("KingdomRebellion", "[SKIP] 王国稳定度与叛乱功能已在 MCM 中关闭，跳过 week=" + weekIndex + " 的自动叛乱判定。");
+			Logger.Log("KingdomRebellion", "[SKIP] Kingdom stability and rebellion are disabled in MCM; skipping automatic rebellion checks for week=" + weekIndex + ".");
 			return true;
 		}
 		try
@@ -532,7 +532,7 @@ internal void TryStartNextAutomaticKingdomRebellionAsync()
 		BuildRebelKingdomNamingRequest(clan, kingdom, pendingAutomaticKingdomRebellionContext.WeekIndex, list, out var systemPrompt, out var userPrompt, rebellionExistingNames);
 		InformationManager.ShowInquiry(new InquiryData(KingdomUiText.T("AF_UI_KingdomRebellion_GeneratingTitle", "Generating rebel kingdom name"), KingdomUiText.T("AF_UI_KingdomRebellion_GeneratingBody", "The system is requesting a new kingdom name and encyclopedia description from the LLM in the background.\n\nThe clan departure and kingdom founding will run only after this step finishes.\nPlease wait; the result will open automatically."), isAffirmativeOptionShown: false, isNegativeOptionShown: false, "", "", null, null), pauseGameActiveState: true);
 		long runtimeGeneration = SaveRuntimeGuard.CaptureGeneration();
-		string logTarget = "自动叛乱建国命名 - " + MemoryEntityIdentityBannerlordAdapter.GetClanId(clan);
+		string logTarget = "Automatic rebellion kingdom naming - " + MemoryEntityIdentityBannerlordAdapter.GetClanId(clan);
 		Task.Run(delegate
 		{
 			RebelKingdomNamingResult namingResult;
@@ -704,7 +704,7 @@ internal void RetryAutomaticKingdomRebellionNamingAsync(PendingAutomaticKingdomR
 		long namingRequestVersion = _pump.Automatic().BeginNaming();
 		InformationManager.ShowInquiry(new InquiryData(KingdomUiText.T("AF_UI_KingdomRebellion_RegeneratingTitle", "Regenerating rebel kingdom name"), KingdomUiText.T("AF_UI_KingdomRebellion_RegeneratingBody", "The system is requesting a new kingdom name and encyclopedia description again using the corrected event/rebellion API settings.\n\nThis round of automatic rebellion and the weekly report flow will remain paused until it finishes."), isAffirmativeOptionShown: false, isNegativeOptionShown: false, "", "", null, null), pauseGameActiveState: true);
 		long runtimeGeneration = SaveRuntimeGuard.CaptureGeneration();
-		string logTarget = "自动叛乱建国命名重试 - " + MemoryEntityIdentityBannerlordAdapter.GetClanId(clan);
+		string logTarget = "Automatic rebellion kingdom naming retry - " + MemoryEntityIdentityBannerlordAdapter.GetClanId(clan);
 		Task.Run(delegate
 		{
 			RebelKingdomNamingResult namingResult;

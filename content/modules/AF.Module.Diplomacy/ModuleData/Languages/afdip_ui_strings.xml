@@ -1,6 +1,8 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version='1.0' encoding='utf-8'?>
 <base type="string">
-  <tags><tag language="English" /></tags>
+  <tags>
+    <tag language="English" />
+  </tags>
   <strings>
     <string id="AF_DIP_UI_Common_Acknowledge" text="Got it" />
     <string id="AF_DIP_UI_Common_Close" text="Close" />
@@ -77,7 +79,7 @@
     <string id="AF_DIP_UI_Archive_Title" text="Kingdom announcements" />
     <string id="AF_DIP_UI_Archive_Empty" text="There are no kingdom announcements yet." />
     <string id="AF_DIP_UI_Archive_Day" text="Day {DAY}" />
-  <string id="AF_DIP_UI_KingdomProfile_EditCurrent" text="Edit current kingdom…" />
+    <string id="AF_DIP_UI_KingdomProfile_EditCurrent" text="Edit current kingdom…" />
     <string id="AF_DIP_UI_KingdomProfile_ExportAll" text="Export all kingdom strategy and personality" />
     <string id="AF_DIP_UI_KingdomProfile_ImportAll" text="Import all kingdom strategy and personality" />
     <string id="AF_DIP_UI_KingdomProfile_ResetAll" text="Restore all kingdom default profiles" />
@@ -191,7 +193,6 @@
     <string id="AF_DIP_UI_KingdomProfile_GenerationPausedEliminated" text="Kingdom eliminated; automatic generation stopped" />
     <string id="AF_DIP_UI_KingdomProfile_GenerationWaitingPrefix" text="Awaiting generation (" />
     <string id="AF_DIP_UI_KingdomProfile_Empty" text="(empty)" />
-
     <string id="AF_DIP_UI_CivilWar_ActionSuppress" text="Suppress" />
     <string id="AF_DIP_UI_CivilWar_ActionNegotiate" text="Negotiate" />
     <string id="AF_DIP_UI_CivilWar_ActionConcede" text="Concede" />
@@ -273,16 +274,18 @@
     <string id="AF_DIP_CivilWar_UltimatumTitle" text="Opposition ultimatum" />
     <string id="AF_DIP_CivilWar_UltimatumAccept" text="Accept the demand" />
     <string id="AF_DIP_CivilWar_UltimatumRefuse" text="Refuse" />
-      <string id="AF_DIP_UI_Vassalage_DeclareWarBlocked" text="The kingdom council cannot declare war on {TARGET} while a vassalage treaty is active. Use formal negotiations to end the treaty first." />
+    <string id="AF_DIP_UI_Vassalage_DeclareWarBlocked" text="The kingdom council cannot declare war on {TARGET} while a vassalage treaty is active. Use formal negotiations to end the treaty first." />
     <string id="AF_DIP_UI_Vassalage_ProtectedPeaceBlocked" text="This war began to protect {SUBJECT}; the enemy cannot bypass the protected subject and seek a separate peace with the suzerain." />
     <string id="AF_DIP_UI_Vassalage_ProtectedPeaceAllowed" text="This war began to protect {SUBJECT}; peace for the suzerain will also end the protected tributary's war." />
     <string id="AF_DIP_UI_Vassalage_ProtectionApplied" text="{SUZERAIN} fulfilled its protection obligation toward {SUBJECT} and {ACTION} against {ENEMY}." />
     <string id="AF_DIP_UI_Vassalage_SubjectWarSync" text="{PREFIX} {DECLARED} subjects joined the war, {QUEUED} will join when conditions are safe, and {ALREADY} were already at war." />
     <string id="AF_DIP_UI_Vassalage_IndependenceChanged" text="{SUBJECT} independence changed from {BEFORE} to {AFTER}/100; the current breakaway threshold is {THRESHOLD} ({RULER} relation {RELATION})." />
     <string id="AF_DIP_UI_Vassalage_IndependenceChangedNoName" text="{SUBJECT} independence changed from {BEFORE} to {AFTER}; the current breakaway threshold is {THRESHOLD} (ruler relation {RELATION})." />
-    <string id="AF_DIP_UI_Vassalage_IndependenceReduced" text="Because the suzerain fulfilled its protection obligation, {SUBJECT} independence fell from {BEFORE} to {AFTER}/100; the current breakaway threshold is {THRESHOLD} ({RULER} relation {RELATION})." />    <string id="AF_DIP_UI_Vassalage_VassalWarNotice" text="{ATTACKER} has declared war on {SUBJECT}. The vassal is under the suzerain's direct protection; the court has joined the war under the treaty." />
+    <string id="AF_DIP_UI_Vassalage_IndependenceReduced" text="Because the suzerain fulfilled its protection obligation, {SUBJECT} independence fell from {BEFORE} to {AFTER}/100; the current breakaway threshold is {THRESHOLD} ({RULER} relation {RELATION})." />
+    <string id="AF_DIP_UI_Vassalage_VassalWarNotice" text="{ATTACKER} has declared war on {SUBJECT}. The vassal is under the suzerain's direct protection; the court has joined the war under the treaty." />
     <string id="AF_DIP_UI_Vassalage_TributaryProtectionRequest" text="{SUBJECT} has been attacked by {ATTACKER}. The tributary pays tribute in exchange for suzerain protection but has no duty to send troops.&#10;&#10;Fulfill the protection obligation and declare war on the attacker? If you refuse, the tributary treaty ends immediately." />
-    <string id="AF_DIP_UI_Vassalage_GarrisonProtectionRequest" text="{SUBJECT} has been attacked by {ATTACKER}. The garrison kingdom is the suzerain's military shield, must campaign with the suzerain, and expects protection in return.&#10;&#10;Protect the garrison kingdom? Refusing will sharply reduce loyalty; if it falls too low, the kingdom will leave the vassalage." />    <string id="AF_DIP_UI_Vassalage_SubjectFallback" text="the subject kingdom" />
+    <string id="AF_DIP_UI_Vassalage_GarrisonProtectionRequest" text="{SUBJECT} has been attacked by {ATTACKER}. The garrison kingdom is the suzerain's military shield, must campaign with the suzerain, and expects protection in return.&#10;&#10;Protect the garrison kingdom? Refusing will sharply reduce loyalty; if it falls too low, the kingdom will leave the vassalage." />
+    <string id="AF_DIP_UI_Vassalage_SubjectFallback" text="the subject kingdom" />
     <string id="AF_DIP_UI_Vassalage_EstablishedTributaryDescription" text="{SUBJECT} has sworn as a tributary, sending regular tribute in exchange for your protection." />
     <string id="AF_DIP_UI_Vassalage_EstablishedGarrisonDescription" text="{SUBJECT} has sworn as a garrison kingdom, accepting the suzerain's command and its border-defense and campaign duties." />
     <string id="AF_DIP_UI_Vassalage_EstablishedVassalDescription" text="{SUBJECT} has sworn as a vassal, accepting suzerain rule and its tribute and military duties." />
@@ -298,7 +301,7 @@
     <string id="AF_DIP_UI_Vassalage_TributePaymentDescription" text="{TRIBUTARY} delivered its tribute on schedule; the suzerain's fiefs have recorded the payment." />
     <string id="AF_DIP_UI_Vassalage_TributePaymentDetailInvalid" text="The tribute ledger is no longer valid." />
     <string id="AF_DIP_UI_Vassalage_TributePaymentDetail" text="The tributary caravan has reached the court. The ledger records:&#10;&#10;Subject: {TRIBUTARY}&#10;Recorded: {DATE}&#10;Tribute value: {VALUE}&#10;&#10;[SUZERAIN FIEF GAINS]&#10;{GAINS}&#10;[TRIBUTARY COST]&#10;{COST}" />
-        <string id="AF_DIP_UI_KingdomProfile_EliminatedGenerationSkipped" text="The eliminated kingdom keeps its current profile; no new LLM generation will be requested." />
+    <string id="AF_DIP_UI_KingdomProfile_EliminatedGenerationSkipped" text="The eliminated kingdom keeps its current profile; no new LLM generation will be requested." />
     <string id="AF_DIP_UI_KingdomProfile_GenerationConfigError" text="The kingdom founding profile could not be generated because the event/rebellion API is not configured." />
     <string id="AF_DIP_UI_KingdomProfile_GenerationCompletedPrefix" text="Generated and locked the national personality and long-term strategy for new kingdom “" />
     <string id="AF_DIP_UI_KingdomProfile_GenerationCompletedSuffix" text="”." />
@@ -350,68 +353,68 @@
     <string id="AF_DIP_UI_Faction_KingFirst" text="King first, " />
     <string id="AF_DIP_UI_Faction_PlayerClanFirst" text="your clan first, " />
     <string id="AF_DIP_UI_Faction_OthersByGrievance" text="others by grievance, highest first" />
-  <string id="AF_DIP_UI_Gathering_NoHostSettlement" text="The clan has no town or castle available as a gathering venue." />
-  <string id="AF_DIP_UI_Gathering_NoVenue" text="No eligible gathering venue is available." />
-  <string id="AF_DIP_UI_Gathering_VenueTitle" text="Host a gathering: choose a venue" />
-  <string id="AF_DIP_UI_Gathering_VenueDescription" text="The venue must be a town or castle owned by your clan." />
-  <string id="AF_DIP_UI_Gathering_Next" text="Next" />
-  <string id="AF_DIP_UI_Gathering_Cancel" text="Cancel" />
-  <string id="AF_DIP_UI_Gathering_VenueAvailable" text="Available as the gathering venue." />
-  <string id="AF_DIP_UI_Gathering_NoClans" text="There are no noble clans available to invite." />
-  <string id="AF_DIP_UI_Gathering_ConfirmCurrent" text="Confirm current list ({COUNT})" />
-  <string id="AF_DIP_UI_Gathering_ClearList" text="Clear selected guests" />
-  <string id="AF_DIP_UI_Gathering_ClearHint" text="Choose the gathering guests again." />
-  <string id="AF_DIP_UI_Gathering_ClanSelected" text="selected {COUNT}" />
-  <string id="AF_DIP_UI_Gathering_ClanSelectedHint" text="This clan has {COUNT} selected guest(s)." />
-  <string id="AF_DIP_UI_Gathering_ClanTitle" text="Host a gathering: choose clans" />
-  <string id="AF_DIP_UI_Gathering_ClanDescription" text="Venue: {SETTLEMENT}&#10;Selected guests: {COUNT}.&#10;Choose a clan to open its member list." />
-  <string id="AF_DIP_UI_Gathering_NoHeroes" text="The selected clan has no noble members to show." />
-  <string id="AF_DIP_UI_Gathering_SelectedMarker" text="[Selected] " />
-  <string id="AF_DIP_UI_Gathering_HeroLabel" text="[{CLAN}] {HERO} ({IDENTITY})" />
-  <string id="AF_DIP_UI_Gathering_HeroHint" text="{HERO} / {CLAN}&#10;{IDENTITY}&#10;{STATE}" />
-  <string id="AF_DIP_UI_Gathering_AlreadyInList" text="Already on the current guest list." />
-  <string id="AF_DIP_UI_Gathering_CanInvite" text="Available to invite; heroes without an independent party will travel to the venue using the native travel system." />
-  <string id="AF_DIP_UI_Gathering_CannotInvite" text="Cannot invite: {REASON}" />
-  <string id="AF_DIP_UI_Gathering_HeroTitle" text="Host a gathering: choose guests" />
-  <string id="AF_DIP_UI_Gathering_HeroDescription" text="Clan: {CLAN}&#10;This is a player-hosted gathering; governors may still be invited. Heroes with independent parties are dispatched directly. Nobles remaining in towns, governors, and heroes without parties travel to the venue using the native system, then return to their original settlement after the gathering.&#10;Selected guests: {COUNT}." />
-  <string id="AF_DIP_UI_Gathering_AddToList" text="Add to list" />
-  <string id="AF_DIP_UI_Gathering_Back" text="Back" />
-  <string id="AF_DIP_UI_Gathering_NoGuests" text="Gathering not started: no guests were selected." />
-  <string id="AF_DIP_UI_Gathering_ConfirmTitle" text="Confirm gathering" />
-  <string id="AF_DIP_UI_Gathering_ConfirmBody" text="Venue: {SETTLEMENT}&#10;Cost: {COST} denars&#10;Duration: {DAYS} days&#10;Guests: {GUESTS}&#10;&#10;Confirming will deduct the cost and send gathering invitations to the guests." />
-  <string id="AF_DIP_UI_Gathering_PayAndInvite" text="Pay and send invitations" />
-  <string id="AF_DIP_UI_Gathering_NotSelected" text="No guests selected yet." />
-  <string id="AF_DIP_UI_Gathering_IdentityUnknown" text="Unknown identity" />
-  <string id="AF_DIP_UI_Gathering_Governor" text="Governor" />
-  <string id="AF_DIP_UI_Gathering_Ruler" text="Ruler" />
-  <string id="AF_DIP_UI_Gathering_ClanLeader" text="Clan leader" />
-  <string id="AF_DIP_UI_Gathering_Lady" text="Lady" />
-  <string id="AF_DIP_UI_Gathering_Lord" text="Lord" />
-  <string id="AF_DIP_UI_Gathering_IdentityHint" text="Identity: {IDENTITY}" />
-  <string id="AF_DIP_UI_Gathering_IdentityHintGoverned" text="Identity: {IDENTITY}&#10;Governed settlement: {SETTLEMENT}" />
-  <string id="AF_DIP_UI_Gathering_UnknownClan" text="Unknown clan" />
-  <string id="AF_DIP_UI_Gathering_UnknownSettlement" text="Unknown settlement" />
-  <string id="AF_DIP_UI_Gathering_ClanHint" text="Members: {MEMBERS}; independent parties: {MOVABLE}; can travel to a gathering by the native system: {TRAVEL}." />
-  <string id="AF_DIP_UI_Gathering_EndPlayerCancelled" text="Gathering cancelled: your gathering at {PLACE} has ended.{REASON}" />
-  <string id="AF_DIP_UI_Gathering_EndPlayerFinished" text="Gathering ended: your gathering at {PLACE} has ended." />
-  <string id="AF_DIP_UI_Gathering_EndNpcCancelled" text="Gathering cancelled: {HOST}&#x27;s gathering at {PLACE} has ended.{REASON}" />
-  <string id="AF_DIP_UI_Gathering_EndNpcFinished" text="Gathering ended: {HOST}&#x27;s gathering at {PLACE} has ended." />
-  <string id="AF_DIP_UI_Gathering_Reason" text=" Reason: {REASON}" />
-  <string id="AF_DIP_UI_Gathering_DialogueHostOption" text="Host a gathering" />
-  <string id="AF_DIP_UI_Gathering_DialogueCompanionOption" text="I want to host a gathering. Help me arrange it." />
-  <string id="AF_DIP_UI_Gathering_DialogueGovernorResponse" text="I will prepare the guest list and invitations." />
-  <string id="AF_DIP_UI_Gathering_DialogueCompanionResponse" text="Understood. I will prepare the venue and guest list." />
-  <string id="AF_DIP_UI_Gathering_Disabled" text="Gatherings are disabled in MCM." />
-  <string id="AF_DIP_UI_Gathering_Created" text="Gathering invitations sent: {SETTLEMENT}; {GUESTS} guest(s), {DAYS} days." />
-  <string id="AF_DIP_UI_Gathering_DisabledCancelled" text="Gatherings were disabled; active gatherings have been cancelled and hosts and guests will return over time." />
-  <string id="AF_DIP_UI_Gathering_GuestArrived" text="{HERO} arrived at {SETTLEMENT} for the gathering." />
-  <string id="AF_DIP_UI_Gathering_AttendanceReward" text="You attended {HOST}&#x27;s gathering and your relation with the host increased." />
-  <string id="AF_DIP_UI_Gathering_CrisisWar" text="The kingdom has entered a war; the host decided to cancel the gathering." />
-  <string id="AF_DIP_UI_Gathering_CrisisSiege" text="{SETTLEMENT} in the kingdom is under siege; the host decided to cancel the gathering." />
-  <string id="AF_DIP_UI_Gathering_NpcCreated" text="{HOST} will host a gathering at {SETTLEMENT}." />
-  <string id="AF_DIP_UI_Gathering_CourierLetter" text="{HOST} to {PLAYER}:&#10;&#10;I will host a gathering at {SETTLEMENT} and invite you to attend. It is expected to last until {DATE}; arrive at the venue if you wish to join." />
-  <string id="AF_DIP_UI_Gathering_SelectedGuestsMore" text="Selected: {NAMES} and {COUNT} more." />
-  <string id="AF_DIP_UI_Gathering_SelectedGuestsExact" text="Selected: {NAMES}" />
+    <string id="AF_DIP_UI_Gathering_NoHostSettlement" text="The clan has no town or castle available as a gathering venue." />
+    <string id="AF_DIP_UI_Gathering_NoVenue" text="No eligible gathering venue is available." />
+    <string id="AF_DIP_UI_Gathering_VenueTitle" text="Host a gathering: choose a venue" />
+    <string id="AF_DIP_UI_Gathering_VenueDescription" text="The venue must be a town or castle owned by your clan." />
+    <string id="AF_DIP_UI_Gathering_Next" text="Next" />
+    <string id="AF_DIP_UI_Gathering_Cancel" text="Cancel" />
+    <string id="AF_DIP_UI_Gathering_VenueAvailable" text="Available as the gathering venue." />
+    <string id="AF_DIP_UI_Gathering_NoClans" text="There are no noble clans available to invite." />
+    <string id="AF_DIP_UI_Gathering_ConfirmCurrent" text="Confirm current list ({COUNT})" />
+    <string id="AF_DIP_UI_Gathering_ClearList" text="Clear selected guests" />
+    <string id="AF_DIP_UI_Gathering_ClearHint" text="Choose the gathering guests again." />
+    <string id="AF_DIP_UI_Gathering_ClanSelected" text="selected {COUNT}" />
+    <string id="AF_DIP_UI_Gathering_ClanSelectedHint" text="This clan has {COUNT} selected guest(s)." />
+    <string id="AF_DIP_UI_Gathering_ClanTitle" text="Host a gathering: choose clans" />
+    <string id="AF_DIP_UI_Gathering_ClanDescription" text="Venue: {SETTLEMENT}&#10;Selected guests: {COUNT}.&#10;Choose a clan to open its member list." />
+    <string id="AF_DIP_UI_Gathering_NoHeroes" text="The selected clan has no noble members to show." />
+    <string id="AF_DIP_UI_Gathering_SelectedMarker" text="[Selected] " />
+    <string id="AF_DIP_UI_Gathering_HeroLabel" text="[{CLAN}] {HERO} ({IDENTITY})" />
+    <string id="AF_DIP_UI_Gathering_HeroHint" text="{HERO} / {CLAN}&#10;{IDENTITY}&#10;{STATE}" />
+    <string id="AF_DIP_UI_Gathering_AlreadyInList" text="Already on the current guest list." />
+    <string id="AF_DIP_UI_Gathering_CanInvite" text="Available to invite; heroes without an independent party will travel to the venue using the native travel system." />
+    <string id="AF_DIP_UI_Gathering_CannotInvite" text="Cannot invite: {REASON}" />
+    <string id="AF_DIP_UI_Gathering_HeroTitle" text="Host a gathering: choose guests" />
+    <string id="AF_DIP_UI_Gathering_HeroDescription" text="Clan: {CLAN}&#10;This is a player-hosted gathering; governors may still be invited. Heroes with independent parties are dispatched directly. Nobles remaining in towns, governors, and heroes without parties travel to the venue using the native system, then return to their original settlement after the gathering.&#10;Selected guests: {COUNT}." />
+    <string id="AF_DIP_UI_Gathering_AddToList" text="Add to list" />
+    <string id="AF_DIP_UI_Gathering_Back" text="Back" />
+    <string id="AF_DIP_UI_Gathering_NoGuests" text="Gathering not started: no guests were selected." />
+    <string id="AF_DIP_UI_Gathering_ConfirmTitle" text="Confirm gathering" />
+    <string id="AF_DIP_UI_Gathering_ConfirmBody" text="Venue: {SETTLEMENT}&#10;Cost: {COST} denars&#10;Duration: {DAYS} days&#10;Guests: {GUESTS}&#10;&#10;Confirming will deduct the cost and send gathering invitations to the guests." />
+    <string id="AF_DIP_UI_Gathering_PayAndInvite" text="Pay and send invitations" />
+    <string id="AF_DIP_UI_Gathering_NotSelected" text="No guests selected yet." />
+    <string id="AF_DIP_UI_Gathering_IdentityUnknown" text="Unknown identity" />
+    <string id="AF_DIP_UI_Gathering_Governor" text="Governor" />
+    <string id="AF_DIP_UI_Gathering_Ruler" text="Ruler" />
+    <string id="AF_DIP_UI_Gathering_ClanLeader" text="Clan leader" />
+    <string id="AF_DIP_UI_Gathering_Lady" text="Lady" />
+    <string id="AF_DIP_UI_Gathering_Lord" text="Lord" />
+    <string id="AF_DIP_UI_Gathering_IdentityHint" text="Identity: {IDENTITY}" />
+    <string id="AF_DIP_UI_Gathering_IdentityHintGoverned" text="Identity: {IDENTITY}&#10;Governed settlement: {SETTLEMENT}" />
+    <string id="AF_DIP_UI_Gathering_UnknownClan" text="Unknown clan" />
+    <string id="AF_DIP_UI_Gathering_UnknownSettlement" text="Unknown settlement" />
+    <string id="AF_DIP_UI_Gathering_ClanHint" text="Members: {MEMBERS}; independent parties: {MOVABLE}; can travel to a gathering by the native system: {TRAVEL}." />
+    <string id="AF_DIP_UI_Gathering_EndPlayerCancelled" text="Gathering cancelled: your gathering at {PLACE} has ended.{REASON}" />
+    <string id="AF_DIP_UI_Gathering_EndPlayerFinished" text="Gathering ended: your gathering at {PLACE} has ended." />
+    <string id="AF_DIP_UI_Gathering_EndNpcCancelled" text="Gathering cancelled: {HOST}'s gathering at {PLACE} has ended.{REASON}" />
+    <string id="AF_DIP_UI_Gathering_EndNpcFinished" text="Gathering ended: {HOST}'s gathering at {PLACE} has ended." />
+    <string id="AF_DIP_UI_Gathering_Reason" text=" Reason: {REASON}" />
+    <string id="AF_DIP_UI_Gathering_DialogueHostOption" text="Host a gathering" />
+    <string id="AF_DIP_UI_Gathering_DialogueCompanionOption" text="I want to host a gathering. Help me arrange it." />
+    <string id="AF_DIP_UI_Gathering_DialogueGovernorResponse" text="I will prepare the guest list and invitations." />
+    <string id="AF_DIP_UI_Gathering_DialogueCompanionResponse" text="Understood. I will prepare the venue and guest list." />
+    <string id="AF_DIP_UI_Gathering_Disabled" text="Gatherings are disabled in MCM." />
+    <string id="AF_DIP_UI_Gathering_Created" text="Gathering invitations sent: {SETTLEMENT}; {GUESTS} guest(s), {DAYS} days." />
+    <string id="AF_DIP_UI_Gathering_DisabledCancelled" text="Gatherings were disabled; active gatherings have been cancelled and hosts and guests will return over time." />
+    <string id="AF_DIP_UI_Gathering_GuestArrived" text="{HERO} arrived at {SETTLEMENT} for the gathering." />
+    <string id="AF_DIP_UI_Gathering_AttendanceReward" text="You attended {HOST}'s gathering and your relation with the host increased." />
+    <string id="AF_DIP_UI_Gathering_CrisisWar" text="The kingdom has entered a war; the host decided to cancel the gathering." />
+    <string id="AF_DIP_UI_Gathering_CrisisSiege" text="{SETTLEMENT} in the kingdom is under siege; the host decided to cancel the gathering." />
+    <string id="AF_DIP_UI_Gathering_NpcCreated" text="{HOST} will host a gathering at {SETTLEMENT}." />
+    <string id="AF_DIP_UI_Gathering_CourierLetter" text="{HOST} to {PLAYER}:&#10;&#10;I will host a gathering at {SETTLEMENT} and invite you to attend. It is expected to last until {DATE}; arrive at the venue if you wish to join." />
+    <string id="AF_DIP_UI_Gathering_SelectedGuestsMore" text="Selected: {NAMES} and others, {COUNT} in total." />
+    <string id="AF_DIP_UI_Gathering_SelectedGuestsExact" text="Selected: {NAMES}" />
     <string id="AF_DIP_UI_KingdomProfile_ExportDirectoryEmpty" text="The export directory is empty." />
     <string id="AF_DIP_UI_KingdomProfile_ExportedCount" text="Exported {COUNT} kingdom profile(s)." />
     <string id="AF_DIP_UI_KingdomProfile_ExportTargetNotFound" text="The kingdom to export could not be found." />
@@ -454,7 +457,6 @@
     <string id="AF_DIP_UI_KingdomProfile_NoJsonObject" text="The LLM response did not contain a JSON object." />
     <string id="AF_DIP_UI_KingdomProfile_MissingFields" text="The LLM JSON is missing national_personality or long_term_strategy." />
     <string id="AF_DIP_UI_KingdomProfile_JsonParseFailed" text="LLM JSON parsing failed: {ERROR}" />
-
     <string id="AF_DIP_UI_Vassalage_Terminal_NoKingdom" text="You do not have a kingdom yet." />
     <string id="AF_DIP_UI_Vassalage_Terminal_NotRuler" text="Current kingdom: {KINGDOM}&#10;&#10;You are not this kingdom’s ruler and cannot view the suzerain’s subject roster." />
     <string id="AF_DIP_UI_Vassalage_Terminal_Description" text="Suzerain: {KINGDOM}&#10;Select a subject with a tribute obligation to view recorded deposits." />
@@ -553,7 +555,6 @@
     <string id="AF_DIP_UI_Annexation_SameKingdom" text="Annexation not established: you cannot annex your own kingdom." />
     <string id="AF_DIP_UI_Annexation_TargetRulerRequired" text="Annexation not established: the other party cannot renounce the target kingdom's sovereignty without being its ruler." />
     <string id="AF_DIP_UI_Annexation_VassalageEndedReason" text="{TARGET} has joined your kingdom; its former vassalage treaties are now void." />
-    <!-- Kingdom CivilWar UI Strings -->
     <string id="AF_KINGDOM_CW_Action_AcceptedAgreementSettling" text="An accepted agreement is still settling; the faction cannot be dissolved." />
     <string id="AF_KINGDOM_CW_Action_AgreementAlreadyAccepted" text="The agreement was accepted and is settling; it cannot be answered again or withdrawn. Wait for the safe retry." />
     <string id="AF_KINGDOM_CW_Action_AgreementSettling" text="An agreement is still settling; the faction cannot be refounded." />
@@ -860,7 +861,7 @@
     <string id="AF_KINGDOM_CW_Stability_High" text="High" />
     <string id="AF_KINGDOM_CW_Stability_Poor" text="Poor" />
     <string id="AF_KINGDOM_CW_Stability_VeryPoor" text="Very poor" />
-      <string id="AF_DIP_UI_Vassalage_TypeTributary" text="tributary" />
+    <string id="AF_DIP_UI_Vassalage_TypeTributary" text="tributary" />
     <string id="AF_DIP_UI_Vassalage_TypeGarrison" text="garrison kingdom" />
     <string id="AF_DIP_UI_Vassalage_TypeVassal" text="vassal" />
     <string id="AF_DIP_UI_Vassalage_SubjectWarNoticeName" text="your {TYPE}{KINGDOM}" />
@@ -1064,5 +1065,119 @@
     <string id="AF_KINGDOM_CW_Outcome_RebelsUsurp" text="Rebels take the throne" />
     <string id="AF_DIP_UI_Notice_ThirdPartyReceived" text="Third-party diplomacy: {TITLE}. The news has reached your kingdom; read the full text in the kingdom bulletin." />
     <string id="AF_DIP_UI_Notice_PlayerCourtDelivery" text="Your declaration has reached {RECEIVER}." />
-</strings>
+    <string id="AF_DIP_UI_StandingNoChange" text="No change" />
+    <string id="AF_DIP_UI_StandingUpperBound" text="Already at the upper limit of 100" />
+    <string id="AF_DIP_UI_StandingLowerBound" text="Already at the lower limit of 0" />
+    <string id="AF_DIP_UI_StandingBoundaryNoChange" text="The numeric boundary produced no actual change" />
+    <string id="AF_DIP_UI_StandingNoActualChangePrefix" text="No actual change (assessment " />
+    <string id="AF_DIP_Source_072" text="Diplomatic announcement" />
+    <string id="AF_DIP_Source_073" text="Negotiation reminder" />
+    <string id="AF_DIP_Source_074" text="Compound diplomatic declaration" />
+    <string id="AF_DIP_Source_075" text="War declaration notice" />
+    <string id="AF_DIP_Source_076" text="Peace request" />
+    <string id="AF_DIP_Source_077" text="Peace response" />
+    <string id="AF_DIP_Source_078" text="Peace rejection" />
+    <string id="AF_DIP_Source_079" text="Alliance request" />
+    <string id="AF_DIP_Source_080" text="Alliance response" />
+    <string id="AF_DIP_Source_081" text="Alliance rejection" />
+    <string id="AF_DIP_Source_082" text="Alliance dissolution notice" />
+    <string id="AF_DIP_Source_083" text="Trade request" />
+    <string id="AF_DIP_Source_084" text="Trade response" />
+    <string id="AF_DIP_Source_085" text="Trade rejection" />
+    <string id="AF_DIP_Source_086" text="Trade termination" />
+    <string id="AF_DIP_Source_087" text="Subject independence notice" />
+    <string id="AF_DIP_Source_088" text="Concession" />
+    <string id="AF_DIP_Source_089" text="Ultimatum" />
+    <string id="AF_DIP_Source_090" text="Condemnation" />
+    <string id="AF_DIP_Source_091" text="Public condemnation" />
+    <string id="AF_DIP_Source_092" text="Diplomatic apology" />
+    <string id="AF_DIP_Source_093" text="Diplomatic concession" />
+    <string id="AF_DIP_Source_094" text="Negotiation response" />
+    <string id="AF_DIP_Source_095" text="Awaiting negotiation" />
+    <string id="AF_DIP_Source_118" text=" publishes a diplomatic declaration" />
+    <string id="AF_DIP_Source_119" text="Diplomatic declaration" />
+    <string id="AF_DIP_Source_136" text="Click to view the diplomatic declaration." />
+    <string id="AF_DIP_Source_137" text=". Click to read the full text." />
+    <!-- Player drafting UI error notices -->
+    <string id="AF_DIP_UI_Compose_DraftNeedBody" text="Write a title or draft notes first." />
+    <string id="AF_DIP_UI_Compose_DraftStaleWindow" text="The current draft window was invalidated by loading a game; please reopen it." />
+    <string id="AF_DIP_UI_Compose_DraftApiMissing" text="The scribe cannot draft documents right now. Check the event/rebellion API or main API settings." />
+    <string id="AF_DIP_UI_Compose_DraftIncomplete" text="The scribe failed to return a complete draft; original text was kept. Please try again." />
+    <string id="AF_DIP_UI_Compose_DraftFormatError" text="The draft returned by the scribe was in an invalid format; original text was kept. Please try again." />
+    <string id="AF_DIP_UI_Compose_DraftTooLong" text="The draft was too long; original text was kept. Please adjust the diplomacy character limit and try again." />
+    <string id="AF_DIP_UI_Compose_DraftLengthMismatch" text="The draft did not meet the diplomacy character length settings ({MIN}-{MAX} characters); original text was kept. Please try again or adjust settings." />
+    <string id="AF_DIP_UI_Compose_DraftTruncated" text="The draft was truncated by the output limit; original text was kept. Adjust diplomacy length or API output limit." />
+    <!-- Document Execution Notifications -->
+    <string id="AF_DIP_UI_DocExec_MustContainAction" text="The diplomatic declaration was not published: the text must clearly include an actionable diplomatic action." />
+    <string id="AF_DIP_UI_DocExec_IncompatibleAction" text="The diplomatic declaration was not published: the diplomatic action in the text is incompatible with the current realm state." />
+    <string id="AF_DIP_UI_DocExec_CapacityReached" text="The diplomatic declaration was not published: no more kingdoms can be added to this diplomatic round." />
+    <string id="AF_DIP_UI_DocExec_MustRespondPeace" text="The diplomatic declaration was not published: this document must first accept or reject the pending peace proposal." />
+    <!-- Orchestration Notifications -->
+    <string id="AF_DIP_UI_Orch_DailyQuotaUsed" text="Today's diplomatic request quota is exhausted; your declaration is published and pending responses are saved to continue next day." />
+    <string id="AF_DIP_UI_Orch_ProcessingIncomplete" text="The diplomatic declaration has been published, but diplomatic processing did not complete fully; check the document outcome and current situation." />
+    <string id="AF_DIP_UI_Orch_SourceAuthorUnavailable" text="The kingdom of your original declaration no longer exists; unanswered diplomatic responses have stopped. Prior commitments are not transferred to the suzerain." />
+    <string id="AF_DIP_UI_Orch_SourceOrTargetUnavailable" text="The original declaration or responding kingdom no longer exists; incomplete responses have stopped. Check the original document and current situation." />
+    <string id="AF_DIP_UI_Orch_TargetUnavailable" text="The original responding kingdom no longer exists; that kingdom's response cannot continue." />
+    <string id="AF_DIP_UI_Orch_ResponsesEndedUnresolved" text="Follow-up diplomatic responses have concluded, but some kingdoms could not reply; original declarations and incomplete records are preserved and new declarations may be issued without restoring prior proposals." />
+    <string id="AF_DIP_UI_Orch_RoundTransitionFollowup" text="The prior diplomatic exchange has ended; declarations that have not yet replied to you have been transferred to priority follow-up." />
+    <string id="AF_DIP_UI_Gathering_CancelPlayerReason" text="The player ordered {HERO} to end the gathering immediately." />
+    <string id="AF_DIP_UI_Gathering_CancelPlayerStatus" text="{HERO} followed your order and cancelled the gathering at {SETTLEMENT}." />
+    <string id="AF_DIP_UI_Gathering_CancelNpcReason" text="{HERO} accepted the player’s persuasion and decided to end the gathering." />
+    <string id="AF_DIP_UI_Gathering_CancelNpcStatus" text="{HERO} accepted your persuasion and cancelled the gathering at {SETTLEMENT}." />
+    <string id="AF_DIP_UI_Gathering_NeedGold" text="Cannot host the gathering: you need {COST} denars." />
+    <string id="AF_DIP_UI_Gathering_Cooldown" text="Gathering preparation is still on cooldown for about {DAYS} days." />
+    <string id="AF_DIP_UI_Gathering_TravellingTo" text="Travelling to {SETTLEMENT}" />
+    <string id="AF_DIP_UI_Gathering_NativeTravelFailed" text="Native travel request failed: {ERROR}" />
+    <string id="AF_DIP_UI_Gathering_MovementCheckFailed" text="Movement check failed: {ERROR}" />
+    <string id="AF_DIP_UI_Gathering_WeeklyStartTitle" text="Noble gathering hosted - {HERO}" />
+    <string id="AF_DIP_UI_Gathering_WeeklyAttendanceTitle" text="Notable noble attends a gathering - {HERO}" />
+    <string id="AF_DIP_UI_Gathering_WeeklyCancelTitle" text="Noble gathering cancelled - {HERO}" />
+    <string id="AF_DIP_UI_Gathering_ReasonSuffix" text=" Reason: {REASON}" />
+    <string id="AF_DIP_UI_Gathering_EndElapsed" text="The gathering has ended." />
+    <string id="AF_DIP_UI_Gathering_EndInvalid" text="The gathering ended because its host or venue became invalid." />
+    <string id="AF_DIP_UI_Gathering_DisabledReason" text="Gatherings are disabled in MCM." />
+    <string id="AF_DIP_UI_Gathering_WorldCommandsUnavailable" text="The world-map command system is not initialized." />
+    <string id="AF_DIP_UI_Gathering_HostOriginMissing" text="The host’s original settlement could not be found." />
+    <string id="AF_DIP_UI_Gathering_GuestOriginMissing" text="The guest’s original settlement could not be found." />
+    <string id="AF_DIP_UI_Gathering_Travelling" text="Travelling" />
+    <string id="AF_DIP_UI_Gathering_HasParty" text="Already has a party" />
+    <string id="AF_DIP_UI_Gathering_CannotMove" text="Cannot currently move to a settlement" />
+    <string id="AF_DIP_UI_Gathering_Unavailable" text="The gathering system is not initialized." />
+    <string id="AF_DIP_UI_Gathering_InvalidTag" text="Gathering instruction was not executed: tag parameters could not be parsed." />
+    <string id="AF_DIP_UI_Gathering_CancelMissing" text="Cannot cancel the gathering: it does not exist or has already ended." />
+    <string id="AF_DIP_UI_Gathering_CancelUnauthorizedDelegate" text="Cannot cancel the gathering: the current speaker is neither your governor nor your companion and cannot carry out your order to end it." />
+    <string id="AF_DIP_UI_Gathering_CancelUnauthorizedHost" text="Cannot cancel the gathering: only its host can accept persuasion and cancel it." />
+    <string id="AF_DIP_UI_Gathering_NoResolvedGuests" text="Gathering not started: no eligible guests could be resolved." />
+    <string id="AF_DIP_UI_Gathering_InvalidHero" text="Invalid hero" />
+    <string id="AF_DIP_UI_Gathering_NotSpawned" text="Has not appeared in the world" />
+    <string id="AF_DIP_UI_Gathering_UnderEighteen" text="Under eighteen" />
+    <string id="AF_DIP_UI_Gathering_ChildOrUnborn" text="Underage or not yet born" />
+    <string id="AF_DIP_UI_Gathering_CannotHostDisabled" text="Cannot host the gathering: gatherings are disabled in MCM." />
+    <string id="AF_DIP_UI_Gathering_CannotHostVenue" text="Cannot host the gathering: select a valid town or castle." />
+    <string id="AF_DIP_UI_Gathering_CannotHostLeader" text="Cannot host the gathering: only a clan leader may host it." />
+    <string id="AF_DIP_UI_Gathering_CannotHostOwnership" text="Cannot host the gathering: the venue must belong to your clan." />
+    <string id="AF_DIP_UI_Gathering_CannotHostSiege" text="Cannot host the gathering: the settlement is under siege." />
+    <string id="AF_DIP_UI_Gathering_CannotHostActive" text="Cannot host the gathering: you already have an active gathering." />
+    <string id="AF_DIP_UI_Gathering_CannotHostOccupied" text="Cannot host the gathering: the settlement already has an active gathering." />
+    <string id="AF_DIP_UI_Gathering_Prisoner" text="Captured" />
+    <string id="AF_DIP_UI_Gathering_Wounded" text="Seriously wounded" />
+    <string id="AF_DIP_UI_Gathering_NoIndependentParty" text="No independent party" />
+    <string id="AF_DIP_UI_Gathering_InArmy" text="In an army" />
+    <string id="AF_DIP_UI_Gathering_InBattleOrSiege" text="In a battle or siege" />
+    <string id="AF_DIP_UI_Gathering_HasNonIndependentParty" text="Already has a non-independent party or is in a party" />
+    <string id="AF_DIP_UI_Gathering_OriginMissing" text="Original settlement could not be found" />
+    <string id="AF_DIP_UI_Gathering_CannotHostInvalidGovernor" text="Cannot host the gathering: the current speaker is not a valid governor." />
+    <string id="AF_DIP_UI_Gathering_CannotHostNotGovernor" text="Cannot host the gathering: the current speaker is not a governor." />
+    <string id="AF_DIP_UI_Gathering_CannotHostGovernorOwnership" text="Cannot host the gathering: the governor’s settlement does not belong to your clan." />
+    <string id="AF_DIP_UI_Gathering_RoleKing" text="king" />
+    <string id="AF_DIP_UI_Gathering_RoleClanLeader" text="clan leader" />
+    <string id="AF_DIP_UI_Gathering_RoleNoble" text="noble" />
+    <string id="AF_DIP_UI_Gathering_UnknownHero" text="Unknown noble" />
+    <string id="AF_DIP_UI_Gathering_ListSeparator" text=", " />
+    <string id="AF_DIP_UI_Gathering_WeeklyStartWithGuests" text="{HOST} ({ROLE}) hosted a noble gathering at {SETTLEMENT}, planned to last {DAYS} days. Notable guests who accepted the invitation include: {GUESTS}. This gathering has actually issued invitations and begun; it is not an unverified plan. Guests who have not arrived may only be described as having accepted an invitation or preparing to attend." />
+    <string id="AF_DIP_UI_Gathering_WeeklyStartWithoutGuests" text="{HOST} ({ROLE}) hosted a noble gathering at {SETTLEMENT}, planned to last {DAYS} days. This gathering has actually issued invitations and begun; it is not an unverified plan. Guests who have not arrived may only be described as having accepted an invitation or preparing to attend." />
+    <string id="AF_DIP_UI_Gathering_WeeklyAttendance" text="{HERO} ({ROLE}) has actually arrived at {SETTLEMENT} and attended the noble gathering hosted by {HOST}. This attendance has occurred and may be included in this week’s kingdom chronicle." />
+    <string id="AF_DIP_UI_Gathering_WeeklyCancel" text="{HOST} cancelled their noble gathering at {SETTLEMENT}; the guests have dispersed.{REASON}" />
+    <string id="AF_DIP_UI_Gathering_WeeklyNameRole" text="{HERO} ({ROLE})" />
+  </strings>
 </base>

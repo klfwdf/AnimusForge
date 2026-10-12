@@ -97,12 +97,12 @@ internal static class Program
         Key(pair,TaleWorlds.InputSystem.InputKey.W);TaleWorlds.InputSystem.Input.MouseMoveX=0;TaleWorlds.InputSystem.Input.MouseMoveY=0;TaleWorlds.InputSystem.Input.DeltaMouseScroll=0;
         Check(_screen.CustomCamera.Frame.rotation.u.x!=0&&_screen.CustomCamera.Frame.rotation.u.z!=0,"player changes yaw and pitch freely");
         Check(_screen.CustomCamera.Fov!=0.7f,"scroll zoom applies only to photo camera");
-        Shoot(pair);Check(Photo.SecondText=="重新截取","second shot cannot add a third");
+        Shoot(pair);Check(Photo.SecondText=="重新截取" || Photo.SecondText=="Capture again","second shot cannot add a third");
         Photo.ExecuteFirst();var data=pair.Completion.GetAwaiter().GetResult();
         Check(data.Count==2&&!MissionScreenshotImageCodec.SameImage(data.Current,data.Reverse),"both player shots retained");Restored(false,"two submit");
         Setup();var retake=new MissionScreenshotCapture(_mission,true);Shoot(retake);Photo.ExecuteSecond();
         Key(retake,TaleWorlds.InputSystem.InputKey.Escape);
-        Check(Photo.FirstText=="重新截取"&&Photo.SecondText=="取消"&&!retake.Completion.IsCompleted,"Esc presents restart/cancel rather than silently submitting");
+        Check((Photo.FirstText=="重新截取" || Photo.FirstText=="Capture again") && (Photo.SecondText=="取消" || Photo.SecondText=="Cancel") && !retake.Completion.IsCompleted,"Esc presents restart/cancel rather than silently submitting");
         Photo.ExecuteFirst();Shoot(retake);Photo.ExecuteFirst();
         Check(retake.Completion.GetAwaiter().GetResult().Count==1,"retake starts again from first, discarding previous reference");Restored(false,"retake");
         Setup();var cancel=new MissionScreenshotCapture(_mission,true);Key(cancel,TaleWorlds.InputSystem.InputKey.Escape);Photo.ExecuteSecond();

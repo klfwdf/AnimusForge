@@ -13,6 +13,7 @@ using TaleWorlds.CampaignSystem.GameState;
 using TaleWorlds.CampaignSystem.Settlements;
 using TaleWorlds.Core;
 using TaleWorlds.Library;
+using TaleWorlds.Localization;
 using TaleWorlds.MountAndBlade;
 using TaleWorlds.ObjectSystem;
 
@@ -238,7 +239,7 @@ internal sealed class CoupRebellionBridge : CampaignBehaviorBase
     private void OnGameLoaded(CampaignGameStarter starter)
     {
         ResetRuntime();
-        if (!_saveValid) { Show("政变后叛乱存档异常，已停用自动重放并保留原始记录。"); return; }
+        if (!_saveValid) { Show(new TextObject("{=AF_COUPX_SaveInvalid}The coup aftermath rebellion save is invalid; automatic replay has been disabled and the original record retained.").ToString()); return; }
         foreach (Request request in _requests.Values)
             if (request.State == RequestState.Naming) request.State = RequestState.Queued;
         _hasRegistrationFailure = _requests.Values.Any(r => r.RegistrationBlocked);
@@ -285,7 +286,7 @@ internal sealed class CoupRebellionBridge : CampaignBehaviorBase
         string coupId = session?.Id;
         MyBehavior owner = MyBehavior.Instance;
         if (!Ready(owner) || string.IsNullOrWhiteSpace(coupId) || kingdom == null)
-        { message = "AF 叛乱接缝、存档或王国尚未就绪。"; return false; }
+        { message = CoupSourceTexts.Get("SeamNotReady"); return false; }
         coupId = coupId.Trim();
         if (_requests.TryGetValue(coupId, out Request existing))
         { message = existing.Message; return existing.KingdomId == kingdom.StringId; }
@@ -295,7 +296,7 @@ internal sealed class CoupRebellionBridge : CampaignBehaviorBase
             bool restore = session.Disposition == CoupKingDisposition.Release;
             List<CoupLoyalistCandidate> candidates;
             if (!(bool)_af.CanTrackCoupWar.Invoke(owner, new object[] { kingdom }))
-            { candidates = new List<CoupLoyalistCandidate>(); message = "内战系统已关闭，跳过政变后内战。"; }
+            { candidates = new List<CoupLoyalistCandidate>(); message = CoupSourceTexts.Get("CivilWarDisabled"); }
             else candidates = SelectLoyalists(owner, kingdom, session.KingId, session.OriginalRulingClanId, restore, out message);
             Clan clan = candidates.Count == 0 ? null : kingdom.Clans.FirstOrDefault(c => c.StringId == candidates[0].ClanId);
             var request = new Request
@@ -313,22 +314,22 @@ internal sealed class CoupRebellionBridge : CampaignBehaviorBase
             if (clan != null && request.RestoreDynasty && CanJoinRestoration(request, kingdom, out Clan dynasty)
                 && dynasty != clan && !request.Followers.Contains(dynasty.StringId)) request.Followers.Add(dynasty.StringId);
             _requests.Add(coupId, request);
-            if (clan != null) { _hasWork = true; request.Message = "旧王支持者已集结：" + clan.Name + "将领导反抗，另有" + request.Followers.Count + "个家族响应；将使用 AF 原命名与建国流程，忙时顺序等待。"; }
+            if (clan != null) { _hasWork = true; request.Message = CoupSourceTexts.Format("RebellionRegistered", clan.Name, request.Followers.Count); }
             message = request.Message;
             Logger.Log("Coup", "rebellion_registered coup=" + coupId + " state=" + request.State + " leader=" + request.ClanId + " followers=" + request.Followers.Count + " reason=" + request.Message);
             return true;
         }
-        catch (Exception ex) { message = "政变后叛乱登记失败：" + Error(ex); Logger.Log("Coup", message); return false; }
+        catch (Exception ex) { message = CoupSourceTexts.Format("RegistrationFailed", Error(ex)); Logger.Log("Coup", "rebellion_registration_failed coup=" + coupId + " error=" + Error(ex)); return false; }
     }
 
     private List<CoupLoyalistCandidate> SelectLoyalists(MyBehavior owner, Kingdom kingdom, string formerKingId, string formerClanId, bool allowFormerClan, out string message)
     {
         var candidates = new List<CoupLoyalistCandidate>();
-        message = "旧王家族及更支持旧王的家族中，目前没有具备带地起兵条件的候选人。";
+        message = CoupSourceTexts.Get("NoEligibleLoyalist");
         if (!DuelSettings.IsKingdomStabilityAndRebellionEnabled())
-        { message = "AF 王国稳定度与叛乱已关闭，跳过政变后反叛。"; return candidates; }
+        { message = CoupSourceTexts.Get("StabilityDisabled"); return candidates; }
         if (PlayerKingdomRebellionImmunity.ShouldProtectKingdom(kingdom))
-        { message = "玩家王国叛乱免疫已开启，跳过政变后反叛。"; return candidates; }
+        { message = CoupSourceTexts.Get("ImmunityEnabled"); return candidates; }
         Hero formerKing = Hero.Find(formerKingId);
         // Heroes belong to CampaignObjectManager, not the XML object registry.
         // Log IDs once per settlement attempt, never per engine tick or candidate.
@@ -336,19 +337,19 @@ internal sealed class CoupRebellionBridge : CampaignBehaviorBase
             + " formerKing=" + formerKingId + " formerFound=" + (formerKing != null)
             + " formerClan=" + formerClanId + " currentKing=" + kingdom?.Leader?.StringId);
         if (formerKing == null || kingdom?.Leader == null)
-            throw new InvalidOperationException("政变前后统治者身份缺失，不能判定支持关系。");
+            throw new InvalidOperationException(CoupSourceTexts.Get("IdentityMissing"));
         foreach (Clan candidate in kingdom.Clans)
         {
             object[] args = { candidate, kingdom, true, null, 0, 0, 0, null };
             bool eligible = (bool)_af.ValidateClan.Invoke(owner, args);
             int oldRelation = 0, newRelation = (int)args[4];
             bool formerFamily = candidate?.StringId == formerClanId;
-            if (formerFamily && !allowFormerClan) { eligible = false; args[3] = "旧王被扣押，其家族不参与本次内战。"; }
+            if (formerFamily && !allowFormerClan) { eligible = false; args[3] = CoupSourceTexts.Get("FormerClanExcluded"); }
             if (eligible)
             {
                 oldRelation = candidate.Leader == formerKing ? 100 : candidate.Leader.GetRelation(formerKing);
                 eligible = CoupLoyalistPolicy.Opposes(formerFamily, oldRelation, newRelation);
-                if (!eligible) args[3] = "对旧王的支持未超过对新王的支持。";
+                if (!eligible) args[3] = CoupSourceTexts.Get("SupportInsufficient");
             }
             Logger.Log("Coup", "loyalist_candidate clan=" + candidate?.StringId + " oldFamily=" + formerFamily
                 + " oldRelation=" + oldRelation + " newRelation=" + newRelation + " eligible=" + eligible + " note=" + args[3]);
@@ -381,23 +382,23 @@ internal sealed class CoupRebellionBridge : CampaignBehaviorBase
         clan = Campaign.Current.CampaignObjectManager.Find<Clan>(request.ClanId);
         followers = new List<Clan>();
         message = "";
-        if (!DuelSettings.IsKingdomStabilityAndRebellionEnabled()) { message = "AF 王国稳定度与叛乱已关闭，本次结束。"; return false; }
-        if (kingdom != null && PlayerKingdomRebellionImmunity.ShouldProtectKingdom(kingdom)) { message = "玩家王国叛乱免疫已开启，本次结束。"; return false; }
+        if (!DuelSettings.IsKingdomStabilityAndRebellionEnabled()) { message = CoupSourceTexts.Get("StabilityEndSession"); return false; }
+        if (kingdom != null && PlayerKingdomRebellionImmunity.ShouldProtectKingdom(kingdom)) { message = CoupSourceTexts.Get("ImmunityEndSession"); return false; }
         if (kingdom == null || kingdom.IsEliminated || Campaign.Current.KingdomManager == null
             || kingdom.RulingClan?.StringId != request.RulingClanId || kingdom.Leader?.StringId != request.RulerId
             || clan?.Leader?.StringId != request.ClanLeaderId)
-        { message = "王国、统治者或原候选族长已变化，本次结束，不重选家族。"; return false; }
+        { message = CoupSourceTexts.Get("ContextChanged"); return false; }
         object[] args = { clan, kingdom, request.LoyalistSelection, null, 0, 0, 0, null };
-        if (!(bool)_af.ValidateClan.Invoke(owner, args)) { message = "原候选家族不再符合 AF 规则：" + args[3] + " 本次结束。"; return false; }
+        if (!(bool)_af.ValidateClan.Invoke(owner, args)) { message = CoupSourceTexts.Format("ValidationFailed", args[3]); return false; }
         // Resolve once for this validation; followers reuse the same main-thread snapshot.
         Hero formerKing = request.LoyalistSelection ? Hero.Find(request.FormerKingId) : null;
         if (request.LoyalistSelection && !StillSupportsFormerKing(request, clan, kingdom, formerKing))
-        { message = "原候选家族已改变对新旧国王的支持，本次不再起兵。"; return false; }
+        { message = CoupSourceTexts.Get("SupportChanged"); return false; }
         request.Relation = (int)args[4]; request.Towns = (int)args[5]; request.Castles = (int)args[6];
         if (request.TrackCivilWar && !(bool)_af.CanTrackCoupWar.Invoke(owner, new object[] { kingdom }))
-        { message = "内战系统已关闭，本次不创建无结算归属的叛军。"; return false; }
+        { message = CoupSourceTexts.Get("CivilWarEndSession"); return false; }
         if (request.TrackCivilWar && request.RestoreDynasty && !CanJoinRestoration(request, kingdom, out _))
-        { message = "旧王家族已无法参与复位内战，本次不再起兵。"; return false; }
+        { message = CoupSourceTexts.Get("FormerClanIneligible"); return false; }
         foreach (string id in request.Followers)
         {
             Clan follower = Campaign.Current.CampaignObjectManager.Find<Clan>(id);
@@ -433,13 +434,13 @@ internal sealed class CoupRebellionBridge : CampaignBehaviorBase
             Clan leader = Campaign.Current.CampaignObjectManager.Find<Clan>(request.ClanId);
             Hero formerKing = Hero.Find(request.FormerKingId);
             if (home == null || rebel == null || leader?.Kingdom != rebel || formerKing == null)
-                throw new InvalidOperationException("已经建国，但内战参与方记录暂不可用。");
+                throw new InvalidOperationException(CoupSourceTexts.Get("ParticipantsUnavailable"));
             if (request.RestoreDynasty)
             {
                 Clan dynasty = Campaign.Current.CampaignObjectManager.Find<Clan>(request.FormerRulingClanId);
                 if (dynasty?.Kingdom == home && CanJoinRestoration(request, home, out _))
                     ChangeKingdomAction.ApplyByJoinToKingdomByDefection(dynasty, home, rebel, default(CampaignTime), true);
-                if (dynasty?.Kingdom != rebel) throw new InvalidOperationException("旧王家族尚未加入复位叛军。");
+                if (dynasty?.Kingdom != rebel) throw new InvalidOperationException(CoupSourceTexts.Get("DynastyNotJoined"));
             }
             object[] args = { request.Id, home, rebel, leader, formerKing, request.RestoreDynasty, request.OriginalName, request.OriginalShortName, null };
             if (!(bool)_af.RegisterCoupWar.Invoke(owner, args)) throw new InvalidOperationException(args[8] as string);
@@ -447,12 +448,12 @@ internal sealed class CoupRebellionBridge : CampaignBehaviorBase
         }
         catch (Exception ex)
         {
-            request.Message = "叛军已建立，内战登记等待重试：" + Error(ex);
+            request.Message = CoupSourceTexts.Format("WarRegistrationPending", Error(ex));
             request.RegistrationBlocked = true;
             _hasRegistrationFailure = true;
             _hasWork = _requests.Values.Any(r => r.State != RequestState.Completed && !r.RegistrationBlocked);
             Logger.Log("Coup", "war_registration_pending coup=" + request.Id + " rebel=" + request.RebelKingdomId + " reason=" + request.Message);
-            Show(request.Message + " 可在城镇菜单选择“重试政变内战登记”；不会再次创建叛军王国。");
+            Show(request.Message, CoupUiText.WarRetryHint);
         }
     }
 
@@ -492,12 +493,12 @@ internal sealed class CoupRebellionBridge : CampaignBehaviorBase
                 object naming = JsonConvert.DeserializeObject(request.NamingJson, _af.NamingType);
                 if (naming == null || !(bool)_af.NamingSucceeded.Invoke(null, new[] { naming }))
                 {
-                    request.Message = naming == null ? "AF 命名结果为空。" : _af.NamingFailure.GetValue(naming) as string;
+                    request.Message = naming == null ? CoupSourceTexts.Get("NamingEmpty") : _af.NamingFailure.GetValue(naming) as string;
                     request.State = RequestState.NamingFailed; ShowNamingFailure(request); return;
                 }
                 // A partial political mutation cannot be safely replayed on load.
                 request.State = RequestState.Completed;
-                request.Message = "政变后叛乱开始执行，本次判定已消费。";
+                request.Message = CoupSourceTexts.Get("ExecutionConsumed");
                 object[] args = { clan, kingdom, request.Week, true, request.Relation, request.Towns, request.Castles, naming, followers, null };
                 try
                 {
@@ -507,7 +508,7 @@ internal sealed class CoupRebellionBridge : CampaignBehaviorBase
                         request.RebelKingdomId = clan.Kingdom.StringId; request.State = RequestState.WarCreated;
                         RegisterCreatedWar(request, owner);
                     }
-                    else Complete(request, (success ? "" : "叛乱未完成：") + args[9]);
+                    else Complete(request, success ? "" : CoupSourceTexts.Format("RebellionIncomplete", args[9]));
                 }
                 catch (Exception ex)
                 {
@@ -516,7 +517,7 @@ internal sealed class CoupRebellionBridge : CampaignBehaviorBase
                         request.RebelKingdomId = clan.Kingdom.StringId; request.State = RequestState.WarCreated;
                         RegisterCreatedWar(request, owner);
                     }
-                    else Complete(request, "叛乱结算异常，已发生变化保留且不会重复建国：" + Error(ex));
+                    else Complete(request, CoupSourceTexts.Format("SettlementException", Error(ex)));
                 }
                 return;
             }
@@ -526,7 +527,7 @@ internal sealed class CoupRebellionBridge : CampaignBehaviorBase
         {
             Logger.Log("Coup", "bridge_tick_failed: " + ex);
             Request request = _requests.Values.FirstOrDefault(r => r.State != RequestState.Completed && !r.RegistrationBlocked);
-            if (request != null && _runningId == null) Complete(request, "政变后叛乱接缝异常，本次结束：" + Error(ex));
+            if (request != null && _runningId == null) Complete(request, CoupSourceTexts.Format("SeamException", Error(ex)));
         }
     }
 
@@ -536,12 +537,11 @@ internal sealed class CoupRebellionBridge : CampaignBehaviorBase
         _af.BuildPrompt.Invoke(owner, args);
         string system = (string)args[4], user = (string)args[5];
         if (request.LoyalistSelection)
-            user += "\n本次起兵背景：玩家刚通过武装政变夺位，起兵家族属于旧王家族或更支持旧王的家族；这是反对篡位的起兵，不要求与新王关系为负。请以此为建国命名与简介的背景。";
+            user += CoupPromptTexts.Get("NamingContext");
         if (request.TrackCivilWar)
-            user += request.RestoreDynasty ? "\n旧王已获释，本次战争目标为旧王朝复位；仅叛军胜利可复位，和平谈判不复位。"
-                : "\n旧王被扣押，旧王及其家族不参与本次内战，不要宣称旧王亲自起兵。";
+            user += CoupPromptTexts.Get(request.RestoreDynasty ? "RestorationContext" : "CapturedContext");
         string requestId = request.Id;
-        string logTarget = "政变后叛乱建国命名 - " + request.ClanId;
+        string logTarget = "Post-coup rebellion kingdom naming - " + request.ClanId;
         int attempts = _af.NamingAttempts;
         long generation = _generation;
         Campaign campaign = Campaign.Current;
@@ -600,9 +600,9 @@ internal sealed class CoupRebellionBridge : CampaignBehaviorBase
         MyBehavior owner = MyBehavior.Instance;
         if (!Ready(owner) || string.IsNullOrWhiteSpace(coupId) || formerKing == null || settlement == null
             || Hero.MainHero == null || PlayerNotorietyBehavior.Instance == null)
-        { message = "AF 政变事实接缝或存档尚未就绪。"; return false; }
+        { message = CoupSourceTexts.Get("OutcomeSeamNotReady"); return false; }
         if (!CoupOutcomeReport.CanReport(session, success))
-        { message = "政变结果尚未完成实际结算，不能登记最终事实。"; return false; }
+        { message = CoupSourceTexts.Get("OutcomeIncomplete"); return false; }
         coupId = coupId.Trim();
         if (!_outcomes.TryGetValue(coupId, out Outcome receipt))
         {
@@ -611,13 +611,13 @@ internal sealed class CoupRebellionBridge : CampaignBehaviorBase
             {
                 ActorHeroId = Hero.MainHero.StringId, HeroId = formerKing.StringId, SettlementId = settlement.StringId, KingdomId = (settlement.MapFaction as Kingdom)?.StringId ?? "",
                 Success = success, Captured = captured, Day = (int)CampaignTime.Now.ToDays, Date = CampaignTime.Now.ToString(),
-                NpcText = success ? player + "在" + place + "发动武装政变并击败了你；这次政变已经成功。" : player + "在" + place + "针对你发动武装政变，但突击失败，随后撤回留守部队。",
-                PlayerText = success ? "你在" + place + "针对" + king + "发动武装政变并取得成功。" : "你在" + place + "针对" + king + "发动武装政变失败，撤回留守部队。"
+                NpcText = success ? CoupSourceTexts.Format("NpcFactSuccess", player, place) : CoupSourceTexts.Format("NpcFactFailure", player, place),
+                PlayerText = success ? CoupSourceTexts.Format("PlayerFactSuccess", king, place) : CoupSourceTexts.Format("PlayerFactFailure", king, place)
             };
             _outcomes.Add(coupId, receipt);
         }
         if (receipt.HeroId != formerKing.StringId || receipt.SettlementId != settlement.StringId || receipt.Success != success || receipt.Captured != captured)
-        { message = "同一政变编号的事实不同，拒绝重复覆盖。"; return false; }
+        { message = CoupSourceTexts.Get("OutcomeMismatch"); return false; }
         string key = "coup:" + coupId;
         try
         {
@@ -628,7 +628,7 @@ internal sealed class CoupRebellionBridge : CampaignBehaviorBase
                 receipt.OriginalKingdomId = session.KingdomId;
                 receipt.ActorKingdomId = (Hero.MainHero.MapFaction as Kingdom)?.StringId ?? "";
                 receipt.BulletinText = CoupOutcomeReport.Build(session, Hero.MainHero.Name.ToString(), formerKing.Name.ToString(),
-                    settlement.Name.ToString(), original?.Name?.ToString() ?? "原王国", success, captured,
+                    settlement.Name.ToString(), original?.Name?.ToString() ?? CoupSourceTexts.Get("DefaultOriginalKingdom"), success, captured,
                     original != null && Clan.PlayerClan?.IsAtWarWith(original) == true);
             }
             if (!receipt.HistoryQueued)
@@ -645,9 +645,9 @@ internal sealed class CoupRebellionBridge : CampaignBehaviorBase
                     string npcName = formerKing.Name.ToString();
                     if (!_af.Memory.Prepare(commit, npcName, out string recoveryId,
                         out string payloadHash, out string errorCode))
-                    { message = "政变记忆未接受：" + errorCode; return false; }
+                    { message = CoupSourceTexts.Format("MemoryRejected", errorCode); return false; }
                     if (!string.IsNullOrEmpty(receipt.RecoveryId) && (receipt.RecoveryId != recoveryId || receipt.RecoveryHash != payloadHash))
-                    { message = "政变记忆恢复身份发生变化，拒绝重复写入。"; return false; }
+                    { message = CoupSourceTexts.Get("MemoryIdentityChanged"); return false; }
                     receipt.RecoveryId = recoveryId; receipt.RecoveryHash = payloadHash;
                     MemoryCommitResult result = _af.Memory.Commit(commit, npcName);
                     string state = MemoryStatus(receipt);
@@ -655,7 +655,7 @@ internal sealed class CoupRebellionBridge : CampaignBehaviorBase
                     if (!receipt.HistoryQueued)
                     {
                         if (state == "Missing") receipt.RecoveryId = receipt.RecoveryHash = null;
-                        message = "政变记忆未完成：" + result.ErrorCode; return false;
+                        message = CoupSourceTexts.Format("MemoryIncomplete", result.ErrorCode); return false;
                     }
                 }
             }
@@ -673,24 +673,24 @@ internal sealed class CoupRebellionBridge : CampaignBehaviorBase
             }
             if (!receipt.WeeklyRecorded)
             {
-                _af.Weekly.Invoke(owner, new object[] { "player_coup", "武装政变 - " + settlement.Name, receipt.PlayerText, key + ":weekly", receipt.KingdomId,
+                _af.Weekly.Invoke(owner, new object[] { "player_coup", CoupSourceTexts.Format("WeeklyTitle", settlement.Name.ToString()), receipt.PlayerText, key + ":weekly", receipt.KingdomId,
                     receipt.SettlementId, true, true, Hero.MainHero.StringId, (Hero.MainHero.MapFaction as Kingdom)?.StringId ?? "", receipt.Day, receipt.Date });
                 receipt.WeeklyRecorded = true;
             }
             if (!receipt.BulletinHandled)
             {
                 receipt.BulletinHandled = (bool)_af.Bulletin.Invoke(owner, new object[] {
-                    coupId, success, receipt.BulletinText, "发生时间：" + receipt.Date,
+                    coupId, success, receipt.BulletinText, CoupSourceTexts.Format("BulletinTimeLabel", receipt.Date),
                     receipt.OriginalKingdomId, receipt.ActorKingdomId, receipt.ActorHeroId ?? Hero.MainHero.StringId, receipt.HeroId });
-                if (!receipt.BulletinHandled) { message = "政变快报事实尚未接受。"; return false; }
+                if (!receipt.BulletinHandled) { message = CoupSourceTexts.Get("BulletinRejected"); return false; }
             }
-            message = "政变事实已按当前设置登记到行动、记忆、周报与快报入口。";
+            message = CoupSourceTexts.Get("FactsRegistered");
             return true;
         }
-        catch (Exception ex) { message = "政变事实登记未完成：" + Error(ex); Logger.Log("Coup", message); return false; }
+        catch (Exception ex) { message = CoupSourceTexts.Format("FactRegistrationFailed", Error(ex)); Logger.Log("Coup", "outcome_registration_failed coup=" + coupId + " error=" + Error(ex)); return false; }
     }
 
     private static string MemoryStatus(Outcome receipt) => _af.Memory.GetStatus(receipt.RecoveryId, receipt.HeroId, receipt.RecoveryHash) ?? "Unavailable";
     private static string Error(Exception ex) => (ex is TargetInvocationException && ex.InnerException != null ? ex.InnerException : ex).Message;
-    private static void Show(string message) { if (!string.IsNullOrEmpty(message)) InformationManager.DisplayMessage(new InformationMessage(CoupUiText.Prefix + message)); }
+    private static void Show(string message, string suffix = null) { if (!string.IsNullOrEmpty(message)) InformationManager.DisplayMessage(new InformationMessage(CoupUiText.Prefix + CoupUiText.LocalizeReason(message) + (suffix ?? string.Empty))); }
 }

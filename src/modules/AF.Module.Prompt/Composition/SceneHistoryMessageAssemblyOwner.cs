@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -73,28 +73,28 @@ internal static string FormatScenePlayerDirectSpeechLabel(string playerName, flo
 		string text = (playerName ?? "").Trim();
 		if (string.IsNullOrWhiteSpace(text))
 		{
-			text = "玩家";
+			text = PromptComposerTexts.Get("residual_player");
 		}
 		if (float.IsNaN(playerDistanceMeters) || float.IsInfinity(playerDistanceMeters) || playerDistanceMeters < 0f)
 		{
-			return text + "对你说";
+			return PromptComposerTexts.Format("residual_player_says", ("NAME", text));
 		}
 		int num = Math.Max(0, (int)Math.Ceiling(playerDistanceMeters));
 		if (playerDistanceMeters > 50f)
 		{
-			return text + "离你" + num + "米对你大声喊道";
+			return PromptComposerTexts.Format("residual_player_shouts_loudly", ("NAME", text), ("DISTANCE", num));
 		}
 		if (playerDistanceMeters > 5f)
 		{
-			return text + "离你" + num + "米对你喊道";
+			return PromptComposerTexts.Format("residual_player_shouts", ("NAME", text), ("DISTANCE", num));
 		}
-		return text + "对你说";
+		return PromptComposerTexts.Format("residual_player_says", ("NAME", text));
 	}
 
 internal static bool TryNormalizeAfefFactLineForPrompt(string text, out string factLine)
 	{
 		string value = ConversationSpeechTextRules.StripAfefPromptScopeLabel((text ?? "").Replace("\r", " ").Replace("\n", " ").Trim());
-		if (value.StartsWith("[AFEF玩家行为补充]", StringComparison.Ordinal) || value.StartsWith("[AFEF NPC行为补充]", StringComparison.Ordinal) || value.StartsWith("【AFEF玩家行为补充】", StringComparison.Ordinal) || value.StartsWith("【AFEF NPC行为补充】", StringComparison.Ordinal))
+		if (value.StartsWith(PromptComposerTexts.Raw("afef_player_action"), StringComparison.Ordinal) || value.StartsWith(PromptComposerTexts.Raw("afef_npc_action"), StringComparison.Ordinal) || value.StartsWith(PromptComposerTexts.Raw("afef_player_action_bracket"), StringComparison.Ordinal) || value.StartsWith(PromptComposerTexts.Raw("afef_npc_action_bracket"), StringComparison.Ordinal))
 		{
 			factLine = NormalizeAfefFactLineForPrompt(value);
 			return true;
@@ -103,37 +103,39 @@ internal static bool TryNormalizeAfefFactLineForPrompt(string text, out string f
 		return false;
 	}
 
-internal static string NormalizeAfefFactLineForPrompt(string text, string fallbackPrefix = "[AFEF玩家行为补充]")
+internal static string NormalizeAfefFactLineForPrompt(string text, string fallbackPrefix = null)
 	{
 		string value = ConversationSpeechTextRules.StripAfefPromptScopeLabel((text ?? "").Replace("\r", " ").Replace("\n", " ").Trim());
 		if (string.IsNullOrWhiteSpace(value))
 		{
 			return "";
 		}
-		if (value.StartsWith("[AFEF玩家行为补充]", StringComparison.Ordinal) || value.StartsWith("[AFEF NPC行为补充]", StringComparison.Ordinal))
+		if (value.StartsWith(PromptComposerTexts.Raw("afef_player_action"), StringComparison.Ordinal) || value.StartsWith(PromptComposerTexts.Raw("afef_npc_action"), StringComparison.Ordinal))
 		{
 			return value;
 		}
-		if (value.StartsWith("【AFEF玩家行为补充】", StringComparison.Ordinal))
+		if (value.StartsWith(PromptComposerTexts.Raw("afef_player_action_bracket"), StringComparison.Ordinal))
 		{
-			return "[AFEF玩家行为补充] " + value.Substring("【AFEF玩家行为补充】".Length).Trim();
+			return PromptComposerTexts.Raw("afef_player_action") + " " + value.Substring(PromptComposerTexts.Raw("afef_player_action_bracket").Length).Trim();
 		}
-		if (value.StartsWith("【AFEF NPC行为补充】", StringComparison.Ordinal))
+		if (value.StartsWith(PromptComposerTexts.Raw("afef_npc_action_bracket"), StringComparison.Ordinal))
 		{
-			return "[AFEF NPC行为补充] " + value.Substring("【AFEF NPC行为补充】".Length).Trim();
+			return PromptComposerTexts.Raw("afef_npc_action") + " " + value.Substring(PromptComposerTexts.Raw("afef_npc_action_bracket").Length).Trim();
 		}
-		string prefix = string.IsNullOrWhiteSpace(fallbackPrefix) ? "[AFEF玩家行为补充]" : fallbackPrefix.Trim();
+		string prefix = string.IsNullOrWhiteSpace(fallbackPrefix) ? PromptComposerTexts.Raw("afef_player_action") : fallbackPrefix.Trim();
 		return prefix + " " + value;
 	}
 
 internal static string BuildScopedAfefFactLineForPrompt(string text, bool isCurrent)
 	{
-		string factLine = NormalizeAfefFactLineForPrompt(text);
+        // Project individual courier facts before the legacy normalizer flattens line breaks.
+		string factLine = NormalizeAfefFactLineForPrompt(MemorySystemFactProjection.ProjectNpcFact(text));
+        factLine = MemorySystemFactProjection.ProjectNpcFact(factLine);
 		if (string.IsNullOrWhiteSpace(factLine))
 		{
 			return "";
 		}
-		return (isCurrent ? "【当下行为】" : "【过往行为】") + factLine;
+		return (isCurrent ? PromptComposerTexts.Raw("history_section_scope_current") : PromptComposerTexts.Raw("history_section_scope_historical")) + factLine;
 	}
 
 internal static string BuildConversationMessageDedupeKey(ConversationMessage msg, ConversationSpeechTextOptions options)
@@ -192,8 +194,8 @@ internal static bool TryConvertSceneMessageToStrictChatMessage(ConversationMessa
 		int npcAgentIndex = context.ViewerAgentIndex;
 		string npcHeroId = context.ViewerHeroId;
 		bool isAfefFact = TryNormalizeAfefFactLineForPrompt(text2, out var afefFactLine);
-		bool isAfefNpcFact = afefFactLine.StartsWith("[AFEF NPC行为补充]", StringComparison.Ordinal);
-		bool isAfefPlayerFact = afefFactLine.StartsWith("[AFEF玩家行为补充]", StringComparison.Ordinal);
+		bool isAfefNpcFact = afefFactLine.StartsWith(PromptComposerTexts.Raw("afef_npc_action"), StringComparison.Ordinal);
+		bool isAfefPlayerFact = afefFactLine.StartsWith(PromptComposerTexts.Raw("afef_player_action"), StringComparison.Ordinal);
 		bool isCurrentAfefFact = isAfefFact && (msg.PromptFactScopeCaptured
             ? msg.PromptIsCurrentFact
             : currentAfefFactKeys != null && currentAfefFactKeys.Contains(BuildConversationMessageDedupeKey(msg, context.SpeechTextOptions)));
@@ -209,8 +211,8 @@ internal static bool TryConvertSceneMessageToStrictChatMessage(ConversationMessa
 				chatMessage = MainPromptMessageAssemblyOwner.CreateCourierChatMessage("assistant", PrefixConversationMessageForPrompt(context, msg, string.IsNullOrWhiteSpace(msg.SpeakerName) ? "NPC" : msg.SpeakerName.Trim(), text3));
 				return true;
 			}
-			string text4 = string.IsNullOrWhiteSpace(msg.SpeakerName) ? "某NPC" : msg.SpeakerName.Trim();
-			chatMessage = MainPromptMessageAssemblyOwner.CreateCourierChatMessage("user", PrefixConversationMessageForPrompt(context, msg, text4, "【你听见】" + text4 + "说：" + text3));
+			string text4 = string.IsNullOrWhiteSpace(msg.SpeakerName) ? PromptComposerTexts.Get("residual_other_npc") : msg.SpeakerName.Trim();
+			chatMessage = MainPromptMessageAssemblyOwner.CreateCourierChatMessage("user", PrefixConversationMessageForPrompt(context, msg, text4, PromptComposerTexts.Format("residual_heard_speech", ("NAME", text4), ("TEXT", text3))));
 			return true;
 		}
 		if (text.Equals("user", StringComparison.OrdinalIgnoreCase))
@@ -224,11 +226,11 @@ internal static bool TryConvertSceneMessageToStrictChatMessage(ConversationMessa
 			}
 			if (msg.TargetAgentIndex >= 0)
 			{
-				string text6 = string.IsNullOrWhiteSpace(msg.TargetName) ? "别人" : msg.TargetName.Trim();
-				chatMessage = MainPromptMessageAssemblyOwner.CreateCourierChatMessage("user", PrefixConversationMessageForPrompt(context, msg, text5, "【你听见】" + text5 + "对" + text6 + "说：" + text2));
+				string text6 = string.IsNullOrWhiteSpace(msg.TargetName) ? PromptComposerTexts.Get("residual_other_person") : msg.TargetName.Trim();
+				chatMessage = MainPromptMessageAssemblyOwner.CreateCourierChatMessage("user", PrefixConversationMessageForPrompt(context, msg, text5, PromptComposerTexts.Format("residual_heard_target_speech", ("NAME", text5), ("TARGET", text6), ("TEXT", text2))));
 				return true;
 			}
-			chatMessage = MainPromptMessageAssemblyOwner.CreateCourierChatMessage("user", PrefixConversationMessageForPrompt(context, msg, text5, "【你听见】" + text5 + "说：" + text2));
+			chatMessage = MainPromptMessageAssemblyOwner.CreateCourierChatMessage("user", PrefixConversationMessageForPrompt(context, msg, text5, PromptComposerTexts.Format("residual_heard_speech", ("NAME", text5), ("TEXT", text2))));
 			return true;
 		}
 		if (text.Equals("system", StringComparison.OrdinalIgnoreCase))
@@ -238,11 +240,11 @@ internal static bool TryConvertSceneMessageToStrictChatMessage(ConversationMessa
 				chatMessage = MainPromptMessageAssemblyOwner.CreateCourierChatMessage("user", PrefixConversationMessageForPrompt(context, msg, "AFEF", BuildScopedAfefFactLineForPrompt(afefFactLine, isCurrentAfefFact)));
 				return true;
 			}
-			string text6 = (isAfefFact && isAfefPlayerFact) ? BuildScopedAfefFactLineForPrompt(afefFactLine, isCurrentAfefFact) : ("【场景事实】" + text2);
-			chatMessage = MainPromptMessageAssemblyOwner.CreateCourierChatMessage("user", PrefixConversationMessageForPrompt(context, msg, isAfefPlayerFact ? "AFEF" : "系统", text6));
+			string text6 = (isAfefFact && isAfefPlayerFact) ? BuildScopedAfefFactLineForPrompt(afefFactLine, isCurrentAfefFact) : (PromptComposerTexts.Get("residual_scene_fact") + text2);
+			chatMessage = MainPromptMessageAssemblyOwner.CreateCourierChatMessage("user", PrefixConversationMessageForPrompt(context, msg, isAfefPlayerFact ? "AFEF" : PromptComposerTexts.Get("residual_system"), text6));
 			return true;
 		}
-		chatMessage = MainPromptMessageAssemblyOwner.CreateCourierChatMessage("user", PrefixConversationMessageForPrompt(context, msg, string.IsNullOrWhiteSpace(msg.SpeakerName) ? "记录" : msg.SpeakerName.Trim(), text2));
+		chatMessage = MainPromptMessageAssemblyOwner.CreateCourierChatMessage("user", PrefixConversationMessageForPrompt(context, msg, string.IsNullOrWhiteSpace(msg.SpeakerName) ? PromptComposerTexts.Get("residual_record") : msg.SpeakerName.Trim(), text2));
 		return true;
 	}
 internal static string PrefixConversationMessageForPrompt(SceneHistoryMessageContext context, ConversationMessage msg, string fallbackSpeaker, string content)
@@ -272,9 +274,9 @@ internal static string BuildConversationMessageMetadataPrefix(SceneHistoryMessag
 		}
 		if (string.IsNullOrWhiteSpace(speaker))
 		{
-			speaker = "记录";
+			speaker = PromptComposerTexts.Get("residual_record");
 		}
-		return "[" + date + " " + hour + "时｜" + scene + "｜" + speaker + "] ";
+		return "[" + date + " " + hour + PromptComposerTexts.Get("residual_hour_separator") + scene + "｜" + speaker + "] ";
 	}
 
 internal static List<string> KeepAfefFactsAndRecentHistoryLines(List<string> lines, int maxConversationLines)
@@ -285,7 +287,7 @@ internal static List<string> KeepAfefFactsAndRecentHistoryLines(List<string> lin
 
     internal static List<object> Build(SceneHistoryMessageAssemblyInput input)
     {
-        var messages = new List<object> { MainPromptMessageAssemblyOwner.CreateCourierChatMessage("system", input.SystemPrompt) };
+        var messages = new List<object> { MainPromptMessageAssemblyOwner.CreateCourierChatMessage("system", MainPromptMessageAssemblyOwner.BuildConversationSystemPrompt(input.SystemPrompt)) };
         AppendSections(messages, input.PrefixUserSections);
         var pending = (input.PendingCurrentFacts ?? Enumerable.Empty<ConversationMessage>())
             .Where(x => x != null).Select(x => BuildConversationMessageDedupeKey(x, input.Context.SpeechTextOptions));

@@ -18,11 +18,12 @@ internal sealed class ClanInfluencePerDayEffectModule : NumericPolicyEffectModul
 		allowedScopes: new[] { PolicyEffectScopes.Kingdom, PolicyEffectScopes.Local, PolicyEffectScopes.Vassal },
 		allowedSelectorKinds: new[] { PolicyEffectTargetKind.Settlement, PolicyEffectTargetKind.Clan, PolicyEffectTargetKind.Kingdom, PolicyEffectTargetKind.Hero },
 		targetKinds: new[] { PolicyEffectTargetKind.Clan },
-		cueTerms: new[] { "内部影响力每日" },
-		retrievalText: "内部运行模块：政策有效期间每日家族影响力变化。",
-		catalogSummary: "内部：家族影响力每日变化",
-		mainInstruction: "内部模块，不向模型暴露。",
-		postprocessRule: "内部模块，不得直接输出。",
+		cueTerms: new[] { PolicyCompatibilityTexts.Get("Module_clanInfluencePerDay_Original_2") },
+		retrievalText: PolicyGenerationPromptTexts.Get("Module_clanInfluencePerDay_retrievalText", "Internal runtime module: daily clan influence changes while the policy is active."),
+		catalogSummary: PolicyGenerationPromptTexts.Get("Module_clanInfluencePerDay_catalogSummary", "Internal: daily clan influence change"),
+		playerDisplayName: PolicyCompatibilityTexts.Get("Module_clanInfluencePerDay_OriginalName"),
+		mainInstruction: PolicyGenerationPromptTexts.Get("Module_clanInfluencePerDay_mainInstruction", "Internal module; not exposed to the model."),
+		postprocessRule: PolicyGenerationPromptTexts.Get("Module_clanInfluencePerDay_postprocessRule", "Internal module; do not output it directly."),
 		payloadPromptSchema: PolicyEffectPayloadSchemas.CreateNumericValueSchema(),
 		family: PolicyEffectFamily.Governance,
 		executionKind: PolicyEffectExecutionKind.DailyMutation,
@@ -48,7 +49,7 @@ internal sealed class ClanInfluencePerDayEffectModule : NumericPolicyEffectModul
 		}
 		if (context.GameBridge == null)
 		{
-			return Failed("clanInfluencePerDay 缺少 game bridge", false);
+			return Failed("clanInfluencePerDay requires a game bridge", false);
 		}
 		if (!context.GameBridge.TryChangeClanInfluence(
 			clanId,
@@ -100,14 +101,14 @@ internal sealed class ClanInfluencePerDayEffectModule : NumericPolicyEffectModul
 		JObject target = context?.ExistingReceipt?.AppliedPayload?["target"] as JObject;
 		if (instance == null || target == null || context.GameBridge == null)
 		{
-			return Failed("clanInfluencePerDay compensation 缺少执行上下文、回执或 game bridge", false);
+			return Failed("clanInfluencePerDay compensation requires execution context, receipt and game bridge", false);
 		}
 		string clanId = ((string)target["clanId"] ?? string.Empty).Trim();
 		float expectedAfter = (float?)target["after"] ?? float.NaN;
 		float before = (float?)target["before"] ?? float.NaN;
 		if (clanId.Length <= 0 || float.IsNaN(expectedAfter) || float.IsNaN(before))
 		{
-			return Failed("clanInfluencePerDay compensation 回执无效", false);
+			return Failed("clanInfluencePerDay compensation receipt is invalid", false);
 		}
 		if (!context.GameBridge.TryRestoreClanInfluence(
 			clanId,
@@ -152,17 +153,17 @@ internal sealed class ClanInfluencePerDayEffectModule : NumericPolicyEffectModul
 		clanId = (context?.TargetId ?? string.Empty).Trim();
 		if (instance == null || string.IsNullOrWhiteSpace(context.PreparedInstance.IdempotencyKey))
 		{
-			error = "clanInfluencePerDay 缺少执行上下文或幂等键";
+			error = "clanInfluencePerDay requires an execution context and idempotency key";
 			return false;
 		}
 		if (!string.Equals(instance.ModuleId, ModuleDescriptor.Id, StringComparison.Ordinal) || payload == null)
 		{
-			error = "clanInfluencePerDay payload 与模块不匹配";
+			error = "clanInfluencePerDay payload does not match the module";
 			return false;
 		}
 		if (context.TargetKind != PolicyEffectTargetKind.Clan || clanId.Length <= 0)
 		{
-			error = "clanInfluencePerDay 缺少有效家族目标";
+			error = "clanInfluencePerDay requires valid clan targets";
 			return false;
 		}
 		error = string.Empty;

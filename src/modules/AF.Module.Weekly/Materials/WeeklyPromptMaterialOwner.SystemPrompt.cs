@@ -138,7 +138,7 @@ internal static partial class WeeklyPromptMaterialOwner
 			stringBuilder.AppendLine(WeeklyMaterialTexts.Prompt("AF_WEEKLY_Prompt_028"));
 		}
 		stringBuilder.AppendLine(flag2 ? WeeklyMaterialTexts.Prompt("AF_WEEKLY_Prompt_029") : WeeklyMaterialTexts.Prompt("AF_WEEKLY_Prompt_030"));
-		return stringBuilder.ToString().TrimEnd();
+		return PromptComposerTexts.ApplyOutputLanguage(stringBuilder.ToString().TrimEnd());
 	}
 
 

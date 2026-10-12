@@ -22,10 +22,10 @@ internal static class TownAmbientTime
 {
 	private static readonly string[] NightTerms =
 	{
-		"今晚", "今夜", "夜里", "夜间", "夜班", "夜哨", "守夜", "夜风", "夜巡", "夜里的", "夜色", "入夜", "过夜", "月亮", "星空"
+		ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0989"), ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0990"), ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0991"), ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0992"), ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0993"), ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0994"), ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0995"), ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0996"), ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0997"), ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0998"), ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0999"), ConversationRuntimeTexts.Raw("AF_CONV_Runtime_1000"), ConversationRuntimeTexts.Raw("AF_CONV_Runtime_1001"), ConversationRuntimeTexts.Raw("AF_CONV_Runtime_1002"), ConversationRuntimeTexts.Raw("AF_CONV_Runtime_1003")
 	};
-	private static readonly string[] EveningTerms = { "傍晚", "黄昏", "日落", "落日前" };
-	private static readonly string[] DayTerms = { "清晨", "早上", "上午", "正午", "午后", "下午", "日头", "太阳", "天亮" };
+	private static readonly string[] EveningTerms = { ConversationRuntimeTexts.Raw("AF_CONV_Runtime_1004"), ConversationRuntimeTexts.Raw("AF_CONV_Runtime_1005"), ConversationRuntimeTexts.Raw("AF_CONV_Runtime_1006"), ConversationRuntimeTexts.Raw("AF_CONV_Runtime_1007") };
+	private static readonly string[] DayTerms = { ConversationRuntimeTexts.Raw("AF_CONV_Runtime_1008"), ConversationRuntimeTexts.Raw("AF_CONV_Runtime_1009"), ConversationRuntimeTexts.Raw("AF_CONV_Runtime_1010"), ConversationRuntimeTexts.Raw("AF_CONV_Runtime_1011"), ConversationRuntimeTexts.Raw("AF_CONV_Runtime_1012"), ConversationRuntimeTexts.Raw("AF_CONV_Runtime_1013"), ConversationRuntimeTexts.Raw("AF_CONV_Runtime_1014"), ConversationRuntimeTexts.Raw("AF_CONV_Runtime_1015"), ConversationRuntimeTexts.Raw("AF_CONV_Runtime_1016") };
 
 	public static TownAmbientTimeBand GetBand(int hour)
 	{
@@ -40,10 +40,10 @@ internal static class TownAmbientTime
 	{
 		switch (GetBand(hour))
 		{
-			case TownAmbientTimeBand.Dawn: return "清晨";
-			case TownAmbientTimeBand.Day: return "白天";
-			case TownAmbientTimeBand.Evening: return "傍晚";
-			default: return "夜里";
+			case TownAmbientTimeBand.Dawn: return ConversationRuntimeTexts.Raw("AF_CONV_Runtime_1017");
+			case TownAmbientTimeBand.Day: return ConversationRuntimeTexts.Raw("AF_CONV_Runtime_1018");
+			case TownAmbientTimeBand.Evening: return ConversationRuntimeTexts.Raw("AF_CONV_Runtime_1019");
+			default: return ConversationRuntimeTexts.Raw("AF_CONV_Runtime_1020");
 		}
 	}
 
@@ -66,10 +66,10 @@ internal static class TownAmbientTime
 	{
 		switch (GetBand(hour))
 		{
-			case TownAmbientTimeBand.Dawn: return "早安";
-			case TownAmbientTimeBand.Day: return "午安";
-			case TownAmbientTimeBand.Evening: return "傍晚好";
-			default: return "晚上好";
+			case TownAmbientTimeBand.Dawn: return ConversationRuntimeTexts.Raw("AF_CONV_Runtime_1021");
+			case TownAmbientTimeBand.Day: return ConversationRuntimeTexts.Raw("AF_CONV_Runtime_1022");
+			case TownAmbientTimeBand.Evening: return ConversationRuntimeTexts.Raw("AF_CONV_Runtime_1023");
+			default: return ConversationRuntimeTexts.Raw("AF_CONV_Runtime_1024");
 		}
 	}
 
@@ -176,7 +176,7 @@ internal static class TownAmbientTime
 	private static bool IsAnyBand(string value)
 	{
 		string normalized = (value ?? "").Trim().ToLowerInvariant();
-		return normalized == "any" || normalized == "any_time" || normalized == "全天" || normalized == "任何时间";
+		return normalized == "any" || normalized == "any_time" || normalized == ConversationRuntimeTexts.Raw("AF_CONV_Runtime_1025") || normalized == ConversationRuntimeTexts.Raw("AF_CONV_Runtime_1026");
 	}
 
 	private static bool MatchesBandName(string value, TownAmbientTimeBand band)
@@ -184,10 +184,10 @@ internal static class TownAmbientTime
 		string normalized = (value ?? "").Trim().ToLowerInvariant();
 		switch (band)
 		{
-			case TownAmbientTimeBand.Dawn: return normalized == "dawn" || normalized == "清晨";
-			case TownAmbientTimeBand.Day: return normalized == "day" || normalized == "白天";
-			case TownAmbientTimeBand.Evening: return normalized == "evening" || normalized == "傍晚";
-			default: return normalized == "night" || normalized == "夜里" || normalized == "夜晚";
+			case TownAmbientTimeBand.Dawn: return normalized == "dawn" || normalized == ConversationRuntimeTexts.Raw("AF_CONV_Runtime_1027");
+			case TownAmbientTimeBand.Day: return normalized == "day" || normalized == ConversationRuntimeTexts.Raw("AF_CONV_Runtime_1028");
+			case TownAmbientTimeBand.Evening: return normalized == "evening" || normalized == ConversationRuntimeTexts.Raw("AF_CONV_Runtime_1029");
+			default: return normalized == "night" || normalized == ConversationRuntimeTexts.Raw("AF_CONV_Runtime_1030") || normalized == ConversationRuntimeTexts.Raw("AF_CONV_Runtime_1031");
 		}
 	}
 

@@ -247,8 +247,8 @@ internal static class PlayerSemanticReplay
                 "known oral offer in another live round binds the player's acceptance: " + kind);
         }
         Test.True(WorldDiplomacyAnalysisApplication.DescribeRejectedPlayerMechanic("player_action_player_offer_response_missing_source_offer")
-                .Contains("正式提案")
-            && WorldDiplomacyAnalysisApplication.DescribeRejectedPlayerMechanic("treaty_roles_must_match_participants").Contains("接收国"),
+                .Contains(SmokeLocalizationEnvironment.EnglishUi ? "formal proposal" : "正式提案")
+            && WorldDiplomacyAnalysisApplication.DescribeRejectedPlayerMechanic("treaty_roles_must_match_participants").Contains(SmokeLocalizationEnvironment.EnglishUi ? "receiving" : "接收国"),
             "rejected player mechanics expose a specific readable reason instead of one generic message");
     }
 

@@ -2,6 +2,7 @@
 
 ## AF skill coordination
 
+- For every new or changed AF runtime text/content, read `.agents/skills/af-bilingual-localization/SKILL.md` and complete CN/EN resources plus actual consumers within the same task; routine development covers the affected chain rather than reopening a whole-repository migration.
 - For verified AF development/maintenance, read the single repository copy at `.claude/skills/animusforge-maintainer/SKILL.md`; select its workflow for the actual task, not a permanent whole-project refactor agenda.
 - The selected maintenance source is `D:/下载/af-skill/af-skill` (version 0.2.0). This repository reads its reviewed local copy, not that external path at runtime. Merge shared-file updates deliberately; preserve the local framework coordination adaptation and other authors' changes. Do not install or overwrite other copies implicitly.
 - For AF core/framework/internal-module/public-API work, also read `.agents/skills/af-core-framework/SKILL.md`. Reconcile them through `.claude/skills/animusforge-maintainer/references/framework-coordination.md`: same-DLL internal ports and versioned external public API remain separate; logical Foundation/Module/Bridge names do not mandate separate DLLs or expand the user's task scope.
@@ -23,6 +24,18 @@
 - 不要擅自修改项目的一键编译/覆盖流程；本项目已经有自己的构建和覆盖方式。
 - 不要回滚用户已有改动。
 
+## 长期双语化维护（后续内容必须双语）
+
+- 后续新增或修改的玩家可见文案、MCM/终端说明、提示词、模型上下文、事实投影、默认资产和世界书，必须同步维护中文与英文并接通真实消费者；双语属于同一功能的完成条件，不留单语实现等待后续补译。
+- UI 随游戏界面语言，Prompt/世界书随 CN/EN 内容包；两包都保留双语 UI。新内部标识与技术诊断用英文，既有存档/协议/AFEF 身份、动态名字与用户内容保留原值，在显示或请求边界投影。
+- 资源与真实 reader、消费者、内容映射/嵌入逻辑名、语言注册和包选择必须一起完成；核对 prefab 的 DataSource 文案属性与绑定。语义、实际接线、词法扫描和实机分别验收，不能用“无汉字/编译通过”替代。
+- 所有新增自然语言生成链路，在最终请求的 system 中明确使用内容包语言，包括对话、信件、周报/公报、人物背景、记忆、政策、命名和插画文字；约束在用户写作要求之后收口并保留协议、事实、JSON字段、数字和专名。覆盖配置、三渠道、重试及真实 messages 都须验证；只翻译提示词不等于模型会按包语言输出。
+- AF 运行数据按用途写入当前已安装模组：`CustomPrompts/` 用户提示词、`Logs/` 日志、`Configs/` 设置、`PlayerExports/` 导入导出、`Cache/` 缓存和临时音频、`Recovery/` 恢复资料；复用 `AnimusForgeDataPaths` 的身份/路径/ancestor reparse 校验。不得自动转写 AppData、Documents 或 TEMP；独立编辑器显式选择合法模块，旧位置只作兼容读取/一次迁移来源。MCM 路由只覆盖 AF 自有 ID。
+- 固定包默认提示词位于 `ModuleData/Defaults/CustomPrompts/`，`CustomPrompts/` 保留用户编辑。按 `McmKnownPromptDefaults.json` 的确切已知默认哈希识别旧发布文件，维护清册时同步两种资产；已编辑、未知和旧用户内容保值。映射迁移需要新建干净 Stage 并保留旧项目输出，不能放行 Stage 中未知文件来解决旧输出冲突。
+- 正式打包必须一次生成 CN 和 EN 两份 ZIP，名称为 `AnimusForge_v1.X.X_CN_MMdd_HHmm.zip` / `AnimusForge_v1.X.X_EN_MMdd_HHmm.zip`，例如 `AnimusForge_v1.5.8_CN_1007_0802.zip`。同一对包共用版本和本机月日/时分；重名时两包同加 `_1`、`_2` 等尾号，保留旧包，禁止自定义 PackageLabel 改名。
+- 每份 ZIP 只有一个 `AnimusForge/` 模块，含 Bootstrap 和 1.3/1.4 实现。正式发行验证完整 Stage 的两种内容投影及旧值/变量/语义；日常验证按变更风险复用有效证据，保持缓存策略，不新增 Tick IO/扫描。遵守原版本事务、两包校验成功后才发布、失败清理及不隐式部署规则。
+- 按该 skill 的长期指南维护；规范更新不改变产品状态、不隐式授权生产打包、部署、push、全局安装或其他副本写入。实际状态与未验项仍登记唯一主台账和 HANDOFF。
+
 ## 单模块双实现输出案例
 
 当任务涉及以下内容时，先阅读并套用 `docs/bannerlord_dual_module_output.md`：
@@ -37,7 +50,7 @@
 - 本项目使用一套源码，分别编译 1.3.x / 1.4.x 实现，但只发布一个 `Modules/AnimusForge` 模块。
 - `SubModule.xml` 只加载 `AnimusForge.Bootstrap.dll`，Bootstrap 根据游戏版本只加载一个实现。
 - 两个实现保持程序集名 `AnimusForge`，分别存放在 `versions/1.3/AnimusForge.dll` 和 `versions/1.4/AnimusForge.dll`，严禁同时加载。
-- 模块 `Id`、`Name` 和输出文件夹统一为 `AnimusForge`，打包只生成一个 ZIP。
+- 模块 `Id`、`Name` 和输出文件夹统一为 `AnimusForge`；CN、EN 各生成一个 ZIP，每个 ZIP 都包含同一单模块的两 API 实现，并遵循上方双语包命名。
 - 不要恢复 `AnimusForge_1_3_x` / `AnimusForge_1_4_5` 双模块输出，也不要覆盖游戏或 TaleWorlds 原版 DLL。
 
 ## 百科按钮注入案例

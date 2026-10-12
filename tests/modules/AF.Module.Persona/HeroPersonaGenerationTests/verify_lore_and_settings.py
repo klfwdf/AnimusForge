@@ -6,6 +6,7 @@ read/write declarations are compiled. All synthetic disk writes stay in a new ru
 from pathlib import Path
 import argparse
 import importlib.util
+import re
 import subprocess
 import sys
 
@@ -16,6 +17,7 @@ from output_isolation import new_run_root, resolve_dotnet, minimal_test_environm
 
 p = argparse.ArgumentParser()
 p.add_argument("--settings-only", action="store_true")
+p.add_argument("--prompt-language", choices=["zh-CN", "en"], default="zh-CN")
 p.add_argument("--mutate", choices=["empty-resets-default", "take-last", "ignore-variant-conditions"])
 p.add_argument("--run-root", type=Path)
 args = p.parse_args()
@@ -32,13 +34,26 @@ methods = "\n".join(extract.declaration(settings, marker) for marker in (
     "private static bool TryReadCustomPromptTextJsonFile(",
     "private static bool TryReadLayeredCustomPromptTextJsonFile(",
 ))
+bulletin_settings = (ROOT / "src/AF.GameAdapter.Bannerlord/Configuration/Mcm/DuelSettings.BulletinPrompt.cs").read_text(encoding="utf-8-sig")
+def constant(source: str, name: str) -> str:
+    return re.search(r'\b(?:internal|private) const string ' + re.escape(name) + r'\s*=\s*(?:"(?:\\.|[^"\\])*"|[^";])*;', source).group()
+
+methods += "\n" + "\n".join(constant(bulletin_settings, name) for name in (
+    "WorldBulletinWritingRequirementsJsonFileName", "DefaultWorldBulletinWritingRequirements",
+)) + "\n" + extract.declaration(bulletin_settings, "private static string MigrateLegacyWorldBulletinWritingRequirements(")
+bulletin_policy = (ROOT / "src/modules/AF.Module.Weekly/Bulletin/WorldBulletinPolicy.cs").read_text(encoding="utf-8-sig")
+bulletin_defaults = "\n".join(constant(bulletin_policy, name) for name in (
+    "BattleWritingRequirements", "LegacyDefaultWritingRequirements", "LegacyNarrativeWritingRequirements", "DefaultWritingRequirements",
+))
+(out / "BulletinPolicyDefaults.cs").write_text("namespace AnimusForge { internal static class WorldBulletinPolicy {" + bulletin_defaults + "}}", encoding="utf-8")
 if args.mutate == "empty-resets-default":
     clause = '\n\t\t\t&& !string.Equals(Path.GetFileName(path), NpcPersonaGenerationRequirementsJsonFileName, StringComparison.OrdinalIgnoreCase)'
     assert methods.count(clause) == 1
     methods = methods.replace(clause, "", 1)
 fixture = (HERE / "LoreAndSettings.cs.txt").read_text(encoding="utf-8")
 fixture = fixture.replace("@@SETTINGS@@", methods)
-files = ["Program.cs"]
+files = ["Program.cs", "BulletinPolicyDefaults.cs"]
+resources = ""
 if not args.settings_only:
     source = (ROOT / "src/modules/AF.Module.Knowledge/Host/KnowledgeLibraryBehavior.cs").read_text(encoding="utf-8-sig")
     markers = (
@@ -75,15 +90,19 @@ if not args.settings_only:
     (out / "Leaves.cs").write_text(leaf, encoding="utf-8")
     for name, relative in (("Index.cs", "Index/KnowledgeRuleIndex.cs"), ("Retriever.cs", "Lore/LoreCandidateRetriever.cs")):
         (out / name).write_bytes((ROOT / "src/modules/AF.Module.Knowledge" / relative).read_bytes())
-    files += ["Knowledge.cs", "Leaves.cs", "Index.cs", "Retriever.cs"]
-fixture = fixture.replace("@@RUN_LORE@@", "" if args.settings_only else "LoreCases();")
+    (out / "KnowledgePromptTexts.cs").write_bytes((ROOT / "src/modules/AF.Module.Knowledge/Host/KnowledgePromptTexts.cs").read_bytes())
+    prompt_file = "KnowledgeRagPromptTexts.en.json" if args.prompt_language == "en" else "KnowledgeRagPromptTexts.json"
+    (out / "KnowledgeRagPromptTexts.json").write_bytes((ROOT / "content/modules/AF.Module.Knowledge/ModuleData" / prompt_file).read_bytes())
+    resources = '<None Include="KnowledgeRagPromptTexts.json" CopyToOutputDirectory="PreserveNewest"/>'
+    files += ["Knowledge.cs", "Leaves.cs", "Index.cs", "Retriever.cs", "KnowledgePromptTexts.cs"]
+fixture = fixture.replace("@@RUN_LORE@@", "" if args.settings_only else "LoreCases(args[2]);")
 (out / "Program.cs").write_text(fixture, encoding="utf-8")
 newtonsoft = dotnet.parent / "sdk/8.0.425/Newtonsoft.Json.dll"
 defines = "" if args.settings_only else "<DefineConstants>PERSONA_LORE</DefineConstants>"
-items = "".join(f'<Compile Include="{f}"/>' for f in files)
+items = "".join(f'<Compile Include="{f}"/>' for f in files) + resources
 (out / "Proof.csproj").write_text(f'<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><EnableDefaultCompileItems>false</EnableDefaultCompileItems><UseAppHost>false</UseAppHost><NuGetAudit>false</NuGetAudit>{defines}</PropertyGroup><ItemGroup>{items}<Reference Include="Newtonsoft.Json"><HintPath>{newtonsoft.as_posix()}</HintPath></Reference></ItemGroup></Project>', encoding="utf-8")
 (out / "NuGet.Config").write_text("<configuration><packageSources><clear/></packageSources></configuration>", encoding="utf-8")
-result = subprocess.run([str(dotnet), "run", "--project", str(out / "Proof.csproj"), "-c", "Release", "-p:RestoreConfigFile=" + str(out / "NuGet.Config"), "--", str(out), str(ROOT / "content/modules/AF.Module.Persona/CustomPrompts/NpcPersonaGenerationRequirements.json")], cwd=out, env=minimal_test_environment(dotnet, out), capture_output=True, text=True, encoding="utf-8", errors="replace")
+result = subprocess.run([str(dotnet), "run", "--project", str(out / "Proof.csproj"), "-c", "Release", "-p:RestoreConfigFile=" + str(out / "NuGet.Config"), "--", str(out), str(ROOT / "content/modules/AF.Module.Persona/CustomPrompts/NpcPersonaGenerationRequirements.json"), args.prompt_language], cwd=out, env=minimal_test_environment(dotnet, out), capture_output=True, text=True, encoding="utf-8", errors="replace")
 (out / "run.log").write_text(result.stdout + result.stderr, encoding="utf-8")
 print(result.stdout + result.stderr, end="")
 raise SystemExit(result.returncode)

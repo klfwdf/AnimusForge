@@ -1,0 +1,48 @@
+using System;using System.IO;using System.Linq;using System.Collections.Generic;using System.Reflection;using System.Text.RegularExpressions;using Newtonsoft.Json;using Newtonsoft.Json.Linq;using AnimusForge;
+internal static class Program {
+ internal static string Root; static int checks;
+ static void Check(bool v,string label){checks++;if(!v)throw new Exception(label);}
+ static void Main(string[] args){Root=args[0];bool en=args[1]=="en";
+ const string name="Lady {0} $1 玩家", quote="用户原话 {1} $1 不要翻译\n你加入了玩家队伍。";
+ foreach(JArray row in JArray.Parse(File.ReadAllText(args[2]))){string key=(string)row[0];string[] parts=row[1].Values<string>().ToArray();var vals=Enumerable.Range(0,parts.Length-1).Select(i=>"literal"+i+" {0} $1 玩家").ToArray();string raw="";for(int i=0;i<parts.Length;i++)raw+=parts[i]+(i<vals.Length?vals[i]:"");
+ string actual;
+ if(key.StartsWith("civil_"))actual=CampaignSystemFactProjection.Project("civil_war",raw);
+ else {string field=key.StartsWith("note_")?"Notes":"Catalog";var templates=typeof(CampaignSystemFactProjection).GetField(field,BindingFlags.NonPublic|BindingFlags.Static).GetValue(null);actual=(string)typeof(CampaignSystemFactProjection).GetMethod("Apply",BindingFlags.NonPublic|BindingFlags.Static).Invoke(null,new[]{templates,raw});}
+ string expected=Regex.Replace(PromptComposerTexts.Get("campaign_fact_"+key),@"\{([0-9]+)\}",m=>vals[int.Parse(m.Groups[1].Value)]);
+ Check(en?actual==expected:actual==raw,"full exact template "+key);foreach(string value in vals)Check(actual.Contains(value),"literal field preserved "+key);
+ }
+ var transcript=new ExecutionTranscript{Outcome="executed",VictimName=name,VenueName="Venue {0}",Method="斩首",Lines=new(){new(){LastStatement=true,Text=quote},new(){LastStatement=false,Text="not a last statement"}}};
+ string originalJson=JsonConvert.SerializeObject(transcript), publicQuote=transcript.PublicLastWords;
+ string sentence=name+"在"+transcript.VenueName+"被以"+transcript.Method+"公开处决。";
+ string rawExecution=sentence+publicQuote, projected=CampaignSystemFactProjection.Project("execution_last_words",rawExecution);
+ Check(en?projected.Contains("publicly executed by beheading"):projected==rawExecution,"execution system sentence and known method");
+ Check(projected.Contains(name)&&projected.Contains(quote),"execution name/quote text never reinterpreted");
+ Check(!en||projected.Contains("unverified")&&projected.Contains("must not claim to have witnessed"),"execution unverified/absent witness constraints preserved");
+ Check(JsonConvert.SerializeObject(transcript)==originalJson && transcript.PublicLastWords==publicQuote,"saved transcript and canonical quote getter unchanged");
+ Check(CampaignSystemFactProjection.Project("execution_last_words",publicQuote).Contains(quote),"standalone quote detail follows same boundary");
+ Check(CampaignSystemFactProjection.Project("player_speech",rawExecution)==rawExecution,"same-word player text never projected");
+ foreach(string raw in new[]{"自由正文：随意说什么。", "王室对名字实施政治压制。额外自定义正文", "名字加入甲加入乙。", "反对派成立：名字，诉求甲，诉求乙"})Check(CampaignSystemFactProjection.Project("civil_war",raw)==raw,"unknown/ambiguous civil free body preserved");
+ string civil="国王完整兑现A为首的反战派的诉求：国王向"+name+"赔偿 42 第纳尔；自由正文 {0} 保留";
+ string pc=CampaignSystemFactProjection.Project("civil_war",civil);Check(!en||pc.Contains("A's anti-war faction")&&pc.Contains("42 denars")&&pc.Contains("自由正文 {0} 保留"),"typed nested faction/known note and unknown note coexist");
+ string memory=MemoryActionFactProjection.Project("civil_war",civil,name);Check(en?memory.Contains(name)&&memory.Contains("42 denars"):memory==null,"real memory action projection retains actor/raw CN semantics");
+ Check(MemoryActionFactProjection.Project("civil_war","custom body",name)==null,"unknown memory continues original renderer");
+ var fact=new WorldBulletinEvent{Kind="execution_last_words",Sentence=sentence,Detail=publicQuote};var civilian=new WorldBulletinEvent{Kind="civil_war_politics",Sentence="Realm：王室对A为首的反战派实施政治压制。",Detail=civil};
+ string before=JsonConvert.SerializeObject(new[]{fact,civilian});
+ var t=typeof(WorldBulletinPolicy);string Npc(WorldBulletinEvent f)=>(string)t.GetMethod("BuildNpcFactSentence",BindingFlags.NonPublic|BindingFlags.Static).Invoke(null,new object[]{f});string Detail(WorldBulletinEvent f)=>(string)t.GetMethod("BuildCoupDetailForPrompt",BindingFlags.NonPublic|BindingFlags.Static).Invoke(null,new object[]{f});
+ Check(en?Npc(fact).Contains("beheading"):Npc(fact)==sentence,"real bulletin NPC sentence boundary");Check(Detail(fact).Contains(quote),"real bulletin detail preserves original quote");Check(!en||Npc(civilian).Contains("politically suppresses A's anti-war faction"),"real bulletin civil sentence boundary");
+ var minor=new WorldBulletinMinor{Sentence="stored original minor",Events=new(){fact,civilian}};string writer=(string)t.GetMethod("BuildWriterMinorSentence",BindingFlags.NonPublic|BindingFlags.Static).Invoke(null,new object[]{minor});Check(writer!=minor.Sentence&&(!en||writer.Contains("beheading")),"real writer minor rebuilds from current supported fact sentences");
+ Check(JsonConvert.SerializeObject(new[]{fact,civilian})==before && minor.Sentence=="stored original minor","bulletin DTOs never mutated");
+ string snapshot="玩家处决英雄素材。日期：Autumn 1。地点：Venue。执行者：Player。被处决者：Victim。处决类型：战后处决。事实约束：这是处决事件，不得写成战场击杀、谋杀、自然死亡或普通俘虏释放。";
+ string ws=CampaignSystemFactProjection.ProjectWeeklyMaterial("raw_text","player_execution:id",snapshot);Check(en?ws.Contains("execution after battle")&&ws.Contains("not a battlefield kill"):ws==snapshot,"complete actual execution weekly snapshot grammar");
+ Check(CampaignSystemFactProjection.ProjectWeeklyMaterial("raw_text","unrelated:id",snapshot)==snapshot,"raw free material with same words not projected");
+ Check(CampaignSystemFactProjection.ProjectWeeklyMaterial("raw_text","player_execution:id",snapshot.Substring(0,snapshot.Length-8))==snapshot.Substring(0,snapshot.Length-8),"truncated snapshot untouched");
+ string kill=MemoryActionFactProjection.Project("hero_killed","你在战场上杀死了"+name+"。","Actor {0}");Check(en?kill=="Actor {0} killed "+name+" on the battlefield.":kill==null,"real NPC kill actor/victim semantic projection");
+ Check(MemoryActionFactProjection.Project("other_kind","你在战场上杀死了"+name+"。","Actor")==null,"wrong kill kind untouched");
+ var material=new MyBehavior.EventMaterialReference{MaterialType="raw_text",ActionStableKey="player_execution:id",SnapshotText=snapshot};string materialBefore=JsonConvert.SerializeObject(material);Check(ActualWeeklyRenderer.BuildWeeklyReportMaterialLine(material)==ws,"real final Weekly renderer consumes selected source kind");Check(JsonConvert.SerializeObject(material)==materialBefore,"final Weekly renderer leaves persisted DTO unchanged");
+ string publicSnapshot="玩家处决英雄素材。执行者：A。被处决者：B。处决类型：城镇公开处刑。刑罚：斩首。罪名：叛乱或叛国。审判方式：司法宣判。合法性：合法。行刑者：本镇刽子手奉A之命行刑。事实约束：这是公开处刑，刑罚与罪名以上述记录为准，不得改写成其他刑罚，也不得写成战场击杀、谋杀或自然死亡。";
+ string publicProjected=CampaignSystemFactProjection.ProjectWeeklyMaterial("raw_text","player_execution:id",publicSnapshot);Check(en?publicProjected.Contains("rebellion or treason")&&publicProjected.Contains("judicial sentence")&&publicProjected.Contains("town executioner acted on A's orders"):publicProjected==publicSnapshot,"public execution charge/style/legitimacy/executor exact fields");
+ foreach(JArray row in JArray.Parse(File.ReadAllText(args[3]))){string key=(string)row[0];string[] parts=row[1].Values<string>().ToArray();string[] values=Enumerable.Range(0,parts.Length-1).Select(i=>"Field"+i+" {0} $1").ToArray();string raw="";for(int j=0;j<parts.Length;j++)raw+=parts[j]+(j<values.Length?values[j]:"");string projectedKill=MemoryActionFactProjection.Project(key.Contains("_1_")?"hero_executed_victim":"hero_killed",raw,"Actor {0}");var all=new[]{"Actor {0}"}.Concat(values).ToArray();string expectedKill=Regex.Replace(PromptComposerTexts.Get(key),@"\{([0-9]+)\}",m=>all[int.Parse(m.Groups[1].Value)]);Check(en?projectedKill==expectedKill:projectedKill==null,"all actual public kill grammar "+key);}
+ Console.WriteLine("PASS campaign facts "+args[1]+" checks="+checks+" complete real projector/MemoryAction/WorldBulletin/ExecutionTranscript and packaged readers");
+ }
+}
+namespace AnimusForge{internal static class AnimusForgeModulePaths{internal static string GetModuleDataFilePath(string name)=>Path.Combine(Program.Root,name);}}

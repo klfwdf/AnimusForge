@@ -1,0 +1,9 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><LangVersion>latest</LangVersion><RepositoryRoot>$(MSBuildProjectDirectory)/../../../../../</RepositoryRoot></PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <Compile Include="$(RepositoryRoot)/extensions/AnimusForge.Illustrator/src/Core/IllustratorText.cs" Link="IllustratorText.cs" />
+    <Compile Include="$(RepositoryRoot)/extensions/AnimusForge.Illustrator/src/UI/IllustratorUiText.cs" Link="IllustratorUiText.cs" />
+    <Compile Include="$(RepositoryRoot)/extensions/AnimusForge.Illustrator/src/UI/IllustrationFailureUiText.cs" Link="IllustrationFailureUiText.cs" />
+  </ItemGroup>
+</Project>

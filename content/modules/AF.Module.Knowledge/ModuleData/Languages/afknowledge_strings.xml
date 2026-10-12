@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<base type="string">
-  <tags><tag language="English" /></tags>
+<base xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" type="string">
+  <tags>
+    <tag language="English" />
+  </tags>
   <strings>
+    <string id="AF_KNOWLEDGE_RuleIndexLabel" text="{NAME} (Keywords: {KEYWORDS}, RAG short texts: {RAG}, Prompts: {VARIANTS})" />
     <string id="AF_KNOWLEDGE_DuplicateConditionTitle" text="Duplicate condition" />
     <string id="AF_KNOWLEDGE_DuplicateCondition" text="Identical conditions cannot be used by multiple prompts.&#10;&#10;Duplicate item: {ITEM} prompt&#10;&#10;Condition:&#10;{CONDITION}" />
     <string id="AF_KNOWLEDGE_Back" text="Back" />
@@ -64,10 +67,7 @@
     <string id="AF_KNOWLEDGE_CreateKnowledgeTitle" text="Create new knowledge" />
     <string id="AF_KNOWLEDGE_CreateKnowledgePrompt" text="Enter the first keyword for this knowledge entry. It becomes the entry ID and export filename, must be unique, and more keywords can be added later:" />
     <string id="AF_KNOWLEDGE_RuleMenuTitle" text="Knowledge - {LABEL}" />
-    <string id="AF_KNOWLEDGE_RuleMenuDescription" text="Keywords: {KEYWORDS}
-RAG short texts: {RAG}
-Prompts: {VARIANTS}
-Text mappings: {MAPPINGS}" />
+    <string id="AF_KNOWLEDGE_RuleMenuDescription" text="Keywords: {KEYWORDS}&#10;RAG short texts: {RAG}&#10;Prompts: {VARIANTS}&#10;Text mappings: {MAPPINGS}" />
     <string id="AF_KNOWLEDGE_EditKeywords" text="Edit keywords" />
     <string id="AF_KNOWLEDGE_EditRag" text="Edit RAG short texts" />
     <string id="AF_KNOWLEDGE_GenerateRag" text="Generate RAG short texts" />
@@ -97,15 +97,12 @@ Text mappings: {MAPPINGS}" />
     <string id="AF_KNOWLEDGE_SetFalseTextPrompt" text="Enter the text to use when the status is false. Leave empty to keep the source unchanged." />
     <string id="AF_KNOWLEDGE_Finish" text="Finish" />
     <string id="AF_KNOWLEDGE_MappingSearchTitle" text="Search mapping types" />
-    <string id="AF_KNOWLEDGE_MappingSearchPrompt" text="Enter keywords separated by spaces.
-Examples: clan kingdom / settlement ruler / spouse / age / status alive / kingdom eliminated" />
+    <string id="AF_KNOWLEDGE_MappingSearchPrompt" text="Enter keywords separated by spaces.&#10;Examples: clan kingdom / settlement ruler / spouse / age / status alive / kingdom eliminated" />
     <string id="AF_KNOWLEDGE_MappingSearchMenuTitle" text="Who and what do you want to retrieve?" />
     <string id="AF_KNOWLEDGE_MappingSearchMenuDescription" text="Choose a category, or search for a specific mapping. Status checks are supported as well. When there are many options, searching is faster." />
     <string id="AF_KNOWLEDGE_MappingChooseTypeTitle" text="Choose mapping type" />
     <string id="AF_KNOWLEDGE_MappingChooseType" text="Choose a mapping type." />
-    <string id="AF_KNOWLEDGE_MappingSearchResults" text="Enter keywords to search mapping types.
-Examples: clan kingdom / settlement ruler / spouse / age / status alive / kingdom eliminated{QUERY}
-Matches: {COUNT}{EMPTY}" />
+    <string id="AF_KNOWLEDGE_MappingSearchResults" text="Enter keywords to search mapping types.&#10;Examples: clan kingdom / settlement ruler / spouse / age / status alive / kingdom eliminated{QUERY}&#10;Matches: {COUNT}{EMPTY}" />
     <string id="AF_KNOWLEDGE_KeywordMenuTitle" text="Edit keywords" />
     <string id="AF_KNOWLEDGE_KeywordMenuDescription" text="Enter one keyword at a time; it is added after confirmation." />
     <string id="AF_KNOWLEDGE_AddKeyword" text="Add keyword (one at a time)" />
@@ -446,9 +443,9 @@ Matches: {COUNT}{EMPTY}" />
     <string id="AF_KNOWLEDGE_MappingTarget_Automatic" text="Automatic target" />
     <string id="AF_KNOWLEDGE_MappingTarget_Generic" text="Target" />
     <string id="AF_KNOWLEDGE_PrototypeSearch" text="Search prototype sentences" />
-    <string id="AF_KNOWLEDGE_PrototypeClearSearch" text="Prototype Clear Search" />
-    <string id="AF_KNOWLEDGE_PrototypePreviousPage" text="Prototype Previous Page" />
-    <string id="AF_KNOWLEDGE_PrototypeNextPage" text="Prototype Next Page" />
+    <string id="AF_KNOWLEDGE_PrototypeClearSearch" text="Clear search" />
+    <string id="AF_KNOWLEDGE_PrototypePreviousPage" text="Previous page" />
+    <string id="AF_KNOWLEDGE_PrototypeNextPage" text="Next page" />
     <string id="AF_KNOWLEDGE_PrototypeBack" text="Back to prototype menu" />
     <string id="AF_KNOWLEDGE_PrototypeViewTitle" text="View prototype sentences" />
     <string id="AF_KNOWLEDGE_PrototypeSearchTitle" text="Search prototype sentences" />
@@ -460,14 +457,14 @@ Matches: {COUNT}{EMPTY}" />
     <string id="AF_KNOWLEDGE_VariantAdd" text="Add prompt" />
     <string id="AF_KNOWLEDGE_VariantMenuTitle" text="Edit prompts" />
     <string id="AF_KNOWLEDGE_VariantMenuDescription" text="Leave the condition empty for a general prompt; any condition makes it specific. The most specific matching prompt is selected." />
-    <string id="AF_KNOWLEDGE_VariantEnter" text="Variant Enter" />
+    <string id="AF_KNOWLEDGE_VariantEnter" text="Enter" />
     <string id="AF_KNOWLEDGE_VariantEditorTitle" text="Prompt editor" />
     <string id="AF_KNOWLEDGE_VariantEditContent" text="Edit prompt content" />
     <string id="AF_KNOWLEDGE_VariantEditCondition" text="Edit conditions" />
     <string id="AF_KNOWLEDGE_VariantDelete" text="Delete this prompt" />
     <string id="AF_KNOWLEDGE_VariantCurrentCondition" text="Current conditions: {CONDITION}" />
     <string id="AF_KNOWLEDGE_VariantContentPrompt" text="Enter content." />
-    <string id="AF_KNOWLEDGE_VariantTruncated" text="Variant Truncated" />
+    <string id="AF_KNOWLEDGE_VariantTruncated" text="&#10;... (content too long; showing the first 220 characters)" />
     <string id="AF_KNOWLEDGE_WhenCulture" text="Culture (CultureId)" />
     <string id="AF_KNOWLEDGE_WhenKingdom" text="Faction/kingdom (KingdomId)" />
     <string id="AF_KNOWLEDGE_WhenSettlement" text="Settlement (SettlementId)" />
@@ -477,14 +474,11 @@ Matches: {COUNT}{EMPTY}" />
     <string id="AF_KNOWLEDGE_WhenSkill" text="Skill level (SkillId &gt;= value)" />
     <string id="AF_KNOWLEDGE_WhenClear" text="Clear all conditions (make general)" />
     <string id="AF_KNOWLEDGE_WhenEditorTitle" text="Edit conditions" />
-    <string id="AF_KNOWLEDGE_RoleSearchOption" text="Role Search Option" />
+    <string id="AF_KNOWLEDGE_RoleSearchOption" text="Search specific NPCs in this category..." />
     <string id="AF_KNOWLEDGE_RoleClearSearch" text="Clear search" />
     <string id="AF_KNOWLEDGE_RoleClearSpecificOption" text="Clear selected specific entries in this category ({COUNT})" />
     <string id="AF_KNOWLEDGE_RoleToggleAll" text="Whole category: {ROLE}" />
-    <string id="AF_KNOWLEDGE_RoleDescription" text="{ROLE}: select the whole category or individual NPCs.
-Whole category: {SELECTED}
-Specific entries selected: {SPECIFIC}
-Total results: {TOTAL}, page {PAGE}/{PAGES}" />
+    <string id="AF_KNOWLEDGE_RoleDescription" text="{ROLE}: select the whole category or individual NPCs.&#10;Whole category: {SELECTED}&#10;Specific entries selected: {SPECIFIC}&#10;Total results: {TOTAL}, page {PAGE}/{PAGES}" />
     <string id="AF_KNOWLEDGE_RoleEditorTitle" text="Identity conditions" />
     <string id="AF_KNOWLEDGE_RoleEditorDescription" text="Select a category first, then choose specific NPCs in it. Whole-category selection remains supported; specific entries can be searched and paged within the category." />
     <string id="AF_KNOWLEDGE_RoleClearAllSpecific" text="Clear all specific identities" />
@@ -492,7 +486,7 @@ Total results: {TOTAL}, page {PAGE}/{PAGES}" />
     <string id="AF_KNOWLEDGE_RoleMultiSelectError" text="Search, paging, and whole-category operations cannot be selected together with specific NPCs." />
     <string id="AF_KNOWLEDGE_RoleSearchPrompt" text="Enter a name, HeroId or CharacterId. Search is limited to this category." />
     <string id="AF_KNOWLEDGE_PickerAdd" text="Add" />
-    <string id="AF_KNOWLEDGE_PickerSelect" text="Picker Select" />
+    <string id="AF_KNOWLEDGE_PickerSelect" text="Select" />
     <string id="AF_KNOWLEDGE_PickerNoNpc" text="No selectable NPCs found." />
     <string id="AF_KNOWLEDGE_PickerNpcTitle" text="Select NPCs" />
     <string id="AF_KNOWLEDGE_PickerMultiDescription" text="Select multiple entries; confirm to add them to the list." />
@@ -517,7 +511,7 @@ Total results: {TOTAL}, page {PAGE}/{PAGES}" />
     <string id="AF_KNOWLEDGE_PickerClanTitle" text="Select clan" />
     <string id="AF_KNOWLEDGE_PickerStringListPick" text="Select from list" />
     <string id="AF_KNOWLEDGE_PickerStringListAdd" text="Enter manually (one at a time)" />
-    <string id="AF_KNOWLEDGE_PickerDelete" text="Picker Delete" />
+    <string id="AF_KNOWLEDGE_PickerDelete" text="Delete" />
     <string id="AF_KNOWLEDGE_PickerStringListDescription" text="Enter one value at a time; confirm to add it to the list." />
     <string id="AF_KNOWLEDGE_PickerStringListInputPrompt" text="Enter a value:" />
     <string id="AF_KNOWLEDGE_PickerStringListRemoveTitle" text="Delete - {TITLE}" />
@@ -540,22 +534,14 @@ Total results: {TOTAL}, page {PAGE}/{PAGES}" />
     <string id="AF_KNOWLEDGE_WhenCultureLabel" text="Culture" />
     <string id="AF_KNOWLEDGE_WhenKingdomLabel" text="Faction" />
     <string id="AF_KNOWLEDGE_WhenSettlementLabel" text="Settlement" />
-    <string id="AF_KNOWLEDGE_WhenRoleLabel" text="Hero" />
+    <string id="AF_KNOWLEDGE_WhenRoleLabel" text="Identity" />
     <string id="AF_KNOWLEDGE_WhenSpecificIdentityLabel" text="Specific identity" />
     <string id="AF_KNOWLEDGE_WhenGenderLabel" text="Gender" />
     <string id="AF_KNOWLEDGE_WhenClanLeaderLabel" text="Clan leader" />
     <string id="AF_KNOWLEDGE_WhenSkillLabel" text="Skill" />
     <string id="AF_KNOWLEDGE_WhenLabelExclusive" text="Specific ({CATEGORIES})" />
     <string id="AF_KNOWLEDGE_WhenDetailGeneral" text="Current: general (no conditions)" />
-    <string id="AF_KNOWLEDGE_WhenDetail" text="Current conditions:
-CultureId: {CULTURE}
-KingdomId: {KINGDOM}
-SettlementId: {SETTLEMENT}
-Roles: {ROLES}
-Specific identities: {IDENTITIES}
-SkillMin: {SKILLS}
-Gender: {GENDER}
-ClanLeader: {CLAN_LEADER}" />
+    <string id="AF_KNOWLEDGE_WhenDetail" text="Current conditions:&#10;CultureId: {CULTURE}&#10;KingdomId: {KINGDOM}&#10;SettlementId: {SETTLEMENT}&#10;Roles: {ROLES}&#10;Specific identities: {IDENTITIES}&#10;SkillMin: {SKILLS}&#10;Gender: {GENDER}&#10;ClanLeader: {CLAN_LEADER}" />
     <string id="AF_KNOWLEDGE_WhenEmpty" text="(empty)" />
     <string id="AF_KNOWLEDGE_WhenAny" text="Any" />
     <string id="AF_KNOWLEDGE_WhenFemale" text="Female" />
@@ -595,14 +581,11 @@ ClanLeader: {CLAN_LEADER}" />
     <string id="AF_KNOWLEDGE_PickerKindHero" text="hero" />
     <string id="AF_KNOWLEDGE_PickerKindClan" text="clan" />
     <string id="AF_KNOWLEDGE_RoleSpecificCount" text=" (specific entries selected: {COUNT})" />
-    <string id="AF_KNOWLEDGE_PrototypeCurrentSearch" text="
-Current search: {QUERY}" />
-    <string id="AF_KNOWLEDGE_PrototypeNoContent" text="
-There is no content on this page." />
+    <string id="AF_KNOWLEDGE_PrototypeCurrentSearch" text="&#10;Current search: {QUERY}" />
+    <string id="AF_KNOWLEDGE_PrototypeNoContent" text="&#10;There is no content on this page." />
     <string id="AF_KNOWLEDGE_RoleSelected" text="selected" />
     <string id="AF_KNOWLEDGE_RoleNotSelected" text="not selected" />
-    <string id="AF_KNOWLEDGE_PickerCurrentSearch" text="
-Current search: {QUERY}" />
+    <string id="AF_KNOWLEDGE_PickerCurrentSearch" text="&#10;Current search: {QUERY}" />
     <string id="AF_KNOWLEDGE_PickerSelectOneSuffix" text=" Select one to add it to the list." />
 
     <string id="AF_KNOWLEDGE_BulkDeleteMore" text="... and {COUNT} more" />
@@ -670,5 +653,214 @@ Current search: {QUERY}" />
     <string id="AF_KNOWLEDGE_RagParseFailureTitle" text="RAG short-text parsing failed" />
     <string id="AF_KNOWLEDGE_RagParseFailureReason" text="The model reply could not be parsed into RAG short texts. A deterministic fallback will be used." />
     <string id="AF_KNOWLEDGE_RagGenerationFailureTitle" text="RAG short-text generation failed" />
-</strings>
+    <string id="AF_KNOWLEDGE_UI_EntityPromptHeader" text="Entity information available for communication between you and {PLAYER}:" />
+    <string id="AF_KNOWLEDGE_UI_ResidentPlayerClan" text="Resident: Player's current clan" />
+    <string id="AF_KNOWLEDGE_UI_ResidentPlayerKingdom" text="Resident: Player's current kingdom" />
+    <string id="AF_KNOWLEDGE_UI_ResidentContextHeroSelf" text="Resident: {NAME} (self)" />
+    <string id="AF_KNOWLEDGE_UI_ResidentContextHeroClan" text="Resident: {NAME}'s clan" />
+    <string id="AF_KNOWLEDGE_UI_ResidentContextHeroKingdom" text="Resident: {NAME}'s current kingdom" />
+    <string id="AF_KNOWLEDGE_UI_PostprocessResidentContextHeroOfClan" text="Resident: {NAME}'s clan" />
+    <string id="AF_KNOWLEDGE_UI_PostprocessResidentContextHeroOfKingdom" text="Resident: {NAME}'s kingdom" />
+    <string id="AF_KNOWLEDGE_UI_DefaultHeroName" text="character" />
+    <string id="AF_KNOWLEDGE_UI_DefaultSettlementName" text="location" />
+    <string id="AF_KNOWLEDGE_UI_DefaultClanName" text="clan" />
+    <string id="AF_KNOWLEDGE_UI_DefaultKingdomName" text="kingdom" />
+    <string id="AF_KNOWLEDGE_UI_Player" text="player" />
+    <string id="AF_KNOWLEDGE_UI_PostprocessInfoHeader" text="Possibly relevant information:" />
+    <string id="AF_KNOWLEDGE_UI_PostprocessSectionHeroes" text="[Heroes]" />
+    <string id="AF_KNOWLEDGE_UI_PostprocessSectionSettlements" text="[Settlements]" />
+    <string id="AF_KNOWLEDGE_UI_PostprocessSectionClans" text="[Clans]" />
+    <string id="AF_KNOWLEDGE_UI_PostprocessSectionKingdoms" text="[Kingdoms]" />
+    <string id="AF_KNOWLEDGE_UI_PostprocessSectionVisibleParties" text="[Nearby visible parties]" />
+    <string id="AF_KNOWLEDGE_UI_PostprocessHeroEntry" text="{INDEX}. Name: {NAME}; Location: {LOCATION}; ID: {ID}{HINT}" />
+    <string id="AF_KNOWLEDGE_UI_PostprocessSettlementEntry" text="{INDEX}. Name: {NAME}; ID: {ID}{HINT}" />
+    <string id="AF_KNOWLEDGE_UI_PostprocessClanEntry" text="{INDEX}. Name: {NAME}; ID: {ID}{HINT}" />
+    <string id="AF_KNOWLEDGE_UI_PostprocessKingdomEntry" text="{INDEX}. Name: {NAME}; ID: {ID}{HINT}" />
+    <string id="AF_KNOWLEDGE_UI_PostprocessMentionHint" text="; Note: {MENTION}" />
+    <string id="AF_KNOWLEDGE_UI_MainPromptPlayerSelf" text="[Player self]" />
+    <string id="AF_KNOWLEDGE_UI_MainPromptPlayerInstruction" text="1. Name: {NAME}; Fixed ID: {ID}; When using FOLLOW to follow the player, set target type to hero and id to {ID}." />
+    <string id="AF_KNOWLEDGE_UI_MainPromptVisiblePartiesHeader" text="[Nearby visible parties]" />
+    <string id="AF_KNOWLEDGE_UI_VisiblePartyUnknown" text="{INDEX}. Name: unknown; Count: 0" />
+    <string id="AF_KNOWLEDGE_UI_VisiblePartyShip" text="; Ship: {INFO}" />
+    <string id="AF_KNOWLEDGE_UI_VisiblePartyEntry" text="{INDEX}. Name: {NAME}; Count: {COUNT}{SHIP}; Party ID: {ID}; Affiliation: {AFFILIATION}{RELATION}; Direction: {DIRECTION}; Distance: {DISTANCE}" />
+    <string id="AF_KNOWLEDGE_UI_VisiblePartyContextRelation" text="Relation to NPC: {RELATION}" />
+    <string id="AF_KNOWLEDGE_UI_VisiblePartyPlayerRelation" text="Relation to player: {RELATION}" />
+    <string id="AF_KNOWLEDGE_UI_MainPromptSectionHeroes" text="[Heroes]" />
+    <string id="AF_KNOWLEDGE_UI_MainPromptHeroEntry" text="{INDEX}. {NAME} (ID: {ID}; Match score: {SCORE}; Mention: {MENTION})" />
+    <string id="AF_KNOWLEDGE_UI_MainPromptHeroClan" text="Clan: {CLAN}; Kingdom: {KINGDOM}" />
+    <string id="AF_KNOWLEDGE_UI_MainPromptHeroTraits" text="Traits: {TRAITS}; Relatives: {RELATIVES}" />
+    <string id="AF_KNOWLEDGE_UI_MainPromptHeroLocation" text="Location: {LOCATION}; Status: {STATUS}" />
+    <string id="AF_KNOWLEDGE_UI_MainPromptHeroAge" text="Age: {AGE}; Alive: {ALIVE}; Gender: {GENDER}; Occupation/title: {OCCUPATION}" />
+    <string id="AF_KNOWLEDGE_UI_MainPromptSectionSettlements" text="[Settlements]" />
+    <string id="AF_KNOWLEDGE_UI_MainPromptSettlementEntry" text="{INDEX}. {NAME} (ID: {ID}; Match score: {SCORE}; Mention: {MENTION})" />
+    <string id="AF_KNOWLEDGE_UI_MainPromptSettlementOwner" text="Owner clan: {CLAN}; Kingdom: {KINGDOM}; Culture: {CULTURE}" />
+    <string id="AF_KNOWLEDGE_UI_MainPromptSettlementStrength" text="Military strength: {STRENGTH}; Prosperity: {PROSPERITY}; Population: {POPULATION}; Loyalty: {LOYALTY}" />
+    <string id="AF_KNOWLEDGE_UI_MainPromptSettlementVillages" text="Bound villages: {VILLAGES}; Current status: {STATUS}" />
+    <string id="AF_KNOWLEDGE_UI_MainPromptSectionClans" text="[Clans]" />
+    <string id="AF_KNOWLEDGE_UI_MainPromptClanEntry" text="{INDEX}. {NAME} (ID: {ID}; Match score: {SCORE}; Mention: {MENTION})" />
+    <string id="AF_KNOWLEDGE_UI_MainPromptClanLeader" text="Leader: {LEADER}; Main members: {MEMBERS}" />
+    <string id="AF_KNOWLEDGE_UI_MainPromptClanKingdom" text="Kingdom: {KINGDOM}; Influence: {INFLUENCE}; Culture: {CULTURE}" />
+    <string id="AF_KNOWLEDGE_UI_MainPromptClanWealth" text="Wealth: {WEALTH}; Tier: {TIER}; Eliminated: {ELIMINATED}; Main settlements: {SETTLEMENTS}" />
+    <string id="AF_KNOWLEDGE_UI_MainPromptSectionKingdoms" text="[Kingdoms]" />
+    <string id="AF_KNOWLEDGE_UI_MainPromptKingdomEntry" text="{INDEX}. {NAME} (ID: {ID}; Match score: {SCORE}; Mention: {MENTION})" />
+    <string id="AF_KNOWLEDGE_UI_MainPromptKingdomLeader" text="Ruler: {LEADER}; Total military strength: {STRENGTH}; Culture: {CULTURE}" />
+    <string id="AF_KNOWLEDGE_UI_MainPromptKingdomEncyclopedia" text="Encyclopedia background: {BACKGROUND}" />
+    <string id="AF_KNOWLEDGE_UI_MainPromptKingdomSettlements" text="Kingdom settlements overview: {SETTLEMENTS}" />
+    <string id="AF_KNOWLEDGE_UI_MainPromptKingdomClans" text="Main clans: {CLANS}" />
+    <string id="AF_KNOWLEDGE_UI_MainPromptKingdomStatus" text="Kingdom current status: {STATUS}" />
+    <string id="AF_KNOWLEDGE_UI_RelationToContext" text="Relation to {NAME}: {RELATION}." />
+    <string id="AF_KNOWLEDGE_UI_RelationSelf" text="Relation to {NAME}: self" />
+    <string id="AF_KNOWLEDGE_UI_RelationPersonal" text="Personal relation value: {VALUE} ({BAND})" />
+    <string id="AF_KNOWLEDGE_UI_Unknown" text="unknown" />
+    <string id="AF_KNOWLEDGE_UI_NoTraits" text="no notable traits" />
+    <string id="AF_KNOWLEDGE_UI_HeroRelativeSummaryHeader" text="[NPC current family and clan status]\nCharacter: {NAME}\n{CONTENT}" />
+    <string id="AF_KNOWLEDGE_UI_HeroRelativeSummaryFooter" text="\nThe above reflects current game state; if old personality, background, or historical conversations conflict with life/death status here, this takes precedence. Deceased individuals can only be mentioned as past events, not described as still active or scheduled for meetings; unlisted does not mean deceased, and no fabrication of cause, time, or perpetrator of death is permitted." />
+    <string id="AF_KNOWLEDGE_UI_NotRecorded" text="not recorded" />
+    <string id="AF_KNOWLEDGE_UI_HeroAlive" text="(alive)" />
+    <string id="AF_KNOWLEDGE_UI_HeroDead" text="(deceased)" />
+    <string id="AF_KNOWLEDGE_UI_HeroLocationSettlement" text="(within settlement)" />
+    <string id="AF_KNOWLEDGE_UI_HeroLocationPrisoner" text="(prisoner)" />
+    <string id="AF_KNOWLEDGE_UI_HeroLocationPrisonerParty" text="(prisoner, held by: {HOLDER})" />
+    <string id="AF_KNOWLEDGE_UI_HeroStatusDead" text="Deceased" />
+    <string id="AF_KNOWLEDGE_UI_HeroStatusCaptive" text="Captive; held by: {HOLDER}" />
+    <string id="AF_KNOWLEDGE_UI_HeroStatusLocation" text="In settlement: {SETTLEMENT}" />
+    <string id="AF_KNOWLEDGE_UI_HeroStatusTarget" text="Mobile party target: {TARGET}" />
+    <string id="AF_KNOWLEDGE_UI_HeroStatusNearby" text="Nearby: {LOCATION}" />
+    <string id="AF_KNOWLEDGE_UI_HeroStatusArmy" text="In army: {ARMY}" />
+    <string id="AF_KNOWLEDGE_UI_HeroStatusBehavior" text="Behavior: {BEHAVIOR}" />
+    <string id="AF_KNOWLEDGE_UI_NoSpecialStatus" text="no special status" />
+    <string id="AF_KNOWLEDGE_UI_OccupationKingdomLeader" text="Kingdom ruler" />
+    <string id="AF_KNOWLEDGE_UI_OccupationKingOrLeader" text="King/Ruler" />
+    <string id="AF_KNOWLEDGE_UI_OccupationClanLeader" text="Clan leader" />
+    <string id="AF_KNOWLEDGE_UI_OccupationLord" text="Lord" />
+    <string id="AF_KNOWLEDGE_UI_OccupationWanderer" text="Wanderer" />
+    <string id="AF_KNOWLEDGE_UI_OccupationNotable" text="Notable" />
+    <string id="AF_KNOWLEDGE_UI_SettlementTypeVillage" text="village" />
+    <string id="AF_KNOWLEDGE_UI_SettlementTypeTown" text="town" />
+    <string id="AF_KNOWLEDGE_UI_SettlementTypeCastle" text="castle" />
+    <string id="AF_KNOWLEDGE_UI_SettlementTypeHideout" text="hideout" />
+    <string id="AF_KNOWLEDGE_UI_SettlementTypeFort" text="fort" />
+    <string id="AF_KNOWLEDGE_UI_SettlementTypeGeneric" text="settlement" />
+    <string id="AF_KNOWLEDGE_UI_SettlementStrengthMilitia" text="Militia: {COUNT}" />
+    <string id="AF_KNOWLEDGE_UI_SettlementStrengthGarrison" text="Garrison: {COUNT}" />
+    <string id="AF_KNOWLEDGE_UI_SettlementStrengthTownGarrison" text="Town garrison: {COUNT}" />
+    <string id="AF_KNOWLEDGE_UI_SettlementProsperityVillage" text="Hearths: {COUNT}" />
+    <string id="AF_KNOWLEDGE_UI_SettlementPopulationVillage" text="approx. {COUNT} people" />
+    <string id="AF_KNOWLEDGE_UI_SettlementPopulationNoField" text="population data unavailable" />
+    <string id="AF_KNOWLEDGE_UI_SettlementVillagesNone" text="none" />
+    <string id="AF_KNOWLEDGE_UI_SettlementVillagesSummary" text="{COUNT} villages" />
+    <string id="AF_KNOWLEDGE_UI_SettlementStatusBesieged" text="Under siege" />
+    <string id="AF_KNOWLEDGE_UI_SettlementStatusVillageState" text="Village state: {STATE}" />
+    <string id="AF_KNOWLEDGE_UI_SettlementStatusSecurity" text="Security: {SECURITY}" />
+    <string id="AF_KNOWLEDGE_UI_ClanFiefsNone" text="none" />
+    <string id="AF_KNOWLEDGE_UI_ClanFiefsSummary" text="{SETTLEMENTS}" />
+    <string id="AF_KNOWLEDGE_UI_KingdomClansNone" text="none" />
+    <string id="AF_KNOWLEDGE_UI_KingdomClansSummary" text="{CLANS}" />
+    <string id="AF_KNOWLEDGE_UI_KingdomSettlementsNone" text="none" />
+    <string id="AF_KNOWLEDGE_UI_KingdomSettlementsSample" text="{SAMPLE}, etc." />
+    <string id="AF_KNOWLEDGE_UI_KingdomSettlementsSummary" text="{TOWNS} towns, {CASTLES} castles, {VILLAGES} villages" />
+    <string id="AF_KNOWLEDGE_UI_KingdomStatusEliminated" text="Eliminated" />
+    <string id="AF_KNOWLEDGE_UI_KingdomStatusWars" text="At war with: {FACTIONS}" />
+    <string id="AF_KNOWLEDGE_UI_KingdomStatusAlliances" text="Allied with: {KINGDOMS}" />
+    <string id="AF_KNOWLEDGE_UI_KingdomStatusTrades" text="Trade agreements: {FACTIONS}" />
+    <string id="AF_KNOWLEDGE_UI_KingdomStatusEliminatedFlag" text="; Eliminated" />
+    <string id="AF_KNOWLEDGE_UI_KingdomStatusNone" text="none" />
+    <string id="AF_KNOWLEDGE_UI_PartyAffiliationVillage" text="Village: {VILLAGE}" />
+    <string id="AF_KNOWLEDGE_UI_PartyAffiliationFaction" text="Faction: {FACTION}" />
+    <string id="AF_KNOWLEDGE_UI_PartyAffiliationOwner" text="Owner: {OWNER}" />
+    <string id="AF_KNOWLEDGE_UI_DirectionHere" text="here" />
+    <string id="AF_KNOWLEDGE_UI_DirectionE" text="E" />
+    <string id="AF_KNOWLEDGE_UI_DirectionNE" text="NE" />
+    <string id="AF_KNOWLEDGE_UI_DirectionN" text="N" />
+    <string id="AF_KNOWLEDGE_UI_DirectionNW" text="NW" />
+    <string id="AF_KNOWLEDGE_UI_DirectionW" text="W" />
+    <string id="AF_KNOWLEDGE_UI_DirectionSW" text="SW" />
+    <string id="AF_KNOWLEDGE_UI_DirectionS" text="S" />
+    <string id="AF_KNOWLEDGE_UI_DirectionSE" text="SE" />
+    <string id="AF_KNOWLEDGE_UI_DistanceKm" text="{DISTANCE} km" />
+    <string id="AF_KNOWLEDGE_UI_GenderMale" text="male" />
+    <string id="AF_KNOWLEDGE_UI_GenderFemale" text="female" />
+    <string id="AF_KNOWLEDGE_UI_EliminatedTrue" text="yes" />
+    <string id="AF_KNOWLEDGE_UI_EliminatedFalse" text="no" />
+    <string id="AF_KNOWLEDGE_UI_RelationSpouse" text="Spouse" />
+    <string id="AF_KNOWLEDGE_UI_RelationFather" text="Father" />
+    <string id="AF_KNOWLEDGE_UI_RelationMother" text="Mother" />
+    <string id="AF_KNOWLEDGE_UI_RelationDaughter" text="Daughter" />
+    <string id="AF_KNOWLEDGE_UI_RelationSon" text="Son" />
+    <string id="AF_KNOWLEDGE_UI_RelationSister" text="Sister" />
+    <string id="AF_KNOWLEDGE_UI_RelationBrother" text="Brother" />
+    <string id="AF_KNOWLEDGE_UI_RelationSameClan" text="Same clan: {CLAN}" />
+    <string id="AF_KNOWLEDGE_UI_RelationContextIsClanLeader" text="This hero is {NAME}'s clan leader" />
+    <string id="AF_KNOWLEDGE_UI_RelationTargetIsClanLeader" text="{NAME} is this hero's clan leader" />
+    <string id="AF_KNOWLEDGE_UI_RelationSameFaction" text="Same faction: {FACTION}" />
+    <string id="AF_KNOWLEDGE_UI_RelationHostileFaction" text="Hostile factions: {CONTEXT_FACTION} vs {TARGET_FACTION}" />
+    <string id="AF_KNOWLEDGE_UI_RelationDifferentFaction" text="Different factions: {CONTEXT_FACTION} vs {TARGET_FACTION}" />
+    <string id="AF_KNOWLEDGE_UI_RelationBandDeadly" text="Deadly enemies" />
+    <string id="AF_KNOWLEDGE_UI_RelationBandHostile" text="Hostile" />
+    <string id="AF_KNOWLEDGE_UI_RelationBandUnfriendly" text="Unfriendly" />
+    <string id="AF_KNOWLEDGE_UI_RelationBandNeutral" text="Neutral" />
+    <string id="AF_KNOWLEDGE_UI_RelationBandFriendly" text="Friendly" />
+    <string id="AF_KNOWLEDGE_UI_RelationBandClose" text="Close" />
+    <string id="AF_KNOWLEDGE_UI_RelationBandIntimate" text="Intimate" />
+    <string id="AF_KNOWLEDGE_UI_PartyRelationOwnParty" text="Own party" />
+    <string id="AF_KNOWLEDGE_UI_PartyRelationFriendly" text="Friendly" />
+    <string id="AF_KNOWLEDGE_UI_PartyRelationHostile" text="Hostile" />
+    <string id="AF_KNOWLEDGE_UI_PartyRelationNeutral" text="Neutral" />
+    <string id="AF_KNOWLEDGE_UI_PartyRelationPersonal" text="Personal relation: {VALUE}" />
+    <string id="AF_KNOWLEDGE_UI_MapLocationSettlement" text="In {SETTLEMENT}" />
+    <string id="AF_KNOWLEDGE_UI_MapLocationBesiege" text="Besieging {SETTLEMENT}" />
+    <string id="AF_KNOWLEDGE_UI_MapLocationMapNearby" text="Near {SETTLEMENT}" />
+    <string id="AF_KNOWLEDGE_UI_MapLocationMapTarget" text="Heading toward {SETTLEMENT}" />
+    <string id="AF_KNOWLEDGE_UI_MapLocationMapTerrain" text="On map{TERRAIN}" />
+    <string id="AF_KNOWLEDGE_UI_MapLocationMapRecent" text="Recently near {SETTLEMENT}" />
+    <string id="AF_KNOWLEDGE_UI_MapLocationMapParty" text="With party {PARTY}" />
+    <string id="AF_KNOWLEDGE_UI_MapLocationMapFallback" text="On world map" />
+    <string id="AF_KNOWLEDGE_UI_MapTerrainSuffix" text=" ({TERRAIN})" />
+    <string id="AF_KNOWLEDGE_UI_MapTerrainWater" text="at sea" />
+    <string id="AF_KNOWLEDGE_UI_PrisonerHolder" text="Held by: {HOLDER}" />
+    <string id="AF_KNOWLEDGE_UI_PrisonerHolderParty" text="Held by party: {PARTY}" />
+    <string id="AF_KNOWLEDGE_UI_RelativeExSpouses" text="Deceased ex-spouses" />
+    <string id="AF_KNOWLEDGE_UI_RelativeChildren" text="Children" />
+    <string id="AF_KNOWLEDGE_UI_RelativeSiblings" text="Siblings" />
+    <string id="AF_KNOWLEDGE_UI_RelativeClanMembers" text="Clan members" />
+    <string id="AF_KNOWLEDGE_BulkDeleteNoMatches" text="&#10;&#10;No matches." />
+    <string id="AF_KNOWLEDGE_MappingSearchNoMatches" text="&#10;&#10;No matches. Try another keyword." />
+    <string id="AF_KNOWLEDGE_RoleSearchOptionQuery" text="Search: {QUERY}" />
+    <string id="AF_KNOWLEDGE_Occupation_NotAssigned" text="Unassigned" />
+    <string id="AF_KNOWLEDGE_Occupation_Tavernkeeper" text="Tavernkeeper" />
+    <string id="AF_KNOWLEDGE_Occupation_Mercenary" text="Mercenary" />
+    <string id="AF_KNOWLEDGE_Occupation_Lord" text="Lord" />
+    <string id="AF_KNOWLEDGE_Occupation_GoodsTrader" text="Goods trader" />
+    <string id="AF_KNOWLEDGE_Occupation_ArenaMaster" text="Arena master" />
+    <string id="AF_KNOWLEDGE_Occupation_Villager" text="Villager" />
+    <string id="AF_KNOWLEDGE_Occupation_Soldier" text="Soldier" />
+    <string id="AF_KNOWLEDGE_Occupation_Townsfolk" text="Townsfolk" />
+    <string id="AF_KNOWLEDGE_Occupation_RansomBroker" text="Ransom broker" />
+    <string id="AF_KNOWLEDGE_Occupation_Weaponsmith" text="Weaponsmith" />
+    <string id="AF_KNOWLEDGE_Occupation_Armorer" text="Armorer" />
+    <string id="AF_KNOWLEDGE_Occupation_HorseTrader" text="Horse trader" />
+    <string id="AF_KNOWLEDGE_Occupation_TavernWench" text="Tavern server" />
+    <string id="AF_KNOWLEDGE_Occupation_TavernGameHost" text="Tavern game host" />
+    <string id="AF_KNOWLEDGE_Occupation_Bandit" text="Bandit" />
+    <string id="AF_KNOWLEDGE_Occupation_Wanderer" text="Wanderer" />
+    <string id="AF_KNOWLEDGE_Occupation_Artisan" text="Artisan" />
+    <string id="AF_KNOWLEDGE_Occupation_Merchant" text="Merchant" />
+    <string id="AF_KNOWLEDGE_Occupation_Preacher" text="Preacher" />
+    <string id="AF_KNOWLEDGE_Occupation_Headman" text="Headman" />
+    <string id="AF_KNOWLEDGE_Occupation_GangLeader" text="Gang leader" />
+    <string id="AF_KNOWLEDGE_Occupation_RuralNotable" text="Rural notable" />
+    <string id="AF_KNOWLEDGE_Occupation_PrisonGuard" text="Prison guard" />
+    <string id="AF_KNOWLEDGE_Occupation_Guard" text="Guard" />
+    <string id="AF_KNOWLEDGE_Occupation_ShopWorker" text="Shop worker" />
+    <string id="AF_KNOWLEDGE_Occupation_Musician" text="Musician" />
+    <string id="AF_KNOWLEDGE_Occupation_Gangster" text="Gangster" />
+    <string id="AF_KNOWLEDGE_Occupation_Blacksmith" text="Blacksmith" />
+    <string id="AF_KNOWLEDGE_Occupation_BannerBearer" text="Banner bearer" />
+    <string id="AF_KNOWLEDGE_Occupation_CaravanGuard" text="Caravan guard" />
+    <string id="AF_KNOWLEDGE_Occupation_Special" text="Special" />
+    <string id="AF_KNOWLEDGE_Occupation_ShipWright" text="Shipwright" />
+    <string id="AF_KNOWLEDGE_RagApiKeyMissing" text="API key is not configured." />
+    <string id="AF_KNOWLEDGE_RagApiUrlMissing" text="API URL is empty." />
+    <string id="AF_KNOWLEDGE_RagRequestFailed" text="RAG API request failed: {DETAIL}" />
+  </strings>
 </base>

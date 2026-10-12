@@ -2,6 +2,51 @@
 <base type="string">
   <tags><tag language="简体中文" /></tags>
   <strings>
+    <string id="AF_UI_GcczRule_Mercy" text="双方任一具备资格的发言者直接确认玩家当前的宽恕决定时使用。士兵的抱怨不会取消玩家的有效命令。" />
+    <string id="AF_UI_GcczRule_Relief" text="仅当定居点要人、头人或普通平民直接接受玩家当前的救济、保护、军纪、粮食、金钱或物资安排时使用。其他身份只能提出建议。" />
+    <string id="AF_UI_GcczRule_Inspire" text="仅当定居点要人、头人或普通平民直接接受玩家当前的公开安抚、演讲、稳定局势或合作计划时使用。其他身份只能提出建议。" />
+    <string id="AF_UI_GcczRule_RallyOath" text="仅当定居点要人、头人或普通平民直接接受玩家当前的公开誓言或平民效忠安排时使用。其他身份只能提出建议。" />
+    <string id="AF_UI_GcczRule_SoldierAppeasement" text="仅在士兵安抚尚待处理，且己方普通士兵直接接受玩家当前的补偿、军纪解释或战利品安排时使用。" />
+    <string id="AF_UI_GcczRule_GatherCivilians" text="具备资格的回应者直接接受、传达或执行玩家当前召集隐居民的命令时使用。依据完整语义判断，不以固定词语判断。" />
+    <string id="AF_UI_GcczRule_CivilianRobbery" text="仅当战败平民、商人、工匠、头人或要人直接回应玩家当前索取金钱或物品的要求时使用。这是局部抢夺，不是全城劫掠。" />
+    <string id="AF_UI_GcczRule_Plunder" text="仅当己方普通士兵直接收到玩家当前的全城劫掠命令时使用。士兵可以抱怨，但不得拒绝、拖延、转移或替换有效命令。" />
+    <string id="AF_UI_GcczRule_Massacre" text="仅当己方普通士兵直接收到玩家当前的屠杀命令时使用。负面措辞不会取消有效命令；后续合资格命令可在所有已捕获目标死亡前叫停。" />
+    <string id="AF_UI_GcczRule_CulturalRepopulation" text="仅当己方普通士兵直接收到玩家当前杀死原居民、并以玩家文化人口重新定居的命令时使用。建议及 NPC 之间的对话绝不执行此动作。" />
+    <string id="AF_UI_GcczRule_StopMassacre" text="仅当己方普通士兵直接收到玩家当前停止尚未完成的屠杀的命令时使用。已经发生的死亡、战利品和后果保持不变。" />
+    <string id="AF_UI_GcczRule_ConstructiveCultureChange" text="仅当有权回应者直接接受玩家当前非破坏性的城镇文化法令时使用。它只改变城镇文化，绝不代表杀戮、驱逐、重新定居或殖民。" />
+    <string id="AF_MCM_Api_EmptyModelList" text="接口返回成功，但模型列表为空或解析失败。" />
+  <string id="AF_CONV_UI_Proactive_ThisLord" text="这位领主" />
+  <string id="AF_CONV_UI_Proactive_ContactTitle" text="NPC主动接触" />
+  <string id="AF_CONV_UI_Proactive_ContactBody" text="{NAME}的队伍主动追上了你。他似乎有事想找你谈谈。" />
+  <string id="AF_CONV_UI_Taunt_FightFallback" text="少废话，既然你想找打，那就来吧。" />
+  <string id="AF_CONV_UI_Taunt_WarningFallback" text="嘴巴放干净点，别逼我动手。" />
+  <string id="AF_CONV_UI_Trade_ShowVerb" text="展示" />
+  <string id="AF_CONV_UI_Trade_GiveVerb" text="给予" />
+  <string id="AF_CONV_UI_Trade_OtherParty" text="对方" />
+  <string id="AF_UI_Retry_CheckMcm" text="请检查 MCM 设置。" />
+  <string id="AF_UI_Retry_MissingApiKey" text="（错误：未配置 API Key）" />
+  <string id="AF_UI_Retry_MissingModel" text="（错误：未配置模型名称）" />
+  <string id="AF_UI_Retry_ActionTagsMissing" text="（API响应格式错误）动作后处理未返回任何可解析的 [ACTION:...] 标签。" />
+  <string id="AF_UI_Retry_PreprocessFormatInvalid" text="（API响应格式错误）前处理规则选择返回格式错误：{REASON}。必须只输出一个 JSON 对象，并包含 rule_codes 字符串数组和 mentioned_entities.entities 字符串数组。" />
+  <string id="AF_UI_PersonaGeneration_MissingNpc" text="找不到要重新生成人设的 NPC。" />
+  <string id="AF_UI_PersonaGeneration_MissingHeroId" text="该 NPC 没有有效的 HeroId，无法重新生成人设。" />
+  <string id="AF_UI_PersonaGeneration_RecentFailure" text="该 NPC 的上次生成请求刚刚失败，请稍后再试。" />
+  <string id="AF_UI_PersonaGeneration_AlreadyGenerating" text="该 NPC 的个性与背景正在生成，请等待当前请求完成后再试。" />
+  <string id="AF_UI_PersonaGeneration_InvalidatedNotSaved" text="请求已失效，未保存新的人设。" />
+  <string id="AF_UI_PersonaGeneration_InvalidatedNotGenerated" text="请求已因数据清理或人物变更失效，未生成新的人设。" />
+  <string id="AF_UI_PersonaGeneration_ChangedDuringGeneration" text="生成期间人设已被修改，未覆盖最新的个性与历史背景。请确认后重新生成。" />
+  <string id="AF_UI_PersonaGeneration_CleanupInvalidatedNotSaved" text="请求已因数据清理或人物变更失效，未保存新的人设。" />
+  <string id="AF_UI_PersonaGeneration_Progress" text="正在生成{NAME}的个性与背景，请稍等。生成完成后会继续回复你的上一句话。" />
+  <string id="AF_UI_PersonaGeneration_ReadinessFailed" text="{NAME}的个性与背景暂时生成失败，请稍后再试。" />
+  <string id="AF_UI_PersonaFailure_NpcParse" text="NPC 个性与背景模型回复解析失败，未保存人设。" />
+  <string id="AF_UI_PersonaFailure_NpcGenerate" text="NPC 个性与背景生成失败。" />
+  <string id="AF_UI_PersonaFailure_PromotedParse" text="升格同伴人设模型回复解析失败，将使用本地后备人设。" />
+  <string id="AF_UI_PersonaFailure_PromotedGenerate" text="升格同伴人设生成失败，将使用本地后备人设。" />
+  <string id="AF_UI_PersonaFailure_SkillsParse" text="升格同伴技能模型回复解析失败，将保留兵种模板技能。" />
+  <string id="AF_UI_PersonaFailure_SkillsGenerate" text="升格同伴技能生成失败，将保留兵种模板技能。" />
+  <string id="AF_UI_Retry_StaleRequest" text="请求已因读档失效。" />
+  <string id="AF_UI_ImportSource_ModuleDirectory" text="模组目录" />
+  <string id="AF_UI_ImportSource_PlayerExports" text="玩家导出" />
   <string id="AF_ENC_UI_PlayerFaction" text="你的势力" />
   <string id="AF_ENC_UI_TauntEscalated" text="挑衅已升级为敌对行动：5 秒后将自动结束对话并攻入敌阵。" />
   <string id="AF_ENC_UI_ReleaseDenied" text="对方并没有同意放你离开。" />
@@ -736,6 +781,8 @@
   <string id="AF_UI_ConversationHistory_NoRecords" text="暂无记录" />
   <string id="AF_UI_ConversationHistory_PageStatus" text="第 {CURRENT} / {TOTAL} 页（{COUNT} 条）" />
   <string id="AF_UI_ConversationHistory_SpeakerFallback" text="记录" />
+  <string id="AF_UI_ConversationHistory_PlayerAction" text="玩家行为" />
+  <string id="AF_UI_ConversationHistory_NpcAction" text="NPC行为" />
   <string id="AF_UI_ConversationHistory_Close" text="关闭" />
   <string id="AF_UI_ConversationHistory_Older" text="更早记录" />
   <string id="AF_UI_ConversationHistory_Newer" text="更新记录" />
@@ -1967,7 +2014,7 @@
   <string id="AF_UI_Weekly_Editor_103" text="自动重试次数：" />
   <string id="AF_UI_Weekly_Editor_104" text="时间范围：" />
   <string id="AF_UI_Weekly_Editor_105" text="系统判断这次更像是 RPM（每分钟请求数）超限。" />
-  <string id="AF_UI_Weekly_Editor_106" text="当前 MCM 的【每分钟最多生成周报数】=" />
+  <string id="AF_UI_Weekly_Editor_106" text="当前 MCM 的【每分钟最多生成周报数】={VALUE}。" />
   <string id="AF_UI_Weekly_Editor_107" text="建议先下调到 " />
   <string id="AF_UI_Weekly_Editor_108" text=" 左右，再继续补跑。" />
   <string id="AF_UI_Weekly_Editor_109" text="接口建议等待：" />
@@ -2524,6 +2571,9 @@ HeroNPC 个性/背景、旧对话历史、压缩记忆、赊账/欠款、未命�
   <string id="AF_MCM_Api_KeyMissing" text="未填写 API Key，无法拉取模型列表。" />
   <string id="AF_MCM_Api_ModelListFetching" text="[系统] 正在拉取 {CHANNEL} 模型列表……" />
   <string id="AF_MCM_Api_UnknownError" text="未知错误。" />
+  <string id="AF_MCM_Api_ModelListEmpty" text="接口返回成功，但模型列表为空或解析失败。" />
+  <string id="AF_MCM_Api_ErrorHintSeparator" text="；" />
+  <string id="AF_MCM_Policy_EffectModuleDetailCountClamped" text="效果模块详规数量配置为 {CONFIGURED}，稳定路由本次按 {EFFECTIVE} 执行；原 MCM 保存值未修改。" />
   <string id="AF_MCM_Api_ModelListFetched" text="[系统] {CHANNEL} 模型列表拉取成功：共 {COUNT} 个；当前选中：{SELECTED}" />
   <string id="AF_MCM_Api_EmptySelection" text="空值" />
   <string id="AF_MCM_Api_ModelListExceptionTitle" text="模型列表拉取异常" />
@@ -2949,7 +2999,7 @@ HeroNPC 个性/背景、旧对话历史、压缩记忆、赊账/欠款、未命�
   <string id="AF_MCM_Tts_Url" text="火山专用 API 地址" />
   <string id="AF_MCM_Tts_Url_Hint" text="V1 非流式地址：https://openspeech.bytedance.com/api/v1/tts" />
   <string id="AF_MCM_Tts_Token" text="火山专用 Token（Authorization Bearer）" />
-  <string id="AF_MCM_Tts_Token_Hint" text="请求头将按文档写入：Authorization: Bearer;{token}。" />
+  <string id="AF_MCM_Tts_Token_Hint" text="请求头将按文档写入：Authorization: Bearer; 后接你的专属 Token。" />
   <string id="AF_MCM_Tts_AppId" text="火山专用 AppID" />
   <string id="AF_MCM_Tts_AppId_Hint" text="即 V1 请求体 app.appid。" />
   <string id="AF_MCM_Tts_ResourceId" text="火山专用 Resource ID" />
@@ -3351,5 +3401,11 @@ HeroNPC 个性/背景、旧对话历史、压缩记忆、赊账/欠款、未命�
   <string id="AF_UI_TagCatalog_VillageActionDestroyLivelihood" text="毁坏生计" />
   <string id="AF_UI_TagCatalog_VillageActionMassacre" text="屠村" />
   <string id="AF_UI_TagCatalog_VillageActionCulturalReform" text="文化改造" />
+  <string id="AF_UI_Retry_ActionPostprocess" text="动作后处理" />
+  <string id="AF_UI_Retry_AuxiliaryDialogue" text="辅助对话" />
+  <string id="AF_UI_Retry_RuleSelection" text="前处理规则选择" />
+  <string id="AF_UI_Weekly_CurrentDraft" text="本周周报草案" />
+  <string id="AF_UI_NativeHistory_QueuedExpired" text="对话历史操作尚未开始，已停止等待；此排队操作不会随后补做。请检查游戏状态后再继续。" />
+  <string id="AF_UI_Terminal_TrustDisplay" text="({TRUST}，{LEVEL}，{INDEX}/10)" />
 </strings>
 </base>
