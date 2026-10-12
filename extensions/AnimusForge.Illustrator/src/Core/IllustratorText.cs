@@ -18,8 +18,8 @@ namespace AnimusForge.Illustrator
         private static Dictionary<string, string> LoadPrompts()
         {
             Dictionary<string, string> values = Load("IllustratorPromptTexts.json");
-            foreach (string key in new List<string>(values.Keys))
-                values[key] = ProtocolMarker.Replace(values[key], match => Raw(match.Groups[1].Value));
+            // Keep protocol placeholders in the selected package language. The parser
+            // accepts both the legacy Chinese labels and the English marker form.
             return values;
         }
 

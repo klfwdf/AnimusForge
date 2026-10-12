@@ -64,20 +64,30 @@ namespace AnimusForge.Illustrator.Core
             var result = new IllustrationDirection();
             int titleLimit = int.TryParse(IllustratorText.Get("Direction_TitleMaxCharacters"), out int configuredTitleLimit)
                 ? Math.Max(18, Math.Min(96, configuredTitleLimit)) : 18;
+            string labelPattern = "(" + string.Join("|", new[]
+            {
+                IllustratorText.Raw("AFI_PROTOCOL_TITLE"), IllustratorText.Raw("AFI_PROTOCOL_THEME"), IllustratorText.Raw("AFI_PROTOCOL_ACTION"),
+                IllustratorText.Raw("AFI_PROTOCOL_FRAMING"), IllustratorText.Raw("AFI_PROTOCOL_AUX_FRAMING"),
+                "[[AFI_PROTOCOL_TITLE]]", "[[AFI_PROTOCOL_THEME]]", "[[AFI_PROTOCOL_ACTION]]",
+                "[[AFI_PROTOCOL_FRAMING]]", "[[AFI_PROTOCOL_AUX_FRAMING]]"
+            }.Select(Regex.Escape)) + ")([^\r\n【]*)";
             result.Prompt = Regex.Replace(output ?? string.Empty,
-                IllustratorText.Raw("Direction_722"), match =>
+                labelPattern, match =>
                 {
                     string label = match.Groups[1].Value;
-                    if (label == IllustratorText.Raw("Direction_723") || label == IllustratorText.Raw("Direction_724"))
+                    if (label == IllustratorText.Raw("AFI_PROTOCOL_FRAMING") || label == IllustratorText.Raw("AFI_PROTOCOL_AUX_FRAMING")
+                        || label == "[[AFI_PROTOCOL_FRAMING]]" || label == "[[AFI_PROTOCOL_AUX_FRAMING]]")
                     {
-                        ReadSceneFraming(result, match.Groups[2].Value, label == IllustratorText.Raw("Direction_725"));
+                        ReadSceneFraming(result, match.Groups[2].Value, label == IllustratorText.Raw("AFI_PROTOCOL_AUX_FRAMING") || label == "[[AFI_PROTOCOL_AUX_FRAMING]]");
                         return string.Empty;
                     }
                     // Theme is shown in a wrapping/scrolling viewport. Keep its full sentence
                     // in metadata instead of permanently cutting it off before disk save.
-                    string value = CleanLabel(match.Groups[2].Value, label == IllustratorText.Raw("Direction_726") ? titleLimit : label == IllustratorText.Raw("Direction_727") ? int.MaxValue : 160);
-                    if (label == IllustratorText.Raw("Direction_728")) result.Title = value;
-                    else if (label == IllustratorText.Raw("Direction_729")) result.Theme = value;
+                    bool isTitle = label == IllustratorText.Raw("AFI_PROTOCOL_TITLE") || label == "[[AFI_PROTOCOL_TITLE]]";
+                    bool isTheme = label == IllustratorText.Raw("AFI_PROTOCOL_THEME") || label == "[[AFI_PROTOCOL_THEME]]";
+                    string value = CleanLabel(match.Groups[2].Value, isTitle ? titleLimit : isTheme ? int.MaxValue : 160);
+                    if (isTitle) result.Title = value;
+                    else if (isTheme) result.Theme = value;
                     else result.ActionSummary = value;
                     return string.Empty;
                 }).Trim();
