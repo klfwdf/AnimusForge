@@ -36,6 +36,11 @@ def method(path, signature):
     raise AssertionError(signature)
 
 recall = method('src/modules/AF.Module.Memory/Recall/MemoryRecallContextOwner.cs', 'internal static string FormatPastAfefLineForPrompt(')
+projection = (ROOT / 'src/modules/AF.Module.Prompt/Composition/MemorySystemFactProjection.cs').read_text('utf-8-sig')
+assert 'internal sealed class PromptFactRecord' in projection
+assert 'internal static bool TryParseKnownFact' in projection
+assert 'internal static string RenderKnownFact' in projection
+assert 'new PromptFactRecord(template.Key, values, body)' in projection
 daily = method('src/AF.GameAdapter.Bannerlord/Memory/MemorySummaryApplicationAdapter.cs', 'internal static string BuildDailyMemoryLineForPrompt(')
 overview = method('src/AF.GameAdapter.Bannerlord/Memory/MemorySummaryApplicationAdapter.cs', 'internal static string BuildMemoryOverviewBlockSourceText(')
 (out / 'ActualMethods.cs').write_text('using System;using System.Linq;using System.Text;using TaleWorlds.Library;namespace AnimusForge {internal static class MemoryRecallContextOwner {' + recall + '\ninternal static string FormatMemoryHourRange(int start,int end)=>start+"-"+end; } internal static class MemorySummaryApplicationAdapter {' + daily + '\n' + overview + '}}', encoding='utf-8')

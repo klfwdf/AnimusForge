@@ -6,6 +6,23 @@ namespace AnimusForge;
 // Request/display boundary only. Never used by a save or history mutation owner.
 internal static class MemorySystemFactProjection
 {
+    // Detached request-boundary identity. The saved/history string remains the
+    // source value; this record only carries the trusted template key and slots
+    // selected by a deterministic parser.
+    internal sealed class PromptFactRecord
+    {
+        internal readonly string FactKind;
+        internal readonly string[] Values;
+        internal readonly string OriginalText;
+
+        internal PromptFactRecord(string factKind, string[] values, string originalText)
+        {
+            FactKind = factKind ?? "";
+            Values = values ?? Array.Empty<string>();
+            OriginalText = originalText ?? "";
+        }
+    }
+
     private sealed class Template
     {
         internal readonly string Key;
@@ -198,13 +215,8 @@ internal static class MemorySystemFactProjection
         if (courier != body) return courier;
         string worldMap = WorldMapFactPromptProjection.ProjectBodyForPrompt(body);
         if (worldMap != body) return worldMap;
-        foreach (Template template in Templates)
-        {
-            if (!TryExtract(body, template, out string[] values)) continue;
-            if (template.Key == "memory_fact_revisit_days"
-                && (!int.TryParse(values[1], out int days) || days <= 0)) continue;
-            return Expand(PromptComposerTexts.Get(template.Key), values);
-        }
+        if (TryParseKnownFact(body, out PromptFactRecord fact))
+            return RenderKnownFact(fact);
         // Scene revisit broadcasts add a captured NPC display name before the same
         // fixed body. Retain the name; reject repeated markers rather than guess.
         foreach (string marker in RevisitMarkers.Value)
@@ -216,6 +228,26 @@ internal static class MemorySystemFactProjection
             if (projected != remainder) return body.Substring(0, at) + projected;
         }
         return body;
+    }
+
+    internal static bool TryParseKnownFact(string body, out PromptFactRecord fact)
+    {
+        fact = null;
+        foreach (Template template in Templates)
+        {
+            if (!TryExtract(body, template, out string[] values)) continue;
+            if (template.Key == "memory_fact_revisit_days"
+                && (!int.TryParse(values[1], out int days) || days <= 0)) continue;
+            fact = new PromptFactRecord(template.Key, values, body);
+            return true;
+        }
+        return false;
+    }
+
+    internal static string RenderKnownFact(PromptFactRecord fact)
+    {
+        if (fact == null || string.IsNullOrWhiteSpace(fact.FactKind)) return fact?.OriginalText ?? "";
+        return Expand(PromptComposerTexts.Get(fact.FactKind), fact.Values);
     }
 
     private static bool TryExtract(string body, Template template, out string[] values)
