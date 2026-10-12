@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using AnimusForge.Illustrator.Engine;
 using System.Diagnostics;
 using System.Net.Http;
@@ -444,6 +445,20 @@ namespace AnimusForge.Illustrator.Core
             IllustratorText.Raw("Director_1014")
         };
 
+        // CN headings and EN stable protocol markers describe the same sections.
+        // Cache the four parsers once; do not compile patterns for each image request.
+        private static readonly string[] RequiredProtocolMarkers = new[]
+        {
+            "[[AFI_PROTOCOL_SUBJECT]]", "[[AFI_PROTOCOL_SCENE]]",
+            "[[AFI_PROTOCOL_LIGHT]]", "[[AFI_PROTOCOL_SPATIAL]]"
+        };
+        private static readonly System.Text.RegularExpressions.Regex[] RequiredSectionParsers =
+            RequiredSectionPatterns.Select((pattern, index) => new System.Text.RegularExpressions.Regex(
+                "(?:【" + pattern + "】|" + System.Text.RegularExpressions.Regex.Escape(RequiredProtocolMarkers[index])
+                + @")([\s\S]*?)(?=【|\[\[AFI_PROTOCOL_|$)",
+                System.Text.RegularExpressions.RegexOptions.Compiled)).ToArray();
+        private static readonly int[] RequiredSectionMinimum = { 8, 12, 10, 10 };
+
         internal static bool HasRequiredSceneDescription(string output)
         {
             return HasCompleteSceneDescription(output, allowBackgroundOverride: false);
@@ -455,18 +470,16 @@ namespace AnimusForge.Illustrator.Core
             if (!allowBackgroundOverride && System.Text.RegularExpressions.Regex.IsMatch(output,
                 IllustratorText.Raw("Director_1015"),
                 System.Text.RegularExpressions.RegexOptions.IgnoreCase)) return false;
-            int[] minimum = { 8, 12, 10, 10 };
-            for (int i = 0; i < RequiredSectionPatterns.Length; i++)
+            for (int i = 0; i < RequiredSectionParsers.Length; i++)
             {
-                var match = System.Text.RegularExpressions.Regex.Match(output,
-                    "【" + RequiredSectionPatterns[i] + "】([^【]+)");
+                var match = RequiredSectionParsers[i].Match(output);
                 string value = match.Success ? match.Groups[1].Value.Trim() : string.Empty;
                 // Structural guard only: padding and section ratios do not establish
                 // action/spatial correctness. Keep a small non-whitespace minimum.
                 int length = 0;
                 foreach (char character in value)
                     if (!char.IsWhiteSpace(character)) length++;
-                if (length < minimum[i]) return false;
+                if (length < RequiredSectionMinimum[i]) return false;
             }
             return true;
         }
