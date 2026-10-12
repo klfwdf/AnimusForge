@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using Newtonsoft.Json.Linq;
 
 namespace AnimusForge;
 
@@ -37,6 +38,26 @@ internal static class PromptLanguageAudit
     internal static void Log(string channel, IEnumerable<object> messages)
     {
         PromptLanguageAuditResult result = Inspect(messages);
+        if (result.UnprojectedSystemMessageCount == 0 && result.DynamicMessageCount == 0) return;
+        Logger.Log("PromptLanguageAudit", "channel=" + (channel ?? "")
+            + " unprojectedSystem=" + result.UnprojectedSystemMessageCount
+            + " dynamicOriginal=" + result.DynamicMessageCount
+            + " action=preserve_original_dynamic_text");
+    }
+
+    internal static void Log(string channel, JArray messages)
+    {
+        PromptLanguageAuditResult result = new PromptLanguageAuditResult();
+        foreach (JToken token in messages ?? new JArray())
+        {
+            string role = token?["role"]?.ToString() ?? "";
+            string content = token?["content"]?.ToString() ?? "";
+            if (string.Equals(role, "system", StringComparison.OrdinalIgnoreCase))
+            {
+                if (Han.IsMatch(StableProtocol.Replace(content, ""))) result.UnprojectedSystemMessageCount++;
+            }
+            else if (Han.IsMatch(content)) result.DynamicMessageCount++;
+        }
         if (result.UnprojectedSystemMessageCount == 0 && result.DynamicMessageCount == 0) return;
         Logger.Log("PromptLanguageAudit", "channel=" + (channel ?? "")
             + " unprojectedSystem=" + result.UnprojectedSystemMessageCount
