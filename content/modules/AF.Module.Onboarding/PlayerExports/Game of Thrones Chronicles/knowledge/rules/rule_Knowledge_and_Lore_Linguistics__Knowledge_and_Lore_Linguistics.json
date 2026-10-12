@@ -1,0 +1,145 @@
+{
+  "Id": "rule_Knowledge_and_Lore_Linguistics",
+  "Keywords": [
+    "Linguistics"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Entry Linguistics It is not only limited by local conditions, but also spreads to further places with travelers and wars."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "scholar",
+          "artisan"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Linguistics"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "artisan"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Linguistics"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Linguistics"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Linguistics Entry Linguistics It is not only limited by local conditions, but also spreads to further places with travelers and wars. Any break in the place of origin, checkpoints, shipping schedules, debts and protection fees will immediately make the nobles in the distance feel the changes in price and power."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Linguistics Entry Linguistics It is not only limited by local conditions, but also spreads to further places with travelers and wars. They may not necessarily understand ledgers, but they know the true weight of a bag of salt and a nail on the road."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Linguistics Entry Linguistics It is not only limited by local conditions, but also spreads to further places with travelers and wars. Some people turn raw materials into tools, cloth and medicine, others set festivals and taboos for exchange; wealth is piled up by many hands, and rarely belongs to just one name."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Linguistics Entry Linguistics It is not only limited by local conditions, but also spreads to further places with travelers and wars. If prices rise but wages do not, prosperity in distant places will only become thinner bread; if roads are safe, even small villages can get a little spring from trade."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Linguistics: Entry Linguistics It is not only limited by local conditions, but also spreads to further places with travelers and wars."
+  ]
+}

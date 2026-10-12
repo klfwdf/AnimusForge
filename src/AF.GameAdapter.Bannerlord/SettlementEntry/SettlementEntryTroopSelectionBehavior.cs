@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -288,15 +288,23 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 		{
 			if (Mission.Current != null || Campaign.Current == null || MobileParty.MainParty?.MemberRoster == null)
 			{
-				InformationManager.DisplayMessage(new InformationMessage("【SETS】只能在战役地图上配置进城随行。", Color.FromUint(WarningColor)));
+				InformationManager.DisplayMessage(new InformationMessage(new TextObject("{=AF_SETS_Entry_ConfigUnavailable}Settlement escort can only be configured on the campaign map.").ToString(), Color.FromUint(WarningColor)));
 				return;
 			}
+			var ownLimit = new TextObject("{=AF_SETS_Entry_ProfileOwnOption}Owned-settlement escort ({LIMIT} troops)");
+			ownLimit.SetTextVariable("LIMIT", OwnSettlementEntryLimit);
+			var otherLimit = new TextObject("{=AF_SETS_Entry_ProfileOtherOption}Other-settlement escort ({LIMIT} troops)");
+			otherLimit.SetTextVariable("LIMIT", OtherSettlementEntryLimit);
 			List<InquiryElement> choices = new List<InquiryElement>
 			{
-				new InquiryElement(EntryProfileKind.OwnSettlement, "自有定居点随行（100人）", null, isEnabled: true, BuildProfileHint(EntryProfileKind.OwnSettlement)),
-				new InquiryElement(EntryProfileKind.OtherSettlement, "他方定居点随行（10人）", null, isEnabled: true, BuildProfileHint(EntryProfileKind.OtherSettlement))
+				new InquiryElement(EntryProfileKind.OwnSettlement, ownLimit.ToString(), null, isEnabled: true, BuildProfileHint(EntryProfileKind.OwnSettlement)),
+				new InquiryElement(EntryProfileKind.OtherSettlement, otherLimit.ToString(), null, isEnabled: true, BuildProfileHint(EntryProfileKind.OtherSettlement))
 			};
-			MultiSelectionInquiryData data = new MultiSelectionInquiryData("【SETS】进城随行配置", "选择要配置的进城/城堡/村庄随行名单：", choices, isExitShown: true, 1, 1, "配置", "关闭", delegate(List<InquiryElement> selected)
+			MultiSelectionInquiryData data = new MultiSelectionInquiryData(
+				new TextObject("{=AF_SETS_Entry_ConfigTitle}SETS settlement escort configuration").ToString(),
+				new TextObject("{=AF_SETS_Entry_ConfigDescription}Choose the escort roster for town, castle, or village entry:").ToString(), choices, isExitShown: true, 1, 1,
+				new TextObject("{=AF_SETS_Entry_Configure}Configure").ToString(),
+				new TextObject("{=AF_SETS_Entry_Close}Close").ToString(), delegate(List<InquiryElement> selected)
 			{
 				if (selected == null || selected.Count == 0 || selected[0].Identifier is not EntryProfileKind kind)
 				{
@@ -309,7 +317,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 		catch (Exception ex)
 		{
 			SettlementEntryTroopSelectionLog.Log("Open config from terminal failed. error=" + ex);
-			InformationManager.DisplayMessage(new InformationMessage("【SETS】打开进城随行配置失败。", Color.FromUint(WarningColor)));
+			InformationManager.DisplayMessage(new InformationMessage(new TextObject("{=AF_SETS_Entry_ConfigOpenFailed}Failed to open the settlement escort configuration.").ToString(), Color.FromUint(WarningColor)));
 		}
 	}
 
@@ -1781,7 +1789,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			TroopRoster mainRoster = MobileParty.MainParty?.MemberRoster;
 			if (mainRoster == null)
 			{
-				InformationManager.DisplayMessage(new InformationMessage("【SETS】玩家部队不可用，无法配置随行。", Color.FromUint(WarningColor)));
+				InformationManager.DisplayMessage(new InformationMessage(new TextObject("{=AF_SETS_Entry_PlayerPartyUnavailable}The player's party is unavailable; escort configuration cannot be opened.").ToString(), Color.FromUint(WarningColor)));
 				return;
 			}
 			int limit = GetProfileLimit(profileKind);
@@ -1794,7 +1802,8 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			TroopRoster leftMembers = BuildConfigSelectableRoster(mainRoster);
 			SubtractRoster(leftMembers, current);
 			TroopRoster emptyPrisoners = TroopRoster.CreateDummyTroopRoster();
-			TextObject rightName = new TextObject(GetProfileTitle(profileKind) + "（上限 {LIMIT}）");
+			TextObject rightName = new TextObject("{=AF_SETS_Entry_PartyRightName}{TITLE} (limit {LIMIT})");
+			rightName.SetTextVariable("TITLE", GetProfileTitle(profileKind));
 			rightName.SetTextVariable("LIMIT", limit);
 			PartyScreenLogic logic = new PartyScreenLogic();
 			PartyScreenLogicInitializationData data = new PartyScreenLogicInitializationData
@@ -1811,7 +1820,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 				LeftPartyPrisonersSizeLimit = 0,
 				RightPartyMembersSizeLimit = Math.Max(1, limit),
 				RightPartyPrisonersSizeLimit = 0,
-				LeftPartyName = new TextObject("可选健康普通士兵"),
+				LeftPartyName = new TextObject("{=AF_SETS_Entry_PartyLeftName}Eligible healthy regular troops"),
 				RightPartyName = rightName,
 				TroopTransferableDelegate = EntryProfileTroopTransferableDelegate,
 				CanTalkToTroopDelegate = null,
@@ -1822,7 +1831,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 				PartyScreenClosedDelegate = OnEntryProfileScreenClosed,
 				IsDismissMode = true,
 				IsTroopUpgradesDisabled = true,
-				Header = new TextObject("配置 " + GetProfileTitle(profileKind)),
+				Header = BuildProfileHeader(profileKind),
 				TransferHealthiesGetWoundedsFirst = true,
 				ShowProgressBar = false,
 				MemberTransferState = PartyScreenLogic.TransferState.Transferable,
@@ -1837,16 +1846,19 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			state.PartyScreenMode = PartyScreenHelper.PartyScreenMode.Normal;
 			Game.Current.GameStateManager.PushState((GameState)(object)state, 0);
 			string selectionScope = profileKind == EntryProfileKind.OtherSettlement
-				? "，只列出健康普通士兵；冲突开始后，现场主队同伴与家族成员会原地加入玩家编队。"
-				: "，只列出健康普通士兵。";
-			InformationManager.DisplayMessage(new InformationMessage("【SETS】正在配置" + GetProfileTitle(profileKind) + selectionScope, Color.FromUint(InfoColor)));
+				? new TextObject("{=AF_SETS_Entry_SelectionScopeOther}; only healthy regular troops are listed. Companions and family members in the main party join your formation when the conflict starts.").ToString()
+				: new TextObject("{=AF_SETS_Entry_SelectionScopeOwn}; only healthy regular troops are listed.").ToString();
+			var configuring = new TextObject("{=AF_SETS_Entry_Configuring}Configuring {TITLE}{SCOPE}");
+			configuring.SetTextVariable("TITLE", GetProfileTitle(profileKind));
+			configuring.SetTextVariable("SCOPE", selectionScope);
+			InformationManager.DisplayMessage(new InformationMessage(configuring.ToString(), Color.FromUint(InfoColor)));
 			SettlementEntryTroopSelectionLog.Log("Profile selection opened. profile=" + profileKind + ", limit=" + limit + ", current=" + current.TotalManCount + ", selectable=" + leftMembers.TotalManCount);
 		}
 		catch (Exception ex)
 		{
 			_pendingProfileSelection = null;
 			SettlementEntryTroopSelectionLog.Log("Open profile selection failed. error=" + ex);
-			InformationManager.DisplayMessage(new InformationMessage("【SETS】打开随行配置界面失败。", Color.FromUint(WarningColor)));
+			InformationManager.DisplayMessage(new InformationMessage(new TextObject("{=AF_SETS_Entry_OpenFailed}Failed to open the settlement escort screen.").ToString(), Color.FromUint(WarningColor)));
 		}
 	}
 
@@ -1866,7 +1878,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 		int limit = Math.Max(0, _pendingProfileSelection?.Limit ?? OtherSettlementEntryLimit);
 		if (selected > limit)
 		{
-			TextObject text = new TextObject("随行配置不能超过 {LIMIT} 人。当前：{COUNT}");
+			TextObject text = new TextObject("{=AF_SETS_Entry_LimitExceeded}The escort roster cannot exceed {LIMIT} troops. Current: {COUNT}");
 			text.SetTextVariable("LIMIT", limit);
 			text.SetTextVariable("COUNT", selected);
 			return new Tuple<bool, TextObject>(false, text);
@@ -1886,18 +1898,21 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			}
 			if (fromCancel)
 			{
-				InformationManager.DisplayMessage(new InformationMessage("【SETS】已取消进城随行配置。", Color.FromUint(WarningColor)));
+				InformationManager.DisplayMessage(new InformationMessage(new TextObject("{=AF_SETS_Entry_Cancelled}Settlement escort configuration was cancelled.").ToString(), Color.FromUint(WarningColor)));
 				return;
 			}
 			TroopRoster saved = ResolveProfileRosterForEntry(rightMemberRoster, MobileParty.MainParty?.MemberRoster, selection.Limit, out _, out _);
 			SetProfileRoster(selection.ProfileKind, saved);
 			int count = saved.TotalManCount;
 			int free = Math.Max(0, selection.Limit - count);
-			string message = "【SETS】" + GetProfileTitle(selection.ProfileKind) + "已保存 " + count + "/" + selection.Limit + "。";
-			if (free > 0)
-			{
-				message += " 仍可带入 " + free + " 人，可按 U 重新配置城镇/城堡/村庄随行。";
-			}
+			var messageText = new TextObject(free > 0
+				? "{=AF_SETS_Entry_SavedWithCapacity}{TITLE} saved: {COUNT}/{LIMIT}. {FREE} more troops can be added; press U to reconfigure town, castle, or village escort."
+				: "{=AF_SETS_Entry_Saved}{TITLE} saved: {COUNT}/{LIMIT}.");
+			messageText.SetTextVariable("TITLE", GetProfileTitle(selection.ProfileKind));
+			messageText.SetTextVariable("COUNT", count);
+			messageText.SetTextVariable("LIMIT", selection.Limit);
+			messageText.SetTextVariable("FREE", free);
+			string message = messageText.ToString();
 			InformationManager.DisplayMessage(new InformationMessage(message, Color.FromUint(free > 0 ? InfoColor : SuccessColor)));
 			SettlementEntryTroopSelectionLog.Log("Profile saved. profile=" + selection.ProfileKind + ", count=" + count + ", limit=" + selection.Limit);
 		}
@@ -1905,7 +1920,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 		{
 			_pendingProfileSelection = null;
 			SettlementEntryTroopSelectionLog.Log("Profile close failed. error=" + ex);
-			InformationManager.DisplayMessage(new InformationMessage("【SETS】保存进城随行配置失败。", Color.FromUint(WarningColor)));
+			InformationManager.DisplayMessage(new InformationMessage(new TextObject("{=AF_SETS_Entry_SaveFailed}Failed to save the settlement escort configuration.").ToString(), Color.FromUint(WarningColor)));
 		}
 	}
 
@@ -2181,7 +2196,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			IncreaseSettlementHealthAction.Apply(settlement, -settlement.SettlementHitPoints * SetsVillageVictoryRewardProfile.SettlementHitPointLossRatio);
 			SkillLevelingManager.OnForceSupplies(MobileParty.MainParty, loot, TaleWorlds.CampaignSystem.MapEvents.MapEvent.PlayerMapEvent == null);
 			InformationManager.DisplayMessage(new InformationMessage(
-				SetsVillageVictoryRewardProfile.BuildRewardMessage(gold, itemCount),
+				SiegeAftermathUiText.BuildVillageRewardMessage(gold, itemCount),
 				Color.FromUint(SuccessColor)));
 			InventoryScreenHelper.OpenScreenAsLoot(new Dictionary<PartyBase, ItemRoster>
 			{
@@ -2406,7 +2421,16 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 
 	private static string GetProfileTitle(EntryProfileKind profileKind)
 	{
-		return profileKind == EntryProfileKind.OwnSettlement ? "自有定居点随行" : "他方定居点随行";
+		return new TextObject(profileKind == EntryProfileKind.OwnSettlement
+			? "{=AF_SETS_Entry_ProfileTitleOwn}Owned-settlement escort"
+			: "{=AF_SETS_Entry_ProfileTitleOther}Other-settlement escort").ToString();
+	}
+
+	private static TextObject BuildProfileHeader(EntryProfileKind profileKind)
+	{
+		var header = new TextObject("{=AF_SETS_Entry_PartyHeader}Configure {TITLE}");
+		header.SetTextVariable("TITLE", GetProfileTitle(profileKind));
+		return header;
 	}
 
 	private static string BuildProfileHint(EntryProfileKind profileKind)
@@ -2415,21 +2439,28 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 		{
 			int limit = GetProfileLimit(profileKind);
 			TroopRoster live = ResolveProfileRosterForEntry(GetProfileRoster(profileKind), MobileParty.MainParty?.MemberRoster, limit, out int configured, out int unavailable);
-			string relationText = profileKind == EntryProfileKind.OwnSettlement
-				? "玩家直属领地；玩家为统治者时，同国附属领主领地也走这套。"
-				: "非自有领地；玩家不是统治者时，同国领主城镇也走这套。";
-			string hint = "已配置 " + configured + "/" + limit + "，当前健康可带入 " + (live?.TotalManCount ?? 0) + "/" + limit + "。" + relationText;
+			string relationText = new TextObject(profileKind == EntryProfileKind.OwnSettlement
+				? "{=AF_SETS_Entry_RelationOwn}Your clan's settlement; when you are the ruler, settlements owned by same-kingdom vassals use this profile too."
+				: "{=AF_SETS_Entry_RelationOther}A settlement you do not own; when you are not the ruler, same-kingdom lord towns use this profile.").ToString();
+			var hintText = new TextObject("{=AF_SETS_Entry_ProfileHint}Configured {CONFIGURED}/{LIMIT}; currently available healthy troops: {LIVE}/{LIMIT}. {RELATION}");
+			hintText.SetTextVariable("CONFIGURED", configured);
+			hintText.SetTextVariable("LIMIT", limit);
+			hintText.SetTextVariable("LIVE", live?.TotalManCount ?? 0);
+			hintText.SetTextVariable("RELATION", relationText);
+			string hint = hintText.ToString();
 			if (unavailable > 0)
 			{
-				hint += " 有 " + unavailable + " 个配置名额因受伤或离队不可用。";
+				var unavailableText = new TextObject("{=AF_SETS_Entry_ProfileUnavailable} {COUNT} configured slots are unavailable because troops are wounded or have left the party.");
+				unavailableText.SetTextVariable("COUNT", unavailable);
+				hint += unavailableText.ToString();
 			}
 			return hint;
 		}
 		catch
 		{
 			return profileKind == EntryProfileKind.OtherSettlement
-				? "配置进入他方城镇/城堡/村庄时带入的健康普通士兵（人数上限可在 MCM 调整）；现场主队英雄会在冲突开始后加入玩家编队。"
-				: "配置进入自有城镇/城堡/村庄时自动带入的普通士兵。";
+				? new TextObject("{=AF_SETS_Entry_ProfileFallbackOther}Healthy regular troops to bring when entering another town, castle, or village (the limit is adjustable in MCM); heroes in the main party join your formation when a conflict starts.").ToString()
+				: new TextObject("{=AF_SETS_Entry_ProfileFallbackOwn}Regular troops automatically brought when entering a town, castle, or village owned by your clan.").ToString();
 		}
 	}
 
@@ -2441,21 +2472,31 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			{
 				return;
 			}
-			string name = settlement?.Name?.ToString() ?? "定居点";
+			string name = settlement?.Name?.ToString() ?? new TextObject("{=AF_SETS_Entry_SettlementFallback}settlement").ToString();
 			int free = Math.Max(0, limit - selectedCount);
 			string message;
 			if (configuredCount <= 0)
 			{
-				message = "【SETS】" + GetProfileTitle(profileKind) + "尚未配置，本次进入 " + name + " 不会带随行。可按 U 进入进城随行配置，为城镇/城堡/村庄设置随行人员。";
+				var unconfigured = new TextObject("{=AF_SETS_Entry_ReminderUnconfigured}{TITLE} is not configured, so no escort will enter {SETTLEMENT} this time. Press U to configure an escort for towns, castles, or villages.");
+				unconfigured.SetTextVariable("TITLE", GetProfileTitle(profileKind));
+				unconfigured.SetTextVariable("SETTLEMENT", name);
+				message = unconfigured.ToString();
 			}
 			else
 			{
-				message = "【SETS】本次进入 " + name + " 随行 " + selectedCount + "/" + limit + "，仍可带入 " + free + " 人。";
+				var configured = new TextObject("{=AF_SETS_Entry_ReminderConfigured}Entering {SETTLEMENT}: escort {SELECTED}/{LIMIT}; {FREE} more troops can be brought.");
+				configured.SetTextVariable("SETTLEMENT", name);
+				configured.SetTextVariable("SELECTED", selectedCount);
+				configured.SetTextVariable("LIMIT", limit);
+				configured.SetTextVariable("FREE", free);
+				message = configured.ToString();
 				if (unavailableCount > 0)
 				{
-					message += " 有 " + unavailableCount + " 个配置名额因受伤或离队空缺。";
+					var unavailable = new TextObject("{=AF_SETS_Entry_ReminderUnavailable} {COUNT} configured slots are empty because troops are wounded or have left the party.");
+					unavailable.SetTextVariable("COUNT", unavailableCount);
+					message += unavailable.ToString();
 				}
-				message += " 可按 U 重新配置城镇/城堡/村庄随行。";
+				message += new TextObject("{=AF_SETS_Entry_ReminderReconfigure} Press U to reconfigure town, castle, or village escort.").ToString();
 			}
 			InformationManager.DisplayMessage(new InformationMessage(message, Color.FromUint(InfoColor)));
 		}
@@ -3125,7 +3166,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			if (civilianAgentIndexes.Count <= 0)
 			{
 				InformationManager.DisplayMessage(new InformationMessage(
-					SetsSettlementCivilianGatherProfile.NoEligibleCivilianMessage,
+					SiegeAftermathUiText.NoEligibleCivilianMessage,
 					Color.FromUint(SetsSettlementCivilianGatherProfile.MessageColor)));
 				SettlementEntryTroopSelectionLog.Log("No eligible ordinary-settlement civilians found for queued gather. settlement="
 					+ _settlementId
@@ -3147,7 +3188,7 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 			_settlementCivilianGatherOrderFinalizePending = false;
 			_nextSettlementCivilianGatherBatchTime = mission.CurrentTime + SetsSettlementCivilianGatherProfile.FormationAssignmentInitialDelaySeconds;
 			InformationManager.DisplayMessage(new InformationMessage(
-				SetsSettlementCivilianGatherProfile.BuildQueuedMessage(_settlementCivilianGatherRequestedCount),
+				SiegeAftermathUiText.BuildQueuedCivilianMessage(_settlementCivilianGatherRequestedCount),
 				Color.FromUint(SetsSettlementCivilianGatherProfile.MessageColor)));
 			SettlementEntryTroopSelectionLog.Log("Prepared staged ordinary-settlement civilian gather. settlement="
 				+ _settlementId
@@ -3247,13 +3288,13 @@ public sealed class SettlementEntryTroopSelectionBehavior : CampaignBehaviorBase
 				civilianFormation.SetFiringOrder(FiringOrder.FiringOrderHoldYourFire);
 				EnsureSetsCommandUiReadyForExternal(mission, "sets_settlement_civilian_gather_complete", force: true, preserveSelection: true);
 				InformationManager.DisplayMessage(new InformationMessage(
-					SetsSettlementCivilianGatherProfile.BuildGatheredMessage(_settlementCivilianGatherAssignedCount),
+					SiegeAftermathUiText.BuildGatheredCivilianMessage(_settlementCivilianGatherAssignedCount),
 					Color.FromUint(SetsSettlementCivilianGatherProfile.MessageColor)));
 			}
 			else
 			{
 				InformationManager.DisplayMessage(new InformationMessage(
-					SetsSettlementCivilianGatherProfile.NoEligibleCivilianMessage,
+					SiegeAftermathUiText.NoEligibleCivilianMessage,
 					Color.FromUint(SetsSettlementCivilianGatherProfile.MessageColor)));
 			}
 			SettlementEntryTroopSelectionLog.Log("Completed staged ordinary-settlement civilian gather. settlement="
@@ -3732,10 +3773,10 @@ if (_spawnedAlliedCount > 0)
 							TrySetFollowerFormationFollowOrder(mission, main, ensurePlayerCommandable: false);
 							EnsureSetsCommandUiReadyForExternal(mission, "finalize_selected_allies", force: true, preserveSelection: false);
 						}
-						string message = "【SETS】随行人员已进入场景，可按原版指挥调整。";
+						string message = new TextObject("{=AF_SETS_Entry_Spawned}SETS escort troops have entered the scene; you can adjust their orders through the native command UI.").ToString();
 					if (_defenderConflictEnabled)
 					{
-						message += " 冲突爆发时他们会协助你。";
+						message += " " + new TextObject("{=AF_SETS_Entry_SpawnedConflict}They will assist you when the conflict begins.").ToString();
 					}
 					InformationManager.DisplayMessage(new InformationMessage(message, Color.FromUint(InfoColor)));
 				}
@@ -3838,7 +3879,7 @@ if (_spawnedAlliedCount > 0)
 				EnsureSetsCommandUiReadyForExternal(mission, "conflict_start", force: true, preserveSelection: true);
 				RefreshSetsUsableProtectionState("conflict_start");
 				SpawnInitialDefenderReserveWave();
-				InformationManager.DisplayMessage(new InformationMessage(SetsSettlementEntryProfile.BuildConflictStartedMessage(_sceneKind), Color.FromUint(WarningColor)));
+				InformationManager.DisplayMessage(new InformationMessage(SiegeAftermathUiText.BuildConflictStartedMessage(_sceneKind), Color.FromUint(WarningColor)));
 				SettlementEntryTroopSelectionLog.Log("Conflict started. settlement=" + _settlementId + ", source=" + source + ", enemies=" + _enemyAgentIndexes.Count + ", readiedAllies=" + readiedAllies + ", commandableSceneHeroes=" + commandableSceneHeroes + ", followersCommandable=true, scatteredHeroesCommandable=true, autoCharge=false");
 			}
 			catch (Exception ex)
@@ -4419,7 +4460,7 @@ if (_spawnedAlliedCount > 0)
 
 				_ownedSettlementMassacreRequestAgentIndex = requester.Index;
 				InformationManager.DisplayMessage(new InformationMessage(
-					SetsOwnedSettlementMassacreProfile.BuildPendingRequestMessage(_sceneKind, requester.Name ?? ""),
+					SetsOwnedSettlementMassacreProfile.BuildPendingRequestMessage(_sceneKind, requester.Name ?? "", isEnglish: !GcczLocalizedResourceLoader.UseChineseInterface),
 					Color.FromUint(SetsOwnedSettlementMassacreProfile.PendingMessageColor)));
 				SettlementEntryTroopSelectionLog.Log("SETS owned/attached settlement massacre request recorded. settlement=" + _settlementId
 					+ ", scene=" + _sceneKind
@@ -4442,7 +4483,7 @@ if (_spawnedAlliedCount > 0)
 			}
 			ClearOwnedSettlementMassacreRequest(source ?? SetsOwnedSettlementMassacreProfile.CancelRequestSource);
 			InformationManager.DisplayMessage(new InformationMessage(
-				SetsOwnedSettlementMassacreProfile.BuildCancelledRequestMessage(),
+				SetsOwnedSettlementMassacreProfile.BuildCancelledRequestMessage(isEnglish: !GcczLocalizedResourceLoader.UseChineseInterface),
 				Color.FromUint(SetsOwnedSettlementMassacreProfile.StopMessageColor)));
 			return true;
 		}
@@ -4549,7 +4590,7 @@ if (_spawnedAlliedCount > 0)
 				MaintainPlayerEntryFollowersArmedCombatReady();
 				MaintainOwnedSettlementMassacre(force: true);
 				InformationManager.DisplayMessage(new InformationMessage(
-					SetsOwnedSettlementMassacreProfile.BuildStartedMessage(_sceneKind, selectedFollowers.Count, targets.Count),
+					SetsOwnedSettlementMassacreProfile.BuildStartedMessage(_sceneKind, selectedFollowers.Count, targets.Count, isEnglish: !GcczLocalizedResourceLoader.UseChineseInterface),
 					Color.FromUint(SetsOwnedSettlementMassacreProfile.StartMessageColor)));
 				SettlementEntryTroopSelectionLog.Log("SETS owned/attached settlement massacre started. settlement=" + _settlementId
 					+ ", scene=" + _sceneKind
@@ -4607,7 +4648,7 @@ if (_spawnedAlliedCount > 0)
 					FinalizeOwnedSettlementMassacre(stoppedByPlayer: true);
 				}
 				InformationManager.DisplayMessage(new InformationMessage(
-					SetsOwnedSettlementMassacreProfile.BuildStoppedMessage(survivors),
+					SetsOwnedSettlementMassacreProfile.BuildStoppedMessage(survivors, isEnglish: !GcczLocalizedResourceLoader.UseChineseInterface),
 					Color.FromUint(SetsOwnedSettlementMassacreProfile.StopMessageColor)));
 				SettlementEntryTroopSelectionLog.Log("SETS owned/attached settlement massacre stopped. settlement=" + _settlementId
 					+ ", scene=" + _sceneKind
@@ -4634,7 +4675,7 @@ if (_spawnedAlliedCount > 0)
 			if (!stoppedByPlayer && playerSideWon)
 			{
 				InformationManager.DisplayMessage(new InformationMessage(
-					SetsOwnedSettlementMassacreProfile.BuildCompletedMessage(_sceneKind),
+					SetsOwnedSettlementMassacreProfile.BuildCompletedMessage(_sceneKind, isEnglish: !GcczLocalizedResourceLoader.UseChineseInterface),
 					Color.FromUint(SetsOwnedSettlementMassacreProfile.StartMessageColor)));
 			}
 			SettlementEntryTroopSelectionLog.Log("SETS owned/attached settlement massacre fight ended. settlement=" + _settlementId
@@ -4829,7 +4870,7 @@ if (_spawnedAlliedCount > 0)
 				EnsureSetsCommandUiReadyForExternal(mission, "owned_settlement_incident", force: true, preserveSelection: true);
 				MaintainOwnedSettlementIncidentPanic(force: true);
 				ClearSetsUsableProtectionState("owned_settlement_incident");
-				InformationManager.DisplayMessage(new InformationMessage(SetsSettlementEntryProfile.BuildOwnedIncidentMessage(_sceneKind), Color.FromUint(WarningColor)));
+				InformationManager.DisplayMessage(new InformationMessage(SiegeAftermathUiText.BuildOwnedIncidentMessage(_sceneKind), Color.FromUint(WarningColor)));
 				SettlementEntryTroopSelectionLog.Log("Owned/attached settlement incident started. settlement=" + _settlementId + ", source=" + (source ?? "") + ", target=" + SafeCharacterId(initialTarget?.Character as CharacterObject));
 			}
 			catch (Exception ex)
@@ -5918,9 +5959,9 @@ if (_spawnedAlliedCount > 0)
 				RefreshEnemyNativeCombatOrders();
 				if (spawned > 0)
 				{
-					string message = !_armedCoup ? SetsSettlementEntryProfile.BuildReserveWaveMessage(_sceneKind, phaseKind, waveNumber, _maxActiveDefenderWaves)
-						: IsCoupHall ? "【宣权篡位】大厅护卫部署：本批 " + spawned + " 人，待部署 " + _remainingDefenderReserve.Count + " 人。"
-						: "【宣权篡位】守军增援第 " + waveNumber + " 批，待入场 " + _remainingDefenderReserve.Count + " 人（场上最多 " + _maxActiveDefenderWaves + " 批；突破大厅入口后停止增援）。";
+					string message = !_armedCoup ? SiegeAftermathUiText.BuildReserveWaveMessage(_sceneKind, phaseKind, waveNumber, _maxActiveDefenderWaves)
+						: IsCoupHall ? new TextObject("{=AF_SETS_Coup_HallGuardDeploy}[Usurpation] Hall guard deployment: {SPAWNED} this wave, {REMAINING} awaiting deployment.").SetTextVariable("SPAWNED", spawned).SetTextVariable("REMAINING", _remainingDefenderReserve.Count).ToString()
+						: new TextObject("{=AF_SETS_Coup_DefenderReinforce}[Usurpation] Defender reinforcements wave {WAVE}, {REMAINING} awaiting entry (up to {MAX_WAVES} waves active; reinforcements stop after breaching the hall entrance).").SetTextVariable("WAVE", waveNumber).SetTextVariable("REMAINING", _remainingDefenderReserve.Count).SetTextVariable("MAX_WAVES", _maxActiveDefenderWaves).ToString();
 					InformationManager.DisplayMessage(new InformationMessage(message, Color.FromUint(WarningColor)));
 				}
 				SettlementEntryTroopSelectionLog.Log("Spawned defender reserve wave. settlement=" + _settlementId + ", wave=" + waveNumber + ", activeWaves=" + CountActiveDefenderReserveWaves() + "/" + _maxActiveDefenderWaves + ", phase=" + phaseKind + ", requested=" + troops.Count + ", spawned=" + spawned + ", skipped=" + Math.Max(0, troops.Count - spawned) + ", remainingTotal=" + (_remainingDefenderReserve?.Count ?? 0) + ", nextWaveTime=" + _nextDefenderReserveWaveTime.ToString("0.0"));
@@ -7078,7 +7119,7 @@ if (_spawnedAlliedCount > 0)
             catch (Exception ex) { SettlementEntryTroopSelectionLog.Log("Coup hall position correction failed: " + ex.Message); }
             _coupHallDeploymentFailed = true;
             SettlementEntryTroopSelectionLog.Log("Coup hall actual spawn invalid. requested=" + intended + ", actual=" + agent.Position);
-            try { _coupTechnicalFailure?.Invoke(base.Mission, "大厅人物未能落在有效出生点，已中止本次部署，未判定胜利。"); }
+            try { _coupTechnicalFailure?.Invoke(base.Mission, new TextObject("{=AF_SETS_Coup_HallSpawnInvalid}Hall character failed to land on a valid spawn point. This deployment has been aborted; victory is not granted.").ToString()); }
             finally { base.Mission.EndMission(); }
             return false;
         }
@@ -7093,7 +7134,8 @@ if (_spawnedAlliedCount > 0)
 			if (enemy) _coupHallDefenderBlockedSince = since; else _coupHallAllyBlockedSince = since;
 			if (since < 0f || now - since < ArmedCoupHallDeploymentTimeout) return;
 			_coupHallDeploymentFailed = true;
-			string reason = "领主大厅连续15秒找不到" + (enemy ? "护卫" : "突击队") + "可达落点，已停止本次部署；未授予胜利，已有伤亡保留。";
+			string sideText = enemy ? new TextObject("{=AF_SETS_Coup_HallGuard}defender").ToString() : new TextObject("{=AF_SETS_Coup_HallAssault}assault squad").ToString();
+			string reason = new TextObject("{=AF_SETS_Coup_HallPointUnreachable}No reachable spawn point found in the lord's hall for {SIDE} for 15 consecutive seconds. Deployment has been stopped; victory is not granted, existing casualties retained.").SetTextVariable("SIDE", sideText).ToString();
 			SettlementEntryTroopSelectionLog.Log("Coup hall deployment blocked. side=" + (enemy ? "defender" : "ally") + ", pending=" + _remainingDefenderReserve.Count);
 			try { _coupTechnicalFailure?.Invoke(base.Mission, reason); }
 			finally { base.Mission.EndMission(); }
@@ -7652,7 +7694,7 @@ agent.Controller = AgentControllerType.None;
 			if (exitBlocked)
 			{
 				canPlayerLeave = false;
-				return new InquiryData("【SETS内部暴乱】", SetsSettlementEntryProfile.BuildExitBlockedMessage(_sceneKind), isAffirmativeOptionShown: true, isNegativeOptionShown: false, "确定", "", null, null);
+				return new InquiryData(new TextObject("{=AF_SETS_ConflictTitle}Internal unrest").ToString(), SiegeAftermathUiText.BuildExitBlockedMessage(_sceneKind), isAffirmativeOptionShown: true, isNegativeOptionShown: false, new TextObject("{=AF_SETS_Confirm}Confirm").ToString(), "", null, null);
 			}
 			canPlayerLeave = true;
 			return null;
@@ -7708,8 +7750,8 @@ agent.Controller = AgentControllerType.None;
 			PrepareVictoryExit(source);
 			QueueVictoryPostMissionFlow(source);
 			InformationManager.DisplayMessage(new InformationMessage(_armedCoup
-				? "【宣权篡位】本场守军已被击溃。继续完成政变目标；大厅胜利后确认旧王处置，离场查看登基动画与战报。"
-				: SetsSettlementEntryProfile.BuildVictoryMessage(_sceneKind), Color.FromUint(SuccessColor)));
+				? new TextObject("{=AF_NOTIFY_Coup_GarrisonDefeated}[Usurpation] The garrison has been defeated. Continue the coup objectives; after victory in the hall, confirm the former ruler's fate, then leave to view the coronation and battle report.").ToString()
+				: SiegeAftermathUiText.BuildVictoryMessage(_sceneKind), Color.FromUint(SuccessColor)));
 			SettlementEntryTroopSelectionLog.Log("Victory reached. settlement=" + _settlementId + ", survivors=" + (_survivingRoster?.TotalManCount ?? 0) + ", source=" + source);
 		}
 

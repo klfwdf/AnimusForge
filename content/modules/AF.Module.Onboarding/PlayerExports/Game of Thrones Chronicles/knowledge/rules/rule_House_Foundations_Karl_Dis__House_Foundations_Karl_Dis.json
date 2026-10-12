@@ -1,0 +1,153 @@
+{
+  "Id": "rule_House_Foundations_Karl_Dis",
+  "Keywords": [
+    "Karl Dis",
+    "House Karl Dis"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Caldis belongs to the royal family of Qarth. The nominal ruling power of Qarth is held by pure-blooded people who claim to be descendants of the ancient kings, but groups such as the Thirteen Giants, the Tourmaline Brotherhood, the Ancient Spice Guild, and wizards also have wealth, weapons, and eyes and ears; therefore, the identity of the royal family is both noble and must be honored among many forces. Carl Dis is based on genealogy, meeting etiquette, caravan relations and the ability to maintain order within the city gate. It can change allies, but it cannot order a city whose blood is trade based solely on the name of its ancestors."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "qartheen"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "scholar",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The royal family of Qarth will carefully weigh the pedigree and seat of Kaldis, and observe whether it can maintain dignity in the disputes between the factions. The blood of the ancient king brings the right to speak, and the spice ship cannot automatically dock."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "qartheen"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "When businessmen look at Karl Dis, they are most concerned about tariffs, road protection and contract enforcement. If the royal family allows factional fighting to block trade routes, no matter how pure the blood is, it will be regarded as a loss by the accountant."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "qartheen"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "slave",
+          "artisan",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "What the laborers in the city felt was who the royal orders fell on. Carl Dis's dress and pedigree are far away from them, but the price of water, wages and whether the guards abuse their power are in front of them every day."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Karl Dis A family in the royal family of Qarth maintains its status through genealogy, etiquette, trade routes and the balance of factions in the city. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Karl Dis A family in the royal family of Qarth maintains its status through genealogy, etiquette, trade routes and the balance of factions in the city. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Karl Dis A family in the royal family of Qarth maintains its status through genealogy, etiquette, trade routes and the balance of factions in the city. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Karl Dis A family in the royal family of Qarth maintains its status through genealogy, etiquette, trade routes and the balance of factions in the city. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Karl Dis: A family in the royal family of Qarth maintains its status through genealogy, etiquette, trade routes and the balance of factions in the city."
+  ]
+}

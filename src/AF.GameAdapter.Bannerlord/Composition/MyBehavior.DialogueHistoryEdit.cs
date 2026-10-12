@@ -19,18 +19,18 @@ public partial class MyBehavior
 		status = "";
 		if (entry == null)
 		{
-			status = "这条记录不能编辑。";
+			status = MemoryEditorUiText.T("AF_MEMORY_UI_HistoryEditUnavailable", "This record cannot be edited.");
 			return false;
 		}
 		if (!TWParallel.IsMainThread())
 		{
-			status = "只能在游戏主线程编辑记录。";
+			status = MemoryEditorUiText.T("AF_MEMORY_UI_HistoryEditMainThread", "Records can only be edited on the game main thread.");
 			return false;
 		}
 		MyBehavior owner = Instance ?? Campaign.Current?.GetCampaignBehavior<MyBehavior>();
 		if (owner == null)
 		{
-			status = "当前没有可用的记录存储。";
+			status = MemoryEditorUiText.T("AF_MEMORY_UI_HistoryStoreUnavailable", "No record storage is currently available.");
 			return false;
 		}
 		try
@@ -40,7 +40,7 @@ public partial class MyBehavior
 		catch (Exception ex)
 		{
 			Logger.Log("DialogueHistory", "[ERROR] edit line failed memoryId=" + (entry.MemoryId ?? "") + " day=" + entry.GameDayIndex + " ordinal=" + entry.LineOrdinal + " error=" + ex.GetType().Name + ": " + ex.Message);
-			status = "编辑失败，记录未改动。";
+			status = MemoryEditorUiText.T("AF_MEMORY_UI_HistoryEditFailed", "Editing failed; the record was not changed.");
 			return false;
 		}
 	}
@@ -53,12 +53,12 @@ public partial class MyBehavior
 		string text = (newText ?? "").Trim();
 		if (string.IsNullOrWhiteSpace(id) || gameDayIndex < 0 || lineOrdinal < 0)
 		{
-			status = "这条记录不能编辑。";
+			status = MemoryEditorUiText.T("AF_MEMORY_UI_HistoryEditUnavailable", "This record cannot be edited.");
 			return false;
 		}
 		if (text.Length == 0)
 		{
-			status = "内容不能为空；如需移除请使用删除。";
+			status = MemoryEditorUiText.T("AF_MEMORY_UI_HistoryEditEmpty", "Content cannot be empty; use Delete to remove the record.");
 			return false;
 		}
 		List<DialogueDay> records = LoadDialogueHistoryById(id);
@@ -66,7 +66,7 @@ public partial class MyBehavior
 		// The ordinal comes from the panel's snapshot; re-check the text so a stale list can never rewrite a different line.
 		if (day?.Lines == null || lineOrdinal >= day.Lines.Count || !DisplayTextMatches(day.Lines[lineOrdinal], entry.Text))
 		{
-			status = "记录已变化，请重新打开历史后再编辑。";
+			status = MemoryEditorUiText.T("AF_MEMORY_UI_HistoryEditChanged", "The record changed. Reopen the history before editing it.");
 			return false;
 		}
 		string rawLine = day.Lines[lineOrdinal];
@@ -77,13 +77,13 @@ public partial class MyBehavior
 		// The displayed text is always the trimmed tail of the line; everything before it is the speaker/AFEF prefix.
 		if (!line.EndsWith(oldText, StringComparison.Ordinal))
 		{
-			status = "这条记录的格式无法安全编辑。";
+			status = MemoryEditorUiText.T("AF_MEMORY_UI_HistoryEditFormat", "This record's format cannot be edited safely.");
 			return false;
 		}
 		string newLine = line.Substring(0, line.Length - oldText.Length) + text;
 		if (string.Equals(newLine, line, StringComparison.Ordinal))
 		{
-			status = "内容未改变。";
+			status = MemoryEditorUiText.T("AF_MEMORY_UI_HistoryEditUnchanged", "The content is unchanged.");
 			return false;
 		}
 		string syncKey = NormalizeDialogueHistoryLineForDailyMemorySync(rawLine);
@@ -95,7 +95,7 @@ public partial class MyBehavior
 		entry.Text = displayText;
 		entry.Kind = kind;
 		Logger.Log("DialogueHistory", "edited line memoryId=" + id + " day=" + gameDayIndex + " ordinal=" + lineOrdinal + " draftUpdated=" + draftUpdated);
-		status = draftUpdated ? "已修改该条记录。" : "已修改该条记录（该日记忆已压缩，压缩内容不受影响）。";
+		status = draftUpdated ? MemoryEditorUiText.T("AF_MEMORY_UI_HistoryEditDone", "The record was edited.") : MemoryEditorUiText.T("AF_MEMORY_UI_HistoryEditDoneCompressed", "The record was edited. That day was already compressed; compressed memory is unchanged.");
 		return true;
 	}
 

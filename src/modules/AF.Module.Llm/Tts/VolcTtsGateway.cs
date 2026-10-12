@@ -41,20 +41,21 @@ public sealed class VolcTtsGateway : ITtsGateway
     {
         switch (code)
         {
-            case "tts_endpoint_unsupported": return "API 地址无效或协议不支持；V3 请使用 /api/v3/tts/unidirectional，Agent Plan 使用 /api/v3/plan/tts/unidirectional（非 SSE/WS）。";
-            case "tts_configuration_incomplete": return "请检查凭据、Resource ID 和音色；V1 还需要 AppID。";
-            case "tts_extra_parameters_invalid": return "附加参数不是有效 JSON；V3 要求 JSON 对象。";
-            case "tts_v3_speed_invalid": return "V3 语速须为 0.5–2.0 倍，未自动修改您的设置。";
-            case "tts_v3_sample_rate_invalid": return "V3 采样率须为 8000、16000、22050、24000、32000、44100 或 48000。";
-            case "tts_audio_format_unsupported": return "播放器只支持 wav 或 pcm。";
-            case "tts_v3_text_invalid": return "V3 文本为空或超过 AF 单次 64 KiB UTF-8 限制。";
-            case "tts_v3_loudness_invalid": return "V3 云端音量倍率须为 0.5–2.0。";
-            case "tts_timeout": return "合成超时（30 秒）；未自动重试。";
-            case "tts_cancelled": return "语音请求已取消。";
-            case "tts_http_401": case "tts_http_403": return "鉴权失败；V3 请填写对应服务的 API Key，Agent Plan 使用套餐专属 API Key，并检查资源与音色授权。";
-            case "tts_http_429": return "请求受限；请检查额度/并发，未自动重试。";
-            case "tts_response_too_large": return "响应超过 AF 音频/传输大小限制。";
-            default: return "合成失败（" + (code ?? "unknown") + "），请查看 TtsEngine 日志；未自动重试。";
+            case "tts_endpoint_unsupported": return "Invalid API URL or unsupported protocol; V3 requires /api/v3/tts/unidirectional and Agent Plan requires /api/v3/plan/tts/unidirectional (HTTP, not SSE/WS).";
+            case "tts_configuration_incomplete": return "Check the credential, resource ID, and voice; V1 also requires an App ID.";
+            case "tts_extra_parameters_invalid": return "Extra parameters must be valid JSON; V3 requires a JSON object.";
+            case "tts_v3_speed_invalid": return "V3 speed must be 0.5–2.0 times normal; the setting was not changed automatically.";
+            case "tts_v3_sample_rate_invalid": return "V3 sample rate must be 8000, 16000, 22050, 24000, 32000, 44100, or 48000 Hz.";
+            case "tts_audio_format_unsupported": return "The player supports wav or pcm only.";
+            case "tts_v3_text_invalid": return "V3 text is empty or exceeds the AF limit of 64 KiB UTF-8 per request.";
+            case "tts_v3_loudness_invalid": return "V3 cloud volume must be 0.5–2.0 times normal.";
+            case "tts_timeout": return "Synthesis timed out after 30 seconds; no automatic retry.";
+            case "tts_cancelled": return "The voice request was cancelled.";
+            case "tts_http_401": return "Authentication failed; V3 requires the matching service API key, Agent Plan requires its dedicated API key, and resource/voice authorization must match.";
+            case "tts_http_403": return "Authentication failed; V3 requires the matching service API key, Agent Plan requires its dedicated API key, and resource/voice authorization must match.";
+            case "tts_http_429": return "Rate limited; check quota/concurrency. No automatic retry.";
+            case "tts_response_too_large": return "The response exceeded the AF audio or transfer size limit.";
+            default: return "Synthesis failed (" + (code ?? "unknown") + "); check the TtsEngine log. No automatic retry.";
         }
     }
 }

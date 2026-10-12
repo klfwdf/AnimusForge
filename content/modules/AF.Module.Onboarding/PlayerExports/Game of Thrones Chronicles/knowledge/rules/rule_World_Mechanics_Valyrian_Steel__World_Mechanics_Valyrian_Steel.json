@@ -1,0 +1,151 @@
+{
+  "Id": "rule_World_Mechanics_Valyrian_Steel",
+  "Keywords": [
+    "Valyrian Steel",
+    "Ancestral Swords",
+    "Spell-Forged Steel",
+    "Reforging"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Valyrian steel is lighter and tougher than common steel and holds an uncanny edge, its blades marked with smoky dark swirls orripples like flowing water. After the fall of the Freehold, the full secret of its forging was lost with the Doom of Valyria; a few master smiths can still rework old steel and alter its shape, yet none can make new metal of its kind from common ore. The surviving Valyrian steel weapons of Westeros are kept by ancient houses as part of their identity, memory, and right of succession, so that who holds an ancestral blade can sting deeper than a chest of golden dragons. It can harm the Others, yet its scarcity ensures it can never be a general answer for arming a host."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "When nobles look upon Valyrian steel, they look first to the blade's name and lineage. Losing an ancestral sword is seen as a maiming of the house, while coming into another house's old blade may bring questions alongside glory."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "artisan"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Warriors revere its balance and edge, while smiths know that reworking old steel calls for the hands of a very few. Men who truly know weapons do not let a famous name blind them to hilt, edge, and the skill of the wielder."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nightswatch",
+          "freefolk"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Near the Wall, Valyrian steel carries a meaning more urgent than heraldry. Should the legends out of the cold prove real, an ancient house blade may suddenly bear a purpose no age foresaw."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Valyrian Steel Light, tough, keen-edged lost steel marked withrippled patterns, treasured by ancient houses, which a handful of master smiths can rework but never forge anew. Whether it is valid depends on who can grant the rights, collect the consideration, and actually make the judgment come to fruition in the event of default."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Valyrian Steel Light, tough, keen-edged lost steel marked withrippled patterns, treasured by ancient houses, which a handful of master smiths can rework but never forge anew. The distant system is not empty talk only if it can be implemented in campfires, city gates and inns."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Valyrian Steel Light, tough, keen-edged lost steel marked withrippled patterns, treasured by ancient houses, which a handful of master smiths can rework but never forge anew. If a rule is practiced over and over again, it will find its way into rituals, crafts, and prayers; if it is sustained only by fear, cracks will show at the onset of a crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Valyrian Steel Light, tough, keen-edged lost steel marked withrippled patterns, treasured by ancient houses, which a handful of master smiths can rework but never forge anew. They remember taxes, grain, labor, relief and who can speak for them; these grand names will eventually fall on the family's rice pot."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Valyrian Steel: Light, tough, keen-edged lost steel marked withrippled patterns, treasured by ancient houses, which a handful of master smiths can rework but never forge anew."
+  ]
+}

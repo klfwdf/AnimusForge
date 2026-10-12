@@ -1,0 +1,246 @@
+{
+  "Id": "rule_imperial_military_system",
+  "Keywords": [
+    "Imperial military system"
+  ],
+  "RagShortTexts": [
+    "After the Battle of Pandrak, the elites of the empire suffered heavy losses and the treasury was empty. Emperor Arenicos abolished the standing army and instead allowed the consuls and nobles to form their own private armies to relieve financial pressure."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The empire’s military system underwent a traumatic transformation. Before the Battle of Pandrak, the empire relied on standing corps—large corps supported by national finances, uniformly trained, and uniformly commanded. That army once conquered most of Calradia and planted the imperial eagle flag in every corner of the continent. But Pendrac took it all. The national treasury was emptied, the elite legions suffered heavy losses, and the subsequent military resources and finances were both depleted. After Emperor Arenicos came to power, he made a cold and pragmatic decision: to abolish the standing army and instead let the consuls and nobles form their own private armies. Whoever owns the territory will raise the soldiers, and whoever's soldiers will lead them to fight. With this cut, the financial pressure on the empire was indeed relieved, but from then on, the imperial army was no longer the emperor's army - it was the respective armies of the consuls and nobles, large and small. Arenicos could still suppress these people when he was alive. Once he died, the nobles with private soldiers were like wolves that had escaped from their cages. The empire split into three parts. Military reform may not be the root cause, but it must be the match that ignites the fuse."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Our army was once a nightmare for all of Calradia. Under the banner of the Eagle, the standing legion is like a sophisticated machine, with heavy infantry in the front, mounted cavalry on the wings, and crossbowmen taking turns shooting in the rear. No barbarian can stand firm in a frontal confrontation. But Pandrak ruined it all. With all the elites and treasury depleted, Emperor Arenicos had no choice - if he continued to maintain a standing army, the empire would go bankrupt. He passed the responsibility of raising troops to the consuls and nobles in various places. Each province paid its own money to raise troops, which were uniformly recruited by the emperor during wartime. It sounds the same as before, but inside everything has changed. Soldiers used to fight for the empire, now they fight for their lords. In the past, military pay was paid from the state treasury, but now the lords paid for it themselves. This leads to a question: why are the soldiers raised by the lord more loyal to the emperor than to the lord? When Arenicos was alive, no one dared ask this question. After his death, the answer was written on the line that divided the empire."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Our army was rebuilt on the ruins of Lycaon. After the reforms of Emperor Arenicos, the southern consuls each formed their own private armies. Our military expenses came from the silver mines in the Onishi Mountains and the grain from the Lycarian plains. Empress Rhagaea continued this system - she had no way of restoring a standing army because the Southern Empire's finances could not support it. But there was one thing she was better at than the other two emperors: convincing her consuls that her interests were their interests. Although our army is a private army in name, the blood of the Petros family and the wealth of the south bind these private soldiers together. As long as the silver mines are still there and as long as the Canterion horses are still running on the Lycarian plains, the army of the Southern Empire will not disperse."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "I serve as a soldier for the consul, and he pays me. In the past, my father's generation served as soldiers for the empire, and their military pay came from the treasury, with the emperor and the eagle flag on it. Now there is a consul above, and I will fight for him if he pays for it. To be honest, I don't care who the emperor is. Rhagaea is in Lycaron, Lucon in the north, Gallius in the west - what does it matter to me which of them is emperor? What I care about is whether the person doing the pay can win. If he wins, my salary will continue to be paid; if he loses, I have to change my employer quickly. After Pandrak, all Imperial soldiers learned this."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The military power of the Northern Empire was based on the aristocratic private military system under the control of the Senate. After Arenicos abolished the standing army, the northern governors were the quickest to complete the transformation - our family has been fighting in the Senate for generations, and we have long been accustomed to raising soldiers at our own expense. His Majesty Lucon himself came from the Senate, and he is very familiar with this set of rules. The army of the Northern Empire does not rely on silver mines like the Southern Empire, nor does it rely on veterans like the Western Empire. What we rely on is the tacit understanding and checks and balances between the Senate families. The disadvantage is that the mobilization speed is not as fast as the other two - the decision-making of the Senate, you know. But the advantage is that once an agreement is reached, the combined forces of the northern families will not lose to anyone."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "I serve as a soldier in the army of the Northern Empire, and my employer is the consul of a senatorial family. To be honest, being a soldier in the north has the most rules - the elders of the Senate like to set various regulations for the army. Marching routes must be submitted for approval, military pay must be paid by signing three documents, and even the spacing between tents in the camp is regulated. The advantage is that military pay is paid on time, and there is no need to pay in kind like in the south; the disadvantage is that during the war, the hands and feet are tied tightly, and by the time the Senate has finished its meeting and approved the attack, the enemy has already fled. But this also means that the Northern Empire's army rarely fights unprepared battles - men cherish their lives and do not bet easily."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_w"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Emperor Galios started his career by relying on veterans, and the military system of the Western Empire was based on veteran politics. After Arenicus abolished the standing army, the demobilized veterans of the legions had nowhere to go. It was Garius who took them in and incorporated them into his own private army and that of the nobles loyal to him. The army of the Western Empire may be the most capable of the three empires - because our core is a group of professional soldiers who have been fighting for half their lives. They don't need training, they just need a commander worth following. Garius is that man. Our shortcomings are also obvious: veterans will grow old and die, and their sons may not be as capable of fighting as their parents. Moreover, the veterans' loyalty to Galios was based on personal prestige, not the system. Once Galios is gone, who can convince those veterans?"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_w"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "I am a veteran who followed Emperor Galios. I used to serve in the standing legion. The legion was disbanded after Pandrak. I returned to my hometown and farmed for two years. Later, I heard that Galios was recruiting people in the west, so I went back with my sword. There are many people like me in the Western Empire - they have fought Pandrak, seen the Eagle Flag fall in the mud, do not trust the Senate, do not trust Lycaron, only trust the general who brought us alive. Galios said that Arenicos' reform was to save money, but saving money saved the souls of the imperial soldiers. He said that the soul of the Western Empire is the veterans. We veterans believe in him. Who knows what will happen to the Western Empire once our group of people can no longer conquer it."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The military reforms of the imperial people are considered by us Vlandians to be the abolition of martial arts. They once had the most terrifying standing army in Calradia, but now they have become a noble private military system similar to ours - the difference is that we Vlandia barons have been fighting like this for hundreds of years. We have institutional inertia, inheritance rules, and an oath of allegiance between the king and the baron. The Imperial people suddenly changed like this, and nothing happened. When Arenicos was alive, his prestige could replace the system; once he died, his prestige was gone, and the system was gone, and the army became the private armed forces of various private soldiers. It would be strange if nothing happened."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Imperials abolished the standing army, which is a good thing for us Sturgia. In the past, when their legions went north, their logistics were guaranteed and their troops were replenished, and they could fight for several years. Now that they have been transformed into aristocratic private soldiers, the Imperial people's combat power is still there - the armored cavalry raised by the consuls are still very capable - but their endurance is no longer good. The nobles could not maintain their troops for long. As the war lasted for a long time, military pay began to be in arrears and the soldiers began to desert. We Sturgians have long been accustomed to Boyer leading private soldiers, but we have been doing this for hundreds of years and have a tacit understanding. The Imperial people suddenly switched from a standing army to a private army, and there was still a long way to go."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "We Aserai merchants were the first to feel that the Imperials had abolished the standing army. In the past, when the Imperial Legion was stationed at the border, the trade routes were safe, and the Imperial patrols would eliminate bandits along the way. After the reform, each province manages its own defense zones, and there are loopholes between the defense zones. The trade route from Lycaron to Sanarat was several times more dangerous than before. But from another perspective, the imperial people's military reforms have also made their consuls an independent military force, and some of them are willing to negotiate business with us alone - in the past, negotiating trade with the empire had to go through three layers of bureaucracy, but now we can go directly to the local consuls who have heavy troops."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The imperial people abolished the standing army, which in our grassland seems to have cut off their own legs. What kind of empire is an empire that does not have its own army and relies on the nobles to fund their own troops? This is the Alliance of Tribes. We know best what a tribal alliance on the grassland looks like - they can stand together when they have a common enemy, and bite each other when there is no common enemy. When Arenicos was alive, the Imperials had a common enemy. Once he died, the common enemies became each other. Now the three emperors are in charge of their own armies, and no one obeys the other. This is good for us."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "steward": 150
+        }
+      },
+      "Content": "The reform of the empire's military system was one of the most significant turning points in the military history of the Calradia continent. Before the Battle of Pandrak, the empire relied on a standing army that was uniformly funded by the state's finances. It was famous for its coordinated tactics of heavy infantry-crossbowmen-armored cavalry. The Battle of Pandrak emptied the empire's finances and military resources. Emperor Arenicos was forced to implement military reforms and abolished the standing army system, instead allowing the consuls and local nobles to form their own private armies. The core logic of this reform is fiscal decompression—shifting the military expenditure burden from the central government to local governments. Judging from the short-term effects, the reforms did alleviate the empire's financial crisis and allowed the empire to maintain basic defense after the defeat of Pandrak. But in the long term, the reforms completely changed the ownership of power in the imperial army: soldiers no longer swore allegiance to the empire, but to the lords who paid for the troops. This structure of allegiance, which had remained unified during Arenicos's lifetime and relied on his personal prestige, collapsed immediately after his assassination. Consuls with private armies supported different heirs to the throne, and the empire split into three independent regimes in less than a year. It is more accurate to characterize military reform as the 'catalyst' rather than the 'root cause' of the empire's division: the deep roots of the empire's division lay in the unclear succession system and the long-term game between the senate, the army, and the royal family. However, military reform provided a force basis for the divided parties at an extremely fast speed. The three post-split empires each followed this aristocratic private army system, but there were differences in the specific operations: the Southern Empire relied on silver mine finances and hereditary recognition to maintain the cohesion of the private army, the Northern Empire coordinated multiple forces through the checks and balances of the Senate family, and the Western Empire built its army based on the personal prestige of Galios and veterans. The common weakness among the three is the lack of sustainable central financial support and institutionalized troop replenishment mechanisms, which means that any party launching a large-scale protracted war will face severe logistical and financial pressures."
+    }
+  ],
+  "TextMappings": []
+}

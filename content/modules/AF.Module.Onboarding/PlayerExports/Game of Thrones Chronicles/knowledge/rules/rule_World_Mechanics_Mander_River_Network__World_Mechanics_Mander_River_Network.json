@@ -1,0 +1,155 @@
+{
+  "Id": "rule_World_Mechanics_Mander_River_Network",
+  "Keywords": [
+    "The Mander",
+    "Reach River Transport",
+    "Tributaries"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Mander and its many tributaries course through the fertile plains of the Reach, flowing past Highgarden before emptying into the Sunset Sea toward the Shield Islands. Its network of waters irrigates grainfields, orchards, and vineyards, turns millwheels, and lets grain, timber, wine casks, and soldiers move along the river. The abundance of the Reach comes not from soil alone, but from cheap water transport that carries the produce of manors to markets and ports. Bridges, fords, and river ports thus carry political weight; floods, silting, or an enemy blockade of a single stretch of channel can shift grain prices far away. The Mander nourishes all the daily labor behind the songs of chivalry."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "reach"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "sailor",
+          "artisan"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Farmers of the Reach judge irrigation by the color of the Mander's water, while boatmen load cargo by the shallows and the span of bridge arches. Nobles praise the golden fields; working folk know better how much mud, water, and aching shoulders every sack of grain passes through first."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "reach"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Magnates of the Reach treat river ports, mills, and bridge tolls as steady revenue, yet must keep exactions from choking off trade. River water flows around stones, and trade routes likewise bend around overly greedy tollgates."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "sailor",
+          "soldier",
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Looking up the Mander from its mouth, the ironborn see both a waterway into a rich heartland and the defensive line of the Shield Islands. Folk of the Reach call the river a mother; raiders see every granary along its banks as a prize."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry The Mander Mander River Network: The waterway and irrigation backbone of the Reach, linking Highgarden, manors, mills, and the western rivermouth to sustain the richest region of the Seven Kingdoms. Whether it is valid depends on who can grant the rights, collect the consideration, and actually make the judgment come to fruition in the event of default."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry The Mander Mander River Network: The waterway and irrigation backbone of the Reach, linking Highgarden, manors, mills, and the western rivermouth to sustain the richest region of the Seven Kingdoms. The distant system is not empty talk only if it can be implemented in campfires, city gates and inns."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry The Mander Mander River Network: The waterway and irrigation backbone of the Reach, linking Highgarden, manors, mills, and the western rivermouth to sustain the richest region of the Seven Kingdoms. If a rule is practiced over and over again, it will find its way into rituals, crafts, and prayers; if it is sustained only by fear, cracks will show at the onset of a crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry The Mander Mander River Network: The waterway and irrigation backbone of the Reach, linking Highgarden, manors, mills, and the western rivermouth to sustain the richest region of the Seven Kingdoms. They remember taxes, grain, labor, relief and who can speak for them; these grand names will eventually fall on the family's rice pot."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Mander River Network: The waterway and irrigation backbone of the Reach, linking Highgarden, manors, mills, and the western rivermouth to sustain the richest region of the Seven Kingdoms."
+  ]
+}

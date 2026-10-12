@@ -1,0 +1,213 @@
+{
+  "Id": "rule_hippogryph_knight",
+  "Keywords": [
+    "Hippogryph Knight",
+    "royal guard",
+    "air combat",
+    "Fierce mount",
+    "Kingdom Elite",
+    "flying cavalry",
+    "royal hippogryph",
+    "sky knight",
+    "King's bodyguard",
+    "peak knight",
+    "flying beast",
+    "Sky Overlord"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Hippogryph Knights are Bretonnia's most elite aerial cavalry, riding the ferocious Hippogryph - a legendary creature with a lion's body, an eagle's head and huge wings. They were the king's personal bodyguard and represented the ultimate achievement of knightly martial arts."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Hippogryph Knight! Bretonnia The brightest star in the sky! Only the bravest kingdom knights, after completing the adventure oath and receiving the recognition of the Holy Grail, are qualified to challenge and tame a hippogryph. These ferocious beasts live on the cliffs of the Gray Mountains. They have a fiery temper and can bite through the plate armor of a Chaos Knight. One hippogryph knight is worth as much as an entire team of kingdom knights - they swoop down from the clouds, tearing apart enemy war machines with their claws, while the knight's spear accurately pierces the throat of the enemy general. The King's Royal Pegasus Knight is awesome enough, and the Hippogryph Knight is the ultimate being above the Pegasus Knight."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Hippogryph Knight is a tactical ace - air superiority means that it can bypass the enemy's frontal defenses and directly attack enemy generals, war machines or vulnerable rear-line units. Their intimidating power far outweighs their actual lethality: Enemies often begin to waver at the sight of the Hippogryph's silhouette in the sky. However, the number of hippogryphs is extremely rare, with only a few dozen in service across the country. Every time they go into battle, they must ensure value for money. The loss of a hippogryph knight is a national disaster."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "Hippogryphs are one of the rarest tamable flying creatures in the Old World. Adults have a wingspan of more than forty feet and can weigh up to three thousand pounds. The selection process for hippogryph knights is extremely strict: candidates must first serve in the Pegasus Knights for five years, then be nominated by the king himself, and finally complete the taming ceremony alone in the hippogryph nest in the Gray Mountains - the mortality rate is about 40%. The Hippogryph Knight's equipment includes specially-made lightweight mithril plate armor, a detachable flying lance, and a saddle lock system connected to the mount. Tactically, in addition to directly participating in the battle, hippogryph knights also serve as aerial reconnaissance and battlefield messengers. The current head of the Royal Hippogryph Knights, Duke Baldoin, is the only being in Bretonnia who holds the dual title of Hippogryph Knight and Grail Knight."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The entire earth trembled as the hippogryph knight passed overhead. These knights are the most manly of men - but often reckless and conceited as a result. As a female lord, I appreciate their bravery, but I hope they can listen more to the command of the ground commander instead of blindly pursuing personal glory."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "My clan has never produced a hippogryph knight - the highest honor that belongs directly to the king. But many of our children dream of taming a hippogryph one day. I told them: Survive three battles first, and then think about things in heaven. Being down-to-earth is the foundation of the clan."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "I have seen hippogryph nests in the mountains - mountains of bones, including those of orcs, beasts, and even a few knights. Anyone who wants to tame this creature is either a madman or a saint. But I admit, watching the hippogryph knight flying over the snowy peaks at sunset is one of the few things in the world that can make me silent."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "A hippogryph's saddle and armor are the work of its craftsmen - they must be light so as not to interfere with flight, yet strong enough to withstand damage. A set of custom-made hippogryph saddle armor costs enough to buy a house in a small town. There are no more than five craftsmen in the country who can do this work, and their skills have been kept secret for generations."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "The Hippogryph Knight is the strongest aerial cavalry in Bretonnia, a legendary creature that rides griffin wings.",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Hippogryph Knights are Bretonnia's most elite aerial cavalry."
+  ]
+}

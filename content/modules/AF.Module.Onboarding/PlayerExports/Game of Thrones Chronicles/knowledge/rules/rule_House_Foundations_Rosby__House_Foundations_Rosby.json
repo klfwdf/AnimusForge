@@ -1,0 +1,132 @@
+{
+  "Id": "rule_House_Foundations_Rosby",
+  "Keywords": [
+    "Rosby",
+    "House Rosby"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Rosby family is based in the town of Rosby to the north of King's Landing. It is a local noble in the king's territory not far from the Red Castle. The town's fields, granaries, roads and distance from the capital determine its weight: in good harvests, Rossby's grain can enter the King's Landing market; in times of famine or war, the city gates will first feel the pressure of levies, prices and refugees. The royal vassals rarely have the same autonomy as the distant frontiers. An order from the palace may turn into taxes, soldiers and food for the town of Rosby in a few days. The family reputation therefore belonged not only to the lord, but also to the farmers who were forced to give away their harvests and the merchants who bargained under the city gates."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "crownlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "When the royal nobles looked at Rossby, they first thought that it was close to King's Landing, close to power, and close to the suspicion of the royal family. A petty lord could be favored for a timely supply of food, or quickly replaced by a rude letter. The weight of Rosby lies not in the vastness of its territory, but in the fact that it is always within the sight of the capital."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "crownlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "merchant",
+          "artisan"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The townspeople of Rosby commented that the lord was very practical: whether the barn was open, whether there was a fair scale in the market, and whether the king left seeds for next year when collecting grain. King's Landing is too close, merchants can make money from the big city, and they will bring back the price and rumors of the big city."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Rosby Entry Rosby The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Rosby Entry Rosby Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Rosby Entry Rosby The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Rosby Entry Rosby They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Rosby: Entry Rosby"
+  ]
+}

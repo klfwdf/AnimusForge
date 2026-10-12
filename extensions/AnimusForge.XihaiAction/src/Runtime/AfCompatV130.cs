@@ -421,15 +421,18 @@ namespace AnimusForge.XihaiAction
                 _harmony.Patch(
                     _strictSceneMessagesSystemPromptMethod,
                     prefix: new HarmonyMethod(strictPromptPrefix));
+                // Bridge installation runs on the host thread. Workers use only
+                // this frozen language choice and immutable Core text resources.
+                bool useChinese = SceneActionPromptPackage.UseChinese;
                 if (!AfV130ConfiguredGatewayTransport.TryCreate(out IAfClassifierTransport configuredTransport))
                 {
                     _classifierProvider =
-                        new AfV130AuxiliaryTextClassifier(_classifierApiMethod);
+                        new AfV130AuxiliaryTextClassifier(_classifierApiMethod, useChinese);
                 }
                 else
                 {
                     _classifierProvider =
-                        new AfV130AuxiliaryTextClassifier(configuredTransport);
+                        new AfV130AuxiliaryTextClassifier(configuredTransport, useChinese);
                 }
                 _classifierRegistration = SceneActionsRuntimeHost.RegisterClassifier(
                     ClassifierProviderId,
@@ -902,7 +905,7 @@ namespace AnimusForge.XihaiAction
                     error = "AF could not build the NPC speech packet.";
                     return false;
                 }
-                string sceneDescription = _sceneDescriptionMethod?.Invoke(null, null) as string ?? "战场";
+                string sceneDescription = _sceneDescriptionMethod?.Invoke(null, null) as string ?? SceneActionPromptPackage.Text("BattlefieldFallback");
                 Type listType = typeof(List<>).MakeGenericType(_npcDataPacketType);
                 IList packetList = (IList)Activator.CreateInstance(listType);
                 // Y-key actor selection is already frozen to the primary target.
@@ -990,10 +993,7 @@ namespace AnimusForge.XihaiAction
                         request.ResponseTask,
                         cancellationToken).ConfigureAwait(false) ?? string.Empty).Trim();
                 cancellationToken.ThrowIfCancellationRequested();
-                if (string.IsNullOrWhiteSpace(response) ||
-                    response.StartsWith("（错误", StringComparison.Ordinal) ||
-                    response.StartsWith("（没说话", StringComparison.Ordinal) ||
-                    response.StartsWith("（API请求失败", StringComparison.Ordinal))
+                if (SceneActionReplyCompatibility.IsFailureReply(response))
                 {
                     failure.Error = "AF returned an empty or failed NPC speech body.";
                     return failure;
@@ -1011,7 +1011,8 @@ namespace AnimusForge.XihaiAction
                             prompt.AudienceReplyMinimumChars,
                             prompt.AudienceReplyMaximumChars,
                             out combined,
-                            out string combinedError)
+                            out string combinedError,
+                            prompt.UseChineseText)
                         : BattleSpeechFrameworkV2.TryParseCombinedNpcSpeechOutput(
                             response,
                             prompt.MinimumChars,
@@ -1021,14 +1022,17 @@ namespace AnimusForge.XihaiAction
                             prompt.AudienceReplyMinimumChars,
                             prompt.AudienceReplyMaximumChars,
                             out combined,
-                            out combinedError);
+                            out combinedError,
+                            prompt.UseChineseText);
                     if (!parsed)
                     {
                         string safeBody = BattleSpeechFrameworkV2.NormalizeNpcSpeechReply(
                             BattleSpeechFrameworkV2.ExtractSpeechBodyForFallback(response),
                             prompt.MinimumChars,
                             prompt.MaximumChars,
-                            out string fallbackReason);
+                            null,
+                            out string fallbackReason,
+                            prompt.UseChineseText);
                         combined = new BattleSpeechCombinedNpcResponseV2(
                             safeBody,
                             new BattleSpeechPlanDecisionV2(
@@ -1038,7 +1042,8 @@ namespace AnimusForge.XihaiAction
                                     safeBody,
                                     prompt.AudienceReplyCount,
                                     prompt.AudienceReplyMinimumChars,
-                                    prompt.AudienceReplyMaximumChars)));
+                                    prompt.AudienceReplyMaximumChars,
+                                    prompt.UseChineseText)));
                         SceneActionsLog.Warning(
                             "BATTLE_SPEECH_INPUT",
                             (prompt.CombatSpeechMode
@@ -1055,7 +1060,8 @@ namespace AnimusForge.XihaiAction
                         prompt.AudienceReplyMinimumChars,
                         prompt.AudienceReplyMaximumChars,
                         out bool politicalSpeechReplaced,
-                        out int politicalRepliesReplaced);
+                        out int politicalRepliesReplaced,
+                        prompt.UseChineseText);
                     if (politicalSpeechReplaced || politicalRepliesReplaced > 0)
                     {
                         SceneActionsLog.Warning(
@@ -1314,7 +1320,7 @@ namespace AnimusForge.XihaiAction
                 {
                     if (BattleSpeechRuntimeHost.HasNpcSpeechPromptScope)
                     {
-                        __result = "【阵前演讲失败】只输出（错误：阵前演讲 Claim 已失效），不要生成普通NPC回复。";
+                        __result = SceneActionPromptPackage.Text("ClaimExpired");
                         return false;
                     }
                     return true;
@@ -1343,7 +1349,7 @@ namespace AnimusForge.XihaiAction
                     // continue with its ordinary player-facing prompt would
                     // silently turn it into a normal shout and could duplicate
                     // SceneActions. Fail the claimed path closed instead.
-                    __result = "【阵前演讲失败】只输出（错误：阵前演讲提示词不可用），不要生成普通NPC回复。";
+                    __result = SceneActionPromptPackage.Text("SpeechPromptUnavailable");
                     return false;
                 }
                 return true;
@@ -1364,29 +1370,17 @@ namespace AnimusForge.XihaiAction
 
                 string promptWithoutPlayerCustomRule =
                     RemovePlayerCustomPromptRuleForNpcSpeech(__0);
-                const string ordinaryPreamble =
-                    "你是【站在你旁边的人】中的NPC角色,可能是多个人。你们的唯一任务是：根据下方提供的角色信息、场景信息和对话历史，以NPC身份直接回复";
-                const string ordinaryPreambleEnd =
-                    "\n禁止生成任何【】章节标题或格式说明。";
-                int start = promptWithoutPlayerCustomRule.IndexOf(ordinaryPreamble, StringComparison.Ordinal);
-                if (start < 0)
-                {
-                    return true;
-                }
-                int end = promptWithoutPlayerCustomRule.IndexOf(
-                    ordinaryPreambleEnd,
-                    start + ordinaryPreamble.Length,
-                    StringComparison.Ordinal);
-                if (end < 0)
+                if (!SceneActionReplyCompatibility.TryFindOrdinaryTaskBlock(
+                    promptWithoutPlayerCustomRule, out int start, out int length))
                 {
                     return true;
                 }
 
-                const string battleSpeechPreamble =
-                    "你是当前阵前演讲中的NPC演讲者。你的唯一任务是：根据下方提供的角色身份、战场处境和对话历史，面向己方士兵发表战前动员。你不是在回复玩家，也不是在进行普通闲聊。";
+                string battleSpeechPreamble =
+                    SceneActionPromptPackage.Text("BattleSpeechPreamble");
                 __result = promptWithoutPlayerCustomRule.Substring(0, start) +
                            battleSpeechPreamble +
-                           promptWithoutPlayerCustomRule.Substring(end + ordinaryPreambleEnd.Length);
+                           promptWithoutPlayerCustomRule.Substring(start + length);
                 SceneActionsLog.Info(
                     "BATTLE_SPEECH_COMPAT",
                     "Removed AF ordinary player-reply task preamble and ignored PlayerCustomPromptRule for NPC battle speech.");
@@ -1400,7 +1394,7 @@ namespace AnimusForge.XihaiAction
                     ex);
                 if (BattleSpeechRuntimeHost.HasNpcSpeechPromptScope)
                 {
-                    __result = "【阵前演讲失败】只输出（错误：阵前演讲系统提示词不可用），不要生成普通NPC回复。";
+                    __result = SceneActionPromptPackage.Text("SystemPromptUnavailable");
                     return false;
                 }
                 return true;

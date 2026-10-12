@@ -1,0 +1,152 @@
+{
+  "Id": "rule_Gold_Veined_Westerlands_The_Crag",
+  "Keywords": [
+    "The Crag",
+    "Sea Crags"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Crag City is located on the coast of the Westerlands and is the traditional seat of House Westerling. The castle is surrounded by mountains and sea, and the cliffs provide natural protection and limit the size of farmland, roads, and ports; residents must therefore make a living between small plots of farmland, fishing, coastal trade, and family prestige. The West is not paved with gold everywhere. Many coastal families own hard land and long memories instead of endless veins of minerals. Castle Rock is connected to the vassal network of Casterly Rock, but has its own rhythm governed by sea breezes, rocky shores and seasons."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry The Crag Local families also relied on mining tunnels, pastures, mountain roads, gold and silver circulation and the market sheltered by Casterly Rock; if any road, well or dock failed, the price would fall first on them."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry The Crag Entry The Crag"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry The Crag They also recognize the accents, laws, and credentials of the West; reputations can travel great distances from taverns, but true distances must still be measured by wheel, oar, or horse's hooves."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry The Crag Entry The Crag"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry The Crag If you can supply supplies, avoid danger, and find a guide, it is worth marking in your itinerary; if you don't have these three things, no matter how loud your family name is, it won't be able to save the lost."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The traces left by generations of people in Cliff City are half hidden in quarrying, logging, ironwork, goat hair, and wall foundations built close to the mountain. The other half are hidden in the stone carvings left by the Seven Gods, family tombs, and the authority of the lords. A stronghold was therefore not just a lord's hall, but also a place where weddings and funerals, vows, labor and local memories recurred."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry The Crag They care about the mines, pastures, mountain roads, the circulation of gold and silver, and the market under the protection of Casterly Rock. They also look at whether seeds are left after the grain collection and whether the city gates are open in times of disaster. When people from afar see the coat of arms, what they see is whether there will be food to eat tomorrow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "The Crag: Crag City is located on the coast of the Westerlands and is the traditional seat of House Westerling. The castle is surrounded by mountains and sea, and the cliffs provide natural protection and limit the size of farmland, roads, and ports; residents must therefore make a living between small plots of farmland, fishing, coastal trade, and family prestige. The West is not paved with gold everywhere. Many coastal families own hard land and long memories instead of endless veins of minerals. Castle Rock is connected to the vassal network of Casterly Rock, but has its own rhythm governed by sea breezes, rocky shores and seasons."
+  ]
+}

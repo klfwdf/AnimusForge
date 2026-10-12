@@ -1,0 +1,125 @@
+{
+  "Id": "rule_Dionys",
+  "Keywords": [
+    "Dionysius"
+  ],
+  "RagShortTexts": [
+    "The Dionys family has guarded Lageta on the northwest border of the Western Empire for generations."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_w"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Dionys family is the most reliable border gate in our Western Empire. Old General Clotor has been guarding the northwest for his whole life, and the Battanians have never taken advantage of him. Emperor Galios could safely hand over the northwest defense line to their family and lead his troops south to deal with the Southern Empire and Vlandia because the Dionys family was in the rear. What's even more rare is that their family is not involved in politics - Clotor's support of Galios is purely based on the trust between soldiers, not to occupy more seats in the court. His wife Lysica and daughter Huaiya are not flower vassals either. When the man goes on an expedition, he still leads troops to patrol the border. But we also know that the Dionys family is the living fossil of the old-school soldiers, and their status in the Western Empire is entirely supported by their military exploits. After Emperor Galios, whether the system of land distribution for military nobles and veterans could be maintained, the Dionykos family was a benchmark."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Dionychos family was Galios’ most loyal watchdog in the west. We recognize that Clotor was capable of fighting in the old army of the empire, and was both civil and military. But he was on the wrong team - following the leader of Galios, the empire's traditions were completely lost. However, from a military perspective, the existence of the Dionys family was the key to the stability of the northwest border of the Western Empire. The Battanian raiding parties had suffered generations of losses at Lageta and no longer dared to cross the border easily. We respect this ability, but we don’t envy it. Their family has guarded that forest for generations, and the fiefdom is remote, far away from the imperial capital. To put it bluntly, they serve as a shield for Galios. The story of Lysica and Huaiya leading the army has also been heard in the south. There are not many female nobles on the border here, but the women of the Dionykos family can indeed fight, and the south has to be convinced of this."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Dionys family is the purest military bloodline in the old army of the empire. They have no interest in fighting for power in the Senate, nor do they have the patience to participate in the dirty deals in the political circles of the imperial capital. They have only guarded the northwest border for generations, blocking the ax of the Battania people for the empire. Clottor's sword was hung up in his account after he grew old, but his judgment is still one of the most important military opinions in the west. When the civil war broke out, we had hoped that the Dionychos family would side with the Senate. After all, the old soldiers' sense of honor should keep them loyal to the traditional order of the empire. But they chose Galios. It's not speculation, it's the trust between border soldiers - they ate dry food together on the front line. This trust is heavier than any speech in the Senate. We regret it, but we don’t despise it. After the empire split into three pieces, a real soldier could only choose between trust and tradition, and he chose the former. Our Senate cannot give this choice, but Galios can."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Dionysian family? The one guarding the border in the northwest. I have a relative who served as a garrison on the other side of the Meirong River. He said that the old general Crotor was a good soldier and he did not boss around his subordinates like other gentlemen. When he was young, he could personally lead the troops into battle. Later, when he got older and could no longer do so, he commanded from the tent. His wife and his daughter are not delicate ladies either. They lead troops to patrol the border when the man is away, and they will take action when the Battanians come. People in the north say that as long as the Dionys family is here, the people of Battania will not be able to change the world. We ordinary people don’t understand politics, but we know who is blocking the knife for us. Their family has been fending off knives for generations, and that's enough. However, some people say that Clotor is getting old. Although his daughter Huaiya can fight, she is a woman after all. It is hard to say whether she will be able to take over this position in the future. If there is no Dionysian family in the northwest, will the Battanians come back? We don’t think about this and can’t sleep thinking about it."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Dionykos family was the most stable pillar in the border defense system of the Western Empire. From a geographical perspective, their fiefdom was the Tower of Lagta, which happened to block the Battanians' best access to the hinterland of the empire. Crotor was a rare general in the old empire's army who was both civil and military. He was famous for his personal martial arts when he was young, and for his battle command as he grew older. This kind of intergenerational transfer of abilities is extremely rare in military families. The reason why he chose to support Galios was analyzed to be the natural tacit understanding of border soldiers-comrades who have been fighting side by side on the front line for a long time, whose trust far exceeds the commitment of the political circles at the rear. This choice is of great significance to the stability of the Western Empire. If the Dionysian family falls to the Northern Empire or remains neutral in the civil war, the Western Empire's northwest border defenses may collapse in an instant. What deserves more attention is the family's female military tradition - mother and daughter Lysica and Huaiya took charge of the defense when Clotor went on an expedition. This is not mainstream among the Calradia military nobles, but it has achieved remarkable results. At present, the Dionys family is still the most stable cornerstone of the Western Empire's military system, but Clotor is old, and the inheritance and ability of the next generation are variables that external observers need to pay attention to."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Dionys? A family guarding the border on the other side of the empire."
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,3 +1,5 @@
+using System.Linq;
+using AnimusForge;
 using System;
 
 namespace AnimusForge;
@@ -43,6 +45,9 @@ internal static int FindDialogueHistorySpeakerDelimiter(string line)
 internal static bool IsLikelyPlayerHistorySpeaker(string speaker)
 	{
 		string text = (speaker ?? "").Trim();
-		return text.IndexOf("玩家", StringComparison.Ordinal) >= 0 || text.IndexOf("你", StringComparison.Ordinal) >= 0 || text.IndexOf("MainHero", StringComparison.OrdinalIgnoreCase) >= 0;
+		return PromptComposerTexts.Raw("History_PlayerNames_Cn").Split(',').Any(name => text.IndexOf(name, StringComparison.Ordinal) >= 0) || text.IndexOf("MainHero", StringComparison.OrdinalIgnoreCase) >= 0
+			|| string.Equals(text, "Player", StringComparison.OrdinalIgnoreCase)
+			|| string.Equals(text, "The player", StringComparison.OrdinalIgnoreCase)
+			|| string.Equals(text, "You", StringComparison.OrdinalIgnoreCase);
 	}
 }

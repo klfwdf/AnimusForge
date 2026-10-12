@@ -1,0 +1,151 @@
+{
+  "Id": "rule_Atlas_of_the_Free_Cities_Braavos",
+  "Keywords": [
+    "Braavos",
+    "Titan of Braavos",
+    "Sealord of Braavos",
+    "Iron Bank of Braavos",
+    "Lagoon",
+    "Faceless Men"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Built among the lagoons, islands, and reefs of the northern Narrow Sea, Braavos was originally founded by people fleeing Valyrian servitude. It regards \"freedom\" as the memory of the founding of the city, and also attaches great importance to contracts, debts, and maritime power that are not controlled by the Dragon Lord. Neptune is the visible face of the city, while rumors of the Iron Bank, shipowners, guilds, theaters, sword masters and faceless men constitute a more difficult to see force. The Titans guard the entrance to the port, serving as both a navigation beacon and the confidence of this city in the fog. Braavos does not have a vast hinterland and relies on shipbuilding, fishing, trade, finance, and people from all over; because of this, it understands better than many city-states that freedom also requires ledgers, sails, and people who can keep their promises."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The merchants of Braavos know that money is not metal, but the confidence that someone else will pay their debt tomorrow. The name of the Iron Bank can make a royal family sit upright and a small ship owner find a loan; but no one will mistake this power for mercy. Braavos respects contracts precisely because it never assumes that people are naturally trustworthy."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "sailor",
+          "artisan",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The crew and strangers first learn to recognize the Titan's shadow, and then learn not to get lost in the fog, bridges and water alleys. There are more accents here than city bricks, and the poor can survive in the docks, theaters, fish markets, and helpers; but everyone knows that the lagoon can hide boats, and it can also hide a person's old name. The freedom of Braavos does not come without a price, but few people dare to openly claim that they are born with someone else."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "lyseni",
+          "volantine",
+          "pentoshi"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Some in other city-states view Braavos' anti-slavery traditions as noble, others as arrogance that gets in the way of business. In any case, anyone who openly treats people as goods here will know that the memory of the city is not written only in monuments. Braavos doesn't always save those far away, but it never forgets how it escaped."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Braavos A lagoon city-state in the north of the Narrow Sea, founded by escaped slaves. The Sea King, the Iron Bank, shipowners and guilds collectively wield power; shipbuilding, finance, trade and the anti-slavery founding memory shape its society. They care about water sources, roads, customs and garrison, and know that behind the place names there is often a food road that can keep the castle alive."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Braavos A lagoon city-state in the north of the Narrow Sea, founded by escaped slaves. The Sea King, the Iron Bank, shipowners and guilds collectively wield power; shipbuilding, finance, trade and the anti-slavery founding memory shape its society. The reputation of a place is often determined by the number of people who died there."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Braavos A lagoon city-state in the north of the Narrow Sea, founded by escaped slaves. The Sea King, the Iron Bank, shipowners and guilds collectively wield power; shipbuilding, finance, trade and the anti-slavery founding memory shape its society. Stones, trees, rivers or mountain passes can become places of livelihood, and may also be endowed with sanctity, taboos and ancestral memories, so they cannot be measured in terms of money alone."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Braavos A lagoon city-state in the north of the Narrow Sea, founded by escaped slaves. The Sea King, the Iron Bank, shipowners and guilds collectively wield power; shipbuilding, finance, trade and the anti-slavery founding memory shape its society. They first checked whether the place could draw water, farm, graze, and avoid military disasters; a line of words on the map, and when it landed in the village, it turned out to be firewood, well rope, and winter food."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Braavos: A lagoon city-state in the north of the Narrow Sea, founded by escaped slaves. The Sea King, the Iron Bank, shipowners and guilds collectively wield power; shipbuilding, finance, trade and the anti-slavery founding memory shape its society."
+  ]
+}

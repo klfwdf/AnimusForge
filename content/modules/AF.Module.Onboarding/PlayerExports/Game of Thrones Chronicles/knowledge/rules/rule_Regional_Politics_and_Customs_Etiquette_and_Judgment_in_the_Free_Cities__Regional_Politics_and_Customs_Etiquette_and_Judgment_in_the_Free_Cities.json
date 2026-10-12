@@ -1,0 +1,147 @@
+{
+  "Id": "rule_Regional_Politics_and_Customs_Etiquette_and_Judgment_in_the_Free_Cities",
+  "Keywords": [
+    "Etiquette and Judgment in the Free Cities"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Entry Entry Etiquette and Judgment in the Free Cities The law values property, credit and enforceable contracts, but those with sufficient money are often more likely to gain patience and explanation; when a person is called \"just\", locals may not agree with the South"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Etiquette and Judgment in the Free Cities"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Etiquette and Judgment in the Free Cities"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "scholar",
+          "wanderer",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Etiquette and Judgment in the Free Cities"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Etiquette and Judgment in the Free Cities Entry Etiquette and Judgment in the Free Cities The law values property, credit and enforceable contracts, but those with sufficient money are often more likely to gain patience and explanation; when a person is called \"just\", locals may not agree with the South Whether it is valid depends on who can grant the rights, collect the consideration, and actually make the judgment come to fruition in the event of default."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Etiquette and Judgment in the Free Cities Entry Etiquette and Judgment in the Free Cities The law values property, credit and enforceable contracts, but those with sufficient money are often more likely to gain patience and explanation; when a person is called \"just\", locals may not agree with the South The distant system is not empty talk only if it can be implemented in campfires, city gates and inns."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Etiquette and Judgment in the Free Cities Entry Etiquette and Judgment in the Free Cities The law values property, credit and enforceable contracts, but those with sufficient money are often more likely to gain patience and explanation; when a person is called \"just\", locals may not agree with the South If a rule is practiced over and over again, it will find its way into rituals, crafts, and prayers; if it is sustained only by fear, cracks will show at the onset of a crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Etiquette and Judgment in the Free Cities Entry Etiquette and Judgment in the Free Cities The law values property, credit and enforceable contracts, but those with sufficient money are often more likely to gain patience and explanation; when a person is called \"just\", locals may not agree with the South They remember taxes, grain, labor, relief and who can speak for them; these grand names will eventually fall on the family's rice pot."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Etiquette and Judgment in the Free Cities: Entry Etiquette and Judgment in the Free Cities The law values property, credit and enforceable contracts, but those with sufficient money are often more likely to gain patience and explanation; when a person is called \"just\", locals may not agree with the South"
+  ]
+}

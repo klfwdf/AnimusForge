@@ -194,11 +194,11 @@ internal static void CopyFactIds(List<string> source, List<string> destination)
 
 
  internal static string BuildNpcActionSummary(MemoryBusinessStateOwner state,NpcActionRecordOwner records,Hero hero,bool recentOnly,Func<int> currentDay)
- => records.BuildSummary(state,GetHeroId(hero),()=>hero?.Name?.ToString()?.Trim(),recentOnly,currentDay,BuildNpcActionMetadataNarrativeSuffix,CampaignBattleRecordCaptureAdapter.StripBattlePlayerMarker);
+ => records.BuildSummary(state,GetHeroId(hero),()=>hero?.Name?.ToString()?.Trim(),recentOnly,currentDay,BuildNpcActionMetadataNarrativeSuffix,CampaignBattleRecordCaptureAdapter.StripBattlePlayerMarker, (entry, actor) => MemoryActionFactProjection.Project(entry.ActionKind, entry.Text, actor));
  internal static string RenderNpcActionEntriesForPrompt(Hero hero,List<NpcActionEntry> entries)
- => NpcActionRecordOwner.RenderEntries(()=>hero?.Name?.ToString()?.Trim(),entries,BuildNpcActionMetadataNarrativeSuffix,CampaignBattleRecordCaptureAdapter.StripBattlePlayerMarker);
+ => NpcActionRecordOwner.RenderEntries(()=>hero?.Name?.ToString()?.Trim(),entries,BuildNpcActionMetadataNarrativeSuffix,CampaignBattleRecordCaptureAdapter.StripBattlePlayerMarker, (entry, actor) => MemoryActionFactProjection.Project(entry.ActionKind, entry.Text, actor));
  internal static string BuildNpcActionMetadataNarrativeSuffix(NpcActionEntry entry)
- => NpcActionRecordOwner.BuildMetadata(entry,ResolveDisplayNameBySettlementEntry,ResolveHeroName,ResolveClanName,ResolveKingdomName);
+ => NpcActionRecordOwner.BuildMetadata(entry,ResolveDisplayNameBySettlementEntry,ResolveHeroName,ResolveClanName,ResolveKingdomName, kind => AdapterRecordTexts.PromptActionKind(kind, WeeklyAggregateEventLineOwner.TranslateNpcActionKindForPrompt(kind)));
 
 
 internal static SkillObject[] GetPromotedCompanionSkillObjects()
@@ -230,7 +230,7 @@ internal static string BuildPromotedHeroSkillSummary(Hero hero)
 	{
 		if (hero == null)
 		{
-			return "（无）";
+			return PersonaPromptTexts.Get("AF_PERSONA_PROMPT_PromotedSkillNone", "(none)");
 		}
 		List<string> list = new List<string>();
 		foreach (SkillObject skill in GetPromotedCompanionSkillObjects())
@@ -240,7 +240,7 @@ internal static string BuildPromotedHeroSkillSummary(Hero hero)
 				list.Add(skill.StringId + "=" + hero.GetSkillValue(skill));
 			}
 		}
-		return list.Count == 0 ? "（无）" : string.Join(", ", list);
+		return list.Count == 0 ? PersonaPromptTexts.Get("AF_PERSONA_PROMPT_PromotedSkillNone", "(none)") : string.Join(", ", list);
 	}
 
 internal static bool TryApplyPromotedHeroSkillJson(Hero hero, string raw)
@@ -296,15 +296,15 @@ internal static string GetQuestCompletionDetailLabel(QuestBase.QuestCompleteDeta
 		switch (detail)
 		{
 		case QuestBase.QuestCompleteDetails.Success:
-			return "成功完成";
+			return AdapterRecordTexts.Raw("AF_REC_Character_0001");
 		case QuestBase.QuestCompleteDetails.Fail:
-			return "任务失败";
+			return AdapterRecordTexts.Raw("AF_REC_Character_0002");
 		case QuestBase.QuestCompleteDetails.FailWithBetrayal:
-			return "以背叛结局失败";
+			return AdapterRecordTexts.Raw("AF_REC_Character_0003");
 		case QuestBase.QuestCompleteDetails.Timeout:
-			return "超时结束";
+			return AdapterRecordTexts.Raw("AF_REC_Character_0004");
 		case QuestBase.QuestCompleteDetails.Cancel:
-			return "已取消";
+			return AdapterRecordTexts.Raw("AF_REC_Character_0005");
 		default:
 			return detail.ToString();
 		}
@@ -348,7 +348,7 @@ internal static Settlement ResolveCurrentActionSettlement(Hero hero)
 
 internal static string GetCompanionRemovedDetailLabel(RemoveCompanionAction.RemoveCompanionDetail detail)
 	{
-		return detail == RemoveCompanionAction.RemoveCompanionDetail.Fire ? "被遣散" : detail.ToString();
+		return detail == RemoveCompanionAction.RemoveCompanionDetail.Fire ? AdapterRecordTexts.Raw("AF_REC_Character_0006") : detail.ToString();
 	}
 
 internal static bool IsPlayerRelatedGovernorChange(Settlement settlement, Hero oldGovernor, Hero newGovernor)
@@ -416,23 +416,23 @@ internal static string BuildTournamentParticipantActionText(string settlementDis
 		StringBuilder stringBuilder = new StringBuilder();
 		if (isChampion)
 		{
-			stringBuilder.Append("你在").Append(settlementDisplayName).Append("的竞技大会中胜出。冠军是").Append(championName).Append("。");
+			stringBuilder.Append(AdapterRecordTexts.Raw("AF_REC_Character_0007")).Append(settlementDisplayName).Append(AdapterRecordTexts.Raw("AF_REC_Character_0008")).Append(championName).Append("。");
 		}
 		else
 		{
-			stringBuilder.Append("你参加了").Append(settlementDisplayName).Append("的竞技大会。冠军是").Append(championName).Append("。");
+			stringBuilder.Append(AdapterRecordTexts.Raw("AF_REC_Character_0009")).Append(settlementDisplayName).Append(AdapterRecordTexts.Raw("AF_REC_Character_0010")).Append(championName).Append("。");
 		}
 		if (!string.IsNullOrWhiteSpace(tournamentRankLabel))
 		{
-			stringBuilder.Append(" 你的最终名次是").Append(tournamentRankLabel.Trim()).Append("。");
+			stringBuilder.Append(AdapterRecordTexts.Raw("AF_REC_Character_0011")).Append(tournamentRankLabel.Trim()).Append("。");
 		}
 		if (!string.IsNullOrWhiteSpace(prizeDisplayName))
 		{
-			stringBuilder.Append(" 本次大会奖品是").Append(prizeDisplayName.Trim()).Append("。");
+			stringBuilder.Append(AdapterRecordTexts.Raw("AF_REC_Character_0012")).Append(prizeDisplayName.Trim()).Append("。");
 		}
 		if (!string.IsNullOrWhiteSpace(participantSummary))
 		{
-			stringBuilder.Append(" 全部参赛者（含冠军）：").Append(participantSummary.Trim()).Append("。");
+			stringBuilder.Append(AdapterRecordTexts.Raw("AF_REC_Character_0013")).Append(participantSummary.Trim()).Append("。");
 		}
 		return stringBuilder.ToString();
 	}
@@ -444,7 +444,7 @@ internal static Dictionary<string, string> BuildTournamentParticipantRankLabels(
 		string heroId = GetHeroId(tournamentHero);
 		if (!string.IsNullOrWhiteSpace(heroId))
 		{
-			dictionary[heroId] = "冠军（第1名）";
+			dictionary[heroId] = AdapterRecordTexts.Raw("AF_REC_Character_0014");
 		}
 		try
 		{
@@ -516,21 +516,21 @@ internal static string BuildTournamentEliminationRankLabel(int furthestRoundInde
 		int num3 = num2 + 1;
 		if (num2 == 1)
 		{
-			return "亚军（第2名）";
+			return AdapterRecordTexts.Raw("AF_REC_Character_0015");
 		}
 		if (num2 == 2)
 		{
-			return "四强（并列第3名）";
+			return AdapterRecordTexts.Raw("AF_REC_Character_0016");
 		}
 		if (num2 == 4)
 		{
-			return "八强（并列第5名）";
+			return AdapterRecordTexts.Raw("AF_REC_Character_0017");
 		}
 		if (num2 == 8)
 		{
-			return "十六强（并列第9名）";
+			return AdapterRecordTexts.Raw("AF_REC_Character_0018");
 		}
-		return "并列第" + num3 + "名";
+		return AdapterRecordTexts.Raw("AF_REC_Character_0019") + num3 + AdapterRecordTexts.Raw("AF_REC_Character_0020");
 	}
 
 internal static Kingdom ResolveTournamentHostKingdom(Town town)
@@ -585,19 +585,19 @@ internal static string BuildTournamentWinnerStatusText(CharacterObject winner)
 		Hero tournamentHero = GetTournamentHero(winner);
 		if (tournamentHero == null)
 		{
-			return "冠军不是有家族档案的英雄，无法识别其家族、所属王国与家族等级。";
+			return AdapterRecordTexts.Raw("AF_REC_Character_0021");
 		}
 		Clan clan = tournamentHero.Clan;
 		if (clan == null)
 		{
-			return "冠军没有可识别的家族，无法识别其所属王国与家族等级。";
+			return AdapterRecordTexts.Raw("AF_REC_Character_0022");
 		}
 		string clanDisplayName = GetClanDisplayName(clan);
 		Kingdom kingdom = clan.Kingdom ?? tournamentHero.MapFaction as Kingdom;
-		string kingdomDisplayName = GetKingdomDisplayName(kingdom, "无明确所属王国");
+		string kingdomDisplayName = GetKingdomDisplayName(kingdom, AdapterRecordTexts.Raw("AF_REC_Character_0023"));
 		int num = Math.Max(0, clan.Tier);
 		string clanTierReputationLabel = GetClanTierReputationLabel(num);
-		return "冠军出身于" + clanDisplayName + "家族，所属王国是" + kingdomDisplayName + "，家族等级评价为" + clanTierReputationLabel + "（" + num + " level）。";
+		return AdapterRecordTexts.Raw("AF_REC_Character_0024") + clanDisplayName + AdapterRecordTexts.Raw("AF_REC_Character_0025") + kingdomDisplayName + AdapterRecordTexts.Raw("AF_REC_Character_0026") + clanTierReputationLabel + "（" + num + " level）。";
 	}
 
 internal static string BuildTournamentCharacterRoleSuffix(CharacterObject character)
@@ -605,33 +605,33 @@ internal static string BuildTournamentCharacterRoleSuffix(CharacterObject charac
 		Hero tournamentHero = GetTournamentHero(character);
 		if (tournamentHero == Hero.MainHero)
 		{
-			return "（玩家）";
+			return AdapterRecordTexts.Raw("AF_REC_Character_0027");
 		}
 		if (tournamentHero != null)
 		{
 			if (tournamentHero.IsFactionLeader)
 			{
-				return "（王国领袖）";
+				return AdapterRecordTexts.Raw("AF_REC_Character_0028");
 			}
 			if (tournamentHero.Clan?.Leader == tournamentHero)
 			{
-				return "（家族族长）";
+				return AdapterRecordTexts.Raw("AF_REC_Character_0029");
 			}
 			if (tournamentHero.IsLord)
 			{
-				return "（贵族）";
+				return AdapterRecordTexts.Raw("AF_REC_Character_0030");
 			}
 			if (tournamentHero.Occupation == Occupation.Wanderer)
 			{
-				return "（流浪者）";
+				return AdapterRecordTexts.Raw("AF_REC_Character_0031");
 			}
-			return "（英雄）";
+			return AdapterRecordTexts.Raw("AF_REC_Character_0032");
 		}
 		try
 		{
 			if (character != null && character.Occupation == Occupation.ArenaMaster)
 			{
-				return "（竞技场人物）";
+				return AdapterRecordTexts.Raw("AF_REC_Character_0033");
 			}
 		}
 		catch
@@ -648,7 +648,7 @@ internal static string BuildTournamentParticipantSummary(MBReadOnlyList<Characte
 		foreach (CharacterObject participant in participants ?? Enumerable.Empty<CharacterObject>())
 		{
 			Hero tournamentHero = GetTournamentHero(participant);
-			string text = GetTournamentCharacterDisplayName(participant, "未命名参赛者");
+			string text = GetTournamentCharacterDisplayName(participant, AdapterRecordTexts.Raw("AF_REC_Character_0034"));
 			if (string.IsNullOrWhiteSpace(text))
 			{
 				continue;
@@ -669,7 +669,7 @@ internal static string BuildTournamentParticipantSummary(MBReadOnlyList<Characte
 			list2.Add(1);
 		}
 		Hero tournamentHero2 = GetTournamentHero(winner);
-		string text4 = GetTournamentCharacterDisplayName(winner, "一名参赛者");
+		string text4 = GetTournamentCharacterDisplayName(winner, AdapterRecordTexts.Raw("AF_REC_Character_0035"));
 		if (!string.IsNullOrWhiteSpace(text4))
 		{
 			string text5 = GetTournamentCharacterId(winner);
@@ -712,13 +712,13 @@ internal void RecordTournamentParticipantNpcActions(CharacterObject winner, MBRe
 			string text = string.IsNullOrWhiteSpace(settlementDisplayName) ? GetSettlementDisplayName(town?.Settlement) : settlementDisplayName.Trim();
 			if (string.IsNullOrWhiteSpace(text))
 			{
-				text = "某座城镇";
+				text = AdapterRecordTexts.Raw("AF_REC_Character_0036");
 			}
 			Hero championHero = GetTournamentHero(winner);
-			string championName = GetTournamentCharacterDisplayName(winner, "一名参赛者");
+			string championName = GetTournamentCharacterDisplayName(winner, AdapterRecordTexts.Raw("AF_REC_Character_0037"));
 			if (string.IsNullOrWhiteSpace(championName))
 			{
-				championName = "一名参赛者";
+				championName = AdapterRecordTexts.Raw("AF_REC_Character_0038");
 			}
 			List<Hero> participantHeroes = BuildTournamentParticipantHeroes(participants, championHero);
 			foreach (Hero tournamentHero in participantHeroes)
@@ -783,29 +783,29 @@ internal void OnTournamentFinished(CharacterObject winner, MBReadOnlyList<Charac
 			}
 			string settlementId = GetSettlementId(town.Settlement);
 			string settlementDisplayName = GetSettlementDisplayName(town.Settlement);
-			string kingdomDisplayName = GetKingdomDisplayName(kingdom, "所属王国");
-			string winnerDisplayName = GetTournamentCharacterDisplayName(winner, "一名参赛者");
+			string kingdomDisplayName = GetKingdomDisplayName(kingdom, AdapterRecordTexts.Raw("AF_REC_Character_0039"));
+			string winnerDisplayName = GetTournamentCharacterDisplayName(winner, AdapterRecordTexts.Raw("AF_REC_Character_0040"));
 			string winnerStatusText = BuildTournamentWinnerStatusText(winner);
 			string prizeDisplayName = GetTournamentPrizeDisplayName(prize);
 			string participantSummary = BuildTournamentParticipantSummary(participants, winner);
 			Dictionary<string, string> tournamentParticipantRankLabels = BuildTournamentParticipantRankLabels(winner, town);
 			StringBuilder stringBuilder = new StringBuilder();
-			stringBuilder.Append(settlementDisplayName).Append("完成了一场竞技大会结算，举办地隶属于").Append(kingdomDisplayName).Append("。");
-			stringBuilder.Append(" 冠军是").Append(winnerDisplayName).Append(BuildTournamentCharacterRoleSuffix(winner)).Append("。");
+			stringBuilder.Append(settlementDisplayName).Append(AdapterRecordTexts.Raw("AF_REC_Character_0041")).Append(kingdomDisplayName).Append("。");
+			stringBuilder.Append(AdapterRecordTexts.Raw("AF_REC_Character_0042")).Append(winnerDisplayName).Append(BuildTournamentCharacterRoleSuffix(winner)).Append("。");
 			if (!string.IsNullOrWhiteSpace(winnerStatusText))
 			{
 				stringBuilder.Append(" ").Append(winnerStatusText);
 			}
 			if (!string.IsNullOrWhiteSpace(prizeDisplayName))
 			{
-				stringBuilder.Append(" 本次大会奖品是").Append(prizeDisplayName).Append("。");
+				stringBuilder.Append(AdapterRecordTexts.Raw("AF_REC_Character_0043")).Append(prizeDisplayName).Append("。");
 			}
 			if (!string.IsNullOrWhiteSpace(participantSummary))
 			{
-				stringBuilder.Append(" 全部参赛者（含冠军）：").Append(participantSummary).Append("。");
+				stringBuilder.Append(AdapterRecordTexts.Raw("AF_REC_Character_0044")).Append(participantSummary).Append("。");
 			}
 			string stableKey = "tournament_finished:" + settlementId + ":" + GetCurrentGameDayIndexSafe() + ":" + GetTournamentCharacterId(winner) + ":" + ((prize?.StringId ?? "").Trim());
-			RecordEventSourceMaterial("tournament_finished", "竞技大会结算 - " + settlementDisplayName, stringBuilder.ToString(), stableKey, kingdomId, settlementId, includeInWorld: false, includeInKingdom: true, GetTournamentHeroId(winner), GetKingdomId(GetTournamentHero(winner)?.MapFaction));
+			RecordEventSourceMaterial("tournament_finished", AdapterRecordTexts.Raw("AF_REC_Character_0045") + settlementDisplayName, stringBuilder.ToString(), stableKey, kingdomId, settlementId, includeInWorld: false, includeInKingdom: true, GetTournamentHeroId(winner), GetKingdomId(GetTournamentHero(winner)?.MapFaction));
 			RecordTournamentParticipantNpcActions(winner, participants, town, settlementDisplayName, prizeDisplayName, participantSummary, tournamentParticipantRankLabels, stableKey);
 		}
 		catch (Exception ex)
@@ -1245,7 +1245,7 @@ internal WeeklyEventMaterialPreviewGroup BuildWorldWeeklyEventMaterialPreviewGro
 				}
 			}
 		}
-		weeklyEventMaterialPreviewGroup.Summary = "世界事件将使用世界开局概要，以及本周更能代表大陆格局变化的重大行动、领导层震荡与世界级通用素材。军团从属加入或离开这类细碎动作会被压缩。";
+		weeklyEventMaterialPreviewGroup.Summary = AdapterRecordTexts.T("AF_REC_WorldPreviewSummary", "World events use the world opening overview plus the week's major actions, leadership upheavals and world-level shared material that best represent shifts across the continent. Minor actions such as army members joining or leaving are condensed.");
 		return weeklyEventMaterialPreviewGroup;
 	}
 
@@ -1331,21 +1331,21 @@ internal static string GetSettlementOwnerChangeDetailLabel(ChangeOwnerOfSettleme
 		switch (detail)
 		{
 		case ChangeOwnerOfSettlementAction.ChangeOwnerOfSettlementDetail.BySiege:
-			return "围城";
+			return AdapterRecordTexts.Raw("AF_REC_Character_0046");
 		case ChangeOwnerOfSettlementAction.ChangeOwnerOfSettlementDetail.ByBarter:
-			return "交易/买卖移交（非攻城）";
+			return AdapterRecordTexts.Raw("AF_REC_Character_0047");
 		case ChangeOwnerOfSettlementAction.ChangeOwnerOfSettlementDetail.ByLeaveFaction:
-			return "脱离王国";
+			return AdapterRecordTexts.Raw("AF_REC_Character_0048");
 		case ChangeOwnerOfSettlementAction.ChangeOwnerOfSettlementDetail.ByKingDecision:
-			return "王国决议";
+			return AdapterRecordTexts.Raw("AF_REC_Character_0049");
 		case ChangeOwnerOfSettlementAction.ChangeOwnerOfSettlementDetail.ByGift:
-			return "赠与";
+			return AdapterRecordTexts.Raw("AF_REC_Character_0050");
 		case ChangeOwnerOfSettlementAction.ChangeOwnerOfSettlementDetail.ByRebellion:
-			return "叛乱";
+			return AdapterRecordTexts.Raw("AF_REC_Character_0051");
 		case ChangeOwnerOfSettlementAction.ChangeOwnerOfSettlementDetail.ByClanDestruction:
-			return "家族覆灭";
+			return AdapterRecordTexts.Raw("AF_REC_Character_0052");
 		default:
-			return "常规变更";
+			return AdapterRecordTexts.Raw("AF_REC_Character_0053");
 		}
 	}
 
@@ -1359,20 +1359,20 @@ internal static string GetHeroKilledVerb(KillCharacterAction.KillCharacterAction
 		switch (detail)
 		{
 		case KillCharacterAction.KillCharacterActionDetail.Murdered:
-			return "谋杀了";
+			return AdapterRecordTexts.Raw("AF_REC_Character_0054");
 		case KillCharacterAction.KillCharacterActionDetail.DiedInLabor:
-			return "间接导致分娩中失去了";
+			return AdapterRecordTexts.Raw("AF_REC_Character_0055");
 		case KillCharacterAction.KillCharacterActionDetail.DiedOfOldAge:
-			return "见证了";
+			return AdapterRecordTexts.Raw("AF_REC_Character_0056");
 		case KillCharacterAction.KillCharacterActionDetail.DiedInBattle:
-			return "在战场上杀死了";
+			return AdapterRecordTexts.Raw("AF_REC_Character_0057");
 		case KillCharacterAction.KillCharacterActionDetail.WoundedInBattle:
-			return "在战斗中重创并导致死亡的是";
+			return AdapterRecordTexts.Raw("AF_REC_Character_0058");
 		case KillCharacterAction.KillCharacterActionDetail.Executed:
 		case KillCharacterAction.KillCharacterActionDetail.ExecutionAfterMapEvent:
-			return "处决了";
+			return AdapterRecordTexts.Raw("AF_REC_Character_0059");
 		default:
-			return "使其死亡：";
+			return AdapterRecordTexts.Raw("AF_REC_Character_0060");
 		}
 	}
 
@@ -1381,13 +1381,13 @@ internal static string BuildExecutedVictimActionText(Hero killer, KillCharacterA
 		string killerName = GetHeroDisplayName(killer);
 		if (killer == null)
 		{
-			return detail == KillCharacterAction.KillCharacterActionDetail.ExecutionAfterMapEvent ? "你在战后被处决。" : "你被处决。";
+			return detail == KillCharacterAction.KillCharacterActionDetail.ExecutionAfterMapEvent ? AdapterRecordTexts.Raw("AF_REC_Character_0061") : AdapterRecordTexts.Raw("AF_REC_Character_0062");
 		}
 		if (detail == KillCharacterAction.KillCharacterActionDetail.ExecutionAfterMapEvent)
 		{
-			return "你在战后被" + killerName + "处决。";
+			return AdapterRecordTexts.Raw("AF_REC_Character_0063") + killerName + AdapterRecordTexts.Raw("AF_REC_Character_0064");
 		}
-		return "你被" + killerName + "处决。";
+		return AdapterRecordTexts.Raw("AF_REC_Character_0065") + killerName + AdapterRecordTexts.Raw("AF_REC_Character_0066");
 	}
 
 internal static VengeanceExecutionFacts ResolvePublicExecutionFacts(Hero victim, KillCharacterAction.KillCharacterActionDetail detail)
@@ -1409,36 +1409,36 @@ internal static VengeanceExecutionFacts ResolvePublicExecutionFacts(Hero victim,
 internal static string BuildPublicExecutionVenueText(VengeanceExecutionFacts facts)
 	{
 		string venue = GetSettlementDisplayName(facts?.Venue);
-		return string.IsNullOrWhiteSpace(venue) || string.Equals(venue, "某处定居点", StringComparison.Ordinal) ? "" : "在" + venue.Trim();
+		return string.IsNullOrWhiteSpace(venue) || string.Equals(venue, AdapterRecordTexts.Raw("AF_REC_Character_0067"), StringComparison.Ordinal) ? "" : AdapterRecordTexts.Raw("AF_REC_Character_0068") + venue.Trim();
 	}
 
 internal static string BuildPublicExecutionMethodText(VengeanceExecutionFacts facts)
 	{
-		return string.IsNullOrWhiteSpace(facts?.MethodLabel) ? "公开处决" : "以" + facts.MethodLabel + "公开处决";
+		return string.IsNullOrWhiteSpace(facts?.MethodLabel) ? AdapterRecordTexts.Raw("AF_REC_Character_0069") : AdapterRecordTexts.Raw("AF_REC_Character_0070") + facts.MethodLabel + AdapterRecordTexts.Raw("AF_REC_Character_0071");
 	}
 
 internal static string BuildPublicExecutionChargeText(VengeanceExecutionFacts facts)
 	{
-		return string.IsNullOrWhiteSpace(facts?.ChargeLabel) ? "" : "，罪名为" + facts.ChargeLabel;
+		return string.IsNullOrWhiteSpace(facts?.ChargeLabel) ? "" : AdapterRecordTexts.Raw("AF_REC_Character_0072") + facts.ChargeLabel;
 	}
 
 internal static string BuildPublicExecutionKillerActionText(Hero victim, VengeanceExecutionFacts facts)
 	{
 		string victimName = GetHeroDisplayName(victim);
-		string how = facts.PlayerStruck ? "亲手" + BuildPublicExecutionMethodText(facts) : "下令" + BuildPublicExecutionMethodText(facts);
-		return "你" + BuildPublicExecutionVenueText(facts) + how + "了" + victimName + BuildPublicExecutionChargeText(facts) + "。";
+		string how = facts.PlayerStruck ? AdapterRecordTexts.Raw("AF_REC_Character_0073") + BuildPublicExecutionMethodText(facts) : AdapterRecordTexts.Raw("AF_REC_Character_0074") + BuildPublicExecutionMethodText(facts);
+		return AdapterRecordTexts.Raw("AF_REC_Character_0075") + BuildPublicExecutionVenueText(facts) + how + AdapterRecordTexts.Raw("AF_REC_Character_0076") + victimName + BuildPublicExecutionChargeText(facts) + "。";
 	}
 
 internal static string BuildPublicExecutionVictimActionText(Hero killer, VengeanceExecutionFacts facts)
 	{
-		string killerText = killer != null ? "被" + GetHeroDisplayName(killer) : "被";
-		return "你" + BuildPublicExecutionVenueText(facts) + killerText + BuildPublicExecutionMethodText(facts) + BuildPublicExecutionChargeText(facts) + "。";
+		string killerText = killer != null ? AdapterRecordTexts.Raw("AF_REC_Character_0077") + GetHeroDisplayName(killer) : AdapterRecordTexts.Raw("AF_REC_Character_0078");
+		return AdapterRecordTexts.Raw("AF_REC_Character_0079") + BuildPublicExecutionVenueText(facts) + killerText + BuildPublicExecutionMethodText(facts) + BuildPublicExecutionChargeText(facts) + "。";
 	}
 
 internal static string BuildPublicExecutionClanSuffix(Hero killer, VengeanceExecutionFacts facts)
 	{
-		string by = killer != null ? "由" + GetHeroDisplayName(killer) : "";
-		return "其" + BuildPublicExecutionVenueText(facts) + by + BuildPublicExecutionMethodText(facts) + BuildPublicExecutionChargeText(facts) + "。";
+		string by = killer != null ? AdapterRecordTexts.Raw("AF_REC_Character_0080") + GetHeroDisplayName(killer) : "";
+		return AdapterRecordTexts.Raw("AF_REC_Character_0081") + BuildPublicExecutionVenueText(facts) + by + BuildPublicExecutionMethodText(facts) + BuildPublicExecutionChargeText(facts) + "。";
 	}
 
 internal static Settlement ResolveHeroExecutionSettlement(Hero victim, Hero killer)
@@ -1467,7 +1467,7 @@ internal static Settlement ResolveHeroExecutionSettlement(Hero victim, Hero kill
 internal static string ResolveHeroExecutionLocationText(Settlement settlement, Hero victim, Hero killer)
 	{
 		string text = GetSettlementDisplayName(settlement);
-		if (!string.IsNullOrWhiteSpace(text) && !string.Equals(text, "某处定居点", StringComparison.Ordinal))
+		if (!string.IsNullOrWhiteSpace(text) && !string.Equals(text, AdapterRecordTexts.Raw("AF_REC_Character_0082"), StringComparison.Ordinal))
 		{
 			return text;
 		}
@@ -1487,15 +1487,15 @@ internal void OnBeforeHeroesMarried(Hero hero1, Hero hero2, bool showNotificatio
 			{
 				NpcActionFacts npcActionFacts = CreateNpcActionFacts("marriage", hero1);
 				ApplyTargetFacts(npcActionFacts, hero2);
-				RecordNpcMajorAction(hero1, "你与" + GetHeroDisplayName(hero2) + "缔结了婚姻。", text, npcActionFacts);
-				RecordNpcRecentAction(hero1, "你与" + GetHeroDisplayName(hero2) + "缔结了婚姻。", text, facts: npcActionFacts);
+				RecordNpcMajorAction(hero1, AdapterRecordTexts.Raw("AF_REC_Character_0083") + GetHeroDisplayName(hero2) + AdapterRecordTexts.Raw("AF_REC_Character_0084"), text, npcActionFacts);
+				RecordNpcRecentAction(hero1, AdapterRecordTexts.Raw("AF_REC_Character_0085") + GetHeroDisplayName(hero2) + AdapterRecordTexts.Raw("AF_REC_Character_0086"), text, facts: npcActionFacts);
 			}
 			if (ShouldTrackNpcActionHero(hero2))
 			{
 				NpcActionFacts npcActionFacts2 = CreateNpcActionFacts("marriage", hero2);
 				ApplyTargetFacts(npcActionFacts2, hero1);
-				RecordNpcMajorAction(hero2, "你与" + GetHeroDisplayName(hero1) + "缔结了婚姻。", text, npcActionFacts2);
-				RecordNpcRecentAction(hero2, "你与" + GetHeroDisplayName(hero1) + "缔结了婚姻。", text, facts: npcActionFacts2);
+				RecordNpcMajorAction(hero2, AdapterRecordTexts.Raw("AF_REC_Character_0087") + GetHeroDisplayName(hero1) + AdapterRecordTexts.Raw("AF_REC_Character_0088"), text, npcActionFacts2);
+				RecordNpcRecentAction(hero2, AdapterRecordTexts.Raw("AF_REC_Character_0089") + GetHeroDisplayName(hero1) + AdapterRecordTexts.Raw("AF_REC_Character_0090"), text, facts: npcActionFacts2);
 			}
 		}
 		catch (Exception ex)
@@ -1520,7 +1520,7 @@ internal void OnHeroKilled(Hero victim, Hero killer, KillCharacterAction.KillCha
 				ApplyTargetFacts(npcActionFacts, victim);
 				string killerText = executionFacts != null
 					? BuildPublicExecutionKillerActionText(victim, executionFacts)
-					: "你" + GetHeroKilledVerb(detail) + GetHeroDisplayName(victim) + "。";
+					: AdapterRecordTexts.Raw("AF_REC_Character_0091") + GetHeroKilledVerb(detail) + GetHeroDisplayName(victim) + "。";
 				RecordNpcMajorAction(killer, killerText, text + ":killer", npcActionFacts);
 				RecordNpcRecentAction(killer, killerText, text + ":killer", facts: npcActionFacts);
 			}
@@ -1540,7 +1540,7 @@ internal void OnHeroKilled(Hero victim, Hero killer, KillCharacterAction.KillCha
 					AddUniqueId(npcActionFacts2.RelatedClanIds, GetClanId(killer.Clan));
 					AddUniqueId(npcActionFacts2.RelatedKingdomIds, GetKingdomId(killer.MapFaction));
 				}
-				string text2 = "你所在的" + GetClanDisplayName(victim.Clan) + "家族失去了" + GetHeroDisplayName(victim) + "。";
+				string text2 = AdapterRecordTexts.Raw("AF_REC_Character_0092") + GetClanDisplayName(victim.Clan) + AdapterRecordTexts.Raw("AF_REC_Character_0093") + GetHeroDisplayName(victim) + "。";
 				if (executionFacts != null)
 				{
 					text2 += BuildPublicExecutionClanSuffix(killer, executionFacts);
@@ -1614,7 +1614,7 @@ internal void RecordPlayerExecutionWeeklyMaterial(Hero victim, Hero killer, Kill
 			return;
 		}
 		string baseKey = "player_execution:" + NpcActionLedger.NormalizeStableKey(stablePrefix, GetHeroId(victim) + ":" + GetHeroId(killer) + ":" + detail);
-		string label = victim == player ? "玩家被处决 - " + GetHeroDisplayName(killer) : "玩家处决英雄 - " + GetHeroDisplayName(victim);
+		string label = victim == player ? AdapterRecordTexts.Raw("AF_REC_Character_0094") + GetHeroDisplayName(killer) : AdapterRecordTexts.Raw("AF_REC_Character_0095") + GetHeroDisplayName(victim);
 		RecordEventSourceMaterial(
 			"player_execution",
 			label,
@@ -1650,59 +1650,59 @@ internal void RecordPlayerExecutionWeeklyMaterial(Hero victim, Hero killer, Kill
 internal static string BuildPlayerExecutionWeeklySnapshot(Hero victim, Hero killer, KillCharacterAction.KillCharacterActionDetail detail, Kingdom victimKingdom, Kingdom killerKingdom, string locationText, string gameDate, VengeanceExecutionFacts executionFacts = null)
 	{
 		Hero player = Hero.MainHero;
-		string victimName = victim == player ? "玩家" : GetHeroDisplayName(victim);
-		string killerName = killer == player ? "玩家" : GetHeroDisplayName(killer);
+		string victimName = victim == player ? AdapterRecordTexts.Raw("AF_REC_Character_0096") : GetHeroDisplayName(victim);
+		string killerName = killer == player ? AdapterRecordTexts.Raw("AF_REC_Character_0097") : GetHeroDisplayName(killer);
 		string victimKingdomName = GetKingdomDisplayName(victimKingdom, "");
 		string killerKingdomName = GetKingdomDisplayName(killerKingdom, "");
 		string victimClanName = GetClanDisplayName(victim?.Clan);
 		string killerClanName = GetClanDisplayName(killer?.Clan);
 		StringBuilder sb = new StringBuilder();
-		sb.Append(victim == player ? "玩家被处决素材。" : "玩家处决英雄素材。");
+		sb.Append(victim == player ? AdapterRecordTexts.Raw("AF_REC_Character_0098") : AdapterRecordTexts.Raw("AF_REC_Character_0099"));
 		if (!string.IsNullOrWhiteSpace(gameDate))
 		{
-			sb.Append("日期：").Append(gameDate.Trim()).Append("。");
+			sb.Append(AdapterRecordTexts.Raw("AF_REC_Character_0100")).Append(gameDate.Trim()).Append("。");
 		}
 		if (!string.IsNullOrWhiteSpace(locationText))
 		{
-			sb.Append("地点：").Append(locationText.Trim()).Append("。");
+			sb.Append(AdapterRecordTexts.Raw("AF_REC_Character_0101")).Append(locationText.Trim()).Append("。");
 		}
-		sb.Append("执行者：").Append(killerName).Append("。");
-		if (!string.IsNullOrWhiteSpace(killerClanName) && !string.Equals(killerClanName, "某个", StringComparison.Ordinal))
+		sb.Append(AdapterRecordTexts.Raw("AF_REC_Character_0102")).Append(killerName).Append("。");
+		if (!string.IsNullOrWhiteSpace(killerClanName) && !string.Equals(killerClanName, AdapterRecordTexts.Raw("AF_REC_Character_0103"), StringComparison.Ordinal))
 		{
-			sb.Append("执行者家族：").Append(killerClanName).Append("。");
+			sb.Append(AdapterRecordTexts.Raw("AF_REC_Character_0104")).Append(killerClanName).Append("。");
 		}
 		if (!string.IsNullOrWhiteSpace(killerKingdomName))
 		{
-			sb.Append("执行者所属王国：").Append(killerKingdomName).Append("。");
+			sb.Append(AdapterRecordTexts.Raw("AF_REC_Character_0105")).Append(killerKingdomName).Append("。");
 		}
-		sb.Append("被处决者：").Append(victimName).Append("。");
-		if (!string.IsNullOrWhiteSpace(victimClanName) && !string.Equals(victimClanName, "某个", StringComparison.Ordinal))
+		sb.Append(AdapterRecordTexts.Raw("AF_REC_Character_0106")).Append(victimName).Append("。");
+		if (!string.IsNullOrWhiteSpace(victimClanName) && !string.Equals(victimClanName, AdapterRecordTexts.Raw("AF_REC_Character_0107"), StringComparison.Ordinal))
 		{
-			sb.Append("被处决者家族：").Append(victimClanName).Append("。");
+			sb.Append(AdapterRecordTexts.Raw("AF_REC_Character_0108")).Append(victimClanName).Append("。");
 		}
 		if (!string.IsNullOrWhiteSpace(victimKingdomName))
 		{
-			sb.Append("被处决者所属王国：").Append(victimKingdomName).Append("。");
+			sb.Append(AdapterRecordTexts.Raw("AF_REC_Character_0109")).Append(victimKingdomName).Append("。");
 		}
 		if (executionFacts == null)
 		{
-			sb.Append("处决类型：").Append(detail == KillCharacterAction.KillCharacterActionDetail.ExecutionAfterMapEvent ? "战后处决" : "处决").Append("。");
-			sb.Append("事实约束：这是处决事件，不得写成战场击杀、谋杀、自然死亡或普通俘虏释放。");
+			sb.Append(AdapterRecordTexts.Raw("AF_REC_Character_0110")).Append(detail == KillCharacterAction.KillCharacterActionDetail.ExecutionAfterMapEvent ? AdapterRecordTexts.Raw("AF_REC_Character_0111") : AdapterRecordTexts.Raw("AF_REC_Character_0112")).Append("。");
+			sb.Append(AdapterRecordTexts.Raw("AF_REC_Character_0113"));
 			return PoliticalDecisionRecordCaptureAdapter.LimitCustomPolicyWeeklyMaterialText(sb.ToString(), 360);
 		}
-		sb.Append("处决类型：城镇公开处刑。");
+		sb.Append(AdapterRecordTexts.Raw("AF_REC_Character_0114"));
 		if (!string.IsNullOrWhiteSpace(executionFacts.MethodLabel))
 		{
-			sb.Append("刑罚：").Append(executionFacts.MethodLabel).Append("。");
+			sb.Append(AdapterRecordTexts.Raw("AF_REC_Character_0115")).Append(executionFacts.MethodLabel).Append("。");
 		}
 		if (!string.IsNullOrWhiteSpace(executionFacts.ChargeLabel))
 		{
-			sb.Append("罪名：").Append(executionFacts.ChargeLabel).Append("。");
+			sb.Append(AdapterRecordTexts.Raw("AF_REC_Character_0116")).Append(executionFacts.ChargeLabel).Append("。");
 		}
-		sb.Append("审判方式：").Append(executionFacts.ToneLabel).Append("。");
-		sb.Append("合法性：").Append(executionFacts.LegitimacyLabel).Append("。");
-		sb.Append("行刑者：").Append(executionFacts.PlayerStruck ? killerName + "亲自行刑" : "本镇刽子手奉" + killerName + "之命行刑").Append("。");
-		sb.Append("事实约束：这是公开处刑，刑罚与罪名以上述记录为准，不得改写成其他刑罚，也不得写成战场击杀、谋杀或自然死亡。");
+		sb.Append(AdapterRecordTexts.Raw("AF_REC_Character_0117")).Append(executionFacts.ToneLabel).Append("。");
+		sb.Append(AdapterRecordTexts.Raw("AF_REC_Character_0118")).Append(executionFacts.LegitimacyLabel).Append("。");
+		sb.Append(AdapterRecordTexts.Raw("AF_REC_Character_0119")).Append(executionFacts.PlayerStruck ? killerName + AdapterRecordTexts.Raw("AF_REC_Character_0120") : AdapterRecordTexts.Raw("AF_REC_Character_0121") + killerName + AdapterRecordTexts.Raw("AF_REC_Character_0122")).Append("。");
+		sb.Append(AdapterRecordTexts.Raw("AF_REC_Character_0123"));
 		return PoliticalDecisionRecordCaptureAdapter.LimitCustomPolicyWeeklyMaterialText(sb.ToString(), 520);
 	}
 
@@ -1777,14 +1777,14 @@ internal void OnGivenBirth(Hero mother, List<Hero> aliveChildren, int stillbornC
 			{
 				AddUniqueId(npcActionFacts.RelatedHeroIds, GetHeroId(hero));
 			}
-			string text2 = "你诞下一名子嗣";
+			string text2 = AdapterRecordTexts.Raw("AF_REC_Character_0124");
 			if (hero != null)
 			{
-				text2 = text2 + "，孩子是" + GetHeroDisplayName(hero);
+				text2 = text2 + AdapterRecordTexts.Raw("AF_REC_Character_0125") + GetHeroDisplayName(hero);
 			}
 			if (stillbornCount > 0)
 			{
-				text2 = text2 + "。此次分娩还伴随" + stillbornCount + "名夭折婴儿";
+				text2 = text2 + AdapterRecordTexts.Raw("AF_REC_Character_0126") + stillbornCount + AdapterRecordTexts.Raw("AF_REC_Character_0127");
 			}
 			text2 += "。";
 			RecordNpcMajorAction(mother, text2, text, npcActionFacts);
@@ -1808,24 +1808,24 @@ internal void OnSettlementOwnerChanged(Settlement settlement, bool openToClaim, 
 				NpcActionFacts npcActionFacts = CreateNpcActionFacts("settlement_owner_changed_gain", newOwner);
 				ApplyTargetFacts(npcActionFacts, oldOwner);
 				ApplySettlementFacts(npcActionFacts, settlement, newOwner, oldOwner);
-				RecordNpcMajorAction(newOwner, "你获得了" + text2 + "的所有权（方式：" + GetSettlementOwnerChangeDetailLabel(detail) + "）。", text + ":gain", npcActionFacts);
-				RecordNpcRecentAction(newOwner, "你获得了" + text2 + "的所有权（方式：" + GetSettlementOwnerChangeDetailLabel(detail) + "）。", text + ":gain", facts: npcActionFacts);
+				RecordNpcMajorAction(newOwner, AdapterRecordTexts.Raw("AF_REC_Character_0128") + text2 + AdapterRecordTexts.Raw("AF_REC_Character_0129") + GetSettlementOwnerChangeDetailLabel(detail) + "）。", text + ":gain", npcActionFacts);
+				RecordNpcRecentAction(newOwner, AdapterRecordTexts.Raw("AF_REC_Character_0130") + text2 + AdapterRecordTexts.Raw("AF_REC_Character_0131") + GetSettlementOwnerChangeDetailLabel(detail) + "）。", text + ":gain", facts: npcActionFacts);
 			}
 			if (ShouldTrackNpcActionHero(oldOwner))
 			{
 				NpcActionFacts npcActionFacts2 = CreateNpcActionFacts("settlement_owner_changed_loss", oldOwner);
 				ApplyTargetFacts(npcActionFacts2, newOwner);
 				ApplySettlementFacts(npcActionFacts2, settlement, newOwner, oldOwner);
-				RecordNpcMajorAction(oldOwner, "你失去了" + text2 + "的所有权（方式：" + GetSettlementOwnerChangeDetailLabel(detail) + "）。", text + ":loss", npcActionFacts2);
-				RecordNpcRecentAction(oldOwner, "你失去了" + text2 + "的所有权（方式：" + GetSettlementOwnerChangeDetailLabel(detail) + "）。", text + ":loss", facts: npcActionFacts2);
+				RecordNpcMajorAction(oldOwner, AdapterRecordTexts.Raw("AF_REC_Character_0132") + text2 + AdapterRecordTexts.Raw("AF_REC_Character_0133") + GetSettlementOwnerChangeDetailLabel(detail) + "）。", text + ":loss", npcActionFacts2);
+				RecordNpcRecentAction(oldOwner, AdapterRecordTexts.Raw("AF_REC_Character_0134") + text2 + AdapterRecordTexts.Raw("AF_REC_Character_0135") + GetSettlementOwnerChangeDetailLabel(detail) + "）。", text + ":loss", facts: npcActionFacts2);
 			}
 			if (ShouldTrackNpcActionHero(capturerHero) && !string.Equals(GetHeroId(capturerHero), GetHeroId(newOwner), StringComparison.OrdinalIgnoreCase))
 			{
 				NpcActionFacts npcActionFacts3 = CreateNpcActionFacts("settlement_owner_changed_capture", capturerHero);
 				ApplyTargetFacts(npcActionFacts3, newOwner);
 				ApplySettlementFacts(npcActionFacts3, settlement, newOwner, oldOwner);
-				RecordNpcMajorAction(capturerHero, "你促成了" + text2 + "的易主，新的所有者是" + GetHeroDisplayName(newOwner) + "。", text + ":capture", npcActionFacts3);
-				RecordNpcRecentAction(capturerHero, "你促成了" + text2 + "的易主，新的所有者是" + GetHeroDisplayName(newOwner) + "。", text + ":capture", facts: npcActionFacts3);
+				RecordNpcMajorAction(capturerHero, AdapterRecordTexts.Raw("AF_REC_Character_0136") + text2 + AdapterRecordTexts.Raw("AF_REC_Character_0137") + GetHeroDisplayName(newOwner) + "。", text + ":capture", npcActionFacts3);
+				RecordNpcRecentAction(capturerHero, AdapterRecordTexts.Raw("AF_REC_Character_0138") + text2 + AdapterRecordTexts.Raw("AF_REC_Character_0139") + GetHeroDisplayName(newOwner) + "。", text + ":capture", facts: npcActionFacts3);
 			}
 			discontinue(oldOwnerKingdom, "settlement_owner_changed:" + GetSettlementId(settlement));
 		}
@@ -1860,7 +1860,7 @@ internal void RecordPublicDailyMemoryWeeklyMaterial(CompressedMemoryBlock block)
 		string blockId = (block.Id ?? MemoryRecordRules.BuildCompressedMemoryBlockId(block.HeroId, block.GameDayIndex)).Trim();
 		string stableHash = WeeklyMemoryMaterialPolicy.ComputeWeeklyMemoryMaterialHash(blockId + "|" + kingdomId + "|" + material);
 		string stableKey = "public_daily_memory:" + kingdomId + ":" + blockId + ":" + stableHash;
-		string label = "公开聊天日结 - " + (string.IsNullOrWhiteSpace(block.HeroName) ? "NPC" : block.HeroName.Trim());
+		string label = AdapterRecordTexts.Raw("AF_REC_Character_0140") + (string.IsNullOrWhiteSpace(block.HeroName) ? "NPC" : block.HeroName.Trim());
 		string snapshot = WeeklyMemoryMaterialPolicy.BuildPublicDailyMemoryWeeklyMaterialSnapshotText(block, material, MemoryRecallContextOwner.FormatMemoryHourRange(block?.StartHour ?? 0, block?.EndHour ?? 0));
 		RecordEventSourceMaterial("public_daily_memory", label, snapshot, stableKey, kingdomId, settlementId, includeInWorld: false, includeInKingdom: true, actorHeroId: MemoryEntityIdentityBannerlordAdapter.GetHeroId(Hero.MainHero), actorKingdomId: kingdomId, dayOverride: block.GameDayIndex, gameDateOverride: block.GameDate);
 		Logger.Log("EventWeeklyReport", "[PublicDailyMemory] source_material_recorded block=" + blockId + " kingdom=" + kingdomId + " publicity=" + publicity);
@@ -1928,15 +1928,16 @@ internal string BuildNpcCurrentActionFact(Hero hero)
 			{
 				return "";
 			}
-			string text = CampaignBattleRecordCaptureAdapter.BuildRecentPartyBehaviorText(hero.PartyBelongedTo);
+			string text = CampaignBattleRecordCaptureAdapter.BuildRecentPartyBehaviorText(hero.PartyBelongedTo, forPrompt: true);
 			if (string.IsNullOrWhiteSpace(text))
 			{
 				string text2 = (hero.CurrentSettlement?.Name?.ToString() ?? "").Trim();
 				if (!string.IsNullOrWhiteSpace(text2))
 				{
-					text = "你当前在" + text2 + "停留。";
+					text = AdapterRecordTexts.PromptFormat("CurrentSettlement", ("SETTLEMENT", text2));
 				}
 			}
+			if (!string.IsNullOrWhiteSpace(text)) text = AdapterRecordTexts.CurrentActionActor(text, hero.Name?.ToString()?.Trim());
 			if (string.IsNullOrWhiteSpace(text))
 			{
 				string npcActionHeroKey = GetNpcActionHeroKey(hero);
@@ -1945,7 +1946,9 @@ internal string BuildNpcCurrentActionFact(Hero hero)
 					NpcActionEntry npcActionEntry = NpcActionLedger.SanitizeNpcActionEntries(value, true, GetCurrentGameDayIndexSafe()).LastOrDefault();
 					if (npcActionEntry != null && npcActionEntry.Day >= GetCurrentGameDayIndexSafe() - 1)
 					{
-						text = npcActionEntry.Text;
+						string projected = MemoryActionFactProjection.Project(npcActionEntry.ActionKind, npcActionEntry.Text, hero?.Name?.ToString()?.Trim());
+                        if (projected != null) return projected;
+                        text = npcActionEntry.Text;
 					}
 				}
 			}
@@ -2092,7 +2095,7 @@ internal void RecordNpcPublicFeedbackEventMaterialInternal(string stableKey, str
 		}
 		if (string.IsNullOrWhiteSpace(cleanKingdomName))
 		{
-			cleanKingdomName = "目标王国";
+			cleanKingdomName = AdapterRecordTexts.Raw("AF_REC_Character_0143");
 		}
 		string cleanNpcName = PoliticalDecisionRecordCaptureAdapter.LimitCustomPolicyWeeklyMaterialText(npcName, 50);
 		if (string.IsNullOrWhiteSpace(cleanNpcName))
@@ -2101,21 +2104,21 @@ internal void RecordNpcPublicFeedbackEventMaterialInternal(string stableKey, str
 		}
 		string cleanPolicyName = PoliticalDecisionRecordCaptureAdapter.LimitCustomPolicyWeeklyMaterialText(policyName, 70);
 		StringBuilder sb = new StringBuilder();
-		sb.Append("NPC政策衍生事件素材。");
+		sb.Append(AdapterRecordTexts.Raw("AF_REC_Character_0144"));
 		if (!string.IsNullOrWhiteSpace(cleanTitle))
 		{
-			sb.Append("标题：").Append(cleanTitle.Trim().TrimEnd('。')).Append("。");
+			sb.Append(AdapterRecordTexts.Raw("AF_REC_Character_0145")).Append(cleanTitle.Trim().TrimEnd('。')).Append("。");
 		}
-		sb.Append("王国：").Append(cleanKingdomName).Append("。关联统治者：").Append(cleanNpcName).Append("。");
+		sb.Append(AdapterRecordTexts.Raw("AF_REC_Character_0146")).Append(cleanKingdomName).Append(AdapterRecordTexts.Raw("AF_REC_Character_0147")).Append(cleanNpcName).Append("。");
 		if (!string.IsNullOrWhiteSpace(cleanPolicyName))
 		{
-			sb.Append("关联政策：").Append(cleanPolicyName.Trim().TrimEnd('。')).Append("。");
+			sb.Append(AdapterRecordTexts.Raw("AF_REC_Character_0148")).Append(cleanPolicyName.Trim().TrimEnd('。')).Append("。");
 		}
 		if (!string.IsNullOrWhiteSpace(cleanPolicyId))
 		{
-			sb.Append("关联政策ID：").Append(cleanPolicyId.Trim().TrimEnd('。')).Append("。");
+			sb.Append(AdapterRecordTexts.Raw("AF_REC_Character_0149")).Append(cleanPolicyId.Trim().TrimEnd('。')).Append("。");
 		}
-		sb.Append("事件摘要：").Append(cleanFeedback.Trim().TrimEnd('。')).Append("。");
+		sb.Append(AdapterRecordTexts.Raw("AF_REC_Character_0150")).Append(cleanFeedback.Trim().TrimEnd('。')).Append("。");
 		string snapshot = PoliticalDecisionRecordCaptureAdapter.LimitCustomPolicyWeeklyMaterialText(sb.ToString(), 300);
 		if (string.IsNullOrWhiteSpace(snapshot))
 		{
@@ -2126,7 +2129,7 @@ internal void RecordNpcPublicFeedbackEventMaterialInternal(string stableKey, str
 		string labelSuffix = !string.IsNullOrWhiteSpace(cleanTitle) ? cleanTitle : cleanPolicyName;
 		RecordEventSourceMaterial(
 			"npc_public_feedback",
-			"政策衍生事件 - " + cleanKingdomName + (string.IsNullOrWhiteSpace(labelSuffix) ? "" : " / " + labelSuffix),
+			AdapterRecordTexts.Raw("AF_REC_Character_0151") + cleanKingdomName + (string.IsNullOrWhiteSpace(labelSuffix) ? "" : " / " + labelSuffix),
 			snapshot,
 			key,
 			targetId,
@@ -2162,17 +2165,17 @@ internal void RecordPlayerKingdomRenameWeeklyMaterialInternal(string oldKingdomN
 		string cleanOldInformalName = PoliticalDecisionRecordCaptureAdapter.LimitCustomPolicyWeeklyMaterialText(oldInformalName, 50);
 		string cleanNewInformalName = PoliticalDecisionRecordCaptureAdapter.LimitCustomPolicyWeeklyMaterialText(newInformalName, 50);
 		StringBuilder sb = new StringBuilder();
-		sb.Append("玩家王国更名素材。");
+		sb.Append(AdapterRecordTexts.Raw("AF_REC_Character_0152"));
 		if (!string.IsNullOrWhiteSpace(cleanDate))
 		{
-			sb.Append("日期：").Append(cleanDate).Append("。");
+			sb.Append(AdapterRecordTexts.Raw("AF_REC_Character_0153")).Append(cleanDate).Append("。");
 		}
-		sb.Append("旧国号：").Append(cleanOldName).Append("。新国号：").Append(cleanNewName).Append("。");
+		sb.Append(AdapterRecordTexts.Raw("AF_REC_Character_0154")).Append(cleanOldName).Append(AdapterRecordTexts.Raw("AF_REC_Character_0155")).Append(cleanNewName).Append("。");
 		if (!string.IsNullOrWhiteSpace(cleanOldInformalName) || !string.IsNullOrWhiteSpace(cleanNewInformalName))
 		{
-			sb.Append("简称变化：").Append(string.IsNullOrWhiteSpace(cleanOldInformalName) ? cleanOldName : cleanOldInformalName).Append(" -> ").Append(string.IsNullOrWhiteSpace(cleanNewInformalName) ? cleanNewName : cleanNewInformalName).Append("。");
+			sb.Append(AdapterRecordTexts.Raw("AF_REC_Character_0156")).Append(string.IsNullOrWhiteSpace(cleanOldInformalName) ? cleanOldName : cleanOldInformalName).Append(" -> ").Append(string.IsNullOrWhiteSpace(cleanNewInformalName) ? cleanNewName : cleanNewInformalName).Append("。");
 		}
-		sb.Append("事实约束：这是玩家统治王国的名称/国号更改，不是新王国建立、家族叛乱、征服、吞并或王国覆灭。");
+		sb.Append(AdapterRecordTexts.Raw("AF_REC_Character_0157"));
 		string snapshot = PoliticalDecisionRecordCaptureAdapter.LimitCustomPolicyWeeklyMaterialText(sb.ToString(), 260);
 		if (string.IsNullOrWhiteSpace(snapshot))
 		{
@@ -2181,7 +2184,7 @@ internal void RecordPlayerKingdomRenameWeeklyMaterialInternal(string oldKingdomN
 		string key = "player_kingdom_rename:" + NpcActionLedger.NormalizeStableKey(stableKey, cleanOldName + ":" + cleanNewName);
 		RecordEventSourceMaterial(
 			"player_kingdom_rename",
-			"玩家王国更名 - " + cleanNewName,
+			AdapterRecordTexts.Raw("AF_REC_Character_0158") + cleanNewName,
 			snapshot,
 			key,
 			targetKingdomId,
@@ -2207,7 +2210,7 @@ internal void RecordPlayerSceneConflictWeeklyMaterialInternal(string text, strin
 		string resolvedSettlementName = string.IsNullOrWhiteSpace(settlementName) ? (settlement?.Name?.ToString() ?? "").Trim() : settlementName.Trim();
 		if (string.IsNullOrWhiteSpace(resolvedSettlementName))
 		{
-			resolvedSettlementName = "当前定居点";
+			resolvedSettlementName = AdapterRecordTexts.Raw("AF_REC_Character_0159");
 		}
 		string location = (locationText ?? "").Trim();
 		string kingdomId = GetKingdomId(settlement?.MapFaction);
@@ -2228,12 +2231,12 @@ internal void RecordPlayerSceneConflictWeeklyMaterialInternal(string text, strin
 			Logger.Log("EventWeeklyReport", "[PlayerSceneConflict][SKIP] kingdom_missing settlement=" + resolvedSettlementId + " text=" + summary);
 			return;
 		}
-		string place = resolvedSettlementName + (string.IsNullOrWhiteSpace(location) ? "" : "的" + location);
-		string snapshot = "玩家和平场景攻击/犯罪素材。地点：" + place + "。履历摘要：" + summary + " 周报约束：这是和平定居点场景内由玩家主动攻击和平单位或触发犯罪造成的事件，不按战场、攻城、竞技场或训练场战斗理解。";
+		string place = resolvedSettlementName + (string.IsNullOrWhiteSpace(location) ? "" : AdapterRecordTexts.Raw("AF_REC_Character_0160") + location);
+		string snapshot = AdapterRecordTexts.Raw("AF_REC_Character_0161") + place + AdapterRecordTexts.Raw("AF_REC_Character_0162") + summary + AdapterRecordTexts.Raw("AF_REC_Character_0163");
 		string key = "player_peace_scene_crime:" + NpcActionLedger.NormalizeStableKey(stableKey, summary);
 		RecordEventSourceMaterial(
 			"player_peace_scene_crime",
-			"玩家和平场景冲突 - " + resolvedSettlementName,
+			AdapterRecordTexts.Raw("AF_REC_Character_0164") + resolvedSettlementName,
 			snapshot,
 			key,
 			kingdomId,

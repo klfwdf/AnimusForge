@@ -171,7 +171,7 @@ internal static class ConversationActionPostprocessOwner
 		{
 			return true;
 		}
-		return Regex.IsMatch(GiveAssetTagCodec.StripTags(text), "\\[(?:ACTION:(?:PUBLIC_EXECUTION_START|GIVE_ASSET|KINGDOM_SERVICE|JOIN_MERCENARY|JOIN_VASSAL|TRADE_TRUST|KING_ABDICATE_TO_PLAYER|VASSALAGE|KINGDOM_ANNEX|AGENDA|WORLDMAP_ORDER|DUEL|ISSUE_|QUEST_TURN_IN|NOBLE_GATHERING|NOBLE_PRISONER_EXECUTE|NOBLE_EXECUTE_ESCORT|NOBLE_EXECUTE_PARTY_PRISONER|TROOP_INSPECTION_SLAUGHTER_PRISONERS|INTIMACY_INTERNAL|MEETING_TAUNT_BATTLE|LET_PLAYER_GO|ENCOUNTER_RELEASE_PLAYER|NPC_SURRENDER|SIEGE_|6|召集)[^\\]]*|A:(?:H_J_P_P_(?:C&L|[CL])|C_J_P_K|C_J_K:[^\\]]+|P_J_K_[MV]|P_L_K)|AD:[^\\]]*|ADP:[^\\]]*)\\]", RegexOptions.IgnoreCase);
+		return Regex.IsMatch(GiveAssetTagCodec.StripTags(text), ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0305"), RegexOptions.IgnoreCase);
 	}
 internal static string ExtractDeferredSceneActionTags(string text)
 	{
@@ -251,10 +251,14 @@ internal static string StripDeferredSceneMoodTags(string text)
 	internal static bool IsNativeConversationNoSpeechPlaceholder(string text)
 	{
 		string value = (text ?? "").Replace("\r", "").Trim();
-		return string.Equals(value, "（没说话）", StringComparison.Ordinal)
-			|| string.Equals(value, "(没说话)", StringComparison.Ordinal)
-			|| string.Equals(value, "无", StringComparison.Ordinal)
-			|| string.Equals(value, "无回信", StringComparison.Ordinal);
+		return string.Equals(value, ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0306"), StringComparison.Ordinal)
+			|| string.Equals(value, ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0307"), StringComparison.Ordinal)
+			|| string.Equals(value, ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0308"), StringComparison.Ordinal)
+			|| string.Equals(value, ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0309"), StringComparison.Ordinal)
+            || string.Equals(value, "(no speech)", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(value, "(said nothing)", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(value, "none", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(value, "no reply", StringComparison.OrdinalIgnoreCase);
 	}
 
 	internal static string StripLordsHallAccessActionTagsForScene(string text)
@@ -321,7 +325,7 @@ internal const string SiegeSurrenderActionTag = NpcSurrenderActionTag;
 internal const string CustomPolicyAgendaPostprocessRuleId = "kingdom_agenda";
 internal const string CustomPolicyAgendaActionTag = KingdomAgendaCustomPolicyBehavior.ActionTag;
 internal const string AutoGroupRelayRuleId = "scene_auto_group_relay";
-internal const string AutoGroupRelayTagTemplate = "[RELAY:接力编号]";
+internal static readonly string AutoGroupRelayTagTemplate = ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0310");
 internal static readonly Regex SetsOwnedSettlementMassacreRequestActionTagRegex = new Regex(Regex.Escape(SetsOwnedSettlementMassacreProfile.RequestActionTag), RegexOptions.IgnoreCase | RegexOptions.Compiled);
 internal static readonly Regex SetsOwnedSettlementMassacreStartActionTagRegex = new Regex(Regex.Escape(SetsOwnedSettlementMassacreProfile.StartActionTag), RegexOptions.IgnoreCase | RegexOptions.Compiled);
 internal static readonly Regex SetsOwnedSettlementMassacreStopActionTagRegex = new Regex(Regex.Escape(SetsOwnedSettlementMassacreProfile.StopActionTag), RegexOptions.IgnoreCase | RegexOptions.Compiled);
@@ -361,7 +365,7 @@ internal static readonly Regex CustomPolicyAgendaActionTagRegex = new Regex(Rege
 		}
 		if (!succeeded)
 		{
-			Logger.Log("ShoutBehavior", "[UnifiedPostprocess] 调用失败: " + error);
+			Logger.Log("ShoutBehavior", "[UnifiedPostprocess] failed: " + error);
 			return (workItem.ReplyText + "\n" + AIConfigHandler.ActionPostprocessFallbackMoodTag).Trim();
 		}
 		return workItem.Normalize(content);
@@ -579,18 +583,18 @@ internal static readonly Regex CustomPolicyAgendaActionTagRegex = new Regex(Rege
 		Logger.Log("ShoutBehavior", "[UnifiedPostprocess] requested chain=" + resolvedChainName + " duel=" + duelRuleInjected + " reward=" + rewardRuleInjected + " loan=" + loanRuleInjected + " persistentAdpDebt=" + persistentAdpDebtRuleInjected + " kingdom=" + kingdomServiceRuleInjected + " royalEligible=" + royalPostprocessEligible + " royalRule=" + royalPostprocessRuleInjected + " vassalage=" + kingdomVassalageRuleInjected + " annexation=" + kingdomAnnexPostprocessRuleInjected + " VASSALAGE_rule_injected=" + vassalagePostprocessRuleInjected + " KINGDOM_ANNEX_rule_injected=" + kingdomAnnexPostprocessRuleInjected + " royalRuleCount=" + (royalRules?.Count ?? 0) + " vassalageRuleCount=" + (vassalageRules?.Count ?? 0) + " annexationRuleCount=" + annexationRuleCount + " lordsHall=" + lordsHallRuleInjected + " meetingRelease=" + meetingReleaseRuleInjected + " vanillaIssue=" + vanillaIssueRuleInjected + " heroJoin=" + heroJoinPartyRuleInjected + " sceneMechanism=" + sceneMechanismRuleInjected + " partyTransfer=" + partyTransferRuleInjected + " voteDeal=" + voteDealRuleInjected + " diplomacy=" + diplomacyRuleInjected + " worldMap=" + worldMapPartyCommandRuleInjected + " nobleGathering=" + nobleGatheringRuleInjected + " marriage=" + marriageRuleInjected + " intimacy=" + (intimacyRules?.Count > 0) + " siegeSurrender=" + siegeSurrenderPostprocessEnabled + " siegeSurrenderSide=" + (siegeSurrenderSideLabel ?? "") + " siegeSurrenderSettlement=" + (siegeSurrenderSettlement?.StringId ?? "") + " npcSurrender=" + npcSurrenderPostprocessEnabled + " siegeIntervention=" + siegeInterventionPostprocessEnabled + " relay=" + relayRuleInjected + " siegeSurrenderRule=" + HasSiegeSurrenderPostprocessRule(siegeSurrenderRules) + " mergedHasSiegeSurrender=" + HasSiegeSurrenderPostprocessRule(mergedRules) + " npcSurrenderRule=" + HasNpcSurrenderPostprocessRule(npcSurrenderRules) + " mergedHasNpcSurrender=" + HasNpcSurrenderPostprocessRule(mergedRules) + " preprocessHits=" + ((preprocessRuleHits == null || preprocessRuleHits.Count == 0) ? "(none)" : string.Join(",", preprocessRuleHits)) + " mergedRules=" + ((mergedRules == null || mergedRules.Count == 0) ? "(none; mood postprocess still runs)" : string.Join(",", mergedRules.Select((PostprocessRuleEntry x) => x?.Tag ?? "").Where((string x) => !string.IsNullOrWhiteSpace(x)))));
 		if (kingdomServiceRuleInjected)
 		{
-			Logger.Log("ShoutBehavior", "[UnifiedPostprocess] kingdom_rules=" + ((kingdomRules == null || kingdomRules.Count == 0) ? "（无）" : string.Join(",", kingdomRules.Select((PostprocessRuleEntry x) => x?.Tag ?? "").Where((string x) => !string.IsNullOrWhiteSpace(x)))) + " merged_rules=" + ((mergedRules == null || mergedRules.Count == 0) ? "（无）" : string.Join(",", mergedRules.Select((PostprocessRuleEntry x) => x?.Tag ?? "").Where((string x) => !string.IsNullOrWhiteSpace(x)))));
+			Logger.Log("ShoutBehavior", "[UnifiedPostprocess] kingdom_rules=" + ((kingdomRules == null || kingdomRules.Count == 0) ? ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0312") : string.Join(",", kingdomRules.Select((PostprocessRuleEntry x) => x?.Tag ?? "").Where((string x) => !string.IsNullOrWhiteSpace(x)))) + " merged_rules=" + ((mergedRules == null || mergedRules.Count == 0) ? ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0313") : string.Join(",", mergedRules.Select((PostprocessRuleEntry x) => x?.Tag ?? "").Where((string x) => !string.IsNullOrWhiteSpace(x)))));
 		}
 		string text20 = string.IsNullOrWhiteSpace(npcName) ? (targetHero?.Name?.ToString() ?? targetCharacter?.Name?.ToString() ?? "") : npcName;
-		string text2 = NormalizePlayerNameForScenePostprocess(string.IsNullOrWhiteSpace(historyText) ? "（无）" : historyText.Trim(), text20);
+		string text2 = NormalizePlayerNameForScenePostprocess(string.IsNullOrWhiteSpace(historyText) ? ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0314") : historyText.Trim(), text20);
 		string text3 = BuildPostprocessRuleTextForScene(mergedRules);
 		string text4 = BuildPostprocessRuleTextForScene(AIConfigHandler.ActionPostprocessMoodRules);
-		string text5 = "（无）";
-		string text6 = "（无）";
-		string text7 = "（无）";
+		string text5 = ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0315");
+		string text6 = ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0316");
+		string text7 = ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0317");
 		string marriagePlayerCandidates = null;
 		string marriageTargetCandidates = null;
-		string runtimeContext = "（无）";
+		string runtimeContext = ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0318");
 		List<RewardSystemBehavior.RewardItemInfo> rewardOptions = null;
 		List<RewardSystemBehavior.RewardItemInfo> rewardAllOptions = null;
 		int rewardAvailableGold = 0;
@@ -612,7 +616,7 @@ internal static readonly Regex CustomPolicyAgendaActionTagRegex = new Regex(Rege
 				}
 				catch
 				{
-					text6 = "赤身裸体";
+					text6 = ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0319");
 				}
 				try
 				{
@@ -648,7 +652,7 @@ internal static readonly Regex CustomPolicyAgendaActionTagRegex = new Regex(Rege
 						}
 							rewardAvailableGold = RewardSystemBehavior.Instance.GetPartyTradeGoldForExternal(party);
 							text5 = BuildRewardPostprocessItemListForScene(rewardOptions, rewardAvailableGold, rewardAllOptions);
-							text7 = "（非hero野外部队没有个人赊账账本；如果要归还已经实际收到的物品或第纳尔，请只从上面的部队库存与资金中输出 GIVE 标签。）";
+							text7 = ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0320");
 						}
 						else
 						{
@@ -673,8 +677,8 @@ internal static readonly Regex CustomPolicyAgendaActionTagRegex = new Regex(Rege
 				}
 				catch
 				{
-					text5 = "（无）";
-					text7 = "（无）";
+					text5 = ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0321");
+					text7 = ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0322");
 					rewardOptions = null;
 					rewardAllOptions = null;
 				}
@@ -692,7 +696,7 @@ internal static readonly Regex CustomPolicyAgendaActionTagRegex = new Regex(Rege
 			}
 			catch
 			{
-				text6 = "赤身裸体";
+				text6 = ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0323");
 			}
 		}
 		if (partyTransferRuleInjected)
@@ -1103,15 +1107,15 @@ internal static bool TryPrepareCourierActionPostprocessForExternal(Hero targetHe
 			}
 			Logger.Log("CourierDelivery", "[UnifiedPostprocess] requested chain=" + resolvedChainName + " duel=" + duelRuleInjected + " reward=" + rewardRuleInjected + " loan=" + loanRuleInjected + " persistentAdpDebt=" + persistentAdpDebtRuleInjected + " kingdom=" + kingdomServiceRuleInjected + " royalEligible=" + royalPostprocessEligible + " royalRule=" + royalPostprocessRuleInjected + " vassalage=" + kingdomVassalageRuleInjected + " annexation=" + kingdomAnnexPostprocessRuleInjected + " VASSALAGE_rule_injected=" + vassalagePostprocessRuleInjected + " KINGDOM_ANNEX_rule_injected=" + kingdomAnnexPostprocessRuleInjected + " royalRuleCount=" + (royalRules?.Count ?? 0) + " vassalageRuleCount=" + (vassalageRules?.Count ?? 0) + " annexationRuleCount=" + annexationRuleCount + " lordsHall=" + lordsHallRuleInjected + " meetingRelease=" + meetingReleaseRuleInjected + " vanillaIssue=" + vanillaIssueRuleInjected + " heroJoin=" + heroJoinPartyRuleInjected + " sceneMechanism=" + sceneMechanismRuleInjected + " partyTransfer=" + partyTransferRuleInjected + " voteDeal=" + voteDealRuleInjected + " diplomacy=" + diplomacyRuleInjected + " worldMap=" + worldMapPartyCommandRuleInjected + " nobleGathering=" + nobleGatheringRuleInjected + " marriage=" + marriageRuleInjected + " intimacy=" + (intimacyRules?.Count > 0) + " siegeIntervention=" + siegeInterventionRuleInjected + " npcSurrender=" + npcSurrenderPostprocessEnabled + " npcSurrenderRule=" + HasNpcSurrenderPostprocessRule(npcSurrenderRules) + " mergedHasNpcSurrender=" + HasNpcSurrenderPostprocessRule(mergedRules) + " preprocessHits=" + ((preprocessRuleHits == null || preprocessRuleHits.Count == 0) ? "(none)" : string.Join(",", preprocessRuleHits)) + " mergedRules=" + ((mergedRules == null || mergedRules.Count == 0) ? "(none; mood postprocess still runs)" : string.Join(",", mergedRules.Select((PostprocessRuleEntry x) => x?.Tag ?? "").Where((string x) => !string.IsNullOrWhiteSpace(x)))));
 			string displayName = string.IsNullOrWhiteSpace(npcName) ? (targetHero?.Name?.ToString() ?? targetCharacter?.Name?.ToString() ?? "NPC") : npcName.Trim();
-			string normalizedHistory = NormalizePlayerNameForScenePostprocess(string.IsNullOrWhiteSpace(historyText) ? "（无）" : historyText.Trim(), displayName);
+			string normalizedHistory = NormalizePlayerNameForScenePostprocess(string.IsNullOrWhiteSpace(historyText) ? ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0324") : historyText.Trim(), displayName);
 			string tagRules = BuildPostprocessRuleTextForScene(mergedRules);
 			string moodRules = BuildPostprocessRuleTextForScene(AIConfigHandler.ActionPostprocessMoodRules);
-			string sharedItemList = "（无）";
-			string playerItemList = "（无）";
-			string debtHint = "（无）";
+			string sharedItemList = ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0325");
+			string playerItemList = ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0326");
+			string debtHint = ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0327");
 			string marriagePlayerCandidates = null;
 			string marriageTargetCandidates = null;
-			string runtimeContext = "（无）";
+			string runtimeContext = ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0328");
 			List<RewardSystemBehavior.RewardItemInfo> rewardOptions = null;
 			List<RewardSystemBehavior.RewardItemInfo> rewardAllOptions = null;
 			int rewardAvailableGold = 0;
@@ -1131,7 +1135,7 @@ internal static bool TryPrepareCourierActionPostprocessForExternal(Hero targetHe
 				}
 				catch
 				{
-					playerItemList = "赤身裸体";
+					playerItemList = ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0329");
 				}
 				try
 				{
@@ -1167,7 +1171,7 @@ internal static bool TryPrepareCourierActionPostprocessForExternal(Hero targetHe
 							}
 							rewardAvailableGold = RewardSystemBehavior.Instance.GetPartyTradeGoldForExternal(party);
 							sharedItemList = BuildRewardPostprocessItemListForScene(rewardOptions, rewardAvailableGold, rewardAllOptions);
-							debtHint = "（非hero野外部队没有个人赊账账本；如果要归还已经实际收到的物品或第纳尔，请只从上面的部队库存与资金中输出 GIVE 标签。）";
+							debtHint = ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0330");
 						}
 						else
 						{
@@ -1192,8 +1196,8 @@ internal static bool TryPrepareCourierActionPostprocessForExternal(Hero targetHe
 				}
 				catch
 				{
-					sharedItemList = "（无）";
-					debtHint = "（无）";
+					sharedItemList = ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0331");
+					debtHint = ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0332");
 				rewardOptions = null;
 				rewardAllOptions = null;
 				}
@@ -1210,7 +1214,7 @@ internal static bool TryPrepareCourierActionPostprocessForExternal(Hero targetHe
 				}
 				catch
 				{
-					playerItemList = "赤身裸体";
+					playerItemList = ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0333");
 				}
 			}
 			if (partyTransferRuleInjected)
@@ -1412,14 +1416,14 @@ internal static void AppendCompactPartyTransferPostprocessSectionForScene(String
 		List<MyBehavior.PartyTransferPromptEntry> list = (entries ?? Enumerable.Empty<MyBehavior.PartyTransferPromptEntry>()).Where((MyBehavior.PartyTransferPromptEntry x) => x != null).ToList();
 		if (list.Count == 0)
 		{
-			sb.AppendLine("（无）");
+			sb.AppendLine(ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0334"));
 			return;
 		}
 		if (isPrisoner)
 		{
 			foreach (IGrouping<string, MyBehavior.PartyTransferPromptEntry> item in
 				from x in list
-				let groupName = x.IsHero ? "贵族/英雄俘虏" : ("T" + GetScenePartyTransferTroopTier(x) + " " + MyBehavior.GetPartyTransferTroopTypeLabelForExternal(x.Character))
+				let groupName = x.IsHero ? ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0335") : ("T" + GetScenePartyTransferTroopTier(x) + " " + EconomyPromptTexts.ProjectSource(MyBehavior.GetPartyTransferTroopTypeLabelForExternal(x.Character)))
 				group x by groupName into g
 				orderby g.Any((MyBehavior.PartyTransferPromptEntry x) => x.IsHero) descending, g.Max(GetScenePartyTransferTroopTier) descending, g.Key
 				select g)
@@ -1440,7 +1444,7 @@ internal static void AppendCompactPartyTransferPostprocessSectionForScene(String
 		foreach (IGrouping<string, MyBehavior.PartyTransferPromptEntry> item2 in
 			from x in list
 			let tier = GetScenePartyTransferTroopTier(x)
-			let type = MyBehavior.GetPartyTransferTroopTypeLabelForExternal(x.Character)
+			let type = EconomyPromptTexts.ProjectSource(MyBehavior.GetPartyTransferTroopTypeLabelForExternal(x.Character))
 			group x by "T" + tier + " " + type into g
 			orderby g.Max(GetScenePartyTransferTroopTier) descending, g.Key
 			select g)
@@ -1468,12 +1472,12 @@ internal static void AppendCompactSettlementTransferPostprocessSectionForScene(S
 		List<MyBehavior.SettlementTransferPromptEntry> list = (entries ?? Enumerable.Empty<MyBehavior.SettlementTransferPromptEntry>()).Where(MyBehavior.IsSettlementTransferEntryValidForExternal).ToList();
 		if (list.Count == 0)
 		{
-			sb.AppendLine("（无）");
+			sb.AppendLine(ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0336"));
 			return;
 		}
 		foreach (MyBehavior.SettlementTransferPromptEntry item in list)
 		{
-			sb.AppendLine(item.PromptIndex + ". " + MyBehavior.GetSettlementTransferAssetDisplayNameForExternal(item) + " | ID " + (string.IsNullOrWhiteSpace(MyBehavior.GetSettlementTransferAssetIdForExternal(item)) ? "未知" : MyBehavior.GetSettlementTransferAssetIdForExternal(item)) + " | 类型 " + (string.IsNullOrWhiteSpace(item.TypeLabel) ? "固定资产" : item.TypeLabel.Trim()) + " | 每日收益 " + Math.Max(0, item.DailyIncomeDenars) + " 第纳尔 | 一次结清指导价 " + Math.Max(0, item.GuidePriceDenars) + " 第纳尔");
+			sb.AppendLine(item.PromptIndex + ". " + EconomyPromptTexts.ProjectPartyAssetName(MyBehavior.GetSettlementTransferAssetDisplayNameForExternal(item)) + " | ID " + (string.IsNullOrWhiteSpace(MyBehavior.GetSettlementTransferAssetIdForExternal(item)) ? ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0337") : MyBehavior.GetSettlementTransferAssetIdForExternal(item)) + ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0338") + (string.IsNullOrWhiteSpace(item.TypeLabel) ? ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0339") : EconomyPromptTexts.ProjectSource(item.TypeLabel.Trim())) + ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0340") + Math.Max(0, item.DailyIncomeDenars) + ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0341") + Math.Max(0, item.GuidePriceDenars) + ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0342"));
 		}
 	}
 
@@ -1481,11 +1485,11 @@ internal static string AppendPostprocessContextBlockForScene(string current, str
 	{
 		string text = (current ?? "").Trim();
 		string text2 = (block ?? "").Trim();
-		if (string.IsNullOrWhiteSpace(text2) || text2 == "（无）")
+		if (string.IsNullOrWhiteSpace(text2) || text2 == ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0343") || text2 == ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0343"))
 		{
-			return string.IsNullOrWhiteSpace(text) ? "（无）" : text;
+			return string.IsNullOrWhiteSpace(text) ? ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0344") : text;
 		}
-		if (string.IsNullOrWhiteSpace(text) || text == "（无）")
+		if (string.IsNullOrWhiteSpace(text) || text == ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0345") || text == ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0345"))
 		{
 			return text2;
 		}
@@ -1525,7 +1529,7 @@ internal static List<PostprocessRuleEntry> BuildAutoGroupRelayPostprocessRulesFo
 			new PostprocessRuleEntry
 			{
 				Tag = AutoGroupRelayTagTemplate,
-				Description = "按运行时补充事实里的【接力选择协议】只输出一个接力标签。接话者编号必须来自【站在你旁边的人】，允许已经发言的人再次接话；话题结束或没有合适接话者时，按【接力终止】输出当前发言者自己的编号。不要编造编号或省略标签。"
+				Description = ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0346")
 			}
 		};
 	}
@@ -1549,9 +1553,9 @@ internal static string BuildCompactPartyTransferEntryTextForScene(MyBehavior.Par
 		if (isPrisoner && entry.IsHero)
 		{
 			string sourceLabel = MyBehavior.GetPartyTransferPrisonerSourceLabelForExternal(entry);
-			return entry.PromptIndex + ". " + text + "x1" + (string.IsNullOrWhiteSpace(sourceLabel) ? "" : ("（来源：" + sourceLabel + "）"));
+			return entry.PromptIndex + ". " + text + "x1" + (string.IsNullOrWhiteSpace(sourceLabel) ? "" : (ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0347") + sourceLabel + "）"));
 		}
-		string text2 = entry.Section == MyBehavior.PartyTransferEntrySection.NpcVolunteers ? "（原版要人募兵）" : "";
+		string text2 = entry.Section == MyBehavior.PartyTransferEntrySection.NpcVolunteers ? ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0348") : "";
 		return entry.PromptIndex + ". " + text + "x" + num + text2;
 	}
 
@@ -1621,17 +1625,17 @@ internal static string BuildDuelPostprocessItemListForScene(List<RewardSystemBeh
 	{
 		if (options == null || options.Count == 0)
 		{
-			return "（无）";
+			return ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0349");
 		}
 		StringBuilder stringBuilder = new StringBuilder();
 		List<RewardSystemBehavior.DuelStakeOption> list = options.Where((RewardSystemBehavior.DuelStakeOption x) => x != null && !x.IsPrivateEquipment).ToList();
 		List<RewardSystemBehavior.DuelStakeOption> list2 = options.Where((RewardSystemBehavior.DuelStakeOption x) => x != null && x.IsPrivateEquipment).ToList();
 		if (list.Count > 0)
 		{
-			stringBuilder.AppendLine("库存物品：");
+			stringBuilder.AppendLine(ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0350"));
 			foreach (RewardSystemBehavior.DuelStakeOption duelStakeOption in list)
 			{
-				stringBuilder.Append(duelStakeOption.Name ?? duelStakeOption.ItemId ?? "未知物品")
+				stringBuilder.Append(duelStakeOption.Name ?? duelStakeOption.ItemId ?? ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0351"))
 					.Append(" x")
 					.Append(Math.Max(1, duelStakeOption.Count))
 					.Append(" | guidePrice=")
@@ -1641,10 +1645,10 @@ internal static string BuildDuelPostprocessItemListForScene(List<RewardSystemBeh
 		}
 		if (list2.Count > 0)
 		{
-			stringBuilder.AppendLine("私人装备：");
+			stringBuilder.AppendLine(ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0352"));
 			foreach (RewardSystemBehavior.DuelStakeOption duelStakeOption2 in list2)
 			{
-				stringBuilder.Append(duelStakeOption2.Name ?? duelStakeOption2.ItemId ?? "未知物品")
+				stringBuilder.Append(duelStakeOption2.Name ?? duelStakeOption2.ItemId ?? ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0353"))
 					.Append(" x")
 					.Append(Math.Max(1, duelStakeOption2.Count))
 					.Append(" | guidePrice=")
@@ -1669,12 +1673,12 @@ internal static List<PostprocessRuleEntry> BuildNpcSurrenderPostprocessRulesForS
 internal static string BuildPartyTransferNpcPostprocessListForScene(List<MyBehavior.PartyTransferPromptEntry> troopOptions, List<MyBehavior.PartyTransferPromptEntry> prisonerOptions, List<MyBehavior.PartyTransferPromptEntry> allTroopOptions = null, List<MyBehavior.PartyTransferPromptEntry> allPrisonerOptions = null)
 	{
 		StringBuilder stringBuilder = new StringBuilder();
-		AppendCompactPartyTransferPostprocessSectionForScene(stringBuilder, "【你当前可转移或可招募部队】：", troopOptions, isPrisoner: false);
+		AppendCompactPartyTransferPostprocessSectionForScene(stringBuilder, ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0354"), troopOptions, isPrisoner: false);
 		List<MyBehavior.PartyTransferPromptEntry> allTroops = (allTroopOptions ?? troopOptions ?? new List<MyBehavior.PartyTransferPromptEntry>()).Where((MyBehavior.PartyTransferPromptEntry x) => x != null).ToList();
-		stringBuilder.Append("全部非Hero士兵: ").Append(allTroops.Sum((MyBehavior.PartyTransferPromptEntry x) => Math.Max(0, x.Count))).Append(" 人 | 雇佣指导总值: ").Append(MyBehavior.CalculatePartyTransferTotalValueForExternal(allTroops, isPrisoner: false)).AppendLine(" 第纳尔");
-		AppendCompactPartyTransferPostprocessSectionForScene(stringBuilder, "【你当前可转移俘虏】：", prisonerOptions, isPrisoner: true);
+		stringBuilder.Append(ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0355")).Append(allTroops.Sum((MyBehavior.PartyTransferPromptEntry x) => Math.Max(0, x.Count))).Append(ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0356")).Append(MyBehavior.CalculatePartyTransferTotalValueForExternal(allTroops, isPrisoner: false)).AppendLine(ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0357"));
+		AppendCompactPartyTransferPostprocessSectionForScene(stringBuilder, ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0358"), prisonerOptions, isPrisoner: true);
 		List<MyBehavior.PartyTransferPromptEntry> allPrisoners = (allPrisonerOptions ?? prisonerOptions ?? new List<MyBehavior.PartyTransferPromptEntry>()).Where((MyBehavior.PartyTransferPromptEntry x) => x != null).ToList();
-		stringBuilder.Append("全部俘虏: ").Append(allPrisoners.Sum((MyBehavior.PartyTransferPromptEntry x) => Math.Max(0, x.Count))).Append(" 人 | 购买指导总值: ").Append(MyBehavior.CalculatePartyTransferTotalValueForExternal(allPrisoners, isPrisoner: true)).AppendLine(" 第纳尔");
+		stringBuilder.Append(ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0359")).Append(allPrisoners.Sum((MyBehavior.PartyTransferPromptEntry x) => Math.Max(0, x.Count))).Append(ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0360")).Append(MyBehavior.CalculatePartyTransferTotalValueForExternal(allPrisoners, isPrisoner: true)).AppendLine(ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0361"));
 		return stringBuilder.ToString().TrimEnd();
 	}
 
@@ -1694,7 +1698,7 @@ internal static List<PostprocessRuleEntry> BuildPersistentAdpDebtPostprocessRule
 			{
 				description += "；";
 			}
-			description += "仅限当前债务提示中列出的、玩家欠当前聊天NPC对象的债务ID；只有本轮系统事实或NPC明确表示对应债务已偿还、收到、豁免或免除时输出；禁止用于创建新债务。";
+			description += ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0362");
 			result.Add(new PostprocessRuleEntry
 			{
 				Tag = tag,
@@ -1705,8 +1709,8 @@ internal static List<PostprocessRuleEntry> BuildPersistentAdpDebtPostprocessRule
 		{
 			result.Add(new PostprocessRuleEntry
 			{
-				Tag = "[ADP:债务ID]",
-				Description = "仅限当前债务提示中列出的、玩家欠当前聊天NPC对象的债务ID；只有本轮系统事实或NPC明确表示对应债务已偿还、收到、豁免或免除时输出；禁止用于创建新债务。"
+				Tag = ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0363"),
+				Description = ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0364")
 			});
 		}
 		return result;
@@ -1738,20 +1742,20 @@ internal static string BuildPostprocessRuleTextForScene(IEnumerable<PostprocessR
 internal static string BuildRewardPostprocessItemListForScene(List<RewardSystemBehavior.RewardItemInfo> options, int gold, List<RewardSystemBehavior.RewardItemInfo> allOptions = null)
 	{
 		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.Append("第纳尔: ").Append(Math.Max(0, gold)).AppendLine();
+		stringBuilder.Append(ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0365")).Append(Math.Max(0, gold)).AppendLine();
 		if (options == null || options.Count == 0)
 		{
-			stringBuilder.Append("全部可转物品总值: ").Append(RewardSystemBehavior.CalculateRewardItemsTotalValueForExternal(allOptions)).AppendLine(" 第纳尔（不含第纳尔）");
+			stringBuilder.Append(ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0366")).Append(RewardSystemBehavior.CalculateRewardItemsTotalValueForExternal(allOptions)).AppendLine(ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0367"));
 			return stringBuilder.ToString().TrimEnd();
 		}
 		List<RewardSystemBehavior.RewardItemInfo> list = options.Where((RewardSystemBehavior.RewardItemInfo x) => x != null && !x.IsPrivateEquipment).ToList();
 		List<RewardSystemBehavior.RewardItemInfo> list2 = options.Where((RewardSystemBehavior.RewardItemInfo x) => x != null && x.IsPrivateEquipment).ToList();
 		if (list.Count > 0)
 		{
-			stringBuilder.AppendLine("库存物品：");
+			stringBuilder.AppendLine(ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0368"));
 			foreach (RewardSystemBehavior.RewardItemInfo item in list)
 			{
-				stringBuilder.Append(item.Name ?? item.PromptStringId ?? item.StringId ?? "未知物品")
+				stringBuilder.Append(item.Name ?? item.PromptStringId ?? item.StringId ?? ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0369"))
 					.Append(string.IsNullOrWhiteSpace(item.PromptStringId) || string.Equals(item.PromptStringId, item.StringId, StringComparison.OrdinalIgnoreCase) ? "" : (" | id=" + item.PromptStringId))
 					.Append(" x")
 					.Append(Math.Max(1, item.Count))
@@ -1762,10 +1766,10 @@ internal static string BuildRewardPostprocessItemListForScene(List<RewardSystemB
 		}
 		if (list2.Count > 0)
 		{
-			stringBuilder.AppendLine("私人战斗装备：");
+			stringBuilder.AppendLine(ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0370"));
 			foreach (RewardSystemBehavior.RewardItemInfo item2 in list2)
 			{
-				stringBuilder.Append(item2.Name ?? item2.PromptStringId ?? item2.StringId ?? "未知物品")
+				stringBuilder.Append(item2.Name ?? item2.PromptStringId ?? item2.StringId ?? ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0371"))
 					.Append(" x")
 					.Append(Math.Max(1, item2.Count))
 					.Append(" | guidePrice=")
@@ -1773,7 +1777,7 @@ internal static string BuildRewardPostprocessItemListForScene(List<RewardSystemB
 					.AppendLine();
 			}
 		}
-		stringBuilder.Append("全部可转物品总值: ").Append(RewardSystemBehavior.CalculateRewardItemsTotalValueForExternal(allOptions ?? options)).AppendLine(" 第纳尔（不含第纳尔）");
+		stringBuilder.Append(ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0372")).Append(RewardSystemBehavior.CalculateRewardItemsTotalValueForExternal(allOptions ?? options)).AppendLine(ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0373"));
 		return stringBuilder.ToString().TrimEnd();
 	}
 
@@ -1808,7 +1812,7 @@ internal static List<PostprocessRuleEntry> BuildRuntimeDiplomacyPostprocessRules
 					return new PostprocessRuleEntry
 					{
 						Tag = rule.Tag,
-						Description = "仅当NPC国王在<latest_reply>中明确同意让自己的王国立即向第三方王国宣战、开战、讨伐或出兵时输出。玩家不是国王，不能以自己的名义或代表所属王国宣战。id1必须是NPC王国ID，id2必须是目标第三方王国ID；两者都从运行时事实复制。",
+						Description = ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0374"),
 						SingleFramedNpcDescription = rule.SingleFramedNpcDescription,
 						RuntimeAllowedParameterValues = rule.RuntimeAllowedParameterValues
 					};
@@ -1824,7 +1828,7 @@ internal static List<PostprocessRuleEntry> BuildRuntimeDiplomacyPostprocessRules
 
 internal static string BuildSceneActionPostprocessUserPrompt(string userPromptTemplate, string tagRules, string npcName, string historyText, string latestReplyBlock, string sharedItemList = null, string playerItemList = null, string debtHint = null, string marriagePlayerCandidates = null, string marriageTargetCandidates = null, string runtimeContext = null)
 	{
-		return AIConfigHandler.BuildActionPostprocessUserPrompt(userPromptTemplate, tagRules, npcName, string.IsNullOrWhiteSpace(historyText) ? "（无）" : historyText.Trim(), string.IsNullOrWhiteSpace(latestReplyBlock) ? "玩家: （无）\nNPC: （无）" : latestReplyBlock.Trim(), sharedItemList, playerItemList, debtHint, marriagePlayerCandidates, marriageTargetCandidates, runtimeContext);
+		return AIConfigHandler.BuildActionPostprocessUserPrompt(userPromptTemplate, tagRules, npcName, string.IsNullOrWhiteSpace(historyText) ? ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0375") : historyText.Trim(), string.IsNullOrWhiteSpace(latestReplyBlock) ? ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0376") : latestReplyBlock.Trim(), sharedItemList, playerItemList, debtHint, marriagePlayerCandidates, marriageTargetCandidates, runtimeContext);
 	}
 
 internal static string BuildSceneMechanismTargetListForPostprocess(List<PostprocessSummonTarget> summonTargets, List<PostprocessGuideTarget> guideTargets)
@@ -1836,21 +1840,21 @@ internal static string BuildSceneMechanismTargetListForPostprocess(List<Postproc
 		{
 			if (item != null && item.PromptId > 0 && !string.IsNullOrWhiteSpace(item.DisplayName) && hashSet.Add(item.PromptId))
 			{
-				list.Add(item.PromptId + " " + item.DisplayName.Trim() + " " + ((item.LocationCode ?? "处").Trim()));
+				list.Add(item.PromptId + " " + item.DisplayName.Trim() + " " + AdapterSceneTexts.ProjectLabelForPrompt((item.LocationCode ?? ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0377")).Trim()));
 			}
 		}
 		foreach (PostprocessGuideTarget item2 in guideTargets ?? new List<PostprocessGuideTarget>())
 		{
 			if (item2 != null && item2.PromptId > 0 && !string.IsNullOrWhiteSpace(item2.DisplayName) && hashSet.Add(item2.PromptId))
 			{
-				list.Add(item2.PromptId + " " + item2.DisplayName.Trim() + " " + ((item2.LocationCode ?? "处").Trim()));
+				list.Add(item2.PromptId + " " + AdapterSceneTexts.ProjectLabelForPrompt(item2.DisplayName.Trim()) + " " + AdapterSceneTexts.ProjectLabelForPrompt((item2.LocationCode ?? ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0378")).Trim()));
 			}
 		}
 		if (list.Count == 0)
 		{
-			return "（无）";
+			return ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0379");
 		}
-		stringBuilder.AppendLine("【带路与传唤NPC清单】：");
+		stringBuilder.AppendLine(ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0380"));
 		foreach (string item3 in list)
 		{
 			stringBuilder.AppendLine(item3);
@@ -1871,15 +1875,15 @@ internal static string BuildSceneRelayNpcListLineForPostprocess(NpcDataPacket np
 		}
 		if (string.IsNullOrWhiteSpace(name))
 		{
-			name = "未知NPC";
+			name = ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0381");
 		}
 		string identity = GetSceneNpcListIdentityForPrompt(npc);
 		if (string.IsNullOrWhiteSpace(identity))
 		{
-			identity = npc.IsHero ? "有名人物" : "场景人物";
+			identity = npc.IsHero ? ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0382") : ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0383");
 		}
-		string position = isPrimaryTarget ? "主对话对象" : (isCurrentSpeaker ? "当前发言者" : "在场人物");
-		return "- 名字: " + SanitizeSceneRelayPostprocessField(name) + " | 身份: " + SanitizeSceneRelayPostprocessField(identity) + " | 对话位置: " + position + " | 接力编号: " + npc.AgentIndex;
+		string position = isPrimaryTarget ? ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0384") : (isCurrentSpeaker ? ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0385") : ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0386"));
+		return ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0387") + SanitizeSceneRelayPostprocessField(name) + ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0388") + SanitizeSceneRelayPostprocessField(identity) + ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0389") + position + ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0390") + npc.AgentIndex;
 	}
 
 internal static string BuildSceneRelayTargetListForPostprocess(IEnumerable<NpcDataPacket> presentNpcs, int currentSpeakerAgentIndex, int primaryTargetAgentIndex = -1)
@@ -1903,8 +1907,8 @@ internal static string BuildSceneRelayTargetListForPostprocess(IEnumerable<NpcDa
 			StringBuilder sb = new StringBuilder();
             // Scalar request facts: the current/primary speaker can be absent from the next-candidate rows.
             if (currentSpeakerAgentIndex >= 0)
-                sb.AppendLine("【当前接力状态】本段回复的当前发言者编号: " + currentSpeakerAgentIndex + "; 主对话对象编号: " + primaryTargetAgentIndex + "; 当前发言者已完成本段回复。");
-			sb.AppendLine("【站在你旁边的人】");
+                sb.AppendLine(ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0391") + currentSpeakerAgentIndex + ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0392") + primaryTargetAgentIndex + ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0393"));
+			sb.AppendLine(ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0394"));
 			foreach (NpcDataPacket npc in relayNpcs)
 			{
 				string line = BuildSceneRelayNpcListLineForPostprocess(npc, npc.AgentIndex == primaryTargetAgentIndex, npc.AgentIndex == currentSpeakerAgentIndex);
@@ -1915,8 +1919,8 @@ internal static string BuildSceneRelayTargetListForPostprocess(IEnumerable<NpcDa
 			}
 			if (currentSpeakerAgentIndex >= 0)
 			{
-				sb.AppendLine("【接力选择协议】只输出一个[RELAY:接力编号]。优先选择最新对话中被询问、被递话或有明确回应理由的人；候选中已经发言的人仍可再次接话，未发言仅作同等条件下的优先项。不要为了凑人数强迫士兵或平民插话。");
-				sb.AppendLine("【接力终止】若本轮话题已结束、明确告别或没有合适的接话者，输出[RELAY:" + currentSpeakerAgentIndex + "]表示结束本轮接力；这是当前发言者自己的编号，不是让其再次发言。结束时也应输出此标签，不要用省略标签表达结束。");
+				sb.AppendLine(ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0395"));
+				sb.AppendLine(ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0396") + currentSpeakerAgentIndex + ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0397"));
 			}
 			return sb.ToString().TrimEnd();
 		}
@@ -1929,17 +1933,17 @@ internal static string BuildSceneRelayTargetListForPostprocess(IEnumerable<NpcDa
 internal static string BuildSettlementTransferPostprocessListForScene(List<MyBehavior.SettlementTransferPromptEntry> npcOptions, List<MyBehavior.SettlementTransferPromptEntry> allNpcOptions = null)
 	{
 		StringBuilder stringBuilder = new StringBuilder();
-		AppendCompactSettlementTransferPostprocessSectionForScene(stringBuilder, "【你当前可转移固定资产】：", npcOptions);
+		AppendCompactSettlementTransferPostprocessSectionForScene(stringBuilder, ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0398"), npcOptions);
 		List<MyBehavior.SettlementTransferPromptEntry> all = (allNpcOptions ?? npcOptions ?? new List<MyBehavior.SettlementTransferPromptEntry>()).Where(MyBehavior.IsSettlementTransferEntryValidForExternal).ToList();
-		stringBuilder.Append("你全部可转固定资产: ").Append(all.Count).Append(" 项 | 一次结清指导总值: ").Append(MyBehavior.CalculateSettlementTransferTotalValueForExternal(all)).AppendLine(" 第纳尔");
+		stringBuilder.Append(ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0399")).Append(all.Count).Append(ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0400")).Append(MyBehavior.CalculateSettlementTransferTotalValueForExternal(all)).AppendLine(ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0401"));
 		return stringBuilder.ToString().TrimEnd();
 	}
 
 internal static string BuildSiegeSurrenderPostprocessContextForNativeConversation(Settlement settlement, string sideLabel)
 	{
-		string settlementName = settlement?.Name?.ToString() ?? "当前围城";
-		string side = string.IsNullOrWhiteSpace(sideLabel) ? "当前NPC本方" : sideLabel.Trim();
-		return "【当前围城投降上下文】\n围城目标：" + settlementName + "\n当前NPC归属：" + side + "\n标签：" + SiegeSurrenderActionTag;
+		string settlementName = settlement?.Name?.ToString() ?? ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0402");
+		string side = string.IsNullOrWhiteSpace(sideLabel) ? ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0403") : sideLabel.Trim();
+		return ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0404") + settlementName + ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0405") + side + ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0406") + SiegeSurrenderActionTag;
 	}
 
 internal static List<PostprocessRuleEntry> BuildSiegeSurrenderPostprocessRulesForNativeConversation(bool enabled, Settlement settlement, BattleSideEnum targetSide)
@@ -1948,19 +1952,19 @@ internal static List<PostprocessRuleEntry> BuildSiegeSurrenderPostprocessRulesFo
 		{
 			return null;
 		}
-		string settlementName = settlement?.Name?.ToString() ?? "当前围城";
+		string settlementName = settlement?.Name?.ToString() ?? ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0407");
 		string description;
 		if (targetSide == BattleSideEnum.Defender)
 		{
-			description = "仅当NPC明确代表守方同意" + settlementName + "开城投降、交出城池或停止守城时输出；讨论、求饶、无授权禁止。";
+			description = ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0408") + settlementName + ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0409");
 		}
 		else if (targetSide == BattleSideEnum.Attacker)
 		{
-			description = "仅当NPC明确代表攻城方同意在" + settlementName + "投降、撤围并接受战败处置时输出；讨论、威胁、临时撤退、无授权禁止。";
+			description = ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0410") + settlementName + ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0411");
 		}
 		else
 		{
-			description = "仅当NPC明确代表当前围城本方同意投降或撤围时输出；模糊表态或无授权禁止。";
+			description = ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0412");
 		}
 		return new List<PostprocessRuleEntry>
 		{
@@ -2075,7 +2079,7 @@ internal static RewardSystemBehavior.RewardItemInfo FindRewardItemByTokenForScen
 			{
 				return "";
 			}
-			return Regex.Replace(value.Trim(), "[\\s\\u3000]+", "").Replace("的", "");
+			return Regex.Replace(value.Trim(), "[\\s\\u3000]+", "").Replace(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0413"), "");
 		}
 		RewardSystemBehavior.RewardItemInfo rewardItemInfo = options.FirstOrDefault((RewardSystemBehavior.RewardItemInfo x) => x != null && string.Equals((x.Name ?? "").Trim(), text, StringComparison.OrdinalIgnoreCase));
 		if (rewardItemInfo != null)
@@ -2163,7 +2167,7 @@ internal static string GetSceneNpcGivenNameForPrompt(NpcDataPacket npc)
 internal static string GetSceneNpcIdentityNameForPrompt(NpcDataPacket npc)
 	{
 		string text = (ShoutUtils.GetPromptIdentityName(npc) ?? "").Trim();
-		return string.IsNullOrWhiteSpace(text) ? "未命名NPC" : text;
+		return string.IsNullOrWhiteSpace(text) ? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0414") : text;
 	}
 
 internal static string GetSceneNpcListIdentityForPrompt(NpcDataPacket npc)
@@ -2325,7 +2329,7 @@ internal static List<PostprocessRuleEntry> MergePostprocessRulesForScene(params 
 					list.Add(item);
 					continue;
 				}
-				if (string.Equals(text, "[AD:价值:天数:N/P:备注内容]", StringComparison.OrdinalIgnoreCase))
+				if (string.Equals(text, ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0415"), StringComparison.OrdinalIgnoreCase))
 				{
 					list[value] = MergeSharedDeferredDebtPostprocessRule(list[value], item);
 				}
@@ -3419,7 +3423,7 @@ internal static bool RequestsAllFixedAssetsForPostprocess(string playerText, str
 		{
 			return false;
 		}
-		return Regex.IsMatch(text, "(?:全部|所有(?:的)?|全都|一切)\\s*(?:资产|财产|固定资产|领地|城市|城堡|工坊|商队|贸易车队)|(?:固定资产|领地|城市|城堡|工坊|商队|贸易车队)\\s*(?:全部|全都|都)|\\ball\\s+(?:assets?|property|fixed\\s+assets?|fiefs?|towns?|castles?|workshops?|caravans?)\\b", RegexOptions.IgnoreCase);
+		return Regex.IsMatch(text, ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0416"), RegexOptions.IgnoreCase);
 	}
 
 internal static bool RequestsAllOrdinaryAssetsForPostprocess(string playerText, string historyText)
@@ -3429,7 +3433,7 @@ internal static bool RequestsAllOrdinaryAssetsForPostprocess(string playerText, 
 		{
 			return false;
 		}
-		return Regex.IsMatch(text, "(?:全部|所有(?:的)?|全都|一切)\\s*(?:资产|财产|物品|东西|货物|装备|库存|行囊)|(?:资产|财产|物品|东西|货物|装备|库存|行囊)\\s*(?:全部|全都|都)|\\ball\\s+(?:assets?|property|items?|goods|equipment|inventory)\\b", RegexOptions.IgnoreCase);
+		return Regex.IsMatch(text, ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0417"), RegexOptions.IgnoreCase);
 	}
 
 internal static string ResolveCourierRuntimeTargetKingdomId(Hero targetHero, CharacterObject targetCharacter)
@@ -3479,6 +3483,12 @@ internal static T ResolveSceneMechanismTargetByToken<T>(IEnumerable<T> targets, 
 		if (val2 != null)
 		{
 			return val2;
+		}
+		string rawLabel = AdapterSceneTexts.ResolveRawLabel(text);
+		if (!string.Equals(rawLabel, text, StringComparison.Ordinal))
+		{
+			val2 = list.FirstOrDefault(x => string.Equals((getName(x) ?? "").Trim(), rawLabel, StringComparison.OrdinalIgnoreCase));
+			if (val2 != null) return val2;
 		}
 		val2 = list.FirstOrDefault((T x) => string.Equals(NormalizeSceneMechanismTargetKey(getName(x)), text2, StringComparison.OrdinalIgnoreCase));
 		if (val2 != null)

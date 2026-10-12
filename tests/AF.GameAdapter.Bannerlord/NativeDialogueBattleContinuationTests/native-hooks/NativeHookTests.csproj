@@ -9,4 +9,7 @@
     <Reference Include="0Harmony"><HintPath>$(GuardHarmonyDir)/0Harmony.dll</HintPath></Reference>
     <None Include="$(GuardHarmonyDir)/0Harmony.dll;$(GuardHarmonyDir)/MonoMod*.dll;$(GuardHarmonyDir)/Mono.Cecil*.dll" Link="%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="../../../../content/foundation/AF.Foundation.Localization/ModuleData/RuntimeStaleRequestCompatibility.txt" LogicalName="AnimusForge.Foundation.StaleRequestError.txt" />
+  </ItemGroup>
 </Project>

@@ -157,14 +157,14 @@ public sealed partial class NpcRulerPolicyBehavior
 				: string.Equals(targetId, policyTargetId, StringComparison.OrdinalIgnoreCase)
 					? FirstNonEmpty(attribution.TargetKingdomName, targetEffect?.TargetKingdomName, targetId)
 					: FirstNonEmpty(targetEffect?.TargetKingdomName, targetId), 50);
-			string policyName = Limit(FirstNonEmpty(policy.PolicyName, "未命名政策"), 70);
+			string policyName = Limit(FirstNonEmpty(policy.PolicyName, PolicyCompatibilityTexts.Get("Legacy_BuildPolicyRecentActionText_060")), 70);
 			string effectSummary = Limit(BuildEffectSummary(relevantEffects), 120);
 			if (string.IsNullOrWhiteSpace(effectSummary))
 			{
-				effectSummary = "无持续数值变化";
+				effectSummary = PolicyCompatibilityTexts.Get("Legacy_BuildPolicyWeeklyMaterialEffectSummary_066");
 			}
 			string snapshot = BuildUnifiedPolicyWeeklySnapshot(policy, attribution, targetName, effectSummary);
-			string materialLabel = attribution.IsPlayerVassalPolicy ? "玩家附庸政策" : "统治者政策";
+			string materialLabel = attribution.IsPlayerVassalPolicy ? PolicyNpcCompatibilityTexts.Get("Npc_Legacy_3108e6874fd120d5") : PolicyNpcCompatibilityTexts.Get("Npc_Legacy_5c46eac8adcecd1f");
 			int activeExecutableEffects = CountActiveExecutablePolicyEffectInstances(relevantEffects);
 			MyBehavior.RecordPolicySystemWeeklyMaterialForExternal(attribution.MaterialKind, materialLabel + " - " + targetName + " / " + policyName, snapshot,
 				"unified_policy:" + policy.PolicyId + ":weekly:" + NormalizeKeyPart(targetId), targetId, recipients.Count > 1 || !isIssuer,
@@ -223,7 +223,7 @@ public sealed partial class NpcRulerPolicyBehavior
 		bool isPlayerVassalPolicy = policy?.IsPlayerPolicy == true
 			&& string.Equals(policy.PolicyKind ?? string.Empty, "vassal", StringComparison.OrdinalIgnoreCase);
 		string targetKingdomId = (policy?.KingdomId ?? string.Empty).Trim();
-		string targetKingdomName = FirstNonEmpty(policy?.KingdomName, targetKingdomId, "目标附庸国");
+		string targetKingdomName = FirstNonEmpty(policy?.KingdomName, targetKingdomId, PolicyNpcCompatibilityTexts.Get("Npc_Legacy_a4b6eca9c042f551"));
 		Kingdom playerKingdom = TryResolvePlayerKingdomForWeeklyAttribution();
 		string issuerKingdomId = isPlayerVassalPolicy
 			? FirstNonEmpty(policy?.IssuerKingdomId, playerKingdom?.StringId)
@@ -232,8 +232,8 @@ public sealed partial class NpcRulerPolicyBehavior
 			? FirstNonEmpty(policy?.IssuerKingdomName, playerKingdom?.Name?.ToString(), issuerKingdomId)
 			: FirstNonEmpty(policy?.KingdomName, targetKingdomName, issuerKingdomId);
 		string publisherLabel = isPlayerVassalPolicy
-			? string.IsNullOrWhiteSpace(issuerKingdomName) ? "宗主玩家" : "宗主玩家（" + issuerKingdomName + "）"
-			: FirstNonEmpty(issuerKingdomName, "未知发布国");
+			? string.IsNullOrWhiteSpace(issuerKingdomName) ? PolicyNpcCompatibilityTexts.Get("Npc_Legacy_4d0df8e2a78c9427") : PolicyNpcCompatibilityTexts.Get("Npc_Legacy_89d05cdf620a7818") + issuerKingdomName + "）"
+			: FirstNonEmpty(issuerKingdomName, PolicyNpcCompatibilityTexts.Get("Npc_Legacy_c88b0bdd8b263a57"));
 		return new UnifiedPolicyWeeklyAttribution
 		{
 			IsPlayerVassalPolicy = isPlayerVassalPolicy,
@@ -264,17 +264,17 @@ public sealed partial class NpcRulerPolicyBehavior
 		string targetName,
 		string effectSummary)
 	{
-		string policyName = Limit(FirstNonEmpty(policy?.PolicyName, "未命名政策"), 70);
+		string policyName = Limit(FirstNonEmpty(policy?.PolicyName, PolicyCompatibilityTexts.Get("Legacy_BuildPolicyRecentActionText_060")), 70);
 		string prefix = attribution?.IsPlayerVassalPolicy == true
-			? "玩家附庸政策。发布方：" + FirstNonEmpty(attribution.PublisherLabel, "宗主玩家")
-				+ "。生效对象：" + Limit(FirstNonEmpty(attribution.TargetKingdomName, attribution.TargetKingdomId, "目标附庸国"), 50)
-				+ "。发布者：" + Limit(FirstNonEmpty(policy?.RulerName, "玩家"), 50)
-				+ "。归属说明：由宗主玩家发布，不是附庸统治者自行颁布"
-			: "统治者政策。发布国：" + Limit(FirstNonEmpty(attribution?.IssuerKingdomName, policy?.KingdomName, policy?.KingdomId), 50)
-				+ "。发布者：" + Limit(policy?.RulerName, 50);
-		return Limit(prefix + "。政策：《" + policyName + "》"
-			+ "。政策摘要：" + Limit(policy?.PolicyDigest, 140) + "。衍生事件：" + Limit(policy?.FeedbackDigest, 70)
-			+ "。周报归属国：" + Limit(targetName, 50) + "。相关每日影响：" + Limit(effectSummary, 120) + "。", 420);
+			? PolicyNpcCompatibilityTexts.Get("Npc_Legacy_0ae8b79c474f4c0c") + FirstNonEmpty(attribution.PublisherLabel, PolicyNpcCompatibilityTexts.Get("Npc_Legacy_4d0df8e2a78c9427"))
+				+ PolicyNpcCompatibilityTexts.Get("Npc_Legacy_5e57f02c15a1cd20") + Limit(FirstNonEmpty(attribution.TargetKingdomName, attribution.TargetKingdomId, PolicyNpcCompatibilityTexts.Get("Npc_Legacy_a4b6eca9c042f551")), 50)
+				+ PolicyNpcCompatibilityTexts.Get("Npc_Legacy_c26893bf9ff6adb9") + Limit(FirstNonEmpty(policy?.RulerName, PolicyNpcCompatibilityTexts.Get("Npc_Legacy_991e63fe292063b6")), 50)
+				+ PolicyNpcCompatibilityTexts.Get("Npc_Legacy_d3d3d7a79df86965")
+			: PolicyNpcCompatibilityTexts.Get("Npc_Legacy_5cc8392f49af3534") + Limit(FirstNonEmpty(attribution?.IssuerKingdomName, policy?.KingdomName, policy?.KingdomId), 50)
+				+ PolicyNpcCompatibilityTexts.Get("Npc_Legacy_c26893bf9ff6adb9") + Limit(policy?.RulerName, 50);
+		return Limit(prefix + PolicyNpcCompatibilityTexts.Get("Npc_Legacy_327f28092a13c419") + policyName + "》"
+			+ PolicyNpcCompatibilityTexts.Get("Npc_Legacy_90bebf0cffdad40e") + Limit(policy?.PolicyDigest, 140) + PolicyNpcCompatibilityTexts.Get("Npc_Legacy_2dd7425af34e6823") + Limit(policy?.FeedbackDigest, 70)
+			+ PolicyNpcCompatibilityTexts.Get("Npc_Legacy_cd1cdfee0f18bfcb") + Limit(targetName, 50) + PolicyNpcCompatibilityTexts.Get("Npc_Legacy_661657fda8932b61") + Limit(effectSummary, 120) + "。", 420);
 	}
 
 	private static bool TryDeserializePolicyRecords(string json, out List<NpcRulerPolicyRecord> records, out Exception exception)
@@ -286,7 +286,7 @@ public sealed partial class NpcRulerPolicyBehavior
 			string compatibleJson = NormalizeGeneratedPolicyEventFieldNames(json);
 			if (!TryDeserializeWirePolicyRecords(compatibleJson, out records))
 			{
-				throw new JsonException("NPC policy response 不符合 canonical module wire contract");
+				throw new JsonException(PolicyNpcCompatibilityTexts.Get("Npc_Legacy_664f538d3b1fb291"));
 			}
 			return true;
 		}
@@ -1461,11 +1461,11 @@ public sealed partial class NpcRulerPolicyBehavior
 					wars.Add(GetKingdomName(other));
 				}
 			}
-			return "战争=" + (wars.Count == 0 ? "无" : string.Join("、", wars));
+			return PolicyMiscTexts.Get("Npc_WarLabel", "Wars=") + (wars.Count == 0 ? PolicyGenerationPromptTexts.Get("NoPolicies", "none") : string.Join(PolicyMiscTexts.Get("Npc_ListSeparator", ", "), wars));
 		}
 		catch
 		{
-			return "未知";
+			return PolicyGenerationPromptTexts.Get("Unknown", "unknown");
 		}
 	}
 
@@ -1473,7 +1473,7 @@ public sealed partial class NpcRulerPolicyBehavior
 	{
 		if (ruler == null)
 		{
-			return "未知";
+			return PolicyGenerationPromptTexts.Get("Unknown", "unknown");
 		}
 		try
 		{
@@ -1489,7 +1489,7 @@ public sealed partial class NpcRulerPolicyBehavior
 		}
 		catch
 		{
-			return "读取失败";
+			return PolicyGenerationPromptTexts.Get("NpcReadFailed", "failed to read");
 		}
 	}
 
@@ -1497,14 +1497,14 @@ public sealed partial class NpcRulerPolicyBehavior
 	{
 		try
 		{
-			string policies = string.Join("、", kingdom.ActivePolicies
+			string policies = string.Join(PolicyMiscTexts.Get("Npc_ListSeparator", ", "), kingdom.ActivePolicies
 				.Where(p => p != null && !(p.StringId ?? string.Empty).StartsWith("af_policy:", StringComparison.OrdinalIgnoreCase))
 				.Select(p => p.Name?.ToString()).Where(x => !string.IsNullOrWhiteSpace(x)).Distinct());
-			return string.IsNullOrWhiteSpace(policies) ? "无" : Limit(policies, 180);
+			return string.IsNullOrWhiteSpace(policies) ? PolicyGenerationPromptTexts.Get("NoPolicies", "none") : Limit(policies, 180);
 		}
 		catch
 		{
-			return "读取失败";
+			return PolicyGenerationPromptTexts.Get("NpcReadFailed", "failed to read");
 		}
 	}
 
@@ -1547,8 +1547,8 @@ public sealed partial class NpcRulerPolicyBehavior
 		List<string> lines = new List<string>();
 		foreach (NpcRulerPolicyEffectDto effect in validEffects)
 		{
-			string target = FirstNonEmpty(effect.TargetKingdomName, "目标王国");
-			lines.AddRange(CustomPolicyBehavior.BuildPlayerVisibleEffectLinesForExternal(
+			string target = FirstNonEmpty(effect.TargetKingdomName, PolicyNpcCompatibilityTexts.Get("Npc_Legacy_3b0b99acd70b4a02"));
+			lines.AddRange(CustomPolicyBehavior.BuildRawPolicyEffectLinesForExternal(
 				target,
 				effect.ModuleEffects,
 				effect.DurationDays));
@@ -1657,13 +1657,13 @@ public sealed partial class NpcRulerPolicyBehavior
 		}
 		catch
 		{
-			return "第" + GetCurrentCampaignDay().ToString(CultureInfo.InvariantCulture) + "天";
+			return PolicyNpcCompatibilityTexts.Get("Npc_Legacy_af50a0fe2a50a3d1") + GetCurrentCampaignDay().ToString(CultureInfo.InvariantCulture) + PolicyNpcCompatibilityTexts.Get("Npc_Legacy_49da61ceeea2f271");
 		}
 	}
 
 	private static string GetKingdomName(Kingdom kingdom)
 	{
-		return kingdom?.Name?.ToString() ?? kingdom?.StringId ?? "未知王国";
+		return kingdom?.Name?.ToString() ?? kingdom?.StringId ?? PolicyCompatibilityTexts.Get("Closeout_CustomPolicyBehavior_Legacy_Closeout_8");
 	}
 
 	private static string FirstNonEmpty(params string[] values)

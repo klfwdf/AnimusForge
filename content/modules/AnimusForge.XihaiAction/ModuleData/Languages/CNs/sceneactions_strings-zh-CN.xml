@@ -2,6 +2,27 @@
 <base xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" type="string">
   <tags><tag language="简体中文" /></tags>
   <strings>
+    <string id="SAX_BatchSummary" text="场景动作：接受 {ACCEPTED} 项，失败 {FAILED} 项，跳过 {SKIPPED} 项。" />
+    <string id="SAX_Reason_UnknownSpeaker" text="未知人物" />
+    <string id="SAX_Reason_UnknownReason" text="未知原因" />
+    <string id="SAX_Reason_SpeakerLeft" text="演讲者已离开场景。" />
+    <string id="SAX_Reason_SpeakerTeamChanged" text="演讲者已更换队伍。" />
+    <string id="SAX_Reason_PlayerCancelled" text="玩家已取消。" />
+    <string id="SAX_Reason_RequestReplaced" text="已被新的阵前演讲请求替代。" />
+    <string id="SAX_Reason_InvalidSpeech" text="演讲文本或演讲者无效。" />
+    <string id="SAX_Reason_PhaseChanged" text="阵前演讲阶段已改变。" />
+    <string id="SAX_Reason_SpeakerUnavailable" text="演讲者已不可用。" />
+    <string id="SAX_Reason_PhaseClosed" text="阵前演讲阶段已结束。" />
+    <string id="SAX_Reason_RequestTimedOut" text="阵前演讲请求已超时。" />
+    <string id="SAX_Reason_BridgeUnavailable" text="AF 专用 NPC 演讲接口不可用，或演讲者已不再处于活动状态。" />
+    <string id="SAX_Reason_ShoutUnavailable" text="AF 场景喊话实例不可用。" />
+    <string id="SAX_Reason_PacketUnavailable" text="AF 无法构建 NPC 演讲数据包。" />
+    <string id="SAX_Reason_PromptUnclaimed" text="专用 NPC 演讲会话无法取得其提示词。" />
+    <string id="SAX_Reason_UnexpectedTask" text="AF 返回了非预期的 NPC 演讲任务。" />
+    <string id="SAX_Reason_ReplayUnavailable" text="延迟的 AF 回复已无法播放。" />
+    <string id="SAX_Reason_ReplayNoResult" text="AF 回复重放未返回播放结果。" />
+    <string id="SAX_Reason_NpcRequestFailed" text="NPC 演讲请求无法启动：{DETAIL}" />
+    <string id="SAX_Reason_ReplayFailed" text="延迟的 AF 回复重放失败：{DETAIL}" />
     <string id="SAX_Loaded" text="AnimusForge 西海动作已加载（v1.1 / 动作框架 V4 + 阵前演讲 V2）。" />
     <string id="SAX_Disabled" text="AnimusForge 西海动作已禁用：所需的 AnimusForge 运行时契约不可用。" />
     <string id="SAX_InitializationFailed" text="AnimusForge 西海动作初始化失败：{REASON}" />
@@ -126,5 +147,18 @@
     <string id="SAX_MCM_AdvanceDelay_Hint" text="发令动作完成后等待多久再向玩家直属编队下达 Advance；只在上方开关开启时生效。" />
     <string id="SAX_MCM_Notifications_Hint" text="显示演讲开始、取消和结束等状态提示；关闭只影响 UI，不影响演讲执行。" />
     <string id="SAX_MCM_Diagnostics_Hint" text="写入自然语言动作和阵前演讲的诊断日志；关闭可减少日志 I/O，不改变功能。" />
+    <string id="SAX_BattleSpeechInputActive" text="当前已有一场演讲正在进行。" />
+    <string id="SAX_BattleSpeechInputNpcNotQueued" text="他人演讲请求未进入战场通道，请确认当前仍在战斗中。" />
+    <string id="SAX_BattleSpeechInputNotQueued" text="演讲请求未进入战场通道，请确认当前仍在战斗中。" />
+    <string id="SAX_BattleSpeechInputNpcTitle" text="他人演讲" />
+    <string id="SAX_BattleSpeechInputTitle" text="演讲" />
+    <string id="SAX_BattleSpeechInputNpcSubtitle" text="当前目标将作为演讲者，AF 会根据你输入的主题重新生成一段对己方士兵的演讲正文。" />
+    <string id="SAX_BattleSpeechInputSubtitle" text="你将作为演讲者，直接输入要对己方士兵说的正文。" />
+    <string id="SAX_BattleSpeechInputTopicHint" text="输入演讲主题：" />
+    <string id="SAX_BattleSpeechInputBodyHint" text="输入对士兵说的演讲正文：" />
+    <string id="SAX_BattleSpeechInputContentHint" text="请输入内容：" />
+    <string id="SAX_BattleSpeechInputSubmit" text="发表" />
+    <string id="SAX_BattleSpeechInputCancel" text="取消" />
+    <string id="SAX_Item_DaimaoHead_Name" text="呆喵" />
   </strings>
 </base>

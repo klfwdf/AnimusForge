@@ -52,8 +52,10 @@ namespace AnimusForge
             Check(MemoryRecallContextOwner.TryBuildMemoryRecallCandidates(missing,"query","",null,1,out var nonempty,out _,1,request)&&nonempty[0].Block.Id=="latest","missing rich title skipped not summary embedding fallback");
             engine.IsAvailable=false;
             Check(!MemoryRecallContextOwner.TryBuildMemoryRecallCandidates(blocks,"query","",null,1,out _,out _,1,request)&&request.BlockingMessage.Contains("不会静默"),"unavailable embedding blocks above cap");
+            Check(request.BlockingDisplay.Message.Resolve().Contains("will not silently") && request.BlockingDisplay.Title.Resolve() == "Compressed memory recall blocked", "embedding failure has separate English display and unchanged diagnostic");
             engine.IsAvailable=true;engine.Compute=text=>text=="query"?new float[]{1,0}:null;
             Check(!MemoryRecallContextOwner.TryBuildMemoryRecallCandidates(blocks,"query","",null,1,out _,out _,1,request)&&request.BlockingMessage.Contains("修复"),"all title embedding failures block");
+            Check(request.BlockingDisplay.Message.Resolve().Contains("Fix the embedding model"), "title embedding display remediation");
             engine.Compute=text=>new float[]{1,0}; request.BlockingTitle=null;
             var candidates=blocks.Select((b,i)=>new MemoryRecallCandidate{Block=b,DisplayId=i+1,Score=i}).ToList();
             AIConfigHandler.Response="{\"rule_codes\":[],\"memory_ids\":[999,\"#2\",2]}";

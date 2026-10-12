@@ -1,0 +1,128 @@
+{
+  "Id": "rule_Titles_and_Etiquette_Written_Word_Parchment_and_Authority",
+  "Keywords": [
+    "Written Word, Parchment, and Authority"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Entry People who can write down their names, debts, and orders are often more likely to be trusted by the powers that be than those who can only speak orally. Writing preserves memory, but also creates exclusions: those who cannot read the contract are still bound by it; so a piece of parchment can change more quietly than a sword"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Written Word, Parchment, and Authority"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Written Word, Parchment, and Authority"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Written Word, Parchment, and Authority"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Written Word, Parchment, and Authority People who can write down their names, debts, and orders are often more likely to be trusted by the powers that be than those who can only speak orally. Writing preserves memory, but also creates exclusions: those who cannot read the contract are still bound by it; so a piece of parchment can change more quietly than a sword Whether it is valid depends on who can grant the rights, collect the consideration, and actually make the judgment come to fruition in the event of default."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Written Word, Parchment, and Authority People who can write down their names, debts, and orders are often more likely to be trusted by the powers that be than those who can only speak orally. Writing preserves memory, but also creates exclusions: those who cannot read the contract are still bound by it; so a piece of parchment can change more quietly than a sword If a rule is practiced over and over again, it will find its way into rituals, crafts, and prayers; if it is sustained only by fear, cracks will show at the onset of a crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Written Word, Parchment, and Authority People who can write down their names, debts, and orders are often more likely to be trusted by the powers that be than those who can only speak orally. Writing preserves memory, but also creates exclusions: those who cannot read the contract are still bound by it; so a piece of parchment can change more quietly than a sword They remember taxes, grain, labor, relief and who can speak for them; these grand names will eventually fall on the family's rice pot."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Written Word, Parchment, and Authority: People who can write down their names, debts, and orders are often more likely to be trusted by the powers that be than those who can only speak orally. Writing preserves memory, but also creates exclusions: those who cannot read the contract are still bound by it; so a piece of parchment can change more quietly than a sword"
+  ]
+}

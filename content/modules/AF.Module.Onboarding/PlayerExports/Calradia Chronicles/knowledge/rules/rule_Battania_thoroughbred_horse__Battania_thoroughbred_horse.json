@@ -1,0 +1,28 @@
+{
+  "Id": "rule_Battania_thoroughbred_horse",
+  "Keywords": [
+    "Battania thoroughbred horse"
+  ],
+  "RagShortTexts": [
+    "Battania Thoroughbred horses are priceless for their ability to heal themselves."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Although this kind of horse is called Battania purebred horse, it is not a Battania horse, but bred by the Vlandia people in the Oaks Hall area. This kind of horse is also a top-notch horse, extremely hard-working, and the most valuable thing is that they have the ability to self-heal after a broken leg. Other horses have to wait for death if they break a leg, but it can return to normal. Although its other attributes are not top-notch, this alone is enough to make it priceless. Although the nobles of Battania don't like to ride horses, they always have such a thoroughbred Battania horse."
+    }
+  ],
+  "TextMappings": []
+}

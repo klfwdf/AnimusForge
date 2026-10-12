@@ -1,0 +1,94 @@
+{
+  "Id": "rule_Palisson",
+  "Keywords": [
+    "Parison",
+    "Trump River"
+  ],
+  "RagShortTexts": [
+    "The soil of Pali Pine is poor and the unique climate is suitable for the growth of grapes."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Pallison is a village near Palawind, located at the mouth of a gorge in the hills north of the Trump River. Although the soil in this area is poor, the cool sea breeze blowing from upstream and the warm afternoon climate provide good conditions for the growth of wine grapes."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The soil in Palisson is not fertile and cannot be used to grow food, but it is better to grow grapes. The climate in the canyon is such that a cool breeze blows from the upper reaches of the river in the morning, and the sun is shining brightly in the afternoon, so the sugar content of the grapes is just right. The nobles of Palawind have a lot of good wine on their tables, and the name Palisson is printed on the bottom of the bottle."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "townsfolk"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Palisson’s wine has a special fruity aroma, which is said to be cultivated by the terroir in the canyon. The wine merchants in Palawind go there every year to buy goods, but when they arrive late, they are gone. At banquets in the palace, wine from Parisone was never absent."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The village of Palisona is stuck at the mouth of the canyon. The wind is very strong. It is sunny during the day and cool at night. The soil doesn't look very good, but the vines grow out of the cracks in the rocks and produce sweet fruit. I had a glass of local wine in the village and it tasted really unique."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Parison",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "Palawind",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

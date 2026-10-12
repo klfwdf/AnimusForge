@@ -1,0 +1,131 @@
+{
+  "Id": "rule_House_Foundations_Blacktyde",
+  "Keywords": [
+    "Blacktyde",
+    "House Blacktyde"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "House Blacktyce is based on Kuroshio Island and is an important Ironborn family outside Greyjoy. Kuroshio Island's harbor, longships, and shipping routes close to the main archipelago make it impossible for the family to stay out of the politics of the Iron Islands; the head of the family must not only face storms at sea, but also maintain his position between choosing a king, the Drowned God, and kin relations. Baelor Blacktyce was sent to Oldtown as a hostage, and after returning to the island, he believed in the Seven Gods. This personal experience shows that the ironborn family will also change due to experience, and not everyone understands the old ways in the same way."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Ironborn nobles respect the antiquity and maritime nature of Blacktys, but will not easily believe that any family monopolizes the old ways. There is no eternally stable throne in archipelago politics. Today’s allies may be tomorrow’s competitors; families must make their ships and commitments weather the tide."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "sailor",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The sailor looked at Blacktail to see if the longship could maintain its formation in bad weather. Soldiers look to see if their leader is willing to stand on the most dangerous deck. Ironborn can forgive failure, but it is difficult to forgive a lord who only makes others pay the iron price."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Blacktyde Entry Blacktyde The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Blacktyde Entry Blacktyde Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Blacktyde Entry Blacktyde The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Blacktyde Entry Blacktyde They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Blacktyde: Entry Blacktyde"
+  ]
+}

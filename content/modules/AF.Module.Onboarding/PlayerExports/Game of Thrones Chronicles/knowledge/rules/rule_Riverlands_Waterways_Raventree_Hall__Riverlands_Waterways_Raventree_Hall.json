@@ -1,0 +1,151 @@
+{
+  "Id": "rule_Riverlands_Waterways_Raventree_Hall",
+  "Keywords": [
+    "Raventree Hall"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Raventree City is the ancient seat of House Blackwood, located in the Red Fork River in the Riverlands. The Blackwood family retains the belief in the old gods and stands out among the riverland nobles, who are dominated by the Seven Gods; the weirwoods and crow legends in the castle give this difference a visible shape. It is as old as the Bracken feud in Stonehedge, with memories of land, reputation and old cases harder to bridge than the distance on a map. Raventree isn't all about hatred: it's also about farmland, waterways, tenant farmers, marriage contracts, and crops that must be harvested on time. Old gods, old debts and the open terrain of the Riverlands together make this a territory with deep memories but difficult to escape from real politics."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "river"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Raventree Hall Local families also relied on river transportation, ferries, wheat fields, mills, and hiding places when war came; if any road, well, spring, or dock failed, the price would fall first on them."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "river"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Raventree Hall Entry Raventree Hall"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Raventree Hall They also recognize the accents, laws, and credentials of the Riverlands; reputations can travel great distances from taverns, but true distances must still be measured by wheel, oar, or horse's hooves."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Raventree Hall Entry Raventree Hall"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Raventree Hall If you can supply supplies, avoid danger, and find a guide, it is worth marking in your itinerary; if you don't have these three things, no matter how loud your family name is, it won't be able to save the lost."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Craftsmen saw stone walls, wooden beams, iron gates, tombs, and the seams left by generations of repairs in Raventree City. The clergy guarded the memory of the Seven Gods, the legend of the ancient River King, and the land that changed hands repeatedly. A stronghold was therefore not just a lord's hall, but also a place where weddings and funerals, vows, labor and local memories recurred."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Raventree Hall They care about river transportation, ferries, wheat fields, mills, and hiding places when war comes. They also care about whether seeds are left after collecting grain and whether the city gates are open in times of disaster. When people from afar see coats of arms, what they see is whether there will be food to eat tomorrow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Raventree Hall: Raventree City is the ancient seat of House Blackwood, located in the Red Fork River in the Riverlands. The Blackwood family retains the belief in the old gods and stands out among the riverland nobles, who are dominated by the Seven Gods; the weirwoods and crow legends in the castle give this difference a visible shape. It is as old as the Bracken feud in Stonehedge, with memories of land, reputation and old cases harder to bridge than the distance on a map. Raventree isn't all about hatred: it's also about farmland, waterways, tenant farmers, marriage contracts, and crops that must be harvested on time. Old gods, old debts and the open terrain of the Riverlands together make this a territory with deep memories but difficult to escape from real politics."
+  ]
+}

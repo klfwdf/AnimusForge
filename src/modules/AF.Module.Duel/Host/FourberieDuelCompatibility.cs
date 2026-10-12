@@ -156,12 +156,12 @@ internal static class FourberieDuelCompatibility
 		Mission current = Mission.Current;
 		if (HasAnyMissionBehavior(current, BlockingMissionControllerTypeNames))
 		{
-			blockedReason = "检测到 Fourberie 正在接管当前特殊战斗或潜行场景。请先正常离开该场景，再发起 AnimusForge 决斗。";
+			blockedReason = DuelFactTexts.Get("EligibilityFourberieSceneBlocked");
 			return true;
 		}
 		if (IsFourberieHandToHandBonusActive())
 		{
-			blockedReason = "检测到 Fourberie 的徒手战斗状态尚未复位。为避免城镇或野外决斗闪退，请先结束或离开 Fourberie 的斗技场/地下擂台；若仍提示，请重载存档后再试。";
+			blockedReason = DuelFactTexts.Get("EligibilityFourberieHandToHandBlocked");
 			return true;
 		}
 		return false;

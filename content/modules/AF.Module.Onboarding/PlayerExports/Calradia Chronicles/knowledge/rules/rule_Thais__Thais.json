@@ -1,0 +1,199 @@
+{
+  "Id": "rule_Thais",
+  "Keywords": [
+    "Thaïs"
+  ],
+  "RagShortTexts": [
+    "Thaïs is the leader of the Gilad clan and a hard-line militant of the Aserai."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": [
+          "clan_aserai_3"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "hero:lord_3_5"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "I am Thaïs. The Aserai people said I was cruel, the Imperial people said I was barbaric, and even the Sultan sighed privately after the imperial meeting and said I was too hasty. They don't understand. My grandpa's grandpa saw how the Imperials used gold and lies to get the Aserai to kill each other. They support one tribe and attack another tribe. When both sides are crippled, they come out to collect taxes. From then on, the Gilard family remembered one thing: peace is an illusion, honor is false, and the knife is only real when it is held in one's own hand. Winged is a good man, and a good man cannot sit firmly in the Sultan's seat. He believed in trading partners, I believed in enemies; he believed in arbitration and mediation, I believed in killing as a warning; he believed that all ethnic groups in the desert would eventually love each other under the cover of customary law, but I knew that was impossible. There are only two things in the desert: water and blood. If there is not enough water, blood must be used to make up for it. I don’t regret what happened to Nimr. He touched the Girard women, and I didn't lay a finger on him - I killed him according to the law, every step was legal. Adram hates me, let him hate me. The Saran tribe had just crawled back from the desert a few years ago. If they wanted to compete with Gilad for status, they still had a hundred years of bloodshed to spare. As for the general purge in the court, it's not that I haven't thought about it. Those wimps sitting in the seats, as fond of talking about peace and trade as Winged, had forgotten what the Aserai did to survive. But I can't touch them yet - Winged is still sitting on the Sultan's throne. He is the only person I dare not kill, not because I am afraid of him, but because I am afraid that if I kill him, no one in the desert will end up. I will wait until he can stop it, or rather, when he can't stop it."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": [
+          "clan_aserai_2"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Thaïs Banu Gilad. When this name is spoken from the mouths of our Salan ethnic group, every word smells of blood. Nimr is the hero we brought back from the desert. He rectified our name in Salan in Pandrak, but died in Hubia during a so-called \"marriage negotiation\". Together with the Gilard girl, he was stuffed into a wooden cage and hung up in public. He followed the law every step of the way and killed them so cleanly that we couldn't even win the lawsuit. Winged gave us money, gave us a caravan, and exchanged a bunch of dinars for a human life. We have collected it, and if we don’t collect it, it will be for nothing, but this bloody debt cannot be smoothed away by gold. Chief Adram said we can't touch Gilad now, but patience is more valuable than gold in the desert."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": [
+          "clan_aserai_3"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Thaïs is our chief, we respect him and fear him. He treats his own people well, and this is true - the people of Gilad's tribe have never lacked food or water under his rule. Whoever dares to touch Gilad's camel team on the trade road will have his head hung at the gate of Hubia the next day. But the fear is real. He was ruthless to his enemies and even more ruthless to his traitors. Even the old guys with great achievements in the clan did not dare to go against him. In the case of Nimr, some of us privately felt that we had done too much, but these thoughts only dared to linger in our stomachs. Thaïs is Gilad's blade, and without him our momentum at the Aserai court will collapse. So we all followed him, not daring to fall behind, let alone look back."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": [
+          "clan_aserai_2"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "hero:lord_3_3"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Thaïs killed my best descendant and put his body in a cage and hung it for three days. I went to Hubia to ask for help, but Nimr was already stinking. He stood at the city gate and looked at me, his expression as calm as a bookkeeper, and quoted the laws he quoted, every one of which was impeccable. Winged persuaded me to accept the compensation, saying that Thais could not be moved now, and advised me to think about it in the long term. I collected the compensation, which was the capital for the reconstruction of the Salan ethnic group; I remembered my hatred. If the Salan ethnic group can survive one hundred years of exile, it can survive another hundred years. One day, the laws of the Girard family can no longer protect him."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "hero:lord_3_1"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Thaïs is my emir and my biggest problem. Is he loyal? He is impeccable when it comes to his loyalty to the Aserai. Does he obey me? He never openly disobeyed my decisions during the Council, but after the meeting he would implement them in his own way—or not implement them. He did the Nimr thing flawlessly, and he followed the legal provisions every step of the way. I sat on the arbitration bench and looked through the customary laws, but I couldn't find any basis for punishing him. I gave the Adlam caravan and dinars, which was the compensation the Sultan could give, but the Sultan could not give justice. Thaïs is the sky in his territory, the second sultan in the court, and the toughest militant in the army. He has been waiting, waiting for me to show my flaws, waiting for me to grow old, waiting for me to die, waiting for an opportunity that would allow him to clean up the court. I can suppress him for the time being, because he still needs the flag of Sudan. The day he was no longer needed was the first day of the Aserai Civil War."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Thaïs is the sharpest scimitar in the desert, but the scimitar does not distinguish between friend and foe. The fact that he killed Nimr sent shivers down our spines - not to sympathize with Saran, who had just crawled back from the desert and had little friendship with us, but Thaïs killed the nobles as neatly as he killed a chicken, and every step was legal. None of us want to mess with a person who treats human life like abacus beads and turns them around until you can find no fault with him. But we cannot completely deny his proposition at the Royal Council - Aserai does need stronger military power and cannot always be a caravan country at the arbitration table of Winged. Thaïs is the only one who dares to say \"beat\" publicly in court. We need this voice, but we just don't know when the knife will come back and cut on his neck."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Emir of Thaïs? Hubia’s iron-blooded master. The attitude of the people in our oasis towards him is just one word: far away. The further away from him the better. It is said that Hubia's taxes were very heavy and his soldiers were fierce, but no one under him dared to rebel, because the heads of the rebels were all hung on the city gates. We have an old camel dealer here who has been to Hubia and came back and said that the city was colder than Sanara. It wasn't the wind that was cold, it was the atmosphere that was cold. No one dared to speak loudly on the street, and everyone bowed their heads when Emil's patrol passed by. Unlike Sanara, you can quarrel with the tax collector in the market. However, the flag of the Gillard family on the trade road was indeed very useful and no one dared to rob it. The money of the masters is stable, and the lives of the people are also stable. Just don't mess with the masters, or you will die if you do."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": [
+          "town_a5"
+        ],
+        "Roles": [
+          "commoner",
+          "notable",
+          "soldier",
+          "townsfolk",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Lord Thaïs is our Emir. We have no objections to him, and we dare not have any. He managed Hubia well - the trade routes were safe, the wells were dry, and food prices did not soar in times of famine. But there are so many rules, so many that it looks like there is an invisible guard standing at every corner of the street. When the Nimr incident happened, the wooden cage was hung at the city gate for three days, and we all saw it. We have heard about the man in the cage. He is a hero. He helped Aserai in Pandrak and later fell in love with a girl from the Girard family. Then he died. We dare not discuss right and wrong, and we only dare to tell our children at home: Stay away from the Girard girl, no matter how pretty she is. During the funeral, the wooden cage was removed and the floor was washed, but the smell seemed to never dissipate."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Thaïs Banu Gilad was the most threatening figure in the Aserai Sultanate. The Gilard family controls the large inland city of Hubia and is the most determined war faction within Aserai. He has always openly advocated using swords to define the borders of Aserai. The methods used to ensnare Nimr were ruthless - every step was strictly in accordance with Aserai law, leaving Sultan Winged's arbitration machine completely idle. This precise legal violence is more difficult to deal with than the whims of a barbarian. What is more noteworthy is his attitude towards Sultan Winged: he is not anti-Sultan, but he is waiting. Wait until Winged grows old, wait until fatal cracks appear in the court, wait until he can legitimately take over power. At present, his strategic focus is still on internal cleansing rather than external expansion. This is a temporary safety signal for us, but once he succeeds in taking office, Aserai's diplomatic style will undergo a fundamental change."
+    },
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The emir of the Gerard family is called Thaïs. Businessmen lowered their voices when mentioning it, saying that they should stay away from Hubia if possible. It is said that once a passing caravan captain accidentally cursed the Girard family in the inn, and the people disappeared the next day. The goods were parked at the door of the inn intact, the horses were still tied, and the people were gone. There were always heads hung at the city gates, all of which were people who had offended him. Isn’t Winged Sultan the boss? Can't control him? The businessman shrugged and said that the Sultan had nothing to do. The Gilard family had money and soldiers, and the Sultan could only give some advice. Winjid is a good man. Good people cannot control evil dogs, but evil dogs will eat people with legal regulations, so you can't complain. Anyway, we are far away, and as long as Thaïs doesn't come to us, he can eat whoever he likes."
+    }
+  ],
+  "TextMappings": []
+}

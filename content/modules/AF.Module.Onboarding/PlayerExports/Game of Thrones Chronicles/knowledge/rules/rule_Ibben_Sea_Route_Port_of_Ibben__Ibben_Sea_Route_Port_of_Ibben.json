@@ -1,0 +1,153 @@
+{
+  "Id": "rule_Ibben_Sea_Route_Port_of_Ibben",
+  "Keywords": [
+    "Port of Ibben",
+    "Ib",
+    "Whaling"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Iban Port () is the main port positioning of Iban Island facing the northern sea. The Iban people are remembered by southerners as tall, bushy, and taciturn, but what really determined port life was whaling, fishing, furs, blubber, timber, and cold sea conditions. The islands are far away from Westeros and the core of the Narrow Sea, and the voyage is long and expensive. Outsiders often regard Iban as the edge of the map, but the locals remember every ice and sea route more clearly than the Southern Crown."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "ibbenese"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Port of Ibben Local families also relied on blubber, fish, furs, hardwoods and the short shipping season; if a road, well or dock failed, the price fell first to them."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "ibbenese"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Port of Ibben Entry Port of Ibben"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Port of Ibben They will also recognize the accents, laws, and credentials of Iban and the Shivering Sea; reputations can spread far from taverns, but true distances must still be measured by wheel, oar, or horse's hoof."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Port of Ibben Entry Port of Ibben"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Port of Ibben If you can supply supplies, avoid danger, and find a guide, it is worth marking in your itinerary; if you don't have these three things, no matter how loud your family name is, it won't be able to save the lost."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The traces left by generations of people in Iban Port are half hidden in the ship repair wood, canvas, salt, fish catches and stones used to resist the sea wind, and the other half are hidden in the ancestral spirits of the Iban people, the legends of sea beasts and the common taboos of the cold port. A stronghold was therefore not just a lord's hall, but also a place where weddings and funerals, vows, labor and local memories recurred."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Port of Ibben They care about blubber, fish catches, furs, hardwoods, and the short sailing season. They also look at whether seeds are left after harvesting food and whether the city gates are open in times of disaster. When people from afar see coats of arms, what they see is whether there will be food to eat tomorrow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Port of Ibben: Iban Port () is the main port positioning of Iban Island facing the northern sea. The Iban people are remembered by southerners as tall, bushy, and taciturn, but what really determined port life was whaling, fishing, furs, blubber, timber, and cold sea conditions. The islands are far away from Westeros and the core of the Narrow Sea, and the voyage is long and expensive. Outsiders often regard Iban as the edge of the map, but the locals remember every ice and sea route more clearly than the Southern Crown."
+  ]
+}

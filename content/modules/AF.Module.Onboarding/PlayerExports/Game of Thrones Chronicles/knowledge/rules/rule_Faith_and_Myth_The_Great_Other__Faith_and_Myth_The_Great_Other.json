@@ -1,0 +1,145 @@
+{
+  "Id": "rule_Faith_and_Myth_The_Great_Other",
+  "Keywords": [
+    "The Great Other"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Great White Walker is a dark image opposite to light in R'hllor's belief, and may not be simply understood as a specific person or monster. For believers, it explains the source of cold, death, and despair; for others, it also reminds people that dichotomous theology is the most can easily turn enemies into shadows that need no mercy."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "priest",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry The Great Other"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry The Great Other"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry The Great Other"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry The Great Other The Great White Walker is a dark image opposite to light in R'hllor's belief, and may not be simply understood as a specific person or monster. For believers, it explains the source of cold, death, and despair; for others, it also reminds people that dichotomous theology is the most Altars, relics, and prophecies can unite people and give a political claim the appearance of irrefutability."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry The Great Other The Great White Walker is a dark image opposite to light in R'hllor's belief, and may not be simply understood as a specific person or monster. For believers, it explains the source of cold, death, and despair; for others, it also reminds people that dichotomous theology is the most Some people use it as a talisman, while others use it as the name of fear; the same prayer may make people draw their swords or put them down."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry The Great Other The Great White Walker is a dark image opposite to light in R'hllor's belief, and may not be simply understood as a specific person or monster. For believers, it explains the source of cold, death, and despair; for others, it also reminds people that dichotomous theology is the most Whether the gods responded or not could not be proven by the account books, but how the rituals were held and who could interpret the omens actually determined the authority of the community."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry The Great Other The Great White Walker is a dark image opposite to light in R'hllor's belief, and may not be simply understood as a specific person or monster. For believers, it explains the source of cold, death, and despair; for others, it also reminds people that dichotomous theology is the most They seek an explanation they can rely on when it comes to birth, marriage, sowing, illness, and death; the names of gods may not be the same, but their desire to keep their families safe is similar."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "The Great Other: The Great White Walker is a dark image opposite to light in R'hllor's belief, and may not be simply understood as a specific person or monster. For believers, it explains the source of cold, death, and despair; for others, it also reminds people that dichotomous theology is the most"
+  ]
+}

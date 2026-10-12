@@ -1,0 +1,153 @@
+{
+  "Id": "rule_Atlas_of_the_Free_Cities_Volantis",
+  "Keywords": [
+    "Volantis",
+    "The Rhoyne",
+    "Black Walls",
+    "Old Blood of Volantis",
+    "Tigers",
+    "Elephants",
+    "Temple of the Lord of Light"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Volantis, straddling the lower reaches of the Rhoyne, is one of the oldest of the Free Cities, and one of the most determined to claim to be the inheritor of Valyria's old dream. Inside the black wall live the old blood nobles, while outside the wall are docks, markets, temples, workshops, slaves and immigrants from all directions. The Tiger Party celebrates expansion, military glory, and the majesty of former bastions of freedom; the Elephant Party favors trade, stability, and slowly increasing wealth. Both slogans are inseparable from the work of rivers, ports, estates and enslaved people. The Red Temple is particularly large here, and the flames, processions and prophecies can bring the mood of the streets into politics. Volantis' rulers will rotate, but the rifts created by Blackwall's hierarchy, the wealth of the Rhoyne, and Valyrian nostalgia won't fade easily."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "For the old blood in the Black Wall, Volantis should remember whose blood is closer to Old Valyria; for the riverport merchants, the city should remember which ship arrived on time. The disputes between the two are sometimes disguised as elections and factions, but in essence they are the same issue: whether the city should survive on the names of its ancestors or on today's goods."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "slave",
+          "artisan",
+          "sailor",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Few people outside the wall have the leisure to talk about their ancestors. For oarsmen, longshoremen, slaves and peddlers, the real politics of the day were the rise and fall of the river, the whip of the overseer, the price of the market and the porridge of the temple. The priests of the Red God promise light and future to the poor, while the old blood nobles talk about glory behind the high wall; both voices will reach the river, but they will have different weights on each person."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire",
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Visitors from Westeros are always awed by the black walls and the long bridge over the river; the Braavos see slave chains first; the Steppes see a city that crams too many people into stone. Volantis welcomes foreign goods, but never lets outsiders forget: it believes it was once the center of the world, and is willing to pay the price of others for this memory."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Volantis The ancient free city-state on the River Rhoyne. The old blood nobles inside the black wall and the ports, slaves and immigrants outside the wall form a deep stratum; the Tiger Party, the Elephant Party, the river transport and the Red Temple jointly shape the city. They care about water sources, roads, customs and garrison, and know that behind the place names there is often a food road that can keep the castle alive."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Volantis The ancient free city-state on the River Rhoyne. The old blood nobles inside the black wall and the ports, slaves and immigrants outside the wall form a deep stratum; the Tiger Party, the Elephant Party, the river transport and the Red Temple jointly shape the city. The reputation of a place is often determined by the number of people who died there."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Volantis The ancient free city-state on the River Rhoyne. The old blood nobles inside the black wall and the ports, slaves and immigrants outside the wall form a deep stratum; the Tiger Party, the Elephant Party, the river transport and the Red Temple jointly shape the city. Stones, trees, rivers or mountain passes can become places of livelihood, and may also be endowed with sanctity, taboos and ancestral memories, so they cannot be measured in terms of money alone."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Volantis The ancient free city-state on the River Rhoyne. The old blood nobles inside the black wall and the ports, slaves and immigrants outside the wall form a deep stratum; the Tiger Party, the Elephant Party, the river transport and the Red Temple jointly shape the city. They first checked whether the place could draw water, farm, graze, and avoid military disasters; a line of words on the map, and when it landed in the village, it turned out to be firewood, well rope, and winter food."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Volantis: The ancient free city-state on the River Rhoyne. The old blood nobles inside the black wall and the ports, slaves and immigrants outside the wall form a deep stratum; the Tiger Party, the Elephant Party, the river transport and the Red Temple jointly shape the city."
+  ]
+}

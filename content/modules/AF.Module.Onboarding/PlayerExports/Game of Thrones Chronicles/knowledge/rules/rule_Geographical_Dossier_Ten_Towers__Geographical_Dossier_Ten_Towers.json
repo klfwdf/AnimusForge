@@ -1,0 +1,154 @@
+{
+  "Id": "rule_Geographical_Dossier_Ten_Towers",
+  "Keywords": [
+    "Ten Towers",
+    "Ten Towers Geography",
+    "Ten Towers History",
+    "Ten Towers Strategy"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Ten Towers is located on the island of Harlaw in the Iron Islands. It is the main castle of House Harlaw. The ten towers are not neatly integrated, but are connected to each other during long-term expansion; the island of Harlaw on which it relies has more fertile land and a larger population, making it one of the few power centers in the Iron Islands that has agricultural products, a harbor, and an ancient book-collecting tradition."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Ten Towers Local families also relied on salt fish, ore, barren fields, sheltered anchorages, and longships to return home; if any road, well, or dock failed, the price would fall first on them."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Ten Towers Entry Ten Towers"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Ten Towers They will also recognize the accents, laws and credentials of the Iron Islands; reputations may travel great distances from taverns, but true distances must still be measured by wheel, oar or horse's hoof."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Ten Towers Entry Ten Towers"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Ten Towers If you can supply supplies, avoid danger, and find a guide, it is worth marking in your itinerary; if you don't have these three things, no matter how loud your family name is, it won't be able to save the lost."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The craftsmen of Ten Tower City relied on the stone walls, wooden beams, iron doors, tombs, and seams repaired from generation to generation to leave behind their craftsmanship, while the priests used the Drowned God, the Sea Stone Seat, and the songs left by the island's ancestors to explain life and death. A stronghold was therefore not just a lord's hall, but also a place where weddings and funerals, vows, labor and local memories recurred."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Ten Towers They care about salt fish, ore, barren fields, sheltered anchorages, and the return of longships. They also look at whether seeds are left after collecting grain and whether the city gates are open in times of disaster. When people from afar see coats of arms, what they see is whether there will be food to eat tomorrow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Ten Towers: Ten Towers is located on the island of Harlaw in the Iron Islands. It is the main castle of House Harlaw. The ten towers are not neatly integrated, but are connected to each other during long-term expansion; the island of Harlaw on which it relies has more fertile land and a larger population, making it one of the few power centers in the Iron Islands that has agricultural products, a harbor, and an ancient book-collecting tradition."
+  ]
+}

@@ -1,0 +1,152 @@
+{
+  "Id": "rule_Heartland_of_the_Rose_Hammerhal",
+  "Keywords": [
+    "Hammerhal",
+    "Tyrell Vassals"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Half Circle is a castle realm in the Reach, named after its walls or the curved outline of its terrain. Castles in the Reach were rarely built solely for warfare; they served as granaries, mills, courts, stables, and places to collect land rents. The plains around Dome are suitable for grains, grapes and pasture, and the Mander River network carries the harvest to Highgarden, Oldtown and coastal ports. Abundance also means exposure: an army can arrive from many roads, and food collectors and refugees alike can block the city gates. It belongs to the kind of local power in the Reach that relies on land and transportation."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "reach"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Hammerhal Local families also relied on grain, wine, orchards, pastures, and markets along the Mander River; if any road, well, or dock failed, the price would fall first on them."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "reach"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Hammerhal Entry Hammerhal"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Hammerhal They also recognize the accents, laws, and credentials of the Reach; reputations can travel great distances from taverns, but true distances must still be measured by wheel, oar, or horse's hooves."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Hammerhal Entry Hammerhal"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Hammerhal If you can supply supplies, avoid danger, and find a guide, it is worth marking in your itinerary; if you don't have these three things, no matter how loud your family name is, it won't be able to save the lost."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The traces left by generations of people on Half Dome are half hidden in the boats, bridges, millstones, fishing nets and riverside churches, and half are hidden in the memories of family status left in the era of the Seven Gods, Knight Legends and Gardener King. A stronghold was therefore not just a lord's hall, but also a place where weddings and funerals, vows, labor and local memories recurred."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Hammerhal They care about grain, wine, orchards, pastures and markets along the Mander River. They also look at whether seeds are left after the grain collection and whether the city gates are open in times of disaster. When people from afar see coats of arms, what they see is whether there will be food to eat tomorrow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Hammerhal: Half Circle is a castle realm in the Reach, named after its walls or the curved outline of its terrain. Castles in the Reach were rarely built solely for warfare; they served as granaries, mills, courts, stables, and places to collect land rents. The plains around Dome are suitable for grains, grapes and pasture, and the Mander River network carries the harvest to Highgarden, Oldtown and coastal ports. Abundance also means exposure: an army can arrive from many roads, and food collectors and refugees alike can block the city gates. It belongs to the kind of local power in the Reach that relies on land and transportation."
+  ]
+}

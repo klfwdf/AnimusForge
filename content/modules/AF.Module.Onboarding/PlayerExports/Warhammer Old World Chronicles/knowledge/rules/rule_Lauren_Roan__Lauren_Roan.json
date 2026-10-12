@@ -1,0 +1,205 @@
+{
+  "Id": "rule_Lauren_Roan",
+  "Keywords": [
+    "Lauren Rowan_LAU",
+    "Mary Heath_LAU",
+    "Laurelorn_LAU",
+    "Eionil_LAU"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Laurenroan is a wood elf enclave in the northwest of the old world that is independent of Athel Loren—it is located between Nordland and Middenland and is the home of the wood elf Eonir ruled by Queen Maryxis. Unlike Aslai of Athel Loren, Eonir of Lauren Roan made an extremely difficult choice in the history of the elves after the Great Schism: they chose not to completely break with the high elves, but maintained a cautious and delicate middle ground - neither recognizing the authority of the Phoenix Throne, nor wanting to be involved in Athel Loren's isolationism. This makes Laurenroan the only Wood Elf kingdom in the Old World that maintains limited but real diplomatic ties with both the Empire, Bretonnia, and the High Elves."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "eonir"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "We Eonir share the same blood roots as our Asrai cousins ​​to the south—but we at Lauren Roan have chosen a harder path. Asrai can completely close himself in the deep forests of Athel Loren, but we, Lauren Roan, only have a forestland the size of a province to sustain our entire civilization. Queen Maryxis teaches us that isolation will eventually lead to extinction, while conditional coexistence with short-lived races is full of double risks of betrayal and misunderstanding, but between the two, the latter at least gives us the possibility of passing on Lauren Roan to the next millennium. The Imperial Elector Counts will never understand why we fight alongside them at some times and reject their calls for aid at others - this flexibility is not capricious, but our millennia-old strategy to preserve the blood of the Eonir in the forests of this Old World overcrowded by humans."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Lauren Roan's strategic position in the northwest of the Empire is extremely unique - it is the only independent political entity located within the Empire's territory but not subject to Imperial law. Laurenron straddles the border between Nordland and Middenland, which means that any military force wishing to march westward from the northern part of the Empire must pass through or bypass the Laurenron Forest. Queen Malyxis's use of this geographical leverage is nothing short of exquisite - for hundreds of years she neither actively allowed nor flatly refused human armies from either side to cross her woodlands, but instead exchanged precise temporary passes for concessions from the Empire in every border negotiation. This makes Lauren Rowan effectively an unstable balancing stone in the politics of the Northern Empire."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "Lauren Roan's Eonir's position in the history of the Great Schism is one of the most nuanced yet diplomatically wise chapters in the history of High Elf-Wood Elf relations in the Old World. When the Phoenix King Caledor II issued the infamous recall order for all elves thousands of years ago - requiring all colonial elves to return to Ulthuan or be considered traitors - Laurenron was in an extremely awkward position both geographically and emotionally: they were located in the heart of the Old World continent, separated by an entire ocean from Ulthuan, but culturally they were unwilling to join the Aslai of Athel Loren in completely rejecting foreign contact. Lauren Roan's ultimate choice was not to respond to the recall order but not to refuse it publicly - a silence that was interpreted by the Phoenix Throne as tacit approval of banishment, but Lauren Roan never formally accepted this sentence. Over the ensuing millennia, Laurenron maintained intermittent unofficial contact with the high elves of Ulthuan—mainly through an exchange of academic and magical letters. This unique position allows Lauren Rowan to possess both Aslay's knowledge of forest magic and part of the theoretical framework of high elves in the elf academic circle - this is a unique academic crossover advantage in the elf world."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Queen Maryxis was probably the oldest and most experienced female ruler in the Old World. According to Lauren Roan's historical records, she has been in power for at least two thousand and five hundred years - the length of her reign has made her accumulation of political experience in the old world beyond the limits that any mortal ruler can imagine. I once talked directly with her at a border meeting in Nordland - not to resolve any disputes, but to see with my own eyes how an Elf Queen who has watched the birth and demise of countless human kingdoms for two thousand and five hundred years thinks of us mortal lords. Her answer is one I will never forget: 'Your fears are too short. What you are afraid of is the harvest this autumn, but what I care about is whether there will still be humans on this land who need to harvest in two epochs. I'm not criticizing you - I'm just doing a longer math problem than you are. '"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Lauren Rowan's Mary Heath is a creepily ancient elf queen to humans, but in our family records her attitude toward us has been subtly but perceptibly cooling over the last eight hundred years. The reason isn't that we've done anything wrong - the reason is that the manure odor from the five newly built pens on our property upwind of her woodland each fall after harvest is blown into Lauren Roan by the westerly wind. Mary Heath wouldn't start a war over livestock manure, but she would shorten the negotiation time for my family's annual border meeting from half a day to a stick of incense. The solution my grandfather came up with was to send an unsolicited shipment of finely milled wood produced by our best craftsmen to Lauren Roan's border post every fall—not a bribe, but an acknowledgment of the odor trouble we had caused along with compensation. This tiny diplomatic ritual lasted for five full generations and was the true underlying basis for all formal strategic alliances between my family and Lauren Rowan."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "In the area bordering Nordland and Lauren Roan, that night when the moon shone through the oak leaves and cast silver-gray spots on the moss-covered boulders, I squatted on the edge of a path that only deer would walk. I saw an elf rider from Lauren Roan silently passing by about twenty feet in front of me - he was a rider, but his deer and horse hooves struck the ground without making any sound that I could hear. The elf didn't look back in my direction, but I'm sure he knew where I was squatting, because the moment he passed twenty feet from me, he slightly tilted his head to the left, an angle that humans would only tilt when nodding to acquaintances in social situations. I don't know him. He might have known my great-great-grandmother before I was born—perhaps he had spent a brief afternoon with my family one long-forgotten autumn on the border of Nordland. He didn't attack me, he didn't greet me, he just let me know that he saw me, and his silence was the most polite but also the most thorough response to the species difference represented by the twenty feet between us."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The elven handmade products produced by Lauren Roan - especially the moonlight silk woven by the wood elves and the exquisite furniture made by the elven carpenters that do not need to be nailed or riveted - have pricing power in the empire's high-end luxury goods market that is the envy of all human craftsmen. The production process of moonlight silk is one of Lauren Ron's core trade secrets: it is said that it uses not silkworm cocoons but the sap fibers of some kind of elf silk-weaving tree that only grows in a specific area of ​​Lauren Ron. The weaving process must go through at least two full moon cycles under the full moonlight to complete a roll of standard size finished product. The price of a Lauren Roan moonlight silk shawl on the Altdorf noble market is equivalent to the annual tax revenue of a small estate - and the total amount of silk legally exported from Lauren Roan each year is not enough to meet one-fifth of the demand, which has kept the premium of moonlight silk in the imperial luxury market at an unreasonable height for a long time. Every textile merchant in my guild has had the same dream: to crack the manufacturing process of moonlight silk and expand production a hundredfold—but we all know the real reason that dream won't come true isn't the production end, but that Mary Heath won't allow it. She locked the annual production of moonlight silk at a level that was just enough to maintain the imperial nobles' polite interest in Lauren Ron but not enough to drive them to greed. This is two thousand and five hundred years of economic wisdom."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Lauren Roan - the wood elf Eonir enclave ruled by Queen Maryxis, an independent forest kingdom in the northwest of the old world",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Lauren Roan Mary Heath Eonir Wood Elf Enclave Nordland"
+  ]
+}

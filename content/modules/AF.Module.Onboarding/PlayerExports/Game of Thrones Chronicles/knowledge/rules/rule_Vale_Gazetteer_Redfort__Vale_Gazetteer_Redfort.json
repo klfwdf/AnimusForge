@@ -1,0 +1,151 @@
+{
+  "Id": "rule_Vale_Gazetteer_Redfort",
+  "Keywords": [
+    "Redfort Castle"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Redfort is the Vale castle of House Redfort, situated where mountain roads meet more open holdings. Its red name may come from stone, soil, or banners, and over long ages has become the local mark of allegiance and belonging. The value of a castle in the Vale often lies not in conquering distant lands, but in commanding a stretch of mountain pass, a bridge, and a granary capable of supplying men; Redfort belongs squarely to this kind of local power. Shaped by the legal order of House Arryn and the knightly culture of the Vale, it must also contend with mountain bandits, clan clashes, and seasonal isolation. Walls may change their guards, but the demands of land and road do not. Any account should treat Redfort as a continually functioning mountain lordship rather than a battlefield with a foreordained outcome."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vale"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Redfort Castle Local families also rely on goats, thin fields, orchards, and pack teams crossing the Mingyue Mountains; if any road, well, or dock fails, the price falls first on them."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vale"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Redfort Castle Entry Redfort Castle"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Redfort Castle They also recognize the accents, laws, and credentials of the valley; reputations can travel great distances from taverns, but true distances must still be measured by wheel, oar, or horse's hoof."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Redfort Castle Entry Redfort Castle"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Redfort Castle If you can supply supplies, avoid danger, and find a guide, it is worth marking in your itinerary; if you don't have these three things, no matter how loud your family name is, it won't be able to save the lost."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Redfort Castle A stronghold was therefore not just a lord's hall, but also a place where weddings and funerals, vows, labor and local memories recurred."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Redfort Castle They care about goats, thin fields, orchards, and pack teams crossing the Mingyue Mountains. They also look at whether seeds are left after collecting grain, and whether the city gates are open in times of disaster. When people from afar see coats of arms, what they see is whether there will be food to eat tomorrow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Redfort Castle: Redfort is the Vale castle of House Redfort, situated where mountain roads meet more open holdings. Its red name may come from stone, soil, or banners, and over long ages has become the local mark of allegiance and belonging. The value of a castle in the Vale often lies not in conquering distant lands, but in commanding a stretch of mountain pass, a bridge, and a granary capable of supplying men; Redfort belongs squarely to this kind of local power. Shaped by the legal order of House Arryn and the knightly culture of the Vale, it must also contend with mountain bandits, clan clashes, and seasonal isolation. Walls may change their guards, but the demands of land and road do not. Any account should treat Redfort as a continually functioning mountain lordship rather than a battlefield with a foreordained outcome."
+  ]
+}

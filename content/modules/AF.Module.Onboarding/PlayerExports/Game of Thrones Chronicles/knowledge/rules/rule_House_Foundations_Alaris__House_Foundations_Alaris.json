@@ -1,0 +1,132 @@
+{
+  "Id": "rule_House_Foundations_Alaris",
+  "Keywords": [
+    "Alaris",
+    "House Alaris"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "House Alarys lives within the complex craft and trade society of Myr. Here, the most precious wealth is often not land, but craft formulas, skilled artisans, steady raw materials, and distant buyers. If House Alarys owns workshops, it must manage trade secrets and labor relations; if it conducts commerce, it must weather the shocks of war and piracy upon the sea lanes. Myr is renowned for its fine craftsmanship and trade, with lenses, lace, carpets, dyes and Myr-style crossbows all requiring skilled craftsmen and imported raw materials. Cities were dominated by wealthy merchants, governors, and industrial interests, with wealth supported by slave labor and the skills of free artisans."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "myrish"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Alaris Exquisite goods are highly profitable, but a shortage of raw materials or a wrong move in diplomacy can shut down an entire workshop."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "myrish"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "slave",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Alaris Nobles can sell lace thousands of miles away, but the person who really makes the needlework flawless is the person who hurts his eyes by the window."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Alaris House Alarys is a local house of Myr whose sphere of activity is shaped by artisan guilds, merchant capital, slave labor, and seaport trade. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Alaris House Alarys is a local house of Myr whose sphere of activity is shaped by artisan guilds, merchant capital, slave labor, and seaport trade. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Alaris House Alarys is a local house of Myr whose sphere of activity is shaped by artisan guilds, merchant capital, slave labor, and seaport trade. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Alaris House Alarys is a local house of Myr whose sphere of activity is shaped by artisan guilds, merchant capital, slave labor, and seaport trade. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Alaris: House Alarys is a local house of Myr whose sphere of activity is shaped by artisan guilds, merchant capital, slave labor, and seaport trade."
+  ]
+}

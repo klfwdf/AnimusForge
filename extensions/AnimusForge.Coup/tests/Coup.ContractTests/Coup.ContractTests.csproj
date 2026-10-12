@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net8.0</TargetFramework>
@@ -10,7 +10,16 @@
     <Compile Include="../../src/CoupSystem/CoupSession.cs" Link="CoupSession.cs" />
     <Compile Include="../../src/CoupSystem/CoupLoyalistPolicy.cs" Link="CoupLoyalistPolicy.cs" />
     <Compile Include="../../src/CoupSystem/CoupOutcomeReport.cs" Link="CoupOutcomeReport.cs" />
+    <Compile Remove="CoupUiText.cs" />
+    <Compile Include="../../src/CoupSystem/CoupUiText.cs" Link="CoupUiText.cs" />
+    <Compile Include="../../src/CoupSystem/CoupSourceTexts.cs" Link="CoupSourceTexts.cs" />
+    <Compile Include="../../src/CoupSystem/CoupPromptTexts.cs" Link="CoupPromptTexts.cs" />
+    <Content Include="../../../../content/modules/AnimusForge.Coup/ModuleData/CoupSourceTexts.json" Link="ModuleData/CoupSourceTexts.json" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="../../../../content/modules/AnimusForge.Coup/ModuleData/CoupPromptTexts.json" Link="ModuleData/CoupPromptTexts.json" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="../../../../content/modules/AnimusForge.Coup/ModuleData/CoupPromptTexts.json" Link="ChineseFixtures/CoupPromptTexts.json" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="../../../../content/modules/AnimusForge.Coup/ModuleData/CoupPromptTexts.en.json" Link="EnglishFixtures/CoupPromptTexts.json" CopyToOutputDirectory="PreserveNewest" />
     <Compile Include="../../../../src/modules/AF.Module.Weekly/Bulletin/WorldBulletinPolicy.cs" Link="WorldBulletinPolicy.cs" />
+
     <Compile Include="../../../../tests/modules/AF.Module.Weekly/WorldBulletinPolicy.SmokeTests/LayoutStub.cs" Link="LayoutStub.cs" />
   </ItemGroup>
 </Project>

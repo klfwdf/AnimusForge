@@ -1,0 +1,157 @@
+{
+  "Id": "rule_World_Mechanics_Bay_of_Seals",
+  "Keywords": [
+    "Bay of Seals",
+    "Eastern Coast of the North",
+    "Karhold Coast",
+    "Cold Sea Fishery"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Bay of Seals lies on the northeastern coast of the North, facing cold and fog-shrouded waters. Coastal forests, river mouths, and sheltered coves sustain fisheries, seal hunting, small-scale timber hauling, and local coasting, though long winters, drift ice, and sudden shifts of wind compress the season for putting to sea. Far from the great ports of the south, a damaged vessel cannot always quickly find sound timber, canvas, and ironwork here, leaving villages more reliant on local stores. On a great lord's map the bay is merely marginal water, yet to folk along its shore it is the daily source of weather, food, and foreign peril."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "sailor",
+          "peasant",
+          "artisan"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Fisherfolk of the Bay of Seals decide whether to launch by the ice and the wheeling of seabirds, not by a lord's urgent demand for salted fish. The sea can feed a household, and wipe out a whole boat in a single bank of fog."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Lords of the northeast look to coastal watches, signal fires, and the provisioning of small havens. An enemy need not storm a great castle; burning a few boat sheds is enough to make the winter hard along the whole shore."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "ibbenese",
+          "nightswatch"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "sailor",
+          "merchant",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Northern mariners treat the Bay of Seals as a familiar shadow along their course: a place to shelter from the gale, or to be locked in by ice. Captains from afar willingly trust local pilots, for no chart marks every newly formed floe."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Bay of Seals A cold bay in the northeastern North where coastal life rests on fishing, sealing, timber, and a brief sailing season, constrained by snowstorms and sea raids. Whether it is valid depends on who can grant the rights, collect the consideration, and actually make the judgment come to fruition in the event of default."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Bay of Seals A cold bay in the northeastern North where coastal life rests on fishing, sealing, timber, and a brief sailing season, constrained by snowstorms and sea raids. The distant system is not empty talk only if it can be implemented in campfires, city gates and inns."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Bay of Seals A cold bay in the northeastern North where coastal life rests on fishing, sealing, timber, and a brief sailing season, constrained by snowstorms and sea raids. If a rule is practiced over and over again, it will find its way into rituals, crafts, and prayers; if it is sustained only by fear, cracks will show at the onset of a crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Bay of Seals A cold bay in the northeastern North where coastal life rests on fishing, sealing, timber, and a brief sailing season, constrained by snowstorms and sea raids. They remember taxes, grain, labor, relief and who can speak for them; these grand names will eventually fall on the family's rice pot."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Bay of Seals: A cold bay in the northeastern North where coastal life rests on fishing, sealing, timber, and a brief sailing season, constrained by snowstorms and sea raids."
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "Id": "rule_Medieval_Siege_Warfare_and_Trebuchets",
+  "Keywords": [
+    "Siege Warfare",
+    "Counterweight Trebuchet",
+    "Stone Castles (Medieval Siege Warfare and Trebuchets)",
+    "Mining",
+    "Siege Engines",
+    "Medieval Fortifications"
+  ],
+  "RagShortTexts": [
+    "Thirteenth-century siege warfare pitted concentric stone castle architecture against devastating counterweight trebuchets and sapping."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Warfare in 1259 was predominantly a science of sieges rather than pitched battles. The proliferation of concentric stone castles featuring round mural towers, advanced arrow-slits, crenellated curtain walls, and massive gatehouses (châtelets) made frontal assaults prohibitively bloody for field armies.\n\nTo overcome these stone bastions, commanders deployed colossal counterweight trebuchets (manganorum), capable of hurling massive boulders weighing hundreds of pounds across hundreds of yards with deadly repetitive accuracy. Sieges also relied heavily on subterranean mining (sapping) to collapse tower foundations, wheeled siege towers (belfries), mantlets for crossbowmen, and the relentless starvation and biological poisoning of fortress water supplies."
+    }
+  ],
+  "TextMappings": []
+}

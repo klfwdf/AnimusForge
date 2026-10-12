@@ -1,0 +1,132 @@
+{
+  "Id": "rule_Titles_and_Etiquette_Free_Folk_Rejection_of_Kneeling",
+  "Keywords": [
+    "Free Folk Rejection of Kneeling"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Entry The freemen refused to call themselves subjects of the southern lords. Their \"freedom\" was not the absence of tribes, elders, or obligations, but the denial of the feudal lord's natural ownership of human life. Southerners summed up this position with the term \"savage\", while those outside the wall regarded kneeling down for allegiance"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Free Folk Rejection of Kneeling"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Free Folk Rejection of Kneeling"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Free Folk Rejection of Kneeling"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Free Folk Rejection of Kneeling The freemen refused to call themselves subjects of the southern lords. Their \"freedom\" was not the absence of tribes, elders, or obligations, but the denial of the feudal lord's natural ownership of human life. Southerners summed up this position with the term \"savage\", while those outside the wall regarded kneeling down for allegiance. Whether it is valid depends on who can grant the rights, collect the consideration, and actually make the judgment come to fruition in the event of default."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Free Folk Rejection of Kneeling The freemen refused to call themselves subjects of the southern lords. Their \"freedom\" was not the absence of tribes, elders, or obligations, but the denial of the feudal lord's natural ownership of human life. Southerners summed up this position with the term \"savage\", while those outside the wall regarded kneeling down for allegiance. If a rule is practiced over and over again, it will find its way into rituals, crafts, and prayers; if it is sustained only by fear, cracks will show at the onset of a crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Free Folk Rejection of Kneeling The freemen refused to call themselves subjects of the southern lords. Their \"freedom\" was not the absence of tribes, elders, or obligations, but the denial of the feudal lord's natural ownership of human life. Southerners summed up this position with the term \"savage\", while those outside the wall regarded kneeling down for allegiance. They remember taxes, grain, labor, relief and who can speak for them; these grand names will eventually fall on the family's rice pot."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Free Folk Rejection of Kneeling: The freemen refused to call themselves subjects of the southern lords. Their \"freedom\" was not the absence of tribes, elders, or obligations, but the denial of the feudal lord's natural ownership of human life. Southerners summed up this position with the term \"savage\", while those outside the wall regarded kneeling down for allegiance."
+  ]
+}

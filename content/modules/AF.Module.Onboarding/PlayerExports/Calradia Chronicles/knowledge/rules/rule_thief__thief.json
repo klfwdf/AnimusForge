@@ -1,0 +1,28 @@
+{
+  "Id": "rule_thief",
+  "Keywords": [
+    "Mounted Highwaymen"
+  ],
+  "RagShortTexts": [
+    "The mounted highwayman bands move with elusive speed and are extraordinarily difficult to catch."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The mounted highwayman bands are steppe brigands led by ruined Khuzait nobles. Coming and going like the wind with unpredictable movements, they are extraordinarily difficult to track down and rank among the most troublesome outlaws to deal with. Not only do they raid villagers, they also dare to plunder merchant caravans and even ambush small detachments of regular soldiers."
+    }
+  ],
+  "TextMappings": []
+}

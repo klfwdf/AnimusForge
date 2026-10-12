@@ -1,0 +1,208 @@
+{
+  "Id": "rule_grave_guard",
+  "Keywords": [
+    "Grave Guard",
+    "Undead Reload",
+    "ancient warrior",
+    "Bronze heavy armor",
+    "Enchant weapons",
+    "Undead Elite Infantry",
+    "Guardian of the Dead"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Tomb Guards are the most elite heavy infantry in the undead army. They wear ancient bronze armor and hold enchanted giant blades. They are condensed from the souls of ancient warriors. Silently and steadfastly guarding the Vampire Lord's fortress, they are a nightmare for any living army."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Tomb Guards are the most loyal and brave guards of our undead nobles. Each one is a warrior soul carefully selected from the ancient battlefield. During his lifetime, he was a fierce general who could survive a hundred battles. After his death, he was covered in heavy bronze armor and had an enchanted weapon in his hand. They are fearless, tireless, never betrayal, and far more trustworthy than living knights. We vampires awaken them with dark night magic and bind them with blood contracts. These ancient warriors are our iron fist and shield to conquer the world of the living."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "As a commander, I must appreciate the tactical value of the Tomb Guards - they are a wall of bronze that never retreats. Any cavalry charge that hits their lines will be shattered to pieces, and any infantry phalanx will crumble under their enchanted greatswords. The only weakness is speed, they are infantry rather than riders. But deploying the Tomb Guard in the center of the battle line as an anvil, and then using the Black Knight or Dire Wolf to attack the flanks as a hammer, this classic tactic is enough to crush any opponent. The spiritualist's spell can also make these elite soldiers stand up again after being knocked down, which can be devastating to the morale of the enemy."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "The origins of the Tomb Guards can be traced back to before the fall of the ancient Nehekhara Empire. The first batch of Tomb Guards were actually created by the Great Lich Nagash during the second rise of the undead, using the bones of Bronze Age barbarian warriors as base materials, combined with the soul binding technique stolen from the Nehekhara priests. The von Carstein family of Sylvania improved the manufacturing process on this basis and introduced a more sophisticated enchantment rune system, allowing each Tomb Guard sword to inflict soul-level trauma. The most amazing thing is the spiral etchings on the Tomb Guard armor - scholars from the Sigmar Church have verified that these patterns originate from the long-lost Celtic-Druid rune tradition of the Albion region, hinting at the secret connection between necromancy and ancient Druidism. During the attack on the fortress on the Stir River, only seventy-two Tomb Guards massacred more than two thousand Imperial defenders within eight hours, creating a terrifying battle loss ratio of one to thirty."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The silence of these ancient warriors unsettled me. They will never say a word more, and they will never object to your orders, but because of this, you don't know whether there is still any consciousness of life under the empty helmet. I once saw a queue of barren tomb guards in my father's castle. The moonlight shone on their bronze armor through the colored windows, and the green light behind those face armor seemed to be watching something. They are loyal, but are they loyal to the vampire lord who summoned them, or to an older will buried beneath the frozen soil of Sylvania?"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Each barren tomb guard is the wealth our family has accumulated over hundreds of years. Do you think it is cheap to buy or cast those bronze armors and temper those enchanted giant swords? Not to mention the dark night rituals required to summon the undead, each time consuming rare undead materials. But the investment is worth it - having a Tomb Guard means your territory cannot be invaded and your family cannot be provoked. I placed the most elite team at the entrance of the family tomb and have been guarding it for three hundred years. No stupid tomb robber or avenger can leave that bronze defense line alive."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "I saw the Tomb Guard from afar during an adventure in northern Shylvania. That sight is enough to make any mercenary reconsider his career choice - a row of bronze figures motionless in the blizzard, the giant sword wrapped with blue necromantic flames. My employer is an imperial archaeologist, and he excitedly said that they were the bodyguards of a certain barbarian king four thousand years ago, but I only care about one thing: once they start moving, we can't run away. Fortunately, the terrifying procession paid no attention to us. They were only guarding an ancient cairn half-buried in the snow. From then on I never took any more jobs in northern Sylvania."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Myrmidia, do you know how much a complete set of Tomb Guard bronze armor is worth on the antique market? Of course, first you have to figure out how to actually make them fall - that's the hard part. I've heard from colleagues in Altdorf that a Tomb Guard pauldron pried from the battlefield sold for two thousand gold crowns on the black market. But buyers often overlook one problem: the undead enchantment on the armor will bring bad luck. There was a collector who was tortured by the whispers of the dead all night long, and finally went crazy and locked himself in the basement. Therefore, I suggest that it is best to stay away from these things. If you make money, you have to spend your life."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Elite undead infantrymen wearing heavy bronze armor and holding enchanted giant swords.",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Tomb Guard Undead Heavy Armor Ancient Warrior"
+  ]
+}

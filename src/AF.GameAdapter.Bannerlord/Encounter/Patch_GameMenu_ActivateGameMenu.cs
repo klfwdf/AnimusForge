@@ -193,7 +193,7 @@ public static class Patch_GameMenu_ActivateGameMenu
 						LordEncounterBehavior.LogEncounterDiagnostic("GameMenu.ActivateGameMenu", "keep_native_activity_target_after_eligible", menuId, leaderHero, encounteredParty);
 						return true;
 					}
-					Logger.LogTrace("UI_Intercept", $"拦截到 'encounter' 菜单请求，重定向至 'AnimusForge_lord_encounter' (目标: {leaderHero.Name})");
+					Logger.LogTrace("UI_Intercept", $"Intercepted 'encounter' menu request; redirecting to 'AnimusForge_lord_encounter' (target: {leaderHero.Name})");
 					LordEncounterBehavior.LogEncounterDiagnostic("GameMenu.ActivateGameMenu", "redirect_custom_lord_encounter", menuId, leaderHero, encounteredParty);
 					LordEncounterBehavior.SetTarget(leaderHero);
 					if (PlayerEncounter.Current != null)

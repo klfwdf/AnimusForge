@@ -2,7 +2,16 @@ using System;using System.Collections.Generic;using System.Linq;using System.Tex
 namespace AnimusForge;
 // Complete pure history rendering/filtering and count-based Native/persisted deduplication.
 internal static class HistorySectionProjectionOwner {
-internal static bool TryRenderSceneHistoryLine(ConversationMessage msg, HashSet<string> allowedSpeakers, out string rendered, int viewerAgentIndex = -1, string fallbackTargetNpcName = "", bool useNpcNameAddress = false, bool useSceneDistanceSpeechLabels = true, string playerName = "玩家")
+private static readonly Lazy<string[]> PlayerHistoryPrefixes = new Lazy<string[]>(() => new[]
+{
+	PromptComposerTexts.Raw("History_PlayerPref_1"), PromptComposerTexts.Raw("History_PlayerPref_2"),
+	PromptComposerTexts.Raw("History_PlayerPref_3"), PromptComposerTexts.Raw("History_PlayerPref_4")
+});
+private static readonly Lazy<string[]> RecentWindowPrefixes = new Lazy<string[]>(() => new[]
+{
+	PromptComposerTexts.Raw("History_RecentWindow1"), PromptComposerTexts.Raw("History_RecentWindow2")
+});
+internal static bool TryRenderSceneHistoryLine(ConversationMessage msg, HashSet<string> allowedSpeakers, out string rendered, int viewerAgentIndex = -1, string fallbackTargetNpcName = "", bool useNpcNameAddress = false, bool useSceneDistanceSpeechLabels = true, string playerName = "player")
 	{
 		rendered = "";
 		if (msg == null)
@@ -30,7 +39,7 @@ internal static bool TryRenderSceneHistoryLine(ConversationMessage msg, HashSet<
 			}
 			if (string.IsNullOrWhiteSpace(text3))
 			{
-				text3 = "某NPC";
+				text3 = PromptComposerTexts.Get("residual_other_npc");
 			}
 			if (text2.StartsWith(text3 + ":", StringComparison.Ordinal) || text2.StartsWith(text3 + "：", StringComparison.Ordinal))
 			{
@@ -66,7 +75,7 @@ internal static bool TryRenderSceneHistoryLine(ConversationMessage msg, HashSet<
 			}
 			else
 			{
-				rendered = "[系统事实] " + text2;
+				rendered = PromptComposerTexts.Get("residual_system_fact") + text2;
 			}
 			return true;
 		default:
@@ -123,7 +132,7 @@ internal static string FormatSceneHistorySection(string sectionText)
 			currentDateHeader = text;
 			continue;
 		}
-		if (string.Equals(text, "无", StringComparison.Ordinal))
+		if (string.Equals(text, PromptComposerTexts.Raw("history_section_none"), StringComparison.Ordinal))
 		{
 			chronologicalIndex++;
 			currentEntries.Add((chronologicalIndex, text));
@@ -250,7 +259,7 @@ internal static bool IsHistorySectionDateHeaderLine(string line)
 internal static string BuildHistoryLineSemanticKey(string line, ConversationSpeechTextOptions options = default)
 {
 	string text = (line ?? "").Replace("\r", "").Trim();
-	if (string.IsNullOrWhiteSpace(text) || string.Equals(text, "无", StringComparison.Ordinal) || IsHistorySectionHeaderLine(text) || IsHistorySectionDateHeaderLine(text))
+	if (string.IsNullOrWhiteSpace(text) || string.Equals(text, PromptComposerTexts.Raw("history_section_none"), StringComparison.Ordinal) || IsHistorySectionHeaderLine(text) || IsHistorySectionDateHeaderLine(text))
 	{
 		return "";
 	}
@@ -277,7 +286,12 @@ internal static string StripHistoryLineSpeakerPrefixForDedupe(string text)
 	{
 		return "";
 	}
-	string[] exactPrefixes = new string[8] { "玩家对NPC说", "玩家对你说", "玩家说", "你对NPC说", "你对你说", "你说", "NPC", "assistant" };
+	string[] exactPrefixes = PromptComposerTexts.Raw("History_RoutingPrefixes_Cn").Split(',').Concat(new[]
+	{
+		"NPC", "assistant",
+		"Player to you", "Player to NPC", "Player said", "You said", "Player", "You",
+        "Player says to you", "Player says to NPC", "You says to you", "You says to NPC"
+	}).ToArray();
 	for (int i = 0; i < exactPrefixes.Length; i++)
 	{
 		string prefix = exactPrefixes[i];
@@ -290,7 +304,7 @@ internal static string StripHistoryLineSpeakerPrefixForDedupe(string text)
 	if (colon > 0 && colon <= 24)
 	{
 		string prefixText = text.Substring(0, colon).Trim();
-		if (prefixText.EndsWith("对NPC说", StringComparison.Ordinal) || prefixText.EndsWith("对你说", StringComparison.Ordinal) || prefixText.EndsWith("说", StringComparison.Ordinal) || prefixText.Equals("玩家", StringComparison.Ordinal) || prefixText.Equals("你", StringComparison.Ordinal) || prefixText.Equals("NPC", StringComparison.Ordinal))
+if (PromptComposerTexts.Raw("History_RoutingSuffixes_Cn").Split(',').Any(s => prefixText.EndsWith(s, StringComparison.Ordinal)) || PromptComposerTexts.Raw("History_PlayerNames_Cn").Split(',').Any(s => prefixText.Equals(s, StringComparison.Ordinal)) || prefixText.Equals("NPC", StringComparison.Ordinal))
 		{
 			return text.Substring(colon + 1).Trim();
 		}
@@ -337,10 +351,10 @@ internal static string PruneEmptyHistoryDateBlocks(List<string> lines)
 	}
 	return string.Join("\n", output).Trim();
 }
-internal static string NormalizeScenePlayerHistoryLine(string text, string targetNpcName = "", bool useNpcNameAddress = false, float playerDistanceMeters = -1f, string playerName = "玩家")
+internal static string NormalizeScenePlayerHistoryLine(string text, string targetNpcName = "", bool useNpcNameAddress = false, float playerDistanceMeters = -1f, string playerName = "player")
 	{
 		string text2 = (text ?? "").Trim();
-		string text3 = useNpcNameAddress && !string.IsNullOrWhiteSpace(targetNpcName) ? (playerName + "对" + targetNpcName + "说") : SceneHistoryMessageAssemblyOwner.FormatScenePlayerDirectSpeechLabel(playerName, playerDistanceMeters);
+		string text3 = useNpcNameAddress && !string.IsNullOrWhiteSpace(targetNpcName) ? PromptComposerTexts.Format("residual_player_addressed", ("NAME", playerName), ("TARGET", targetNpcName)) : SceneHistoryMessageAssemblyOwner.FormatScenePlayerDirectSpeechLabel(playerName, playerDistanceMeters);
 		if (string.IsNullOrWhiteSpace(text2))
 		{
 			return text3 + ":";
@@ -349,7 +363,8 @@ internal static string NormalizeScenePlayerHistoryLine(string text, string targe
 		{
 			return text2;
 		}
-		if (text2.StartsWith("玩家:", StringComparison.Ordinal) || text2.StartsWith("玩家：", StringComparison.Ordinal) || text2.StartsWith("你:", StringComparison.Ordinal) || text2.StartsWith("你：", StringComparison.Ordinal))
+		if (PlayerHistoryPrefixes.Value.Any(pref => text2.StartsWith(pref, StringComparison.Ordinal))
+			|| text2.StartsWith("Player:", StringComparison.OrdinalIgnoreCase) || text2.StartsWith("You:", StringComparison.OrdinalIgnoreCase))
 		{
 			int num = text2.IndexOfAny(new char[2] { ':', '：' });
 			string value = ((num >= 0 && num + 1 < text2.Length) ? text2.Substring(num + 1).Trim() : "");
@@ -406,18 +421,23 @@ internal static bool IsPrivateRecentWindowHeader(string line)
 		{
 			return false;
 		}
-		if (text.StartsWith("【近期对话窗口】", StringComparison.Ordinal) || text.StartsWith("【最近对话历史】", StringComparison.Ordinal))
+		if (RecentWindowPrefixes.Value.Any(pref => text.StartsWith(pref, StringComparison.Ordinal))
+			|| text.StartsWith("[Recent dialogue window]", StringComparison.OrdinalIgnoreCase) || text.StartsWith("[Recent dialogue history]", StringComparison.OrdinalIgnoreCase))
 		{
 			return true;
 		}
-		if (text.StartsWith("【", StringComparison.Ordinal) && text.EndsWith("的近期对话】", StringComparison.Ordinal))
+		if (text.StartsWith("【", StringComparison.Ordinal) && text.EndsWith(PromptComposerTexts.Raw("History_RecentDialogSuffixBracket"), StringComparison.Ordinal))
 		{
 			string text2 = text.Substring(1, text.Length - 2);
-			int num = text2.IndexOf('与');
-			if (num > 0 && num < text2.Length - "的近期对话".Length)
+int num = text2.IndexOf(PromptComposerTexts.Raw("History_WithInfix")[0]);
+			if (num > 0 && num < text2.Length - PromptComposerTexts.Raw("History_RecentDialogSuffix").Length)
 			{
 				return true;
 			}
+		}
+		if (text.StartsWith("[", StringComparison.Ordinal) && text.EndsWith(" recent dialogue]", StringComparison.OrdinalIgnoreCase))
+		{
+			return true;
 		}
 		return false;
 	}
@@ -475,11 +495,11 @@ internal static string BuildConversationMemoryDedupKey(ConversationMessage messa
 		}
 		if (string.Equals(role, "user", StringComparison.Ordinal))
 		{
-			int targetSeparator = content.IndexOf('对');
-			int speechSeparator = content.IndexOf("说:", StringComparison.Ordinal);
+int targetSeparator = content.IndexOf(PromptComposerTexts.Raw("History_SpeechAddressedInfix")[0]);
+int speechSeparator = content.IndexOf(PromptComposerTexts.Raw("History_SpeechSayColon"), StringComparison.Ordinal);
 			if (speechSeparator < 0)
 			{
-				speechSeparator = content.IndexOf("说：", StringComparison.Ordinal);
+speechSeparator = content.IndexOf(PromptComposerTexts.Raw("History_SpeechSayFullColon"), StringComparison.Ordinal);
 			}
 			if (targetSeparator > 0 && speechSeparator > targetSeparator && speechSeparator <= 128)
 			{

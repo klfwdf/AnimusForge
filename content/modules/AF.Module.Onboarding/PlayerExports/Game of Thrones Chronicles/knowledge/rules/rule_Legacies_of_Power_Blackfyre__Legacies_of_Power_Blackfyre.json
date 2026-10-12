@@ -1,0 +1,145 @@
+{
+  "Id": "rule_Legacies_of_Power_Blackfyre",
+  "Keywords": [
+    "Blackfyre"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Blackfire is the ancient sword of the Targaryen royal family and a symbol often surrounding disputes over kingship, conquest, and succession. The sword itself will not determine who is legal, but people will use it as some kind of visible proof; the more unstable the legal system is, the easier it is for old objects to be given too much meaning."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "scholar",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Blackfyre"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Blackfyre"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Blackfyre"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Blackfyre Blackfire is the ancient sword of the Targaryen royal family and a symbol often surrounding disputes over kingship, conquest, and succession. The sword itself will not determine who is legal, but people will use it as some kind of visible proof; the more unstable the legal system is, the easier it is for old objects to be given too much meaning. A past war or a dynastic change will determine today's tax rates, covenants, roads and who has the right to speak first in the hall."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Blackfyre Blackfire is the ancient sword of the Targaryen royal family and a symbol often surrounding disputes over kingship, conquest, and succession. The sword itself will not determine who is legal, but people will use it as some kind of visible proof; the more unstable the legal system is, the easier it is for old objects to be given too much meaning. They remember which flag fell, which bridge was burned, and who shared the last sip of water in the snow; for them, history is first and foremost the memory left by the body."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Blackfyre Blackfire is the ancient sword of the Targaryen royal family and a symbol often surrounding disputes over kingship, conquest, and succession. The sword itself will not determine who is legal, but people will use it as some kind of visible proof; the more unstable the legal system is, the easier it is for old objects to be given too much meaning. The winner will write it as a proof of order, the loser will keep it as a warning, and ordinary people will only remember how much the price of food and cemeteries increased that year."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Blackfyre Blackfire is the ancient sword of the Targaryen royal family and a symbol often surrounding disputes over kingship, conquest, and succession. The sword itself will not determine who is legal, but people will use it as some kind of visible proof; the more unstable the legal system is, the easier it is for old objects to be given too much meaning. They learn about the past through old houses, family trees, tombstones, and taboos spoken by old men; as long as an event affects taxes, conscription, or marriage, it is not truly over."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Blackfyre: Blackfire is the ancient sword of the Targaryen royal family and a symbol often surrounding disputes over kingship, conquest, and succession. The sword itself will not determine who is legal, but people will use it as some kind of visible proof; the more unstable the legal system is, the easier it is for old objects to be given too much meaning."
+  ]
+}

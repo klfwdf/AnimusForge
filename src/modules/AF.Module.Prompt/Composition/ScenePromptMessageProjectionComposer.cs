@@ -15,13 +15,13 @@ internal static class ScenePromptMessageProjectionComposer
 {
 internal static bool HasPartyTransferRuleContext(string extras)
 	{
-		return !string.IsNullOrWhiteSpace(extras) && extras.IndexOf("【附加规则:party_transfer】", StringComparison.OrdinalIgnoreCase) >= 0;
+		return !string.IsNullOrWhiteSpace(extras) && extras.IndexOf(PromptComposerTexts.Raw("rule_party_transfer"), StringComparison.OrdinalIgnoreCase) >= 0;
 	}
 
 internal static string BuildNpcInitiatedOpeningPersistentFactText(string extraFact)
 	{
 		string factBody = StripAfefPrefixForPromptSection(extraFact);
-		return string.IsNullOrWhiteSpace(factBody) ? "" : ("[AFEF NPC行为补充] " + factBody);
+		return string.IsNullOrWhiteSpace(factBody) ? "" : (PromptComposerTexts.Raw("scene_compat_001") + factBody);
 	}
 
 internal static string BuildRecentSceneLoreQueryText(List<string> historyLines, int maxLines = 3, int maxChars = 280)
@@ -89,22 +89,22 @@ return lines;
 internal static string ComposeScenePublicHistorySection(List<string> lines, int historyLimit, int minimum, int maximum)
 {
 		lines = SceneHistoryMessageAssemblyOwner.KeepAfefFactsAndRecentHistoryLines(lines, Math.Max(minimum, Math.Min(maximum, historyLimit)));
-		return (lines.Count == 0) ? "【当前场景公共对话与互动】\n无" : ("【当前场景公共对话与互动】\n" + string.Join("\n", lines));
+		return (lines.Count == 0) ? PromptComposerTexts.Get("scene_live_002") : (PromptComposerTexts.Get("scene_live_003") + string.Join("\n", lines));
 	}
 internal static string BuildSceneNpcListLineForPrompt(NpcDataPacket npc)
 	{
 		if (npc == null)
 		{
-			return "- 名字: 未知 | 性别: 未知 | 身份: 未知身份";
+			return PromptComposerTexts.Get("scene_live_004");
 		}
 		string text = npc.IsHero ? ConversationActionPostprocessOwner.GetSceneNpcIdentityNameForPrompt(npc) : ConversationActionPostprocessOwner.GetSceneNpcGivenNameForPrompt(npc);
-		return "- 名字: " + text + " | 性别: " + (npc.IsFemale ? "女" : "男") + " | 身份: " + ConversationActionPostprocessOwner.GetSceneNpcListIdentityForPrompt(npc);
+		return PromptComposerTexts.Get("scene_npc_list_name") + text + PromptComposerTexts.Get("scene_npc_list_gender") + (npc.IsFemale ? PromptComposerTexts.Get("scene_npc_list_female") : PromptComposerTexts.Get("scene_npc_list_male")) + PromptComposerTexts.Get("scene_npc_list_identity") + ConversationActionPostprocessOwner.GetSceneNpcListIdentityForPrompt(npc);
 	}
 internal static string BuildDistanceToCurrentNpcForNpcListLine(NpcDataPacket npc, NpcDataPacket currentNpc)
 	{
 		if (npc == null || currentNpc == null || !npc.HasScenePosition || !currentNpc.HasScenePosition)
 		{
-			return " | 距离你: 未知";
+			return PromptComposerTexts.Get("scene_live_010");
 		}
 		float deltaX = npc.ScenePositionX - currentNpc.ScenePositionX;
 		float deltaY = npc.ScenePositionY - currentNpc.ScenePositionY;
@@ -112,9 +112,9 @@ internal static string BuildDistanceToCurrentNpcForNpcListLine(NpcDataPacket npc
 		float distanceMeters = (float)Math.Sqrt(deltaX * deltaX + deltaY * deltaY + deltaZ * deltaZ);
 		if (float.IsNaN(distanceMeters) || float.IsInfinity(distanceMeters))
 		{
-			return " | 距离你: 未知";
+			return PromptComposerTexts.Get("scene_live_010");
 		}
-		return " | 距离你: " + distanceMeters.ToString("0.0", System.Globalization.CultureInfo.InvariantCulture) + "米";
+		return PromptComposerTexts.Get("scene_npc_list_distance") + distanceMeters.ToString("0.0", System.Globalization.CultureInfo.InvariantCulture) + PromptComposerTexts.Get("scene_npc_list_distance_unit");
 	}
 internal static string BuildSceneNonHeroNamingNoteForPrompt(IEnumerable<NpcDataPacket> npcs)
 	{
@@ -122,7 +122,7 @@ internal static string BuildSceneNonHeroNamingNoteForPrompt(IEnumerable<NpcDataP
 		{
 			return "";
 		}
-		return "【非HeroNPC命名说明】：【站在你旁边的人】里的“名字”是非HeroNPC的个人名字；在【当前场景公共对话与互动】等历史里，会使用“身份+名字”的写法，例如“帝国女镇民利娅”，两者指向同一人。";
+		return PromptComposerTexts.Get("scene_live_014");
 	}
 
 internal static string BuildProactiveSceneOpeningFactText(string extraFact, string promptText)
@@ -136,9 +136,9 @@ internal static string BuildProactiveSceneOpeningFactText(string extraFact, stri
 		string promptBody = (promptText ?? "").Replace("\r", " ").Replace("\n", " ").Trim();
 		if (!string.IsNullOrWhiteSpace(promptBody))
 		{
-			parts.Add(promptBody + " 这是NPC主动发起本轮对话的事实补充，不是玩家说出的台词。");
+			parts.Add(promptBody + PromptComposerTexts.Get("npc_initiated_fact_supplement"));
 		}
-		return parts.Count == 0 ? "" : ("[AFEF NPC行为补充] " + string.Join(" ", parts).Trim());
+		return parts.Count == 0 ? "" : (PromptComposerTexts.Raw("scene_compat_001") + string.Join(" ", parts).Trim());
 	}
 internal static string BuildNpcInitiatedOpeningUserText(string extraFact, string promptText)
 	{
@@ -146,19 +146,19 @@ internal static string BuildNpcInitiatedOpeningUserText(string extraFact, string
 		string factBody = StripAfefPrefixForPromptSection(extraFact);
 		if (!string.IsNullOrWhiteSpace(factBody))
 		{
-			sections.Add("【当下事实】\n[AFEF NPC行为补充] " + factBody);
+			sections.Add(PromptComposerTexts.Get("scene_live_017") + factBody);
 		}
 		string promptBody = (promptText ?? "").Replace("\r", " ").Replace("\n", " ").Trim();
 		if (!string.IsNullOrWhiteSpace(promptBody))
 		{
-			sections.Add("【本轮行为请求】\n" + promptBody);
+			sections.Add(PromptComposerTexts.Get("scene_live_018") + promptBody);
 		}
 		if (sections.Count == 0)
 		{
 			return "";
 		}
-		return "【NPC主动发起本轮对话】\n" + string.Join("\n\n", sections)
-			+ "\n\n以上 role=user 内容是行为与事实指令，不是玩家说出的台词。";
+		return PromptComposerTexts.Get("scene_live_019") + string.Join("\n\n", sections)
+			+ PromptComposerTexts.Get("scene_live_020");
 	}
 
     internal static string BuildNativeConversationStreamingVisibleText(string text, ConversationSpeechTextOptions options)
@@ -175,7 +175,7 @@ internal static string BuildNpcInitiatedOpeningUserText(string extraFact, string
 internal static bool IsSceneWeeklyFullReportHeader(string line)
 {
 	string text = (line ?? "").Trim();
-	return text.StartsWith("【NPC所属王国完整周报】", StringComparison.Ordinal) || text.StartsWith("【世界完整周报】", StringComparison.Ordinal) || text.StartsWith("【周边相关王国完整周报】", StringComparison.Ordinal);
+	return PromptComposerTexts.StartsWith(text, "weekly_report_npc_kingdom") || PromptComposerTexts.StartsWith(text, "weekly_report_world") || PromptComposerTexts.StartsWith(text, "weekly_report_nearby");
 }
 
 internal static string FormatSceneRuleSection(string text)
@@ -195,7 +195,7 @@ internal static string FormatSceneRuleSection(string text)
 		{
 			continue;
 		}
-		bool startsNewBlock = trimmed.StartsWith("【附加规则:", StringComparison.Ordinal) || string.Equals(trimmed, "【说明】你不必提到附加规则内的内容，除非有人问起。", StringComparison.Ordinal);
+		bool startsNewBlock = PromptComposerTexts.StartsWith(trimmed, "rule_section_prefix") || string.Equals(trimmed, PromptComposerTexts.Raw("rule_section_note"), StringComparison.Ordinal);
 		if (startsNewBlock && current.Length > 0)
 		{
 			blocks.Add(current.ToString().Trim());
@@ -242,17 +242,17 @@ internal static string FormatSceneKnowledgeSection(string text)
 		{
 			continue;
 		}
-		if (string.Equals(trimmed, "参与互动让你的脑海里浮现了这些知识", StringComparison.Ordinal))
+		if (string.Equals(trimmed, PromptComposerTexts.Raw("knowledge_section_recall_prefix"), StringComparison.Ordinal))
 		{
 			FlushCurrentBlock();
 			output.Add(trimmed);
 			continue;
 		}
-		if (trimmed.StartsWith("【以下是关于（", StringComparison.Ordinal))
+		if (PromptComposerTexts.StartsWith(trimmed, "knowledge_section_about_prefix"))
 		{
 			FlushCurrentBlock();
 		}
-		if (trimmed.StartsWith("【玩家外貌信息（常驻）】", StringComparison.Ordinal))
+		if (PromptComposerTexts.StartsWith(trimmed, "knowledge_section_player_appearance"))
 		{
 			FlushCurrentBlock();
 		}
@@ -285,12 +285,12 @@ internal static void SplitSceneExtraSections(string text, out string miscSection
 	{
 		string rawLine = lines[i] ?? "";
 		string trimmed = rawLine.Trim();
-		if (!inKnowledgeSection && (string.Equals(trimmed, "参与互动让你的脑海里浮现了这些知识", StringComparison.Ordinal) || trimmed.StartsWith("【以下是关于（", StringComparison.Ordinal) || trimmed.StartsWith("【玩家外貌信息（常驻）】", StringComparison.Ordinal)))
+		if (!inKnowledgeSection && (string.Equals(trimmed, PromptComposerTexts.Raw("knowledge_section_recall_prefix"), StringComparison.Ordinal) || PromptComposerTexts.StartsWith(trimmed, "knowledge_section_about_prefix") || PromptComposerTexts.StartsWith(trimmed, "knowledge_section_player_appearance")))
 		{
 			inRuleSection = false;
 			inKnowledgeSection = true;
 		}
-		else if (!inKnowledgeSection && (trimmed.StartsWith("【附加规则:", StringComparison.Ordinal) || string.Equals(trimmed, "【说明】你不必提到附加规则内的内容，除非有人问起。", StringComparison.Ordinal)))
+		else if (!inKnowledgeSection && (PromptComposerTexts.StartsWith(trimmed, "rule_section_prefix") || string.Equals(trimmed, PromptComposerTexts.Raw("rule_section_note"), StringComparison.Ordinal)))
 		{
 			inRuleSection = true;
 		}
@@ -320,7 +320,7 @@ internal static string BuildSceneSystemRuleBlock(string ruleSection, string scen
 {
 	string text = FormatSceneRuleSection(ruleSection);
 	string mechanism = FormatSceneRuleSection(sceneMechanismPromptSection);
-	bool hasSceneMechanismRuleMarker = !string.IsNullOrWhiteSpace(text) && text.IndexOf("【附加规则:scene_mechanism_actions】", StringComparison.OrdinalIgnoreCase) >= 0;
+	bool hasSceneMechanismRuleMarker = !string.IsNullOrWhiteSpace(text) && text.IndexOf(PromptComposerTexts.Raw("rule_scene_mechanism"), StringComparison.OrdinalIgnoreCase) >= 0;
 	if (!string.IsNullOrWhiteSpace(mechanism) && hasSceneMechanismRuleMarker)
 	{
 		bool allowAppendWithoutMarker = false;
@@ -343,7 +343,7 @@ internal static string BuildSceneSystemRuleBlock(string ruleSection, string scen
 			.Trim();
 		if (!string.IsNullOrWhiteSpace(inspectionSlaughterInstruction))
 		{
-			string inspectionSlaughterRule = "【附加规则:scene_mechanism_actions】\n"
+			string inspectionSlaughterRule = PromptComposerTexts.Raw("scene_compat_035")
 				+ inspectionSlaughterInstruction;
 			text = string.IsNullOrWhiteSpace(text)
 				? inspectionSlaughterRule
@@ -365,7 +365,7 @@ internal static string BuildSceneSystemRuleBlock(string ruleSection, string scen
 			.Trim();
 		if (!string.IsNullOrWhiteSpace(executionInstruction))
 		{
-			string executionRule = "【附加规则:noble_prisoner_execution】\n" + executionInstruction;
+			string executionRule = PromptComposerTexts.Raw("scene_compat_036") + executionInstruction;
 			text = string.IsNullOrWhiteSpace(text) ? executionRule : (text + "\n" + executionRule);
 			text = FormatSceneRuleSection(text);
 		}
@@ -381,7 +381,7 @@ internal static string BuildSceneSystemRuleBlock(string ruleSection, string scen
 		{
 			return text;
 		}
-		const string marker = "【附加规则:scene_mechanism_actions】";
+		string marker = PromptComposerTexts.Raw("rule_scene_mechanism");
 		int num = text.IndexOf(marker, StringComparison.OrdinalIgnoreCase);
 		if (num < 0)
 		{
@@ -391,7 +391,7 @@ internal static string BuildSceneSystemRuleBlock(string ruleSection, string scen
 			}
 			return string.IsNullOrWhiteSpace(text) ? text2 : (text + "\n" + text2);
 		}
-		int num2 = text.IndexOf("【附加规则:", num + marker.Length, StringComparison.Ordinal);
+		int num2 = text.IndexOf(PromptComposerTexts.Raw("rule_section_prefix"), num + marker.Length, StringComparison.Ordinal);
 		if (num2 < 0)
 		{
 			return text.TrimEnd() + "\n" + text2;
@@ -421,7 +421,8 @@ internal static string BuildSimpleDialogueReplyLengthInstruction(int minTokens, 
 {
 	int num = Math.Max(1, minTokens);
 	int num2 = Math.Max(num, maxTokens);
-	return (num == num2) ? $"你实际要说的话，此处约{num2}字。" : $"你实际要说的话，此处不得少于{num}字，最多{num2}字。";
+	return num == num2 ? PromptComposerTexts.Format("scene_reply_speech_length_exact", ("max", num2))
+		: PromptComposerTexts.Format("scene_reply_speech_length_range", ("min", num), ("max", num2));
 }
 
 internal static bool TryExtractReplyFormatInstruction(ref string prompt, out string instruction)
@@ -436,15 +437,15 @@ internal static bool TryExtractReplyFormatInstruction(ref string prompt, out str
 	string[] array = text.Split('\n');
 	for (int i = 0; i <= array.Length - 4; i++)
 	{
-		if (!string.Equals(array[i].Trim(), "你的回复格式必须严格按照以下执行，其中内心思考要用()括起来，动作要用**括起来：", StringComparison.Ordinal))
+		if (!PromptComposerTexts.IsLabel(array[i].Trim(), "scene_reply_format_strict"))
 		{
 			continue;
 		}
-		if (!array[i + 1].Trim().StartsWith("（你的内心思考内容", StringComparison.Ordinal) || !string.Equals(array[i + 2].Trim(), "*你的动作内容*", StringComparison.Ordinal) || !array[i + 3].Trim().StartsWith("你实际要说的话，此处", StringComparison.Ordinal))
+		if (!PromptComposerTexts.StartsWith(array[i + 1].Trim(), "scene_reply_thought_prefix") || !PromptComposerTexts.IsLabel(array[i + 2].Trim(), "scene_reply_action_placeholder") || !PromptComposerTexts.StartsWith(array[i + 3].Trim(), "scene_reply_speech_prefix"))
 		{
 			continue;
 		}
-		int instructionLineCount = (i + 4 < array.Length && array[i + 4].Trim().StartsWith("[RELAY:接力编号]", StringComparison.Ordinal)) ? 5 : 4;
+		int instructionLineCount = (i + 4 < array.Length && array[i + 4].Trim().StartsWith(PromptComposerTexts.Raw("scene_compat_039"), StringComparison.Ordinal)) ? 5 : 4;
 		List<string> list = array.ToList();
 		instruction = string.Join("\n", list.GetRange(i, instructionLineCount)).Trim();
 		list.RemoveRange(i, instructionLineCount);
@@ -453,15 +454,15 @@ internal static bool TryExtractReplyFormatInstruction(ref string prompt, out str
 	}
 	for (int i = 0; i <= array.Length - 3; i++)
 	{
-		if (!string.Equals(array[i].Trim(), "你的回复格式必须严格按照以下执行，动作要用**括起来：", StringComparison.Ordinal))
+		if (!PromptComposerTexts.IsLabel(array[i].Trim(), "scene_reply_format_no_thought"))
 		{
 			continue;
 		}
-		if (!string.Equals(array[i + 1].Trim(), "*你的动作内容*", StringComparison.Ordinal) || !array[i + 2].Trim().StartsWith("你实际要说的话，此处", StringComparison.Ordinal))
+		if (!(PromptComposerTexts.IsLabel(array[i + 1].Trim(), "scene_reply_action_placeholder") || PromptComposerTexts.IsLabel(array[i + 1].Trim(), "scene_reply_action_placeholder_no_break")) || !PromptComposerTexts.StartsWith(array[i + 2].Trim(), "scene_reply_speech_prefix"))
 		{
 			continue;
 		}
-		int instructionLineCount = (i + 3 < array.Length && array[i + 3].Trim().StartsWith("[RELAY:接力编号]", StringComparison.Ordinal)) ? 4 : 3;
+		int instructionLineCount = (i + 3 < array.Length && array[i + 3].Trim().StartsWith(PromptComposerTexts.Raw("scene_compat_039"), StringComparison.Ordinal)) ? 4 : 3;
 		List<string> list = array.ToList();
 		instruction = string.Join("\n", list.GetRange(i, instructionLineCount)).Trim();
 		list.RemoveRange(i, instructionLineCount);
@@ -520,10 +521,10 @@ internal static bool TryExtractReplyFormatInstruction(ref string prompt, out str
 	internal static bool ContainsAfefFactMarkerForActionPostprocess(string line)
 	{
 		string text = ConversationSpeechTextRules.StripAfefPromptScopeLabel((line ?? "").Trim());
-		return text.IndexOf("[AFEF玩家行为补充]", StringComparison.Ordinal) >= 0
-			|| text.IndexOf("[AFEF NPC行为补充]", StringComparison.Ordinal) >= 0
-			|| text.IndexOf("【AFEF玩家行为补充】", StringComparison.Ordinal) >= 0
-			|| text.IndexOf("【AFEF NPC行为补充】", StringComparison.Ordinal) >= 0;
+		return text.IndexOf(PromptComposerTexts.Raw("afef_player_action"), StringComparison.Ordinal) >= 0
+			|| text.IndexOf(PromptComposerTexts.Raw("afef_npc_action"), StringComparison.Ordinal) >= 0
+			|| text.IndexOf(PromptComposerTexts.Raw("afef_player_action_bracket"), StringComparison.Ordinal) >= 0
+			|| text.IndexOf(PromptComposerTexts.Raw("afef_npc_action_bracket"), StringComparison.Ordinal) >= 0;
 	}
 
 	internal static bool IsActionPostprocessHistoryHeaderLine(string line)
@@ -550,7 +551,7 @@ internal static bool TryExtractReplyFormatInstruction(ref string prompt, out str
 				continue;
 			}
 			kept.Add(line);
-			if (!IsActionPostprocessHistoryHeaderLine(line) && !string.Equals(line, "无", StringComparison.Ordinal))
+			if (!IsActionPostprocessHistoryHeaderLine(line) && !PromptComposerTexts.IsLabel(line, "history_section_none"))
 			{
 				hasContent = true;
 			}
@@ -567,7 +568,7 @@ internal static bool TryExtractReplyFormatInstruction(ref string prompt, out str
 		}
 		int num = text.IndexOfAny(new char[2] { ':', '：' });
 		string text2 = (num >= 0) ? text.Substring(0, num).Trim() : text;
-		return text2.Equals("玩家", StringComparison.OrdinalIgnoreCase) || text2.Equals("你", StringComparison.OrdinalIgnoreCase) || text2.EndsWith("对你说", StringComparison.Ordinal) || text2.EndsWith("对NPC说", StringComparison.Ordinal);
+		return text2.Equals(PromptComposerTexts.Raw("postprocess_player_name_placeholder"), StringComparison.OrdinalIgnoreCase) || text2.Equals(PromptComposerTexts.Raw("retrieval_remainder_you"), StringComparison.OrdinalIgnoreCase) || text2.EndsWith(PromptComposerTexts.Raw("player_says_generic"), StringComparison.Ordinal) || text2.EndsWith(PromptComposerTexts.Raw("player_says_to_npc"), StringComparison.Ordinal);
 	}
 
 	internal static string BuildSingleNpcSceneReplyInstruction(string npcName, bool hasMultiplePresentNpcs, string capturedPlayerName)
@@ -580,13 +581,13 @@ internal static bool TryExtractReplyFormatInstruction(ref string prompt, out str
 		}
 		if (string.IsNullOrWhiteSpace(text2))
 		{
-			text2 = "玩家";
+			text2 = PromptComposerTexts.Get("scene_live_050");
 		}
 		if (hasMultiplePresentNpcs)
 		{
-			return "请只以" + text + "的身份回复，并结合role=user中其他人刚才说过的话来回应，不要各说各的。绝对不可以代替他人说话";
+			return PromptComposerTexts.Get("scene_reply_multi_instruction_prefix") + text + PromptComposerTexts.Get("scene_reply_multi_instruction_suffix");
 		}
-		return text + "现在正在与" + text2 + "单独交谈。请只以" + text + "的身份回应" + text2 + "。绝对不可以代替他人说话";
+		return text + PromptComposerTexts.Get("scene_reply_single_instruction") + text2 + PromptComposerTexts.Get("scene_reply_single_instruction_suffix") + text + PromptComposerTexts.Get("scene_reply_single_instruction_respond") + text2 + PromptComposerTexts.Get("scene_reply_single_instruction_no_replace");
 	}
 
 internal static string BuildReplyLengthInstruction(int minTokens, int maxTokens, bool formatDisabled, bool innerThoughtDisabled, int thoughtMinTokens)
@@ -598,12 +599,12 @@ internal static string BuildReplyLengthInstruction(int minTokens, int maxTokens,
 	int num = Math.Max(1, minTokens);
 	int num2 = Math.Max(num, maxTokens);
 	int num3 = thoughtMinTokens;
-	string text = (num == num2) ? $"你实际要说的话，此处约{num2}字。" : $"你实际要说的话，此处不得少于{num}字，最多{num2}字。";
+	string text = BuildSimpleDialogueReplyLengthInstruction(num, num2);
 	if (innerThoughtDisabled)
 	{
-		return "你的回复格式必须严格按照以下执行，动作要用**括起来：\n*你的动作内容*(注意不要分段）\n" + text;
+		return PromptComposerTexts.Get("scene_reply_format_no_thought") + "\n" + PromptComposerTexts.Get("scene_reply_action_placeholder_no_break") + "\n" + text;
 	}
-	return $"你的回复格式必须严格按照以下执行，其中内心思考要用()括起来，动作要用**括起来：\n（你的内心思考内容，不少于{num3}字，重点是思考#4 role=user及往后的对话历史）\n*你的动作内容*\n" + text;
+	return PromptComposerTexts.Get("scene_reply_format_strict") + "\n" + PromptComposerTexts.Format("scene_reply_thought_placeholder", ("min", num3)) + "\n" + PromptComposerTexts.Get("scene_reply_action_placeholder") + "\n" + text;
 }
 
 internal static string BuildSceneSingleNpcTaskSystemBlock(string npcName, bool hasMultiplePresentNpcs, int minTokens, int maxTokens, string playerNameForLength, bool formatDisabled, bool innerThoughtDisabled, int thoughtMinTokens, string capturedPlayerName)
@@ -617,7 +618,7 @@ internal static string BuildSceneSingleNpcTaskSystemBlock(string npcName, bool h
 	stringBuilder.Append(BuildReplyLengthInstruction(minTokens, maxTokens, formatDisabled, innerThoughtDisabled, thoughtMinTokens));
 	return stringBuilder.ToString().Trim();
 }
-	internal const string PlayerCraftedAfefInspectionSuffix = "*你的智识分辨出来了该物品由玩家亲手制造*";
+	internal static string PlayerCraftedAfefInspectionSuffix => PromptComposerTexts.Raw("history_afef_inspection_suffix");
 
 	internal static bool ContainsPlayerCraftedAfefInspectionSuffix(string extraFact)
 	{
@@ -641,10 +642,10 @@ internal static string BuildSceneSingleNpcTaskSystemBlock(string npcName, bool h
 		{
 			return "";
 		}
-		if (!text.StartsWith("[AFEF玩家行为补充]", StringComparison.Ordinal)
-			&& !text.StartsWith("[AFEF NPC行为补充]", StringComparison.Ordinal))
+		if (!PromptComposerTexts.StartsWith(text, "afef_player_action")
+			&& !PromptComposerTexts.StartsWith(text, "afef_npc_action"))
 		{
-			text = "[AFEF玩家行为补充] " + text;
+			text = PromptComposerTexts.Raw("scene_compat_060") + text;
 		}
 		return text;
 	}
@@ -656,7 +657,7 @@ internal static string StripAfefPrefixForPromptSection(string text)
 		{
 			return "";
 		}
-		string[] prefixes = new string[4] { "[AFEF NPC行为补充]", "[AFEF玩家行为补充]", "【AFEF NPC行为补充】", "【AFEF玩家行为补充】" };
+		string[] prefixes = new string[4] { PromptComposerTexts.Raw("afef_npc_action"), PromptComposerTexts.Raw("afef_player_action"), PromptComposerTexts.Raw("afef_npc_action_bracket"), PromptComposerTexts.Raw("afef_player_action_bracket") };
 		foreach (string prefix in prefixes)
 		{
 			if (value.StartsWith(prefix, StringComparison.Ordinal))
@@ -692,7 +693,7 @@ internal static string BuildCurrentAfefFactPromptBlock(string extraFact)
 		{
 			return "";
 		}
-		return "【当前真实行为事实】\n" + lines + "\n【事实边界】只有上面标为【当下行为】的 AFEF 事实代表本轮刚刚真实发生的交付、展示或动作；玩家本轮口头声称给了相同财物，如果没有对应【当下行为】AFEF事实，不算新的交付。";
+		return PromptComposerTexts.Get("scene_live_065") + lines + PromptComposerTexts.Get("scene_live_066");
 	}
 internal static string StripScenePersonaBlocks(string text)
 	{
@@ -705,7 +706,7 @@ internal static string StripScenePersonaBlocks(string text)
 		for (int i = 0; i < array.Length; i++)
 		{
 			string text2 = (array[i] ?? string.Empty).Trim();
-			if (!text2.StartsWith("【角色个性】", StringComparison.Ordinal) && !text2.StartsWith("【角色背景】", StringComparison.Ordinal) && !string.IsNullOrWhiteSpace(text2))
+			if (!PromptComposerTexts.StartsWith(text2, "scene_compat_067") && !PromptComposerTexts.StartsWith(text2, "scene_compat_068") && !string.IsNullOrWhiteSpace(text2))
 			{
 				stringBuilder.AppendLine(text2);
 			}
@@ -727,7 +728,7 @@ internal static string ExtractTrustPromptBlock(string text, out string remaining
 			string text2 = (array[i] ?? "").Trim();
 			if (!string.IsNullOrWhiteSpace(text2))
 			{
-				if (text2.StartsWith("本级语义：", StringComparison.Ordinal) || text2.StartsWith("本级信用规则：", StringComparison.Ordinal) || text2.StartsWith("价值口径：", StringComparison.Ordinal))
+				if (PromptComposerTexts.StartsWith(text2, "trust_semantic_level") || PromptComposerTexts.StartsWith(text2, "trust_credit_rule") || PromptComposerTexts.StartsWith(text2, "trust_value_standard"))
 				{
 					list.Add(text2);
 				}
@@ -752,7 +753,7 @@ internal static string InjectTrustBlockBeforeGroupRules(string localExtras, stri
 		{
 			return text2;
 		}
-		int num = text.IndexOf("【群体对话规则】", StringComparison.Ordinal);
+		int num = text.IndexOf(PromptComposerTexts.Raw("group_dialogue_rules"), StringComparison.Ordinal);
 		if (num >= 0)
 		{
 			string text3 = text.Substring(0, num).TrimEnd();
@@ -765,7 +766,7 @@ internal static string BuildAutoGroupRelayInfoDisplayName(NpcDataPacket npc)
 	{
 		if (npc == null)
 		{
-			return "有人";
+			return PromptComposerTexts.Get("scene_auto_group_someone");
 		}
 		string name = (npc.IsHero ? ConversationActionPostprocessOwner.GetSceneNpcIdentityNameForPrompt(npc) : ConversationActionPostprocessOwner.GetSceneNpcGivenNameForPrompt(npc)).Trim();
 		if (string.IsNullOrWhiteSpace(name))
@@ -774,7 +775,7 @@ internal static string BuildAutoGroupRelayInfoDisplayName(NpcDataPacket npc)
 		}
 		if (string.IsNullOrWhiteSpace(name))
 		{
-			name = "未知NPC";
+			name = PromptComposerTexts.Get("scene_live_074");
 		}
 		string identity = (ConversationActionPostprocessOwner.GetSceneNpcListIdentityForPrompt(npc) ?? "").Trim();
 		if (string.IsNullOrWhiteSpace(identity) || identity.IndexOf(name, StringComparison.OrdinalIgnoreCase) >= 0 || string.Equals(identity, name, StringComparison.OrdinalIgnoreCase))
@@ -833,9 +834,9 @@ internal static string BuildAutoGroupChatReplyInstruction(string npcName, List<N
 			.Take(5));
 		if (string.IsNullOrWhiteSpace(text2))
 		{
-			text2 = "周围的人";
+			text2 = PromptComposerTexts.Get("scene_auto_group_surrounding");
 		}
-		return text + "现在正在和" + text2 + "继续聊天，玩家暂时没有插话。请只以" + text + "的身份，接续上面的对话历史和【本轮接力话题】中上一位的发言，可以回应在场的人或补充自己的看法，不必重新向玩家回答同一个问题。可以认同、质疑或追问，但不要重复相同的问候、奉承或照抄别人的结论，也不要代替任何人说话。";
+		return text + PromptComposerTexts.Get("scene_auto_group_instruction_prefix") + text2 + PromptComposerTexts.Get("scene_auto_group_instruction_suffix") + text + PromptComposerTexts.Get("scene_auto_group_instruction_identity");
 	}
 internal static string NormalizeSceneHistoryLineForLoreQuery(string line)
 	{
@@ -844,9 +845,9 @@ internal static string NormalizeSceneHistoryLineForLoreQuery(string line)
 		{
 			return "";
 		}
-		if (text.StartsWith("[系统事实] ", StringComparison.Ordinal))
+		if (PromptComposerTexts.StartsWith(text, "scene_compat_079"))
 		{
-			text = text.Substring("[系统事实] ".Length).Trim();
+			text = text.Substring(PromptComposerTexts.Raw("scene_compat_079").Length).Trim();
 		}
 		return text;
 	}
@@ -870,8 +871,8 @@ internal static bool IsNativeConversationPreprocessUnavailableTextForExternal(st
 		{
 			return false;
 		}
-		return value.StartsWith("（API请求失败", StringComparison.Ordinal)
-			&& value.IndexOf("原生对话前处理", StringComparison.Ordinal) >= 0;
+		return PromptComposerTexts.StartsWith(value, "scene_compat_081")
+			&& value.IndexOf(PromptComposerTexts.Raw("scene_compat_082"), StringComparison.Ordinal) >= 0;
 	}
 internal static bool HasInjectedRuleBlockForPostprocess(string instructions, string ruleId)
 	{
@@ -881,7 +882,7 @@ internal static bool HasInjectedRuleBlockForPostprocess(string instructions, str
 		{
 			return false;
 		}
-		return text.IndexOf("【附加规则:" + text2 + "】", StringComparison.OrdinalIgnoreCase) >= 0;
+		return text.IndexOf(PromptComposerTexts.Raw("rule_section_prefix") + text2 + "】", StringComparison.OrdinalIgnoreCase) >= 0;
 	}
 
 internal static string BuildSceneFirstMeetingNpcFactSection(string text)
@@ -890,7 +891,7 @@ internal static string BuildSceneFirstMeetingNpcFactSection(string text)
 		{
 			return "";
 		}
-		return "【AFEF NPC行为补充】\n" + text.Trim();
+		return PromptComposerTexts.Raw("scene_compat_084") + text.Trim();
 
 }
 internal static string BuildNearbyPresentNpcLineForPrompt(NpcDataPacket selfNpc, IEnumerable<NpcDataPacket> presentNpcs)
@@ -917,7 +918,7 @@ internal static string BuildNearbyPresentNpcLineForPrompt(NpcDataPacket selfNpc,
 			}
 			if (presentNpc.IsHero)
 			{
-				string text2 = (presentNpc.RoleDesc ?? "").Trim();
+				string text2 = AdapterPromptCaptureTexts.PcapProjectKnown((presentNpc.RoleDesc ?? "").Trim());
 				list.Add(string.IsNullOrWhiteSpace(text2) ? text : (text2 + text));
 				continue;
 			}
@@ -927,7 +928,7 @@ internal static string BuildNearbyPresentNpcLineForPrompt(NpcDataPacket selfNpc,
 		{
 			return "";
 		}
-		return "并且你旁边还站着" + string.Join("，", list) + "。";
+		return PromptComposerTexts.Get("scene_nearby_present_prefix") + string.Join("，", list) + "。";
 	}
 
 internal static string ComposePlayerIdentityInfo(PersonaIdentityPromptCaptureAdapter.HeroIdentityInfoSnapshot snapshot)
@@ -937,41 +938,41 @@ internal static string ComposePlayerIdentityInfo(PersonaIdentityPromptCaptureAda
         string text=snapshot.Clan,factionName=snapshot.Faction,liegeName=snapshot.Liege,text3=snapshot.Title,heroCultureNameForPrompt=snapshot.Culture,text4=snapshot.Age,text5=snapshot.Equipment,value=snapshot.TradeSummary;
         bool includeRuleGatedFields=snapshot.IncludeRules,flag=snapshot.HasFaction,includeMarriageCandidates=snapshot.IncludeMarriage;
 		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.AppendLine("[player身份信息]");
-		stringBuilder.AppendLine("玩家文化：" + heroCultureNameForPrompt);
+		stringBuilder.AppendLine(PromptComposerTexts.Get("scene_live_086"));
+		stringBuilder.AppendLine(PromptComposerTexts.Get("scene_live_087") + heroCultureNameForPrompt);
 		if (includeRuleGatedFields)
 		{
-			stringBuilder.AppendLine("玩家声望：" + PersonaIntroTextRules.GetClanTierReputationLabel(num) + $"（{Math.Max(0, num)} level）");
+			stringBuilder.AppendLine(PromptComposerTexts.Get("scene_live_088") + PersonaIntroTextRules.GetClanTierReputationLabel(num) + $"（{Math.Max(0, num)} level）");
 			if (flag)
 			{
-				stringBuilder.AppendLine(PersonaIdentityPromptCaptureAdapter.BuildFactionLineForPrompt("玩家势力：", factionName, liegeName));
-				stringBuilder.AppendLine("玩家身份：" + text3);
+				stringBuilder.AppendLine(PersonaIdentityPromptCaptureAdapter.BuildFactionLineForPrompt(PromptComposerTexts.Get("scene_live_089"), factionName, liegeName));
+				stringBuilder.AppendLine(PromptComposerTexts.Get("scene_live_090") + text3);
 			}
-			stringBuilder.AppendLine("玩家家族：" + text + $"（{Math.Max(0, num)} level，玩家是家族的族长）");
+			stringBuilder.AppendLine(PromptComposerTexts.Get("scene_live_091") + text + PromptComposerTexts.Format("scene_player_clan_suffix", ("TIER", Math.Max(0, num))));
 		}
 		else if (flag)
 		{
-			stringBuilder.AppendLine(PersonaIdentityPromptCaptureAdapter.BuildFactionLineForPrompt("玩家势力：", factionName, liegeName));
+			stringBuilder.AppendLine(PersonaIdentityPromptCaptureAdapter.BuildFactionLineForPrompt(PromptComposerTexts.Get("scene_live_089"), factionName, liegeName));
 		}
 		else
 		{
-			stringBuilder.AppendLine("提示：你感觉此人只是个普通人。");
+			stringBuilder.AppendLine(PromptComposerTexts.Get("scene_live_093"));
 		}
-		stringBuilder.AppendLine("玩家年纪：" + text4);
+		stringBuilder.AppendLine(PromptComposerTexts.Get("scene_live_094") + text4);
 		if (!string.IsNullOrWhiteSpace(value))
 		{
-			stringBuilder.AppendLine("玩家装备：" + text5);
+			stringBuilder.AppendLine(PromptComposerTexts.Get("scene_live_095") + text5);
 			stringBuilder.AppendLine(value);
 		}
 		else
 		{
-			stringBuilder.AppendLine("玩家装备：" + text5);
+			stringBuilder.AppendLine(PromptComposerTexts.Get("scene_live_095") + text5);
 		}
 		if (includeMarriageCandidates)
 		{
 			int marriageCandidateMaxAgeSettingForPrompt = snapshot.MarriageMaxAge;
-			stringBuilder.AppendLine("【玩家家族可婚配成员（允许已有配偶，事实清单）】");
-			stringBuilder.AppendLine($"筛选口径：列出玩家家族内部基础适婚池（年龄 {PersonaIdentityPromptCaptureAdapter.MarriageCandidateMinAgeForPrompt}-{marriageCandidateMaxAgeSettingForPrompt}、非囚犯）。多配偶已允许，已有配偶不是拒绝理由；具体能否与对方成员成婚，仍以性别限制、年龄差、非重复婚姻和运行时婚姻规则为准。");
+			stringBuilder.AppendLine(PromptComposerTexts.Get("scene_live_097"));
+			stringBuilder.AppendLine(PromptComposerTexts.Format("scene_player_marriage_scope", ("MIN", PersonaIdentityPromptCaptureAdapter.MarriageCandidateMinAgeForPrompt), ("MAX", marriageCandidateMaxAgeSettingForPrompt)));
 			stringBuilder.AppendLine(snapshot.MarriageCandidates);
 		}
 		return stringBuilder.ToString().Trim();
@@ -983,11 +984,11 @@ internal static string ComposeNpcIdentityInfo(PersonaIdentityPromptCaptureAdapte
         string text=snapshot.Clan,factionName=snapshot.Faction,liegeName=snapshot.Liege,text3=snapshot.Title,heroCultureNameForPrompt=snapshot.Culture,text4=snapshot.ClanRole,text5=snapshot.Age,text6=snapshot.Equipment;
         bool includeMarriageCandidates=snapshot.IncludeMarriage;
 		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.AppendLine("[NPC身份信息]");
-		stringBuilder.AppendLine("NPC文化：" + heroCultureNameForPrompt);
-		stringBuilder.AppendLine("NPC声望：" + PersonaIntroTextRules.GetClanTierReputationLabel(num) + $"（{Math.Max(0, num)} level）");
-		stringBuilder.AppendLine(PersonaIdentityPromptCaptureAdapter.BuildFactionLineForPrompt("NPC势力：", factionName, liegeName));
-		stringBuilder.AppendLine("NPC身份：" + text3);
+		stringBuilder.AppendLine(PromptComposerTexts.Get("scene_live_098"));
+		stringBuilder.AppendLine(PromptComposerTexts.Get("scene_live_099") + heroCultureNameForPrompt);
+		stringBuilder.AppendLine(PromptComposerTexts.Get("scene_live_100") + PersonaIntroTextRules.GetClanTierReputationLabel(num) + $"（{Math.Max(0, num)} level）");
+		stringBuilder.AppendLine(PersonaIdentityPromptCaptureAdapter.BuildFactionLineForPrompt(PromptComposerTexts.Get("scene_live_101"), factionName, liegeName));
+		stringBuilder.AppendLine(PromptComposerTexts.Get("scene_live_102") + text3);
 		string npcPlayerRelationshipLine = snapshot.Kinship;
 		if (!string.IsNullOrWhiteSpace(npcPlayerRelationshipLine))
 		{
@@ -995,31 +996,31 @@ internal static string ComposeNpcIdentityInfo(PersonaIdentityPromptCaptureAdapte
 		}
 		if (!string.IsNullOrWhiteSpace(text4))
 		{
-			stringBuilder.AppendLine("NPC家族：" + text + $"（{Math.Max(0, num)} level，{text4}）");
+			stringBuilder.AppendLine(PromptComposerTexts.Get("scene_live_103") + text + $"（{Math.Max(0, num)} level，{text4}）");
 		}
 		else
 		{
-			stringBuilder.AppendLine("NPC家族：" + text + $"（{Math.Max(0, num)} level）");
+			stringBuilder.AppendLine(PromptComposerTexts.Get("scene_live_103") + text + $"（{Math.Max(0, num)} level）");
 		}
 		if (snapshot.HasLeader)
 		{
 			if (snapshot.LeaderIsSelf)
 			{
-				stringBuilder.AppendLine("该家族族长：你本人");
+				stringBuilder.AppendLine(PromptComposerTexts.Get("scene_live_105"));
 			}
 			else
 			{
-				stringBuilder.AppendLine("该家族族长：" + (snapshot.LeaderName));
+				stringBuilder.AppendLine(PromptComposerTexts.Get("scene_live_106") + (snapshot.LeaderName));
 			}
 		}
-		stringBuilder.AppendLine("NPC年纪：" + text5);
-		stringBuilder.AppendLine("NPC存款：" + num2 + " 第纳尔");
-		stringBuilder.AppendLine("NPC装备：" + text6);
+		stringBuilder.AppendLine(PromptComposerTexts.Get("scene_live_107") + text5);
+		stringBuilder.AppendLine(PromptComposerTexts.Get("scene_live_108") + num2 + PromptComposerTexts.Get("scene_live_109"));
+		stringBuilder.AppendLine(PromptComposerTexts.Get("scene_live_110") + text6);
 		if (includeMarriageCandidates)
 		{
 			int marriageCandidateMaxAgeSettingForPrompt = snapshot.MarriageMaxAge;
-			stringBuilder.AppendLine("【该家族可婚配成员（允许已有配偶，事实清单）】");
-			stringBuilder.AppendLine($"筛选口径：列出该家族内部基础适婚池（年龄 {PersonaIdentityPromptCaptureAdapter.MarriageCandidateMinAgeForPrompt}-{marriageCandidateMaxAgeSettingForPrompt}、非囚犯）。多配偶已允许，已有配偶不是拒绝理由；具体能否与玩家家族成员成婚，仍以性别限制、年龄差、非重复婚姻和运行时婚姻规则为准。");
+			stringBuilder.AppendLine(PromptComposerTexts.Get("scene_live_111"));
+			stringBuilder.AppendLine(PromptComposerTexts.Format("scene_npc_marriage_scope", ("MIN", PersonaIdentityPromptCaptureAdapter.MarriageCandidateMinAgeForPrompt), ("MAX", marriageCandidateMaxAgeSettingForPrompt)));
 			stringBuilder.AppendLine(snapshot.MarriageCandidates);
 		}
 		if (!string.IsNullOrWhiteSpace(snapshot.InventorySummary))

@@ -198,7 +198,7 @@ public static class AIConfigHandler
 			JObject schema = _preprocessPrompts?.StrictJson?.MentionedEntitiesSchema;
 			if (schema == null || !schema.Properties().Any())
 			{
-				throw new InvalidOperationException("PreprocessPrompts.json 缺少必填项: StrictJson.MentionedEntitiesSchema");
+				throw new InvalidOperationException("PreprocessPrompts.json is missing required field: StrictJson.MentionedEntitiesSchema");
 			}
 			return schema.ToString(Formatting.None);
 		}
@@ -213,7 +213,16 @@ public static class AIConfigHandler
 		}
 	}
 
-	public static string GlobalPrompt => ApplyPlayerDisplayNameToGuardrailText(_guardrail?.GlobalPrompt ?? "");
+	public static string GlobalPrompt
+	{
+		get
+		{
+			string prompt = _guardrail?.GlobalPrompt ?? "";
+			if (string.Equals(prompt, PromptRetrievalTexts.Raw("Raw_a780a9b461cf"), StringComparison.Ordinal))
+				prompt = PromptComposerTexts.Get("residual_default_global");
+			return ApplyPlayerDisplayNameToGuardrailText(prompt);
+		}
+	}
 
 	public static string GlobalGuardrail => ApplyPlayerDisplayNameToGuardrailText(_guardrail?.GlobalGuardrail ?? "");
 
@@ -234,9 +243,9 @@ public static class AIConfigHandler
 		{
 			return "";
 		}
-		string name = string.IsNullOrWhiteSpace(npcName) ? "目标NPC" : npcName.Trim();
+		string name = string.IsNullOrWhiteSpace(npcName) ? PromptComposerTexts.Get("residual_config_8d2218348671") : npcName.Trim();
 		string percent = Math.Max(0f, Math.Min(1f, healthRatio)).ToString("P0");
-		return text.Replace("{npcName}", name).Replace("{healthPercent}", percent).Replace("{healthRatio}", percent);
+		return PromptComposerTexts.FormatTemplate(text, ("npcName", name), ("healthPercent", percent), ("healthRatio", percent));
 	}
 
 	public static List<string> DuelTriggerKeywords => CopyConfigList(_guardrail?.Duel?.AcceptKeywords);
@@ -644,9 +653,9 @@ public static class AIConfigHandler
 			RpItemIntroductionPromptsConfigModel config = _rpItemIntroductionPrompts;
 			if (config == null)
 			{
-				throw new InvalidOperationException("RP物品介绍提示词尚未加载");
+				throw new InvalidOperationException("RP item introduction prompts have not been loaded");
 			}
-			systemPrompt = RequireRpItemIntroductionPromptValue(config.SystemPrompt, "SystemPrompt");
+			systemPrompt = PromptComposerTexts.ApplyOutputLanguage(RequireRpItemIntroductionPromptValue(config.SystemPrompt, "SystemPrompt"));
 			userPrompt = RenderRpItemIntroductionPromptTemplate(config.UserPromptTemplate, new Dictionary<string, string>(StringComparer.Ordinal)
 			{
 				["item_name"] = itemName ?? "",
@@ -660,7 +669,7 @@ public static class AIConfigHandler
 			error = ex.Message;
 			if (Interlocked.Exchange(ref _rpItemIntroductionPromptBuildFailureLogged, 1) == 0)
 			{
-				Logger.Log("AIConfig", "[RP物品介绍] 无法渲染提示词，自动介绍已跳过: " + error);
+				Logger.Log("AIConfig", "[RP item introduction] Could not render the prompt; automatic introduction skipped: " + error);
 			}
 			return false;
 		}
@@ -755,7 +764,7 @@ public static class AIConfigHandler
 					Description = rule?.Description ?? ""
 				});
 			}
-			Logger.Log("AIConfig", "[RoyalPostprocessRules] mode=resident targetHero=" + (targetHero?.StringId ?? "") + " rules=" + ((list.Count == 0) ? "（无）" : string.Join(",", list.Select((PostprocessRuleEntry x) => x?.Tag ?? "").Where((string x) => !string.IsNullOrWhiteSpace(x)))));
+			Logger.Log("AIConfig", "[RoyalPostprocessRules] mode=resident targetHero=" + (targetHero?.StringId ?? "") + " rules=" + ((list.Count == 0) ? "(none)" : string.Join(",", list.Select((PostprocessRuleEntry x) => x?.Tag ?? "").Where((string x) => !string.IsNullOrWhiteSpace(x)))));
 		}
 		catch
 		{
@@ -766,7 +775,7 @@ public static class AIConfigHandler
 	private static string NormalizeActionPostprocessOptionalValue(string value)
 	{
 		string text = (value ?? "").Trim();
-		if (string.IsNullOrWhiteSpace(text) || string.Equals(text, "（无）", StringComparison.Ordinal))
+		if (string.IsNullOrWhiteSpace(text) || string.Equals(text, PromptRetrievalTexts.Raw("Raw_c7bcc6d27f3a"), StringComparison.Ordinal))
 		{
 			return "";
 		}
@@ -788,10 +797,17 @@ public static class AIConfigHandler
 			{
 				string pattern = "(?:\\r?\\n){0,2}" + Regex.Escape(titleLine) + "\\r?\\n" + Regex.Escape(text3) + "(?:\\r?\\n)?";
 				text = Regex.Replace(text, pattern, "", RegexOptions.CultureInvariant);
+                string packageTitle = PromptRetrievalTexts.OptionalHeader(titleLine);
+                if (!string.Equals(packageTitle, titleLine, StringComparison.Ordinal))
+                {
+                    string packagePattern = "(?:\\r?\\n){0,2}" + Regex.Escape(packageTitle) + "\\r?\\n" + Regex.Escape(text3) + "(?:\\r?\\n)?";
+                    text = Regex.Replace(text, packagePattern, "", RegexOptions.CultureInvariant);
+                }
 			}
 			return text.Replace(text3, "");
 		}
-		return text.Replace(text3, text2);
+		// Nonempty values are inserted once after all optional sections have been removed.
+		return text;
 	}
 
 	public static string BuildActionPostprocessSystemPrompt(string tagRules, string moodRules, string npcName, string sharedItemList = null, string playerItemList = null, string debtHint = null, string marriagePlayerCandidates = null, string marriageTargetCandidates = null)
@@ -806,14 +822,20 @@ public static class AIConfigHandler
 		debtHint = NormalizeActionPostprocessNameReferences(debtHint, npcName);
 		marriagePlayerCandidates = NormalizeActionPostprocessNameReferences(marriagePlayerCandidates, npcName);
 		marriageTargetCandidates = NormalizeActionPostprocessNameReferences(marriageTargetCandidates, npcName);
-		text = ReplaceActionPostprocessOptionalSection(text, "{npc_name}的物品清单：", "shared_item_list", sharedItemList);
-		text = ReplaceActionPostprocessOptionalSection(text, "玩家可见装备：", "player_item_list", playerItemList);
-		text = ReplaceActionPostprocessOptionalSection(text, "债务提示：", "debt_hint", debtHint);
-		text = ReplaceActionPostprocessOptionalSection(text, "玩家家族可婚配成员（允许已有配偶，事实清单）：", "marriage_player_candidates", marriagePlayerCandidates);
-		text = ReplaceActionPostprocessOptionalSection(text, "对方家族可婚配成员（允许已有配偶，事实清单）：", "marriage_target_candidates", marriageTargetCandidates);
-		text = text.Replace("{tag_rules}", string.IsNullOrWhiteSpace(tagRules) ? "（无）" : tagRules.Trim())
-			.Replace("{mood_rules}", string.IsNullOrWhiteSpace(moodRules) ? "（无）" : moodRules.Trim())
-			.Replace("{npc_name}", "NPC");
+		text = ReplaceActionPostprocessOptionalSection(text, PromptRetrievalTexts.Raw("Raw_a7699de9c855"), "shared_item_list", sharedItemList);
+		text = ReplaceActionPostprocessOptionalSection(text, PromptRetrievalTexts.Raw("Raw_e22aa87ba2c7"), "player_item_list", playerItemList);
+		text = ReplaceActionPostprocessOptionalSection(text, PromptRetrievalTexts.Raw("Raw_667cf12fa5e8"), "debt_hint", debtHint);
+		text = ReplaceActionPostprocessOptionalSection(text, PromptRetrievalTexts.Raw("Raw_674366dba38e"), "marriage_player_candidates", marriagePlayerCandidates);
+		text = ReplaceActionPostprocessOptionalSection(text, PromptRetrievalTexts.Raw("Raw_47744bca4c99"), "marriage_target_candidates", marriageTargetCandidates);
+		text = PromptComposerTexts.FormatTemplate(text,
+            ("tag_rules", string.IsNullOrWhiteSpace(tagRules) ? PromptComposerTexts.Get("residual_config_c7bcc6d27f3a") : tagRules.Trim()),
+            ("mood_rules", string.IsNullOrWhiteSpace(moodRules) ? PromptComposerTexts.Get("residual_config_c7bcc6d27f3a") : moodRules.Trim()),
+            ("npc_name", "NPC"),
+            ("shared_item_list", NormalizeActionPostprocessOptionalValue(sharedItemList)),
+            ("player_item_list", NormalizeActionPostprocessOptionalValue(playerItemList)),
+            ("debt_hint", NormalizeActionPostprocessOptionalValue(debtHint)),
+            ("marriage_player_candidates", NormalizeActionPostprocessOptionalValue(marriagePlayerCandidates)),
+            ("marriage_target_candidates", NormalizeActionPostprocessOptionalValue(marriageTargetCandidates)));
 		return Regex.Replace(text.Trim(), "(\\r?\\n){3,}", Environment.NewLine + Environment.NewLine);
 	}
 
@@ -831,18 +853,25 @@ public static class AIConfigHandler
 		marriageTargetCandidates = NormalizeActionPostprocessNameReferences(marriageTargetCandidates, npcName);
 		runtimeContext = AppendPersistentActionPostprocessRuntimeContext(runtimeContext);
 		runtimeContext = NormalizeActionPostprocessNameReferences(runtimeContext, npcName);
-		text = ReplaceActionPostprocessOptionalSection(text, "玩家可见装备：", "player_item_list", playerItemList);
-		text = ReplaceActionPostprocessOptionalSection(text, "{npc_name}的物品清单：", "shared_item_list", sharedItemList);
-		text = ReplaceActionPostprocessOptionalSection(text, "玩家家族可婚配成员（允许已有配偶，事实清单）：", "marriage_player_candidates", marriagePlayerCandidates);
-		text = ReplaceActionPostprocessOptionalSection(text, "对方家族可婚配成员（允许已有配偶，事实清单）：", "marriage_target_candidates", marriageTargetCandidates);
-		text = ReplaceActionPostprocessOptionalSection(text, "债务提示：", "debt_hint", debtHint);
-		text = ReplaceActionPostprocessOptionalSection(text, "运行时补充事实：", "runtime_context", runtimeContext);
+		text = ReplaceActionPostprocessOptionalSection(text, PromptRetrievalTexts.Raw("Raw_e22aa87ba2c7"), "player_item_list", playerItemList);
+		text = ReplaceActionPostprocessOptionalSection(text, PromptRetrievalTexts.Raw("Raw_a7699de9c855"), "shared_item_list", sharedItemList);
+		text = ReplaceActionPostprocessOptionalSection(text, PromptRetrievalTexts.Raw("Raw_674366dba38e"), "marriage_player_candidates", marriagePlayerCandidates);
+		text = ReplaceActionPostprocessOptionalSection(text, PromptRetrievalTexts.Raw("Raw_47744bca4c99"), "marriage_target_candidates", marriageTargetCandidates);
+		text = ReplaceActionPostprocessOptionalSection(text, PromptRetrievalTexts.Raw("Raw_667cf12fa5e8"), "debt_hint", debtHint);
+		text = ReplaceActionPostprocessOptionalSection(text, PromptRetrievalTexts.Raw("Raw_edf50fd9fd51"), "runtime_context", runtimeContext);
 		int maxHistoryEntries = DuelSettings.GetActionPostprocessHistoryEntryLimitForExternal();
 		string newValue = PrepareActionPostprocessHistoryText(historyText, maxHistoryEntries, latestReplyBlock);
-		text = text.Replace("{tag_rules}", string.IsNullOrWhiteSpace(tagRules) ? "（无）" : tagRules.Trim())
-			.Replace("{history}", string.IsNullOrWhiteSpace(newValue) ? "（无）" : newValue)
-			.Replace("{reply}", string.IsNullOrWhiteSpace(latestReplyBlock) ? "玩家: （无）\nNPC: （无）" : latestReplyBlock.Trim())
-			.Replace("{npc_name}", "NPC");
+		text = PromptComposerTexts.FormatTemplate(text,
+            ("tag_rules", string.IsNullOrWhiteSpace(tagRules) ? PromptComposerTexts.Get("residual_config_c7bcc6d27f3a") : tagRules.Trim()),
+            ("history", string.IsNullOrWhiteSpace(newValue) ? PromptComposerTexts.Get("residual_config_c7bcc6d27f3a") : newValue),
+            ("reply", string.IsNullOrWhiteSpace(latestReplyBlock) ? PromptComposerTexts.Get("residual_config_0e254d00217b") : latestReplyBlock.Trim()),
+            ("npc_name", "NPC"),
+            ("shared_item_list", NormalizeActionPostprocessOptionalValue(sharedItemList)),
+            ("player_item_list", NormalizeActionPostprocessOptionalValue(playerItemList)),
+            ("debt_hint", NormalizeActionPostprocessOptionalValue(debtHint)),
+            ("marriage_player_candidates", NormalizeActionPostprocessOptionalValue(marriagePlayerCandidates)),
+            ("marriage_target_candidates", NormalizeActionPostprocessOptionalValue(marriageTargetCandidates)),
+            ("runtime_context", NormalizeActionPostprocessOptionalValue(runtimeContext)));
 		return Regex.Replace(text.Trim(), "(\\r?\\n){3,}", Environment.NewLine + Environment.NewLine);
 	}
 
@@ -861,10 +890,10 @@ public static class AIConfigHandler
 		}
 		if (!string.IsNullOrWhiteSpace(playerId) && !ContainsExactRuntimeEntityId(text, "hero", playerId))
 		{
-			facts.Add("【固定实体ID】玩家本人固定ID：" + playerId + "。当后处理标签需要指向玩家本人或玩家主队所属英雄时，只能使用此ID；WORLDMAP_ORDER跟随玩家时，目标类型用hero，id填写" + playerId + "；不要猜测玩家ID。");
+			facts.Add(PromptComposerTexts.Format("residual_player_fixed_id", ("ID", playerId)));
 		}
 		string locationFact = BuildActionPostprocessPlayerCurrentLocationFact();
-		if (!string.IsNullOrWhiteSpace(locationFact) && text.IndexOf("【玩家当前地点ID】", StringComparison.OrdinalIgnoreCase) < 0)
+		if (!string.IsNullOrWhiteSpace(locationFact) && (text.IndexOf(PromptRetrievalTexts.Raw("Raw_d4b710cc137d"), StringComparison.OrdinalIgnoreCase) < 0 && text.IndexOf(PromptComposerTexts.Get("residual_location_header"), StringComparison.OrdinalIgnoreCase) < 0))
 		{
 			facts.Add(locationFact);
 		}
@@ -891,7 +920,7 @@ public static class AIConfigHandler
 		{
 			return true;
 		}
-		string structuredPattern = @"(?:固定ID|ID|编号)[:：]\s*(?:" + Regex.Escape(type.Trim()) + @":)?" + Regex.Escape(id.Trim()) + @"(?![A-Za-z0-9_.-])";
+		string structuredPattern = PromptRetrievalTexts.Raw("Raw_06f543127b58") + Regex.Escape(type.Trim()) + @":)?" + Regex.Escape(id.Trim()) + @"(?![A-Za-z0-9_.-])";
 		return Regex.IsMatch(text, structuredPattern, RegexOptions.IgnoreCase);
 	}
 
@@ -906,7 +935,7 @@ public static class AIConfigHandler
 				settlement = Settlement.CurrentSettlement;
 				if (settlement != null)
 				{
-					source = "当前场景定居点";
+					source = PromptComposerTexts.Get("residual_location_scene");
 				}
 			}
 			catch
@@ -920,7 +949,7 @@ public static class AIConfigHandler
 					settlement = MobileParty.MainParty?.CurrentSettlement;
 					if (settlement != null)
 					{
-						source = "玩家主队所在定居点";
+						source = PromptComposerTexts.Get("residual_location_party");
 					}
 				}
 				catch
@@ -935,7 +964,7 @@ public static class AIConfigHandler
 					settlement = Hero.MainHero?.CurrentSettlement;
 					if (settlement != null)
 					{
-						source = "玩家英雄所在定居点";
+						source = PromptComposerTexts.Get("residual_location_hero");
 					}
 				}
 				catch
@@ -947,18 +976,18 @@ public static class AIConfigHandler
 			{
 				string settlementId = (settlement.StringId ?? "").Trim();
 				string settlementName = (settlement.Name?.ToString() ?? settlementId).Trim();
-				string type = settlement.IsTown ? "城镇" : (settlement.IsCastle ? "城堡" : (settlement.IsVillage ? "村庄" : (settlement.IsHideout ? "藏身处" : "定居点")));
+				string type = settlement.IsTown ? PromptComposerTexts.Get("residual_location_town") : (settlement.IsCastle ? PromptComposerTexts.Get("residual_location_castle") : (settlement.IsVillage ? PromptComposerTexts.Get("residual_location_village") : (settlement.IsHideout ? PromptComposerTexts.Get("residual_location_hideout") : PromptComposerTexts.Get("residual_location_settlement"))));
 				if (string.IsNullOrWhiteSpace(settlementId))
 				{
 					return "";
 				}
 				StringBuilder sb = new StringBuilder();
-				sb.Append("【玩家当前地点ID】当前定居点ID：" + settlementId + "；名称：" + settlementName + "；类型：" + type);
+				sb.Append(PromptComposerTexts.Format("residual_location_current", ("ID", settlementId), ("NAME", settlementName), ("TYPE", type)));
 				if (!string.IsNullOrWhiteSpace(source))
 				{
-					sb.Append("；来源：" + source);
+					sb.Append(PromptComposerTexts.Format("residual_location_source", ("SOURCE", source)));
 				}
-				sb.Append("。若玩家在<latest_reply>语境中说“这里”“此地”“本城”“当前地点”“我们所在的地方”，且动作标签需要定居点目标，目标类型写settlement，id填写上述原始ID。");
+				sb.Append(PromptComposerTexts.Get("residual_location_rule"));
 				return sb.ToString();
 			}
 			Settlement nearest = ResolveNearestSettlementToMainPartyForPostprocess(out float distance);
@@ -968,7 +997,7 @@ public static class AIConfigHandler
 				string settlementName = (nearest.Name?.ToString() ?? settlementId).Trim();
 				if (!string.IsNullOrWhiteSpace(settlementId))
 				{
-					return "【玩家当前地点ID】当前未处于定居点内；最近定居点ID：" + settlementId + "；名称：" + settlementName + "；距离：" + distance.ToString("0.0") + "。只有当玩家明确说“附近”“最近的定居点”等语义时才使用最近定居点；目标类型写settlement，id填写上述原始ID；不要把它误当作玩家脚下当前地点。";
+					return PromptComposerTexts.Format("residual_location_nearest", ("ID", settlementId), ("NAME", settlementName), ("DISTANCE", distance.ToString("0.0")));
 				}
 			}
 		}
@@ -1164,14 +1193,14 @@ public static class AIConfigHandler
 	private static bool TryParseActionPostprocessAfefHeaderLine(string line, out string prefix)
 	{
 		string text = (line ?? "").Trim();
-		if (text.Equals("【AFEF玩家行为补充】", StringComparison.Ordinal) || text.Equals("[AFEF玩家行为补充]", StringComparison.Ordinal))
+		if (text.Equals(PromptRetrievalTexts.Raw("Raw_4c4fc91b8269"), StringComparison.Ordinal) || text.Equals(PromptRetrievalTexts.Raw("Raw_6d7b96ecf184"), StringComparison.Ordinal))
 		{
-			prefix = "[AFEF玩家行为补充]";
+			prefix = PromptRetrievalTexts.Raw("Raw_6d7b96ecf184");
 			return true;
 		}
-		if (text.Equals("【AFEF NPC行为补充】", StringComparison.Ordinal) || text.Equals("[AFEF NPC行为补充]", StringComparison.Ordinal))
+		if (text.Equals(PromptRetrievalTexts.Raw("Raw_487d3cf9bfef"), StringComparison.Ordinal) || text.Equals(PromptRetrievalTexts.Raw("Raw_c231f39bb72c"), StringComparison.Ordinal))
 		{
-			prefix = "[AFEF NPC行为补充]";
+			prefix = PromptRetrievalTexts.Raw("Raw_c231f39bb72c");
 			return true;
 		}
 		prefix = "";
@@ -1220,7 +1249,7 @@ public static class AIConfigHandler
 			{
 				return "";
 			}
-			return "玩家: " + playerText;
+			return PromptComposerTexts.Get("residual_player_colon") + playerText;
 		}
 		if (roleText == "assistant")
 		{
@@ -1237,7 +1266,7 @@ public static class AIConfigHandler
 	private static string ExtractActionPostprocessPlayerTextFromRoleContent(string content)
 	{
 		string text = (content ?? "").Trim();
-		if (string.IsNullOrWhiteSpace(text) || text.StartsWith("[AFEF", StringComparison.Ordinal) || text.StartsWith("【最近对话历史】", StringComparison.Ordinal) || text.StartsWith("【近期对话窗口】", StringComparison.Ordinal))
+		if (string.IsNullOrWhiteSpace(text) || text.StartsWith("[AFEF", StringComparison.Ordinal) || text.StartsWith(PromptRetrievalTexts.Raw("Raw_9165a76adb33"), StringComparison.Ordinal) || text.StartsWith(PromptRetrievalTexts.Raw("Raw_c54c0e98c857"), StringComparison.Ordinal))
 		{
 			return "";
 		}
@@ -1261,7 +1290,7 @@ public static class AIConfigHandler
 	private static int FindLastActionPostprocessDirectSpeechLabelEnd(string text)
 	{
 		int best = -1;
-		foreach (string token in new string[3] { "对你说】", "对NPC说】", "对玩家说】" })
+		foreach (string token in new string[3] { PromptRetrievalTexts.Raw("Raw_365ec0fd142d"), PromptRetrievalTexts.Raw("Raw_dffe7e6b8fac"), PromptRetrievalTexts.Raw("Raw_83bf62d6feda") })
 		{
 			int index = (text ?? "").LastIndexOf(token, StringComparison.Ordinal);
 			if (index >= 0)
@@ -1299,13 +1328,13 @@ public static class AIConfigHandler
 
 	private static bool IsActionPostprocessRecallBlockStart(string line)
 	{
-		return (line ?? "").Trim().IndexOf("你想起之前的对话与互动", StringComparison.Ordinal) >= 0;
+		return (line ?? "").Trim().IndexOf(PromptRetrievalTexts.Raw("Raw_da4bbd69da2d"), StringComparison.Ordinal) >= 0;
 	}
 
 	private static bool IsActionPostprocessRecallBlockEnd(string line)
 	{
 		string text = (line ?? "").Trim();
-		return text.StartsWith("【当前场景公共对话与互动】", StringComparison.Ordinal) || text.StartsWith("【最近对话历史】", StringComparison.Ordinal) || text.StartsWith("【近期对话窗口】", StringComparison.Ordinal);
+		return text.StartsWith(PromptRetrievalTexts.Raw("Raw_91135712d215"), StringComparison.Ordinal) || text.StartsWith(PromptRetrievalTexts.Raw("Raw_9165a76adb33"), StringComparison.Ordinal) || text.StartsWith(PromptRetrievalTexts.Raw("Raw_c54c0e98c857"), StringComparison.Ordinal);
 	}
 
 	private static bool ShouldSkipActionPostprocessHistoryLine(string line)
@@ -1319,15 +1348,15 @@ public static class AIConfigHandler
 		{
 			return true;
 		}
-		if (text.StartsWith("内容：", StringComparison.Ordinal) || text.StartsWith("日期：", StringComparison.Ordinal) || text.StartsWith("AFEF行为补充：", StringComparison.Ordinal))
+		if (text.StartsWith(PromptRetrievalTexts.Raw("Raw_377416bd80dc"), StringComparison.Ordinal) || text.StartsWith(PromptRetrievalTexts.Raw("Raw_c92a25aabdb0"), StringComparison.Ordinal) || text.StartsWith(PromptRetrievalTexts.Raw("Raw_be011a7d2c19"), StringComparison.Ordinal))
 		{
 			return true;
 		}
-		if (text.StartsWith("【场景事实】", StringComparison.Ordinal))
+		if (text.StartsWith(PromptRetrievalTexts.Raw("Raw_1bc081547883"), StringComparison.Ordinal))
 		{
 			return true;
 		}
-		return Regex.IsMatch(text, "^\\d+#标题[：:]", RegexOptions.CultureInvariant);
+		return Regex.IsMatch(text, PromptRetrievalTexts.Raw("Raw_902df6832ac1"), RegexOptions.CultureInvariant);
 	}
 
 	private static string NormalizeActionPostprocessHistoryLine(string line)
@@ -1337,7 +1366,7 @@ public static class AIConfigHandler
 		text = Regex.Replace(text, "^\\[AF_SCENE_SESSION:\\d+\\]\\s*", "", RegexOptions.CultureInvariant);
 		text = Regex.Replace(text, "^\\[[^\\]\\r\\n]*[｜|][^\\]\\r\\n]*\\]\\s*", "", RegexOptions.CultureInvariant);
 		text = NormalizeActionPostprocessAfefHistoryLine(text);
-		text = Regex.Replace(text, "^【[^】]*对(?:你|NPC|[^】]+)说】\\s*", "玩家: ", RegexOptions.CultureInvariant);
+		text = Regex.Replace(text, PromptRetrievalTexts.Raw("Raw_52712046bf7a"), PromptRetrievalTexts.Raw("Raw_d55de525e50a"), RegexOptions.CultureInvariant);
 		text = Regex.Replace(text, "\\s+", " ", RegexOptions.CultureInvariant).Trim();
 		return text;
 	}
@@ -1345,13 +1374,13 @@ public static class AIConfigHandler
 	private static string NormalizeActionPostprocessAfefHistoryLine(string line)
 	{
 		string text = (line ?? "").Trim();
-		if (text.StartsWith("【AFEF玩家行为补充】", StringComparison.Ordinal))
+		if (text.StartsWith(PromptRetrievalTexts.Raw("Raw_4c4fc91b8269"), StringComparison.Ordinal))
 		{
-			return "[AFEF玩家行为补充] " + text.Substring("【AFEF玩家行为补充】".Length).Trim();
+			return PromptRetrievalTexts.Raw("Raw_99eae8bac39e") + text.Substring(PromptRetrievalTexts.Raw("Raw_4c4fc91b8269").Length).Trim();
 		}
-		if (text.StartsWith("【AFEF NPC行为补充】", StringComparison.Ordinal))
+		if (text.StartsWith(PromptRetrievalTexts.Raw("Raw_487d3cf9bfef"), StringComparison.Ordinal))
 		{
-			return "[AFEF NPC行为补充] " + text.Substring("【AFEF NPC行为补充】".Length).Trim();
+			return PromptRetrievalTexts.Raw("Raw_5f4a1277089e") + text.Substring(PromptRetrievalTexts.Raw("Raw_487d3cf9bfef").Length).Trim();
 		}
 		return text;
 	}
@@ -1373,7 +1402,7 @@ public static class AIConfigHandler
 			return false;
 		}
 		string speaker = text.Substring(0, num).Trim();
-		return speaker.Equals("玩家", StringComparison.OrdinalIgnoreCase) || speaker.Equals("NPC", StringComparison.OrdinalIgnoreCase) || speaker.Equals("你", StringComparison.OrdinalIgnoreCase) || speaker.Contains("对");
+		return speaker.Equals(PromptRetrievalTexts.Raw("Raw_991e63fe2920"), StringComparison.OrdinalIgnoreCase) || speaker.Equals("NPC", StringComparison.OrdinalIgnoreCase) || speaker.Equals(PromptRetrievalTexts.Raw("Raw_a0c7716669b5"), StringComparison.OrdinalIgnoreCase) || speaker.Contains(PromptRetrievalTexts.Raw("Raw_74570c72706a"));
 	}
 
 	private static HashSet<string> BuildActionPostprocessLatestReplyEntryKeys(string latestReplyBlock)
@@ -1435,9 +1464,9 @@ public static class AIConfigHandler
 		}
 		string text2 = NormalizeActionPostprocessDialogueText(npcReplyText);
 		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.Append("玩家: ").Append(string.IsNullOrWhiteSpace(text) ? "（无）" : text);
+		stringBuilder.Append(PromptComposerTexts.Get("residual_player_colon")).Append(string.IsNullOrWhiteSpace(text) ? PromptComposerTexts.Get("residual_none") : text);
 		stringBuilder.AppendLine();
-		stringBuilder.Append("NPC: ").Append(string.IsNullOrWhiteSpace(text2) ? "（无）" : text2);
+		stringBuilder.Append("NPC: ").Append(string.IsNullOrWhiteSpace(text2) ? PromptComposerTexts.Get("residual_none") : text2);
 		return stringBuilder.ToString().Trim();
 	}
 
@@ -1480,7 +1509,7 @@ public static class AIConfigHandler
 				{
 					continue;
 				}
-				if (text3.Equals("玩家", StringComparison.OrdinalIgnoreCase) || text3.Equals("你", StringComparison.OrdinalIgnoreCase) || (text3.Contains("对") && text3.EndsWith("说", StringComparison.Ordinal)))
+				if (text3.Equals(PromptRetrievalTexts.Raw("Raw_991e63fe2920"), StringComparison.OrdinalIgnoreCase) || text3.Equals(PromptRetrievalTexts.Raw("Raw_a0c7716669b5"), StringComparison.OrdinalIgnoreCase) || (text3.Contains(PromptRetrievalTexts.Raw("Raw_74570c72706a")) && text3.EndsWith(PromptRetrievalTexts.Raw("Raw_ccca74461399"), StringComparison.Ordinal)))
 				{
 					return NormalizeActionPostprocessDialogueText(text4);
 				}
@@ -2399,7 +2428,7 @@ public static class AIConfigHandler
 		string text = (value ?? "").Trim();
 		if (string.IsNullOrWhiteSpace(text))
 		{
-			throw new InvalidOperationException("PreprocessPrompts.json 缺少必填项: " + (configPath ?? "unknown"));
+			throw new InvalidOperationException("PreprocessPrompts.json required field missing: " + (configPath ?? "unknown"));
 		}
 		return text;
 	}
@@ -2409,7 +2438,7 @@ public static class AIConfigHandler
 		string loadError = _preprocessPromptsLoadError;
 		if (!string.IsNullOrWhiteSpace(loadError))
 		{
-			throw new InvalidOperationException("PreprocessPrompts.json 加载失败: " + loadError + "。实际路径: " + ResolveModuleDataFilePath("PreprocessPrompts.json"));
+			throw new InvalidOperationException("PreprocessPrompts.json load failed: " + loadError + "; actual path: " + ResolveModuleDataFilePath("PreprocessPrompts.json"));
 		}
 	}
 
@@ -2418,7 +2447,7 @@ public static class AIConfigHandler
 		string text = (value ?? "").Trim();
 		if (string.IsNullOrWhiteSpace(text))
 		{
-			throw new InvalidDataException("RpItemIntroductionPrompts.json 缺少必填项: " + (fieldName ?? "unknown"));
+			throw new InvalidDataException("RpItemIntroductionPrompts.json required field missing: " + (fieldName ?? "unknown"));
 		}
 		return text;
 	}
@@ -2432,7 +2461,7 @@ public static class AIConfigHandler
 			string key = match.Groups[1].Value;
 			if (!RpItemIntroductionTemplateVariables.Contains(key) || !replacements.TryGetValue(key, out var value))
 			{
-				throw new InvalidOperationException("RpItemIntroductionPrompts.json 的 UserPromptTemplate 包含未提供的占位符: {" + key + "}");
+				throw new InvalidOperationException("RpItemIntroductionPrompts.json UserPromptTemplate contains an unprovided placeholder: {" + key + "}");
 			}
 			return value ?? "";
 		}).Trim();
@@ -2447,7 +2476,7 @@ public static class AIConfigHandler
 			string key = match.Groups[1].Value;
 			if (!replacements.TryGetValue(key, out var value))
 			{
-				throw new InvalidOperationException("PreprocessPrompts.json 模板存在未知或未提供的占位符: " + configPath + ".{" + key + "}");
+				throw new InvalidOperationException("PreprocessPrompts.json template contains an unknown or unprovided placeholder: " + configPath + ".{" + key + "}");
 			}
 			return value ?? "";
 		}).Trim();
@@ -2603,7 +2632,7 @@ public static class AIConfigHandler
 			try
 			{
 				string text3 = (Hero.MainHero?.Name?.ToString() ?? "").Trim();
-				if (!string.IsNullOrWhiteSpace(text3) && !string.Equals(text3, "玩家", StringComparison.Ordinal))
+				if (!string.IsNullOrWhiteSpace(text3) && !string.Equals(text3, PromptRetrievalTexts.Raw("Raw_991e63fe2920"), StringComparison.Ordinal))
 				{
 					hashSet.Add(text3);
 				}
@@ -2614,7 +2643,7 @@ public static class AIConfigHandler
 			try
 			{
 				string text4 = (MyBehavior.BuildPlayerPublicDisplayNameForExternal() ?? "").Trim();
-				if (!string.IsNullOrWhiteSpace(text4) && !string.Equals(text4, "玩家", StringComparison.Ordinal))
+				if (!string.IsNullOrWhiteSpace(text4) && !string.Equals(text4, PromptRetrievalTexts.Raw("Raw_991e63fe2920"), StringComparison.Ordinal))
 				{
 					hashSet.Add(text4);
 				}
@@ -2624,9 +2653,9 @@ public static class AIConfigHandler
 			}
 			foreach (string item in hashSet.OrderByDescending((string x) => x.Length))
 			{
-				text2 = text2.Replace(item, "玩家");
+				text2 = text2.Replace(item, PromptRetrievalTexts.Raw("Raw_991e63fe2920"));
 			}
-			text2 = text2.Replace("玩家（玩家）", "玩家").Replace("玩家(玩家)", "玩家");
+			text2 = text2.Replace(PromptRetrievalTexts.Raw("Raw_bae7b44a81ad"), PromptRetrievalTexts.Raw("Raw_991e63fe2920")).Replace(PromptRetrievalTexts.Raw("Raw_279aac7cc1ae"), PromptRetrievalTexts.Raw("Raw_991e63fe2920"));
 			return ShoutNetwork.RestorePlayerPersonaRawNameReferencesForExternal(text2, rawPlayerPersonaNames);
 		}
 		catch
@@ -2644,16 +2673,16 @@ public static class AIConfigHandler
 			{
 				return text2;
 			}
-			text2 = text2.Replace("（无）", "(none)")
-				.Replace("玩家对你说：", "Player says to you: ")
-				.Replace("玩家对你说:", "Player says to you: ")
-				.Replace("玩家:", "Player:")
-				.Replace("玩家：", "Player:")
-				.Replace("你:", "Player:")
-				.Replace("你：", "Player:")
-				.Replace("上一句NPC发言：", "Previous NPC line: ")
-				.Replace("[系统事实]", "[System fact]")
-				.Replace("某NPC", "NPC");
+			text2 = text2.Replace(PromptRetrievalTexts.Raw("Raw_c7bcc6d27f3a"), "(none)")
+				.Replace(PromptRetrievalTexts.Raw("Raw_e20885c71bba"), "Player says to you: ")
+				.Replace(PromptRetrievalTexts.Raw("Raw_eb9871e91111"), "Player says to you: ")
+				.Replace(PromptRetrievalTexts.Raw("Raw_cad58ccd6927"), "Player:")
+				.Replace(PromptRetrievalTexts.Raw("Raw_c33062c3904b"), "Player:")
+				.Replace(PromptRetrievalTexts.Raw("Raw_46af94834f9d"), "Player:")
+				.Replace(PromptRetrievalTexts.Raw("Raw_6a064a843e75"), "Player:")
+				.Replace(PromptRetrievalTexts.Raw("Raw_3c784167bde3"), "Previous NPC line: ")
+				.Replace(PromptRetrievalTexts.Raw("Raw_288b07814d60"), "[System fact]")
+				.Replace(PromptRetrievalTexts.Raw("Raw_6fd13bfc8098"), "NPC");
 			return text2;
 		}
 		catch
@@ -2806,7 +2835,7 @@ public static class AIConfigHandler
 			{
 				return true;
 			}
-			if (!LlmRetryPrompt.PromptRetryBlocking("动作后处理", error))
+			if (!LlmRetryPrompt.PromptRetryBlocking(new TaleWorlds.Localization.TextObject("{=AF_UI_Retry_ActionPostprocess}Action postprocessing").ToString(), error))
 			{
 				return false;
 			}
@@ -2871,7 +2900,7 @@ public static class AIConfigHandler
 			}
 			if (content.IndexOf("[ACTION:", StringComparison.OrdinalIgnoreCase) < 0 || content.IndexOf(']') < 0)
 			{
-				error = LlmRetryPrompt.BuildFailureDetail("（API响应格式错误）动作后处理未返回任何可解析的 [ACTION:...] 标签。", content, "");
+				error = LlmRetryPrompt.BuildFailureDetail(PromptRetrievalTexts.Raw("Raw_2acff7afde1f"), content, "");
 				FreezeWatchdog.Mark("AuxActionPostprocess.format_error", "contentLen=" + content.Length + " elapsedMs=" + Math.Round(freezeWatchSw.Elapsed.TotalMilliseconds, 2), immediate: true);
 				return false;
 			}
@@ -2882,7 +2911,8 @@ public static class AIConfigHandler
 		catch (Exception ex)
 		{
 			error = LlmRetryPrompt.BuildFailureDetail(BuildAuxiliaryRouterExceptionText(ex), content, "");
-			FreezeWatchdog.Mark("AuxActionPostprocess.exception", ex.GetType().Name + ": " + ex.Message + " elapsedMs=" + Math.Round(freezeWatchSw.Elapsed.TotalMilliseconds, 2), immediate: true);			return false;
+			FreezeWatchdog.Mark("AuxActionPostprocess.exception", ex.GetType().Name + ": " + ex.Message + " elapsedMs=" + Math.Round(freezeWatchSw.Elapsed.TotalMilliseconds, 2), immediate: true);
+			return false;
 		}
 	}
 
@@ -2894,7 +2924,7 @@ public static class AIConfigHandler
 			{
 				return true;
 			}
-			if (!LlmRetryPrompt.PromptRetryBlocking("辅助对话", error))
+			if (!LlmRetryPrompt.PromptRetryBlocking(new TaleWorlds.Localization.TextObject("{=AF_UI_Retry_AuxiliaryDialogue}Auxiliary dialogue").ToString(), error))
 			{
 				return false;
 			}
@@ -2972,7 +3002,8 @@ public static class AIConfigHandler
 		}
 		catch (Exception ex)
 		{
-			error = LlmRetryPrompt.BuildFailureDetail(BuildAuxiliaryRouterExceptionText(ex), content, "");			FreezeWatchdog.Mark("AuxSimpleDialogue.exception", ex.GetType().Name + ": " + ex.Message + " elapsedMs=" + Math.Round(freezeWatchSw.Elapsed.TotalMilliseconds, 2), immediate: true);
+			error = LlmRetryPrompt.BuildFailureDetail(BuildAuxiliaryRouterExceptionText(ex), content, "");
+			FreezeWatchdog.Mark("AuxSimpleDialogue.exception", ex.GetType().Name + ": " + ex.Message + " elapsedMs=" + Math.Round(freezeWatchSw.Elapsed.TotalMilliseconds, 2), immediate: true);
 			return false;
 		}
 	}
@@ -3166,11 +3197,11 @@ public static class AIConfigHandler
 		}
 		const string value = "\u0001AF_NONE_ASCII\u0001";
 		const string value2 = "\u0001AF_NONE_CN\u0001";
-		text = text.Replace("(none)", value).Replace("（无）", value2);
+		text = text.Replace("(none)", value).Replace(PromptRetrievalTexts.Raw("Raw_c7bcc6d27f3a"), value2);
 		text = RemoveAuxiliaryInnerThoughtSegments(text, '（', '）');
 		text = RemoveAuxiliaryInnerThoughtSegments(text, '(', ')');
 		text = Regex.Replace(text, "[ \\t]{2,}", " ", RegexOptions.CultureInvariant);
-		text = text.Replace(value, "(none)").Replace(value2, "（无）");
+		text = text.Replace(value, "(none)").Replace(value2, PromptRetrievalTexts.Raw("Raw_c7bcc6d27f3a"));
 		text = text.Trim();
 		text = text.TrimStart('，', '。', '、', '；', '：', ',', ';', ':');
 		return text.Trim();
@@ -3279,7 +3310,7 @@ public static class AIConfigHandler
 		{
 			text = text.Substring(startIndex).TrimStart();
 		}
-		return text.StartsWith("[场景喊话]", StringComparison.Ordinal);
+		return text.StartsWith(PromptRetrievalTexts.Raw("Raw_a9bcee692b61"), StringComparison.Ordinal);
 	}
 
 	private static void TrimAuxiliaryLatestDialogueLines(List<string> lines, string latestNpcText, string latestPlayerText)
@@ -3336,7 +3367,7 @@ public static class AIConfigHandler
 		{
 			return "";
 		}
-		string value = "上一句NPC发言：";
+		string value = PromptRetrievalTexts.Raw("Raw_3c784167bde3");
 		if (text.StartsWith(value, StringComparison.Ordinal))
 		{
 			return NormalizeSemanticText(text.Substring(value.Length));
@@ -3362,7 +3393,7 @@ public static class AIConfigHandler
 			return false;
 		}
 		string text2 = GetAuxiliaryHistorySpeakerPrefix(text);
-		return text2.Equals("玩家", StringComparison.OrdinalIgnoreCase) || text2.Equals("你", StringComparison.OrdinalIgnoreCase) || text2.Equals("Player", StringComparison.OrdinalIgnoreCase) || text2.Equals("You", StringComparison.OrdinalIgnoreCase) || text2.EndsWith(" says to you", StringComparison.OrdinalIgnoreCase) || (text2.Contains("对") && text2.EndsWith("说", StringComparison.Ordinal));
+		return text2.Equals(PromptRetrievalTexts.Raw("Raw_991e63fe2920"), StringComparison.OrdinalIgnoreCase) || text2.Equals(PromptRetrievalTexts.Raw("Raw_a0c7716669b5"), StringComparison.OrdinalIgnoreCase) || text2.Equals("Player", StringComparison.OrdinalIgnoreCase) || text2.Equals("You", StringComparison.OrdinalIgnoreCase) || text2.EndsWith(" says to you", StringComparison.OrdinalIgnoreCase) || (text2.Contains(PromptRetrievalTexts.Raw("Raw_74570c72706a")) && text2.EndsWith(PromptRetrievalTexts.Raw("Raw_ccca74461399"), StringComparison.Ordinal));
 	}
 
 	private static string GetAuxiliaryHistorySpeakerPrefix(string line)
@@ -3488,7 +3519,7 @@ public static class AIConfigHandler
 		{
 			return true;
 		}
-		if (text.StartsWith("上一句NPC发言：", StringComparison.Ordinal) || text.StartsWith("Previous NPC line:", StringComparison.OrdinalIgnoreCase))
+		if (text.StartsWith(PromptRetrievalTexts.Raw("Raw_3c784167bde3"), StringComparison.Ordinal) || text.StartsWith("Previous NPC line:", StringComparison.OrdinalIgnoreCase))
 		{
 			return true;
 		}
@@ -3510,7 +3541,7 @@ public static class AIConfigHandler
 		{
 			return true;
 		}
-		if (text2.Equals("NPC", StringComparison.OrdinalIgnoreCase) || text2.Equals("Assistant", StringComparison.OrdinalIgnoreCase) || text2.Equals("系统", StringComparison.OrdinalIgnoreCase) || text2.Equals("System", StringComparison.OrdinalIgnoreCase) || text2.Equals("旁白", StringComparison.OrdinalIgnoreCase))
+		if (text2.Equals("NPC", StringComparison.OrdinalIgnoreCase) || text2.Equals("Assistant", StringComparison.OrdinalIgnoreCase) || text2.Equals(PromptRetrievalTexts.Raw("Raw_5b50d7c4b595"), StringComparison.OrdinalIgnoreCase) || text2.Equals("System", StringComparison.OrdinalIgnoreCase) || text2.Equals(PromptRetrievalTexts.Raw("Raw_101f6e6d6095"), StringComparison.OrdinalIgnoreCase))
 		{
 			return true;
 		}
@@ -3605,7 +3636,7 @@ public static class AIConfigHandler
 		{
 			return "player";
 		}
-		if (text.StartsWith("上一句NPC发言：", StringComparison.Ordinal) || text.StartsWith("Previous NPC line:", StringComparison.OrdinalIgnoreCase))
+		if (text.StartsWith(PromptRetrievalTexts.Raw("Raw_3c784167bde3"), StringComparison.Ordinal) || text.StartsWith("Previous NPC line:", StringComparison.OrdinalIgnoreCase))
 		{
 			return "npc";
 		}
@@ -3643,7 +3674,7 @@ public static class AIConfigHandler
 		if (IsAuxiliaryPlayerHistoryLine(text))
 		{
 			num += 20;
-			if (text2.Contains("对") && text2.EndsWith("说", StringComparison.Ordinal))
+			if (text2.Contains(PromptRetrievalTexts.Raw("Raw_74570c72706a")) && text2.EndsWith(PromptRetrievalTexts.Raw("Raw_ccca74461399"), StringComparison.Ordinal))
 			{
 				num += 30;
 			}
@@ -3712,7 +3743,7 @@ public static class AIConfigHandler
 		{
 			return false;
 		}
-		return text.StartsWith("[AFEF玩家行为补充]", StringComparison.Ordinal) || text.StartsWith("[AFEF NPC行为补充]", StringComparison.Ordinal);
+		return text.StartsWith(PromptRetrievalTexts.Raw("Raw_6d7b96ecf184"), StringComparison.Ordinal) || text.StartsWith(PromptRetrievalTexts.Raw("Raw_c231f39bb72c"), StringComparison.Ordinal);
 	}
 
 	private static string AppendAuxiliaryAfefFactToRoutingContext(string context, string afefLine)
@@ -3760,7 +3791,7 @@ public static class AIConfigHandler
 			{
 				return true;
 			}
-			if (text2.StartsWith("上一句NPC发言：", StringComparison.Ordinal) && string.Equals(text2.Substring("上一句NPC发言：".Length).Trim(), text, StringComparison.Ordinal))
+			if (text2.StartsWith(PromptRetrievalTexts.Raw("Raw_3c784167bde3"), StringComparison.Ordinal) && string.Equals(text2.Substring(PromptRetrievalTexts.Raw("Raw_3c784167bde3").Length).Trim(), text, StringComparison.Ordinal))
 			{
 				return true;
 			}
@@ -3783,7 +3814,7 @@ public static class AIConfigHandler
 				{
 					continue;
 				}
-				if (text.StartsWith("[AFEF玩家行为补充]", StringComparison.Ordinal) || text.StartsWith("[AFEF NPC行为补充]", StringComparison.Ordinal))
+				if (text.StartsWith(PromptRetrievalTexts.Raw("Raw_6d7b96ecf184"), StringComparison.Ordinal) || text.StartsWith(PromptRetrievalTexts.Raw("Raw_c231f39bb72c"), StringComparison.Ordinal))
 				{
 					continue;
 				}
@@ -3820,9 +3851,9 @@ public static class AIConfigHandler
 		if (IsWorldDiplomacyTakeoverEnabledForTopicRouting())
 		{
 			routingGuidance = (routingGuidance
-				+ "\n【外交接管话题边界】宣战、议和、结盟、解盟、贸易等国与国外交必须选择 DIPLOMACY（口头外交），不得选择 KINGDOM_AGENDA。"
-				+ "玩家即使不是国王，只要是在劝说当前NPC国王让其自己的王国向第三国宣战，也选择 DIPLOMACY。"
-				+ "KINGDOM_AGENDA 只用于国内政策、封地处置、驱逐氏族等非外交议程，以及对已经存在的非外交议程拉票。").Trim();
+				+ PromptComposerTexts.Get("residual_config_882c0bc75509")
+				+ PromptComposerTexts.Get("residual_config_1fda242604fb")
+				+ PromptComposerTexts.Get("residual_config_13fe4c63aee2")).Trim();
 		}
 		string emptyValue = RequirePreprocessPromptValue(config?.EmptyValue, "TopicRouting.EmptyValue");
 		return RenderPreprocessPromptTemplate(config?.UserPromptTemplate, "TopicRouting.UserPromptTemplate", new Dictionary<string, string>(StringComparer.Ordinal)
@@ -3857,7 +3888,7 @@ public static class AIConfigHandler
 			{
 				return true;
 			}
-			if (!LlmRetryPrompt.PromptRetryBlocking("前处理规则选择", error))
+			if (!LlmRetryPrompt.PromptRetryBlocking(new TaleWorlds.Localization.TextObject("{=AF_UI_Retry_RuleSelection}Preprocess rule selection").ToString(), error))
 			{
 				return false;
 			}
@@ -4286,7 +4317,7 @@ public static class AIConfigHandler
 
 	private static string BuildAuxiliaryPreprocessFormatError(string reason, string content)
 	{
-		string detail = "（API响应格式错误）前处理规则选择返回格式错误：" + (string.IsNullOrWhiteSpace(reason) ? "unknown" : reason.Trim()) + "。必须只输出一个 JSON 对象，并包含 rule_codes 字符串数组和 mentioned_entities.entities 字符串数组。";
+		string detail = PromptRetrievalTexts.Raw("Raw_6a06fe656acf") + (string.IsNullOrWhiteSpace(reason) ? "unknown" : reason.Trim()) + PromptRetrievalTexts.Raw("Raw_9a8b413632be");
 		return LlmRetryPrompt.BuildFailureDetail(detail, content);
 	}
 
@@ -4634,7 +4665,7 @@ public static class AIConfigHandler
 				string formatError = BuildAuxiliaryPreprocessFormatError(parseError, content);
 				Logger.Log("GuardrailSemantic", "auxiliary_router format_error reason=" + parseError + " raw=" + JsonConvert.ToString(content ?? ""));
 				LogAuxiliaryRouterTokenTrace("auxiliary_router_format_error", BuildAuxiliaryRouterMessages(text2), "[AUXILIARY ROUTER PARSE]" + "\n" + "url=" + apiUrl + "\n" + "model=" + modelName + "\n" + "reason=" + parseError + "\n" + "ai_response=" + "\n" + (content ?? ""), 0);
-				if (!LlmRetryPrompt.PromptRetryBlocking("前处理规则选择", formatError))
+				if (!LlmRetryPrompt.PromptRetryBlocking(new TaleWorlds.Localization.TextObject("{=AF_UI_Retry_RuleSelection}Preprocess rule selection").ToString(), formatError))
 				{
 					throw new PreprocessFormatException(formatError);
 				}
@@ -4712,7 +4743,7 @@ public static class AIConfigHandler
 					break;
 				}
 				error = BuildAuxiliaryPreprocessFormatError(parseError, content);
-				if (!LlmRetryPrompt.PromptRetryBlocking("前处理规则选择", error))
+				if (!LlmRetryPrompt.PromptRetryBlocking(new TaleWorlds.Localization.TextObject("{=AF_UI_Retry_RuleSelection}Preprocess rule selection").ToString(), error))
 				{
 					return false;
 				}
@@ -5580,7 +5611,7 @@ public static class AIConfigHandler
 				}
 				if (!string.IsNullOrWhiteSpace(text) && !string.IsNullOrWhiteSpace(value))
 				{
-					stringBuilder.AppendLine("【附加规则:" + text + "】");
+					stringBuilder.AppendLine(PromptRetrievalTexts.Prompt("ExtraRuleOpen") + text + PromptRetrievalTexts.Prompt("ExtraRuleClose"));
 					stringBuilder.AppendLine(value);
 					string value3 = BuildRuntimeRuleConstraintHint(text);
 					if (!string.IsNullOrWhiteSpace(value3))
@@ -5866,14 +5897,13 @@ public static class AIConfigHandler
 			{
 				return text;
 			}
-			foreach (KeyValuePair<string, string> token in tokens)
-			{
-				if (!string.IsNullOrWhiteSpace(token.Key))
-				{
-					text = text.Replace("{" + token.Key + "}", token.Value ?? "");
-				}
-			}
-			return text;
+			// Preserve the original case-sensitive keys and expand the template once.
+			// Names and other inserted data must never become later placeholders.
+			var literalTokens = new Dictionary<string, string>(tokens, StringComparer.Ordinal);
+			return RpItemIntroductionTemplateVariableRegex.Replace(text, match =>
+				!string.IsNullOrWhiteSpace(match.Groups[1].Value)
+					&& literalTokens.TryGetValue(match.Groups[1].Value, out string value)
+					? value ?? "" : match.Value);
 		}
 		catch
 		{
@@ -5891,19 +5921,19 @@ public static class AIConfigHandler
 				return text2;
 			}
 			string text3 = MyBehavior.BuildPlayerPublicDisplayNameForExternal();
-			if (string.IsNullOrWhiteSpace(text3) || string.Equals(text3, "玩家", StringComparison.Ordinal))
+			if (string.IsNullOrWhiteSpace(text3) || string.Equals(text3, PromptRetrievalTexts.Raw("Raw_991e63fe2920"), StringComparison.Ordinal))
 			{
 				return text2;
 			}
 			const string text4 = "__AFEF_PLAYER_FACT__";
 			const string text5 = "__PLAYER_CLAN_FACT__";
-			text2 = text2.Replace("[AFEF玩家行为补充]", text4);
-			text2 = text2.Replace("【玩家家族可婚配成员（允许已有配偶，事实清单）】", text5);
-			text2 = text2.Replace("玩家家族", "__PLAYER_CLAN__");
-			text2 = text2.Replace("玩家", text3);
-			text2 = text2.Replace("__PLAYER_CLAN__", "玩家家族");
-			text2 = text2.Replace(text4, "[AFEF玩家行为补充]");
-			text2 = text2.Replace(text5, "【玩家家族可婚配成员（允许已有配偶，事实清单）】");
+			text2 = text2.Replace(PromptRetrievalTexts.Raw("Raw_6d7b96ecf184"), text4);
+			text2 = text2.Replace(PromptRetrievalTexts.Raw("Raw_60f2702d68c8"), text5);
+			text2 = text2.Replace(PromptRetrievalTexts.Raw("Raw_4c35ed8cec1d"), "__PLAYER_CLAN__");
+			text2 = text2.Replace(PromptRetrievalTexts.Raw("Raw_991e63fe2920"), text3);
+			text2 = text2.Replace("__PLAYER_CLAN__", PromptRetrievalTexts.Raw("Raw_4c35ed8cec1d"));
+			text2 = text2.Replace(text4, PromptRetrievalTexts.Raw("Raw_6d7b96ecf184"));
+			text2 = text2.Replace(text5, PromptRetrievalTexts.Raw("Raw_60f2702d68c8"));
 			return text2;
 		}
 		catch
@@ -5981,17 +6011,17 @@ public static class AIConfigHandler
 		}
 		string text = trustLevelIndex switch
 		{
-			1 => "彻底不信", 
-			2 => "极度怀疑", 
-			3 => "强烈戒备", 
-			4 => "不信任", 
-			5 => "保留", 
-			_ => "观望", 
+			1 => PromptComposerTexts.Get("residual_config_dd717a91cd44"),
+			2 => PromptComposerTexts.Get("residual_config_935e65405174"),
+			3 => PromptComposerTexts.Get("residual_config_98097a31834a"),
+			4 => PromptComposerTexts.Get("residual_config_f25398a8ab38"),
+			5 => PromptComposerTexts.Get("residual_config_670ec25af841"),
+			_ => PromptComposerTexts.Get("residual_config_17b6ab8fa6bc"),
 		};
 		string text2 = MyBehavior.BuildPlayerPublicDisplayNameForExternal();
 		if (string.IsNullOrWhiteSpace(text2))
 		{
-			text2 = "玩家";
+			text2 = PromptComposerTexts.Get("residual_player");
 		}
 		return new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
 		{
@@ -6055,7 +6085,7 @@ public static class AIConfigHandler
 		string text = MyBehavior.BuildPlayerPublicDisplayNameForExternal();
 		if (string.IsNullOrWhiteSpace(text))
 		{
-			text = "玩家";
+			text = PromptComposerTexts.Get("residual_player");
 		}
 		return new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
 		{
@@ -6084,7 +6114,7 @@ public static class AIConfigHandler
 		string text = MyBehavior.BuildPlayerPublicDisplayNameForExternal();
 		if (string.IsNullOrWhiteSpace(text))
 		{
-			text = "玩家";
+			text = PromptComposerTexts.Get("residual_player");
 		}
 		return new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
 		{
@@ -6197,7 +6227,7 @@ public static class AIConfigHandler
 		string playerName = MyBehavior.BuildPlayerPublicDisplayNameForExternal();
 		if (string.IsNullOrWhiteSpace(playerName))
 		{
-			playerName = "玩家";
+			playerName = PromptComposerTexts.Get("residual_player");
 		}
 		string npcName = "";
 		try
@@ -6750,7 +6780,7 @@ public static class AIConfigHandler
 					Description = description
 				});
 			}
-				Logger.Log("AIConfig", "[KingdomServicePostprocessRules] state=" + text + " playerClan=" + (playerClan?.StringId ?? "") + " playerKingdom=" + (kingdom?.StringId ?? "") + " targetKingdom=" + (kingdom2?.StringId ?? "") + " targetKingdomIdToken=" + text2 + " isMercenaryService=" + flag + " isSameKingdom=" + flag2 + " playerTier=" + num + " mercTier=" + num2 + " vassalTier=" + num3 + " trustCurrent=" + num6 + " trustMerc=" + num4 + " trustVassal=" + num5 + " rules=" + ((list.Count == 0) ? "（无）" : string.Join(",", list.Select((PostprocessRuleEntry x) => x?.Tag ?? "").Where((string x) => !string.IsNullOrWhiteSpace(x)))));
+				Logger.Log("AIConfig", "[KingdomServicePostprocessRules] state=" + text + " playerClan=" + (playerClan?.StringId ?? "") + " playerKingdom=" + (kingdom?.StringId ?? "") + " targetKingdom=" + (kingdom2?.StringId ?? "") + " targetKingdomIdToken=" + text2 + " isMercenaryService=" + flag + " isSameKingdom=" + flag2 + " playerTier=" + num + " mercTier=" + num2 + " vassalTier=" + num3 + " trustCurrent=" + num6 + " trustMerc=" + num4 + " trustVassal=" + num5 + " rules=" + ((list.Count == 0) ? "(none)" : string.Join(",", list.Select((PostprocessRuleEntry x) => x?.Tag ?? "").Where((string x) => !string.IsNullOrWhiteSpace(x)))));
 		}
 		catch
 		{
@@ -6803,7 +6833,7 @@ public static class AIConfigHandler
 				}
 				list.Add(runtimeClanJoinRule);
 			}
-			Logger.Log("AIConfig", "[HeroJoinPartyPostprocessRules] targetHero=" + (hero?.StringId ?? "") + " suppressPlayerPartyTarget=" + suppressPlayerPartyTarget + " includePersonalJoin=" + includePersonalJoinRule + " rules=" + ((list.Count == 0) ? "（无）" : string.Join(",", list.Select((PostprocessRuleEntry x) => x?.Tag ?? "").Where((string x) => !string.IsNullOrWhiteSpace(x)))));
+			Logger.Log("AIConfig", "[HeroJoinPartyPostprocessRules] targetHero=" + (hero?.StringId ?? "") + " suppressPlayerPartyTarget=" + suppressPlayerPartyTarget + " includePersonalJoin=" + includePersonalJoinRule + " rules=" + ((list.Count == 0) ? "(none)" : string.Join(",", list.Select((PostprocessRuleEntry x) => x?.Tag ?? "").Where((string x) => !string.IsNullOrWhiteSpace(x)))));
 		}
 		catch
 		{
@@ -6826,7 +6856,7 @@ public static class AIConfigHandler
 			string state = ResolveClanJoinKingdomStateKey(clan, hero);
 			if (!string.Equals(state, "clan_join_target_ready", StringComparison.OrdinalIgnoreCase))
 			{
-				Logger.Log("AIConfig", "[" + logPrefix + "] clan_join blocked_state=" + state + " targetClan=" + (clan?.StringId ?? "") + " targetHero=" + (hero?.StringId ?? "") + " rules=（无）");
+				Logger.Log("AIConfig", "[" + logPrefix + "] clan_join blocked_state=" + state + " targetClan=" + (clan?.StringId ?? "") + " targetHero=" + (hero?.StringId ?? "") + " rules=(none)");
 				return list;
 			}
 			List<Kingdom> retrievedKingdoms = ResolveRetrievedKingdomsForClanJoin(entityPostprocessContext);
@@ -6835,7 +6865,7 @@ public static class AIConfigHandler
 				.ToList();
 			if (eligibleKingdoms.Count == 0)
 			{
-				Logger.Log("AIConfig", "[" + logPrefix + "] clan_join no_retrieved_kingdom targetClan=" + (clan?.StringId ?? "") + " targetHero=" + (hero?.StringId ?? "") + " rules=（无）");
+				Logger.Log("AIConfig", "[" + logPrefix + "] clan_join no_retrieved_kingdom targetClan=" + (clan?.StringId ?? "") + " targetHero=" + (hero?.StringId ?? "") + " rules=(none)");
 				return list;
 			}
 			HashSet<string> allowedKingdomIds = new HashSet<string>(eligibleKingdoms.Select((Kingdom x) => (x.StringId ?? "").Trim()), StringComparer.OrdinalIgnoreCase);
@@ -6862,7 +6892,7 @@ public static class AIConfigHandler
 					RuntimeAllowedParameterValues = new HashSet<string>(allowedKingdomIds, StringComparer.OrdinalIgnoreCase)
 				});
 			}
-			Logger.Log("AIConfig", "[" + logPrefix + "] clan_join state=" + state + " targetClan=" + (clan?.StringId ?? "") + " targetHero=" + (hero?.StringId ?? "") + " allowedKingdoms=" + string.Join(",", allowedKingdomIds) + " rules=" + ((list.Count == 0) ? "（无）" : string.Join(",", list.Select((PostprocessRuleEntry x) => x?.Tag ?? "").Where((string x) => !string.IsNullOrWhiteSpace(x)))));
+			Logger.Log("AIConfig", "[" + logPrefix + "] clan_join state=" + state + " targetClan=" + (clan?.StringId ?? "") + " targetHero=" + (hero?.StringId ?? "") + " allowedKingdoms=" + string.Join(",", allowedKingdomIds) + " rules=" + ((list.Count == 0) ? "(none)" : string.Join(",", list.Select((PostprocessRuleEntry x) => x?.Tag ?? "").Where((string x) => !string.IsNullOrWhiteSpace(x)))));
 		}
 		catch
 		{
@@ -6914,10 +6944,10 @@ public static class AIConfigHandler
 					kingdomIds.Add(kingdomId);
 				}
 			}
-			foreach (Match sectionMatch in Regex.Matches(context, "【王国】(?<body>[\\s\\S]*?)(?=\\r?\\n【|\\z)", RegexOptions.IgnoreCase))
+			foreach (Match sectionMatch in Regex.Matches(context, PromptRetrievalTexts.Raw("Raw_11941497b794"), RegexOptions.IgnoreCase))
 			{
 				string body = sectionMatch?.Groups["body"].Value ?? "";
-				foreach (Match idMatch in Regex.Matches(body, "(?:ID|编号)[:：]\\s*(?:kingdom:)?([A-Za-z0-9_.\\-]+)", RegexOptions.IgnoreCase))
+				foreach (Match idMatch in Regex.Matches(body, PromptRetrievalTexts.Raw("Raw_4e35e5270e14"), RegexOptions.IgnoreCase))
 				{
 					string kingdomId = (idMatch?.Groups[1].Value ?? "").Trim();
 					if (!string.IsNullOrWhiteSpace(kingdomId))
@@ -7264,15 +7294,15 @@ public static class AIConfigHandler
 			switch (accessDetails.AccessLimitationReason)
 			{
 			case SettlementAccessModel.AccessLimitationReason.ClanTier:
-				return "玩家家族等级不足";
+				return PromptComposerTexts.Get("residual_config_e4d0beafdf07");
 			case SettlementAccessModel.AccessLimitationReason.CrimeRating:
-				return "玩家在当地有犯罪评级";
+				return PromptComposerTexts.Get("residual_config_8c3ef7b99019");
 			case SettlementAccessModel.AccessLimitationReason.Disguised:
-				return "当前只能靠伪装混入";
+				return PromptComposerTexts.Get("residual_config_edd1534db206");
 			case SettlementAccessModel.AccessLimitationReason.LocationEmpty:
-				return "领主大厅当前无人可见";
+				return PromptComposerTexts.Get("residual_config_de99bb51f8b5");
 			default:
-				return (accessDetails.AccessLevel == SettlementAccessModel.AccessLevel.FullAccess) ? "原生规则允许直接进入" : "原生规则不允许直接进入";
+				return (accessDetails.AccessLevel == SettlementAccessModel.AccessLevel.FullAccess) ? PromptComposerTexts.Get("residual_config_3b0dbe9b86d4") : PromptComposerTexts.Get("residual_config_dbb90e3b376f");
 			}
 		}
 		catch
@@ -7573,11 +7603,11 @@ public static class AIConfigHandler
 	{
 		return (tag ?? "").Trim().ToLowerInvariant() switch
 		{
-			"duel" => "决斗挑战", 
-			"reward" => "交易/奖励", 
-			"loan" => "借贷/赊账", 
-			"surroundings" => "地理方位", 
-			_ => "当前话题", 
+			"duel" => PromptComposerTexts.Get("residual_config_98f1ed6898a4"),
+			"reward" => PromptComposerTexts.Get("residual_config_585d3a5c527a"),
+			"loan" => PromptComposerTexts.Get("residual_config_5dea2fe4e943"),
+			"surroundings" => PromptComposerTexts.Get("residual_config_fc51c0c592a3"),
+			_ => PromptComposerTexts.Get("residual_config_b2dfe2113b3e"),
 		};
 	}
 
@@ -7585,11 +7615,11 @@ public static class AIConfigHandler
 	{
 		return (tag ?? "").Trim().ToLowerInvariant() switch
 		{
-			"duel" => "向我发起决斗", 
-			"reward" => "谈交易和货物", 
-			"loan" => "谈借钱或还款", 
-			"surroundings" => "问附近位置", 
-			_ => "讨论这件事", 
+			"duel" => PromptComposerTexts.Get("residual_config_67918e9930e0"),
+			"reward" => PromptComposerTexts.Get("residual_config_f85d2060b363"),
+			"loan" => PromptComposerTexts.Get("residual_config_f144d388f014"),
+			"surroundings" => PromptComposerTexts.Get("residual_config_633f95c40c46"),
+			_ => PromptComposerTexts.Get("residual_config_bbd4bd5adbb8"),
 		};
 	}
 
@@ -7627,7 +7657,7 @@ public static class AIConfigHandler
 			string text2 = RuleTopicLabel(keyValuePair2.Key);
 			string text3 = RuleTopicAskHint(keyValuePair.Key);
 			string text4 = RuleTopicAskHint(keyValuePair2.Key);
-			return $"[系统-澄清优先] 玩家意图在“{text}”与“{text2}”之间存在歧义（分差={num:0.00}）。本轮先追问一句澄清，不要输出任何 ACTION 标签，也不要直接承诺交易/借贷/决斗。可参考：你是想{text3}，还是在{text4}？";
+			return PromptComposerTexts.Format("residual_clarification", ("FIRST", text), ("SECOND", text2), ("MARGIN", num.ToString("0.00")), ("ASK_FIRST", text3), ("ASK_SECOND", text4));
 		}
 		catch
 		{
@@ -7768,7 +7798,7 @@ public static class AIConfigHandler
 			try { loaded = _promptConfigurationLoader.Load(); }
 			catch (Exception ex)
 			{
-				Logger.Log("AIConfig", "[错误] 加载失败: " + ex.Message);
+				Logger.Log("AIConfig", "[Error] Configuration load failed: " + ex.Message);
 				loaded = new PromptConfigurationLoadResult(
 					new PromptConfigurationSnapshot(new AIConfigModel(), new GuardrailConfigModel(),
 						new ActionPostprocessConfigModel(), new PreprocessPromptsConfigModel(),
@@ -7779,7 +7809,7 @@ public static class AIConfigHandler
 			if (loaded.RpBothUnavailable)
 			{
 				if (Interlocked.Exchange(ref _rpItemIntroductionPromptsFallbackLogged, 1) == 0)
-					Logger.Log("AIConfig", "[错误] RP物品介绍提示词配置及其内置默认值均不可用，自动介绍已停用: " + loaded.RpFallbackReason);
+					Logger.Log("AIConfig", "[Error] RP item introduction prompt configuration and embedded defaults are both unavailable; automatic introduction disabled: " + loaded.RpFallbackReason);
 			}
 			else
 			{
@@ -7787,7 +7817,7 @@ public static class AIConfigHandler
 				if (loaded.RpUsedEmbeddedDefaults)
 				{
 					if (Interlocked.Exchange(ref _rpItemIntroductionPromptsFallbackLogged, 1) == 0)
-						Logger.Log("AIConfig", "[RP物品介绍] RpItemIntroductionPrompts.json 无效或缺失，已回退程序集内置默认提示词；磁盘文件未改写。原因: " + loaded.RpFallbackReason);
+						Logger.Log("AIConfig", "[RP item introduction] RpItemIntroductionPrompts.json is invalid or missing; using embedded prompt defaults without rewriting the disk file. Reason: " + loaded.RpFallbackReason);
 				}
 				else Interlocked.Exchange(ref _rpItemIntroductionPromptsFallbackLogged, 0);
 			}
@@ -7804,12 +7834,12 @@ public static class AIConfigHandler
 			try
 			{
 				GuardrailConfigModel guardrail = replacement.ReadGuardrailForOwner();
-				Logger.Log("AIConfig", string.Format("配置加载成功。触发词(决斗/奖励/借贷/地理)={0}/{1}/{2}/{3}，扩展规则={4}，启用规则总数={5}。规则返回上限={6}。知识检索({7})：{8}（语义优先={9}, returnCap={10}）。后处理模板：{11}。",
+				Logger.Log("AIConfig", string.Format("Configuration loaded. Trigger words (duel/reward/loan/geography)={0}/{1}/{2}/{3}; extra rules={4}; enabled rules={5}; rule return cap={6}; knowledge retrieval ({7})={8} (semanticFirst={9}, returnCap={10}); postprocess templates={11}.",
 					(guardrail?.Duel?.AcceptKeywords?.Count).GetValueOrDefault(), (guardrail?.Reward?.TriggerKeywords?.Count).GetValueOrDefault(),
 					(guardrail?.Loan?.TriggerKeywords?.Count).GetValueOrDefault(), (guardrail?.Surroundings?.TriggerKeywords?.Count).GetValueOrDefault(),
 					(guardrail?.RulePrompts?.Count).GetValueOrDefault(), GetAllEnabledRulePrompts().Count, GetGuardrailReturnCapFromMcm(),
-					KnowledgeRetrievalFromMcm ? "MCM" : "Guardrail", KnowledgeRetrievalEnabled ? "开启" : "关闭",
-					KnowledgeSemanticFirst, KnowledgeSemanticTopK, ActionPostprocessEnabled ? "开启" : "关闭"));
+					KnowledgeRetrievalFromMcm ? "MCM" : "Guardrail", KnowledgeRetrievalEnabled ? "enabled" : "disabled",
+					KnowledgeSemanticFirst, KnowledgeSemanticTopK, ActionPostprocessEnabled ? "enabled" : "disabled"));
 			}
 			catch { }
 			try

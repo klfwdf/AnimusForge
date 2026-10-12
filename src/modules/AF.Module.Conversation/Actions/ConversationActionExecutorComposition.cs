@@ -581,7 +581,7 @@ internal static string RunCourierActionPostprocessForExternal(Hero targetHero, C
 		}
 		if (!AIConfigHandler.TryCallAuxiliaryActionPostprocess(workItem.SystemPrompt, workItem.UserPrompt, 5000, 0f, out string content, out string error))
 		{
-			Logger.Log("CourierDelivery", "[UnifiedPostprocess] 调用失败: " + error);
+			Logger.Log("CourierDelivery", "[UnifiedPostprocess] failed: " + error);
 			return workItem.FallbackText;
 		}
 		return workItem.CompleteOnMainThread(content);

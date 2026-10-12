@@ -1,0 +1,151 @@
+{
+  "Id": "rule_House_Foundations_House_Mallister",
+  "Keywords": [
+    "House Mallister",
+    "Silver Eagle"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Mallister family is based on Seaside City on the shore of Ironborn Bay, and its family emblem is a silver eagle on a purple background. The towers and ports of Seaside City have long monitored the Ironborn's incoming attacks, so Mallister's reputation comes first from guarding the sea, not from the bridges and farmland within the Riverlands. Family knights value etiquette and reputation, but coastal residents measure them by more practical standards: whether the beacon fire is lit in time, whether the ship can enter the harbor, and whether the city gates are still open to the refugees when the plunderers come ashore. Guarding the entrance to Ironborn Bay is sufficient to explain its status."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "river"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "When the river princes looked at Mallister, they often first thought of the high tower in Seaside City facing Ironborn Bay. Inland families can treat pirates as news from afar, but Mallister must include sails, beacons, and coastal villages in their annual tax arrangements. Silver Eagle's fame comes from watching, and watching is an expensive thing and rarely appreciated."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "river"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The fishermen near Haijiang City know that if the eyes on the tower had seen half an hour earlier, the family on the seaside might live one more generation. People will complain about ship repairs, vigils and food requisitions, and they will also hope that the Silver Eagle flag is still hanging in the same place in the sea fog. For the people along the coast, the quality of Mallister is first determined by whether the alarm bell is timely."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "sailor",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Ironborn do not regard Seaside City as any ordinary river fortress. The towers, harbors, and long-term vigilance there mean that there are few real surprises in a surprise attack. Mallister may not be worthy of praise in iron folk songs, but he is worthy of reconnaissance; an enemy at sea who can make one look at the wind before putting down an oar has earned a grudging respect."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Mallister The Silver Eagle family of Seaside City in Ironborn Bay has long been responsible for the defense of the west coast of the Riverlands. Nobles valued their reputation as knights, and the people of the coast valued it by its beacons, harbors, and ability to defend itself against the Ironborn. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Mallister The Silver Eagle family of Seaside City in Ironborn Bay has long been responsible for the defense of the west coast of the Riverlands. Nobles valued their reputation as knights, and the people of the coast valued it by its beacons, harbors, and ability to defend itself against the Ironborn. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Mallister The Silver Eagle family of Seaside City in Ironborn Bay has long been responsible for the defense of the west coast of the Riverlands. Nobles valued their reputation as knights, and the people of the coast valued it by its beacons, harbors, and ability to defend itself against the Ironborn. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Mallister The Silver Eagle family of Seaside City in Ironborn Bay has long been responsible for the defense of the west coast of the Riverlands. Nobles valued their reputation as knights, and the people of the coast valued it by its beacons, harbors, and ability to defend itself against the Ironborn. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "House Mallister: The Silver Eagle family of Seaside City in Ironborn Bay has long been responsible for the defense of the west coast of the Riverlands. Nobles valued their reputation as knights, and the people of the coast valued it by its beacons, harbors, and ability to defend itself against the Ironborn."
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "Id": "rule_Karakazi_River",
+  "Keywords": [
+    "Karakaz River"
+  ],
+  "RagShortTexts": [
+    "The Karakaz River is the boundary river between Nord and Khuzait"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "This is the boundary river between Noord and Khuzait. The water flow is large but it is frozen all year round."
+    }
+  ],
+  "TextMappings": []
+}

@@ -14,8 +14,10 @@ internal static class Program
         _checks++;
     }
 
-    private static void Main()
+    private static void Main(string[] args)
     {
+        WeeklyPromptFixture.Select(args);
+        bool english = WeeklyPromptFixture.English;
         var owner = typeof(WeeklyMaterialAggregationOwner);
         Check(owner != null, "owner loaded");
         Check(!WeeklyMaterialAggregationOwner.IsWeeklyPromptAggregatableMaterial(null), "null excluded");
@@ -70,8 +72,9 @@ internal static class Program
         var raid = WeeklyPromptMaterialOwner.BuildResolvedVillageRaidMaterial(raidSource, id => id == "village_a" ? "A 村" : "");
         Check(raid.MaterialType == "prompt_resolved_village_raid", "raid material type");
         Check(raid.SourceMaterialCount == 3, "raid source count");
-        Check(raid.SnapshotText.Contains("掠夺被击退") && raid.SnapshotText.Contains("随后又遭到掠夺"), "raid defended then restarted");
-        Check(!raid.SnapshotText.Contains("：掠夺成功，"), "raid no false success");
+        Check(raid.SnapshotText.Contains(english ? "The raid was repelled" : "掠夺被击退") && raid.SnapshotText.Contains(english ? "was raided again afterward" : "随后又遭到掠夺"), "raid defended then restarted");
+        Check(!raid.SnapshotText.Contains(english ? "The raid succeeded" : "：掠夺成功，"), "raid no false success");
+        Check(raid.SnapshotText.Contains(english ? "no result has been resolved" : "没有结算结果"), "raid restart remains unconfirmed");
         Check(WeeklyPromptMaterialOwner.ResolveVillageRaidOutcome(new() { ActionStableKey = "raid_completed:village_a:Attacker" }) == "success", "attacker success");
         Check(WeeklyPromptMaterialOwner.ResolveVillageRaidOutcome(new() { ActionStableKey = "raid_completed:village_a:None" }) == "aborted", "aborted outcome");
         var shortGroup = new MyBehavior.WeeklyEventMaterialPreviewGroup
@@ -88,6 +91,10 @@ internal static class Program
         Check(shortGroup.OutputMode == MyBehavior.WeeklyReportOutputMode.TitleShortTagsOnly, "short output mode");
         Check(!shortGroup.IncludePreviousReportInPrompt, "short omits previous report");
         Check(shortGroup.PromptMaterials.Any(x => x.MaterialType == "prompt_short_movement" && x.SourceMaterialCount == 2), "movement converter executes in owner");
+        var movement = shortGroup.PromptMaterials.Single(x => x.MaterialType == "prompt_short_movement");
+        Check(movement.SnapshotText.Contains(english ? "Recent movement events: 2" : "近期行军动向事件共：2") && movement.SnapshotText.Contains(english ? "harassment" : "袭扰"), "movement package copy preserves count and action");
+        Check(WeeklyMaterialTexts.ProjectRaw("繁荣扩张") == (english ? "prosperity expanded" : "繁荣扩张"), "derived trend uses package projection");
+        Check(WeeklyMaterialTexts.Raw("AF_WEEKLY_Material_0680") == "繁荣扩张", "projection does not mutate source identity");
         Check(!shortGroup.PromptMaterials.Any(x => x.ActionStableKey == "tournament_finished:one"), "tournament excluded");
         Check(shortGroup.PromptMaterials.Any(x => x.Label == "保留"), "unclassified material cloned");
         var stats = WeeklyPromptMaterialOwner.BuildWeeklyPromptShortSettlementStatsMaterial(
@@ -97,11 +104,13 @@ internal static class Program
                 new() { MaterialType = "raw_text", ActionStableKey = "settlement_stats:b", SettlementId = "b", SnapshotText = "治安改善", ActionDay = 3 }
             }, shortGroup);
         Check(stats.MaterialType == "prompt_short_settlement_stats" && stats.SourceMaterialCount == 2, "settlement stats owned summary");
-        Check(stats.SnapshotText.Contains("繁荣") && stats.SnapshotText.Contains("粮食"), "settlement trends preserved");
+        Check(stats.SnapshotText.Contains(english ? "prosperity expanded" : "繁荣") && stats.SnapshotText.Contains(english ? "food became scarce" : "粮食"), "settlement trends preserved");
         raidSource[1].ActorKingdomId = "kingdom_a";
         var shortRaid = WeeklyPromptMaterialOwner.BuildWeeklyPromptShortVillageRaidMaterial(raidSource, shortGroup);
         Check(shortRaid.MaterialType == "prompt_short_village_raid" && shortRaid.SourceMaterialCount == 3, "raid short owned summary");
-        Check(shortRaid.SnapshotText.Contains("被击退") && !shortRaid.SnapshotText.Contains("掠夺成功：1"), "raid short outcome not inflated");
+        Check(shortRaid.SnapshotText == (english
+            ? "[Village raids]\n- Own villages successfully raided: 0 villages; own successful raids: 0 villages; own raids repelled: 1 villages; own raids aborted: 0 villages."
+            : "[村庄掠夺]\n- 我方被掠夺成功：0处；我方掠夺成功：0处；我方掠夺被击退：1处；我方掠夺中止：0处。"), "raid short outcome not inflated");
         var factsRead = 0;
         var eventOwner = new WeeklyAggregateEventLineOwner(new WeeklyAggregateGameFacts(
             id => "英雄:" + id, id => "家族:" + id, id => "王国:" + id,
@@ -118,7 +127,7 @@ internal static class Program
         Check(WeeklyAggregateEventLineOwner.TranslateNpcActionKindForPrompt("clan_rebellion") == "家族叛乱事件", "action kind text owned");
         Check(WeeklyAggregateEventLineOwner.TryParseWeeklyPromptPrisonerPair("prisoner_taken:captor:prisoner:captor", out var captorId, out var prisonerId) && captorId == "captor" && prisonerId == "prisoner", "prisoner pair parser reused");
         Check(!WeeklyAggregateEventLineOwner.TryParseWeeklyPromptPrisonerPair("other:captor:prisoner", out _, out _), "unrelated pair excluded");
-        Console.WriteLine($"PASS J17WeeklyAggregationRules {_checks} checks");
+        Console.WriteLine($"PASS J17WeeklyAggregationRules {(english ? "en" : "cn")} {_checks} checks");
     }
 }
 

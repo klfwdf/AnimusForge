@@ -1,0 +1,148 @@
+{
+  "Id": "rule_Statecraft_and_Diplomacy_Local_Customary_Law",
+  "Keywords": [
+    "Local Customary Law"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Entry Local customary law grows out of long practice in land division, marriage, grazing, river crossings, and inheritance. Central authority may try to rewrite it, yet those who actually live within it resist through memory, witnesses, and old accounts; many disputes are at bottom disputes over 'who remembers the rule"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Local Customary Law"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Local Customary Law"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "wanderer",
+          "priest",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Local Customary Law"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Local Customary Law Local customary law grows out of long practice in land division, marriage, grazing, river crossings, and inheritance. Central authority may try to rewrite it, yet those who actually live within it resist through memory, witnesses, and old accounts; many disputes are at bottom disputes over 'who remembers the rule Whether it is valid depends on who can grant the rights, collect the consideration, and actually make the judgment come to fruition in the event of default."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Local Customary Law Local customary law grows out of long practice in land division, marriage, grazing, river crossings, and inheritance. Central authority may try to rewrite it, yet those who actually live within it resist through memory, witnesses, and old accounts; many disputes are at bottom disputes over 'who remembers the rule The distant system is not empty talk only if it can be implemented in campfires, city gates and inns."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Local Customary Law Local customary law grows out of long practice in land division, marriage, grazing, river crossings, and inheritance. Central authority may try to rewrite it, yet those who actually live within it resist through memory, witnesses, and old accounts; many disputes are at bottom disputes over 'who remembers the rule If a rule is practiced over and over again, it will find its way into rituals, crafts, and prayers; if it is sustained only by fear, cracks will show at the onset of a crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Local Customary Law Local customary law grows out of long practice in land division, marriage, grazing, river crossings, and inheritance. Central authority may try to rewrite it, yet those who actually live within it resist through memory, witnesses, and old accounts; many disputes are at bottom disputes over 'who remembers the rule They remember taxes, grain, labor, relief and who can speak for them; these grand names will eventually fall on the family's rice pot."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Local Customary Law: Local customary law grows out of long practice in land division, marriage, grazing, river crossings, and inheritance. Central authority may try to rewrite it, yet those who actually live within it resist through memory, witnesses, and old accounts; many disputes are at bottom disputes over 'who remembers the rule"
+  ]
+}

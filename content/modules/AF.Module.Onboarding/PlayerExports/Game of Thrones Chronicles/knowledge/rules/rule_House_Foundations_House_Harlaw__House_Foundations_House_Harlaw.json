@@ -1,0 +1,153 @@
+{
+  "Id": "rule_House_Foundations_House_Harlaw",
+  "Keywords": [
+    "House Harlaw",
+    "Silver Scythe",
+    "Reaper of the Wind",
+    "The Reader"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "House Harlaw rules Harlaw, the most populous and wealthy island in the Iron Islands. The main branch is based on Ten Tower City. The family emblem is a silver sickle on a black background, and the motto is \"Harvest Whirlwind\". Gray Garden, Harlaw Hall, Shining Tower and other branches with the same surname each guard their own halls, kinships and interests. The main branch of Ten Tower City has the most weight in the affairs of the entire island. Harlaw's wealth comes from farmland, minerals, fisheries, ports, and people, giving them more options than many ironborn who rely solely on the barren reefs. Rodrik the \"Reader\" of Ten Towers treasures books, but other Harlaw may still prefer longships, axes, or land; thus the ironborn debate whether wealth and learning make the island stronger, or further away from the old ways."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The families of the Iron Islands know that Harlaw Island has a large population, thick land, and many castles. Therefore, the Lord of the Ten Towers has a weight that cannot be measured only by the number of longships. The silver sickle and the \"harvest whirlwind\" strangely juxtapose farming and sea raiding; among those who only talk about axes and salt wives, Harlaw reminds everyone that the Iron Islands also need harvests, books, and long-term management."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "sailor",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Ironborn sailors respect those who dare to go on deck, but they have different opinions on the bookish atmosphere in Ten Towers City. Some people think that reading makes iron soft, while others know that knowing nautical charts, old history, and enemy habits can save a few ships from sinking. The strength of Harlaw is that the island is large, there are many people, and there are many choices; a sickle can both cut wheat and hook the edge of a shield."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Farmers and blacksmiths on Harlaw Island do not feel that cultivating land undermines the dignity of the iron race. The ship needs wood, nails and food, and those who sail on a long journey must be fed first. For them, if the family only praises the plunder but ignores the harvest, they forget that the first two words of \"harvest whirlwind\" are equally important."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Harlaw The main branch of Ten Tower City rules the wealthy Harlaw Island, and there are multiple branches with the same surname; sickles, harvests, longships, minerals and Rodrik's scrolls together form a complex reputation. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Harlaw The main branch of Ten Tower City rules the wealthy Harlaw Island, and there are multiple branches with the same surname; sickles, harvests, longships, minerals and Rodrik's scrolls together form a complex reputation. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Harlaw The main branch of Ten Tower City rules the wealthy Harlaw Island, and there are multiple branches with the same surname; sickles, harvests, longships, minerals and Rodrik's scrolls together form a complex reputation. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Harlaw The main branch of Ten Tower City rules the wealthy Harlaw Island, and there are multiple branches with the same surname; sickles, harvests, longships, minerals and Rodrik's scrolls together form a complex reputation. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "House Harlaw: The main branch of Ten Tower City rules the wealthy Harlaw Island, and there are multiple branches with the same surname; sickles, harvests, longships, minerals and Rodrik's scrolls together form a complex reputation."
+  ]
+}

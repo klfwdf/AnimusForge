@@ -1,0 +1,205 @@
+{
+  "Id": "rule_Nekraka_Society",
+  "Keywords": [
+    "Nekra Club_NEC",
+    "Wausauland_NEC",
+    "Necrarchs_NEC",
+    "Necromancer Vampire_NEC"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Neklak would be the most secretive of the five vampire lineages and the least involved in living politics - they do not build castles, collect blood taxes, or cultivate a network of blood servants. Instead, they seal themselves in remote towers, catacombs, or abandoned magical ruins, and devote every moment of their eternal life to the in-depth study of necromancy. Their ancestor, Wosolan, is said to have transcended the physical form of ordinary vampires and turned into a translucent body maintained purely by dark magic - he does not need to drink blood, because his existence itself has been completely replaced by necromantic energy to replace biological needs. Members of the Order of Neklak are the least living vampires in appearance - their skin is as dry as parchment, their eye sockets are sunken, and their bodies are so shrunk that one can almost see through their chests."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "We Nekraks have no interest in the noise of the outside world. Leave von Carstein to play court games with the Imperial Elector Counts - what we find in the abyss of necromancy is more essential and timeless than any political intrigue. Master Wosolan completely completed his self-reconstruction from a 'vampire creature' to a 'pure necromantic energy construct' three hundred years ago - he is the furthest among us, and because of this he has become our beacon. We require no living blood - we sustain our research by drawing power directly from the winds of dark magic. The price is that our bodies look dead in appearance, but to those who have devoted their minds 100% to research, the body is just a coat that will be discarded sooner or later."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Neklak Order poses little direct threat in a military or political sense - their membership is extremely small, they do not maintain an army, and they do not initiate attacks. But they pose an extremely dangerous indirect threat in a strategic sense: any ambitious person who encounters a bottleneck in necromancy—whether a human necromancer, a vampire warlord, or a chaos sorcerer—might stumble upon a Neklak retreat and attempt to gain access to its centuries-old forbidden knowledge. Once this knowledge fell into the wrong hands—especially into the hands of a warlord with the resources to implement them—the consequences would be catastrophic. Therefore, it is a hidden but vital defensive duty of the Border Lords to monitor the areas surrounding known Neklak retreats and disrupt other forces should they attempt to contact them."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "The academic tradition of the Neklak Order occupies a third line of knowledge inheritance in the history of hidden knowledge in the old world, which is almost completely independent of the Imperial Academy of Magic and the White Tower of High Elves. Unlike other vampire lineages, Necrok does not regard necromancy as a tool of domination but as a pure object of research. This academic orientation has allowed them to reach some theoretical frontiers of necromancy that even Nagash himself may not have explored in depth during the two thousand years of accumulation. Vosolan's \"Pure Necronomical Energy Construct\" form is the only case in vampirology that fully records the entire transformation process from \"biological vampire\" to \"pure energy undead\" - this transformation involves completely stripping the blood-dependent mechanism from the biochemical level and replacing it with a purely magical circulatory system maintained by necrotic energy. The Imperial Academy of Magic's ban on necromancy prevents Imperial scholars from directly studying Neklak's knowledge system, but it is believed that at least three prominent Imperial magic scholars have - privately - obtained considerable cutting-edge information on Necromancy theory through unofficial academic correspondence with Neklak members."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Deep in the misty swamp in the northern part of the territory, there is a Neklak Hermitage Tower whose detailed location I have never known but whose existence is certain - because every eleven years, a skinny figure wrapped in a gray shroud will appear outside the door of my manor in the late autumn twilight, politely but not refusing to borrow a specific academic yearbook published by the Imperial Academy of Magic. He didn't threaten me - in fact he left a vial of rare alchemical ingredients he collected in the swamp on the doorstep every time he came as payment for borrowing the book. The unusual part of this relationship is its absolute regularity: eleventh year, early winter, different year volumes of the same book. He may be using our Imperial Almanac to record some long-term magical fluctuation that only he cares about. I didn't refuse his request to borrow books - not because I was afraid of him, but because a Nekra scholar who only had a social impulse once every eleven years was probably the least dangerous person to come into contact with in this old world."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Neklak's seclusion model formed a unique phenomenon in my family's three hundred years of border governance: my family's manor library unknowingly became an external library for Neklak to store knowledge. It all started when my great-great-grandfather inadvertently purchased a box of forbidden books that had escaped from a defunct library of human necromancers—rather than destroying them, he sealed them away in a lead-lined bookcase in the basement of the library. Over the next two hundred years, four different Neklak scholars attempted to gain access to the collection through legal and illegal means—including one tomb-robbing infiltration and two high-priced purchase offers through middlemen. My family's response was to move the collection of books from the basement to a separate underground cellar whose location was known only to the family's chief librarian - and then sent polite rejection letters to the Neklak scholars. The wording on the letter was: 'The collection is under maintenance, please write again in a hundred years.' Neklak won't be offended - they fully understand the 'long wait' thing."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "On a snowstorm night in the northern section of the Gray Mountains, I mistakenly entered a stone tower that could not be found on any imperial map - its door was open, and the tower was full of bookshelves from the first floor to the top floor. The bookshelves were not lined with books but scrolls made of some kind of dried reptile skin. The owner of the tower sat on the top floor - a thin figure wrapped in gray cloth. His fingers were like dead branches, but when turning the scroll, his movements were so precise that each joint of those fingers was equipped with an independent driving mechanism. He did not expel me, nor did he invite me - he just continued to flip through his scrolls, and after about half an hour of silence, he said slowly to himself - not to me: 'What the peasants of the empire will say before falling asleep is \"Good night, see you tomorrow\" - but how many people understand the theoretical premise of this sentence is that they assume that they will not die directly in sleep. 'Then he fell silent again. After daybreak the storm stopped and I left the tower. I didn’t peek at anything on his scroll—not because of morality, but because of a more fundamental fear: I was afraid I’d understand any of the lines."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Neklak Society occupies the top but most difficult-to-reach supplier position in the old world's black market knowledge economy. If you need a manuscript on how to integrate undead labor into mining production, you can go to any of Tyrell's underground necromancers - but if you need a breakdown of the principles of how to keep zombies functioning in the oxygen-deprived environment of deep mines for two hundred years, you can only go to Neklak. Their knowledge is priced without currency - they accept barter, and their only common medium of exchange is \"necromantic scholarship that you haven't read and they haven't read either.\" This formed an extremely closed academic cycle: the top level of necromancy knowledge in the entire old world was essentially a completely self-sufficient knowledge economic circle controlled by no more than twenty Neklak scholars."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "The Order of the Necromancer—a vampire academic lineage led by Vosolan that focuses on the pure study of necromancy.",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Necrak Society Vosoran Necromancy Academic Vampire Genealogy"
+  ]
+}

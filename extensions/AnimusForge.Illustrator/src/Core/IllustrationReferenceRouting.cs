@@ -12,9 +12,7 @@ namespace AnimusForge.Illustrator.Core
     {
         // Every full-body capture uses the same native idle stance (StanceIndex 0). Name it,
         // so the image model treats the pose as a render artefact rather than a composition.
-        internal const string IdleStanceFullBodyNote =
-            "【全身图用途】此图是游戏引擎统一的待机展示站姿（正面直立、双臂自然下垂），仅作服装装备形制、配色、覆盖范围与体型的对照；" +
-            "人物的身体朝向、重心、四肢位置、手势与取景按正文【此刻动作】（如有）与【人物与镜头】绘制。";
+        internal static string IdleStanceFullBodyNote => IllustratorText.Get("Ref_IdleStanceFullBodyNote");
 
         // Stable reorder for the image endpoint only: idle-stance full-body renders go last,
         // so /images/edits and chat image models do not take the first image's silhouette as
@@ -53,11 +51,7 @@ namespace AnimusForge.Illustrator.Core
             var scene = scenes?.FirstOrDefault(x => x != null &&
                 (x.Kind == IllustrationReferenceKind.Scene || x.Kind == IllustrationReferenceKind.MapConversationScene) && !string.IsNullOrWhiteSpace(x.Base64Image));
             return scene == null ? null : new IllustrationReferenceImage(scene.Base64Image,
-                scene.Label + (scene.Kind == IllustrationReferenceKind.MapConversationScene
-                    ? " 生图环境参考：仅用于当前位置与环境定位，保留这张对话布景可见的地貌、植被与材质，屏幕人物位置不作为野外实际站位证据。"
-                    : " 生图环境参考：仅用于当前位置与环境定位，保持实际建筑布局、墙面材质与固有色、门窗楼梯及环境高低关系；") +
-                "人物动作优先采用对话中的已发生叙事，不以截图待机姿势覆盖导演动作。" +
-                "依导演选择的机位和画风重新绘制，参考图不作为必须保留的像素底图，不复制UI或截图渲染质感。", scene.Kind);
+                scene.Label + (scene.Kind == IllustrationReferenceKind.MapConversationScene ? IllustratorText.Get("Ref_MapConversationSceneAnchor") : IllustratorText.Get("Ref_SceneAnchor")), scene.Kind);
         }
 
         internal static void AddSceneReferences(List<IllustrationReferenceImage> image, IReadOnlyList<IllustrationReferenceImage> scenes,
@@ -82,7 +76,7 @@ namespace AnimusForge.Illustrator.Core
                 double fov = selected ? direction.SceneHorizontalFovDegrees.Value : 55;
                 // Internally produced base64 only. Bound allocation before decode.
                 if (panorama.Base64Image.Length > 24 * 1024 * 1024)
-                    throw new InvalidOperationException("场景全景超过投影预算，已停止生图。");
+                    throw new InvalidOperationException("The scene panorama exceeds its projection budget. Image generation stopped.");
                 string auxiliarySelection = AuxiliarySelection(direction, selected);
                 bool sendAuxiliary = auxiliarySelection == "director";
                 byte[] panoramaBytes = Convert.FromBase64String(panorama.Base64Image);
@@ -91,19 +85,13 @@ namespace AnimusForge.Illustrator.Core
                         direction.AuxiliarySceneYawDegrees.Value, direction.AuxiliaryScenePitchDegrees.Value,
                         direction.AuxiliarySceneHorizontalFovDegrees.Value, token)
                     : new[] { ScenePerspectiveProjection.Project(panoramaBytes, yaw, pitch, fov, token) };
-                const string sceneRole =
-                    "此参考图来自同一现场独立静态副本，主动省略了现场所有人物与动态实体，空桌椅或空地不代表现场无人；在场人物及有证据的背景人群按正文绘制，不照搬副本的无人状态。" +
-                    "这张图只约束场景环境，不用于推断人物脸部、发型、年龄、服装或姿态；人物外观以对应身份参考图为准。" +
-                    "这是中性观察补光，不代表现场光源；光源方向、时段与氛围按正文，人物位置按本次事实。缺失区域不作为开放天空或新增物体的证据。";
+                string sceneRole = IllustratorText.Get("Ref_SceneRole");
                 image.Insert(sceneReferenceCount++, new IllustrationReferenceImage(Convert.ToBase64String(perspectives[0]),
-                    "普通透视环境主视角：" +
-                    (selected ? "依据导演选择的方向从完整全景重新投影。" : "导演未提供可用的视觉选景，从完整全景取默认前向。") +
-                    "最终画面的方向与可见建筑关系以此图为准，不能把画外的王座、门洞或其他方向的陈设搬进此视角。" + sceneRole,
+                    (selected ? IllustratorText.Get("Ref_PerspectiveMain_Selected") : IllustratorText.Get("Ref_PerspectiveMain_Default")) + sceneRole,
                     IllustrationReferenceKind.ScenePerspective));
                 if (sendAuxiliary)
                     image.Insert(sceneReferenceCount++, new IllustrationReferenceImage(Convert.ToBase64String(perspectives[1]),
-                        "普通透视环境辅助视角：与前一张主图来自同一全景，仅补充相邻结构、重叠地标和材质。" +
-                        "最终构图仍采用主视角，不把辅助图独有的设施移到主背景，不拼接背景或重复绘制共同地标。" + sceneRole,
+                        IllustratorText.Get("Ref_PerspectiveAux") + sceneRole,
                         IllustrationReferenceKind.ScenePerspective));
                 GenerationDiagnostics.Current?.RecordStage("scene_perspective_reference", new JObject
                 {

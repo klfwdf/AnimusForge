@@ -34,58 +34,72 @@ public static class TroopInspectionPrisonerSlaughterProfile
     }
 
     public static string BuildRuntimeInstruction(int regularPrisonerCount, int attackerCount)
+        => BuildRuntimeInstruction(regularPrisonerCount, attackerCount, false);
+
+    public static string BuildRuntimeInstruction(int regularPrisonerCount, int attackerCount, bool isEnglish)
+        => BuildRuntimeInstruction(regularPrisonerCount, attackerCount, TownPromptCatalogResources.Get(isEnglish));
+
+    public static string BuildRuntimeInstruction(int regularPrisonerCount, int attackerCount, TownPromptTextCatalog textCatalog)
     {
-        return "【检阅士兵·普通俘虏屠戮】当前是AF检阅士兵场景，说话者是玩家本轮带入检阅的普通士兵；现场有 "
-            + ClampCount(regularPrisonerCount)
-            + " 名普通士兵俘虏和 "
-            + ClampCount(attackerCount)
-            + " 名可执行命令的检阅士兵。玩家可以使用任何自然语言直接命令士兵杀死、处死或屠戮现场普通俘虏；不要依赖固定词、关键词匹配或固定句式，而要由AI结合玩家本轮完整意思和士兵的直接回复作语义判断。只有玩家本轮确实下达立即执行的明确命令，并且当前士兵在正文中明确接受、服从或开始执行时，后处理才输出 "
-            + ActionTag
-            + "。询问意见、讨论可能性、假设、否定、撤回、威胁但未下令、NPC主动建议、旁听者发言或含糊答复都不得输出。该标签只针对普通士兵俘虏，永远不包含被俘领主；实际死亡后才从俘虏名册扣除。";
+        TownPromptTextCatalog text = textCatalog ?? TownPromptCatalogResources.Get(true);
+        return TownPromptTextCatalog.FormatTemplate(text.InspectionSlaughterPromptTemplate, ("prisoners", ClampCount(regularPrisonerCount).ToString()), ("soldiers", ClampCount(attackerCount).ToString()));
     }
 
     public static string BuildPostprocessRuleDescription(int regularPrisonerCount, int attackerCount)
+        => BuildPostprocessRuleDescription(regularPrisonerCount, attackerCount, false);
+
+    public static string BuildPostprocessRuleDescription(int regularPrisonerCount, int attackerCount, bool isEnglish)
+        => BuildPostprocessRuleDescription(regularPrisonerCount, attackerCount, TownPromptCatalogResources.Get(isEnglish));
+
+    public static string BuildPostprocessRuleDescription(int regularPrisonerCount, int attackerCount, TownPromptTextCatalog textCatalog)
     {
-        return "AF检阅士兵场景专用：说话者必须是玩家本轮带入检阅的普通士兵，现场必须仍有普通士兵俘虏。由AI根据玩家本轮完整话语与该士兵的直接回复进行语义判断，不得使用固定关键词门槛。仅当玩家明确命令立即屠戮/处死现场普通俘虏，且士兵明确接受执行时输出。询问、讨论、假设、否定、撤回、NPC主动建议、旁听或未明确服从均不输出。当前普通俘虏 "
-            + ClampCount(regularPrisonerCount)
-            + " 名，可执行士兵 "
-            + ClampCount(attackerCount)
-            + " 名；被俘领主不属于此标签。";
+        TownPromptTextCatalog text = textCatalog ?? TownPromptCatalogResources.Get(true);
+        return TownPromptTextCatalog.FormatTemplate(text.InspectionSlaughterRuleDescription, ("prisoners", ClampCount(regularPrisonerCount).ToString()), ("soldiers", ClampCount(attackerCount).ToString()));
     }
 
     public static string BuildStartedMessage(int attackerCount, int targetCount)
+        => BuildStartedMessage(attackerCount, targetCount, false);
+
+    public static string BuildStartedMessage(int attackerCount, int targetCount, bool isEnglish)
     {
-        return "【检阅士兵】屠戮命令已下达："
+        TownPromptTextCatalog text = TownPromptCatalogResources.Get(isEnglish);
+        return text.GetRuntimeText("BuildStartedMessage_001")
             + ClampCount(attackerCount)
-            + " 名士兵开始持械攻击 "
+            + text.GetRuntimeText("BuildStartedMessage_002")
             + ClampCount(targetCount)
-            + " 名普通俘虏；只有场景内实际死亡者才会从俘虏名册扣除。";
+            + text.GetRuntimeText("BuildStartedMessage_003");
+
     }
 
     public static string BuildCompletedMessage(int killedCount)
+        => BuildCompletedMessage(killedCount, false);
+
+    public static string BuildCompletedMessage(int killedCount, bool isEnglish)
     {
-        return "【检阅士兵】屠戮结束："
+        TownPromptTextCatalog text = TownPromptCatalogResources.Get(isEnglish);
+        return text.GetRuntimeText("BuildCompletedMessage_001")
             + ClampCount(killedCount)
-            + " 名普通俘虏已在场景内实际死亡并从俘虏名册扣除；被俘领主未受影响。";
+            + text.GetRuntimeText("BuildCompletedMessage_002");
+
     }
 
     public static string BuildUnavailableMessage(string reason)
+        => BuildUnavailableMessage(reason, false);
+
+    public static string BuildUnavailableMessage(string reason, bool isEnglish)
     {
-        switch ((reason ?? string.Empty).Trim())
+        TownPromptTextCatalog text = TownPromptCatalogResources.Get(isEnglish);
+        string norm = (reason ?? string.Empty).Trim();
+        return norm switch
         {
-            case "not_normal_inspection":
-                return "【检阅士兵】当前不属于普通检阅场景，屠戮命令未执行。";
-            case "speaker_not_inspected_soldier":
-                return "【检阅士兵】当前回应者不是可执行命令的检阅士兵，屠戮命令未执行。";
-            case "no_regular_prisoners":
-                return "【检阅士兵】现场没有可处置的普通士兵俘虏；被俘领主不会由此命令处理。";
-            case "slaughter_already_active":
-                return "【检阅士兵】士兵已经在执行屠戮命令。";
-            case "combat_setup_unavailable":
-                return "【检阅士兵】当前场景未能建立俘虏处决战斗，屠戮命令未执行；详情已写入日志。";
-            default:
-                return "【检阅士兵】未能执行屠戮命令；详情已写入日志。";
-        }
+            "not_normal_inspection" => text.GetRuntimeText("BuildUnavailableMessage_002"),
+            "speaker_not_inspected_soldier" => text.GetRuntimeText("BuildUnavailableMessage_004"),
+            "no_regular_prisoners" => text.GetRuntimeText("BuildUnavailableMessage_006"),
+            "slaughter_already_active" => text.GetRuntimeText("BuildUnavailableMessage_008"),
+            "combat_setup_unavailable" => text.GetRuntimeText("BuildUnavailableMessage_010"),
+            _ => text.GetRuntimeText("BuildUnavailableMessage_011")
+        };
+
     }
 
     private static int ClampCount(int value)

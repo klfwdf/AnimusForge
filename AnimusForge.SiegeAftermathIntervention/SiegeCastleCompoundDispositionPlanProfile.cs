@@ -6,19 +6,19 @@ namespace AnimusForge.SiegeAftermathIntervention;
 
 /// <summary>
 /// Parses only explicit, non-overlapping multi-group orders such as
-/// "50名强壮战俘修缮城堡，其余卖掉". Vague combinations remain fail-closed.
+/// "50 strong prisoners repair the castle, sell the rest". Vague combinations remain fail-closed.
 /// </summary>
 public static class SiegeCastleCompoundDispositionPlanProfile
 {
     public const int MaximumSteps = 4;
 
     private static readonly Regex RemainderBoundaryRegex = new Regex(
-        @"(?<![，,；;\s])(?=(?:剩下|剩余|其余|余下))",
-        RegexOptions.Compiled);
+        CastleAftermathCompatibilityTexts.Raw("compound_remainder_boundary_pattern"),
+        RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
     private static readonly Regex ClauseSeparatorRegex = new Regex(
-        @"[，,；;。！!\r\n]+|然后|随后|再把|再将|再让",
-        RegexOptions.Compiled);
+        CastleAftermathCompatibilityTexts.Raw("compound_clause_separator_pattern"),
+        RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
     public static bool TryBuild(string playerText, out SiegeCastleCompoundDispositionPlan plan)
     {
@@ -31,7 +31,7 @@ public static class SiegeCastleCompoundDispositionPlanProfile
             return false;
         }
 
-        string expanded = RemainderBoundaryRegex.Replace(text, "；");
+        string expanded = RemainderBoundaryRegex.Replace(text, ";");
         string[] clauses = ClauseSeparatorRegex.Split(expanded);
         var steps = new List<SiegeCastleCompoundDispositionStep>();
         var seen = new HashSet<SiegeCastlePrisonerDispositionKind>();

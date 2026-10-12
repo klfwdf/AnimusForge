@@ -1,0 +1,154 @@
+{
+  "Id": "rule_House_Foundations_Bonel",
+  "Keywords": [
+    "Bonel",
+    "House Bonel"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "House Bonnell is the lord of Sweet Sister Island. They hold the titles of Shield of Sisters, Lord of Wave Stand and Keeper of Night Lighthouse, and are loyal to House Sunderland. The thin soil and treacherous seas of the Sister Islands make fishing, navigation, lighthouses and hospitality traditions particularly important. Although Godrich Bonnell bears the reputation of \"robber lord\", he still respects the rights of guests; on this island that is often isolated by storms, a hot dinner table can sometimes determine a person's life or death as much as a beacon tower."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vale"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The nobles of the valley often have prejudices against the etiquette and accent of the people of the Sister Islands, but they cannot ignore the night lighthouse and the channel route. If Ponnell guards the lights and restrains plundering, he is guarding a damp sea gate for the entire valley."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vale"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "sailor",
+          "peasant",
+          "artisan"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The fishermen of Tianjie Island know that Hai never cares about titles. They care whether the lighthouse is lit and whether the shipwrecked crew members can get hot soup. They also know that the so-called smuggling and survival are sometimes only separated by a bad harvest."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "crownlands",
+          "river"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "sailor",
+          "merchant",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Foreign captains were both wary and dependent on Bonnaire. The Sisters Islands had reefs, thick fog, and unpredictable currents; they thanked the lightkeeper when they were safely ashore and cursed every lord on the island when their cargo was seized."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Bonel The Bonnell family rules Sweet Sister Island, is responsible for the coastal defense of Sisters, Wave Tower and Night Lighthouse, and is loyal to the Sunderland family. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Bonel The Bonnell family rules Sweet Sister Island, is responsible for the coastal defense of Sisters, Wave Tower and Night Lighthouse, and is loyal to the Sunderland family. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Bonel The Bonnell family rules Sweet Sister Island, is responsible for the coastal defense of Sisters, Wave Tower and Night Lighthouse, and is loyal to the Sunderland family. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Bonel The Bonnell family rules Sweet Sister Island, is responsible for the coastal defense of Sisters, Wave Tower and Night Lighthouse, and is loyal to the Sunderland family. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Bonel: The Bonnell family rules Sweet Sister Island, is responsible for the coastal defense of Sisters, Wave Tower and Night Lighthouse, and is loyal to the Sunderland family."
+  ]
+}

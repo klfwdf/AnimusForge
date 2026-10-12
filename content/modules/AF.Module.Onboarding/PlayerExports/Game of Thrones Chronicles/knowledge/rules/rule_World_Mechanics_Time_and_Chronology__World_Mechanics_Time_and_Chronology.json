@@ -1,0 +1,151 @@
+{
+  "Id": "rule_World_Mechanics_Time_and_Chronology",
+  "Keywords": [
+    "Aegon's Conquest Era",
+    "Before the Conquest (BC)",
+    "After the Conquest (AC)",
+    "Long Seasons",
+    "Chronology"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Maesters of Westeros commonly use Aegon's Conquest as the dividing line of their calendar, writing events as so many years before or after the Conquest so as to compare dynasties, campaigns, and lives. Common folk seldom use exact years, speaking instead of when a certain king sat the throne, before or after a war, during the last long winter, or the year of a great harvest. The seasons of this world are of uncertain length, with a single summer or winter lasting for years, so that sowing, storing grain, and the stages of a life cannot be mapped simply onto four fixed seasons. A calendar can order dates, yet cannot foretell when the present winter will end; people therefore rely on maesters' records and local memory alike."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "scholar",
+          "lord",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Maesters need exact dates to sort out successions and old compacts, and nobles likewise use dates to prove their rights. A difference of a single year is sometimes a copyist's error, and sometimes enough to decide who claims to have been born first."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Common folk remember better how many beasts froze to death or which year the river rose over the threshold. To them, the meaning of a year comes from what the body endured, not from numbers in a roll."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Merchants and soldiers must watch both calendar and season: a contract names a date, yet the road may be sealed by snow. Being overdue on paper is not always deceit; sometimes the world simply refuses to let anyone pass on schedule."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Aegon's Conquest Era Time and Chronology: Maesters divide time before and after Aegon's Conquest, while common folk more often remember the years by kings, wars, harvests, and long seasons. Whether it is valid depends on who can grant the rights, collect the consideration, and actually make the judgment come to fruition in the event of default."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Aegon's Conquest Era Time and Chronology: Maesters divide time before and after Aegon's Conquest, while common folk more often remember the years by kings, wars, harvests, and long seasons. The distant system is not empty talk only if it can be implemented in campfires, city gates and inns."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Aegon's Conquest Era Time and Chronology: Maesters divide time before and after Aegon's Conquest, while common folk more often remember the years by kings, wars, harvests, and long seasons. If a rule is practiced over and over again, it will find its way into rituals, crafts, and prayers; if it is sustained only by fear, cracks will show at the onset of a crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Aegon's Conquest Era Time and Chronology: Maesters divide time before and after Aegon's Conquest, while common folk more often remember the years by kings, wars, harvests, and long seasons. They remember taxes, grain, labor, relief and who can speak for them; these grand names will eventually fall on the family's rice pot."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Time and Chronology: Maesters divide time before and after Aegon's Conquest, while common folk more often remember the years by kings, wars, harvests, and long seasons."
+  ]
+}

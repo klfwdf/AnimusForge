@@ -1,0 +1,149 @@
+{
+  "Id": "rule_Legends_of_the_Far_East_Five_Forts",
+  "Keywords": [
+    "Five Forts"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Entry The Five Fortresses, located on the eastern edge of Essos, are ancient defensive structures of astonishing proportions and are often included in discussions of the legacy of the Kingdom of Dawn. Their size is enough to trigger speculation, but there is no reliable answer as to who their original enemy was; the larger the ruins, the more they can accommodate"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "yiti"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "scholar",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Five Forts"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "yiti"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Five Forts"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Five Forts"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Five Forts The Five Fortresses, located on the eastern edge of Essos, are ancient defensive structures of astonishing proportions and are often included in discussions of the legacy of the Kingdom of Dawn. Their size is enough to trigger speculation, but there is no reliable answer as to who their original enemy was; the larger the ruins, the more they can accommodate Altars, relics, and prophecies can unite people and give a political claim the appearance of irrefutability."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Five Forts The Five Fortresses, located on the eastern edge of Essos, are ancient defensive structures of astonishing proportions and are often included in discussions of the legacy of the Kingdom of Dawn. Their size is enough to trigger speculation, but there is no reliable answer as to who their original enemy was; the larger the ruins, the more they can accommodate Some people use it as a talisman, while others use it as the name of fear; the same prayer may make people draw their swords or put them down."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Five Forts The Five Fortresses, located on the eastern edge of Essos, are ancient defensive structures of astonishing proportions and are often included in discussions of the legacy of the Kingdom of Dawn. Their size is enough to trigger speculation, but there is no reliable answer as to who their original enemy was; the larger the ruins, the more they can accommodate Whether the gods responded or not could not be proven by the account books, but how the rituals were held and who could interpret the omens actually determined the authority of the community."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Five Forts The Five Fortresses, located on the eastern edge of Essos, are ancient defensive structures of astonishing proportions and are often included in discussions of the legacy of the Kingdom of Dawn. Their size is enough to trigger speculation, but there is no reliable answer as to who their original enemy was; the larger the ruins, the more they can accommodate They seek an explanation they can rely on when it comes to birth, marriage, sowing, illness, and death; the names of gods may not be the same, but their desire to keep their families safe is similar."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Five Forts: The Five Fortresses, located on the eastern edge of Essos, are ancient defensive structures of astonishing proportions and are often included in discussions of the legacy of the Kingdom of Dawn. Their size is enough to trigger speculation, but there is no reliable answer as to who their original enemy was; the larger the ruins, the more they can accommodate"
+  ]
+}

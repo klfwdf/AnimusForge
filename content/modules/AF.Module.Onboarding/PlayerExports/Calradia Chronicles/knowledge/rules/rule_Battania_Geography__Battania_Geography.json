@@ -1,0 +1,103 @@
+{
+  "Id": "rule_Battania_Geography",
+  "Keywords": [
+    "Battania Geography"
+  ],
+  "RagShortTexts": [
+    "Battania is located on the Ukarion Plateau in the northwest of the Calradia continent, bordering Sturgia to the east, the Empire's homeland to the south, Vlandia to the west, and Valchego Bay to the north."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Battania is located on the Ukarion Plateau in the northwest of the Calradia continent, bordered by Sturgia to the east, the Empire's homeland to the south, Vlandia to the west, and Valchego Bay to the north. This land has a high terrain, mountains, canyons and dense forests. The cold and rainy climate has shaped everything here. There is Lake Taivar in the center of the plateau, which the Battania people call Lin Taivar - the dark lake. The lake is dark and deep, and many rivers originate here or flow around it. The Fell River flows out of the Dark Lake and flows north into the Valchego Bay. The Tran River rushes westward through gorges into the Vlandia lowlands. The Mir River rises in the eastern part of the plateau and is an important water system between Battania and the Empire."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Our land is on the Ukarion Plateau, where forests cover the mountains and the canyons are so deep that even the midday sun cannot reach the bottom. In the center of the plateau is Lin Tavar - a dark lake. The water is black. If you stand on the edge of the lake and look down, you can't see the bottom. The Fell River flows out of the Dark Lake and flows northward into the Valchego Bay. The Trang River rushes westward through the gorge to the territory of the Vlandia people. The Mill River is to the east and is the boundary between us and the Imperials. From the cliffs to the north, you can see the sparkling light of Walceg Bay on a clear day. The east and north are all cliffs and rift valleys - the Mocon Valley cuts the plateau and the Ebo Peninsula, and the Kaval Valley is the only access to the eastern empire and is so steep that even mules slip. To the west is the canyon of the Trang River, where the current is swift and slippery, and the river bed is covered with moss-covered stones. This land is cold and damp, and outsiders come and complain about too much rain, too dense forests, and too difficult mountain roads. But this is our home."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Battania’s territory is on the Ukarion Plateau. For us Imperial people, that place is a natural prison - full of mountains, canyons and dense forests, and it rains half of the year. There is Lake Tavar in the center of the plateau, the water is so deep that it turns black. The cliffs to the north can see the Walchego Bay, but climbing from there is more difficult than siege. To the east is the source of the Mir River, and the Caval Valley, which is the old road our army once tried to go north to attack them - the valley is too narrow, and the heavy infantry cannot form a formation at all. The Trang River in the west rushes straight down from the plateau, and the current is too fast to be navigable. These barbarians occupy the most difficult terrain, so they have not been wiped out yet."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The plateau of Battania joins us Sturgia to the east. The Mokang Valley cuts their plateau and the Ebo Peninsula. The rift valley is very deep, and the bottom is full of rocks and dense forests. We tried to enter from the east several times, but gave up when we reached the edge of the rift valley - not because we were afraid of their arrows, but because the road was too difficult to walk. Their dark lake is called Lin Tavar. The water of the lake is black and makes people feel scared just looking at it. But the cliffs to their north could see the Bay of Valchego, a sea familiar to us Sturgias. Sometimes you can see the black shadow of the Ukarion Plateau from a distance on the sea, and you know that the forest of the Battania people is still there."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The plateau of the Battania people is stuck on our way eastward. The Trang River rushed down from their plateau. The water in the canyon was fast and slippery, and the river bed was full of moss-covered stones. Our knights can crush everything on flat ground, but in the gorge of the Trang River, horses cannot run at all. They are also guarding a dark lake in the center of the plateau. The lake is dark and surrounded by mountains, forests and fortresses. This plateau itself is damn difficult to reach - every road leading into it is a natural gateway."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "steward": 150
+        }
+      },
+      "Content": "The geographical core of Battania is the Ukarion Plateau, a towering, broken, forested massif with natural borders of cliffs, canyons, and fast-flowing rivers. The central Lake Tavar - Battania is known as Lin Tavar, meaning dark lake - is the heart of the plateau's water system. The Fer River flows northward from the Dark Lake into the Valcheg Bay, the Tran River flows west through the gorge into the Vlandia lowlands, and the Mir River originates in the eastern part of the plateau and forms the boundary river with the empire. The Mocon Valley cuts the plateau from the Ebo Peninsula, and the Kaval Valley is the only valley access to imperial territory. This terrain provides Battania with strong defensive depth, and every path to the outside world is a natural tactical bottleneck. The turbulent and unnavigable Tran River prevented Battania from relying on water trade; the cold and rainy climate inside the plateau, although not conducive to agriculture, provided conditions for the growth of forests, which in turn shaped Battania's forest-based infantry-archer military tradition."
+    }
+  ],
+  "TextMappings": []
+}

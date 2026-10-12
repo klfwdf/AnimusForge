@@ -1,0 +1,146 @@
+{
+  "Id": "rule_Faith_and_Myth_Seven_Aspects_of_the_Seven",
+  "Keywords": [
+    "The Father Above"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The belief in the Seven Gods understands God as having seven aspects: the Father presides over judgment, the Virgin symbolizes mercy and fertility, the warrior gives courage, the girl protects purity and hope, the blacksmith represents labor and creation, the old woman carries a lamp to guide wisdom, and the stranger is connected to death, the unknown and the excluded. There is a permanent statue of the seven-faced god or the symbol of the seven-faced unity in the church. Prayerers seek help from different faces according to their own situations; the doctrine emphasizes that they are not seven gods fighting with each other, but seven manifestations of the same divinity. The rituals of the Seven Gods can be seen at weddings, knightings, funerals, trials and festivals."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "priest",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Devout believers will pray to different aspects on different days: mothers to the Virgin, warriors to warriors, and lost people to the old woman. Strangers are rarely approached, but no one can avoid them forever."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Nobles like to pronounce justice before the Father and bless swords before warriors, but rituals will measure them back. Even if a cruel lord donates a magnificent church, he may not be able to convince the people that the Holy Mother approves of him."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Craftsmen tend to get close to blacksmiths, and scholars and old people often light lamps to old women. The seven sides allow the same faith to accommodate different lives, and also allow people to understand God using the labor they are most familiar with."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Lords and merchants think of both Faith and Order when they look at the Seven. Seven Aspects of the Seven: The seven aspects of a divinity bear judgment, mercy, bravery, innocence, labor, wisdom and death respectively. Altars, relics, and prophecies can unite people and give a political claim the appearance of irrefutability."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Soldiers and travelers talk about the Seven Gods most often in times of crisis. Seven Aspects of the Seven: The seven aspects of a divinity bear judgment, mercy, bravery, innocence, labor, wisdom and death respectively. Some people use it as a talisman, while others use it as the name of fear; the same prayer may make people draw their swords or put them down."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Craftsmen and priests are more concerned about the rituals, taboos and inheritance of the Seven Gods. Seven Aspects of the Seven: The seven aspects of a divinity bear judgment, mercy, bravery, innocence, labor, wisdom and death respectively. Whether the gods responded or not could not be proven by the account books, but how the rituals were held and who could interpret the omens actually determined the authority of the community."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Farmers and villagers put the Seven Gods into seasons and household chores. Seven Aspects of the Seven: The seven aspects of a divinity bear judgment, mercy, bravery, innocence, labor, wisdom and death respectively. They seek an explanation they can rely on when it comes to birth, marriage, sowing, illness, and death; the names of gods may not be the same, but their desire to keep their families safe is similar."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Seven Aspects of the Seven: The seven aspects of a divinity bear judgment, mercy, bravery, innocence, labor, wisdom and death respectively."
+  ]
+}

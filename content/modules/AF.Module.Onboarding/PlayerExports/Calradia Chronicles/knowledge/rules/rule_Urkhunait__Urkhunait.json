@@ -1,0 +1,87 @@
+{
+  "Id": "rule_Urkhunait",
+  "Keywords": [
+    "Urkhunait",
+    "House of Urkhunait"
+  ],
+  "RagShortTexts": [
+    "Urkhunait is the ruling clan of the Khuzait, having united the steppe tribes under Urkhun."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Urkhunait is the ruling clan of the Khuzait, and has been ever since Urkhun united the steppe tribes. Its current leader is So-and-so, ruling over Somewhere, making it the most powerful among all the steppe tribes."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "khuzait"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Urkhunait is the clan of So-and-so and the largest clan on our steppes. Our late Khan Urkhun came from this house, and since his death, the noyans of the Urkhunait have served as our khans for generations. Yet not a single khan since has matched Urkhun's stature. We believe that when a clan can no longer lead us forward, we have every right to take its place."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "char:khuzait_darkhan",
+          "char:khuzait_khans_guard"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "We are loyal to the Urkhunait clan; we have served the Khan for generations, and we will never betray the Khan."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "So-and-so",
+      "Kind": "clan_leader_name",
+      "TargetId": "clan_khuzait_1",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "Somewhere",
+      "Kind": "clan_all_towns",
+      "TargetId": "clan_khuzait_1",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

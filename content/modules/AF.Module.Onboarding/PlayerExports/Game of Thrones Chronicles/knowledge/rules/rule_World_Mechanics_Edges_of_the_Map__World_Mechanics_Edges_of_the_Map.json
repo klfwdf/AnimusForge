@@ -1,0 +1,150 @@
+{
+  "Id": "rule_World_Mechanics_Edges_of_the_Map",
+  "Keywords": [
+    "Sothoryos",
+    "Ulthos",
+    "Distant Sea Charts",
+    "Unknown Continents"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The world drawn by maesters and mariners is far from complete. Sothoryos enters merchant memory through vast tropical coasts, dense jungles, disease, great beasts, and abandoned outposts, with explorers rarely pushing deep enough to fix its southern end; Ulthos lies farther still, lacking reliable consensus even on how large it is or what it adjoins. The edges of maps are often filled with monsters, gold, and lost kingdoms, for where no witnesses return, imagination most easily takes their place. Cautious sailors distinguish between coasts seen with their own eyes, courses copied from others, and tavern boasts, never mistaking blank parchment for land to be claimed at will."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "scholar",
+          "sailor",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Scholars wish to compare multiple charts, while old sailors put more trust in currents, stars, and the scars left on a ship's hull. Both know that a coastline inked on parchment may come from a man who drew near it only once."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Rich merchants and lords easily see spices, mines, and renown in the blank spaces of a map, discovering only when outfitting an expedition that fresh water, fever, and the homeward wind cost dearer than dreams."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "priest",
+          "artisan"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Common folk hear of the ends of the map from singers and quaysides, willing to believe in wonders while treating those places as terrors they will never reach. Rumors of far-off lands often reflect the desires of the teller rather than the distant lands themselves."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Sothoryos Edges of the Map: Sothoryos, Ulthos, and farther seas leave behind only fragmentary wakes and contradictory rumors; the unknown does not license arbitrary assertions. Whether it is valid depends on who can grant the rights, collect the consideration, and actually make the judgment come to fruition in the event of default."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Sothoryos Edges of the Map: Sothoryos, Ulthos, and farther seas leave behind only fragmentary wakes and contradictory rumors; the unknown does not license arbitrary assertions. The distant system is not empty talk only if it can be implemented in campfires, city gates and inns."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Sothoryos Edges of the Map: Sothoryos, Ulthos, and farther seas leave behind only fragmentary wakes and contradictory rumors; the unknown does not license arbitrary assertions. If a rule is practiced over and over again, it will find its way into rituals, crafts, and prayers; if it is sustained only by fear, cracks will show at the onset of a crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Sothoryos Edges of the Map: Sothoryos, Ulthos, and farther seas leave behind only fragmentary wakes and contradictory rumors; the unknown does not license arbitrary assertions. They remember taxes, grain, labor, relief and who can speak for them; these grand names will eventually fall on the family's rice pot."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Edges of the Map: Sothoryos, Ulthos, and farther seas leave behind only fragmentary wakes and contradictory rumors; the unknown does not license arbitrary assertions."
+  ]
+}

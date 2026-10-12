@@ -1,3 +1,4 @@
+using AnimusForge;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -80,7 +81,7 @@ internal static class WorldDiplomacyPeaceAdmissionApplication
     internal static bool TryValidateOfferedPeaceTerms(IWorldDiplomacyPeaceAdmissionPort port,
         WorldDiplomacyRoundOffer offer, WorldDiplomacyDocument source, string proposer, string target, out string reason)
 	{
-        reason = "和平原案来源或参与国已失效。";
+        reason = DiplomacyMiscPromptTexts.Get("PeaceAdmission_SourceOrKingdomInvalid", "Original peace terms source or participating kingdom is invalid.");
 		if (offer == null || source == null || proposer == null || target == null
 			|| proposer == target || !source.IsReadyForPublication
 			|| !string.Equals(source.AuthorKingdomId, proposer, StringComparison.OrdinalIgnoreCase)) return false;
@@ -94,7 +95,7 @@ internal static class WorldDiplomacyPeaceAdmissionApplication
     {
 		reason = "";
 		if (terms == null) { reason = ""; return true; }
-        reason = "贡金金额或期限无法解析，或为负数。";
+        reason = DiplomacyMiscPromptTexts.Get("PeaceAdmission_TributeAmountOrDurationInvalid", "Tribute amount or duration cannot be parsed, or is negative.");
         if (terms.DailyTribute < 0 || terms.DurationDays < 0) return false;
         bool hasTributeRoles = !string.IsNullOrWhiteSpace(terms.TributePayerKingdomId)
             || !string.IsNullOrWhiteSpace(terms.TributeReceiverKingdomId);
@@ -105,20 +106,20 @@ internal static class WorldDiplomacyPeaceAdmissionApplication
 		{
 			string payer = port.KingdomId(terms.TributePayerKingdomId);
 			string receiver = port.KingdomId(terms.TributeReceiverKingdomId);
-            reason = "贡金支付国和接收国必须是本次交涉的两个不同国家。";
+            reason = DiplomacyMiscPromptTexts.Get("PeaceAdmission_TributeKingdomsMustDiffer", "Tribute paying and receiving kingdoms must be two distinct kingdoms in this negotiation.");
 			if (payer == null || receiver == null || payer == receiver
 				|| (payer != proposer && payer != target)
 				|| (receiver != proposer && receiver != target)) return false;
 				// Prosperity-based limits advise AI offers; explicit negotiated amounts
                 // are supported by the same native peace effect used by oral diplomacy.
-            reason = "约定的贡金期限不受支持：" + promisedDuration + "天；原条款未被改写。";
+            reason = string.Format(DiplomacyMiscPromptTexts.Get("PeaceAdmission_UnsupportedTributeDurationFormat", "Agreed tribute duration is unsupported: {0} days; original terms were not rewritten."), promisedDuration);
 			if (port.ResolveDuration(
 					promisedDuration.ToString(CultureInfo.InvariantCulture),
                     hasTribute: promisedTribute > 0) != promisedDuration) return false;
 		}
 		else if (promisedDuration != 0)
 		{
-            reason = "没有贡金的和平原案不能附带贡金支付期限。";
+            reason = DiplomacyMiscPromptTexts.Get("PeaceAdmission_NoTributeCannotHaveDuration", "Peace terms without tribute cannot have a tribute payment duration.");
 			return false;
 		}
 
@@ -129,7 +130,7 @@ internal static class WorldDiplomacyPeaceAdmissionApplication
 		string from = port.KingdomId(terms.CessionFromKingdomId);
 		string to = port.KingdomId(terms.CessionToKingdomId);
 		string settlement = port.SettlementId(terms.CessionSettlementId);
-        reason = "割地条款当前不可执行：请核对转出国、接收国、领地归属和允许割让条件；该条款未被删除。";
+        reason = DiplomacyMiscPromptTexts.Get("PeaceAdmission_CessionClauseUnexecutable", "Cession clause is currently unexecutable: check ceding kingdom, receiving kingdom, settlement ownership, and allowable cession conditions; clause was not removed.");
 		if (!IsCessionCurrentlyAllowed(port, from, to, settlement, proposer, target) || !port.HasRuler(to)) return false;
         reason = ""; return true;
 	}

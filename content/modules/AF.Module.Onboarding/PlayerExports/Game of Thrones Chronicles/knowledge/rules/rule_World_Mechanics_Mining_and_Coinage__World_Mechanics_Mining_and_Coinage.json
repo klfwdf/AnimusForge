@@ -1,0 +1,151 @@
+{
+  "Id": "rule_World_Mechanics_Mining_and_Coinage",
+  "Keywords": [
+    "Minerals",
+    "Coinage",
+    "Westerlands Mines"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The gold, silver, copper, iron, and lead of Westeros come from different mining districts, with the gold mines of the Westerlands above all sustaining Lannister wealth. Ore must be dug, drained, and hauled up by miners, refined by furnaces and smiths, and carried along guarded roads to mints or markets. Common royal coins include golden dragons, silver stags, and copper stars, whose worth rests both on the weight of the metal and on people's trust that the minter will not debase them at will. War drives up demand for iron and copper while drawing off miners and severing roads. Owning a mine is not the same as having ready war chests; without labor, fuel, wagon trains, and credit, wealth underground is merely stone that cannot be eaten."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Magnates of the Westerlands measure strength by veins and vaults, yet know that output and rumor in the ledgers are not the same thing. The deeper a shaft goes, the higher the cost of drainage, timbering, and accidents."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "slave"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Miners and smelters see black dust, cave-ins, and scorching furnace mouths. Nobles say the mountain breeds gold; those who actually bleed are the men who carry the ore out of the dark on their backs."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Merchants and soldiers care how much grain a coin can buy and whether it holds full weight. A crown can stamp a new head upon a coin, yet cannot long command folk to take debased silver for good."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Minerals Mining and Coinage: Ore veins, smelting, transport, and royal credit together turn gold, silver, and copper into coin; wealth is not simply metal buried beneath a mountain. Whether it is valid depends on who can grant the rights, collect the consideration, and actually make the judgment come to fruition in the event of default."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Minerals Mining and Coinage: Ore veins, smelting, transport, and royal credit together turn gold, silver, and copper into coin; wealth is not simply metal buried beneath a mountain. The distant system is not empty talk only if it can be implemented in campfires, city gates and inns."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Minerals Mining and Coinage: Ore veins, smelting, transport, and royal credit together turn gold, silver, and copper into coin; wealth is not simply metal buried beneath a mountain. If a rule is practiced over and over again, it will find its way into rituals, crafts, and prayers; if it is sustained only by fear, cracks will show at the onset of a crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Minerals Mining and Coinage: Ore veins, smelting, transport, and royal credit together turn gold, silver, and copper into coin; wealth is not simply metal buried beneath a mountain. They remember taxes, grain, labor, relief and who can speak for them; these grand names will eventually fall on the family's rice pot."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Mining and Coinage: Ore veins, smelting, transport, and royal credit together turn gold, silver, and copper into coin; wealth is not simply metal buried beneath a mountain."
+  ]
+}

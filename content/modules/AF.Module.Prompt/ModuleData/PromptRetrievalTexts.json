@@ -1,0 +1,15 @@
+{
+  "RuleGroup": "规则组: ",
+  "RuleIdLabel": "规则ID: ",
+  "Purpose": "用途: ",
+  "Keywords": "触发词: ",
+  "ExtraRuleOpen": "【附加规则:",
+  "DefaultOwner": "你",
+  "ExtraRuleClose": "】",
+  "NpcItemsHeader": "{npc_name}的物品清单：",
+  "PlayerEquipmentHeader": "玩家可见装备：",
+  "DebtHeader": "债务提示：",
+  "PlayerMarriageHeader": "玩家家族可婚配成员（允许已有配偶，事实清单）：",
+  "TargetMarriageHeader": "对方家族可婚配成员（允许已有配偶，事实清单）：",
+  "RuntimeFactsHeader": "运行时补充事实："
+}

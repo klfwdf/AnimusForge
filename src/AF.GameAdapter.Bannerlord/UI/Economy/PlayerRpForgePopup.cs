@@ -244,7 +244,7 @@ public sealed class PlayerRpForgePopup
 		_pendingAction = PendingAction.Submit;
 		_dataSource?.SetBusy(
 			true,
-			"正在确认输入并整理安全模板候选……（Esc 可取消）");
+			EconomyUiTexts.PlayerRpForgeConfirmInput);
 		// Keep the original popup alive through the platform double-click window and
 		// through the Enter key release, so neither input can confirm the next inquiry.
 		_pendingActionNotBeforeUtc = DateTime.UtcNow.AddMilliseconds(
@@ -300,7 +300,7 @@ public sealed class PlayerRpForgePopup
 		{
 			_dataSource?.SetBusy(
 				true,
-				"正在整理 Top 50 安全模板……（Esc 可取消）");
+				EconomyUiTexts.PlayerRpForgePreparingCandidates);
 			try
 			{
 				_onSubmit?.Invoke(

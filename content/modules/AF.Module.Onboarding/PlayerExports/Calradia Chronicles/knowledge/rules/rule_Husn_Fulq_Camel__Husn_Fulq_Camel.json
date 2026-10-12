@@ -1,0 +1,28 @@
+{
+  "Id": "rule_Husn_Fulq_Camel",
+  "Keywords": [
+    "Husn Fulq Camel"
+  ],
+  "RagShortTexts": [
+    "The Husn Fulq camel is a prized riding camel domesticated by Aserai merchants."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Husn Fulq camel is a prized breed of riding camel domesticated by Aserai merchants. Standing a man and a half tall, it can trample any infantryman underfoot and gives its rider an unmatched sense of security. Among the Aserai, only nobles and the Sultan ride such prime camels. A noble mounted on a camel looks towering and imposing, effectively intimidating the enemy. Moreover, the Husn camel runs very fast—almost no different from a fine steed—so riding one never feels clumsy or sluggish."
+    }
+  ],
+  "TextMappings": []
+}

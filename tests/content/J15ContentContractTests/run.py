@@ -574,6 +574,51 @@ COURIER_THEME_EXPECTED = {
 # SettlementBalancePopup is loaded by SettlementBalancePopup; the DialogueUI item
 # is referenced by AFDialogueConversation's ItemTemplate (Pen sizing/scrollbars).
 COMMITTED_CONTENT_ADDITIONS = {
+    "ModuleData/Languages/afconv_ambient_strings.xml": {
+        "owner": "AF.Module.Conversation",
+        "source": "content/modules/AF.Module.Conversation/ModuleData/Languages/afconv_ambient_strings.xml",
+        "sha256": "CB342D78D50BA8AB340DAA2B9CAA4D318B6D2263D6D6A012DE1C6016D63F06F0",
+        "revision": "8b07db9d2",
+    },
+    "ModuleData/Languages/CNs/afconv_ambient_strings-zh-CN.xml": {
+        "owner": "AF.Module.Conversation",
+        "source": "content/modules/AF.Module.Conversation/ModuleData/Languages/CNs/afconv_ambient_strings-zh-CN.xml",
+        "sha256": "D4FBA49FF40629A3F0704D3D29DE286DF21797B3596A2F8038758056436A8F5C",
+        "revision": "8b07db9d2",
+    },
+    # Localization resources and the mission photo prefab were already mapped
+    # before this contract entry was added; pin their reviewed source bytes
+    # without changing the runtime projection.
+    "ModuleData/Languages/af_ui_strings.xml": {
+        "owner": "AF.Module.UI",
+        "source": "content/modules/AF.Module.UI/ModuleData/Languages/af_ui_strings.xml",
+        "sha256": "9B27F04B6D936162E92C8046E7B8BABED1D2EDF04AE1CF3308CC433115BB458E",
+        "revision": "b15aa6e31",
+    },
+    "ModuleData/Languages/CNs/af_ui_strings-zh-CN.xml": {
+        "owner": "AF.Module.UI",
+        "source": "content/modules/AF.Module.UI/ModuleData/Languages/CNs/af_ui_strings-zh-CN.xml",
+        "sha256": "6E06D5FED6166D2468C04AFA7933BCCA87CEE25A951136D6DC8A37A43E95EEA0",
+        "revision": "b15aa6e31",
+    },
+    "ModuleData/Languages/afevent_ui_strings.xml": {
+        "owner": "AF.Module.UI",
+        "source": "content/modules/AF.Module.UI/ModuleData/Languages/afevent_ui_strings.xml",
+        "sha256": "ABC909757F1373F600BFF07B532671A5D4ABEE473F2C18A6A6FF40CBCD1D151A",
+        "revision": "36efaa184",
+    },
+    "ModuleData/Languages/CNs/afevent_ui_strings-zh-CN.xml": {
+        "owner": "AF.Module.UI",
+        "source": "content/modules/AF.Module.UI/ModuleData/Languages/CNs/afevent_ui_strings-zh-CN.xml",
+        "sha256": "A5C040CC45D7A2D7139230312AD0FFB3F83578D62BC9E334F87BDFB08173F9E6",
+        "revision": "36efaa184",
+    },
+    "GUI/Prefabs/MissionPhotoOverlay.xml": {
+        "owner": "AnimusForge.Illustrator",
+        "source": "extensions/AnimusForge.Illustrator/GUI/Prefabs/MissionPhotoOverlay.xml",
+        "sha256": "32A58643A3CDE32B3E7CA89F08BEE06D2027C8B70A7709A046B2CD6D125FBF97",
+        "revision": "f4f7bcf46",
+    },
     # Incoming writing-requirements feature; keep all pre-existing resource pins unchanged.
     "CustomPrompts/WorldBulletinWritingRequirements.json": {
         "owner": "AF.Module.Weekly",
@@ -591,6 +636,138 @@ COMMITTED_CONTENT_ADDITIONS = {
         "sha256": "DA324DECAFEB2CA5147C39119FCEBDC9F9A900733ED99B2AAA111E3C606B4350",
         "revision": "0218ca82491c0a0fb5b85236b805e1863c82d02d",
     },
+    "ModuleData/Languages/illustrator_strings.xml": {
+        "owner": "AnimusForge.Illustrator", "source": "content/modules/AnimusForge.Illustrator/ModuleData/Languages/illustrator_strings.xml",
+        "sha256": "7178F913A5CE46D27A967D627DDF54742EF2052EA5ACD892385A9B665B9E6331", "revision": "6c2c03e63",
+    },
+    "ModuleData/Languages/CNs/illustrator_strings-zh-CN.xml": {
+        "owner": "AnimusForge.Illustrator", "source": "content/modules/AnimusForge.Illustrator/ModuleData/Languages/CNs/illustrator_strings-zh-CN.xml",
+        "sha256": "DEFABD2C6A49890F905221D3DE8D582E5A7DF73CE1AA8927709A207DF81858D4", "revision": "6c2c03e63",
+    },
+    "ModuleData/Languages/coup_strings.xml": {
+        "owner": "AnimusForge.Coup", "source": "content/modules/AnimusForge.Coup/ModuleData/Languages/coup_strings.xml",
+        "sha256": "EF5C70AF338D42E4A21416B9B832761B7E23938ABF8938A1A0F7BDC6B4EDE183", "revision": "d41cce6ab",
+    },
+    "ModuleData/Languages/CNs/coup_strings-zh-CN.xml": {
+        "owner": "AnimusForge.Coup", "source": "content/modules/AnimusForge.Coup/ModuleData/Languages/CNs/coup_strings-zh-CN.xml",
+        "sha256": "99BEB1AAA62D8C09B0B8D0BC4C9590AF85B564070F5DB12E5DC012CA1707D16E", "revision": "d41cce6ab",
+    },
+    "ModuleData/Languages/afd_ui_strings.xml": {
+        "owner": "AnimusForge.DialogueUI", "source": "content/modules/AnimusForge.DialogueUI/ModuleData/Languages/afd_ui_strings.xml",
+        "sha256": "BF8EDEB943D037493549DE4EBA7BC2B32A54B748DA08332835BF74A406D60FC2", "revision": "f1f2a726f",
+    },
+    "ModuleData/Languages/CNs/afd_ui_strings-zh-CN.xml": {
+        "owner": "AnimusForge.DialogueUI", "source": "content/modules/AnimusForge.DialogueUI/ModuleData/Languages/CNs/afd_ui_strings-zh-CN.xml",
+        "sha256": "476B9ED0E03A26EEDB1DA783952EAAF954657E63D5B5F454A1D5848EA5E9D203", "revision": "f1f2a726f",
+    },
+    "ModuleData/Languages/afmemory_ui_strings.xml": {
+        "owner": "AF.Module.Memory", "source": "content/modules/AF.Module.Memory/ModuleData/Languages/afmemory_ui_strings.xml",
+        "sha256": "2C8AA7871C21FE6F266C33921719606EEDEC4F61DA32A305A8E0DFA6777008B9", "revision": "476bdb1d6",
+    },
+    "ModuleData/Languages/CNs/afmemory_ui_strings-zh-CN.xml": {
+        "owner": "AF.Module.Memory", "source": "content/modules/AF.Module.Memory/ModuleData/Languages/CNs/afmemory_ui_strings-zh-CN.xml",
+        "sha256": "81807B8A6A49E6197136F66FFDC096093C0895DE83384503329BFF0C918A089F", "revision": "476bdb1d6",
+    },
+    "ModuleData/Languages/afpol_ui_strings.xml": {
+        "owner": "PolicySystem", "source": "content/modules/PolicySystem/ModuleData/Languages/afpol_ui_strings.xml",
+        "sha256": "4DCD130145AF35376071A9B677A16CCF87AE81F9E904948BD13AE52F620D1064", "revision": "0250513bc",
+    },
+    "ModuleData/Languages/CNs/afpol_ui_strings-zh-CN.xml": {
+        "owner": "PolicySystem", "source": "content/modules/PolicySystem/ModuleData/Languages/CNs/afpol_ui_strings-zh-CN.xml",
+        "sha256": "8A808B9D9C872766915FAC89A09EB810F9EF28B58366B06221BFF45F6752BBBB", "revision": "0250513bc",
+    },
+    "ModuleData/Languages/afeconomy_strings.xml": {
+        "owner": "AF.Module.Economy", "source": "content/modules/AF.Module.Economy/ModuleData/Languages/afeconomy_strings.xml",
+        "sha256": "1A6E7B170C627D3F3DD4574EFAAAFDE9F5A0C200509FB95F32FA6D56827E006B", "revision": "economy-reward-notifications",
+    },
+    "ModuleData/Languages/CNs/afeconomy_strings-zh-CN.xml": {
+        "owner": "AF.Module.Economy", "source": "content/modules/AF.Module.Economy/ModuleData/Languages/CNs/afeconomy_strings-zh-CN.xml",
+        "sha256": "581E968D1F2794A98F42B32CB170E9851D037562243C9C682FAD3D4720AE88B0", "revision": "economy-reward-notifications",
+    },
+    "ModuleData/Languages/afknowledge_strings.xml": {
+        "owner": "AF.Module.Knowledge", "source": "content/modules/AF.Module.Knowledge/ModuleData/Languages/afknowledge_strings.xml",
+        "sha256": "1CB72D709D0019542EDD050CDA6A752CD9B4F91B9004B64754A2023F93C7F82F", "revision": "knowledge-dynamic-localization",
+    },
+    "ModuleData/Languages/CNs/afknowledge_strings-zh-CN.xml": {
+        "owner": "AF.Module.Knowledge", "source": "content/modules/AF.Module.Knowledge/ModuleData/Languages/CNs/afknowledge_strings-zh-CN.xml",
+        "sha256": "7A9E25D0A6751B88D519C4848295F6F9B896B9B701E54C54555B379DE45EDF5B", "revision": "knowledge-dynamic-localization",
+    },
+    "ModuleData/Languages/sets_ui_strings.xml": {
+        "owner": "AnimusForge.SiegeAftermathIntervention", "source": "content/modules/AnimusForge.SiegeAftermathIntervention/ModuleData/Languages/sets_ui_strings.xml",
+        "sha256": "65BA5339D7E0B64D533B9F2F736B0F188C00E6F5602C6D7F13712B295A90589F", "revision": "2fcc2f240",
+    },
+    "ModuleData/Languages/CNs/sets_ui_strings-zh-CN.xml": {
+        "owner": "AnimusForge.SiegeAftermathIntervention", "source": "content/modules/AnimusForge.SiegeAftermathIntervention/ModuleData/Languages/CNs/sets_ui_strings-zh-CN.xml",
+        "sha256": "501F8FB76F5765C454CC2D5D4C04A66FE40A431C64D83F0D5175B5179775DCA2", "revision": "2fcc2f240",
+    },
+    "ModuleData/Languages/gccz_town_manual_strings.xml": {
+        "owner": "AnimusForge.SiegeAftermathIntervention", "source": "content/modules/AnimusForge.SiegeAftermathIntervention/ModuleData/Languages/gccz_town_manual_strings.xml",
+        "sha256": "05B702BED059385E37CF744E485CD4B8EC04467A140C3721F64946F0E8415090", "revision": "39713bafb",
+    },
+    "ModuleData/Languages/afworldmap_strings.xml": {
+        "owner": "AF.Module.WorldMap", "source": "content/modules/AF.Module.WorldMap/ModuleData/Languages/afworldmap_strings.xml",
+        "sha256": "AA75A4D27159A7F03870DD4A157A6E7EB27505A6698E9148795DF667A58CA218", "revision": "e185e3b7a",
+    },
+    "ModuleData/Languages/CNs/afworldmap_strings-zh-CN.xml": {
+        "owner": "AF.Module.WorldMap", "source": "content/modules/AF.Module.WorldMap/ModuleData/Languages/CNs/afworldmap_strings-zh-CN.xml",
+        "sha256": "860A93985B9129F554088869C8C06F72A7722EA72BB29E85527ED45CD00D44E3", "revision": "e185e3b7a",
+    },
+    "ModuleData/Languages/afdip_ui_strings.xml": {
+        "owner": "AF.Module.Diplomacy", "source": "content/modules/AF.Module.Diplomacy/ModuleData/Languages/afdip_ui_strings.xml",
+        "sha256": "88FC847091C2E2D00F912345EA95B544005427812732A36C494568E9D3889D7C", "revision": "c60006cc0",
+    },
+    "ModuleData/Languages/CNs/afdip_ui_strings-zh-CN.xml": {
+        "owner": "AF.Module.Diplomacy", "source": "content/modules/AF.Module.Diplomacy/ModuleData/Languages/CNs/afdip_ui_strings-zh-CN.xml",
+        "sha256": "E0859356D14058ABF0758F81884A9B059902214B8335BC0222C81C770420DBC7", "revision": "c60006cc0",
+    },
+    "ModuleData/Languages/afconv_ui_strings.xml": {
+        "owner": "AF.Module.Conversation", "source": "content/modules/AF.Module.Conversation/ModuleData/Languages/afconv_ui_strings.xml",
+        "sha256": "3D6062B5B8DFA236C6ED721A4E41761EFD82F417D4BD91C10FA3C38C7E8B97BB", "revision": "393c52fef",
+    },
+    "ModuleData/Languages/CNs/afconv_ui_strings-zh-CN.xml": {
+        "owner": "AF.Module.Conversation", "source": "content/modules/AF.Module.Conversation/ModuleData/Languages/CNs/afconv_ui_strings-zh-CN.xml",
+        "sha256": "7A1A75599F46555E69E51F1439BE79E0F6B56FEFA96CC908DF42F0C48316A96B", "revision": "393c52fef",
+    },
+    "ModuleData/Languages/afsocial_ui_strings.xml": {
+        "owner": "AF.Module.Social", "source": "content/modules/AF.Module.Social/ModuleData/Languages/afsocial_ui_strings.xml",
+        "sha256": "1021A6D18D1C8866CB218F68950F6813B05035A58208004F160E79E611A3DD76", "revision": "7ad5c1c86",
+    },
+    "ModuleData/Languages/CNs/afsocial_ui_strings-zh-CN.xml": {
+        "owner": "AF.Module.Social", "source": "content/modules/AF.Module.Social/ModuleData/Languages/CNs/afsocial_ui_strings-zh-CN.xml",
+        "sha256": "68BCDD929700B65CDAA6099B95FD61793DC61B8E29D5B37056D90538F226185D", "revision": "7ad5c1c86",
+    },
+    "ModuleData/Languages/afexercise_ui_strings.xml": {
+        "owner": "AF.Module.Exercise", "source": "content/modules/AF.Module.Exercise/ModuleData/Languages/afexercise_ui_strings.xml",
+        "sha256": "75CE4515704C2FE6F4CE22F36F49B140FA74CC1A56A3C212308D9A878DE551F6", "revision": "exercise-ui-localization",
+    },
+    "ModuleData/Languages/CNs/afexercise_ui_strings-zh-CN.xml": {
+        "owner": "AF.Module.Exercise", "source": "content/modules/AF.Module.Exercise/ModuleData/Languages/CNs/afexercise_ui_strings-zh-CN.xml",
+        "sha256": "071DAAF095E2E95E1065258F14734E8EAEA4ED17B806C518482D32076CCEF856", "revision": "exercise-ui-localization",
+    },
+    "ModuleData/Languages/afwev_ui_strings.xml": {
+        "owner": "AF.Module.WorldEvents", "source": "content/modules/AF.Module.WorldEvents/ModuleData/Languages/afwev_ui_strings.xml",
+        "sha256": "A77BA1A977F5096109B9D8B608FA28BE6D423E59024C537B94EBBD0C038C6FAA", "revision": "56716b473",
+    },
+    "ModuleData/Languages/CNs/afwev_ui_strings-zh-CN.xml": {
+        "owner": "AF.Module.WorldEvents", "source": "content/modules/AF.Module.WorldEvents/ModuleData/Languages/CNs/afwev_ui_strings-zh-CN.xml",
+        "sha256": "B15D88A071C25DEE59CE5429A9CAD0C07B56D7AD048FD0ABF95B4D165380EAD9", "revision": "56716b473",
+    },
+    "ModuleData/Languages/afonboarding_ui_strings.xml": {
+        "owner": "AF.Module.Onboarding", "source": "content/modules/AF.Module.Onboarding/ModuleData/Languages/afonboarding_ui_strings.xml",
+        "sha256": "BA1ABD58167ED8536395DA0EBE5448E40019F43D10419C40EA1C33C152DAE5D7", "revision": "316d917af",
+    },
+    "ModuleData/Languages/CNs/afonboarding_ui_strings-zh-CN.xml": {
+        "owner": "AF.Module.Onboarding", "source": "content/modules/AF.Module.Onboarding/ModuleData/Languages/CNs/afonboarding_ui_strings-zh-CN.xml",
+        "sha256": "9C2920A86E518162481B81EC86A53D2826F42695955B2C864A1705FBA2CF4516", "revision": "316d917af",
+    },
+    "ModuleData/Languages/afkingdom_ui_strings.xml": {
+        "owner": "AF.Module.Kingdom", "source": "content/modules/AF.Module.Kingdom/ModuleData/Languages/afkingdom_ui_strings.xml",
+        "sha256": "00000000000000000000000000000000", "revision": "360d094cb",
+    },
+    "ModuleData/Languages/CNs/afkingdom_ui_strings-zh-CN.xml": {
+        "owner": "AF.Module.Kingdom", "source": "content/modules/AF.Module.Kingdom/ModuleData/Languages/CNs/afkingdom_ui_strings-zh-CN.xml",
+        "sha256": "00000000000000000000000000000000", "revision": "360d094cb",
+    },
 }
 
 EXPECTED = {**J15A_EXPECTED, **J15B_EXPECTED, **J15C_EXPECTED, **F4A_EXPECTED, **INTEGRATION_EXPECTED, **COMMITTED_CONTENT_ADDITIONS,
@@ -601,13 +778,14 @@ EXPECTED = {**J15A_EXPECTED, **J15B_EXPECTED, **J15C_EXPECTED, **F4A_EXPECTED, *
 # baseline at the integration parent and the reviewed SHA-256 of the checked-out bytes now.
 J15B_REVIEWED_EDIT_PARENT = "99ca85ae"
 J15B_REVIEWED_EDITS = {
+    "ModuleData/TownAmbientDialogue.json": "98053B7D88089486FA4E300EF8CD0451F36785DFA503AB4943FFC4CC5D7AD52F",
     "ModuleData/ActionPostprocessPrompts.json": "509EE9248F938042CCF7338AE4ED2401631224DA8DCB95D7ED26C7553D8F0C38",
     "ModuleData/RuleBehaviorPrompts.json": "3396D30D95CCB808A8C798023467FC1EB2AEF9DFAA984EAAEA2C661EBC679CCF",
     "GUI/Prefabs/AnimusForgeConversationHistoryLog.xml": "59DF887251BC46F09ED5CB4DB8116F2D3AACBD404624A76A45B4CCD364F6026C",
     "ModuleData/action_sets.xml": "DD52422AC7F6B5D0BF7049964CD64E1A79E109E62414B0235CF7F7432966DB2B",
     "ModuleData/action_types.xml": "75DBD6F57B01D544EAABC5AA0165403A3AC8080985E340B00FB18A22FBCE91AD",
-    "ModuleData/Languages/language_data.xml": "C552D3CC00DB957E729AECA07034C0D297733D71D4F7501D4B4AB0737D1AED6F",
-    "ModuleData/Languages/CNs/language_data.xml": "B8DBB6C8F0A6CF6EF66B70ADF79F6CC8F6B57E1887151111DFB6DFD4A0CE5C65",
+    "ModuleData/Languages/language_data.xml": "C33B861355BF8D06B974D7FF1D4103E81693FCBAC011B71E49CAABD4CA3A39D5",
+    "ModuleData/Languages/CNs/language_data.xml": "DF7DD38129105CCCF4F9FBD0C8EE501D2422B5F6D1EB78C8CF4E3B7B25B515D0",
     # cb045840 blob is 96BE1920...; the uncommitted CivilWar UI relocation (faction tab moved to the
     # kingdom screen via KingdomFactionTab.cs) removes the terminal Faction tab button and panel (-64 lines).
     "GUI/Prefabs/AnimusForgeTerminalPopup.xml": "2BB7A1574140F2F3CE6F561320DDE433AEF679D5FC1A7E3A9BE042CE6F60BF5B",

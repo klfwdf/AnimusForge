@@ -1,0 +1,153 @@
+{
+  "Id": "rule_World_Mechanics_Tourneys",
+  "Keywords": [
+    "Tourneys",
+    "Jousting",
+    "Melee",
+    "Competition"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "A tourney commonly includes jousting, a melee, archery, and feasting, though the manner of holding it varies from place to place. Knights enter the lists by virtue of armor, warhorses, squires, and training; victors win purses, renown, and by custom the right to ransom the defeated man's horse and armor, while a hedge knight may stake all he owns on a single tilting. Tourneys are also places to display house banners openly, arrange marriages, court patrons, and sound out political stances, where seating and the crowning of a queen of love and beauty may carry messages far beyond sport. Outside the lists gather peddlers, gaming tables, camp followers, minstrels, and great numbers of smallfolk levied to supply the festivities."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "reach",
+          "stormlands",
+          "vale"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Knights see a tourney as a shortcut to renown, ransom, and a liege lord's eye. Veterans know that a splintered lance kills all the same, and that mastery of the lists is not mastery of war in the mud."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "artisan",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Peddlers and craftsmen welcome the crowds a tourney brings: armor plates need mending, horses need provender, and wine and cloth sell apace. They also know that if the host defaults once on his bills, the debts left behind by the celebration will hang longer than the pennons."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "priest",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Smallfolk may get spectacle and loose copper from a tourney, or suffer grain requisitions, trampled fields, and drunken knights. Singers remember the champion; farmers remember which wheat field was flattened by pavilions."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Tourneys Grand noble gatherings blending martial skill, pageantry, marriage pacts, wagering, and politics, where glory and debt are often born upon the same lists. Whether it is valid depends on who can grant the rights, collect the consideration, and actually make the judgment come to fruition in the event of default."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Tourneys Grand noble gatherings blending martial skill, pageantry, marriage pacts, wagering, and politics, where glory and debt are often born upon the same lists. The distant system is not empty talk only if it can be implemented in campfires, city gates and inns."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Tourneys Grand noble gatherings blending martial skill, pageantry, marriage pacts, wagering, and politics, where glory and debt are often born upon the same lists. If a rule is practiced over and over again, it will find its way into rituals, crafts, and prayers; if it is sustained only by fear, cracks will show at the onset of a crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Tourneys Grand noble gatherings blending martial skill, pageantry, marriage pacts, wagering, and politics, where glory and debt are often born upon the same lists. They remember taxes, grain, labor, relief and who can speak for them; these grand names will eventually fall on the family's rice pot."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Tourneys: Grand noble gatherings blending martial skill, pageantry, marriage pacts, wagering, and politics, where glory and debt are often born upon the same lists."
+  ]
+}

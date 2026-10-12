@@ -1,0 +1,69 @@
+{
+  "Id": "rule_Hodital",
+  "Keywords": [
+    "Hodital",
+    "Padishah Khoditar"
+  ],
+  "RagShortTexts": [
+    "Padishah Khoditar built the White Fortress Akkarat."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "steward": 80
+        }
+      },
+      "Content": "Padishah Koshtar, the terrible monarch of the Padishah regime, \"Padishah\" is his imperial title, which means the head of kings. During his various expeditions to the Devsagar Plateau, he ordered the construction of Akkarat, the \"White Fortress\", as a military stronghold and symbol of rule for his conquests. There is a sacred fire burning on the top of the fortress, which has not been extinguished for decades, to show his suzerainty over the tribes of the Devsagar Plateau. Hoshtar's rule over Devseg was based on the intimidation of force, and his brutal methods of warfare left a long-lasting imprint on the memories of the tribes on the plateau. However, his hegemony did not last long, and like the empire, Padishah's power gradually turned on the defensive and eventually retreated eastward. The White Fortress also changed hands, and the flag flying at the top was changed from the emblem of the Holy Fire to the horse-tailed banner of Khuzait Khan."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": [
+          "town_k2"
+        ],
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Our attitude towards the name Hoshtar cannot be said to be hatred or awe, but more of a kind of indifference that has been separated by too many generations. It has been so long that his merits and demerits have become nothing more than a casual remark he made while basking in the sun under the wall, no different from discussing a heavy snowfall a hundred years ago. Of course we know that he built the White Fortress. The city wall is indeed strong. Several generations have passed and the city gate has been replaced by countless guards, but the wall is still the same. People who live behind a solid wall can never criticize those who build the wall too harshly. As for who the wall suppressed and who it defended, that is what the people outside the wall should keep track of. He also lit the sacred fire. According to the legend passed down by the elders, every time he conquered a tribe, he would throw a sacrifice found from the leader's tent into the fire, burning the faces of each tribe. The person who added fuel to the fire has long since changed. Who still cares about the person who lit the fire first? It's not false that he kills without blinking an eye. But most of the ancestors of Akkarat residents were not the ones who were knifed - it was the disobedient leader who was knifed. Their ancestors were wall builders, blacksmiths, and drivers delivering grain, and they would still work and eat under different masters. Which prince on the Devsagar Plateau doesn't kill people? The fact that Hoshtar killed more people only meant that he was able to fight far and had nothing to do with the common people. Ultimately, Hoshtar built the city, set it on fire, killed people, and left—or was driven away. Nowadays, there is a big horsetail banner floating at the top of the city. The person in charge is A, and the taxes are paid to B. He was just the first master, no different from a series of masters that followed. If there was any difference, the wall he left behind was indeed well repaired, that's all."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "A",
+      "Kind": "settlement_owner_clan_name",
+      "TargetId": "town_K2",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "B",
+      "Kind": "settlement_owner_leader_name",
+      "TargetId": "town_K2",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

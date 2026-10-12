@@ -1,0 +1,111 @@
+{
+  "Id": "rule_House_Foundations_Windblown",
+  "Keywords": [
+    "Windblown"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Windblown are an Essosi mercenary company of horse and foot whose members come from many cities and peoples. Their captain, the Tattered Prince, was once a nobleman of Pentos chosen in his youth to be Prince, yet rather than remain a splendid prisoner destined for ritual sacrifice according to custom, he fled into exile; he sewed strips of differently colored cloth into a cloak, and his men took that as their badge. The core of the Windblown is not a shared homeland, but the experience of exile, military discipline, contracts, and the authority accumulated over long years by their captain. A cloak of rags looks worn, yet reminds everyone that each strip of cloth comes from a life already cast aside or impossible to return to."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Employers consider the Windblown seasoned and especially suited to borderlands, sieges, and disputed territories that change hands again and again. Yet the Tattered Prince has his own long-term aims, and any contract may be weighed by him inside a larger ledger."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "When sellswords look at the ragtag cloaks, they see many men who have lost their homelands stitched together into a single company. Accents and faiths vary within the company; what truly unites them is the word of command, silver pay, and whether the man beside you will run when the charge begins."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "pentoshi"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "People of Pentos are especially sensitive to the story of the Tattered Prince. Some see him as a traitor who fled a sacred duty, while others believe that letting a young nobleman enjoy every luxury before slitting his throat for the city was murder dressed in the robes of tradition all along."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Windblown Commanded by the Tattered Prince and drawn from many lands, the Windblown fight in the Disputed Lands under ragtag multicolored cloaks, exile experience, and strict contracts. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Windblown Commanded by the Tattered Prince and drawn from many lands, the Windblown fight in the Disputed Lands under ragtag multicolored cloaks, exile experience, and strict contracts. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Windblown: Commanded by the Tattered Prince and drawn from many lands, the Windblown fight in the Disputed Lands under ragtag multicolored cloaks, exile experience, and strict contracts."
+  ]
+}

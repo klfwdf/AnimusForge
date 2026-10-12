@@ -1,0 +1,213 @@
+{
+  "Id": "rule_Spider_Cavalry",
+  "Keywords": [
+    "Spider Trooper",
+    "forest goblin",
+    "giant poisonous spider",
+    "Jungle shuttle",
+    "Ignore terrain",
+    "spider web tactics",
+    "spider ride",
+    "venom",
+    "Goblin Spider",
+    "jungle ambush",
+    "giant spider",
+    "eight legs"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Spider Riders are the ace unit of the forest goblin tribe living deep in the dense forests of the old world. The riders and the giant poisonous spiders on their crotches work together to shuttle between the dense forest canopies, using spider silk to slide between the canopies and drag enemies into the trees from above. In the dense forest, no cavalry can catch up with the spider cavalry."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The spider boys are the most evil greenskins in my opinion! I'm a big orc and I like to fight in open places - but the Spider Riders love to stay in the dark woods and ride those big furry spiders with eight legs and a belly bigger than your head! How did goblins and spiders get together? I heard that forest goblins grew up in the same nest as spider babies - these little goblins would feed spiders with webs, raise the spiders as their own mothers, and then the spiders would take care of the goblins as their own babies - this was slimier than the wolf cavalry, and it gave me goosebumps just listening to it. The most frightening thing is when the spider cavalry fights in the forest: you think there are only two trees and a fern in front of you - suddenly a team of spider cavalry swoops down from the ceiling. The spider legs put their shoulders on your shoulders, wrap the spider silk around your neck and lift you up - after you go up, you can only be found in the canopy of the tree, wrapped in a ball of spider silk like a bird's nest. We orcs cannot fight in the forest without the spider cavalry - they go in front and pull down the human archers hiding in the trees one by one, so that we can rush in safely and chop up the others."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Spider Cavalry is the most effective terrain-adaptive light cavalry in the known world. Its ability to move regardless of terrain in dense forests and swamps makes the concept of conventional cavalry and infantry defense radius completely invalid. The green-skinned spider cavalry followed a vertical tactical template called \"top-down decisive battle\": in the early stage of the battle, they used canopy ambushes to eliminate enemy reconnaissance and high-value units. In the mid-term, they used short-range spider silk slithering to create all-round harassment to distract the command attention. Finally, they formed a pincer attack with the main force of the orcs on the ground. At this time, the enemy was already under triple pressure from the dense forest behind them and from above. Defending against Spider Troopers requires fire and wide vision - you have neither in the Jungle. The only non-special measure effective against spiders is forest burning: the planned burning of dense forest edges along the march's route to deprive the spider cavalry of canopy access."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "The tick-spider symbiosis of the forest goblin spider riders may be one of the most complex cross-species social organizations in Old World terrestrial life. Forest goblins - biologically classified as 'Greenskin, Goblinidae, Wood-dwelling subspecies' - have established two unusual biological bonds with giant poisonous spiders: nest co-breeding (goblin newborns and spider eggs are hatched in the same fermentation fungus nest to ensure that the goblin skin is covered with a symbiotic bacterial film that is not attacked by spiders for life), and bacterial sugar exchange (goblins exchange the sweet mold syrup in their saliva for the venom secreted by the spider's jaw gland for weapon quenching). Its giant spider mount belongs to the class Arachnida·Lycosidae·Araneidae in taxonomy - the leg span of adults can reach twelve to sixteen feet and the weight can reach three hundred and fifty pounds. The venom contains a histolytic acid called 'spider enzyme A7', which can semi-liquefy all soft tissues in the prey within four to eight hours after being injected into the prey. The spider then eats by sucking - this is the fate of the unlucky thing that was sucked into the spider's body. The silk web sliding between the tree crowns has been analyzed by Imperial engineers - the tensile strength of spider silk is about four times that of steel wire of the same diameter, which explains why a 350-pound giant spider can release multiple strands of spider silk between its hands and feet and then move at high speed in the forest canopy."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "My territory is adjacent to a large ancient dense forest. Every autumn, in the villages around the forest, we will find domestic animals hanging from the trees by spider silk—sometimes dead animals, sometimes slowly digesting sheep that are still alive after being injected with venom. The hunter said that the Spider Trooper was \"hoarding food.\" I ordered forty sentry towers to be erected along the edge of the forest in the territory, and fires were raised every night to force the spiders to retreat - this took nearly seven years and half of the territory's tax revenue."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "I once sent two scout teams into the dense forest to map the spider cavalry's activities. The first team didn't come back. The second team came back with one body - a scout. The lower part of his neck was wrapped in spider silk and dragged back in the shape of a hammock. His spurs were still on, but his legs had been corroded to the bone by the venom. The message he left before his death was engraved on the saddle: \"The trees are moving.\" Later I ordered that the woodland be permanently abandoned."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "On the outskirts of Athel Loren, a group of scouts and I were ambushed by Spider Riders. It was dusk - we had just climbed up from a ravine, and suddenly there was rustling all around, not on the ground, but above our heads. I looked up and saw about seven or eight goblins on the backs of the spiders staring directly at us. The eight black eyes of the spiders reflected red light under the light. Then all of a sudden they all spun silk at us—not shooting silk, but pulling down a cloud of cobwebs from above like a fisherman casting a net. Three of the four of us were covered, and I cut the net for about ten beats - ten beats was as long as a day and a night in that environment."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Do you know how much forest goblin silk is worth on the black market? A bundle of high-quality spider silk—meaning freshly drawn from the mounts of a living Spider Trooper—can fetch forty gold crowns per ounce at the Weaver's Guild in Altdorf, as it is the prime base material for anti-slash robes. The question is how to extract silk from a living giant spider? The answer is don't try - everyone who has tried is now in a cocoon somewhere in the belly of that spider."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Forest goblins and giant poisonous spiders co-create symbionts in their nests, and the symbiotic bacterial film on the skin relieves the spider's attack instinct",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Use the webbing to slip through the tree canopy and drag enemies into the trees from above."
+  ]
+}

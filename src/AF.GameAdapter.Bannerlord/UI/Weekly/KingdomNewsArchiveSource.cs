@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using AnimusForge.Refactor.Contracts;
+using TaleWorlds.Localization;
 
 namespace AnimusForge;
 
@@ -11,9 +12,11 @@ namespace AnimusForge;
 // nothing is scanned per frame and no persisted record is modified.
 internal static class KingdomNewsArchiveSource
 {
+	private static string Localize(string id, string fallback)
+		=> new TextObject("{=" + id + "}" + fallback).ToString();
 	internal const string DiplomacyKind = "diplomacy";
 	internal const string PolicyKind = "policy";
-	private const string AllCountriesName = "全部王国";
+	private static string AllCountriesName => Localize("AF_UI_Weekly_Browser_AllKingdoms", "All kingdoms");
 	private const int MaxDiplomacyEntries = 240;
 	private const int MaxPolicyEntries = 240;
 	private const int BodyCharacterLimit = 8000;
@@ -86,13 +89,13 @@ internal static class KingdomNewsArchiveSource
 
 	private static MyBehavior.WeeklyReportBrowserEntryData BuildDiplomacyEntry(WorldDiplomacyTimelineDocument document)
 	{
-		string label = document.IsResponse ? "外交回应" : document.RequiresResponse ? "外交照会" : document.ChangedDiplomaticState ? "外交结果" : "外交宣言";
-		string author = FirstNonEmpty(document.AuthorKingdomName, document.AuthorKingdomId, "未知国家");
-		string target = string.Join("、", DiplomacyCountries(document)
+		string label = document.IsResponse ? Localize("AF_UI_Timeline_DiplomaticResponse", "Diplomatic response") : document.RequiresResponse ? Localize("AF_UI_Timeline_DiplomaticNote", "Diplomatic note") : document.ChangedDiplomaticState ? Localize("AF_UI_Timeline_DiplomaticResult", "Diplomatic result") : Localize("AF_UI_Timeline_DiplomaticMessage", "Diplomatic message");
+		string author = FirstNonEmpty(document.AuthorKingdomName, document.AuthorKingdomId, Localize("AF_UI_Timeline_UnknownCountry", "Unknown kingdom"));
+		string target = string.Join(Localize("AF_UI_Scene_NameSeparator", ", "), DiplomacyCountries(document)
 			.Where(p => !string.Equals(p.Key, document.AuthorKingdomId, StringComparison.OrdinalIgnoreCase))
 			.Select(p => FirstNonEmpty(p.Value, p.Key)).Where(x => x.Length > 0).Distinct(StringComparer.OrdinalIgnoreCase).Take(4));
 		string body = Limit(document.Body);
-		if (!string.IsNullOrWhiteSpace(document.ImpactText)) body += "\n\n外交影响：" + document.ImpactText.Trim();
+		if (!string.IsNullOrWhiteSpace(document.ImpactText)) body += "\n\n" + Localize("AF_UI_Weekly_Browser_DiplomaticImpact", "Diplomatic impact") + ": " + document.ImpactText.Trim();
 		string id = "diplomacy:" + FirstNonEmpty(document.DocumentId, document.CreatedUtcTicks.ToString(CultureInfo.InvariantCulture));
 		int day = Math.Max(0, document.Day);
 		return new MyBehavior.WeeklyReportBrowserEntryData
@@ -103,7 +106,7 @@ internal static class KingdomNewsArchiveSource
 			KindLabelText = label + " · " + author + (target.Length == 0 ? "" : " → " + target),
 			WeekIndex = day / 7,
 			Title = FirstNonEmpty(document.Title, label),
-			BodyText = body.Length == 0 ? "（该外交消息暂无正文。）" : body,
+			BodyText = body.Length == 0 ? Localize("AF_UI_Weekly_Browser_DiplomaticEmpty", "(This diplomatic message has no body text.)") : body,
 			CreatedDate = FirstNonEmpty(document.GameDate, FormatDay(day)),
 			CreatedDay = day,
 			TagText = "",
@@ -116,7 +119,7 @@ internal static class KingdomNewsArchiveSource
 		string scope = PolicyScopeLabel(policy.ScopeKind);
 		string id = "policy:" + FirstNonEmpty(policy.HistoryKey, policy.RecordId, policy.TitleText);
 		string body = Limit(policy.BodyText);
-		if (!string.IsNullOrWhiteSpace(policy.ImpactText)) body += "\n\n政策影响：" + policy.ImpactText.Trim();
+		if (!string.IsNullOrWhiteSpace(policy.ImpactText)) body += "\n\n" + Localize("AF_UI_Timeline_PolicyImpact", "Policy effects") + ": " + policy.ImpactText.Trim();
 		int day = Math.Max(0, policy.Day);
 		return new MyBehavior.WeeklyReportBrowserEntryData
 		{
@@ -127,7 +130,7 @@ internal static class KingdomNewsArchiveSource
 				+ (string.IsNullOrWhiteSpace(policy.KingdomName) ? "" : " · " + policy.KingdomName.Trim()),
 			WeekIndex = day / 7,
 			Title = FirstNonEmpty(policy.TitleText, scope),
-			BodyText = body.Length == 0 ? "（该政策暂无正文。）" : body,
+			BodyText = body.Length == 0 ? Localize("AF_UI_Weekly_Browser_PolicyEmpty", "(This policy has no body text.)") : body,
 			CreatedDate = FirstNonEmpty(policy.DateText, FormatDay(day)),
 			CreatedDay = day,
 			TagText = "",
@@ -145,10 +148,10 @@ internal static class KingdomNewsArchiveSource
 
 	private static string PolicyScopeLabel(string scopeKind)
 	{
-		if (string.Equals(scopeKind, "kingdom", StringComparison.OrdinalIgnoreCase)) return "王国政策";
-		if (string.Equals(scopeKind, "local", StringComparison.OrdinalIgnoreCase)) return "地方政策";
-		if (string.Equals(scopeKind, "vassal", StringComparison.OrdinalIgnoreCase)) return "附庸政策";
-		return "政策";
+		if (string.Equals(scopeKind, "kingdom", StringComparison.OrdinalIgnoreCase)) return Localize("AF_UI_Timeline_KingdomPolicy", "Kingdom policy");
+		if (string.Equals(scopeKind, "local", StringComparison.OrdinalIgnoreCase)) return Localize("AF_UI_Timeline_LocalPolicy", "Local policy");
+		if (string.Equals(scopeKind, "vassal", StringComparison.OrdinalIgnoreCase)) return Localize("AF_UI_Timeline_VassalPolicy", "Vassal policy");
+		return Localize("AF_UI_Timeline_Policy", "Policy");
 	}
 
 	private static string Limit(string text)
@@ -157,7 +160,13 @@ internal static class KingdomNewsArchiveSource
 		return normalized.Length <= BodyCharacterLimit ? normalized : normalized.Substring(0, BodyCharacterLimit) + "…";
 	}
 
-	private static string FormatDay(int day) => day > 0 ? "第" + day.ToString(CultureInfo.InvariantCulture) + "天" : "未知日期";
+	private static string FormatDay(int day)
+	{
+		if (day <= 0) return Localize("AF_UI_Timeline_UnknownDate", "Unknown date");
+		TextObject text = new TextObject("{=AF_UI_Timeline_Day}Day {DAY}");
+		text.SetTextVariable("DAY", day.ToString(CultureInfo.InvariantCulture));
+		return text.ToString();
+	}
 
 	private static string FirstNonEmpty(params string[] values)
 	{

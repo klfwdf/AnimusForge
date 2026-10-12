@@ -1,0 +1,150 @@
+{
+  "Id": "rule_Commodities_and_Trade_Timber_and_Furs_of_the_North",
+  "Keywords": [
+    "Timber and Furs of the North"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Entry The forests, furs, timber, and amber of the North turn long winters into tradable wealth. White Harbor merchants can load them on ships heading south, but mountain hunters only regard a good skin as winter money for their family; when the roads are frozen, the people closest to the market may not be able to"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Timber and Furs of the North"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "artisan",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Timber and Furs of the North"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "sailor",
+          "wanderer",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Timber and Furs of the North"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Timber and Furs of the North The forests, furs, timber, and amber of the North turn long winters into tradable wealth. White Harbor merchants can load them on ships heading south, but mountain hunters only regard a good skin as winter money for their family; when the roads are frozen, the people closest to the market may not be able to Any break in the place of origin, checkpoints, shipping schedules, debts and protection fees will immediately make the nobles in the distance feel the changes in price and power."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Timber and Furs of the North The forests, furs, timber, and amber of the North turn long winters into tradable wealth. White Harbor merchants can load them on ships heading south, but mountain hunters only regard a good skin as winter money for their family; when the roads are frozen, the people closest to the market may not be able to They may not necessarily understand ledgers, but they know the true weight of a bag of salt and a nail on the road."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Timber and Furs of the North The forests, furs, timber, and amber of the North turn long winters into tradable wealth. White Harbor merchants can load them on ships heading south, but mountain hunters only regard a good skin as winter money for their family; when the roads are frozen, the people closest to the market may not be able to Some people turn raw materials into tools, cloth and medicine, others set festivals and taboos for exchange; wealth is piled up by many hands, and rarely belongs to just one name."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Timber and Furs of the North The forests, furs, timber, and amber of the North turn long winters into tradable wealth. White Harbor merchants can load them on ships heading south, but mountain hunters only regard a good skin as winter money for their family; when the roads are frozen, the people closest to the market may not be able to If prices rise but wages do not, prosperity in distant places will only become thinner bread; if roads are safe, even small villages can get a little spring from trade."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Timber and Furs of the North: The forests, furs, timber, and amber of the North turn long winters into tradable wealth. White Harbor merchants can load them on ships heading south, but mountain hunters only regard a good skin as winter money for their family; when the roads are frozen, the people closest to the market may not be able to"
+  ]
+}

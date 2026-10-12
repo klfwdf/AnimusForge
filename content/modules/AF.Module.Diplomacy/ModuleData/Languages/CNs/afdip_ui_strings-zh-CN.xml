@@ -1,0 +1,1187 @@
+<?xml version='1.0' encoding='utf-8'?>
+<base type="string">
+  <tags>
+    <tag language="简体中文" />
+  </tags>
+  <strings>
+    <string id="AF_DIP_UI_Common_Acknowledge" text="知道了" />
+    <string id="AF_DIP_UI_Common_Close" text="关闭" />
+    <string id="AF_DIP_UI_Common_UnknownDate" text="未知日期" />
+    <string id="AF_DIP_UI_Compose_Title" text="撰写外交宣言" />
+    <string id="AF_DIP_UI_Compose_ReplyTitle" text="回应外交宣言" />
+    <string id="AF_DIP_UI_Compose_Hint" text="可先写下标题或要点，再请书记官代笔。" />
+    <string id="AF_DIP_UI_Compose_HintEmpty" text="请先写下标题或拟文要点。" />
+    <string id="AF_DIP_UI_Compose_Cancel" text="取消" />
+    <string id="AF_DIP_UI_Compose_Publish" text="发布外交文书" />
+    <string id="AF_DIP_UI_Compose_AutoDraft" text="书记官代笔" />
+    <string id="AF_DIP_UI_Compose_AutoDrafting" text="书记官拟稿中…" />
+    <string id="AF_DIP_UI_Compose_AutoDraftingHint" text="书记官正在拟稿，请稍候。" />
+    <string id="AF_DIP_UI_Compose_DraftCancelled" text="拟稿已取消，原文已保留。" />
+    <string id="AF_DIP_UI_Compose_DraftFailed" text="书记官拟稿失败，原文已保留。请重试。" />
+    <string id="AF_DIP_UI_Compose_DraftUnavailable" text="书记官暂时无法拟稿，原文已保留。请重试。" />
+    <string id="AF_DIP_UI_Compose_DraftEdited" text="拟稿期间内容已修改，保留您当前的文字。" />
+    <string id="AF_DIP_UI_Compose_DraftReady" text="稿件已回填，可修改后发布；再次代笔将重新拟稿。" />
+    <string id="AF_DIP_UI_Presentation_NotInitialized" text="AI 外交功能尚未初始化。" />
+    <string id="AF_DIP_UI_Presentation_RulerOnlyTitle" text="无法发布外交宣言" />
+    <string id="AF_DIP_UI_Presentation_RulerOnlyBody" text="只有王国统治者才能发布外交宣言。" />
+    <string id="AF_DIP_UI_Vote_AgendaDescription" text="点击查看这项王国议程。" />
+    <string id="AF_DIP_UI_Vote_AgendaTitle" text="新的王国议程" />
+    <string id="AF_DIP_UI_Vote_AgendaTitleWithName" text="王国议程：{TITLE}" />
+    <string id="AF_DIP_UI_Vote_Invalidated" text="这项王国议程已经失效。" />
+    <string id="AF_DIP_UI_Vote_CannotView" text="当前无法查看王国议程。" />
+    <string id="AF_DIP_UI_Vote_CannotOpen" text="当前无法打开这项王国议程。" />
+    <string id="AF_DIP_UI_Vote_OpenFailed" text="打开王国议程失败，请稍后重试。" />
+    <string id="AF_DIP_UI_Vote_AgendaFuture" text="你可以参与这项议程，约 {DAYS} 天后进入投票。点击查看议程详情。" />
+    <string id="AF_DIP_UI_Vote_AgendaVoting" text="这项议程已经进入投票阶段。点击前往投票界面。" />
+    <string id="AF_DIP_UI_Vote_AgendaDetails" text="你可以参与这项王国议程。点击查看详情。" />
+    <string id="AF_DIP_UI_Vote_ProposalRejectedNotAllowed" text="议程提交失败：当前王国规则不允许该议程。" />
+    <string id="AF_DIP_UI_Vote_ProposalRejectedNotRetained" text="议程提交失败：王国未保留该议程。" />
+    <string id="AF_DIP_UI_Vote_ProposalSubmitted" text="{CLAN}家族提出新议程。" />
+    <string id="AF_DIP_UI_Vote_DealFulfilledChoice" text="投票交易完成：{NPC}已按承诺投票选择“{OPTION}”。" />
+    <string id="AF_DIP_UI_Vote_DealFulfilled" text="投票交易完成：{NPC}已按承诺投票。" />
+    <string id="AF_DIP_UI_Vote_DealPromised" text="{CLAN}家族承诺在“{AGENDA}”中投票选择“{OPTION}”。" />
+    <string id="AF_DIP_UI_Vote_MeetingInvalidated" text="该议程已经失效，无法召开投票会议。" />
+    <string id="AF_DIP_UI_Vote_MeetingOpened" text="已召开投票会议：{TITLE}" />
+    <string id="AF_DIP_UI_Vote_MeetingOpenFailed" text="召开投票会议失败，请查看 AnimusForge 日志。" />
+    <string id="AF_DIP_UI_Vassalage_ManagementTitle" text="臣属国管理" />
+    <string id="AF_DIP_UI_Vassalage_TributeHistoryTitle" text="贡赋记录" />
+    <string id="AF_DIP_UI_Vassalage_TributeHistoryEmpty" text="尚无贡赋入库记录。" />
+    <string id="AF_DIP_UI_Vassalage_TributeHistoryClose" text="返回臣属国管理" />
+    <string id="AF_DIP_UI_Vassalage_ContractNotice" text="使节呈上盖有王印的臣属条约。" />
+    <string id="AF_DIP_UI_Vassalage_ContractNoticeTitle" text="臣属条约签署" />
+    <string id="AF_DIP_UI_Vassalage_TributaryNotice" text="诸国使节送来朝贡条约的消息。" />
+    <string id="AF_DIP_UI_Vassalage_TributaryNoticeTitle" text="诸国朝贡条约" />
+    <string id="AF_DIP_UI_Vassalage_InfoNotice" text="边境使者送来一份臣属事务急报。" />
+    <string id="AF_DIP_UI_Vassalage_InfoNoticeTitle" text="臣属事务急报" />
+    <string id="AF_DIP_UI_Vassalage_ProtectionNotice" text="臣属国派来急使，请求宗主国裁断战争义务。" />
+    <string id="AF_DIP_UI_Vassalage_ProtectionNoticeTitle" text="臣属国求援" />
+    <string id="AF_DIP_UI_Vassalage_TributePaymentNotice" text="朝贡车队抵达宫廷，贡赋已经入库。" />
+    <string id="AF_DIP_UI_Vassalage_TributePaymentNoticeTitle" text="贡赋入库" />
+    <string id="AF_DIP_UI_Vassalage_VassalWarNoticeTitle" text="附庸国遭到宣战" />
+    <string id="AF_DIP_UI_Vassalage_TributaryProtectionTitle" text="朝贡国请求庇护" />
+    <string id="AF_DIP_UI_Vassalage_GarrisonProtectionTitle" text="卫戍国请求保护" />
+    <string id="AF_DIP_UI_Vassalage_Protect" text="履行庇护" />
+    <string id="AF_DIP_UI_Vassalage_RefuseTributaryProtection" text="拒绝庇护" />
+    <string id="AF_DIP_UI_Vassalage_SendProtection" text="出兵保护" />
+    <string id="AF_DIP_UI_Vassalage_RefuseGarrisonProtection" text="拒绝出兵" />
+    <string id="AF_DIP_UI_Archive_NoticeDescription" text="点击查看外交宣言。" />
+    <string id="AF_DIP_UI_Archive_NoticeTitle" text="新的外交宣言" />
+    <string id="AF_DIP_UI_Archive_Reanalyze" text="重新解析" />
+    <string id="AF_DIP_UI_Archive_Reply" text="回应" />
+    <string id="AF_DIP_UI_Archive_CustomPolicy" text="自定义政策" />
+    <string id="AF_DIP_UI_Archive_PolicyRecord" text="政策记录" />
+    <string id="AF_DIP_UI_Archive_PolicyImpact" text="政策影响效果" />
+    <string id="AF_DIP_UI_Archive_UnknownCountry" text="未知国家" />
+    <string id="AF_DIP_UI_Archive_NoDetails" text="（无详情）" />
+    <string id="AF_DIP_UI_Archive_AnnouncementDetails" text="公告详情" />
+    <string id="AF_DIP_UI_Archive_NewMarker" text="新" />
+    <string id="AF_DIP_UI_Archive_ReviewPolicy" text="重新评议政策" />
+    <string id="AF_DIP_UI_Archive_Title" text="王国公告" />
+    <string id="AF_DIP_UI_Archive_Empty" text="目前还没有王国公告。" />
+    <string id="AF_DIP_UI_Archive_Day" text="第{DAY}天" />
+    <string id="AF_DIP_UI_KingdomProfile_EditCurrent" text="编辑当前国家…" />
+    <string id="AF_DIP_UI_KingdomProfile_ExportAll" text="全量导出（国家战略与性格）" />
+    <string id="AF_DIP_UI_KingdomProfile_ImportAll" text="全量导入（国家战略与性格）" />
+    <string id="AF_DIP_UI_KingdomProfile_ResetAll" text="恢复全部国家的默认卡" />
+    <string id="AF_DIP_UI_Common_Back" text="返回" />
+    <string id="AF_DIP_UI_KingdomProfile_MenuDescription" text="独立国家角色卡数据；当前不会注入 AI 外交请求。&#10;" />
+    <string id="AF_DIP_UI_KingdomProfile_ProfileCount" text="国家卡：" />
+    <string id="AF_DIP_UI_KingdomProfile_ProfileCountSuffix" text=" 条；玩家覆盖：" />
+    <string id="AF_DIP_UI_KingdomProfile_CountSuffix" text=" 条。&#10;" />
+    <string id="AF_DIP_UI_KingdomProfile_MenuDescriptionTail" text="新建国家的 LLM 建国卡会作为固定默认值保存，玩家编辑优先。" />
+    <string id="AF_DIP_UI_KingdomProfile_Title" text="国家战略与性格" />
+    <string id="AF_DIP_UI_Common_Enter" text="进入" />
+    <string id="AF_DIP_UI_KingdomProfile_ExportAllFolderTitle" text="全量导出（国家战略与性格）- 选择文件夹" />
+    <string id="AF_DIP_UI_KingdomProfile_ImportAllFolderTitle" text="全量导入（国家战略与性格）- 选择文件夹" />
+    <string id="AF_DIP_UI_KingdomProfile_NoEditableKingdoms" text="当前没有可编辑的国家。" />
+    <string id="AF_DIP_UI_KingdomProfile_SelectTitle" text="编辑国家战略与性格" />
+    <string id="AF_DIP_UI_KingdomProfile_SelectDescription" text="请选择国家。列表仅显示国家名称；已覆灭国家仍会保留档案。" />
+    <string id="AF_DIP_UI_Common_Edit" text="编辑" />
+    <string id="AF_DIP_UI_KingdomProfile_NotFound" text="找不到对应国家。" />
+    <string id="AF_DIP_UI_KingdomProfile_InitFailed" text="国家卡初始化失败。" />
+    <string id="AF_DIP_UI_KingdomProfile_EditPersonality" text="编辑国家性格" />
+    <string id="AF_DIP_UI_KingdomProfile_EditStrategy" text="编辑长期战略目标" />
+    <string id="AF_DIP_UI_KingdomProfile_ResetOne" text="恢复该国默认卡" />
+    <string id="AF_DIP_UI_KingdomProfile_ExportOne" text="导出该国" />
+    <string id="AF_DIP_UI_KingdomProfile_ImportOne" text="导入该国" />
+    <string id="AF_DIP_UI_KingdomProfile_FoundingRunning" text="LLM 建国卡正在生成…" />
+    <string id="AF_DIP_UI_KingdomProfile_Regenerate" text="重新生成该国的 LLM 建国默认卡" />
+    <string id="AF_DIP_UI_KingdomProfile_BackToList" text="返回国家列表" />
+    <string id="AF_DIP_UI_KingdomProfile_DetailTitlePrefix" text="国家卡 - " />
+    <string id="AF_DIP_UI_KingdomProfile_ExportOneFolderTitle" text="导出单个国家卡 - 选择文件夹" />
+    <string id="AF_DIP_UI_KingdomProfile_ImportOneFolderTitle" text="导入单个国家卡 - 选择文件夹" />
+    <string id="AF_DIP_UI_KingdomProfile_PersonalityTitlePrefix" text="编辑国家性格 - " />
+    <string id="AF_DIP_UI_KingdomProfile_PersonalityDescription" text="描述国家的决策风格、价值观、对风险和羞辱的反应以及不可退让的底线。保存后成为玩家覆盖。" />
+    <string id="AF_DIP_UI_KingdomProfile_PersonalityPrompt" text="请输入国家性格；允许留空。" />
+    <string id="AF_DIP_UI_KingdomProfile_PersonalityUpdated" text="国家性格已更新。" />
+    <string id="AF_DIP_UI_KingdomProfile_StrategyTitlePrefix" text="编辑长期战略目标 - " />
+    <string id="AF_DIP_UI_KingdomProfile_StrategyDescription" text="描述国家长期、固定且可持续追求的方向。保存后成为玩家覆盖。" />
+    <string id="AF_DIP_UI_KingdomProfile_StrategyPrompt" text="请输入长期战略目标；允许留空。" />
+    <string id="AF_DIP_UI_KingdomProfile_StrategyUpdated" text="长期战略目标已更新。" />
+    <string id="AF_DIP_UI_KingdomProfile_ResetTitle" text="恢复国家默认卡" />
+    <string id="AF_DIP_UI_KingdomProfile_ResetDescriptionPrefix" text="将清除“" />
+    <string id="AF_DIP_UI_KingdomProfile_ResetDescriptionSuffix" text="”的玩家覆盖。国家会回到当前默认基线（可能来自内置预设、首次资料包或已固化的 LLM 建国卡）。是否继续？" />
+    <string id="AF_DIP_UI_Common_RestoreDefault" text="恢复默认" />
+    <string id="AF_DIP_UI_Common_Cancel" text="取消" />
+    <string id="AF_DIP_UI_KingdomProfile_ResetDonePrefix" text="已恢复“" />
+    <string id="AF_DIP_UI_KingdomProfile_ResetDoneSuffix" text="”的默认国家卡。" />
+    <string id="AF_DIP_UI_KingdomProfile_ResetAllTitle" text="恢复全部国家默认卡" />
+    <string id="AF_DIP_UI_KingdomProfile_ResetAllDescription" text="这会清除全部国家的玩家覆盖，但不会删除内置/首次资料包默认或新建国家已经由 LLM 固化的建国默认。建议先导出备份。是否继续？" />
+    <string id="AF_DIP_UI_KingdomProfile_ResetAllButton" text="恢复全部默认" />
+    <string id="AF_DIP_UI_KingdomProfile_ResetAllDone" text="已恢复全部国家的默认卡。" />
+    <string id="AF_DIP_UI_KingdomProfile_RegenerateEliminated" text="已覆灭国家保留现有国家卡，但不会请求 LLM 重新生成。" />
+    <string id="AF_DIP_UI_KingdomProfile_RegenerateUnavailable" text="该国家不是可重新生成的动态建国卡。" />
+    <string id="AF_DIP_UI_KingdomProfile_RegenerateRunning" text="该国家的 LLM 建国卡正在生成。" />
+    <string id="AF_DIP_UI_KingdomProfile_RegenerateQueued" text="已安排重新生成；完成后会固化为该国新的默认卡。玩家覆盖不会被覆盖。" />
+    <string id="AF_DIP_UI_KingdomProfile_ExportFailed" text="导出失败：" />
+    <string id="AF_DIP_UI_KingdomProfile_ExportAllExists" text="该文件夹中已有国家卡全量导出。" />
+    <string id="AF_DIP_UI_KingdomProfile_ExportDone" text="导出完成：" />
+    <string id="AF_DIP_UI_KingdomProfile_ExportOneExists" text="该文件夹中已有这个国家的单国导出。" />
+    <string id="AF_DIP_UI_KingdomProfile_OverwriteExport" text="覆盖导出" />
+    <string id="AF_DIP_UI_KingdomProfile_UseNewFolder" text="改用新文件夹（自动）" />
+    <string id="AF_DIP_UI_KingdomProfile_ExistingExportTitle" text="检测到已有导出" />
+    <string id="AF_DIP_UI_Common_Select" text="选择" />
+    <string id="AF_DIP_UI_KingdomProfile_ImportFailed" text="导入失败：" />
+    <string id="AF_DIP_UI_KingdomProfile_NoSafeMatchesPrefix" text="没有可安全匹配的国家卡；无效或无法匹配 " />
+    <string id="AF_DIP_UI_KingdomProfile_ItemsSuffix" text=" 条。" />
+    <string id="AF_DIP_UI_KingdomProfile_ImportDone" text="导入完成：" />
+    <string id="AF_DIP_UI_KingdomProfile_DuplicateAllTitle" text="检测到重复 - 国家战略与性格" />
+    <string id="AF_DIP_UI_KingdomProfile_DuplicateAllDescriptionPrefix" text="可匹配国家卡：" />
+    <string id="AF_DIP_UI_KingdomProfile_DuplicateAllDescriptionMiddle" text="；已有玩家覆盖、资料包默认或 LLM 建国默认：" />
+    <string id="AF_DIP_UI_KingdomProfile_DuplicateAllDescriptionSkipped" text="；无效或无法匹配：" />
+    <string id="AF_DIP_UI_KingdomProfile_DuplicateAllDescriptionSuffix" text="。选择“跳过”会整张国家卡跳过。" />
+    <string id="AF_DIP_UI_KingdomProfile_DuplicateOneTitlePrefix" text="检测到重复 - " />
+    <string id="AF_DIP_UI_KingdomProfile_DuplicateOneDescription" text="该国家已有玩家覆盖、资料包默认或 LLM 建国默认。选择“跳过”会整张国家卡跳过。" />
+    <string id="AF_DIP_UI_KingdomProfile_OverwriteImport" text="覆盖导入" />
+    <string id="AF_DIP_UI_KingdomProfile_ImportNonDuplicates" text="只导入非重复信息" />
+    <string id="AF_DIP_UI_KingdomProfile_PlayerExportsUnavailable" text="PlayerExports 路径不可用：" />
+    <string id="AF_DIP_UI_KingdomProfile_ManualExportFolder" text="手动输入文件夹名…" />
+    <string id="AF_DIP_UI_KingdomProfile_ManualImportPath" text="手动输入文件夹名/路径…" />
+    <string id="AF_DIP_UI_KingdomProfile_UseLatestExport" text="使用最新玩家导出（自动）" />
+    <string id="AF_DIP_UI_KingdomProfile_SelectExportFolder" text="选择目标文件夹。" />
+    <string id="AF_DIP_UI_KingdomProfile_SelectImportFolder" text="选择来源文件夹；也可以手动输入只读的绝对目录或 JSON 文件。" />
+    <string id="AF_DIP_UI_KingdomProfile_EnterExportFolder" text="输入导出文件夹名" />
+    <string id="AF_DIP_UI_KingdomProfile_EnterImportPath" text="输入导入文件夹名/路径" />
+    <string id="AF_DIP_UI_KingdomProfile_ExportFolderHint" text="留空=自动时间戳；导出始终限制在 PlayerExports 内。" />
+    <string id="AF_DIP_UI_KingdomProfile_ImportPathHint" text="留空=最新玩家导出；名称优先查找模组目录，也可输入只读绝对目录或 .json 文件。" />
+    <string id="AF_DIP_UI_Common_Confirm" text="确定" />
+    <string id="AF_DIP_UI_KingdomProfile_InvalidExportFolder" text="导出文件夹名无效。" />
+    <string id="AF_DIP_UI_KingdomProfile_ExportOutsideRoot" text="导出目标必须位于 PlayerExports 内。" />
+    <string id="AF_DIP_UI_KingdomProfile_InvalidImportPath" text="绝对路径不存在，或不是 JSON 文件。" />
+    <string id="AF_DIP_UI_KingdomProfile_NoImportFolders" text="玩家导出目录下没有可导入文件夹。" />
+    <string id="AF_DIP_UI_KingdomProfile_ImportFolderNotFound" text="找不到模组目录或玩家导出中的文件夹。" />
+    <string id="AF_DIP_UI_KingdomProfile_IdLabel" text="ID：" />
+    <string id="AF_DIP_UI_KingdomProfile_CultureLabel" text="文化：" />
+    <string id="AF_DIP_UI_KingdomProfile_Unknown" text="未知" />
+    <string id="AF_DIP_UI_KingdomProfile_StatusLabel" text="状态：" />
+    <string id="AF_DIP_UI_KingdomProfile_Eliminated" text="已覆灭（档案保留）" />
+    <string id="AF_DIP_UI_KingdomProfile_Active" text="存续" />
+    <string id="AF_DIP_UI_KingdomProfile_CurrentSourceLabel" text="当前来源：" />
+    <string id="AF_DIP_UI_KingdomProfile_PlayerOverride" text="玩家覆盖" />
+    <string id="AF_DIP_UI_KingdomProfile_DefaultSourceLabel" text="默认来源：" />
+    <string id="AF_DIP_UI_KingdomProfile_FoundingLabel" text="LLM 建国卡：" />
+    <string id="AF_DIP_UI_KingdomProfile_LastErrorLabel" text="最近错误：" />
+    <string id="AF_DIP_UI_KingdomProfile_AuthoredDefault" text="内置国家默认" />
+    <string id="AF_DIP_UI_KingdomProfile_GenericDefault" text="文化/通用默认" />
+    <string id="AF_DIP_UI_KingdomProfile_FoundingFallback" text="新国家临时默认（等待 LLM）" />
+    <string id="AF_DIP_UI_KingdomProfile_LlmFoundingDefault" text="LLM 建国默认（已固化）" />
+    <string id="AF_DIP_UI_KingdomProfile_BundleDefault" text="首次资料包默认" />
+    <string id="AF_DIP_UI_KingdomProfile_GenerationRunning" text="生成中" />
+    <string id="AF_DIP_UI_KingdomProfile_GenerationFailedPrefix" text="生成失败；将按冷却重试或可手动重试（" />
+    <string id="AF_DIP_UI_KingdomProfile_GenerationAttemptsSuffix" text="）" />
+    <string id="AF_DIP_UI_KingdomProfile_GenerationComplete" text="已完成并固化" />
+    <string id="AF_DIP_UI_KingdomProfile_GenerationPausedEliminated" text="国家已覆灭，自动生成已停止" />
+    <string id="AF_DIP_UI_KingdomProfile_GenerationWaitingPrefix" text="等待生成（" />
+    <string id="AF_DIP_UI_KingdomProfile_Empty" text="（空）" />
+    <string id="AF_DIP_UI_CivilWar_ActionSuppress" text="压制" />
+    <string id="AF_DIP_UI_CivilWar_ActionNegotiate" text="谈判" />
+    <string id="AF_DIP_UI_CivilWar_ActionConcede" text="妥协" />
+    <string id="AF_DIP_UI_CivilWar_ActionDissolve" text="强制解散" />
+    <string id="AF_DIP_UI_CivilWar_ActionLeaveCrown" text="退出王室阵营" />
+    <string id="AF_DIP_UI_CivilWar_ActionJoinFaction" text="加入所选派系" />
+    <string id="AF_DIP_UI_CivilWar_ActionFound" text="建立派系" />
+    <string id="AF_DIP_UI_CivilWar_ActionJoinCrown" text="加入王室" />
+    <string id="AF_DIP_UI_CivilWar_ActionProposeRebellion" text="提议起兵" />
+    <string id="AF_DIP_UI_CivilWar_ActionLeaveFaction" text="退出派系" />
+    <string id="AF_DIP_UI_CivilWar_ActionAcceptDissolve" text="服从解散" />
+    <string id="AF_DIP_UI_CivilWar_ActionAcceptCompensation" text="接受补偿" />
+    <string id="AF_DIP_UI_CivilWar_ActionRefuseDissolve" text="抗命起兵" />
+    <string id="AF_DIP_UI_CivilWar_ActionRefuseCompensation" text="拒绝补偿" />
+    <string id="AF_DIP_UI_CivilWar_ActionImmediateRebellion" text="立即起兵" />
+    <string id="AF_DIP_UI_CivilWar_ActionDissolveOwn" text="解散派系" />
+    <string id="AF_DIP_UI_CivilWar_ActionChangeDemand" text="更改诉求" />
+    <string id="AF_DIP_UI_CivilWar_TitleKingSelected" text="国王治理 · {FACTION}" />
+    <string id="AF_DIP_UI_CivilWar_TitleKingChoose" text="国王治理 · 请选择一个派系" />
+    <string id="AF_DIP_UI_CivilWar_TitleKingEmpty" text="国王治理 · 尚无可治理派系" />
+    <string id="AF_DIP_UI_CivilWar_TitleCrown" text="王室附庸 · 你的家族不满 {GRIEVANCE} · 与国王 {RELATION}" />
+    <string id="AF_DIP_UI_CivilWar_TitleMember" text="{TAG}成员 · 你的家族不满 {GRIEVANCE} · 与领袖 {RELATION}" />
+    <string id="AF_DIP_UI_CivilWar_TitleLeader" text="{TAG}领袖" />
+    <string id="AF_DIP_UI_CivilWar_TitleMiddle" text="未表态封臣 · 你的家族不满 {GRIEVANCE} · 与国王 {RELATION}" />
+    <string id="AF_DIP_UI_CivilWar_PendingResponse" text="待答复：{RESPONSE}" />
+    <string id="AF_DIP_UI_CivilWar_DissolutionOrder" text="国王的解散令" />
+    <string id="AF_DIP_UI_CivilWar_NegotiationCompensation" text="国王的谈判补偿" />
+    <string id="AF_DIP_UI_CivilWar_Grievance" text="你的家族不满 {GRIEVANCE}" />
+    <string id="AF_DIP_UI_CivilWar_SelectFactionFirst" text="请先在目录中选择派系" />
+    <string id="AF_DIP_UI_CivilWar_NoOpposition" text="尚无反对派" />
+    <string id="AF_DIP_UI_CivilWar_NoDemand" text="没有可选诉求" />
+    <string id="AF_DIP_UI_CivilWar_SelectCompensationTier" text="选择补偿档位" />
+    <string id="AF_DIP_UI_CivilWar_ConcedeDemand" text="兑现{DEMAND}" />
+    <string id="AF_DIP_UI_CivilWar_Demand" text="诉求" />
+    <string id="AF_DIP_UI_CivilWar_StandWithKing" text="站在国王一边" />
+    <string id="AF_DIP_UI_CivilWar_ReevaluateMembers" text="其他成员重评是否参与" />
+    <string id="AF_DIP_UI_CivilWar_DissolveRelationLoss" text="与其他成员关系 −10" />
+    <string id="AF_DIP_UI_CivilWar_JoinFactionSub" text="加入{FACTION}" />
+    <string id="AF_DIP_UI_CivilWar_SelectedFaction" text="所选派系" />
+    <string id="AF_DIP_UI_CivilWar_LeadershipTransfer" text="领导权移交继任者" />
+    <string id="AF_DIP_UI_CivilWar_LeaveNeutral" text="{DAYS} 天中立 · 关系受损" />
+    <string id="AF_DIP_UI_CivilWar_FoundSlots" text="选择诉求 · 名额 {USED} / {MAX}" />
+    <string id="AF_DIP_UI_CivilWar_FoundingProcess" text="进入建国流程" />
+    <string id="AF_DIP_UI_CivilWar_LeaderDecision" text="交由领袖判定" />
+    <string id="AF_DIP_UI_CivilWar_FactionDissolved" text="派系解散" />
+    <string id="AF_DIP_UI_CivilWar_AcceptOffer" text="收下 {OFFER} · 解散" />
+    <string id="AF_DIP_UI_CivilWar_RebellionProcess" text="进入起兵流程" />
+    <string id="AF_DIP_UI_CivilWar_FactionRetained" text="派系保留 · 不收费" />
+    <string id="AF_DIP_UI_CivilWar_Compensation" text="补偿" />
+    <string id="AF_DIP_UI_CivilWar_Gold" text="{AMOUNT} 金币" />
+    <string id="AF_DIP_UI_CivilWar_Influence" text="{AMOUNT} 影响力" />
+    <string id="AF_DIP_UI_CivilWar_NoFixedCost" text="无固定费用" />
+    <string id="AF_DIP_UI_CivilWar_Cooldown" text="冷却至第 {DAY} 天" />
+    <string id="AF_DIP_UI_CivilWar_Unavailable" text="暂不可用 · 点击查看" />
+    <string id="AF_DIP_UI_CivilWar_SelectFactionNotice" text="请先在目录中选择要治理的派系。" />
+    <string id="AF_DIP_UI_CivilWar_NoOppositionNotice" text="王国内尚无反对派。" />
+    <string id="AF_DIP_UI_CivilWar_AcceptDissolveBody" text="服从解散令：派系解散，不满仍然保留。" />
+    <string id="AF_DIP_UI_CivilWar_RefuseDissolveBody" text="抗命：拒绝解散并进入起兵流程。" />
+    <string id="AF_DIP_UI_CivilWar_AcceptCompensationBody" text="接受补偿：收下 {OFFER}，撤回诉求并解散派系。" />
+    <string id="AF_DIP_UI_CivilWar_RefuseCompensationBody" text="拒绝补偿：派系保留，不收补偿。" />
+    <string id="AF_DIP_UI_CivilWar_ActionFailed" text="派系操作失败，详见日志。" />
+    <string id="AF_DIP_UI_CivilWar_ChangeDemandTitle" text="更改派系诉求" />
+    <string id="AF_DIP_UI_CivilWar_FoundTitle" text="建立派系" />
+    <string id="AF_DIP_UI_CivilWar_ChangeDemandDescription" text="更改后保留派系身份，立即重评其他成员是否继续参与；不会自动起兵。" />
+    <string id="AF_DIP_UI_CivilWar_FoundDescription" text="无需达到不满或关系门槛，但仍受战后冷却；创建时与统治者关系−10，改建时承担旧阵营关系损失。" />
+    <string id="AF_DIP_UI_CivilWar_LedByClan" text="由本家族领导" />
+    <string id="AF_DIP_UI_CivilWar_NegotiateTitle" text="谈判补偿" />
+    <string id="AF_DIP_UI_CivilWar_NegotiateDescription" text="只有对方接受后才转移补偿；拒绝仍消耗行动冷却。" />
+    <string id="AF_DIP_UI_CivilWar_NoLegalOptions" text="当前没有合法选项。" />
+    <string id="AF_DIP_UI_CivilWar_ConfirmTitle" text="确认派系操作" />
+    <string id="AF_DIP_UI_Common_Continue" text="继续" />
+    <string id="AF_DIP_CivilWar_LoyaltyText" text="内战反对派领地" />
+    <string id="AF_DIP_CivilWar_RoyalNegotiationTitle" text="王室交涉" />
+    <string id="AF_DIP_CivilWar_RoyalNegotiationAccept" text="接受／服从" />
+    <string id="AF_DIP_CivilWar_RoyalNegotiationRefuse" text="拒绝／抗命" />
+    <string id="AF_DIP_CivilWar_FollowRebelsTitle" text="追随叛军" />
+    <string id="AF_DIP_CivilWar_FollowRebelsAccept" text="追随叛军" />
+    <string id="AF_DIP_CivilWar_FollowRebelsRefuse" text="留在王国" />
+    <string id="AF_DIP_CivilWar_UltimatumTitle" text="反对派最后通牒" />
+    <string id="AF_DIP_CivilWar_UltimatumAccept" text="接受诉求" />
+    <string id="AF_DIP_CivilWar_UltimatumRefuse" text="拒绝" />
+    <string id="AF_DIP_UI_Vassalage_DeclareWarBlocked" text="王国议会不能在臣属条约有效时向{TARGET}宣战。若要解除条约，请先通过正式谈判处理。" />
+    <string id="AF_DIP_UI_Vassalage_ProtectedPeaceBlocked" text="此战因保护{SUBJECT}而起；敌国不能绕过受保护方直接向宗主国单独求和。" />
+    <string id="AF_DIP_UI_Vassalage_ProtectedPeaceAllowed" text="此战因保护{SUBJECT}而起；宗主国和平将同步受保护朝贡国停战。" />
+    <string id="AF_DIP_UI_Vassalage_ProtectionApplied" text="{SUZERAIN}履行了对{SUBJECT}的保护义务，已对{ENEMY}{ACTION}。" />
+    <string id="AF_DIP_UI_Vassalage_SubjectWarSync" text="{PREFIX}{DECLARED} 个附庸国/卫戍国已参战，{QUEUED} 个将在局势安全时参战，{ALREADY} 个原本已在战。" />
+    <string id="AF_DIP_UI_Vassalage_IndependenceChanged" text="{SUBJECT}的独立度由 {BEFORE} 变为 {AFTER}/100；当前脱离阈值为 {THRESHOLD}（{RULER}关系 {RELATION}）。" />
+    <string id="AF_DIP_UI_Vassalage_IndependenceChangedNoName" text="{SUBJECT}的独立度由 {BEFORE} 变为 {AFTER}；当前脱离阈值为 {THRESHOLD}（统治者关系 {RELATION}）。" />
+    <string id="AF_DIP_UI_Vassalage_IndependenceReduced" text="因宗主国履行保护义务，{SUBJECT}的独立度由 {BEFORE} 降至 {AFTER}/100；当前脱离阈值为 {THRESHOLD}（{RULER}关系 {RELATION}）。" />
+    <string id="AF_DIP_UI_Vassalage_VassalWarNotice" text="{ATTACKER}已经向{SUBJECT}宣战。附庸国处于宗主国的直接保护之下；宫廷已按条约自动介入战争。" />
+    <string id="AF_DIP_UI_Vassalage_TributaryProtectionRequest" text="{SUBJECT}遭到{ATTACKER}宣战。朝贡国以贡赋换取宗主庇护，但不承担出兵义务。&#10;&#10;是否履行庇护，向进攻者宣战？若拒绝，朝贡条约将立即终止。" />
+    <string id="AF_DIP_UI_Vassalage_GarrisonProtectionRequest" text="{SUBJECT}遭到{ATTACKER}宣战。卫戍国是宗主国的军事屏障，承担随军作战义务，也期待宗主出兵保护。&#10;&#10;是否保护卫戍国？若拒绝，忠诚度将大幅下降；过低时将脱离臣属关系。" />
+    <string id="AF_DIP_UI_Vassalage_SubjectFallback" text="臣属国" />
+    <string id="AF_DIP_UI_Vassalage_EstablishedTributaryDescription" text="{SUBJECT}已立誓为朝贡国，按期进献贡赋，接受你的庇护。" />
+    <string id="AF_DIP_UI_Vassalage_EstablishedGarrisonDescription" text="{SUBJECT}已立誓为卫戍国，接受宗主号令，承担边境守卫与随军作战义务。" />
+    <string id="AF_DIP_UI_Vassalage_EstablishedVassalDescription" text="{SUBJECT}已立誓为附庸国，接受宗主统辖，承担贡赋与出兵义务。" />
+    <string id="AF_DIP_UI_Vassalage_NpcTributaryDescription" text="{VASSAL}已承认{SUZERAIN}的宗主权，成为朝贡国。" />
+    <string id="AF_DIP_UI_Vassalage_EstablishedDetail" text="使节呈上盖有王印的臣服誓书：&#10;&#10;【臣属条约】&#10;宗主国：{SUZERAIN}&#10;臣属国：{VASSAL}&#10;条约类型：{TYPE}&#10;立约日：{DATE}&#10;&#10;【基本条款】&#10;一、{TYPE}承认{SUZERAIN}的宗主权，并以本条约身份继续存在。&#10;二、{TYPE}保留王号、宫廷、家族与内部治理；本条约不视为吞并。&#10;{CLAUSES}" />
+    <string id="AF_DIP_UI_Vassalage_TributaryClauses" text="三、朝贡国应定期输送贡赋，以换取{SUZERAIN}的庇护。&#10;四、朝贡国保留军事自主权，不随宗主国出征；朝贡国主动挑起的战争，宗主国无义务介入。&#10;五、朝贡国受外敌进攻时，可请求宗主国履行庇护；宗主国拒绝庇护，则朝贡条约终止。&#10;六、立约时朝贡国已经承受的外敌战事，由宗主国按庇护义务接手处置。" />
+    <string id="AF_DIP_UI_Vassalage_GarrisonClauses" text="三、卫戍国进入{SUZERAIN}的军事体系，承担随宗主作战与边境屏障义务，但不缴纳贡赋。&#10;四、卫戍国不得自行宣战，也不得绕开宗主国单独处理战争事务。&#10;五、宗主国拒绝防卫、攻击卫戍国或长期不能维护其安全，将削弱忠诚；忠诚崩溃时，卫戍国可宣布脱离宗主控制。" />
+    <string id="AF_DIP_UI_Vassalage_VassalClauses" text="三、附庸国接受{SUZERAIN}控制，承担贡赋与出兵义务。&#10;四、附庸国不得独立宣战或单独媾和，默认跟随宗主国战争；遭宣战时宗主国自动保护。&#10;五、附庸国王权受宗主国约束；除宗主国主动放弃或另行议定外，不按卫戍国规则自动脱离。" />
+    <string id="AF_DIP_UI_Vassalage_ProtectionDescriptionTributary" text="{SUBJECT}遭到{ATTACKER}宣战，急使请求履行庇护。" />
+    <string id="AF_DIP_UI_Vassalage_ProtectionDescriptionGarrison" text="{SUBJECT}遭到{ATTACKER}宣战，宫廷需裁定是否出兵保护。" />
+    <string id="AF_DIP_UI_Vassalage_ProtectionDescriptionVassal" text="{SUBJECT}遭到{ATTACKER}宣战；宗主国已按条约自动保护。" />
+    <string id="AF_DIP_UI_Vassalage_TributePaymentDescriptionEmpty" text="朝贡车队抵达宫廷，贡赋已经入库。" />
+    <string id="AF_DIP_UI_Vassalage_TributePaymentDescription" text="{TRIBUTARY}按期送来贡赋，宗主国各领地已完成入账。" />
+    <string id="AF_DIP_UI_Vassalage_TributePaymentDetailInvalid" text="贡赋簿册已经失效。" />
+    <string id="AF_DIP_UI_Vassalage_TributePaymentDetail" text="朝贡车队已抵达宫廷，贡赋入库簿册如下：&#10;&#10;臣属国：{TRIBUTARY}&#10;入库日期：{DATE}&#10;贡赋价值：{VALUE}&#10;&#10;【宗主国各领地所得】&#10;{GAINS}&#10;【臣属国贡赋消耗】&#10;{COST}" />
+    <string id="AF_DIP_UI_KingdomProfile_EliminatedGenerationSkipped" text="已覆灭国家保留现有国家卡，但不会请求 LLM 重新生成。" />
+    <string id="AF_DIP_UI_KingdomProfile_GenerationConfigError" text="国家建国卡生成失败：事件/叛乱 API 尚未配置。" />
+    <string id="AF_DIP_UI_KingdomProfile_GenerationCompletedPrefix" text="已为新国家“" />
+    <string id="AF_DIP_UI_KingdomProfile_GenerationCompletedSuffix" text="”生成并固化国家性格与长期战略。" />
+    <string id="AF_DIP_UI_WorldDiplomacy_ManagedByAi" text="该项已由 AI 外交接管，请在“王国公告”中发布外交宣言。" />
+    <string id="AF_DIP_UI_Reward_VassalageTitle" text="臣属国条约" />
+    <string id="AF_DIP_UI_Reward_AnnexationTitle" text="国家吞并" />
+    <string id="AF_DIP_UI_Reward_FailureSuffix" text="失败" />
+    <string id="AF_DIP_UI_Faction_CatalogCount" text="{COUNT} 个派系  ·  门槛 {THRESHOLD}" />
+    <string id="AF_DIP_UI_Faction_CatalogEmpty" text="尚无派系  ·  门槛 {THRESHOLD}" />
+    <string id="AF_DIP_UI_Faction_AboveFormationThreshold" text="高于成派门槛 {THRESHOLD}" />
+    <string id="AF_DIP_UI_Faction_BelowFormationThreshold" text="低于成派门槛 {THRESHOLD}" />
+    <string id="AF_DIP_UI_Faction_PowerUnit" text="王室 {CROWN}%  ·  {FORTIFICATIONS} 个领地" />
+    <string id="AF_DIP_UI_Faction_NoRecentChronicle" text="暂无近期纪事" />
+    <string id="AF_DIP_UI_Faction_GrievanceThreshold" text="家族不满  ·  门槛 {THRESHOLD}" />
+    <string id="AF_DIP_UI_Faction_Grievance" text="家族不满" />
+    <string id="AF_DIP_UI_Faction_FormationTickLegend" text="红色刻度为成派门槛" />
+    <string id="AF_DIP_UI_Faction_DataUnavailable" text="派系数据不可用" />
+    <string id="AF_DIP_UI_Faction_DataReadFailed" text="派系数据读取失败" />
+    <string id="AF_DIP_UI_Faction_Crown" text="王室阵营" />
+    <string id="AF_DIP_UI_Faction_Undecided" text="未表态" />
+    <string id="AF_DIP_UI_Faction_PlayerLeads" text="你领导 · " />
+    <string id="AF_DIP_UI_Faction_PlayerFaction" text="你的派系 · " />
+    <string id="AF_DIP_UI_Faction_TabMeta" text="{COUNT} 家 · 不满 {GRIEVANCE}" />
+    <string id="AF_DIP_UI_Faction_GrievanceLedger" text="贵族不满账册" />
+    <string id="AF_DIP_UI_Faction_LedgerMeta" text="{COUNT} 家 · 最高 {GRIEVANCE}" />
+    <string id="AF_DIP_UI_Faction_PowerMeta" text="{COUNT} 家 · 军力 {POWER}%{PLAYER}" />
+    <string id="AF_DIP_UI_Faction_IncludesYou" text=" · 含你" />
+    <string id="AF_DIP_UI_Faction_Ultimatum" text="通牒" />
+    <string id="AF_DIP_UI_Faction_SupportingClans" text="支持家族" />
+    <string id="AF_DIP_UI_Faction_LatestPrefix" text="最新  ·  " />
+    <string id="AF_DIP_UI_Faction_NoFaction" text="尚无派系" />
+    <string id="AF_DIP_UI_Faction_StabilityMeta" text="稳定度{TIER}  ·  不满与稳定度分别计算" />
+    <string id="AF_DIP_UI_Faction_NoOppositionFormed" text="王国内尚无反对派成立" />
+    <string id="AF_DIP_UI_Faction_NoEligibleVassal" text="没有可以成派的正式封臣家族。" />
+    <string id="AF_DIP_UI_Faction_FormationPending" text="最高家族不满 {GRIEVANCE}，尚未达到成派门槛 {THRESHOLD}。达到后按概率判定，同一王国每七日最多尝试一次。" />
+    <string id="AF_DIP_UI_Faction_FormationReady" text="最高家族不满 {GRIEVANCE}，已达成派门槛 {THRESHOLD}，每七日按概率判定一次。" />
+    <string id="AF_DIP_UI_Faction_FormationGap" text="距成派门槛" />
+    <string id="AF_DIP_UI_Faction_FormationThreshold" text="成派门槛" />
+    <string id="AF_DIP_UI_Faction_Reached" text="已达" />
+    <string id="AF_DIP_UI_Faction_Points" text="点" />
+    <string id="AF_DIP_UI_Faction_NobleClans" text="贵族家族" />
+    <string id="AF_DIP_UI_Faction_SortGrievance" text="按家族不满由高到低" />
+    <string id="AF_DIP_UI_Faction_MilitaryMeta" text="{COUNT} 家  ·  军事实力 {POWER}%" />
+    <string id="AF_DIP_UI_Faction_CrownRespond" text="王室阵营 · 随国王应对派系" />
+    <string id="AF_DIP_UI_Faction_UndecidedClans" text="未表态家族" />
+    <string id="AF_DIP_UI_Faction_CrownNote" text="若派系起兵，王室阵营家族随国王应战；家族不满达到 {THRESHOLD} 会撤回对王室的支持。" />
+    <string id="AF_DIP_UI_Faction_UndecidedNote" text="尚未加入任何阵营，可加入王室或任一战前派系。" />
+    <string id="AF_DIP_UI_Faction_CrownClans" text="王室阵营家族" />
+    <string id="AF_DIP_UI_Faction_KingFirst" text="国王在前，" />
+    <string id="AF_DIP_UI_Faction_PlayerClanFirst" text="你的家族置顶，" />
+    <string id="AF_DIP_UI_Faction_OthersByGrievance" text="其余按不满由高到低" />
+    <string id="AF_DIP_UI_Gathering_NoHostSettlement" text="你的家族没有可作为举办地的城镇或城堡。" />
+    <string id="AF_DIP_UI_Gathering_NoVenue" text="没有可用举办地。" />
+    <string id="AF_DIP_UI_Gathering_VenueTitle" text="召开宴会：选择举办地" />
+    <string id="AF_DIP_UI_Gathering_VenueDescription" text="举办地必须是你的家族拥有的城镇或城堡。" />
+    <string id="AF_DIP_UI_Gathering_Next" text="下一步" />
+    <string id="AF_DIP_UI_Gathering_Cancel" text="取消" />
+    <string id="AF_DIP_UI_Gathering_VenueAvailable" text="可作为宴会举办地。" />
+    <string id="AF_DIP_UI_Gathering_NoClans" text="没有可邀请的贵族家族。" />
+    <string id="AF_DIP_UI_Gathering_ConfirmCurrent" text="确认当前名单（{COUNT}人）" />
+    <string id="AF_DIP_UI_Gathering_ClearList" text="清空已选名单" />
+    <string id="AF_DIP_UI_Gathering_ClearHint" text="重新选择宴会宾客。" />
+    <string id="AF_DIP_UI_Gathering_ClanSelected" text="已选 {COUNT}" />
+    <string id="AF_DIP_UI_Gathering_ClanSelectedHint" text="该家族已选宾客 {COUNT} 人。" />
+    <string id="AF_DIP_UI_Gathering_ClanTitle" text="召开宴会：选择家族" />
+    <string id="AF_DIP_UI_Gathering_ClanDescription" text="举办地：{SETTLEMENT}&#10;已选宾客：{COUNT} 人。&#10;请选择一个家族打开成员名单。" />
+    <string id="AF_DIP_UI_Gathering_NoHeroes" text="所选家族没有可显示的贵族成员。" />
+    <string id="AF_DIP_UI_Gathering_SelectedMarker" text="[已选] " />
+    <string id="AF_DIP_UI_Gathering_HeroLabel" text="[{CLAN}] {HERO}（{IDENTITY}）" />
+    <string id="AF_DIP_UI_Gathering_HeroHint" text="{HERO} / {CLAN}&#10;{IDENTITY}&#10;{STATE}" />
+    <string id="AF_DIP_UI_Gathering_AlreadyInList" text="已经在当前宴会名单中。" />
+    <string id="AF_DIP_UI_Gathering_CanInvite" text="可发出赴宴邀请；没有独立部队者将按原版旅行机制前往主办地。" />
+    <string id="AF_DIP_UI_Gathering_CannotInvite" text="不可邀请：{REASON}" />
+    <string id="AF_DIP_UI_Gathering_HeroTitle" text="召开宴会：选择宾客" />
+    <string id="AF_DIP_UI_Gathering_HeroDescription" text="家族：{CLAN}&#10;这是玩家举办的宴会，总督仍可邀请。有独立部队的人会直接被调度；留在城里的贵族、总督、无部队英雄会按原版旅行机制前往主办地，宴会结束后返回原驻留地。&#10;已选宾客：{COUNT} 人。" />
+    <string id="AF_DIP_UI_Gathering_AddToList" text="加入名单" />
+    <string id="AF_DIP_UI_Gathering_Back" text="返回" />
+    <string id="AF_DIP_UI_Gathering_NoGuests" text="宴会未召开：没有可邀请的宾客。" />
+    <string id="AF_DIP_UI_Gathering_ConfirmTitle" text="确认召开宴会" />
+    <string id="AF_DIP_UI_Gathering_ConfirmBody" text="举办地：{SETTLEMENT}&#10;费用：{COST} 第纳尔&#10;持续：{DAYS} 天&#10;宾客：{GUESTS} 人&#10;&#10;确认后将扣款并向宾客下达前往举办地的宴会邀请。" />
+    <string id="AF_DIP_UI_Gathering_PayAndInvite" text="支付并发出邀请" />
+    <string id="AF_DIP_UI_Gathering_NotSelected" text="尚未选择宾客。" />
+    <string id="AF_DIP_UI_Gathering_IdentityUnknown" text="身份未知" />
+    <string id="AF_DIP_UI_Gathering_Governor" text="总督" />
+    <string id="AF_DIP_UI_Gathering_Ruler" text="君主" />
+    <string id="AF_DIP_UI_Gathering_ClanLeader" text="族长" />
+    <string id="AF_DIP_UI_Gathering_Lady" text="女士" />
+    <string id="AF_DIP_UI_Gathering_Lord" text="领主" />
+    <string id="AF_DIP_UI_Gathering_IdentityHint" text="身份：{IDENTITY}" />
+    <string id="AF_DIP_UI_Gathering_IdentityHintGoverned" text="身份：{IDENTITY}&#10;管辖：{SETTLEMENT}" />
+    <string id="AF_DIP_UI_Gathering_UnknownClan" text="未知家族" />
+    <string id="AF_DIP_UI_Gathering_UnknownSettlement" text="未知定居点" />
+    <string id="AF_DIP_UI_Gathering_ClanHint" text="成员 {MEMBERS} 人；有独立部队 {MOVABLE} 人；可原版旅行赴宴 {TRAVEL} 人。" />
+    <string id="AF_DIP_UI_Gathering_EndPlayerCancelled" text="宴会已取消：你在{PLACE}举办的宴会已经散场。{REASON}" />
+    <string id="AF_DIP_UI_Gathering_EndPlayerFinished" text="宴会已结束：你在{PLACE}举办的宴会已经散场。" />
+    <string id="AF_DIP_UI_Gathering_EndNpcCancelled" text="宴会已取消：{HOST}在{PLACE}举办的宴会已经散场。{REASON}" />
+    <string id="AF_DIP_UI_Gathering_EndNpcFinished" text="宴会已结束：{HOST}在{PLACE}举办的宴会已经散场。" />
+    <string id="AF_DIP_UI_Gathering_Reason" text=" 原因：{REASON}" />
+    <string id="AF_DIP_UI_Gathering_DialogueHostOption" text="召开宴会" />
+    <string id="AF_DIP_UI_Gathering_DialogueCompanionOption" text="我想举办一场宴会，你帮我安排。" />
+    <string id="AF_DIP_UI_Gathering_DialogueGovernorResponse" text="我会为您准备名单与请柬。" />
+    <string id="AF_DIP_UI_Gathering_DialogueCompanionResponse" text="明白，我会按您的意思准备举办地和宾客名单。" />
+    <string id="AF_DIP_UI_Gathering_Disabled" text="宴会功能已在 MCM 中关闭。" />
+    <string id="AF_DIP_UI_Gathering_Created" text="宴会已发出邀请：{SETTLEMENT}，宾客 {GUESTS} 人，持续 {DAYS} 天" />
+    <string id="AF_DIP_UI_Gathering_DisabledCancelled" text="宴会功能已关闭，正在进行的宴会已经取消，主人和宾客将陆续返程。" />
+    <string id="AF_DIP_UI_Gathering_GuestArrived" text="{HERO}已抵达{SETTLEMENT}参加宴会。" />
+    <string id="AF_DIP_UI_Gathering_AttendanceReward" text="你参加了{HOST}的宴会，与主办方的好感提升了。" />
+    <string id="AF_DIP_UI_Gathering_CrisisWar" text="王国已经卷入战争，主办人决定取消宴会。" />
+    <string id="AF_DIP_UI_Gathering_CrisisSiege" text="王国内的{SETTLEMENT}正遭围攻，主办人决定取消宴会。" />
+    <string id="AF_DIP_UI_Gathering_NpcCreated" text="{HOST}将在{SETTLEMENT}举办宴会。" />
+    <string id="AF_DIP_UI_Gathering_CourierLetter" text="{HOST}致{PLAYER}：&#10;&#10;我将在{SETTLEMENT}举办一场宴会，诚邀你前来赴宴。宴会预计持续至 {DATE}；若你愿意，到达举办地即可。" />
+    <string id="AF_DIP_UI_Gathering_SelectedGuestsMore" text="已选：{NAMES} 等 {COUNT} 人。" />
+    <string id="AF_DIP_UI_Gathering_SelectedGuestsExact" text="已选：{NAMES}" />
+    <string id="AF_DIP_UI_KingdomProfile_ExportDirectoryEmpty" text="导出目录为空。" />
+    <string id="AF_DIP_UI_KingdomProfile_ExportedCount" text="已导出国家卡 {COUNT} 条。" />
+    <string id="AF_DIP_UI_KingdomProfile_ExportTargetNotFound" text="找不到要导出的国家。" />
+    <string id="AF_DIP_UI_KingdomProfile_ExportProfileNotFound" text="国家卡不存在。" />
+    <string id="AF_DIP_UI_KingdomProfile_ExportedPrefix" text="已导出：{KINGDOM}" />
+    <string id="AF_DIP_UI_KingdomProfile_InvalidProfileCount" text="资料包中存在 {COUNT} 条无效或重复的王国资料。" />
+    <string id="AF_DIP_UI_KingdomProfile_CannotMatchWorld" text="资料包中的王国无法安全匹配当前世界：{REASON}" />
+    <string id="AF_DIP_UI_KingdomProfile_UnknownReason" text="未知原因" />
+    <string id="AF_DIP_UI_KingdomProfile_DuplicateTarget" text="资料包中存在重复或无效的王国目标：{TARGET}" />
+    <string id="AF_DIP_UI_KingdomProfile_NoReloadableProfiles" text="资料包中没有可重载的王国性格与战略。" />
+    <string id="AF_DIP_UI_KingdomProfile_SerializationEmpty" text="序列化结果为空。" />
+    <string id="AF_DIP_UI_KingdomProfile_RollbackSnapshotEmpty" text="回滚快照为空。" />
+    <string id="AF_DIP_UI_KingdomProfile_RollbackSnapshotInvalid" text="回滚快照无效。" />
+    <string id="AF_DIP_UI_KingdomProfile_ReloadPlanEmpty" text="王国重载计划为空。" />
+    <string id="AF_DIP_UI_KingdomProfile_ReloadCloneFailed" text="无法创建王国资料重载副本。" />
+    <string id="AF_DIP_UI_KingdomProfile_ReloadTargetMissing" text="当前世界已变化，找不到王国目标：{TARGET}" />
+    <string id="AF_DIP_UI_KingdomProfile_ReloadComplete" text="已重载 {IMPORTED} 个王国；其余 {RESET} 个当前王国恢复默认资料。" />
+    <string id="AF_DIP_UI_KingdomProfile_ImportNoSafeMatch" text="导入文件中没有与“{KINGDOM}”安全匹配的国家卡。动态建国 ID 只有在名称一致时才会匹配。" />
+    <string id="AF_DIP_UI_KingdomProfile_ImportComplete" text="已导入 {IMPORTED} 条；跳过重复 {DUPLICATES} 条；无效或无法匹配 {UNMATCHED} 条。" />
+    <string id="AF_DIP_UI_KingdomProfile_SingleImportTargetOrPathEmpty" text="单国导入目标或路径为空。" />
+    <string id="AF_DIP_UI_KingdomProfile_InvalidImportPathPrefix" text="导入路径无效：" />
+    <string id="AF_DIP_UI_KingdomProfile_ImportDirectoryNotFound" text="导入目录不存在。" />
+    <string id="AF_DIP_UI_KingdomProfile_MultipleSingleImports" text="发现多份可匹配该国家的单国文件，请删除旧副本或直接选择目标 JSON 文件。" />
+    <string id="AF_DIP_UI_KingdomProfile_SingleImportNoSafeMatch" text="导入目录中没有与“{KINGDOM}”安全匹配的国家卡。" />
+    <string id="AF_DIP_UI_KingdomProfile_ImportPathEmpty" text="导入路径为空。" />
+    <string id="AF_DIP_UI_KingdomProfile_OnlyJson" text="只允许导入 JSON 文件。" />
+    <string id="AF_DIP_UI_KingdomProfile_NoImportFiles" text="未找到 {FULL} 或单国 JSON 文件。" />
+    <string id="AF_DIP_UI_KingdomProfile_ImportFileLimit" text="单次导入文件数量超过 {COUNT} 个安全上限。" />
+    <string id="AF_DIP_UI_KingdomProfile_ImportFileError" text="{FILE}：{ERROR}" />
+    <string id="AF_DIP_UI_KingdomProfile_ProfileLimit" text="国家卡数量超过 {COUNT} 条安全上限。" />
+    <string id="AF_DIP_UI_KingdomProfile_FileEmpty" text="文件不存在或为空。" />
+    <string id="AF_DIP_UI_KingdomProfile_FileTooLarge" text="文件超过 32 MB 安全上限。" />
+    <string id="AF_DIP_UI_KingdomProfile_RootObjectRequired" text="根节点必须是 JSON 对象。" />
+    <string id="AF_DIP_UI_KingdomProfile_SingleCardInvalid" text="单国国家卡缺少有效 ID，或没有正文、默认正文及明确覆盖标记。" />
+    <string id="AF_DIP_UI_KingdomProfile_ExportFormatRequired" text="JSON 结构不是国家卡导出格式。" />
+    <string id="AF_DIP_UI_KingdomProfile_InvalidUtf8" text="文件不是有效的 UTF-8 编码。" />
+    <string id="AF_DIP_UI_KingdomProfile_EmptyCard" text="空国家卡。" />
+    <string id="AF_DIP_UI_KingdomProfile_DynamicNameMismatch" text="动态国家 ID 相同但名称不同。" />
+    <string id="AF_DIP_UI_KingdomProfile_NoUniqueMatch" text="当前世界中没有唯一匹配国家。" />
+    <string id="AF_DIP_UI_KingdomProfile_NoJsonObject" text="LLM 返回内容中没有 JSON 对象。" />
+    <string id="AF_DIP_UI_KingdomProfile_MissingFields" text="LLM JSON 缺少 national_personality 或 long_term_strategy。" />
+    <string id="AF_DIP_UI_KingdomProfile_JsonParseFailed" text="LLM JSON 解析失败：{ERROR}" />
+    <string id="AF_DIP_UI_Vassalage_Terminal_NoKingdom" text="你尚未拥有王国。" />
+    <string id="AF_DIP_UI_Vassalage_Terminal_NotRuler" text="你的当前王国：{KINGDOM}&#10;&#10;你不是该王国的国王，不能查阅宗主国臣属名册。" />
+    <string id="AF_DIP_UI_Vassalage_Terminal_Description" text="宗主国：{KINGDOM}&#10;选择有贡赋义务的臣属国，查看贡赋入库记录。" />
+    <string id="AF_DIP_UI_Vassalage_Terminal_NoSubjects" text="你的王国尚无臣属国。" />
+    <string id="AF_DIP_UI_Vassalage_Terminal_BuildFailed" text="臣属名册生成失败，请稍后再试。" />
+    <string id="AF_DIP_UI_Vassalage_Terminal_Roster" text="臣属国名册：" />
+    <string id="AF_DIP_UI_Vassalage_Terminal_Treaty" text="   条约：{TYPE}" />
+    <string id="AF_DIP_UI_Vassalage_Terminal_Signed" text="   立约日：{DATE}" />
+    <string id="AF_DIP_UI_Vassalage_Terminal_Duration" text="   履约时长：{DAYS}" />
+    <string id="AF_DIP_UI_Vassalage_Terminal_Independence" text="   独立度：{VALUE}" />
+    <string id="AF_DIP_UI_Vassalage_Terminal_TributeRecords" text="   贡赋记录：请在臣属国管理列表中选择“查看贡赋记录”（当前 {COUNT} 条）。" />
+    <string id="AF_DIP_UI_Vassalage_Terminal_NoTribute" text="   贡赋记录：该臣属类型不交贡。" />
+    <string id="AF_DIP_UI_Vassalage_Terminal_NoPaymentRecords" text="尚无贡赋入库记录。" />
+    <string id="AF_DIP_UI_Vassalage_Terminal_NotRulerShort" text="你不是当前王国的国王。" />
+    <string id="AF_DIP_UI_Vassalage_Terminal_CannotViewLedger" text="不能查阅宗主国臣属贡赋簿册。" />
+    <string id="AF_DIP_UI_Vassalage_Terminal_AgreementNotFound" text="未找到该臣属国条约。" />
+    <string id="AF_DIP_UI_Vassalage_Terminal_HistoryTitle" text="{SUBJECT} · 贡赋记录" />
+    <string id="AF_DIP_UI_Vassalage_Terminal_HistorySubtitle" text="{TYPE} · 立约日：{DATE} · 履约：{DAYS}天" />
+    <string id="AF_DIP_UI_Vassalage_Terminal_TypeNoTribute" text="该臣属类型不产生贡赋记录。" />
+    <string id="AF_DIP_UI_Vassalage_Terminal_LedgerBuildFailed" text="贡赋簿册生成失败。" />
+    <string id="AF_DIP_UI_Vassalage_Terminal_IndependenceShort" text="独立{VALUE}" />
+    <string id="AF_DIP_UI_Vassalage_Terminal_TributeCount" text="贡赋{COUNT}条" />
+    <string id="AF_DIP_UI_Vassalage_Terminal_NoTributeShort" text="不交贡" />
+    <string id="AF_DIP_UI_Vassalage_Terminal_SubjectHint" text="条约：{TYPE}&#10;立约日：{DATE}&#10;履约时长：{DAYS}{INDEPENDENCE}{TRIBUTE}" />
+    <string id="AF_DIP_UI_Vassalage_Terminal_InvalidRecordLine" text="- 贡赋记录已经失效。" />
+    <string id="AF_DIP_UI_Vassalage_Terminal_NoSettlementGain" text="本次贡赋未能分配到宗主国领地。" />
+    <string id="AF_DIP_UI_Vassalage_Terminal_TributeValue" text="贡赋价值：{VALUE}" />
+    <string id="AF_DIP_UI_Vassalage_Terminal_GainsSummary" text="本次贡赋已入库，宗主国各领地所得如下：" />
+    <string id="AF_DIP_UI_Vassalage_Terminal_InvalidRecord" text="贡赋记录已经失效。" />
+    <string id="AF_DIP_UI_Vassalage_AgreementRevisedTitle" text="臣属条约改订" />
+    <string id="AF_DIP_UI_Vassalage_AgreementBrokenTitle" text="臣属条约终止" />
+    <string id="AF_DIP_UI_Vassalage_TributaryBreachTitle" text="朝贡国背约" />
+    <string id="AF_DIP_UI_Vassalage_TributariesAtWarTitle" text="朝贡国互相开战" />
+    <string id="AF_DIP_UI_Vote_MeetingButton" text="召开投票会议" />
+    <string id="AF_DIP_UI_Vote_ActiveCount" text="{COUNT} 项活跃" />
+    <string id="AF_DIP_UI_Vote_None" text="无" />
+    <string id="AF_DIP_UI_Vote_RulerDecision" text="国王裁决" />
+    <string id="AF_DIP_UI_Vote_CouncilMember" text="议会成员" />
+    <string id="AF_DIP_UI_Vote_Spectate" text="旁观" />
+    <string id="AF_DIP_UI_Vote_OtherKingdom" text="他国" />
+    <string id="AF_DIP_UI_Vote_DecideNow" text="立即裁决" />
+    <string id="AF_DIP_UI_Vote_AgendaTab" text="内政" />
+    <string id="AF_DIP_UI_Vote_SupporterCount" text="{COUNT} 家" />
+    <string id="AF_DIP_UI_Vote_MoreSupporters" text="另有 {COUNT} 家支持" />
+    <string id="AF_DIP_UI_Vote_AgendaQuotedTitle" text="议程《{TITLE}》" />
+    <string id="AF_DIP_UI_Vote_RulerHint" text="逆多数意见强推宣战、议和或政策会加深全体封臣不满；封地表决的落选申领家族不满也会上升。" />
+    <string id="AF_DIP_UI_Vote_CouncilHint" text="投票会议开始后表态支持；也可在对话中与其他家族商议拉票。" />
+    <string id="AF_DIP_UI_Vote_SpectateHint" text="他国议程仅供查看，无法参与投票。" />
+    <string id="AF_DIP_UI_Vote_CurrentKingdomAgenda" text="{KINGDOM} 议程" />
+    <string id="AF_DIP_UI_Vote_UnknownKingdom" text="未知王国" />
+    <string id="AF_DIP_UI_Vote_NoKingdom" text="无王国" />
+    <string id="AF_DIP_UI_Vote_Unknown" text="未知" />
+    <string id="AF_DIP_UI_Vote_ProposerUnknown" text="提案人: 未知" />
+    <string id="AF_DIP_UI_Vote_ProposerDaysRemaining" text="提案人: {PROPOSER} · 剩余 {DAYS} 天" />
+    <string id="AF_DIP_UI_Vote_ProposerCanVote" text="提案人: {PROPOSER} · 可以投票" />
+    <string id="AF_DIP_UI_Vote_Info" text="{TYPE} · 提案人 {PROPOSER}" />
+    <string id="AF_DIP_UI_Vote_BadgeDecide" text="可裁决" />
+    <string id="AF_DIP_UI_Vote_BadgeVoting" text="可以投票" />
+    <string id="AF_DIP_UI_Vote_BadgeDays" text="剩余 {DAYS} 天" />
+    <string id="AF_DIP_UI_Vote_Meta" text="提案人  {PROPOSER}   ·   {STATUS}{OPTIONS}" />
+    <string id="AF_DIP_UI_Vote_OnlyClanCanDecide" text="仅你的家族有表决权" />
+    <string id="AF_DIP_UI_Vote_VotingOpen" text="可以投票" />
+    <string id="AF_DIP_UI_Vote_DaysRemaining" text="剩余 {DAYS} 天" />
+    <string id="AF_DIP_UI_Vote_OptionCount" text="{COUNT} 个选项" />
+    <string id="AF_DIP_UI_Vote_SingleClanKingdom" text="单家族王国" />
+    <string id="AF_DIP_UI_Vote_Anytime" text="随时" />
+    <string id="AF_DIP_UI_Vote_DecideImmediatelyHint" text="无需等待，可立即裁决" />
+    <string id="AF_DIP_UI_Vote_SingleClanFooter" text="本国仅你的家族有表决权，点击「立即裁决」决定是否通过" />
+    <string id="AF_DIP_UI_Vote_Voting" text="投票" />
+    <string id="AF_DIP_UI_Vote_UntilVoting" text="距离开始投票" />
+    <string id="AF_DIP_UI_Vote_Started" text="已开始" />
+    <string id="AF_DIP_UI_Vote_DaysUnit" text="天" />
+    <string id="AF_DIP_UI_Vote_OpenMeetingHint" text="可召开投票会议" />
+    <string id="AF_DIP_UI_Vote_UrgentHint" text="不足 1 天 · 紧急" />
+    <string id="AF_DIP_UI_Vote_AfterDeadlineHint" text="到期后进入表决" />
+    <string id="AF_DIP_UI_Vote_FooterOpen" text="提案「{TITLE}」已可投票" />
+    <string id="AF_DIP_UI_Vote_FooterFuture" text="提案「{TITLE}」将在 {DAYS} 天后开始投票" />
+    <string id="AF_DIP_UI_Vote_Deals" text="已谈妥拉票 {COUNT} 家" />
+    <string id="AF_DIP_UI_Vote_SlightlyFavor" text="略微支持" />
+    <string id="AF_DIP_UI_Vote_StronglyFavor" text="强力支持" />
+    <string id="AF_DIP_UI_Vote_FullyPush" text="全力推动" />
+    <string id="AF_DIP_UI_Vote_Neutral" text="中立" />
+    <string id="AF_DIP_UI_Vote_NoSponsor" text="无人牵头" />
+    <string id="AF_DIP_UI_Vote_You" text="你" />
+    <string id="AF_DIP_UI_Vote_OnlyClanDecides" text="仅你的家族有表决权 · 由你裁决" />
+    <string id="AF_DIP_UI_Vote_NoOtherVoters" text="无其他家族参与表决" />
+    <string id="AF_DIP_UI_Vote_NoCouncilTrend" text="议会尚无倾向（不含你）" />
+    <string id="AF_DIP_UI_Annexation_Processing" text="吞并暂缓：{TARGET}的并入政务正在处理中。" />
+    <string id="AF_DIP_UI_Annexation_NoClans" text="吞并中止：{TARGET}已无可宣誓效忠的有效家族。" />
+    <string id="AF_DIP_UI_Annexation_SettlementsPending" text="吞并中止：{TARGET}仍有领地未完成移交。为避免领地归属出错，旧王国暂未解散。" />
+    <string id="AF_DIP_UI_Annexation_ClansPending" text="吞并中止：{TARGET}仍有家族未完成效忠。为避免家族归属出错，旧王国暂未解散。" />
+    <string id="AF_DIP_UI_Annexation_DestroyFailed" text="吞并中止：{TARGET}所有家族已向{PLAYER}效忠，但旧王国暂未能完成解散。" />
+    <string id="AF_DIP_UI_Annexation_Completed" text="吞并完成：{TARGET}已并入{PLAYER}。{TARGET}所有家族已向{PLAYER}宣誓效忠，{TARGET}就此灭亡。" />
+    <string id="AF_DIP_UI_Annexation_NotPlayerRuler" text="吞并未成立：你必须是自己王国的国王。" />
+    <string id="AF_DIP_UI_Annexation_TargetInvalid" text="吞并未成立：目标王国不存在，或已经灭亡。" />
+    <string id="AF_DIP_UI_Annexation_SameKingdom" text="吞并未成立：不能吞并自己的王国。" />
+    <string id="AF_DIP_UI_Annexation_TargetRulerRequired" text="吞并未成立：对方无权代表目标王国放弃王权。" />
+    <string id="AF_DIP_UI_Annexation_VassalageEndedReason" text="{TARGET}已并入你的王国，旧臣属条约随之作废。" />
+    <string id="AF_KINGDOM_CW_Action_AcceptedAgreementSettling" text="已接受的协议仍在结算，不能解散。" />
+    <string id="AF_KINGDOM_CW_Action_AgreementAlreadyAccepted" text="协议已接受并进入结算，不能重复答复或撤回；等待安全重试。" />
+    <string id="AF_KINGDOM_CW_Action_AgreementSettling" text="已有协议正在结算，不能改建派系。" />
+    <string id="AF_KINGDOM_CW_Action_AlreadyNeutral" text="当前已是中立。" />
+    <string id="AF_KINGDOM_CW_Action_AwaitingFactionResponse" text="正在等待派系回应。" />
+    <string id="AF_KINGDOM_CW_Action_ChangeDemandConsequence" text="更改自己派系的诉求，并立即重评每个其他成员是否继续参与；退出者回到中立，不额外扣关系，不招募外部家族，不触发起兵。" />
+    <string id="AF_KINGDOM_CW_Action_ChangeOwnDemandOnly" text="只能更改自己领导的战前派系诉求。" />
+    <string id="AF_KINGDOM_CW_Action_ClanAllegianceChanged" text="家族归属已变化，不能回应原协议。" />
+    <string id="AF_KINGDOM_CW_Action_ClanLeaderIneligible" text="家族领袖不具备资格。" />
+    <string id="AF_KINGDOM_CW_Action_ConcedeConsequence" text="完整兑现当前诉求；宣权将退位，独立战争将承认独立。" />
+    <string id="AF_KINGDOM_CW_Action_DemandChangeLocked" text="王室交涉或协议结算中，暂不能更改诉求。" />
+    <string id="AF_KINGDOM_CW_Action_DemandInvalid" text="诉求或目标不合法，或缺少所需领地。" />
+    <string id="AF_KINGDOM_CW_Action_DemandUnchanged" text="诉求及目标未改变，无需重新评估成员。" />
+    <string id="AF_KINGDOM_CW_Action_DetonateLeaderConsequence" text="立即进入起兵建国流程。" />
+    <string id="AF_KINGDOM_CW_Action_DetonateOwnOnly" text="只能要求自己的战前派系起兵。" />
+    <string id="AF_KINGDOM_CW_Action_DetonateProposalConsequence" text="向领袖提议；拒绝后7天内不能再次建议。" />
+    <string id="AF_KINGDOM_CW_Action_Disabled" text="内战功能未启用或王国已失效。" />
+    <string id="AF_KINGDOM_CW_Action_DissolveOwnConsequence" text="解散自己领导的派系，与每个其他成员家族关系−10；保留不满，不延长已有王国冷却。" />
+    <string id="AF_KINGDOM_CW_Action_DissolveOwnOnly" text="只能主动解散自己领导的战前派系。" />
+    <string id="AF_KINGDOM_CW_Action_ExitCooldown" text="退出冷却至第 {A} 天，换国不能绕过。" />
+    <string id="AF_KINGDOM_CW_Action_FactionLeaderChanged" text="派系领袖已变化，请等待继任处理。" />
+    <string id="AF_KINGDOM_CW_Action_FactionSlotsFull" text="派系名额已满或王国仍在冷却。" />
+    <string id="AF_KINGDOM_CW_Action_ForceDissolveConsequence" text="成员不满+7.5、与国王关系−10；服从则解散，抗命则起兵。" />
+    <string id="AF_KINGDOM_CW_Action_FoundConsequence" text="创建派系，与统治者关系−10；若已有阵营，先退出并承担成员关系损失，自己的旧派系会解散。玩家领袖只会手动起兵。" />
+    <string id="AF_KINGDOM_CW_Action_GovernanceCooldown" text="政治行动冷却至第 {A} 天。" />
+    <string id="AF_KINGDOM_CW_Action_InvalidOfferTier" text="补偿档位无效。" />
+    <string id="AF_KINGDOM_CW_Action_KingCannotJoin" text="国王不能自行加入、退出或建立反对派。" />
+    <string id="AF_KINGDOM_CW_Action_KingdomCooldownFound" text="王国战后冷却至第 {A} 天，玩家创建派系也须等待。" />
+    <string id="AF_KINGDOM_CW_Action_LeaderSuccession" text="{A}继任派系领袖。" />
+    <string id="AF_KINGDOM_CW_Action_LeaveConsequence" text="与原成员领袖关系−10，与派系领袖−20（不叠加）；7天内不能加入或建立派系。" />
+    <string id="AF_KINGDOM_CW_Action_MembershipLocked" text="建国请求或内战期间，成员管理已锁定。" />
+    <string id="AF_KINGDOM_CW_Action_MembershipPendingReview" text="已有派系操作结果待核查，暂不能改变成员或派系。" />
+    <string id="AF_KINGDOM_CW_Action_MustLeaveCampFirst" text="须先退出当前阵营，承担关系损失及7天冷却。" />
+    <string id="AF_KINGDOM_CW_Action_NegotiateConsequence" text="接受后转移补偿、撤回诉求并解散；拒绝不收费但消耗7天冷却。战中先议和归国。" />
+    <string id="AF_KINGDOM_CW_Action_NewDemandInvalid" text="新诉求或目标不合法，或缺少所需领地。" />
+    <string id="AF_KINGDOM_CW_Action_NoDissolveWarBlocked" text="国内/世界战争上限或玩家王国免疫阻止抗命起兵，不能下达解散令。" />
+    <string id="AF_KINGDOM_CW_Action_NoOperation" text="操作不存在。" />
+    <string id="AF_KINGDOM_CW_Action_NoSuccessor" text="派系无合格继任者，解散。" />
+    <string id="AF_KINGDOM_CW_Action_NoSuppressAfterFounding" text="建国请求开始后不能压制或行政解散。" />
+    <string id="AF_KINGDOM_CW_Action_NothingToRespond" text="没有需要本家族回应的事项。" />
+    <string id="AF_KINGDOM_CW_Action_PlayerKingdomDisabled" text="设置已关闭玩家王国派系。" />
+    <string id="AF_KINGDOM_CW_Action_PreviousOperationPendingReview" text="先前操作结果待核查，暂不能继续操作。" />
+    <string id="AF_KINGDOM_CW_Action_ProposalRefusedCooldown" text="起兵建议被拒后须等待7天。" />
+    <string id="AF_KINGDOM_CW_Action_RebelsFoundingKingdom" text="叛军正在建国，请等待建国完成。" />
+    <string id="AF_KINGDOM_CW_Action_RespondAcceptConsequence" text="接受补偿将撤回诉求并解散派系。" />
+    <string id="AF_KINGDOM_CW_Action_RespondDissolveConsequence" text="服从将解散派系；抗命将起兵。" />
+    <string id="AF_KINGDOM_CW_Action_ResponseDeadline" text="&#10;答复期限：第 {A} 天；超时视为{B}。" />
+    <string id="AF_KINGDOM_CW_Action_ResponseDeadlineDefy" text="抗命" />
+    <string id="AF_KINGDOM_CW_Action_ResponseDeadlinePassed" text="回应期限已过。" />
+    <string id="AF_KINGDOM_CW_Action_ResponseDeadlineRefuse" text="拒绝" />
+    <string id="AF_KINGDOM_CW_Action_ResponseDissolve" text="王室命令解散派系。服从将解散，抗命将起兵。" />
+    <string id="AF_KINGDOM_CW_Action_ResponseOffer" text="王室提出以 {A} 换取撤回诉求；接受后解散派系。" />
+    <string id="AF_KINGDOM_CW_Action_ResponseOfferGold" text="{A} 金币" />
+    <string id="AF_KINGDOM_CW_Action_ResponseOfferInfluence" text="{A} 影响力" />
+    <string id="AF_KINGDOM_CW_Action_RisingBlocked" text="国内/世界战争上限或叛乱免疫阻止起兵。" />
+    <string id="AF_KINGDOM_CW_Action_RulingClanOnly" text="只有原王国的统治家族能执行此操作。" />
+    <string id="AF_KINGDOM_CW_Action_RulingClanResources" text="统治家族资源不足。" />
+    <string id="AF_KINGDOM_CW_Action_SelectExistingFaction" text="请选择仍然存在的派系。" />
+    <string id="AF_KINGDOM_CW_Action_SelectJoinableFaction" text="请选择可加入的战前派系。" />
+    <string id="AF_KINGDOM_CW_Action_StateChanged" text="派系状态已变化，请重新确认。" />
+    <string id="AF_KINGDOM_CW_Action_SuppressConsequence" text="成员失去最多20影响力；领袖不满+7.5，其余+4；与国王关系−5。首次压制延后期限7天。" />
+    <string id="AF_KINGDOM_CW_Action_Unsupported" text="不支持此操作。" />
+    <string id="AF_KINGDOM_CW_Action_VassalOnly" text="必须是本国正式封臣。" />
+    <string id="AF_KINGDOM_CW_Behavior_ClanDestroyed" text="{CLAN}被消灭" />
+    <string id="AF_KINGDOM_CW_Behavior_CurrentPolicy" text="现行政策" />
+    <string id="AF_KINGDOM_CW_Behavior_FiefGranted" text="{SETTLEMENT}封给了{CLAN}" />
+    <string id="AF_KINGDOM_CW_Behavior_FiefLost" text="{CLAN}失去封地" />
+    <string id="AF_KINGDOM_CW_Behavior_LandsRaided" text="{CLAN}的领地遭到劫掠" />
+    <string id="AF_KINGDOM_CW_Behavior_PeaceImposed" text="王国被迫议和" />
+    <string id="AF_KINGDOM_CW_Behavior_PeaceImposedByKing" text="国王逆议会多数意见强行议和" />
+    <string id="AF_KINGDOM_CW_Behavior_PolicyImposed" text="王国强推政策：{POLICY}" />
+    <string id="AF_KINGDOM_CW_Behavior_RoyalExecution" text="王室处决了{CLAN}的成员" />
+    <string id="AF_KINGDOM_CW_Behavior_WarImposed" text="强行开战" />
+    <string id="AF_KINGDOM_CW_Behavior_WarImposedByKing" text="国王逆议会多数意见强行开战" />
+    <string id="AF_KINGDOM_CW_Core_AftermathEmboldened" text="叛军得胜鼓舞了其余派系，但各派仍需时间整顿" />
+    <string id="AF_KINGDOM_CW_Core_AftermathSettled" text="内战平息，其余派系暂缓施压" />
+    <string id="AF_KINGDOM_CW_Core_AftermathSuppressed" text="王室平叛震慑了其余派系，各派暂时偃旗息鼓" />
+    <string id="AF_KINGDOM_CW_Core_AftermathTruce" text="{MOOD}（{WEEKS} 周内不递交最后通牒）" />
+    <string id="AF_KINGDOM_CW_Core_CauseThreshold" text="不满达到阈值" />
+    <string id="AF_KINGDOM_CW_Core_CauseWeariness" text="王国厌战（{VALUE}）" />
+    <string id="AF_KINGDOM_CW_Core_DemandTurnedToAbdication" text="{FACTION}屡遭拒绝，转而要求国王退位" />
+    <string id="AF_KINGDOM_CW_Core_DissolvedKingDelays" text="{FACTION}被国王一再拖延，派系瓦解" />
+    <string id="AF_KINGDOM_CW_Core_DissolvedRepeatedRefusals" text="{FACTION}多次被拒仍未起兵，派系瓦解" />
+    <string id="AF_KINGDOM_CW_Core_EnemyKingdom" text="敌国" />
+    <string id="AF_KINGDOM_CW_Core_EscalationRollFailed" text="但升级判定未通过" />
+    <string id="AF_KINGDOM_CW_Core_FactionDissolvedInvalid" text="{FACTION}的诉求目标或领袖已失效，派系解散" />
+    <string id="AF_KINGDOM_CW_Core_FactionFounded" text="{FACTION}成立，诉求：{DEMAND}" />
+    <string id="AF_KINGDOM_CW_Core_FactionRetained" text="{REASON}；保留派系。" />
+    <string id="AF_KINGDOM_CW_Core_FollowAccepted" text="你的家族追随{FACTION}，转投{REBEL}。" />
+    <string id="AF_KINGDOM_CW_Core_FollowDeclined" text="你的家族拒绝追随{FACTION}，站到了王室一边。" />
+    <string id="AF_KINGDOM_CW_Core_FollowEnded" text="这次起兵已经结束。" />
+    <string id="AF_KINGDOM_CW_Core_FollowFailed" text="未能转投叛军，你的家族留在王国一方。" />
+    <string id="AF_KINGDOM_CW_Core_FollowPromptFollow" text="&#10;&#10;追随：你的家族带着封地转投{REBEL}，内战结束后随结局一同归国（王室获胜时会受到惩处）。" />
+    <string id="AF_KINGDOM_CW_Core_FollowPromptIntro" text="你所在的{FACTION}已起兵，建立{REBEL}与王室开战。" />
+    <string id="AF_KINGDOM_CW_Core_FollowPromptStay" text="&#10;留下：你的家族改站王室一边，与昔日同党为敌。" />
+    <string id="AF_KINGDOM_CW_Core_FormationRollFailed" text="{CLAN}{CAUSE}，但成派判定未通过（{CHANCE}）" />
+    <string id="AF_KINGDOM_CW_Core_KingDefers" text="国王暂缓答复{FACTION}，最后通牒延后" />
+    <string id="AF_KINGDOM_CW_Core_KingRefusedDemand" text="国王拒绝{FACTION}的诉求，{REASON}" />
+    <string id="AF_KINGDOM_CW_Core_LeaderGoneNoRising" text="{FACTION}的领袖已不存在，取消起兵" />
+    <string id="AF_KINGDOM_CW_Core_NoPendingUltimatum" text="当前没有待答复的最后通牒。" />
+    <string id="AF_KINGDOM_CW_Core_NoSlotDomesticWar" text="{FACTION}决意起兵，但国内已有内战，暂时按兵不动" />
+    <string id="AF_KINGDOM_CW_Core_NoSlotWorldLimit" text="{FACTION}决意起兵，但世界叛乱已达上限（{COUNT}/{MAX}），暂时按兵不动" />
+    <string id="AF_KINGDOM_CW_Core_OthersCoolingDown" text="{FACTION}起兵，其余派系进入冷却（第 {DAY} 天前不递交通牒）" />
+    <string id="AF_KINGDOM_CW_Core_OutbreakHistory" text="{FACTION}建立{REBEL}，内战爆发" />
+    <string id="AF_KINGDOM_CW_Core_PlayerKingAccepted" text="玩家国王接受{FACTION}的最后通牒" />
+    <string id="AF_KINGDOM_CW_Core_PlayerKingRefused" text="玩家国王拒绝{FACTION}的最后通牒" />
+    <string id="AF_KINGDOM_CW_Core_PledgeBroken" text="国王违背承诺，与{OTHER}议和" />
+    <string id="AF_KINGDOM_CW_Core_ReasonFoundingTimeout" text="建国请求超时" />
+    <string id="AF_KINGDOM_CW_Core_RebelKingdomEstablished" text="叛军王国建立完成，内战爆发。" />
+    <string id="AF_KINGDOM_CW_Core_RebellionCooldown" text="王国刚刚经历叛乱，{WEEKS} 周内不再形成新派系" />
+    <string id="AF_KINGDOM_CW_Core_RebellionImmunityBlocked" text="玩家王国的稳定度叛乱免疫阻止了{FACTION}起兵" />
+    <string id="AF_KINGDOM_CW_Core_RebellionIncomplete" text="起兵尚未完全完成：{REASON}" />
+    <string id="AF_KINGDOM_CW_Core_RefusalCountNotMet" text="但派系被拒次数未满（{COUNT}/{MIN}），暂不起兵" />
+    <string id="AF_KINGDOM_CW_Core_RisingRebelKingdom" text="{FACTION}起兵，正在建立临时叛军王国" />
+    <string id="AF_KINGDOM_CW_Core_UltimatumAcceptPending" text="诉求尚未兑现，派系保留等待处理。" />
+    <string id="AF_KINGDOM_CW_Core_UltimatumAcceptedDissolved" text="已接受最后通牒，派系解散。" />
+    <string id="AF_KINGDOM_CW_Core_UltimatumDelivered" text="{FACTION}递交最后通牒：{DEMAND}" />
+    <string id="AF_KINGDOM_CW_Core_UltimatumExpired" text="最后通牒已失效。" />
+    <string id="AF_KINGDOM_CW_Core_UltimatumRefusedNoRevolt" text="你拒绝了最后通牒，派系暂未起兵。" />
+    <string id="AF_KINGDOM_CW_Core_UltimatumRefusedRevolt" text="你拒绝了最后通牒，派系起兵了。" />
+    <string id="AF_KINGDOM_CW_Core_UltimatumRefusedWaiting" text="你拒绝了最后通牒，派系决意起兵，正等待时机。" />
+    <string id="AF_KINGDOM_CW_Core_UltimatumStatus" text="&#10;&#10;已被拒绝 {COUNT} 次。若不答复，将在第 {DAY} 天自动判定。拒绝可能导致内战。" />
+    <string id="AF_KINGDOM_CW_Core_UltimatumToPlayerKing" text="{FACTION}的最后通牒已送达玩家国王，等待明确答复" />
+    <string id="AF_KINGDOM_CW_Coup_AlreadyRegistered" text="政变内战已经登记。" />
+    <string id="AF_KINGDOM_CW_Coup_ConditionsUnmet" text="政变内战登记条件不满足。" />
+    <string id="AF_KINGDOM_CW_Coup_IdentityConflict" text="政变内战身份冲突，保留原记录。" />
+    <string id="AF_KINGDOM_CW_Coup_RebelKingdomEliminated" text="政变叛军被消灭，叛乱平定。" />
+    <string id="AF_KINGDOM_CW_Coup_RestorationIdentityMissing" text="原王室家族未加入叛军，或复辟身份/原王国名称缺失，暂缓登记。" />
+    <string id="AF_KINGDOM_CW_Coup_RulerKingdomEliminated" text="原统治者王国被消灭，确认政变结果。" />
+    <string id="AF_KINGDOM_CW_Demand_autonomy" text="承认本派系封地自主" />
+    <string id="AF_KINGDOM_CW_Demand_continue_war" text="不与{TARGET}议和" />
+    <string id="AF_KINGDOM_CW_Demand_make_peace" text="结束与{TARGET}的战争并议和" />
+    <string id="AF_KINGDOM_CW_Demand_redress" text="支付赔偿并追究当事人责任" />
+    <string id="AF_KINGDOM_CW_Demand_revoke_policy" text="废除{TARGET}" />
+    <string id="AF_KINGDOM_CW_Demand_unknown" text="贯彻派系诉求" />
+    <string id="AF_KINGDOM_CW_Demand_usurp" text="国王退位，由派系领袖继任" />
+    <string id="AF_KINGDOM_CW_Event_KingExecuted" text="国王遭到处决，王国陷入内战。" />
+    <string id="AF_KINGDOM_CW_Event_ProposalPartiesChanged" text="交涉当事方已变化，撤销未接受的旧提议。" />
+    <string id="AF_KINGDOM_CW_FactionTag_autonomy" text="分治派系" />
+    <string id="AF_KINGDOM_CW_FactionTag_continue_war" text="主战派系" />
+    <string id="AF_KINGDOM_CW_FactionTag_make_peace" text="反战派系" />
+    <string id="AF_KINGDOM_CW_FactionTag_redress" text="索赔派系" />
+    <string id="AF_KINGDOM_CW_FactionTag_revoke_policy" text="变法派系" />
+    <string id="AF_KINGDOM_CW_FactionTag_unknown" text="反对派系" />
+    <string id="AF_KINGDOM_CW_FactionTag_usurp" text="拥立派系" />
+    <string id="AF_KINGDOM_CW_Panel_ChronicleWeek" text="第 {WEEK} 周  ·  {TEXT}" />
+    <string id="AF_KINGDOM_CW_Panel_CivilWar" text="内战" />
+    <string id="AF_KINGDOM_CW_Panel_CivilWarWeek" text="内战第 {WEEK} 周" />
+    <string id="AF_KINGDOM_CW_Panel_ConditionFactionSlots" text="本国派系名额" />
+    <string id="AF_KINGDOM_CW_Panel_ConditionFormalVassal" text="正式封臣资格" />
+    <string id="AF_KINGDOM_CW_Panel_ConditionGrievanceThreshold" text="不满门槛 {THRESHOLD}" />
+    <string id="AF_KINGDOM_CW_Panel_ConditionMet" text="已满足" />
+    <string id="AF_KINGDOM_CW_Panel_ConditionNoEligibleClan" text="无合格家族" />
+    <string id="AF_KINGDOM_CW_Panel_ConditionNotReached" text="未达到" />
+    <string id="AF_KINGDOM_CW_Panel_ConditionOrWeariness" text="或 厌战度 {VALUE}" />
+    <string id="AF_KINGDOM_CW_Panel_ConditionPlayerKingdomFactions" text="玩家王国派系" />
+    <string id="AF_KINGDOM_CW_Panel_ConditionPostWarCooldown" text="战后冷却" />
+    <string id="AF_KINGDOM_CW_Panel_ConditionReached" text="已达到" />
+    <string id="AF_KINGDOM_CW_Panel_CrownExitHint" text="退出王室阵营：与国王 −{LEADER}、其余王室家族 −{MEMBER}，{DAYS} 天内保持中立。" />
+    <string id="AF_KINGDOM_CW_Panel_CrownRespondedFirst" text="王室先行回应" />
+    <string id="AF_KINGDOM_CW_Panel_DayOf" text="第 {DAY} 天" />
+    <string id="AF_KINGDOM_CW_Panel_DaysLeft" text="剩余 {DAYS} 天" />
+    <string id="AF_KINGDOM_CW_Panel_DeliverUltimatum" text="递交通牒" />
+    <string id="AF_KINGDOM_CW_Panel_Delivered" text="已递交" />
+    <string id="AF_KINGDOM_CW_Panel_DeliveringSoon" text="即将递交" />
+    <string id="AF_KINGDOM_CW_Panel_DemandTag" text="{TAG}诉求" />
+    <string id="AF_KINGDOM_CW_Panel_DemandTitle" text="要求{DEMAND}" />
+    <string id="AF_KINGDOM_CW_Panel_DemandTitleExpired" text="诉求已失效" />
+    <string id="AF_KINGDOM_CW_Panel_DissolveOrder" text="解散令" />
+    <string id="AF_KINGDOM_CW_Panel_EmptyDisabled" text="内战派系功能未启用" />
+    <string id="AF_KINGDOM_CW_Panel_EmptyNoKingdom" text="你尚未加入任何王国" />
+    <string id="AF_KINGDOM_CW_Panel_Enabled" text="已开启" />
+    <string id="AF_KINGDOM_CW_Panel_ExitCost" text="与领袖 −{LEADER}、成员 −{MEMBER}，{DAYS} 天内不能加入或建立派系。" />
+    <string id="AF_KINGDOM_CW_Panel_FactionNameFallback" text="{LEADER}的反对派" />
+    <string id="AF_KINGDOM_CW_Panel_GoalPressure" text="逼宫" />
+    <string id="AF_KINGDOM_CW_Panel_GoalSecede" text="独立" />
+    <string id="AF_KINGDOM_CW_Panel_GoalUsurp" text="夺位" />
+    <string id="AF_KINGDOM_CW_Panel_GoldAmount" text="{AMOUNT} 金币" />
+    <string id="AF_KINGDOM_CW_Panel_IdentityKing" text="你是国王  ·  王室阵营" />
+    <string id="AF_KINGDOM_CW_Panel_IdentityNotVassal" text="{CLAN}  ·  非正式封臣，不能参与派系" />
+    <string id="AF_KINGDOM_CW_Panel_IdentityVassal" text="封臣  ·  {CLAN}  ·  {ROLE}" />
+    <string id="AF_KINGDOM_CW_Panel_InfluenceAmount" text="{AMOUNT} 影响力" />
+    <string id="AF_KINGDOM_CW_Panel_JoinedDaysAgo" text=" · {DAYS} 日前加入" />
+    <string id="AF_KINGDOM_CW_Panel_JoinedToday" text=" · 今日加入" />
+    <string id="AF_KINGDOM_CW_Panel_KingHintActive" text="压制、谈判、强制解散共用 {DAYS} 天冷却；妥协不受限，但会兑现诉求。" />
+    <string id="AF_KINGDOM_CW_Panel_KingHintIdle" text="反对派成立后开放压制、谈判、妥协与强制解散。" />
+    <string id="AF_KINGDOM_CW_Panel_LeaderHint" text="不会自动起兵；手动起兵须本家族军力占比达到 {THRESHOLD}%（当前 {CURRENT}%）。可主动解散或改建，仍受战后冷却。" />
+    <string id="AF_KINGDOM_CW_Panel_LeaderLine" text="领袖  {CLAN}{YOU}   ·   与国王关系 {RELATION}" />
+    <string id="AF_KINGDOM_CW_Panel_MemberHint" text="起兵由领袖决定，提议被拒后 {DAYS} 天内不能再提。退出：{EXIT}" />
+    <string id="AF_KINGDOM_CW_Panel_MembersLocked" text="建国请求或内战期间，成员去留锁定。" />
+    <string id="AF_KINGDOM_CW_Panel_MiddleCooldown" text="退出冷却至第 {DAY} 天，期间不能加入或建立派系。" />
+    <string id="AF_KINGDOM_CW_Panel_MiddleSwitchHint" text="加入后改投须先退出：{EXIT}" />
+    <string id="AF_KINGDOM_CW_Panel_NoAnswer" text="未经答复" />
+    <string id="AF_KINGDOM_CW_Panel_NoUltimatum" text="未经通牒" />
+    <string id="AF_KINGDOM_CW_Panel_None" text="无" />
+    <string id="AF_KINGDOM_CW_Panel_NoteAwaitKingReply" text="期限内等待国王答复" />
+    <string id="AF_KINGDOM_CW_Panel_NoteAwaitYourConfirm" text="等待你确认" />
+    <string id="AF_KINGDOM_CW_Panel_NoteAwaitingLeaderAnswer" text="等待派系领袖答复" />
+    <string id="AF_KINGDOM_CW_Panel_NoteAwaitingYourAnswer" text="待你答复 · 超时视为{OUTCOME}" />
+    <string id="AF_KINGDOM_CW_Panel_NoteCheckLog" text="已保留状态，需检查日志" />
+    <string id="AF_KINGDOM_CW_Panel_NoteCompensationAwaitsLeader" text="国王提出补偿换取撤回诉求，等待派系领袖答复。" />
+    <string id="AF_KINGDOM_CW_Panel_NoteCompensationOffer" text="国王提出 {OFFER} 补偿，换取撤回诉求并解散派系；接受后补偿归你的家族。" />
+    <string id="AF_KINGDOM_CW_Panel_NoteConcedeAbdication" text="妥协即退位，由派系领袖继位" />
+    <string id="AF_KINGDOM_CW_Panel_NoteConcedeHonors" text="妥协将兑现该诉求" />
+    <string id="AF_KINGDOM_CW_Panel_NoteCrownFightsWithKing" text="若派系起兵，王室阵营家族随国王应战。" />
+    <string id="AF_KINGDOM_CW_Panel_NoteDecidedOnRefusal" text="拒绝后判定" />
+    <string id="AF_KINGDOM_CW_Panel_NoteDefaultRisk" text="国王若妥协将兑现诉求；若拒绝，派系按概率决定是否起兵。" />
+    <string id="AF_KINGDOM_CW_Panel_NoteDeliveringUltimatum" text="即将递交最后通牒" />
+    <string id="AF_KINGDOM_CW_Panel_NoteDissolveAwaitsLeader" text="国王已下令解散，等待派系领袖服从或抗命。" />
+    <string id="AF_KINGDOM_CW_Panel_NoteFoundingGoal" text="叛军正在建国。战争目标：{GOAL}。" />
+    <string id="AF_KINGDOM_CW_Panel_NoteHoldingStillHomeWar" text="国内战事期间按兵不动" />
+    <string id="AF_KINGDOM_CW_Panel_NoteKingDissolveOrder" text="国王下令解散派系：服从则解散，抗命则起兵。" />
+    <string id="AF_KINGDOM_CW_Panel_NoteKingRuling" text="国王正在裁决" />
+    <string id="AF_KINGDOM_CW_Panel_NoteLowEscalation" text="被拒后起兵概率较低（×{SCALE}）。" />
+    <string id="AF_KINGDOM_CW_Panel_NoteOpenWarGoal" text="叛军王国已与王室开战。战争目标：{GOAL}。" />
+    <string id="AF_KINGDOM_CW_Panel_NotePlayerFactionRisk" text="国王若拒绝，派系按概率决定是否起兵；建国请求或内战开始后，成员去留锁定。" />
+    <string id="AF_KINGDOM_CW_Panel_NoteRebelAtWarWithCrown" text="叛军王国已与王室开战" />
+    <string id="AF_KINGDOM_CW_Panel_NoteRefusalRollSuffix" text="；拒绝后，派系按概率决定是否起兵。" />
+    <string id="AF_KINGDOM_CW_Panel_NoteRefusedRetry" text="被拒 {COUNT} 次后重提 · {NOTE}" />
+    <string id="AF_KINGDOM_CW_Panel_NoteResolvedWaitWarEnd" text="已决意，待战事结束" />
+    <string id="AF_KINGDOM_CW_Panel_NoteRetryNextDay" text="次日重试" />
+    <string id="AF_KINGDOM_CW_Panel_NoteWaitingRebelFounding" text="等待叛军王国建立" />
+    <string id="AF_KINGDOM_CW_Panel_NoteWaitingRebellionSlot" text="等待起兵名额释放" />
+    <string id="AF_KINGDOM_CW_Panel_NoteWillDeliverUltimatum" text="之后向国王递交最后通牒" />
+    <string id="AF_KINGDOM_CW_Panel_OutcomeDefiance" text="抗命" />
+    <string id="AF_KINGDOM_CW_Panel_OutcomeRefusal" text="拒绝" />
+    <string id="AF_KINGDOM_CW_Panel_Paused" text="暂停" />
+    <string id="AF_KINGDOM_CW_Panel_PlayerLedNote" text="玩家领袖派系不会自动起兵；可改换诉求重新评估成员，手动起兵需确认且满足军力门槛。" />
+    <string id="AF_KINGDOM_CW_Panel_PreviouslyRefused" text="前次被拒" />
+    <string id="AF_KINGDOM_CW_Panel_RebelFounding" text="叛军建国中" />
+    <string id="AF_KINGDOM_CW_Panel_Rebellion" text="起兵" />
+    <string id="AF_KINGDOM_CW_Panel_RefusalUnit" text="次" />
+    <string id="AF_KINGDOM_CW_Panel_RefusalUnitDeferred" text="次 · 拖延 {COUNT}" />
+    <string id="AF_KINGDOM_CW_Panel_Refused" text="已拒绝" />
+    <string id="AF_KINGDOM_CW_Panel_ResolvedToRebel" text="决意起兵" />
+    <string id="AF_KINGDOM_CW_Panel_RoyalLetter" text="王室来函" />
+    <string id="AF_KINGDOM_CW_Panel_RoyalTalks" text="王室谈判" />
+    <string id="AF_KINGDOM_CW_Panel_RulingKingAccepts" text="国王接受" />
+    <string id="AF_KINGDOM_CW_Panel_RulingKingDefers" text="国王拖延" />
+    <string id="AF_KINGDOM_CW_Panel_RulingKingRefuses" text="国王拒绝" />
+    <string id="AF_KINGDOM_CW_Panel_RulingKingRefusesRebels" text="国王拒绝，派系起兵" />
+    <string id="AF_KINGDOM_CW_Panel_RulingPending" text="裁决中" />
+    <string id="AF_KINGDOM_CW_Panel_SettingDisabled" text="设置已关闭" />
+    <string id="AF_KINGDOM_CW_Panel_Settlement" text="结算" />
+    <string id="AF_KINGDOM_CW_Panel_ShortName" text="{CLAN}{TAG}" />
+    <string id="AF_KINGDOM_CW_Panel_StageAwaitingResponse" text="待派系回应 · 剩 {DAYS} 天" />
+    <string id="AF_KINGDOM_CW_Panel_StageCivilWarWeek" text="内战 · 第 {WEEK} 周" />
+    <string id="AF_KINGDOM_CW_Panel_StageCooldown" text="内战余波平息中（第 {DAY} 天前不会成派）" />
+    <string id="AF_KINGDOM_CW_Panel_StageEmboldened" text="受叛军得胜鼓舞 · {DAYS} 天后提出通牒" />
+    <string id="AF_KINGDOM_CW_Panel_StageFormed" text="{COUNT} 个反对派已成立" />
+    <string id="AF_KINGDOM_CW_Panel_StageFormedUltimatumIn" text="已成形 · {DAYS} 天后提出通牒" />
+    <string id="AF_KINGDOM_CW_Panel_StageFormedUltimatumSoon" text="已成形 · 即将提出通牒" />
+    <string id="AF_KINGDOM_CW_Panel_StageNoneFormed" text="尚无派系成形" />
+    <string id="AF_KINGDOM_CW_Panel_StageOpenWar" text="{COUNT} 派正在内战" />
+    <string id="AF_KINGDOM_CW_Panel_StagePausedHomeWar" text="暂停 · 国内战事期间按兵不动" />
+    <string id="AF_KINGDOM_CW_Panel_StagePlayerKingdomDisabled" text="玩家王国派系已在设置中关闭" />
+    <string id="AF_KINGDOM_CW_Panel_StageRebelling" text="起兵中 · 叛军王国建立中" />
+    <string id="AF_KINGDOM_CW_Panel_StageResolvedWaitingSlot" text="决意起兵 · 等待起兵名额" />
+    <string id="AF_KINGDOM_CW_Panel_StageSettlementError" text="结算异常 · 已保留状态，需检查日志" />
+    <string id="AF_KINGDOM_CW_Panel_StageSettlementIncomplete" text="结算未完成 · 次日重试" />
+    <string id="AF_KINGDOM_CW_Panel_StageSuppressed" text="受平叛震慑 · {DAYS} 天后提出通牒" />
+    <string id="AF_KINGDOM_CW_Panel_StageUltimatum" text="{COUNT} 派发出最后通牒" />
+    <string id="AF_KINGDOM_CW_Panel_StageUltimatumAwaitKing" text="最后通牒 · 待国王答复（剩 {DAYS} 天）" />
+    <string id="AF_KINGDOM_CW_Panel_StageUltimatumAwaitRuling" text="最后通牒 · 等待裁决" />
+    <string id="AF_KINGDOM_CW_Panel_StanceCrown" text="王室阵营" />
+    <string id="AF_KINGDOM_CW_Panel_StanceFactionLeader" text="派系领袖" />
+    <string id="AF_KINGDOM_CW_Panel_StanceKing" text="国王" />
+    <string id="AF_KINGDOM_CW_Panel_StanceSupporter" text="支持{TAG}" />
+    <string id="AF_KINGDOM_CW_Panel_StanceUndeclared" text="未表态" />
+    <string id="AF_KINGDOM_CW_Panel_StandingBy" text="待命" />
+    <string id="AF_KINGDOM_CW_Panel_StepFounded" text="成立" />
+    <string id="AF_KINGDOM_CW_Panel_StepKingAnswer" text="国王答复" />
+    <string id="AF_KINGDOM_CW_Panel_StepManualRebellion" text="手动起兵" />
+    <string id="AF_KINGDOM_CW_Panel_StepMayRebel" text="可能起兵" />
+    <string id="AF_KINGDOM_CW_Panel_Ultimatum" text="最后通牒" />
+    <string id="AF_KINGDOM_CW_Panel_UnitDays" text="天" />
+    <string id="AF_KINGDOM_CW_Panel_UnitWeeks" text="周" />
+    <string id="AF_KINGDOM_CW_Panel_UntilDay" text="至第 {DAY} 天" />
+    <string id="AF_KINGDOM_CW_Panel_ValueError" text="异常" />
+    <string id="AF_KINGDOM_CW_Panel_ValueFounding" text="建国中" />
+    <string id="AF_KINGDOM_CW_Panel_ValueSoon" text="即将" />
+    <string id="AF_KINGDOM_CW_Panel_ValueWeekNumber" text="{WEEK}" />
+    <string id="AF_KINGDOM_CW_Panel_WeekOf" text="第 {WEEK} 周" />
+    <string id="AF_KINGDOM_CW_Panel_YouSuffix" text="（你）" />
+    <string id="AF_KINGDOM_CW_PlayerControl_KingdomCooldown" text="王国战后冷却至第 {A} 天，玩家也不能手动起兵。" />
+    <string id="AF_KINGDOM_CW_PlayerControl_StrengthBelowThreshold" text="玩家家族军力占比 {A}% 未达到手动起兵门槛 {B}%。" />
+    <string id="AF_KINGDOM_CW_Role_Leader" text="{TAG}领袖" />
+    <string id="AF_KINGDOM_CW_Role_Member" text="{TAG}成员" />
+    <string id="AF_KINGDOM_CW_Source_broken_pledge" text="国王背诺" />
+    <string id="AF_KINGDOM_CW_Source_demand_refused" text="诉求被拒" />
+    <string id="AF_KINGDOM_CW_Source_fief_denied" text="封地落选" />
+    <string id="AF_KINGDOM_CW_Source_fief_lost" text="失守封地" />
+    <string id="AF_KINGDOM_CW_Source_lands_raided" text="领地遭劫" />
+    <string id="AF_KINGDOM_CW_Source_peace_imposed" text="强行议和" />
+    <string id="AF_KINGDOM_CW_Source_policy_imposed" text="政策强推" />
+    <string id="AF_KINGDOM_CW_Source_royal_execution" text="王室处决" />
+    <string id="AF_KINGDOM_CW_Source_royal_suppression" text="王室打压" />
+    <string id="AF_KINGDOM_CW_Source_unknown" text="未知不满" />
+    <string id="AF_KINGDOM_CW_Source_war_imposed" text="强行开战" />
+    <string id="AF_KINGDOM_CW_Stability_Average" text="中等" />
+    <string id="AF_KINGDOM_CW_Stability_ExtremelyHigh" text="极高" />
+    <string id="AF_KINGDOM_CW_Stability_ExtremelyPoor" text="极危" />
+    <string id="AF_KINGDOM_CW_Stability_FairlyHigh" text="较高" />
+    <string id="AF_KINGDOM_CW_Stability_High" text="高" />
+    <string id="AF_KINGDOM_CW_Stability_Poor" text="较弱" />
+    <string id="AF_KINGDOM_CW_Stability_VeryPoor" text="微弱" />
+    <string id="AF_DIP_UI_Vassalage_TypeTributary" text="朝贡国" />
+    <string id="AF_DIP_UI_Vassalage_TypeGarrison" text="卫戍国" />
+    <string id="AF_DIP_UI_Vassalage_TypeVassal" text="附庸国" />
+    <string id="AF_DIP_UI_Vassalage_SubjectWarNoticeName" text="你的{TYPE}{KINGDOM}" />
+    <string id="AF_DIP_UI_Vassalage_SubjectWarNoticeKingdomFallback" text="该国" />
+    <string id="AF_DIP_UI_Vassalage_PlayerKingdomFallback" text="玩家王国" />
+    <string id="AF_DIP_UI_Vassalage_CampaignDate" text="{YEAR}年 {SEASON} {DAY}日" />
+    <string id="AF_DIP_UI_Vassalage_SeasonSpring" text="春季" />
+    <string id="AF_DIP_UI_Vassalage_SeasonSummer" text="夏季" />
+    <string id="AF_DIP_UI_Vassalage_SeasonAutumn" text="秋季" />
+    <string id="AF_DIP_UI_Vassalage_SeasonWinter" text="冬季" />
+    <string id="AF_DIP_UI_Vassalage_SeasonUnknown" text="未知季节" />
+    <string id="AF_DIP_UI_Vassalage_FiefTown" text="城镇" />
+    <string id="AF_DIP_UI_Vassalage_FiefCastle" text="城堡" />
+    <string id="AF_DIP_UI_Vassalage_PerFiefUnit" text="座" />
+    <string id="AF_DIP_UI_Vassalage_PerVillageUnit" text="村" />
+    <string id="AF_DIP_UI_Vassalage_Terminal_Obedience" text="{VALUE}/100；脱离阈值 {THRESHOLD}；{RULER}关系 {RELATION}" />
+    <string id="AF_DIP_UI_Vassalage_Terminal_ElapsedDays" text="{DAYS}天" />
+    <string id="AF_DIP_UI_Vassalage_Terminal_IndependenceLabel" text="&#10;独立度：" />
+    <string id="AF_DIP_UI_Vassalage_Terminal_TributeClickHint" text="&#10;点击查看详细贡赋记录。" />
+    <string id="AF_DIP_UI_Vassalage_Terminal_TypeNoTributeHint" text="&#10;该臣属类型不产生贡赋记录。" />
+    <string id="AF_DIP_UI_Vassalage_Terminal_HistoryLine" text="，臣属国力：{STRENGTH}；入库：繁荣 +{PROSPERITY}、食物库存 +{FOOD}、村庄户数 +{HEARTH}；贡赋代价：繁荣 -{COST_PROSPERITY}、食物库存 -{COST_FOOD}、村庄户数 -{COST_HEARTH}。" />
+    <string id="AF_DIP_UI_Vassalage_Terminal_CostFallback" text="繁荣度 -{PROSPERITY}（城镇 {TOWNS}，城堡 {CASTLES}）&#10;粮食 -{FOOD}&#10;户数 -{HEARTH}（村庄 {VILLAGES}）" />
+    <string id="AF_DIP_UI_Vassalage_Terminal_NoSettlementGainLine" text="本次贡赋未能分配到宗主国领地。" />
+    <string id="AF_DIP_UI_Vassalage_PerFiefFortificationLine" text="{LABEL}（{COUNT}）：每座入库 繁荣度 {PROSPERITY}，粮食 {FOOD}{FOOD_LIMIT}&#10;" />
+    <string id="AF_DIP_UI_Vassalage_PerVillageLine" text="村庄（{COUNT}）：每村增加 户数 {HEARTH}&#10;" />
+    <string id="AF_DIP_UI_Vassalage_PerFiefBaseline" text="（原 +{ORIGINAL}/{UNIT}，实缴率 {RATIO}）" />
+    <string id="AF_DIP_UI_Vassalage_GainRatioNote" text="（应得 +{PLANNED}，实缴率 {RATIO}" />
+    <string id="AF_DIP_UI_Vassalage_TownPaymentLine" text="城镇（{COUNT}）：每座缴纳 繁荣度 -{PROSPERITY}，食物库存 -{FOOD}&#10;" />
+    <string id="AF_DIP_UI_Vassalage_CastlePaymentLine" text="城堡（{COUNT}）：每座缴纳 繁荣度 -{PROSPERITY}，食物库存 -{FOOD}&#10;" />
+    <string id="AF_DIP_UI_Vassalage_VillagePaymentLine" text="村庄（{COUNT}）：每村缴纳 户数 -{HEARTH}" />
+    <string id="AF_DIP_UI_Vassalage_SettlementFortificationGain" text="{SETTLEMENT}：繁荣度 +{PROSPERITY}，粮食 +{FOOD}" />
+    <string id="AF_DIP_UI_Vassalage_SettlementVillageGain" text="{SETTLEMENT}：户数 +{HEARTH}" />
+    <string id="AF_DIP_UI_Vassalage_AgreementRevisedSummary" text="{SUBJECT}的臣属条约已由{OLD}改订为{NEW}。" />
+    <string id="AF_DIP_UI_Vassalage_AgreementRevisedDetail" text="宫廷书记官已重写臣属条约：&#10;&#10;臣属国：{SUBJECT}&#10;原条约类型：{OLD}&#10;新条约类型：{NEW}&#10;原立约日：{OLD_DATE}&#10;新立约日：{NEW_DATE}&#10;&#10;旧约随之作废：立约日重置，旧约相关贡赋记录、忠诚度与保护安排均已归档。" />
+    <string id="AF_DIP_UI_Vassalage_AgreementBrokenSummary" text="{SUBJECT}的{TYPE}条约已经终止。" />
+    <string id="AF_DIP_UI_Vassalage_AgreementBrokenDetail" text="宫廷急报：&#10;&#10;臣属国：{SUBJECT}&#10;条约类型：{TYPE}&#10;立约日：{SIGNED}&#10;终止日：{ENDED}&#10;终止原因：{REASON}&#10;&#10;{MESSAGE}" />
+    <string id="AF_DIP_UI_Vassalage_BreakReasonReleased" text="宗主国主动释放，臣属国恢复独立" />
+    <string id="AF_DIP_UI_Vassalage_BreakReasonPlayerBroke" text="宗主国主动撕毁臣属誓约" />
+    <string id="AF_DIP_UI_Vassalage_BreakReasonProtectionRefused" text="宗主国拒绝履行朝贡庇护" />
+    <string id="AF_DIP_UI_Vassalage_BreakReasonProtectionDismissed" text="宗主国未回应朝贡国求援" />
+    <string id="AF_DIP_UI_Vassalage_BreakReasonGarrisonCollapsed" text="卫戍国独立度达到脱离阈值" />
+    <string id="AF_DIP_UI_Vassalage_BreakReasonVassalCollapsed" text="附庸国独立度达到脱离阈值" />
+    <string id="AF_DIP_UI_Vassalage_BreakReasonRelationThreshold" text="独立度达到当前统治者关系对应的脱离阈值" />
+    <string id="AF_DIP_UI_Vassalage_BreakReasonAnnexation" text="王国被吞并" />
+    <string id="AF_DIP_UI_Vassalage_BreakReasonVassalageEnded" text="臣属关系终止" />
+    <string id="AF_DIP_UI_Vassalage_TributaryBreachSummary" text="{DECLARING}宣战了{TARGET}；朝贡条约已经终止，宗主国已自动维护臣属秩序。" />
+    <string id="AF_DIP_UI_Vassalage_TributaryBreachDetail" text="边境急报：&#10;&#10;背约方：{DECLARING}&#10;被宣战方：{TARGET}&#10;&#10;{BREAKER}主动攻击受宗主控制的臣属国，朝贡条约已经终止。&#10;{SUZERAIN}已经自动保护{TARGET_NAME}，并号令所有卫戍国与附庸国共同对原朝贡国开战。" />
+    <string id="AF_DIP_UI_Vassalage_TributariesAtWarSummary" text="{DECLARING}宣战了{TARGET}；此为朝贡国之间的自主战争，宗主国不介入。" />
+    <string id="AF_DIP_UI_Vassalage_TributariesAtWarDetail" text="边境急报：&#10;&#10;宣战方：{DECLARING}&#10;被宣战方：{TARGET}&#10;&#10;两个朝贡国均保留军事自主权。此战被视为朝贡国之间的自主战争，宗主国不会自动保护、不会自动参战，也不会解除任何朝贡条约。" />
+    <string id="AF_DIP_UI_WorldDiplomacy_PersistenceUnavailable" text="外交存档数据异常，外交已暂停并保留原数据。请查看 Logs/Mod_Logic 中的 WorldDiplomacy 日志；当前外交操作已拒绝。" />
+    <string id="AF_DIP_UI_WorldDiplomacy_SessionEnded" text="外交操作所属会话已结束，请重新打开。" />
+    <string id="AF_DIP_UI_WorldDiplomacy_PersistenceUnreadable" text="外交存档读取异常，外交已暂停以保护原存档。请勿覆盖原档；查看 Logs/Mod_Logic 中的 WorldDiplomacy 日志。" />
+    <string id="AF_DIP_UI_WorldDiplomacy_DeclareBodyEmpty" text="外交宣言正文不能为空。" />
+    <string id="AF_DIP_UI_WorldDiplomacy_DeclareNotRuler" text="你当前不再是王国统治者，外交宣言没有发布。" />
+    <string id="AF_DIP_UI_WorldDiplomacy_DeclarePublished" text="外交宣言已经公开发布；系统正在后台解析其对象、诉求与外交动作。" />
+    <string id="AF_DIP_UI_WorldDiplomacy_ReplyBodyEmpty" text="外交回应正文不能为空。" />
+    <string id="AF_DIP_UI_WorldDiplomacy_ReplyNotRuler" text="你当前不再是王国统治者，外交回应没有发布。" />
+    <string id="AF_DIP_UI_WorldDiplomacy_ReplyNoRound" text="外交回应暂未发布：无法建立交涉回合。" />
+    <string id="AF_DIP_UI_WorldDiplomacy_ReplyPublished" text="外交回应已经公开发布；系统正在后台解析其诉求与外交动作。" />
+    <string id="AF_DIP_UI_WorldDiplomacy_ImpactResultSection" text="【外交结果】" />
+    <string id="AF_DIP_UI_WorldDiplomacy_ImpactReputationSection" text="【国际声誉】" />
+    <string id="AF_DIP_UI_WorldDiplomacy_ImpactPrestigeSection" text="【国家威望】" />
+    <string id="AF_DIP_UI_WorldDiplomacy_ImpactOtherKingdomsSection" text="【其他国家影响】" />
+    <string id="AF_DIP_UI_WorldDiplomacy_ImpactDeltaLabel" text="变化：" />
+    <string id="AF_DIP_UI_WorldDiplomacy_ImpactReasonLabel" text="原因：" />
+    <string id="AF_DIP_UI_WorldDiplomacy_ImpactNoReputationChange" text="本篇没有形成明确的国际声誉变化。" />
+    <string id="AF_DIP_UI_WorldDiplomacy_ImpactNoPrestigeChange" text="本篇没有触发国家威望结算。" />
+    <string id="AF_DIP_UI_WorldDiplomacy_ImpactNoReason" text="无说明" />
+    <string id="AF_DIP_UI_WorldDiplomacy_UnknownKingdom" text="未知国家" />
+    <string id="AF_DIP_UI_WorldDiplomacy_BodyArchived" text="（该旧公文正文已压缩至年度摘要。）" />
+    <string id="AF_DIP_UI_WorldDiplomacy_BodyCompressed" text="该旧公文正文已经压缩，可查看对应年度外交摘要。" />
+    <string id="AF_DIP_UI_WorldDiplomacy_BodySectionTitle" text="公告正文" />
+    <string id="AF_DIP_UI_WorldDiplomacy_ImpactSectionTitle" text="外交结果与外交影响" />
+    <string id="AF_DIP_UI_WorldDiplomacy_WorldBulletin" text="世界公告" />
+    <string id="AF_DIP_UI_WorldDiplomacy_IndexMetaDeclaration" text="外交宣言：" />
+    <string id="AF_DIP_UI_WorldDiplomacy_UnreadMarker" text="新" />
+    <string id="AF_DIP_UI_WorldDiplomacy_ChronicleArchive" text="外交编年档案" />
+    <string id="AF_DIP_UI_WorldDiplomacy_AnnualSummaryKind" text="年度外交摘要" />
+    <string id="AF_DIP_UI_WorldDiplomacy_WorldSharedMemory" text="世界共享记忆" />
+    <string id="AF_DIP_UI_WorldDiplomacy_YearLabel" text="第{YEAR}年" />
+    <string id="AF_DIP_UI_WorldDiplomacy_AnnualRecordTitle" text="第{YEAR}年外交纪要" />
+    <string id="AF_DIP_UI_WorldDiplomacy_AnnualCompressedArchive" text="年度压缩档案" />
+    <string id="AF_DIP_UI_WorldDiplomacy_AnnualSummarySection" text="年度摘要" />
+    <string id="AF_DIP_UI_WorldDiplomacy_MajorEventsSection" text="重大事件索引" />
+    <string id="AF_DIP_UI_WorldDiplomacy_HistoryCompactionKind" text="外交历史整理" />
+    <string id="AF_DIP_UI_WorldDiplomacy_LongTermMemory" text="长期外交记忆" />
+    <string id="AF_DIP_UI_WorldDiplomacy_HistoryCompactionTitle" text="外交历史整理档案" />
+    <string id="AF_DIP_UI_WorldDiplomacy_CompactionMeta" text="累计 {TOKENS} Tokens 后整理" />
+    <string id="AF_DIP_UI_WorldDiplomacy_DiplomaticRecordSection" text="外交纪要" />
+    <string id="AF_DIP_UI_WorldDiplomacy_GameConfirmedResultsSection" text="游戏确认结果" />
+    <string id="AF_DIP_UI_WorldDiplomacy_StandingSection" text="【国家威望与国际声誉】" />
+    <string id="AF_DIP_UI_WorldDiplomacy_StandingPrestigeLabel" text="国家威望：" />
+    <string id="AF_DIP_UI_WorldDiplomacy_StandingPrestigeHint" text="/100（该国的外交信用与威慑；过低会损害国内贵族关系）" />
+    <string id="AF_DIP_UI_WorldDiplomacy_StandingReputationLabel" text="国际声誉：" />
+    <string id="AF_DIP_UI_WorldDiplomacy_StandingReputationHint" text="/100（他国对该国的评价；影响合作意愿与施压倾向）" />
+    <string id="AF_DIP_UI_WorldDiplomacy_ArchiveSubtitleIdle" text="统一查看自定义政策、政策衍生事件与各国公开发布的外交宣言。" />
+    <string id="AF_DIP_UI_WorldDiplomacy_DefaultTopic" text="外交交涉" />
+    <string id="AF_DIP_UI_WorldDiplomacy_ActiveEventPrefix" text="当前外交事件：" />
+    <string id="AF_DIP_UI_WorldDiplomacy_ActiveEventInProgress" text="  ·  进行中" />
+    <string id="AF_DIP_UI_WorldDiplomacy_ActiveEventParticipants" text="  ·  参与国：" />
+    <string id="AF_DIP_UI_WorldDiplomacy_Reject_SourceUnavailable" text="原提案尚未送达本国、已失效或不存在，不能执行这次回应。" />
+    <string id="AF_DIP_UI_WorldDiplomacy_Reject_TradeTermsChanged" text="接受贸易原案时不能修改期限或附加条款；修改条件请另发新提案。" />
+    <string id="AF_DIP_UI_WorldDiplomacy_Reject_NoOpenOffer" text="未能对应到对方仍有效的正式提案。请确认对方的提案宣言已送达且仍开放，或在该宣言上直接回复接受。" />
+    <string id="AF_DIP_UI_WorldDiplomacy_Reject_TreatyRoles" text="条约的接收国与并入国（或宗主国与臣属国）必须正好是本次交涉的双方。" />
+    <string id="AF_DIP_UI_WorldDiplomacy_Reject_AcceptChangesTerms" text="接受原案时不能修改原提案的条款；修改条件请另发新提案。" />
+    <string id="AF_DIP_UI_WorldDiplomacy_Reject_TreatyCycle" text="该条约会造成臣属关系循环。" />
+    <string id="AF_DIP_UI_WorldDiplomacy_Reject_SubjectHasTreaty" text="臣属方已存在臣属条约。" />
+    <string id="AF_DIP_UI_WorldDiplomacy_Reject_TreatyParticipantsUnavailable" text="条约一方的王国或统治者当前不可用。" />
+    <string id="AF_DIP_UI_WorldDiplomacy_Reject_UnsupportedClause" text="该条约不支持附加贡金、期限或割地条款。" />
+    <string id="AF_DIP_UI_WorldDiplomacy_Reject_NotAtWar" text="双方当前并不处于战争状态。" />
+    <string id="AF_DIP_UI_WorldDiplomacy_Reject_PeaceTerms" text="和平条款当前无法原样执行。" />
+    <string id="AF_DIP_UI_WorldDiplomacy_Reject_DeclareWarNotLegal" text="当前不满足宣战条件。" />
+    <string id="AF_DIP_UI_WorldDiplomacy_Reject_StateConflict" text="与双方当前的同盟或贸易状态冲突。" />
+    <string id="AF_DIP_UI_WorldDiplomacy_Reject_NotInLegalActions" text="该动作不在双方当前可执行的外交动作之内。" />
+    <string id="AF_DIP_UI_WorldDiplomacy_Reject_NoLiveTarget" text="对象王国不存在、已灭亡或没有独立外交权。" />
+    <string id="AF_DIP_UI_WorldDiplomacy_Reject_UnsupportedByState" text="当前局势不支持解析出的动作。" />
+    <string id="AF_DIP_UI_WorldDiplomacy_DeclarePublishedMechanicRejected" text="外交宣言已经发布，但其中解析出的外交动作未执行：" />
+    <string id="AF_DIP_UI_WorldDiplomacy_Reject_DeclareWarNotExecuted" text="宣战未执行：" />
+    <string id="AF_DIP_UI_Vote_AbolishPolicyTitle" text="废除政策：{POLICY}" />
+    <string id="AF_DIP_UI_Vote_BilateralCannotCreate" text="对等外交议程：无法建立复议议程，未产生外交效果。" />
+    <string id="AF_DIP_UI_Vote_BilateralCounterpartCreateFailed" text="对等外交议程：建立复议议程失败，未产生外交效果。" />
+    <string id="AF_DIP_UI_Vote_BilateralCounterpartTitle" text="对等外交复议：{TITLE}" />
+    <string id="AF_DIP_UI_Vote_BilateralCounterpartType" text="复议" />
+    <string id="AF_DIP_UI_Vote_BilateralEffective" text="对等外交议程：{FIRST}与{SECOND}均已通过{KIND}，协议现已生效。" />
+    <string id="AF_DIP_UI_Vote_BilateralFirstApproved" text="对等外交议程：{SOURCE}已通过{KIND}提案，现提交{TARGET}复议。" />
+    <string id="AF_DIP_UI_Vote_BilateralInvalid" text="对等外交议程失效：{FIRST}与{SECOND}之间的{KIND}条件已变化，协议未生效。" />
+    <string id="AF_DIP_UI_Vote_BilateralKindAlliance" text="同盟" />
+    <string id="AF_DIP_UI_Vote_BilateralKindDiplomacy" text="外交" />
+    <string id="AF_DIP_UI_Vote_BilateralKindPeace" text="和平" />
+    <string id="AF_DIP_UI_Vote_BilateralKindTrade" text="贸易协定" />
+    <string id="AF_DIP_UI_Vote_BilateralPendingDuplicate" text="对等外交议程：{FIRST}与{SECOND}已有待复议的{KIND}提案。" />
+    <string id="AF_DIP_UI_Vote_BilateralRejected" text="对等外交议程：{SECOND}否决了{FIRST}的{KIND}提案，未产生外交效果。" />
+    <string id="AF_DIP_UI_Vote_DeadlineMemberAction" text="请审阅议程并准备投票。" />
+    <string id="AF_DIP_UI_Vote_DeadlineOneDay" text="王国议程《{TITLE}》将在一天内结束；{ACTION}" />
+    <string id="AF_DIP_UI_Vote_DeadlineRulerAction" text="你将进入最终表决并作出裁决。" />
+    <string id="AF_DIP_UI_Vote_DescAgainstAbolish" text="该选项将保留此政策。" />
+    <string id="AF_DIP_UI_Vote_DescAgainstEnact" text="该选项将不推行此政策。" />
+    <string id="AF_DIP_UI_Vote_DescFavorAbolish" text="该选项将废除此政策。" />
+    <string id="AF_DIP_UI_Vote_DescFavorEnact" text="该选项将推行此政策。" />
+    <string id="AF_DIP_UI_Vote_EnactPolicyTitle" text="推行政策：{POLICY}" />
+    <string id="AF_DIP_UI_Vote_NoProposer" text="无" />
+    <string id="AF_DIP_UI_Vote_OutcomeAgainstAbolish" text="反对废除，保留政策（否）" />
+    <string id="AF_DIP_UI_Vote_OutcomeAgainstEnact" text="反对推行，维持未生效（否）" />
+    <string id="AF_DIP_UI_Vote_OutcomeFavorAbolish" text="废除（是）" />
+    <string id="AF_DIP_UI_Vote_OutcomeFavorEnact" text="推行（是）" />
+    <string id="AF_DIP_UI_Vote_ProposalVoteSoon" text="提案《{TITLE}》将在{DAYS}天后开启投票" />
+    <string id="AF_DIP_UI_Vote_RequiredDecisionDue" text="议程《{TITLE}》期限已到，请作出最终裁决。" />
+    <string id="AF_DIP_UI_Vote_TypeAlliance" text="同盟" />
+    <string id="AF_DIP_UI_Vote_TypeDecision" text="决议" />
+    <string id="AF_DIP_UI_Vote_TypeDeclareWar" text="宣战" />
+    <string id="AF_DIP_UI_Vote_TypeExpelClan" text="驱逐家族" />
+    <string id="AF_DIP_UI_Vote_TypeFief" text="封地" />
+    <string id="AF_DIP_UI_Vote_TypeKingSelection" text="王选" />
+    <string id="AF_DIP_UI_Vote_TypeMakePeace" text="和平" />
+    <string id="AF_DIP_UI_Vote_TypePolicy" text="政策" />
+    <string id="AF_DIP_UI_Vote_TypeTrade" text="贸易" />
+    <string id="AF_DIP_UI_Vote_UnknownClan" text="未知家族" />
+    <string id="AF_DIP_UI_Vote_UnknownKingdomName" text="未知王国" />
+    <string id="AF_DIP_UI_Vote_UnknownOption" text="未知选项" />
+    <string id="AF_DIP_UI_Vote_UnnamedPolicy" text="未命名政策" />
+    <string id="AF_DIP_UI_Vote_UnnamedProposal" text="未命名提案" />
+    <string id="AF_DIP_UI_WorldDiplomacy_AnalysisFailedTruncated" text="宣言已公开；模型输出因长度上限被截断，外交动作尚未执行。请提高对应API的输出上限后选择“重新解析”。" />
+    <string id="AF_DIP_UI_WorldDiplomacy_AnalysisFailedAcceptAndAmend" text="宣言已公开；解析同时给出接受原案和修改条款，外交动作未执行。可重新解析原文；修改条件应作为新提案。" />
+    <string id="AF_DIP_UI_WorldDiplomacy_AnalysisFailedTreatyRoles" text="宣言已公开；解析未能辨明条约双方角色，提案未执行。可重新解析原文。" />
+    <string id="AF_DIP_UI_WorldDiplomacy_AnalysisFailed" text="宣言已公开；分析失败，外交动作未执行。可选择“重新解析”再次处理原文。" />
+    <string id="AF_DIP_UI_WorldDiplomacy_DeclarePublishedMechanicRejectedDetail" text="外交宣言已经发布，但其中解析出的外交动作未执行：{REASON}" />
+    <string id="AF_DIP_UI_WorldDiplomacy_Reject_WithCode" text="{DETAIL}（{CODE}）" />
+    <string id="AF_DIP_UI_WorldDiplomacy_Reject_DeclareWarNotExecutedDetail" text="宣战未执行：{REASON}" />
+    <string id="AF_DIP_UI_KingdomProfile_GenerationKingdomEliminated" text="国家已覆灭，已停止自动生成建国卡。" />
+    <string id="AF_DIP_UI_KingdomProfile_GenerationKingdomMissing" text="国家对象已不存在，无法生成建国卡。" />
+    <string id="AF_DIP_UI_KingdomProfile_GenerationApiSettingsMissing" text="请检查 MCM 的政策 API 来源或主 API 设置。" />
+    <string id="AF_DIP_UI_KingdomProfile_GenerationApiMainConfigIncomplete" text="主 API 配置不完整，政策生成无法开始。" />
+    <string id="AF_DIP_UI_KingdomProfile_GenerationApiSelectedAndMainIncomplete" text="所选政策 API 配置不完整，且主 API 也不完整，政策生成无法开始。" />
+    <string id="AF_DIP_UI_KingdomProfile_ApiRequestFailed" text="API 请求失败。" />
+    <string id="AF_DIP_UI_KingdomProfile_StaleRequest" text="（错误：请求已因读档失效）" />
+    <string id="AF_DIP_UI_KingdomProfile_ExportDirectoryInvalid" text="导出目录无效。" />
+    <string id="AF_DIP_UI_KingdomProfile_ImportSourceModDirectory" text="模组目录" />
+    <string id="AF_DIP_UI_KingdomProfile_ImportSourcePlayerExports" text="玩家导出" />
+    <string id="AF_KINGDOM_CW_Chronicle_NoOutcome" text="{FACTION}的内战未能结算：没有可用的结局" />
+    <string id="AF_KINGDOM_CW_Chronicle_OppositionFounded" text="反对派成立：{FACTION}，诉求为{DEMAND}" />
+    <string id="AF_KINGDOM_CW_Chronicle_Outbreak" text="{FACTION}建立{REBEL}，与{KINGDOM}开战，内战爆发" />
+    <string id="AF_KINGDOM_CW_Chronicle_RecruitedCrown" text="{CLAN}加入了王室派。" />
+    <string id="AF_KINGDOM_CW_Chronicle_RecruitedFaction" text="{CLAN}加入了{FACTION}。" />
+    <string id="AF_KINGDOM_CW_Chronicle_ResolutionFailed" text="{FACTION}的内战结算失败：{REASON}" />
+    <string id="AF_KINGDOM_CW_Chronicle_SupportWithdrawn" text="{CLANS}因{SOURCE}等事件积累不满，撤回对王室的支持，转为中立" />
+    <string id="AF_KINGDOM_CW_Chronicle_WarResolved" text="{FACTION}的内战结束（{OUTCOME}）：{NOTES}" />
+    <string id="AF_KINGDOM_CW_Core_RebellionIncompleteRetained" text="起事未能完成；该派系已被保留。" />
+    <string id="AF_KINGDOM_CW_Coup_ChronicleCoup" text="政变后内战已登记：被废黜的国王及其家族不加入本次叛乱。" />
+    <string id="AF_KINGDOM_CW_Coup_ChronicleRestoration" text="复位内战已登记：只有叛军获胜才恢复旧王朝与原国名；和谈不会恢复。" />
+    <string id="AF_KINGDOM_CW_Event_ClaimSatisfied" text="派系领袖已经继位，宣权诉求已满足。" />
+    <string id="AF_KINGDOM_CW_Event_DemandChanged" text="派系调整诉求为：{DEMAND}" />
+    <string id="AF_KINGDOM_CW_Event_KingdomGoneWarEnded" text="原王国已经消亡，派系及其内战流程终止；现存家族与王国归属保持实际状态。" />
+    <string id="AF_KINGDOM_CW_Event_PeaceMade" text="双方已议和，诉求已满足。" />
+    <string id="AF_KINGDOM_CW_Event_PolicyRevoked" text="目标政策已撤销，诉求已满足。" />
+    <string id="AF_KINGDOM_CW_Event_TargetKingdomGone" text="目标王国已失效，关闭旧诉求。" />
+    <string id="AF_KINGDOM_CW_Event_WarEnded" text="战争已经结束，继续战争的旧诉求失效。" />
+    <string id="AF_KINGDOM_CW_Outcome_CrownVictory" text="王室胜利" />
+    <string id="AF_KINGDOM_CW_Outcome_Negotiated" text="谈判解决" />
+    <string id="AF_KINGDOM_CW_Outcome_RebelsCoerce" text="叛军迫使让步" />
+    <string id="AF_KINGDOM_CW_Outcome_RebelsSecede" text="叛军独立" />
+    <string id="AF_KINGDOM_CW_Outcome_RebelsUsurp" text="叛军夺取王位" />
+    <string id="AF_DIP_UI_Notice_ThirdPartyReceived" text="【第三方外交消息】{TITLE}。消息已传至本国，可在王国公告中查看全文。" />
+    <string id="AF_DIP_UI_Notice_PlayerCourtDelivery" text="你的宣言已传播至{RECEIVER}。" />
+    <string id="AF_DIP_UI_StandingNoChange" text="无变化" />
+    <string id="AF_DIP_UI_StandingUpperBound" text="已达上限100" />
+    <string id="AF_DIP_UI_StandingLowerBound" text="已达下限0" />
+    <string id="AF_DIP_UI_StandingBoundaryNoChange" text="数值边界未产生实际位移" />
+    <string id="AF_DIP_UI_StandingNoActualChangePrefix" text="无实际变化（评价" />
+    <string id="AF_DIP_Source_072" text="外交公告" />
+    <string id="AF_DIP_Source_073" text="谈判催促" />
+    <string id="AF_DIP_Source_074" text="复合外交宣言" />
+    <string id="AF_DIP_Source_075" text="宣战告知" />
+    <string id="AF_DIP_Source_076" text="和平申请" />
+    <string id="AF_DIP_Source_077" text="和平回应" />
+    <string id="AF_DIP_Source_078" text="和平拒绝" />
+    <string id="AF_DIP_Source_079" text="同盟申请" />
+    <string id="AF_DIP_Source_080" text="同盟回应" />
+    <string id="AF_DIP_Source_081" text="同盟拒绝" />
+    <string id="AF_DIP_Source_082" text="解盟告知" />
+    <string id="AF_DIP_Source_083" text="贸易申请" />
+    <string id="AF_DIP_Source_084" text="贸易回应" />
+    <string id="AF_DIP_Source_085" text="贸易拒绝" />
+    <string id="AF_DIP_Source_086" text="贸易终止" />
+    <string id="AF_DIP_Source_087" text="臣属国独立告知" />
+    <string id="AF_DIP_Source_088" text="退让" />
+    <string id="AF_DIP_Source_089" text="最后通牒" />
+    <string id="AF_DIP_Source_090" text="谴责" />
+    <string id="AF_DIP_Source_091" text="公开谴责" />
+    <string id="AF_DIP_Source_092" text="外交致歉" />
+    <string id="AF_DIP_Source_093" text="外交让步" />
+    <string id="AF_DIP_Source_094" text="谈判回应" />
+    <string id="AF_DIP_Source_095" text="谈判等待" />
+    <string id="AF_DIP_Source_118" text="发布外交宣言" />
+    <string id="AF_DIP_Source_119" text="外交宣言" />
+    <string id="AF_DIP_Source_136" text="点击查看外交宣言。" />
+    <string id="AF_DIP_Source_137" text="。点击查看全文。" />
+    <!-- Player drafting UI error notices -->
+    <string id="AF_DIP_UI_Compose_DraftNeedBody" text="请先写下标题或拟文要点。" />
+    <string id="AF_DIP_UI_Compose_DraftStaleWindow" text="当前拟文窗口已因读档失效，请重新打开。" />
+    <string id="AF_DIP_UI_Compose_DraftApiMissing" text="书记官暂时无法拟稿，请检查外交使用的事件/叛乱API或主API设置。" />
+    <string id="AF_DIP_UI_Compose_DraftIncomplete" text="书记官未能返回完整稿件，原文已保留。请重试。" />
+    <string id="AF_DIP_UI_Compose_DraftFormatError" text="书记官返回的稿件格式不正确，原文已保留。请重试。" />
+    <string id="AF_DIP_UI_Compose_DraftTooLong" text="书记官返回的稿件超过编辑器容量，原文已保留。请重试。" />
+    <string id="AF_DIP_UI_Compose_DraftLengthMismatch" text="稿件未符合外交字数设置（{MIN}—{MAX}字），原文已保留。请重试或调整设置。" />
+    <string id="AF_DIP_UI_Compose_DraftTruncated" text="稿件因输出上限被截断，原文已保留。请调高API输出上限。" />
+    <!-- Document Execution Notifications -->
+    <string id="AF_DIP_UI_DocExec_MustContainAction" text="外交宣言没有发布：正文必须明确包含一项可执行的外交动作。" />
+    <string id="AF_DIP_UI_DocExec_IncompatibleAction" text="外交宣言没有发布：正文中的外交动作与当前真实状态不相容。" />
+    <string id="AF_DIP_UI_DocExec_CapacityReached" text="外交宣言没有发布：本次外交事件已无法再加入新的处理国。" />
+    <string id="AF_DIP_UI_DocExec_MustRespondPeace" text="外交宣言没有发布：本篇必须先接受或拒绝当前和平原案。" />
+    <!-- Orchestration Notifications -->
+    <string id="AF_DIP_UI_Orch_DailyQuotaUsed" text="外交今日请求额度已用完；你的宣言已公开，尚未完成的回应已保留，将在下一游戏日继续。" />
+    <string id="AF_DIP_UI_Orch_ProcessingIncomplete" text="外交宣言已发布，但外交处理未完整结束，请查看公文结果并核对当前局势。" />
+    <string id="AF_DIP_UI_Orch_SourceAuthorUnavailable" text="你的原宣言所属王国已不存在，尚未答复的外交回应已停止；旧承诺不会转给宗主国。" />
+    <string id="AF_DIP_UI_Orch_SourceOrTargetUnavailable" text="原宣言或回应国已不存在，尚未完成的回应已停止。请查看原公文与当前外交局势。" />
+    <string id="AF_DIP_UI_Orch_TargetUnavailable" text="宣言的原回应国已不存在；该国回应无法继续。" />
+    <string id="AF_DIP_UI_Orch_ResponsesEndedUnresolved" text="后续外交回应已结束，但仍有国家未能答复；原宣言和未完成记录已保留，可重新发布宣言，不会恢复旧提议。" />
+    <string id="AF_DIP_UI_Orch_RoundTransitionFollowup" text="原外交交涉已结束；尚未回应你的宣言已转入优先后续回应。" />
+    <string id="AF_DIP_UI_Gathering_CancelPlayerReason" text="玩家命令{HERO}立即散宴。" />
+    <string id="AF_DIP_UI_Gathering_CancelPlayerStatus" text="{HERO}已经遵照你的命令取消了在{SETTLEMENT}举办的宴会。" />
+    <string id="AF_DIP_UI_Gathering_CancelNpcReason" text="{HERO}接受玩家劝说后决定散宴。" />
+    <string id="AF_DIP_UI_Gathering_CancelNpcStatus" text="{HERO}已经接受你的劝说，取消了在{SETTLEMENT}举办的宴会。" />
+    <string id="AF_DIP_UI_Gathering_NeedGold" text="宴会无法召开：你需要 {COST} 第纳尔。" />
+    <string id="AF_DIP_UI_Gathering_Cooldown" text="宴会筹备尚在冷却中，还需要约 {DAYS} 天。" />
+    <string id="AF_DIP_UI_Gathering_TravellingTo" text="正在旅行至{SETTLEMENT}" />
+    <string id="AF_DIP_UI_Gathering_NativeTravelFailed" text="原版旅行下达失败：{ERROR}" />
+    <string id="AF_DIP_UI_Gathering_MovementCheckFailed" text="移动检查失败：{ERROR}" />
+    <string id="AF_DIP_UI_Gathering_WeeklyStartTitle" text="贵族宴会举办 - {HERO}" />
+    <string id="AF_DIP_UI_Gathering_WeeklyAttendanceTitle" text="重要贵族赴宴 - {HERO}" />
+    <string id="AF_DIP_UI_Gathering_WeeklyCancelTitle" text="贵族宴会取消 - {HERO}" />
+    <string id="AF_DIP_UI_Gathering_ReasonSuffix" text=" 原因：{REASON}" />
+    <string id="AF_DIP_UI_Gathering_EndElapsed" text="宴会已经结束。" />
+    <string id="AF_DIP_UI_Gathering_EndInvalid" text="宴会因主办方或举办地失效而结束。" />
+    <string id="AF_DIP_UI_Gathering_DisabledReason" text="宴会功能已在 MCM 中关闭。" />
+    <string id="AF_DIP_UI_Gathering_WorldCommandsUnavailable" text="大地图命令系统未初始化。" />
+    <string id="AF_DIP_UI_Gathering_HostOriginMissing" text="找不到主办人的原始所在城。" />
+    <string id="AF_DIP_UI_Gathering_GuestOriginMissing" text="找不到宾客的原始所在城。" />
+    <string id="AF_DIP_UI_Gathering_Travelling" text="正在旅行" />
+    <string id="AF_DIP_UI_Gathering_HasParty" text="已有部队" />
+    <string id="AF_DIP_UI_Gathering_CannotMove" text="当前无法移动至定居点" />
+    <string id="AF_DIP_UI_Gathering_Unavailable" text="宴会系统未初始化。" />
+    <string id="AF_DIP_UI_Gathering_InvalidTag" text="宴会指令未执行：标签参数无法解析。" />
+    <string id="AF_DIP_UI_Gathering_CancelMissing" text="取消宴会失败：目标宴会不存在或已经结束。" />
+    <string id="AF_DIP_UI_Gathering_CancelUnauthorizedDelegate" text="取消宴会失败：当前对话对象不是你的总督或同伴，不能代你执行散宴命令。" />
+    <string id="AF_DIP_UI_Gathering_CancelUnauthorizedHost" text="取消宴会失败：只有宴会主人本人才能接受劝说并取消这场宴会。" />
+    <string id="AF_DIP_UI_Gathering_NoResolvedGuests" text="宴会未召开：没有解析到可赴宴宾客。" />
+    <string id="AF_DIP_UI_Gathering_InvalidHero" text="无效人物" />
+    <string id="AF_DIP_UI_Gathering_NotSpawned" text="尚未出现在世界" />
+    <string id="AF_DIP_UI_Gathering_UnderEighteen" text="未满十八岁" />
+    <string id="AF_DIP_UI_Gathering_ChildOrUnborn" text="未成年或未出世" />
+    <string id="AF_DIP_UI_Gathering_CannotHostDisabled" text="宴会无法召开：宴会功能已在 MCM 中关闭。" />
+    <string id="AF_DIP_UI_Gathering_CannotHostVenue" text="宴会无法召开：必须选择有效城镇或城堡。" />
+    <string id="AF_DIP_UI_Gathering_CannotHostLeader" text="宴会无法召开：只有家族族长能够作为宴会主人。" />
+    <string id="AF_DIP_UI_Gathering_CannotHostOwnership" text="宴会无法召开：主办地必须是你自己家族拥有的定居点。" />
+    <string id="AF_DIP_UI_Gathering_CannotHostSiege" text="宴会无法召开：该定居点正在被围攻。" />
+    <string id="AF_DIP_UI_Gathering_CannotHostActive" text="宴会无法召开：你已经有一场正在进行的宴会。" />
+    <string id="AF_DIP_UI_Gathering_CannotHostOccupied" text="宴会无法召开：该定居点已有正在进行的宴会。" />
+    <string id="AF_DIP_UI_Gathering_Prisoner" text="被俘" />
+    <string id="AF_DIP_UI_Gathering_Wounded" text="重伤" />
+    <string id="AF_DIP_UI_Gathering_NoIndependentParty" text="没有独立部队" />
+    <string id="AF_DIP_UI_Gathering_InArmy" text="正在军团中" />
+    <string id="AF_DIP_UI_Gathering_InBattleOrSiege" text="正在战斗或围城" />
+    <string id="AF_DIP_UI_Gathering_HasNonIndependentParty" text="已有非独立部队或正处于部队中" />
+    <string id="AF_DIP_UI_Gathering_OriginMissing" text="找不到原始所在城" />
+    <string id="AF_DIP_UI_Gathering_CannotHostInvalidGovernor" text="宴会无法召开：当前对话对象不是有效总督。" />
+    <string id="AF_DIP_UI_Gathering_CannotHostNotGovernor" text="宴会无法召开：当前对话对象不是总督。" />
+    <string id="AF_DIP_UI_Gathering_CannotHostGovernorOwnership" text="宴会无法召开：该总督管理的定居点不属于你的家族。" />
+    <string id="AF_DIP_UI_Gathering_RoleKing" text="国王" />
+    <string id="AF_DIP_UI_Gathering_RoleClanLeader" text="家族族长" />
+    <string id="AF_DIP_UI_Gathering_RoleNoble" text="贵族" />
+    <string id="AF_DIP_UI_Gathering_UnknownHero" text="未知贵族" />
+    <string id="AF_DIP_UI_Gathering_ListSeparator" text="、" />
+    <string id="AF_DIP_UI_Gathering_WeeklyStartWithGuests" text="{HOST}（{ROLE}）在{SETTLEMENT}举办了一场贵族宴会，宴会计划持续{DAYS}天。 已接受邀请的重要宾客包括：{GUESTS}。 这是已经实际发出邀请并开始执行的宴会事件，不是未经证实的计划；尚未抵达的宾客只能写作接受邀请或准备赴宴。" />
+    <string id="AF_DIP_UI_Gathering_WeeklyStartWithoutGuests" text="{HOST}（{ROLE}）在{SETTLEMENT}举办了一场贵族宴会，宴会计划持续{DAYS}天。 这是已经实际发出邀请并开始执行的宴会事件，不是未经证实的计划；尚未抵达的宾客只能写作接受邀请或准备赴宴。" />
+    <string id="AF_DIP_UI_Gathering_WeeklyAttendance" text="{HERO}（{ROLE}）已经实际抵达{SETTLEMENT}，参加了{HOST}举办的贵族宴会。这是一项已经发生的出席事实，可以写入本周王国纪事。" />
+    <string id="AF_DIP_UI_Gathering_WeeklyCancel" text="{HOST}取消了自己在{SETTLEMENT}举办的贵族宴会，宾客已经散去。{REASON}" />
+    <string id="AF_DIP_UI_Gathering_WeeklyNameRole" text="{HERO}（{ROLE}）" />
+    <string id="AF_DIP_UI_WorldDiplomacy_ReplySourceUnavailable" text="原公文已不可用，请重新打开撰写界面。" />
+    <string id="AF_DIP_UI_OralGeneration_DelayedFact" text="此前答应的外交宣言尚未发布，待重新拟文；约定条款没有改变。" />
+    <string id="AF_DIP_UI_OralGeneration_WithdrawalFact" text="我已明确同意撤回此前的公开外交提案，待正式撤回宣言发布；原案尚未因此失效。" />
+    <string id="AF_DIP_UI_WorldDiplomacy_Reject_PeaceNotExecutedDetail" text="和平提案未执行：{REASON}" />
+  </strings>
+</base>

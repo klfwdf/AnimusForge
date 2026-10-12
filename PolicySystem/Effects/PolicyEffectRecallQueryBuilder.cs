@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace AnimusForge.PolicyEffects;
 
@@ -16,10 +17,24 @@ internal sealed class PolicyEffectRecallQuery
 // Runs once per generation; at most twelve embeddings, never on Tick.
 internal static class PolicyEffectRecallQueryBuilder
 {
+	private static readonly string[] TimingTerms = Terms("RecallQuery_TimingTerms");
+	private static readonly string[] PolicyPrefixes = Terms("RecallQuery_PolicyPrefixes");
+	private static readonly string[] ExclusionPrefixes = Terms("RecallQuery_ExclusionPrefixes");
+	private static readonly string[] RepealPrefixes = Terms("RecallQuery_RepealPrefixes");
+	private static readonly string[] ProhibitionTerms = Terms("RecallQuery_ProhibitionTerms");
+	private static readonly string[] NoNumericIntentValues = Terms("RecallQuery_NoNumericIntentValues");
+	private static readonly Regex ContrastBoundary = new Regex(string.Join("|", Terms("RecallQuery_ContrastTerms")
+		.Select(term => term.All(character => character <= 127) ? @"\b" + Regex.Escape(term) + @"\b" : Regex.Escape(term))),
+		RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.IgnoreCase);
+	private static readonly Regex SentenceBoundary = new Regex("[" + Regex.Escape(PolicyCompatibilityTexts.Get("RecallQuery_SentenceDelimiters"))
+		+ @"]|(?<!\d)\.(?!\d)", RegexOptions.Compiled | RegexOptions.CultureInvariant);
+
+	private static string[] Terms(string key) => PolicyCompatibilityTexts.Get(key).Split(new[] { '|' }, StringSplitOptions.RemoveEmptyEntries);
+
 	internal static IReadOnlyList<PolicyEffectRecallQuery> Build(string name, string content, string impact, string numeric, IReadOnlyList<IPolicyEffectModule> modules)
 	{
 		string authoritative = ((name ?? "").Trim() + "\n" + (content ?? "").Trim()).Trim();
-		if (authoritative.Length == 0) throw new InvalidOperationException("政策效果模块检索文本为空。");
+		if (authoritative.Length == 0) throw new InvalidOperationException("Policy effect module retrieval text is empty.");
 		List<PolicyEffectRecallQuery> result = new List<PolicyEffectRecallQuery>(PolicyEffectModuleRouter.QueryIntentLimit)
 		{
 			new PolicyEffectRecallQuery { Text = authoritative, Source = PolicyEffectRecallQuerySource.Policy }
@@ -29,8 +44,8 @@ internal static class PolicyEffectRecallQueryBuilder
 		List<(PolicyEffectRecallQuery Query, int Ordinal, bool Cue, bool Numeric)> clauses = new List<(PolicyEffectRecallQuery, int, bool, bool)>();
 		int ordinal = 0;
 		// A comma often separates a target/condition from its consequence; keep that context together.
-		string original = (content ?? "").Replace("而是", "；").Replace("但是", "；");
-		foreach (string sentence in original.Split(new[] { '\r', '\n', '。', '；', ';', '！', '!', '？', '?' }, StringSplitOptions.RemoveEmptyEntries))
+		string original = ContrastBoundary.Replace(content ?? "", ";");
+		foreach (string sentence in SentenceBoundary.Split(original))
 		{
 			bool excluded = IsExplicitExclusion(sentence.Trim());
 			foreach (string window in Windows(sentence))
@@ -39,13 +54,14 @@ internal static class PolicyEffectRecallQueryBuilder
 				if (text.Length < 2 || !clauseSeen.Add(text)) continue;
 				bool cue = (modules ?? Array.Empty<IPolicyEffectModule>()).Any(m => m?.CueTerms?.Any(term =>
 					!string.IsNullOrWhiteSpace(term) && text.IndexOf(term, StringComparison.OrdinalIgnoreCase) >= 0) == true);
-				bool timed = text.Any(char.IsDigit) || new[] { "每日", "每天", "一次性", "单次", "第纳尔", "百分" }.Any(text.Contains);
+				bool timed = text.Any(char.IsDigit) || TimingTerms.Any(term => text.IndexOf(term, StringComparison.OrdinalIgnoreCase) >= 0);
 				clauses.Add((new PolicyEffectRecallQuery { Text = text, Source = PolicyEffectRecallQuerySource.OriginalClause, IsExplicitExclusion = excluded }, ordinal++, cue, timed));
 			}
 		}
 		List<string> supplements = new List<string>(2);
-		if (!string.IsNullOrWhiteSpace(impact)) supplements.Add("影响概述：" + impact.Trim());
-		if (!string.IsNullOrWhiteSpace(numeric) && numeric.Trim() != "无直接数值意图") supplements.Add("数值意图：" + numeric.Trim());
+		if (!string.IsNullOrWhiteSpace(impact)) supplements.Add(PolicyGenerationPromptTexts.Get("ModuleImpactQuery", "Impact overview: ") + impact.Trim());
+		if (!string.IsNullOrWhiteSpace(numeric) && !NoNumericIntentValues.Any(value => string.Equals(numeric.Trim(), value, StringComparison.OrdinalIgnoreCase)))
+			supplements.Add(PolicyGenerationPromptTexts.Get("ModuleNumericQuery", "Numeric intent: ") + numeric.Trim());
 		int originalBudget = PolicyEffectModuleRouter.QueryIntentLimit - supplements.Count;
 		foreach (var clause in clauses.OrderBy(c => c.Query.IsExplicitExclusion).ThenByDescending(c => c.Cue).ThenByDescending(c => c.Numeric).ThenBy(c => c.Ordinal))
 		{
@@ -63,13 +79,25 @@ internal static class PolicyEffectRecallQueryBuilder
 	private static bool IsExplicitExclusion(string text)
 	{
 		string clean = text;
-		foreach (string prefix in new[] { "本政策", "此政策", "本方案", "本措施" })
-			if (clean.StartsWith(prefix, StringComparison.Ordinal)) { clean = clean.Substring(prefix.Length).Trim(); break; }
+		foreach (string prefix in PolicyPrefixes)
+			if (StartsWithTerm(clean, prefix))
+			{
+				clean = clean.Substring(prefix.Length).Trim();
+				if (prefix.All(character => character <= 127)) clean = clean.TrimStart(':', ',').Trim();
+				break;
+			}
 		// These are ranking hints, not execution judgments or candidate rejection.
-		// In particular 禁止/不得劫掠 and decreases are valid positive measures.
-		return new[] { "不改变", "不调整", "不执行", "不实施", "不影响", "不会改变", "无需改变", "不增加", "不减少", "不提高", "不降低" }
-			.Any(prefix => clean.StartsWith(prefix, StringComparison.Ordinal))
-			|| (clean.StartsWith("废除", StringComparison.Ordinal) && clean.Contains("禁令"));
+		// Prohibiting raids and reducing a numeric value remain positive measures.
+		return ExclusionPrefixes.Any(prefix => StartsWithTerm(clean, prefix))
+			|| (RepealPrefixes.Any(prefix => StartsWithTerm(clean, prefix))
+				&& ProhibitionTerms.Any(term => clean.IndexOf(term, StringComparison.OrdinalIgnoreCase) >= 0));
+	}
+
+	private static bool StartsWithTerm(string text, string term)
+	{
+		if (!text.StartsWith(term, StringComparison.OrdinalIgnoreCase)) return false;
+		return !term.All(character => character <= 127) || text.Length == term.Length
+			|| !char.IsLetterOrDigit(text[term.Length]);
 	}
 
 	private static IEnumerable<string> Windows(string text)

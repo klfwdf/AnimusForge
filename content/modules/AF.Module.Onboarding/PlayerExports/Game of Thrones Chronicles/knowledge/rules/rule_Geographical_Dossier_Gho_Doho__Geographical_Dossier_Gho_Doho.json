@@ -1,0 +1,147 @@
+{
+  "Id": "rule_Geographical_Dossier_Gho_Doho",
+  "Keywords": [
+    "Gho Doho"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Gor Dohor is the ruins of the ancient city of Rhoynar along the River Rhoyne, in the river world east of Pentos. It was destroyed in the Valyrian War, and its remaining walls and old waterways bear witness to the decline of the Rhoynar civilization; talking about this place today is more about the long-lasting vacancies left by river traffic, ruins, and conquests."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Looking out from Ge Duohe, what is closest to life is not the coat of arms, but the water level, ferry, reed fields, arable highlands and rainy season roads. Local families also rely on water, roads, arable land, herds, and markets where goods can be exchanged; if any road, well, or dock fails, the price falls first on them."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "In addition to trumpets and flags, Ge Dohe's defense relied on bridges, shoals, causeways, boats, and grain roads that did not get bogged down in the mud. Entry Gho Doho"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "How long a traveler stays in Ge Duohe depends on water transportation, bridge tax, ferry fees, mills and riverside markets. They also recognize the accents, laws, and credentials of the known world; reputations can travel great distances from taverns, but real distances must still be measured by wheel, oar, or horse's hoof."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Gho Doho Entry Gho Doho"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Soldiers who passed through Ge Duohe remembered which places could be forded and which causeways were not swallowed by floods. If you can supply supplies, avoid danger, and find a guide, it is worth marking in your itinerary; if you don't have these three things, no matter how loud your family name is, it won't be able to save the lost."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The craftsmen of Ge Duohe relied on boats, bridge timbers, millstones, fishing nets, and riverside churches to leave behind their craftsmanship, while the priests used local gods, ancestral graves, and taboos passed down from generation to generation to explain life and death. A stronghold was therefore not just a lord's hall, but also a place where weddings and funerals, vows, labor and local memories recurred."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Gho Doho They care about water sources, roads, cultivated land, herds, and markets where goods can be exchanged. They also look at whether seeds are left after harvesting grain and whether the city gates are open in times of disaster. When people from afar see coats of arms, what they see is whether there will be food to eat tomorrow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Gho Doho: Gor Dohor is the ruins of the ancient city of Rhoynar along the River Rhoyne, in the river world east of Pentos. It was destroyed in the Valyrian War, and its remaining walls and old waterways bear witness to the decline of the Rhoynar civilization; talking about this place today is more about the long-lasting vacancies left by river traffic, ruins, and conquests."
+  ]
+}

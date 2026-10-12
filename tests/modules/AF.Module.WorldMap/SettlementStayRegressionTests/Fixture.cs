@@ -38,6 +38,12 @@ class CourierMobilePartyAIModel : NativeModel
     public NativeModel _inner = new NativeModel();
     // MODEL_METHOD
 }
+
+class WorldMapUiText
+{
+    public static string Result(string id, string fallback, params (string, object)[] args) => fallback;
+}
+
 class WorldMapPartyCommandBehavior
 {
     enum CommandKind { GoToSettlement, PatrolSettlement, AttackParty, AttackHero }

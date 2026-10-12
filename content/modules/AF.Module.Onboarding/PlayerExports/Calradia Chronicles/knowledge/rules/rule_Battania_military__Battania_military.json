@@ -1,0 +1,108 @@
+{
+  "Id": "rule_Battania_military",
+  "Keywords": [
+    "Battania Military"
+  ],
+  "RagShortTexts": [
+    "Battania Archers specialize in deadly ambushes in the dense forests of the Ukarion Plateau."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Battania had no standing central army. When war came, the High King issued a summons to the chiefs of each tribe, and each tribe sent warriors in accordance with the ancient covenant. This alliance system results in tribes often being slow to move due to feuds or divergent interests, which is a core issue Caladog is trying to reinforce. The chief of each tribe has his own personal soldiers, called \"furnace guards\". They are the most elite and loyal warriors in the tribe. They are responsible for protecting the chief and his family, as well as taking on security and ceremonial duties within the tribe. When mobilization for tribal warfare was issued, any adult male capable of holding a bow could be drafted into the army. They carry their own hunting bows, war scythes or short spears, and form battle groups under the leadership of older hunters. Although these militiamen are poorly equipped, they have been hunting in the forest since childhood, their archery skills are accurate, and their familiarity with the terrain far exceeds that of any foreign army. The core of Battania's army is its archers. They carry longbows and arrows and can move quickly in complex terrain. Battania archers are good at using forest terrain to carry out ambushes, setting up ambushes on the only way the enemy must pass, and after the enemy enters the ambush circle, they fire arrows from all directions at the same time. This tactic can often inflict heavy blows to the enemy. The hoplites of Battania are called scythes, named after their characteristic weapon, the scythe. At the Battle of Pandrak, the coalition forces collapsed when Battania's scythes entered the fray. The scythes are usually the strongest and bravest warriors in the tribe. Tactically, the scythes are usually used as an assault force. After the archers weaken the enemy with arrows and disrupt the formation, they suddenly attack from the flanks or rear. The Battania's most feared tactic is the \"howling charge\", in which, after weakening the enemy and deciding to strike a final blow, all warriors simultaneously let out a terrifying war cry and then charge forward en masse. Before charging, warriors would apply war patterns to intimidate their enemies. The Battania people still retain the habit of fighting on foot and wielding two-handed swords and war scythes or holding bows and arrows."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "In the eyes of the Imperials, Battania's military power is not worth mentioning. Their territory is small, their population is sparse, their equipment is crude, they have no heavy cavalry, and they do not even have a decent fortress. Imperial legions can easily defeat Battania armies many times their own size in open areas. Imperial generals privately acknowledged, however, that any attempt to penetrate the Ukarion Plateau would be foolish. In the cold, damp forest, Battania's archers are like ghosts, firing deadly arrows from behind the trees, from the bushes, and from everywhere you'd expect. The discipline and formation that the Imperial Legion was proud of were of no use in the dense forest. The lesson of the Battle of Pandrak was too painful - two thousand elite infantrymen of Galios were shot into hedgehogs on the forest path. Galios himself never concealed his disdain for the Battanians, calling them \"rats hiding behind trees.\" But it was this \"Eagle of the Western Empire\" who targeted Battania as the first target after the empire was divided. This isn't out of revenge, but out of pragmatism: the Battania may be weak, but if left unchecked, they'll stab you in the back when fighting other enemies. The barbarians in these forests must be eliminated before they can peacefully claim control of Calradia."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Sturgians hate Battania far more than the Empire. In the epic of Sturgia, the Battle of Pandrak is sung repeatedly—not as a victory, but as a betrayal. Grand Duke Vadinslav and Old Olek died on the battlefield, and countless Bojes and warriors sacrificed their lives for the cause of the Northern Alliance. However, the Battania people stood aside after the ambush was successful, allowing the Sturgia people to bleed into a river under Pandrak Castle. The quarrel between the Archduke Langward and Caladog was repeatedly mentioned at the court of Sturgia. Langward is said to have smashed his wine glass on the spot, saying that the Battanians were \"not even as good as Nord pirates - at least pirates know how to share the spoils\". Since then, Sturgian merchants no longer visit Battania's markets, and the Sturgian boyars no longer view Battania as a potential ally. Militarily, the Sturgians did not fear Battania. The Sturgia's shield walls are effective against arrows, and their axemen are capable of overpowering any scythe in melee combat. What Sturgia is really afraid of is the terrain of Battania - the dense forests and mountain passes of the Ukarion Plateau make it difficult for heavy troops to move forward. But if the Battanians dare to step out of the forest, the Sturgians are confident that they can crush them."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The people of Vlandia have the most complicated attitude towards Battania. On the one hand, the knights of Vlandia sneered at Battania's \"barbaric tactics\" - hiding behind trees and firing cold arrows, using farm tools as weapons, and howling like wild beasts, which they considered to have no honor at all. The chivalry of Vlandia advocates frontal charge and fair duel, while the people of Battania are just the opposite. On the other hand, the presence of Battania does hinder Vlandia's expansion. The Ukarion Plateau acts like a natural barrier, confining Vlandia to the lowlands. During his reign, King Detel attempted to maintain peace with Battania, easing relations through trade and diplomacy. But after the Battle of Pandrak, the High King of Batania greedily tried to seize most of the spoils, which made Sturgia and Vlandia disappointed with their ally Batania. Detel was sidelined by the main war faction, and Vlandia's expansion was completely out of control. Today, the border lords of Vlandia continue to encroach on the lands of Battania. They found that Vlandia's heavy cavalry was almost invincible as long as they did not go deep into the forest and fought the Battanians in the open. It would take three to five men for a Battania scythe to take on a Vlandia knight—if that knight could successfully charge. The problem is, the Battanians rarely give the knights a chance to charge."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nord"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Nords have no hatred for Battania, only contempt and calculation. In the settlement of Valchego Bay, Nord adventurers and mercenaries view Battania as a piece of rotting meat that will sooner or later be eaten away. The Nords admired warriors, but the Battanians had lost their courage in their eyes. A nation that no longer drinks blood and nourishes hair, and no longer follows ancient traditions, is not worthy of respect in the eyes of the Nords. Nord captains prowl the northern shores of Battania year round, biding their time. Sometimes they work for Sturgia, sometimes for Vlandia, sometimes they just take matters into their own hands and raid coastal villages. The people of Battania looked north on the cliffs of Ka Banses, waiting for the legendary fleet of High King Mon to return to save their people. What the Nords saw was just a nation without a fleet making a wish to the sea."
+    }
+  ],
+  "TextMappings": []
+}

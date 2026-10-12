@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -37,10 +37,7 @@ namespace AnimusForge.Illustrator.Engine
             stats.MaxMs = Math.Max(stats.MaxMs, milliseconds);
         }
         internal static string SceneReferenceLabel() =>
-            "当前玩家视角的单张真实现场画面，不是全景或多个方向。仅用于判断当前位置与环境定位，保留可见的墙面材质与配色、门窗楼梯和环境高低关系；" +
-            "只对已看见的环境作描述，画面外及被遮挡区域保持未知，不按地点名称重造建筑。" +
-            "人物行动优先采用当前会话最近两轮对话中的已发生叙事，不采用截图里的站姿、手势、朝向或视线；人物身份细节仍按对应人物参考，不把界面头像或画廊作品当作现场人物。" +
-            "忽略游戏对话UI、字幕、血条与名牌，不将界面内容画入作品。" + ScreenshotMaskReferenceNote;
+            IllustratorText.Get("Scene_ScreenshotRefNote") + ScreenshotMaskReferenceNote;
 
         internal static IReadOnlyList<IllustrationReferenceImage> CreateCapturedSceneReferences(string image)
         {
@@ -52,8 +49,7 @@ namespace AnimusForge.Illustrator.Engine
         {
             if (string.IsNullOrWhiteSpace(image)) return Array.Empty<IllustrationReferenceImage>();
             // Keep only a screenshot already handed to this request; never start another capture.
-            return new[] { new IllustrationReferenceImage(image,
-                "本次已取得的当前现场截图；环境物件超预算，未提供环境全景或任何不完整副本。环境未知部分不得补造。", IllustrationReferenceKind.Scene) };
+            return new[] { new IllustrationReferenceImage(image, IllustratorText.Get("Scene_ScreenshotBudgetFallback"), IllustrationReferenceKind.Scene) };
         }
 
         internal static async Task<ConversationSceneReferenceCapture> CaptureConversationSceneReferencesAsync(
@@ -76,8 +72,8 @@ namespace AnimusForge.Illustrator.Engine
                     ["environmentReferences"] = screenshot.Count, ["panorama"] = false, ["totalMs"] = 0
                 });
                 return new ConversationSceneReferenceCapture(screenshot,
-                    "玩家在设置中关闭了场景离屏渲染：没有环境全景" + (screenshot.Count > 0 ? "，仅有打开插画时的当前位置截图，只用于判断当前位置与环境定位。" : "，也未取得当前位置截图，环境只依据文字事实，不补造未知的建筑与陈设。"),
-                    screenshot.Count > 0 ? "场景全景已关闭：使用当前画面截图" : "场景全景已关闭：按文字事实构图");
+                    IllustratorText.Get("SceneCapture_DisabledPrefix") + (screenshot.Count > 0 ? IllustratorText.Get("SceneCapture_DisabledScreenshot") : IllustratorText.Get("SceneCapture_DisabledFacts")),
+                    screenshot.Count > 0 ? IllustratorText.Raw("Residual_SceneReferenceCapture_9b51875a1934") : IllustratorText.Raw("Residual_SceneReferenceCapture_1f88a73b3f5e"));
             }
             return await CaptureMissionSceneReferencesAsync(source, token, preCapturedScene).ConfigureAwait(false);
         }
@@ -117,7 +113,7 @@ namespace AnimusForge.Illustrator.Engine
                     var mission = source.Mission;
                     var screen = source.MissionScreen;
                     if (mission?.Scene == null || screen?.CombatCamera == null || !ReferenceEquals(screen.Mission, mission) || !screen.MissionStartedRendering())
-                        throw new InvalidOperationException("当前任务场景尚未完成渲染，暂时无法采集附近环境，请稍后重试。");
+                        throw new InvalidOperationException(IllustratorText.Raw("Residual_SceneReferenceCapture_6683777e115f"));
                     frameStats = new PanoramaFrameStats();
                     _activePanoramaFrameStats = frameStats;
                     MatrixFrame sourceFrame = screen.CombatCamera.Frame;
@@ -155,7 +151,7 @@ namespace AnimusForge.Illustrator.Engine
                     if (!string.IsNullOrWhiteSpace(preCapturedScene)) calibrationReason = "pre_captured_before_overlay";
                     return Tuple.Create(mission, PanoramaProjection.BuildCameraFrames(sourceFrame), calibration, cameraOriginSource);
                 }, captureToken).ConfigureAwait(false);
-                if (context == null) throw new InvalidOperationException("无法调度全景采集。");
+                if (context == null) throw new InvalidOperationException(IllustratorText.Raw("Residual_SceneReferenceCapture_5a3d96ea40de"));
                 fallbackScene = context.Item3;
                 GenerationDiagnostics.Current?.RecordStage("scene_calibration", new JObject
                 { ["attempt"] = 1, ["reason"] = calibrationReason, ["available"] = !string.IsNullOrWhiteSpace(context.Item3) });
@@ -170,7 +166,7 @@ namespace AnimusForge.Illustrator.Engine
                     _pendingPanoramaSnapshot = null;
                     return created;
                 }, captureToken).ConfigureAwait(false);
-                if (renderer == null) throw new InvalidOperationException("全景渲染器未建立。");
+                if (renderer == null) throw new InvalidOperationException(IllustratorText.Raw("Residual_SceneReferenceCapture_3c96f6b6297b"));
                 GenerationDiagnostics.Current?.RecordStage("panorama_observation_lighting", renderer.ObservationLightingDiagnostics);
                 GenerationDiagnostics.Current?.RecordStage("panorama_camera_coverage", renderer.CameraDiagnostics);
                 GenerationDiagnostics.Current?.RecordStage("panorama_renderer_ready");
@@ -179,24 +175,24 @@ namespace AnimusForge.Illustrator.Engine
                     var faceWatch = Stopwatch.StartNew();
                     GenerationDiagnostics.Current?.RecordStage("panorama_face_start", new JObject { ["face"] = face, ["direction"] = PanoramaDirections[face] });
                     bool selected = await RunOnGameThreadAsync(() => renderer.SelectFace(face), captureToken).ConfigureAwait(false);
-                    if (!selected) throw new InvalidOperationException("全景镜头切换被未完成的导出阻止。");
+                    if (!selected) throw new InvalidOperationException(IllustratorText.Raw("Residual_SceneReferenceCapture_000cfa23b3b0"));
                     bool ready = false;
                     for (int attempt = 0; attempt < 90 && !ready; attempt++)
                     {
                         var frames = await RunOnGameThreadAsync(() => IllustratorRuntime.AfterFramesAsync(2, captureToken), captureToken).ConfigureAwait(false);
-                        if (frames == null) throw new InvalidOperationException("无法等待全景渲染帧。");
+                        if (frames == null) throw new InvalidOperationException(IllustratorText.Raw("Residual_SceneReferenceCapture_d4dff0c6bb32"));
                         await frames.ConfigureAwait(false);
                         ready = await RunOnGameThreadAsync(() => renderer.IsReady, captureToken).ConfigureAwait(false);
                     }
-                    if (!ready) throw new InvalidOperationException("全景镜头未完成渲染，没有发送不完整参考图。");
+                    if (!ready) throw new InvalidOperationException(IllustratorText.Raw("Residual_SceneReferenceCapture_6c12ed179562"));
                     string path = await RunOnGameThreadAsync(() => renderer.RequestExport(face), captureToken).ConfigureAwait(false);
-                    if (path == null) throw new InvalidOperationException("全景导出未就绪。");
+                    if (path == null) throw new InvalidOperationException(IllustratorText.Raw("Residual_SceneReferenceCapture_953728313135"));
                     exportedPaths.Add(path);
                     byte[] bytes = null;
                     try
                     {
                         bytes = await ReadPanoramaFaceAsync(path, faceTimeoutMs, captureToken).ConfigureAwait(false);
-                        if (bytes == null) throw new InvalidOperationException("全景导出未取得完整图片，没有用重复视角代替。");
+                        if (bytes == null) throw new InvalidOperationException(IllustratorText.Raw("Residual_SceneReferenceCapture_11ec79e731ce"));
                     }
                     finally
                     {
@@ -229,15 +225,15 @@ namespace AnimusForge.Illustrator.Engine
                     { ["attempt"] = 2, ["reason"] = calibrationReason, ["available"] = !string.IsNullOrWhiteSpace(currentScene) });
                 }
                 string calibrationNote = string.IsNullOrWhiteSpace(currentScene)
-                    ? "本次未取得真实当前画面；当前位置依据已有文字事实，不补造未知位置。人物动作优先采用对话中的已发生叙事，不能把本副本的补光或无人状态当作现场。"
-                    : "附加的当前截图仅用于判断当前位置与环境定位，人物动作优先采用对话中的已发生叙事。";
+                    ? IllustratorText.Get("SceneCapture_CalibrationUnavailable")
+                    : IllustratorText.Get("SceneCapture_CalibrationAvailable");
                 var references = new List<IllustrationReferenceImage>
                 {
                     new IllustrationReferenceImage(Convert.ToBase64String(panorama),
-                        "当前场景独立静态副本的360×180度环境全景：同一点前后左右上下六个90度镜头，经球面映射合成一张展开图，不是六个房间或六张拼贴。" +
-                        "中央是采集起始前方，左右边缘在后方相接，顶部为上方、底部为下方；展开边缘与两极的拉伸不是建筑变形。" +
-                        "这张图只约束场景环境：用于辨认建筑、家具、门窗楼梯、材质与摆放；不得从全景推断人物的脸、发型、年龄、服装、姿态或人数。人物以对应身份参考图和事实为准。" +
-                        "最终依导演选定机位绘制单幅正常透视作品，不照搬全景展开布局。" + snapshot.Notes + calibrationNote, IllustrationReferenceKind.ScenePanorama)
+                        IllustratorText.Get("SceneCapture_PanoramaDescription") +
+                        IllustratorText.Get("SceneCapture_PanoramaOrientation") +
+                        IllustratorText.Get("SceneCapture_PanoramaScope") +
+                        IllustratorText.Get("SceneCapture_PanoramaFinalView") + snapshot.Notes + calibrationNote, IllustrationReferenceKind.ScenePanorama)
                 };
                 references.AddRange(CreateCapturedSceneReferences(currentScene));
                 composed = true;
@@ -253,26 +249,26 @@ namespace AnimusForge.Illustrator.Engine
                     ["cameraOriginSource"] = context.Item4 });
                 TaleWorlds.Library.Debug.Print($"[Illustrator] Nearby prefab panorama composed: views=6, coverage=360x180, radius=30m, meshes={snapshot.CopiedRoots}, calibration={references.Count > 1}, sourceMissionViews=0");
                 return new ConversationSceneReferenceCapture(references,
-                    (context.Item4 == "player_eye" ? "本次以玩家眼位为零附加偏移视点。" : "未取得有效玩家眼位，本次保留当前相机位置并已记录回退。") +
-                    "依据附近30米的独立静态环境副本，采集六个90度方向后投影为360度水平、180度垂直的全景。全方向视野不代表所有几何已覆盖；全景只约束环境，真实当前截图如有附加，仅用于当前位置与环境定位。",
-                    "任务场景：附近30米全景参考可用" + (string.IsNullOrWhiteSpace(currentScene) ? "；当前位置截图未取得" : string.Empty), snapshot.NearbyPropFacts);
+                    (context.Item4 == "player_eye" ? IllustratorText.Get("SceneCapture_PlayerEye") : IllustratorText.Get("SceneCapture_CameraFallback")) +
+                    IllustratorText.Get("SceneCapture_NearbyCoverage"),
+                    IllustratorText.Raw("Residual_SceneReferenceCapture_226ef240347e") + (string.IsNullOrWhiteSpace(currentScene) ? IllustratorText.Raw("Residual_SceneReferenceCapture_f8e8df5d9bdd") : string.Empty), snapshot.NearbyPropFacts);
             }
             catch (PanoramaGeometryBudgetExceededException ex)
             {
                 // CreatePanoramaSnapshotAsync retires any partial copy before throwing.
                 // Recheck the original scene and cancellation; neither permits a fallback.
                 bool current = await RunOnGameThreadAsync(() => { source.EnsureCurrent(captureToken); return true; }, captureToken).ConfigureAwait(false);
-                if (!current) throw new InvalidOperationException("场景状态校验调度已停止，不能继续本次插画。");
+                if (!current) throw new InvalidOperationException("Scene state validation dispatch stopped; cannot continue with this illustration.");
                 var references = PreserveBudgetFallbackScreenshot(fallbackScene);
                 GenerationDiagnostics.Current?.RecordStage("panorama_skipped_geometry_budget", new JObject
                 { ["phase"] = ex.Phase, ["limit"] = ex.Limit, ["panorama"] = false, ["currentScreenshot"] = references.Count > 0 });
                 return new ConversationSceneReferenceCapture(references,
-                    "附近环境物件超过采集预算，本次没有环境全景；不使用任何不完整副本。" +
-                    (references.Count > 0 ? "仅保留已取得的当前位置截图，环境未知部分不得补造。" : "环境只依据已有文字事实，不补造未知建筑与陈设。"),
-                    "环境物件超过" + ex.Limit + "个预算，已跳过环境采集，继续绘制");
+                    IllustratorText.Get("SceneCapture_BudgetNoPanorama") +
+                    (references.Count > 0 ? IllustratorText.Get("SceneCapture_BudgetScreenshot") : IllustratorText.Get("SceneCapture_BudgetFacts")),
+                    IllustratorText.Raw("Residual_SceneReferenceCapture_6de98f225787") + ex.Limit + IllustratorText.Raw("Residual_SceneReferenceCapture_57eb9ae185bd"));
             }
             catch (OperationCanceledException) when (!token.IsCancellationRequested)
-            { throw new TimeoutException("环境全景采集超过时间预算，已停止；没有发送不完整环境图。"); }
+            { throw new TimeoutException("Environment panorama capture exceeded its time budget and stopped. No incomplete environment image was sent."); }
             finally
             {
                 try

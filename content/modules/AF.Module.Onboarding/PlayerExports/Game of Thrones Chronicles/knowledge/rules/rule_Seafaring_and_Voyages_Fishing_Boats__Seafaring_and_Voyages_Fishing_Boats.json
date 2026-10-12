@@ -1,0 +1,147 @@
+{
+  "Id": "rule_Seafaring_and_Voyages_Fishing_Boats",
+  "Keywords": [
+    "Fishing Boats"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Fishing boats mostly operate near the coast, estuaries and shallow seas. They have small hulls and shallow drafts, and rely on nets, hooks, cages and experience in fishing. They provided daily food for the port towns and were the first to feel the impact of storms, war blockades and piracy on ordinary households."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Fishing Boats Fishing boats mostly operate near the coast, estuaries and shallow seas. They have small hulls and shallow drafts, and rely on nets, hooks, cages and experience in fishing. They provided daily food for the port towns and were the first to feel the impact of storms, war blockades and piracy on ordinary households. The rules of the sea ultimately have to withstand wet ropes, bad water and sudden turns of weather."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Fishing Boats Fishing boats mostly operate near the coast, estuaries and shallow seas. They have small hulls and shallow drafts, and rely on nets, hooks, cages and experience in fishing. They provided daily food for the port towns and were the first to feel the impact of storms, war blockades and piracy on ordinary households. If any maritime plan ignores the crew's physical strength and return conditions, victory may turn into drifting."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Fishing Boats Fishing boats mostly operate near the coast, estuaries and shallow seas. They have small hulls and shallow drafts, and rely on nets, hooks, cages and experience in fishing. They provided daily food for the port towns and were the first to feel the impact of storms, war blockades and piracy on ordinary households. A single misjudgment can cost you goods, credit, and lives at the same time."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Fishing Boats Fishing boats mostly operate near the coast, estuaries and shallow seas. They have small hulls and shallow drafts, and rely on nets, hooks, cages and experience in fishing. They provided daily food for the port towns and were the first to feel the impact of storms, war blockades and piracy on ordinary households."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Fishing Boats Fishing boats mostly operate near the coast, estuaries and shallow seas. They have small hulls and shallow drafts, and rely on nets, hooks, cages and experience in fishing. They provided daily food for the port towns and were the first to feel the impact of storms, war blockades and piracy on ordinary households. There are no extra roads to go around on the ship, and mistakes can often only be shared by the entire ship."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Fishing Boats Fishing boats mostly operate near the coast, estuaries and shallow seas. They have small hulls and shallow drafts, and rely on nets, hooks, cages and experience in fishing. They provided daily food for the port towns and were the first to feel the impact of storms, war blockades and piracy on ordinary households. Wood and knots maintain the hull, while faith helps people face the uncontrollable sea."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Fishing Boats Fishing boats mostly operate near the coast, estuaries and shallow seas. They have small hulls and shallow drafts, and rely on nets, hooks, cages and experience in fishing. They provided daily food for the port towns and were the first to feel the impact of storms, war blockades and piracy on ordinary households. The changes on the distant sea often turn into empty stalls in the market the next day."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Fishing Boats: Fishing boats mostly operate near the coast, estuaries and shallow seas. They have small hulls and shallow drafts, and rely on nets, hooks, cages and experience in fishing. They provided daily food for the port towns and were the first to feel the impact of storms, war blockades and piracy on ordinary households."
+  ]
+}

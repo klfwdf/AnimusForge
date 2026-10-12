@@ -1,0 +1,186 @@
+{
+  "Id": "rule_golden_crown",
+  "Keywords": [
+    "Golden Crown",
+    "Vlandian Golden Crown"
+  ],
+  "RagShortTexts": [
+    "The Vlandian Golden Crown was a gift presented by the Imperial Emperor to the first king, Osric."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "hero:lord_4_1"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "When my great-grandfather Osric 'Iron-Arm' proclaimed himself King of Vlandia, the Emperor personally sent us a golden crown as a token of friendship. Hah. Imperial gifts are never to be trusted. If you toss a bone into a pack of wild dogs, what does that mean for the bone? It means you will be gnawed and fought over from every side. I have spent most of my life either in the saddle or encamped before besieged fortresses. I once told myself that though my own fate was full of hardship, at least my son might rule in peace. We deceive ourselves with such lies, for peace will never come. My son will succeed to my rule, and he too will fight endlessly with his brothers and his vassals. After him, my grandsons will tear at one another as well. Still, as kings and princes, at least they can enjoy dry tents, fine wine, and soft beds all day long. Life is fleeting, and that is all the peace anyone can hope for."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Golden Crown? I have heard of it. The Imperial Emperor sent it to our very first king back when the kingdom was founded. Solid gold, worth a fortune. Still, the old folk say that thing brings bad luck—once you take something from the Empire, you have to take the Empire's troubles upon yourself. Later on we fought the Empire back and forth, so who knows whether that Golden Crown was a blessing or a curse. Anyway, it sits in the royal palace now and has nothing to do with us."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "This Golden Crown—how should I put it? Given by the Empire, it has been a tangled mess of an account from the very start. You could call it proof that the Empire recognized our Vlandia, yet it was also a gift sent by the Empire. And what does sending a gift mean? Either they are showing weakness, or they are laying a trap. Derthert thinks it was a trap, and he has a point. Then again, without this Golden Crown, by what right would Osric's descendants sit upon that throne? People like us stand with Derthert today and with Ingalther tomorrow, and when all is said and done, is it not because anyone can make a bid for that seat? There is only one Golden Crown, and whoever wears it gets bitten by everyone else. Those who do not wear it wish they could be bitten, yet lack the fortune for it. You ask whether this Golden Crown is a good thing or a bad thing? I do not know either."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": [
+          "clan_vlandia_3"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null
+      },
+      "Content": "The Golden Crown is the symbol of Vlandian royal authority, yet our attitude toward it has always been one of restraint. We neither regard the Empire's gift of the Golden Crown as an act of goodwill, nor view it as a curse the way some do. It is simply a crown; what matters is how the one who wears it governs. King Derthert substitutes arbitration for the sword, and that is more precious than gold. Yet those who fight over the Golden Crown like dogs over a bone will never understand that truth."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": [
+          "clan_vlandia_4"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null
+      },
+      "Content": "The Empire's Golden Crown? Bah. That wretched hat is nothing but a dog collar the Empire slipped around our necks. Osric took it, and from that day on the kings of Vlandia have had to sit beneath the Empire's shadow. And Derthert actually feels sorry toward the Empire? In his bones he is nothing more than a faithful hound of the Empire. We of the dey Cortain clan do not recognize that Golden Crown—what we recognize are the blades and horse-hooves of Vlandia. A true king should not wear a crown handed to him by someone else; he should seize one for himself."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": [
+          "clan_vlandia_2"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null
+      },
+      "Content": "The Golden Crown is a gift from the Empire, nothing more. I harbor no special feelings toward it. Derthert is the king, he wears that crown, and on the surface I recognize him—no problem there. Speaking strictly to the facts, though, after several generations everyone knows full well what the Empire had in mind when it sent that thing in the first place. I do not curse it as crudely as Ingalther does, but when the day truly comes that Vlandia needs a firmer hand, the weight of that Golden Crown may well have to rest on a different pair of shoulders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": [
+          "clan_vlandia_1"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": false,
+        "SkillMin": null
+      },
+      "Content": "The Golden Crown belongs to our clan, yet it is also our clan's burden. From the day Osric accepted it, not a single generation of dey Meroc men has known peace. Derthert is right—the Empire tossed a bone our way, and ever since, our whole family has been reduced to men fighting for scraps in the jaws of wild dogs. Outsiders see only the gleam of gold, not the blood pressed beneath it. Derthert has spent his whole life enduring days in the saddle and before besieged fortresses, and those of us who watch over him know it all too well."
+    },
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Vlandians have a golden crown, said to have been sent by an Imperial Emperor in the old days. Strange thing—the Empire and Vlandia have fought for so many years, yet it all started with the giving of a gift. That crown is probably quite handsome to look at, though the Vlandians themselves have fought plenty among themselves over it. Gold is gold; wherever it goes, it stirs up trouble."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Golden Crown was an expedient measure of the Empire in bygone days—trading a single crown for temporary peace along the western coast. And what happened afterward? The Vlandians tore at one another for generations. Reckoned on the balance sheet, that bargain was no loss at all. Naturally we would never say so in public, but when senators discuss it in private, everyone agrees that one Golden Crown proved more useful than an entire legion. As for now, the Golden Crown remains in their hands, though the man who wears it is no longer worth the Empire's trouble."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "That Golden Crown of Vlandia is a fascinating case study in diplomacy. With a single crown the Empire recognized a king, and from then on that crown became both the foundation of the kingdom's legitimacy and the root of its internal strife. Outsiders like us can see it very clearly: whoever wears that crown is King of Vlandia, yet that same crown will rob him of a good night's sleep. A remark of Derthert's has traveled far—a bone tossed into a pack of wild dogs. He was speaking of his own vassals and his own family. How much bitterness lies in a king comparing himself to a wild dog is something we outsiders cannot fully fathom."
+    }
+  ],
+  "TextMappings": []
+}

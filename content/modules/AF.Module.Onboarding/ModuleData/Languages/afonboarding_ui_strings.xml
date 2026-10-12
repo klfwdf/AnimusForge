@@ -1,0 +1,306 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base type="string">
+  <tags><tag language="English" /></tags>
+  <strings>
+    <string id="AF_ONBOARDING_YJ_LATENCY_TITLE" text="YJ route latency test" />
+    <string id="AF_COMMON_CANCEL" text="Cancel" />
+    <string id="AF_ONBOARDING_YJ_LATENCY_FAILED" text="All three YJ routes failed the latency test. Check your network and try again, or use custom settings." />
+    <string id="AF_ONBOARDING_YJ_SELECTED" text="Selected YJ route: " />
+    <string id="AF_ONBOARDING_YJ_RESPONSE_TIME" text=", response about " />
+    <string id="AF_ONBOARDING_API_AUXILIARY" text="Preprocessing API" />
+    <string id="AF_ONBOARDING_API_POSTPROCESS" text="Postprocessing API" />
+    <string id="AF_ONBOARDING_API_EVENTS" text="Events/rebellion API" />
+    <string id="AF_ONBOARDING_API_PRIMARY" text="Primary API" />
+    <string id="AF_ONBOARDING_API_AUXILIARY_URL" text="Preprocessing API Base URL" />
+    <string id="AF_ONBOARDING_API_POSTPROCESS_URL" text="Postprocessing API Base URL" />
+    <string id="AF_ONBOARDING_API_EVENTS_URL" text="Events/rebellion API Base URL" />
+    <string id="AF_ONBOARDING_API_PRIMARY_URL" text="Primary API Base URL" />
+    <string id="AF_ONBOARDING_API_AUXILIARY_KEY" text="Preprocessing API key" />
+    <string id="AF_ONBOARDING_API_POSTPROCESS_KEY" text="Postprocessing API key" />
+    <string id="AF_ONBOARDING_API_EVENTS_KEY" text="Events/rebellion API key" />
+    <string id="AF_ONBOARDING_API_PRIMARY_KEY" text="Primary API key" />
+    <string id="AF_ONBOARDING_API_AUXILIARY_MODEL" text="Preprocessing model name" />
+    <string id="AF_ONBOARDING_API_POSTPROCESS_MODEL" text="Postprocessing model name" />
+    <string id="AF_ONBOARDING_API_EVENTS_MODEL" text="Events/rebellion model name" />
+    <string id="AF_ONBOARDING_API_PRIMARY_MODEL" text="Primary model name" />
+    <string id="AF_ONBOARDING_API_AUXILIARY_HINT" text="Preprocessing API: choose a fast, lower-cost model." />
+    <string id="AF_ONBOARDING_API_POSTPROCESS_HINT" text="Postprocessing API: choose a model with strong analysis and reasoning, such as GPT." />
+    <string id="AF_ONBOARDING_API_EVENTS_HINT" text="Weekly reports and rebellion API: choose a model with good writing, such as Gemini. Rebellion naming uses this model too." />
+    <string id="AF_ONBOARDING_API_PRIMARY_HINT" text="Primary API (NPC dialogue): choose a model with good writing, such as Gemini." />
+    <string id="AF_ONBOARDING_COMPAT_WARNING_TITLE" text="Compatibility warning" />
+    <string id="AF_COMMON_CONTINUE" text="Continue" />
+    <string id="AF_COMMON_BACK" text="Back" />
+    <string id="AF_ONBOARDING_MCM_SAVE_URL_FAILED" text="MCM settings could not be read; the Base URL cannot be saved right now." />
+    <string id="AF_ONBOARDING_MODEL_FETCH_FAILED" text="Model list fetch failed" />
+    <string id="AF_ONBOARDING_API_CONNECTION_FAILED" text="API connection failed" />
+    <string id="AF_ONBOARDING_STARTED" text="AnimusForge started, version: " />
+    <string id="AF_ONBOARDING_MOD_WARNING" text="This version is not recommended with other gameplay mods. If a crash occurs, check your mod load order first!" />
+    <string id="AF_ONBOARDING_BUSY" text="An AnimusForge setup or API test is already running. Complete or cancel it first." />
+    <string id="AF_ONBOARDING_RECONFIGURE_FAILED" text="Failed to open API reconfiguration: " />
+    <string id="AF_ONBOARDING_RECONFIGURED_CANCELLED" text="API reconfiguration cancelled." />
+    <string id="AF_ONBOARDING_RECONFIGURED_DONE" text="API reconfiguration complete: settings were written to MCM and the game was resumed. Database import and first-use setup are skipped." />
+    <string id="AF_ONBOARDING_SETUP_CLOSED" text="First-use setup was closed. Reopen it from the terminal; AI features still require setup." />
+    <string id="AF_ONBOARDING_SUPPORT" text="Support the AnimusForge team" />
+    <string id="AF_ONBOARDING_SUPPORT_HINT" text="Open the Afdian support page." />
+    <string id="AF_ONBOARDING_DEEPSEEK_FLASH" text="Play with the official DeepSeek Flash API preset" />
+    <string id="AF_ONBOARDING_DEEPSEEK_FLASH_HINT" text="Automatically fill the DeepSeek Flash preset; enter an API key once." />
+    <string id="AF_ONBOARDING_DEEPSEEK_PRO" text="Play with the official DeepSeek Pro API preset" />
+    <string id="AF_ONBOARDING_DEEPSEEK_PRO_HINT" text="Automatically fill the DeepSeek Pro preset; enter an API key once." />
+    <string id="AF_ONBOARDING_CUSTOM" text="Play with fully custom APIs" />
+    <string id="AF_ONBOARDING_CUSTOM_HINT" text="Use the legacy path and fill in Base URL, API key, and model one by one." />
+    <string id="AF_ONBOARDING_EXISTING" text="Play with the existing configuration" />
+    <string id="AF_ONBOARDING_EXISTING_HINT" text="Test the current MCM configuration directly; weekly report and rebellion APIs are skipped when incomplete." />
+    <string id="AF_ONBOARDING_YJ_PRESET" text="Play through the YJ API relay" />
+    <string id="AF_ONBOARDING_YJ_PRESET_HINT" text="Test and choose the fastest YJ route; use one or multiple API key groups." />
+    <string id="AF_ONBOARDING_SAVE_EXIT" text="Save and exit" />
+    <string id="AF_ONBOARDING_SAVE_EXIT_HINT" text="Save the current game and return to the main menu." />
+    <string id="AF_ONBOARDING_API_QUICK_SETUP" text="AnimusForge - API quick setup" />
+    <string id="AF_COMMON_CONFIRM" text="Confirm" />
+    <string id="AF_COMMON_CLOSE" text="Close" />
+    <string id="AF_ONBOARDING_BACK_RECONFIGURE" text="Back to API reconfiguration menu" />
+    <string id="AF_ONBOARDING_BACK_WELCOME" text="Back to first-use setup menu" />
+    <string id="AF_ONBOARDING_BACK_RECONFIGURE_HINT" text="Return to the AnimusForge API reconfiguration menu." />
+    <string id="AF_ONBOARDING_BACK_WELCOME_HINT" text="Return to the AnimusForge first-use API setup menu." />
+    <string id="AF_ONBOARDING_YJ_ACCOUNT" text="Get an API key and buy credits" />
+    <string id="AF_ONBOARDING_YJ_ACCOUNT_HINT" text="Open the YJ API key management and credit purchase pages." />
+    <string id="AF_ONBOARDING_YJ_MULTI" text="Multiple API key groups" />
+    <string id="AF_ONBOARDING_YJ_MULTI_HINT" text="Enter one key for each API group and fetch models for each group." />
+    <string id="AF_ONBOARDING_YJ_SINGLE" text="Single API key group" />
+    <string id="AF_ONBOARDING_YJ_SINGLE_HINT" text="Enter one key to fill all four APIs; models are still fetched and selected separately." />
+    <string id="AF_ONBOARDING_YJ_COPY_QQ" text="Copy YJ relay QQ group" />
+    <string id="AF_ONBOARDING_YJ_COPY_QQ_HINT" text="Copy QQ group " />
+    <string id="AF_ONBOARDING_TO_CLIPBOARD" text=" to the clipboard." />
+    <string id="AF_ONBOARDING_YJ_MENU" text="YJ API relay" />
+    <string id="AF_ONBOARDING_YJ_MENU_FAILED" text="Failed to open the YJ API relay menu: " />
+    <string id="AF_ONBOARDING_DEEPSEEK_KEY_TITLE" text="DeepSeek API key confirmation" />
+    <string id="AF_COMMON_YES" text="Yes" />
+    <string id="AF_COMMON_NO" text="No" />
+    <string id="AF_ONBOARDING_DEEPSEEK_KEY_FAILED" text="Failed to open the DeepSeek API key confirmation: " />
+    <string id="AF_ONBOARDING_DEEPSEEK_APPLY_FAILED" text="Failed to apply the DeepSeek preset: " />
+    <string id="AF_ONBOARDING_DEEPSEEK_MCM_FAILED" text="MCM settings could not be read; the DeepSeek preset cannot be written right now." />
+    <string id="AF_ONBOARDING_DEEPSEEK_KEY_INPUT" text="Enter DeepSeek API key" />
+    <string id="AF_ONBOARDING_SAVE_TEST_APIS" text="Save and test all four APIs" />
+    <string id="AF_ONBOARDING_KEY_EMPTY" text="API key cannot be empty." />
+    <string id="AF_ONBOARDING_DEEPSEEK_APPLIED" text="DeepSeek preset saved to MCM; testing all four APIs." />
+    <string id="AF_ONBOARDING_DEEPSEEK_INPUT_FAILED" text="Failed to open the DeepSeek API key input: " />
+    <string id="AF_ONBOARDING_YJ_LATENCY_BODY" text="Comparing three YJ routes. After the test, choose a connection method.\nNo key is sent and no model generation is performed." />
+    <string id="AF_ONBOARDING_RECONFIGURE_BODY" text="You are reconfiguring APIs from the AnimusForge terminal.\n\nThis flow writes and tests the primary, preprocessing, postprocessing, weekly report, and rebellion APIs, then returns to the game without database import or first-use setup." />
+    <string id="AF_ONBOARDING_QUICK_SETUP_BODY" text="Choose an API setup method for first use.\n\nA recommended preset fills the Base URL, model, reasoning, and temperature for all required APIs; you only need to enter one API key." />
+    <string id="AF_ONBOARDING_YJ_BODY" text="【Required before playing】\nOpen the key management and credit pages from “Get an API key and buy credits”; create a valid key and add enough credits.\n\nWithout a valid key or credits, models cannot be fetched, connection tests cannot pass, and AI gameplay is unavailable.\nA single-group key is entered once; multi-group mode requires one key per API." />
+    <string id="AF_ONBOARDING_YJ_RECONFIGURE_SUFFIX" text="\n\nTerminal API reconfiguration is active: after all four APIs pass, the game resumes without database import." />
+    <string id="AF_ONBOARDING_YJ_QQ_COPIED" text="YJ community QQ group copied to clipboard: " />
+    <string id="AF_ONBOARDING_YJ_QQ_COPY_FAILED" text="Could not copy the QQ group; copy it manually: " />
+    <string id="AF_ONBOARDING_YJ_KEY_PAGE" text="API key management" />
+    <string id="AF_ONBOARDING_YJ_CREDIT_PAGE" text="Credit purchase" />
+    <string id="AF_ONBOARDING_SYSTEM_YJ_FALLBACK" text="[System] The default browser could not start; opened the YJ API " />
+    <string id="AF_ONBOARDING_SYSTEM_YJ_OPENING" text="[System] Opening the YJ API " />
+    <string id="AF_ONBOARDING_SYSTEM_YJ_FAILED" text="[System] Failed to open the YJ API " />
+    <string id="AF_ONBOARDING_PAGE_SUFFIX" text=" page." />
+    <string id="AF_ONBOARDING_PAGE_FAILED_SUFFIX" text=" page failed: " />
+    <string id="AF_ONBOARDING_MCM_CONFIG_FAILED" text="MCM settings could not be read; cannot configure " />
+    <string id="AF_ONBOARDING_MCM_INPUT_FAILED" text="MCM settings could not be read; cannot enter " />
+    <string id="AF_ONBOARDING_YJ_SINGLE_KEY_TITLE" text="Enter YJ API single-group key" />
+    <string id="AF_ONBOARDING_YJ_KEY_TITLE_PREFIX" text="Enter YJ API " />
+    <string id="AF_ONBOARDING_YJ_SINGLE_KEY_BODY" text="Enter one YJ API key. The tested Base URL and key will be written to all four APIs; each API will then fetch and select its model." />
+    <string id="AF_ONBOARDING_YJ_MULTI_KEY_BODY_PREFIX" text="Enter the YJ API key for " />
+    <string id="AF_ONBOARDING_YJ_MULTI_KEY_BODY_SUFFIX" text=" group. Only the current API is written, and models available to this key are fetched." />
+    <string id="AF_COMMON_NEXT" text="Next" />
+    <string id="AF_ONBOARDING_YJ_SINGLE_KEY_LABEL" text="YJ API single-group key" />
+    <string id="AF_ONBOARDING_WRITTEN_FETCHING" text=" was saved to MCM; fetching models for " />
+    <string id="AF_ONBOARDING_AVAILABLE_MODELS_SUFFIX" text="." />
+    <string id="AF_ONBOARDING_YJ_INPUT_FAILED" text="Failed to open the YJ API key input: " />
+    <string id="AF_ONBOARDING_DEEPSEEK_KEY_BODY" text="Do you have an official DeepSeek API key?\n\nIf not, choose “No” to open the DeepSeek platform and create a key with credits. Return to the game and choose the preset again." />
+    <string id="AF_ONBOARDING_SYSTEM_DEEPSEEK_FALLBACK" text="[System] The default browser could not start; opened the official DeepSeek API keys page." />
+    <string id="AF_ONBOARDING_SYSTEM_DEEPSEEK_OPENING" text="[System] Opening the official DeepSeek API keys page." />
+    <string id="AF_ONBOARDING_SYSTEM_DEEPSEEK_FAILED" text="[System] Failed to open the official DeepSeek page: " />
+    <string id="AF_ONBOARDING_PRESET_WRITTEN_PREFIX" text="Saved " />
+    <string id="AF_ONBOARDING_PRESET_KEY_BODY" text=" preset.\nEnter a DeepSeek API key; it will be written to the primary, preprocessing, postprocessing, weekly report, and rebellion APIs." />
+    <string id="AF_ONBOARDING_TEST_MCM_FAILED" text="MCM settings could not be read; the API preset cannot be tested right now." />
+    <string id="AF_ONBOARDING_API_SET_FAILED" text="API set connection test failed." />
+    <string id="AF_ONBOARDING_API_SET_CANCEL_HINT" text="You cancelled this test. Return to the first-use menu to choose another setup method." />
+    <string id="AF_ONBOARDING_API_SET_CANCELLED" text="API set test cancelled." />
+    <string id="AF_ONBOARDING_API_SET_ERROR_HINT" text="This is usually a network, certificate, or proxy issue, or an incorrect API setting." />
+    <string id="AF_ONBOARDING_API_SET_EXCEPTION" text="API set test error: " />
+    <string id="AF_ONBOARDING_API_INCOMPLETE_SUFFIX" text=" is incomplete; check the Base URL, API key, and model name." />
+    <string id="AF_ONBOARDING_API_INCOMPLETE_TITLE" text="Incomplete API configuration" />
+    <string id="AF_ONBOARDING_API_INCOMPLETE_BODY" text="The API configuration is incomplete, so the set test cannot start." />
+    <string id="AF_ONBOARDING_API_TARGET_EMPTY" text="API set test failed: target configuration is empty." />
+    <string id="AF_ONBOARDING_RETURN_SETUP" text="Return to the first-use menu and choose another setup method." />
+    <string id="AF_ONBOARDING_RESPONSE_NO_MODEL" text="The endpoint returned HTTP success, but the response contained no usable model reply." />
+    <string id="AF_ONBOARDING_REPLY_PARSE_FAILED" text="Reply parsing failed." />
+    <string id="AF_ONBOARDING_CONNECTION_SUCCESS" text="Connection test succeeded." />
+    <string id="AF_ONBOARDING_RESPONSE_INVALID" text="The endpoint returned HTTP success, but the response was not a parseable chat-completion format." />
+    <string id="AF_ONBOARDING_REPLY_PARSE_EXCEPTION" text="Reply parsing failed: " />
+    <string id="AF_ONBOARDING_CONNECTION_ERROR_HINT_PREFIX" text="This is usually a network, certificate, or proxy issue, or the " />
+    <string id="AF_ONBOARDING_CONNECTION_ERROR_HINT_SUFFIX" text=" Base URL is incorrect." />
+    <string id="AF_ONBOARDING_CONNECTION_FAILED" text="Connection test failed: " />
+    <string id="AF_ONBOARDING_UNKNOWN_ERROR" text="Unknown error" />
+    <string id="AF_ONBOARDING_CONNECTION_FAILED_NEWLINE" text="Connection test failed.\n" />
+    <string id="AF_ONBOARDING_CONNECTION_EXCEPTION" text="Connection test error: " />
+    <string id="AF_ONBOARDING_EXISTING_TEST_PASSED" text="Existing configuration test passed" />
+    <string id="AF_ONBOARDING_API_SET_PASSED" text="API set test passed" />
+    <string id="AF_ONBOARDING_CONFIGURED_APIS" text="Configured APIs" />
+    <string id="AF_ONBOARDING_EVENTS_SKIPPED" text="Weekly report and rebellion APIs are incomplete; that test was skipped." />
+    <string id="AF_ONBOARDING_ADJUST_API_TITLE" text="Adjust API information" />
+    <string id="AF_ONBOARDING_ENTER_API" text="Enter API information" />
+    <string id="AF_ONBOARDING_TEST_EXISTING" text="Test existing configuration" />
+    <string id="AF_ONBOARDING_WEEKLY_EVENT_FAILED" text="Weekly event generation failed. Check the Base URL, API key, model name, or network." />
+    <string id="AF_ONBOARDING_AUXILIARY_UNAVAILABLE_EXISTING" text="The preprocessing API (rule retrieval/routing) is unavailable. Test the existing MCM configuration or re-enter it. This API is required and has no RAG fallback." />
+    <string id="AF_ONBOARDING_AUXILIARY_UNAVAILABLE" text="The preprocessing API (rule retrieval/routing) is unavailable. Check its Base URL, API key, model, or network. This API is required and has no RAG fallback." />
+    <string id="AF_ONBOARDING_AUXILIARY_ADJUST" text="Adjust preprocessing API" />
+    <string id="AF_ONBOARDING_AUXILIARY_ENTER" text="Enter preprocessing API" />
+    <string id="AF_ONBOARDING_POSTPROCESS_UNAVAILABLE_EXISTING" text="The postprocessing API is unavailable. Test the existing MCM configuration or re-enter it.\n\nPostprocessing needs stable decisions; prefer a reasoning model or a more capable model." />
+    <string id="AF_ONBOARDING_POSTPROCESS_UNAVAILABLE" text="The postprocessing API is unavailable. Re-enter it or continue using the primary API.\n\nPostprocessing needs stable decisions; prefer a reasoning model or a more capable model." />
+    <string id="AF_ONBOARDING_FALLBACK_PRIMARY" text="Continue with primary API" />
+    <string id="AF_ONBOARDING_POSTPROCESS_ADJUST" text="Adjust postprocessing API" />
+    <string id="AF_ONBOARDING_POSTPROCESS_ENTER_SHORT" text="Enter postprocessing API" />
+    <string id="AF_ONBOARDING_EVENTS_UNAVAILABLE_EXISTING" text="The events/rebellion API is unavailable. Test the existing MCM configuration or re-enter it.\n\nIt generates weekly reports and rebellion kingdom names; failed naming has no local-name fallback." />
+    <string id="AF_ONBOARDING_EVENTS_UNAVAILABLE" text="The events/rebellion API is unavailable. Re-enter its Base URL, API key, and model, or check the network.\n\nIt generates weekly reports and rebellion kingdom names; failed naming has no local-name fallback." />
+    <string id="AF_ONBOARDING_EVENTS_ADJUST" text="Adjust events/rebellion API" />
+    <string id="AF_ONBOARDING_EVENTS_ENTER" text="Enter events/rebellion API" />
+    <string id="AF_ONBOARDING_WELCOME_TITLE" text="Welcome to AnimusForge" />
+    <string id="AF_ONBOARDING_WELCOME_BODY" text="Before playing, confirm the primary API. It generates NPC dialogue; AI conversations are unavailable until it is configured." />
+    <string id="AF_ONBOARDING_PRIMARY_ENTER" text="Enter primary API" />
+    <string id="AF_ONBOARDING_AUXILIARY_TITLE" text="Configure preprocessing API (required)" />
+    <string id="AF_ONBOARDING_AUXILIARY_BODY" text="The preprocessing API handles rule retrieval/routing. Rule topics are screened at low cost before primary generation. It is required and has no RAG fallback." />
+    <string id="AF_ONBOARDING_AUXILIARY_ENTER_SHORT" text="Enter preprocessing API" />
+    <string id="AF_ONBOARDING_POSTPROCESS_TITLE" text="Configure postprocessing API" />
+    <string id="AF_ONBOARDING_POSTPROCESS_BODY" text="The postprocessing API handles action and emotion tags. It separates postprocessing from preprocessing and primary generation; you can continue using the primary API if needed.\n\nPostprocessing needs stable decisions; prefer a reasoning model or a more capable model." />
+    <string id="AF_ONBOARDING_BASE_URL_TITLE" text="Enter Base URL" />
+    <string id="AF_ONBOARDING_ENTER_PREFIX" text="Enter " />
+    <string id="AF_ONBOARDING_EXAMPLE_SUFFIX" text=".\nExample: " />
+    <string id="AF_ONBOARDING_EMPTY_SUFFIX" text=" cannot be empty." />
+    <string id="AF_ONBOARDING_OPEN_PREFIX" text="Failed to open " />
+    <string id="AF_ONBOARDING_INPUT_FAILED_SUFFIX" text=" input: " />
+    <string id="AF_ONBOARDING_BASE_URL_PASSED" text="Base URL check passed; enter the API key next." />
+    <string id="AF_ONBOARDING_BASE_URL_FAILED" text="Base URL check failed: " />
+    <string id="AF_ONBOARDING_BASE_URL_CANCELLED" text="Base URL check cancelled." />
+    <string id="AF_ONBOARDING_BASE_URL_EMPTY" text="Base URL cannot be empty." />
+    <string id="AF_ONBOARDING_BASE_URL_INVALID" text="Base URL is invalid; enter a complete http/https address." />
+    <string id="AF_ONBOARDING_BASE_URL_CHECKING_TITLE" text="Checking Base URL" />
+    <string id="AF_ONBOARDING_BASE_URL_CHECKING_BODY" text="Checking whether the Base URL is available...\n\nYou can enter the API key after the check passes." />
+    <string id="AF_ONBOARDING_EXIT_SAVE" text="Exit current game" />
+    <string id="AF_ONBOARDING_BACK_PREVIOUS" text="Back to previous screen" />
+    <string id="AF_ONBOARDING_BASE_URL_UNAVAILABLE" text="The Base URL is unavailable. Check it again and retry." />
+    <string id="AF_ONBOARDING_BASE_URL_FAILED_LOWER" text="Base URL check failed" />
+    <string id="AF_ONBOARDING_BASE_URL_NEXT_TITLE" text="What should I do next?" />
+    <string id="AF_ONBOARDING_BASE_URL_NEXT_BODY" text="The Base URL is unavailable. Re-enter it or exit the current game." />
+    <string id="AF_ONBOARDING_BASE_URL_REENTER" text="Re-enter Base URL" />
+    <string id="AF_ONBOARDING_API_KEY_TITLE" text="Enter API key" />
+    <string id="AF_ONBOARDING_MCM_WRITTEN_SUFFIX" text=" was saved to MCM." />
+    <string id="AF_ONBOARDING_MODEL_FETCH_MCM_FAILED" text="MCM settings could not be read; models cannot be fetched right now." />
+    <string id="AF_ONBOARDING_NEED_BASE_URL" text="Enter the Base URL first." />
+    <string id="AF_ONBOARDING_NEED_API_KEY" text="Enter the API key first." />
+    <string id="AF_ONBOARDING_MODELS_FETCHED" text="Available models fetched; choose a model." />
+    <string id="AF_ONBOARDING_MODELS_UNRECOGNIZED" text="The endpoint returned a response, but no usable model list was recognized. You can enter a model manually." />
+    <string id="AF_ONBOARDING_MODELS_FAILED" text="Failed to fetch models: " />
+    <string id="AF_ONBOARDING_MODELS_CANCELLED" text="Model list fetch cancelled." />
+    <string id="AF_ONBOARDING_MODELS_FETCHING_TITLE" text="Fetching model list" />
+    <string id="AF_ONBOARDING_MODELS_FETCHING_BODY" text="Fetching models available from this endpoint...\n\nThe next step opens automatically when complete.\nIf fetching keeps failing, go back to re-enter the settings or enter a model manually later." />
+    <string id="AF_ONBOARDING_MODEL_INPUT_MCM_FAILED" text="MCM settings could not be read; cannot enter " />
+    <string id="AF_ONBOARDING_MODEL_MANUAL_TITLE" text="Enter model name manually" />
+    <string id="AF_ONBOARDING_MODEL_REENTER_KEY" text="Re-enter API key" />
+    <string id="AF_ONBOARDING_MODEL_REFRESH" text="Fetch model list again" />
+    <string id="AF_ONBOARDING_MODEL_SELECT_BODY" text="Choose an available model." />
+    <string id="AF_ONBOARDING_MODEL_NO_LIST" text="\n\nNo model list was fetched; you can enter a model manually." />
+    <string id="AF_ONBOARDING_MODEL_RECOMMEND_PREFIX" text="\n\n[Channel model suggestion]\n" />
+    <string id="AF_ONBOARDING_MODEL_RECOMMEND_SUFFIX" text="\nThe final choice is yours." />
+    <string id="AF_ONBOARDING_MODEL_RECOVERY_HINT" text="\n\nIf the Base URL or API key is wrong, scroll to the bottom to return and enter it again." />
+    <string id="AF_ONBOARDING_MODEL_SELECT_TITLE" text="Choose model name" />
+    <string id="AF_ONBOARDING_MODEL_TESTING_PREFIX" text=" was saved to MCM; testing the complete connection: " />
+    <string id="AF_ONBOARDING_MODEL_SELECT_FAILED" text="Failed to open model selection: " />
+    <string id="AF_ONBOARDING_MODEL_MANUAL_INPUT" text="Enter model name" />
+    <string id="AF_ONBOARDING_START_TEST" text="Start test" />
+    <string id="AF_ONBOARDING_MODEL_INPUT_FAILED" text="Failed to open model name input: " />
+    <string id="AF_ONBOARDING_MCM_OF" text="MCM " />
+    <string id="AF_ONBOARDING_CONNECTION_SUCCESS_PREFIX" text="connection test succeeded: " />
+    <string id="AF_ONBOARDING_CONNECTION_HINT" text="This is usually a network, certificate, or proxy issue, or an incorrect Base URL." />
+    <string id="AF_ONBOARDING_TEST_CANCEL_HINT" text="You cancelled this test. Return to retry or change the API settings." />
+    <string id="AF_ONBOARDING_TEST_CANCELLED" text="Test cancelled; returned to the previous screen." />
+    <string id="AF_ONBOARDING_MCM_READ_FAILED" text="Could not read MCM settings." />
+    <string id="AF_ONBOARDING_MCM_MISSING_PREFIX" text="MCM is missing " />
+    <string id="AF_ONBOARDING_MCM_MISSING_PREFIX_NO_SPACE" text="MCM is missing " />
+    <string id="AF_ONBOARDING_SET_TESTING_BODY" text="Testing the API set in parallel using the current MCM settings...\n\nThe next step opens when complete; any required API failure returns to the first-use menu." />
+    <string id="AF_ONBOARDING_SINGLE_TESTING_PREFIX" text="Testing " />
+    <string id="AF_ONBOARDING_SINGLE_TESTING_SUFFIX" text=" using MCM settings...\n\nThe next step opens when complete.\nYou can exit the current game here if the test keeps failing." />
+    <string id="AF_ONBOARDING_TESTING_TITLE" text="Testing existing configuration" />
+    <string id="AF_ONBOARDING_COMPAT_CONTINUE" text="\n\nContinue this process?" />
+    <string id="AF_ONBOARDING_TROUBLESHOOT" text="\n\nTroubleshooting: " />
+    <string id="AF_ONBOARDING_ENTER_MODEL_PREFIX" text="Enter" />
+    <string id="AF_ONBOARDING_MODEL_EXAMPLE" text=".\nExample: gpt-4o-mini" />
+    <string id="AF_ONBOARDING_EXIT_FAILED" text="Failed to exit the current game: " />
+    <string id="AF_ONBOARDING_SAVE_HANDLER_MISSING" text="No save handler was found; exiting the current game." />
+    <string id="AF_ONBOARDING_SAVE_IN_PROGRESS" text="A save is already in progress; another save will run when it completes, then the game exits." />
+    <string id="AF_ONBOARDING_SAVING_EXIT" text="Saving the current game; it will exit when saving completes." />
+    <string id="AF_ONBOARDING_SAVE_EXIT_FAILED" text="Save and exit failed: " />
+    <string id="AF_ONBOARDING_SAVE_EXIT_NO_HANDLER" text="Save and exit failed: no save handler was found." />
+    <string id="AF_ONBOARDING_SAVE_CANCELLED" text="Saving the current game failed; exit cancelled." />
+    <string id="AF_ONBOARDING_IMPORT_BODY" text="This content includes world lore, character information, kingdom openings, personalities, and long-term strategies to improve the experience.\n\nSome lore increases CPU load." />
+    <string id="AF_ONBOARDING_IMPORT_TITLE" text="Knowledge-base import" />
+    <string id="AF_ONBOARDING_IMPORT_ALL" text="Import all" />
+    <string id="AF_ONBOARDING_SKIP" text="Skip" />
+    <string id="AF_ONBOARDING_SKIP_IMPORT_BODY" text="Skip the database import?\nWithout it, NPCs will barely understand your world settings." />
+    <string id="AF_ONBOARDING_SKIP_IMPORT_TITLE" text="Skip database import" />
+    <string id="AF_ONBOARDING_IMPORT_DONE" text="First import complete. Enter the player name, appearance, and background next; these can be skipped." />
+    <string id="AF_ONBOARDING_IMPORT_SKIPPED" text="Database import skipped. Enter the player name, appearance, and background next; these can be skipped." />
+    <string id="AF_ONBOARDING_PERSONA_FAILED" text="Failed to open the player persona setup: " />
+    <string id="AF_ONBOARDING_SCENE_CONFLICT_BODY" text="Allow direct player attacks to trigger scene conflicts?\n\nWhen enabled, attacking NPCs in peaceful town or lord-meeting scenes can trigger AnimusForge conflicts.\n\nWhen disabled, direct attacks use vanilla damage resolution; arguments and taunts can still escalate conflicts.\n\nThis choice is saved to MCM and can be changed from Scene Shout." />
+    <string id="AF_ONBOARDING_SCENE_CONFLICT_TITLE" text="AnimusForge - Scene conflict" />
+    <string id="AF_ONBOARDING_ENABLE" text="Enable" />
+    <string id="AF_ONBOARDING_SCENE_CONFLICT_SHOW_FAILED" text="[WARN] Failed to show peaceful-scene conflict settings: " />
+    <string id="AF_ONBOARDING_SCENE_CONFLICT_MCM_FAILED" text="MCM settings could not be read; the peaceful-scene conflict option cannot be saved." />
+    <string id="AF_ONBOARDING_SCENE_CONFLICT_ENABLED" text="Direct attacks can now trigger scene conflicts." />
+    <string id="AF_ONBOARDING_SCENE_CONFLICT_DISABLED" text="Direct attacks no longer trigger scene conflicts; damage uses vanilla logic." />
+    <string id="AF_ONBOARDING_SCENE_CONFLICT_SAVE_FAILED" text="Failed to save the peaceful-scene conflict option: " />
+    <string id="AF_ONBOARDING_MCM_PERSIST_WARN" text="[WARN] Failed to persist MCM settings: " />
+    <string id="AF_ONBOARDING_API_VALIDATION_FAILED" text="The API information in MCM failed its connection test; setup cannot continue yet." />
+    <string id="AF_ONBOARDING_API_ENDPOINT_LABEL" text="\nEndpoint: " />
+    <string id="AF_ONBOARDING_API_MODEL_LABEL" text="\nModel: " />
+    <string id="AF_ONBOARDING_API_STATUS_LABEL" text="\nStatus: " />
+    <string id="AF_ONBOARDING_API_HINT_URL_MODEL" text="\nTroubleshooting: check the Base URL suffix and model name." />
+    <string id="AF_ONBOARDING_API_HINT_KEY" text="\nTroubleshooting: check whether the API key is valid." />
+    <string id="AF_ONBOARDING_API_HINT_UPSTREAM" text="\nTroubleshooting: the gateway received the request, but the upstream host is unreachable." />
+    <string id="AF_ONBOARDING_HTTP_400" text="The request format is invalid. The Base URL suffix may be wrong or the endpoint may not support chat completions." />
+    <string id="AF_ONBOARDING_HTTP_401" text="The API key is invalid, empty, or uses the wrong authentication format." />
+    <string id="AF_ONBOARDING_HTTP_402" text="Credits are insufficient, the plan is restricted, or this channel requires a top-up before model calls." />
+    <string id="AF_ONBOARDING_HTTP_403" text="This key cannot access the model or endpoint, or was blocked by platform risk controls." />
+    <string id="AF_ONBOARDING_HTTP_404" text="The Base URL suffix or endpoint path is wrong, or the model does not exist with this provider." />
+    <string id="AF_ONBOARDING_HTTP_408" text="The server took too long to respond, usually because of poor network quality or a slow upstream." />
+    <string id="AF_ONBOARDING_HTTP_429_QUOTA" text="Credits may be exhausted or the balance is too low, so the request was throttled or rejected." />
+    <string id="AF_ONBOARDING_HTTP_429_RATE" text="Requests are too frequent, concurrency is too high, or the account hit a rate limit. Try again shortly." />
+    <string id="AF_ONBOARDING_HTTP_500" text="The server failed internally. This is usually not a local input error; try again later." />
+    <string id="AF_ONBOARDING_HTTP_UPSTREAM" text="The gateway or upstream service is unavailable, usually due to a provider outage or network path issue." />
+    <string id="AF_ONBOARDING_HTTP_UNKNOWN" text="First check the Base URL, API key, model name, and network." />
+    <string id="AF_ONBOARDING_BASE_URL_ERROR" text="Base URL check failed." />
+    <string id="AF_ONBOARDING_BASE_URL_ERROR_404" text=" The address is likely wrong; common causes are an incorrect Base URL suffix or endpoint path." />
+    <string id="AF_ONBOARDING_BASE_URL_ERROR_400" text=" The address returned an invalid request, so it likely does not support this OpenAI-style endpoint." />
+    <string id="AF_ONBOARDING_BASE_URL_ERROR_UPSTREAM" text=" The address is temporarily unavailable due to a server or network path issue." />
+    <string id="AF_ONBOARDING_BASE_URL_ERROR_DEFAULT" text=" Check that the Base URL is correct." />
+    <string id="AF_ONBOARDING_MODEL_ERROR" text="Failed to fetch the model list." />
+    <string id="AF_ONBOARDING_MODEL_ERROR_KEY" text=" The API key is invalid or authentication failed." />
+    <string id="AF_ONBOARDING_MODEL_ERROR_CREDITS" text=" Credits are insufficient or the channel restricts endpoint calls." />
+    <string id="AF_ONBOARDING_MODEL_ERROR_ACCESS" text=" This key cannot access the model-list endpoint or was blocked by provider controls." />
+    <string id="AF_ONBOARDING_MODEL_ERROR_URL" text=" The Base URL is likely wrong or this provider does not support /models." />
+    <string id="AF_ONBOARDING_MODEL_ERROR_RATE" text=" Requests are too frequent or the account hit a rate limit." />
+    <string id="AF_ONBOARDING_MODEL_ERROR_MANUAL" text=" You can enter a model name manually to continue." />
+    <string id="AF_ONBOARDING_IMPORT_MANUAL_PATH" text="Enter folder name/path manually" />
+    <string id="AF_ONBOARDING_IMPORT_LATEST" text="Use latest player export (automatic)" />
+    <string id="AF_ONBOARDING_IMPORT_PICKER_TITLE" text="Choose import folder" />
+    <string id="AF_ONBOARDING_IMPORT_PICKER_BODY" text="Choose a module folder or a player-exported world book:" />
+    <string id="AF_ONBOARDING_IMPORT_BUTTON" text="Import" />
+    <string id="AF_ONBOARDING_IMPORT_MANUAL_HINT" text="Names search module folders first, then player exports; leave empty for the latest export." />
+    <string id="AF_ONBOARDING_IMPORT_PICKER_FAILED" text="Failed to open import selection: " />
+    <string id="AF_ONBOARDING_IMPORT_KINGDOM_FAILED" text="Import failed: kingdom strategy and personality import could not run. Reason: " />
+    <string id="AF_ONBOARDING_IMPORT_FAILED" text="Import failed: " />
+    <string id="AF_ONBOARDING_UNKNOWN_VERSION" text="Unknown version" />
+    <string id="AF_ONBOARDING_LATENCY_SUFFIX" text=" ms." />
+    <string id="AF_COMMON_PERIOD" text="." />
+          <string id="AF_ONBOARDING_INITIAL_GUIDE_TITLE" text="Welcome to AnimusForge" />
+    <string id="AF_ONBOARDING_INITIAL_GUIDE_BODY" text="You do not need to open MCM to configure the APIs. The first-use setup guide will walk you through the API settings after you enter a save." />
+    <string id="AF_COMMON_GOT_IT" text="Got it" />
+    <string id="AF_ONBOARDING_BUILTIN_BOOK_CALRADIA" text="Calradia Chronicles" />
+    <string id="AF_ONBOARDING_BUILTIN_BOOK_CALRADIALITE" text="Calradia Chronicles (Lite Edition) (choose this for a lower-performance CPU, such as the i5-12400F)" />
+    <string id="AF_ONBOARDING_BUILTIN_BOOK_WARHAMMER" text="Warhammer Old World Chronicles" />
+    <string id="AF_ONBOARDING_BUILTIN_BOOK_GAMEOFTHRONES" text="Game of Thrones Chronicles" />
+</strings>
+</base>

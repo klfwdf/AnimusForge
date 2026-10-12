@@ -64,7 +64,7 @@ public sealed class WorldBulletinBodyWidget : Widget
 		float capHeight = 0;
 		if (hasCap)
 		{
-			float threeLines = MeasureHeight("国\n国\n国", leadWidth);
+			float threeLines = MeasureHeight(WorldBulletinPolicyTexts.Raw("WBLT_Raw_049"), leadWidth);
 			WorldBulletinTextFlow.SplitToHeight(tail, threeLines, text => MeasureHeight(text, leadWidth), out head, out tail);
 			capHeight = threeLines / _scaleToUse;
 		}

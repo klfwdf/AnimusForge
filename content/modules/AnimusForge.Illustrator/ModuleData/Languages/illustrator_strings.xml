@@ -1,0 +1,522 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base type="string">
+  <tags>
+    <tag language="English" />
+  </tags>
+  <strings>
+    <string id="AF_ILL_AUTO_GENERATE" text="Generate images automatically" />
+    <string id="AF_ILL_AUTO_GENERATE_HINT" text="Active only when image generation is enabled. When on, illustrations are generated during bulletin creation; when off, they are generated when the panel opens and the cache misses." />
+    <string id="AF_ILL_AUTO_REDRAW" text="Redraw scene illustration after NPC replies" />
+    <string id="AF_ILL_AUTO_REDRAW_HINT" text="After the player generates the first illustration, each NPC reply redraws one automatically. Later requests reuse the initial panorama, references, and stable facts while updating the latest two dialogue turns and actions." />
+    <string id="AF_ILL_CACHE_LIMIT" text="Maximum local cache images" />
+    <string id="AF_ILL_CACHE_LIMIT_HINT" text="Maximum number of generated images kept in the persistent local cache to avoid duplicate requests." />
+    <string id="AF_ILL_CLEAN_TEMP" text="Clean temporary files after generation" />
+    <string id="AF_ILL_CLEAN_TEMP_HINT" text="Each extraction task cleans only its own off-screen exports when it finishes. When disabled, heraldry exports are kept for troubleshooting; loaded portrait files still follow the normal release flow. Gallery caches and default illustrations are unaffected." />
+    <string id="AF_ILL_CUSTOM_DIRECTOR" text="Custom director prompt" />
+    <string id="AF_ILL_CUSTOM_DIRECTOR_HINT" text="Set composition, action, shot, and narrative preferences for encyclopedia, meetings, and bulletins. Blank keeps defaults. Sent only to the Visual Director and cannot override known facts or output format." />
+    <string id="AF_ILL_CUSTOM_STYLE" text="Custom style prompt (active when Style=prompt)" />
+    <string id="AF_ILL_CUSTOM_STYLE_HINT" text="Open the long-text editor to edit style instructions. Active only when the style preset is “prompt”; injected into every image channel. A classical oil-painting preset is provided as a reference." />
+    <string id="AF_ILL_DIRECTOR_BASE_URL" text="Director API endpoint (Base URL)" />
+    <string id="AF_ILL_DIRECTOR_BASE_URL_HINT" text="Visual Director API endpoint. Leave blank to reuse the main conversation API; enter a Base URL for an independent model or proxy." />
+    <string id="AF_ILL_DIRECTOR_KEY" text="Director API key (API Key)" />
+    <string id="AF_ILL_DIRECTOR_KEY_HINT" text="Visual Director API key. Leave blank to reuse the main conversation API key." />
+    <string id="AF_ILL_DIRECTOR_MAX_TOKENS" text="Director maximum output tokens" />
+    <string id="AF_ILL_DIRECTOR_MAX_TOKENS_HINT" text="max_tokens sent to the director API, default 25000. This is an output budget, not a target length; configure it within the API limits." />
+    <string id="AF_ILL_DIRECTOR_MODEL" text="Director model name (Model)" />
+    <string id="AF_ILL_DIRECTOR_MODEL_HINT" text="Visual Director model name. Leave blank to reuse the main conversation model." />
+    <string id="AF_ILL_DIRECTOR_REFERENCE_TOKENS" text="Director prompt reference length (approx. tokens)" />
+    <string id="AF_ILL_DIRECTOR_REFERENCE_TOKENS_HINT" text="A soft length reference, not the API output limit. When forced reduction is enabled, the character budget takes priority; otherwise the complete reply may contain at most 30000 characters. The full four sections are retained without padding." />
+    <string id="AF_ILL_DISPLAY" text="AnimusForge - AI Illustrator" />
+    <string id="AF_ILL_DISPLAY_MODE" text="Illustration display mode" />
+    <string id="AF_ILL_DISPLAY_MODE_HINT" text="Standalone panel uses the scene illustration panel. Fullscreen overlay fills the conversation background while preserving controls and input. It hides automatically for encyclopedia and menus. Automatic redraw uses this choice." />
+    <string id="AF_ILL_ENABLED" text="Enable image generation" />
+    <string id="AF_ILL_ENABLED_HINT" text="Master switch for all image-generation paths. When disabled, encyclopedia, conversation, bulletin, and gallery entries will not send image requests." />
+    <string id="AF_ILL_FETCH" text="Fetch" />
+    <string id="AF_ILL_FETCH_DIRECTOR_MODELS" text="Fetch director models" />
+    <string id="AF_ILL_FETCH_DIRECTOR_MODELS_HINT" text="Fetches available models from the director Base URL, or from the main conversation API when blank." />
+    <string id="AF_ILL_FETCH_IMAGE_MODELS" text="Fetch image model list" />
+    <string id="AF_ILL_FETCH_IMAGE_MODELS_HINT" text="Queries the configured endpoint for models. Google native mode uses /models and native authentication. Only the current response page is read; enter a model manually if it is not listed. Image and art models are prioritized." />
+    <string id="AF_ILL_FULL_URL" text="Use complete request URL (do not append suffix)" />
+    <string id="AF_ILL_FULL_URL_HINT" text="Uses the entered endpoint directly without appending a suffix. Suitable for custom proxies. Google native mode requires a complete :generateContent URL; the URL determines the model." />
+    <string id="AF_ILL_GEAR_FIDELITY" text="Preserve AF equipment" />
+    <string id="AF_ILL_GEAR_FIDELITY_HINT" text="Preserves equipment identity while allowing narrative changes such as tears, stains, or wetness. When disabled, clothing, armor, weapons, and accessories follow custom director rules; identity and established facts remain. Affects new requests only and never changes game equipment." />
+    <string id="AF_ILL_GROUP_BASIC" text="1. Basic Settings" />
+    <string id="AF_ILL_GROUP_DIRECTOR_API" text="3. Visual Director API (OpenAI-compatible; blank uses main API)" />
+    <string id="AF_ILL_GROUP_DISPLAY" text="4. Bulletins and Display Scenes" />
+    <string id="AF_ILL_GROUP_IMAGE_API" text="2. Image API (OpenAI-compatible)" />
+    <string id="AF_ILL_GROUP_STORAGE" text="5. Storage and Performance" />
+    <string id="AF_ILL_IMAGE_BASE_URL" text="Image API endpoint (Base URL)" />
+    <string id="AF_ILL_IMAGE_BASE_URL_HINT" text="For compatible APIs, enter the service root or /v1. Google native APIs accept the v1beta root or a complete /models/name:generateContent URL. Player2 is detected automatically at http://127.0.0.1:4315 and chooses its model in the Player2 app. With a reference image, /images/edits is preferred; without one, /images/generations is used. The model must support the selected channel." />
+    <string id="AF_ILL_IMAGE_KEY" text="Image API key (API Key)" />
+    <string id="AF_ILL_IMAGE_KEY_HINT" text="API key for authentication. Leave blank for endpoints that need no authentication or local proxies." />
+    <string id="AF_ILL_IMAGE_MODEL" text="Image model name (Model)" />
+    <string id="AF_ILL_IMAGE_MODEL_HINT" text="Image model name. Supports standard image models and native multimodal conversation image models; the channel is detected automatically." />
+    <string id="AF_ILL_IMAGE_SIZE" text="Image resolution (Size)" />
+    <string id="AF_ILL_IMAGE_SIZE_HINT" text="Bulletin and fullscreen scene illustrations convert presets to 16:9: the 1024 square and 1280/720 presets become 1280×720; the 1344/1536 presets become 1536×864; the 2048 square becomes 2048×1152. Encyclopedia and standalone-panel scene illustrations use the selected size. The image service must support the corresponding size." />
+    <string id="AF_ILL_IMAGE_TIMEOUT" text="Image request timeout" />
+    <string id="AF_ILL_IMAGE_TIMEOUT_HINT" text="Maximum total wait for one image request; the default is 240 seconds. Includes Edits attempts, conversation-channel fallback, and downloading the result image. Increase it for high-quality redraws with multiple reference images or a slow relay. Applies to the next image request and does not affect visual director requests or off-screen capture timeouts." />
+    <string id="AF_ILL_NEGATIVE_PROMPT" text="Negative prompt (Negative Prompt)" />
+    <string id="AF_ILL_NEGATIVE_PROMPT_HINT" text="Open the long-text editor and list elements to exclude from the image. Active only for the custom prompt style; appended after preset negative terms." />
+    <string id="AF_ILL_OFFSCREEN_ENV" text="Enable off-screen scene rendering (environment panorama)" />
+    <string id="AF_ILL_OFFSCREEN_ENV_HINT" text="When enabled, conversation illustrations render a panorama within 30 meters of the player in the background for buildings, furnishings, and materials. Capture takes a few seconds and uses some GPU. When disabled, the environment uses the current screenshot and textual facts. Character portraits always render off-screen. World-map conversations do not use panoramas." />
+    <string id="AF_ILL_OPEN_EDITOR" text="Open editor" />
+    <string id="AF_ILL_PANORAMA_DIRECTION_TIMEOUT" text="Panorama direction export timeout" />
+    <string id="AF_ILL_PANORAMA_DIRECTION_TIMEOUT_HINT" text="Maximum wait for each panorama direction PNG, default 6 seconds. Six directions are captured sequentially and remain subject to the total timeout." />
+    <string id="AF_ILL_PANORAMA_TOTAL_TIMEOUT" text="Environment panorama total timeout" />
+    <string id="AF_ILL_PANORAMA_TOTAL_TIMEOUT_HINT" text="Total budget for stage extraction, environment copy construction, and six-direction capture, default 40 seconds. Stops when the budget is reached and does not send missing or duplicate images." />
+    <string id="AF_ILL_PORTRAIT_TIMEOUT" text="Character portrait export timeout" />
+    <string id="AF_ILL_PORTRAIT_TIMEOUT_HINT" text="Maximum wait for each off-screen portrait, default 20 seconds. Applies to the next extraction and does not affect AI API timeouts." />
+    <string id="AF_ILL_QUALITY" text="Image quality preset (Quality)" />
+    <string id="AF_ILL_QUALITY_HINT" text="standard/hd target DALL-E-3; low/medium/high/auto target gpt-image-1 and compatible proxies. Default omits the parameter to avoid unsupported-model errors. Conversation image channels convert this to a quality prompt." />
+    <string id="AF_ILL_RANDOMNESS" text="Randomness" />
+    <string id="AF_ILL_RANDOMNESS_HINT" text="At 0, no random prompt is added. Higher values encourage variation in framing, negative space, depth of field, and lighting while preserving identity, equipment, heraldry, and established facts. This controls prompt guidance, not model sampling." />
+    <string id="AF_ILL_REFERENCE_IMAGE" text="Send reference image to image model" />
+    <string id="AF_ILL_REFERENCE_IMAGE_HINT" text="Sends captured 3D character references with the request through supported multimodal and image-edit channels. When disabled, references are used only by the prompt director." />
+    <string id="AF_ILL_SELECT_DIRECTOR_MODEL" text="Select director model (dropdown)" />
+    <string id="AF_ILL_SELECT_DIRECTOR_MODEL_HINT" text="After fetching models above, select one here. Manual input uses the text box; the default reuses the main module." />
+    <string id="AF_ILL_SELECT_IMAGE_MODEL" text="Select image model (dropdown)" />
+    <string id="AF_ILL_SELECT_IMAGE_MODEL_HINT" text="After fetching models above, select one here. Choosing “*manual input*” uses the model name entered above." />
+    <string id="AF_ILL_STYLE" text="Generation style (Style)" />
+    <string id="AF_ILL_STYLE_HINT" text="vivid/natural are official OpenAI style enums. Other presets inject style instructions and negative terms into the prompt instead of sending a style parameter. Choosing “prompt” uses the custom text below." />
+    <string id="AF_ILL_TEST_API" text="Test image API (may incur charges)" />
+    <string id="AF_ILL_TEST_API_HINT" text="Generates one test image with the current configuration and may incur service charges. Sends one request without channel retries. Click again to cancel while running. No save or game capture is needed; the result is saved under Cache/Illustrator/ApiTest/last-result.png." />
+    <string id="AF_ILL_TEST_CANCEL" text="Test / Cancel" />
+    <string id="AF_ILL_UNIT_IMAGES" text="0 images" />
+    <string id="AF_ILL_UNIT_SECONDS" text="0 sec" />
+    <string id="AF_ILL_UI_GALLERY_TITLE" text="Calradia Visual Chronicle Gallery" />
+    <string id="AF_ILL_UI_ALL" text="All" />
+    <string id="AF_ILL_UI_FAVORITES" text="Favorites" />
+    <string id="AF_ILL_UI_REDRAW" text="Redraw" />
+    <string id="AF_ILL_UI_REDRAW_PROMPT" text="Redraw with prompt" />
+    <string id="AF_ILL_UI_REDRAW_IMAGE" text="Redraw from this image" />
+    <string id="AF_ILL_UI_COPY" text="Copy" />
+    <string id="AF_ILL_UI_GALLERY" text="Visual Chronicle" />
+    <string id="AF_ILL_UI_CLOSE" text="Close" />
+    <string id="AF_ILL_UI_SCENE_PROBE" text="Capture scene preview" />
+    <string id="AF_ILL_UI_CONVERT_RP" text="Convert to RP item" />
+    <string id="AF_ILL_UI_SET_DEFAULT" text="Set as default" />
+    <string id="AF_ILL_UI_DELETE" text="Delete" />
+    <string id="AF_ILL_UI_OPEN_FOLDER" text="Open image folder" />
+    <string id="AF_ILL_UI_GALLERY_WELCOME" text="Browse the Calradia visual chronicle gallery." />
+    <string id="AF_ILL_UI_GALLERY_READING" text="Reading the gallery…" />
+    <string id="AF_ILL_UI_GALLERY_BUSY" text="Gallery is busy in the background. Try refreshing later." />
+    <string id="AF_ILL_UI_GALLERY_LOADING" text="Loading image…" />
+    <string id="AF_ILL_UI_GALLERY_TEXTURE_FAILED" text="Image texture could not be loaded. Refresh the gallery." />
+    <string id="AF_ILL_UI_GALLERY_EMPTY_ALL" text="No images have been archived yet. A new illustration will be created when a bulletin is generated." />
+    <string id="AF_ILL_UI_GALLERY_EMPTY_FAVORITES" text="No favorites yet. Select an image in All and click Favorites." />
+    <string id="AF_ILL_UI_GALLERY_FAVORITE" text="Favorite" />
+    <string id="AF_ILL_UI_GALLERY_UNFAVORITE" text="Unfavorite" />
+    <string id="AF_ILL_UI_GALLERY_FAVORITE_FAILED" text="Could not update favorite" />
+    <string id="AF_ILL_UI_GALLERY_UNFAVORITE_FAILED" text="Could not remove favorite" />
+    <string id="AF_ILL_UI_GALLERY_FAVORITE_ADDED" text="Favorited: " />
+    <string id="AF_ILL_UI_GALLERY_FAVORITE_REMOVED" text="Unfavorited: " />
+    <string id="AF_ILL_UI_GALLERY_COUNT_ALL" text="{COUNT} archived images" />
+    <string id="AF_ILL_UI_GALLERY_COUNT_FAVORITES" text="{COUNT} favorite images" />
+    <string id="AF_ILL_UI_GALLERY_ERROR" text="Gallery operation failed: {ERROR}" />
+    <string id="AF_ILL_UI_GALLERY_LOAD_ERROR" text="Image loading failed: {ERROR}" />
+    <string id="AF_ILL_UI_GALLERY_FAVORITED" text="Favorited: {TITLE}" />
+    <string id="AF_ILL_UI_GALLERY_UNFAVORITED" text="Unfavorited: {TITLE}" />
+    <string id="AF_ILL_UI_GALLERY_CONVERT_TITLE" text="Convert to RP item" />
+    <string id="AF_ILL_UI_GALLERY_CONVERT_HINT" text="Review the image description before adding it to your inventory. NPCs will read this description when you show them the item." />
+    <string id="AF_ILL_UI_GALLERY_CONVERT_CANCELLED" text="Conversion cancelled; no item was added." />
+    <string id="AF_ILL_UI_GALLERY_CONVERT_UNAVAILABLE" text="Could not open the image description editor." />
+    <string id="AF_ILL_UI_GALLERY_SET_DEFAULT_LOADING" text="Reading the local image and setting it as default…" />
+    <string id="AF_ILL_UI_GALLERY_SET_DEFAULT_FAILED" text="Could not set the default image." />
+    <string id="AF_ILL_UI_GALLERY_DELETE_FAILED" text="Delete failed" />
+    <string id="AF_ILL_UI_GALLERY_FOLDER_FAILED" text="Could not open the image folder: {ERROR}" />
+    <string id="AF_ILL_UI_CARD_READY" text="Ready" />
+    <string id="AF_ILL_UI_CARD_COPY_SUCCESS" text="Prompt copied to clipboard" />
+    <string id="AF_ILL_UI_CARD_COPY_FAILED" text="Copy failed: {ERROR}" />
+    <string id="AF_ILL_UI_CARD_PREPARE_FAILED" text="Generation preparation failed: {ERROR}" />
+    <string id="AF_ILL_UI_CARD_PROBE_FAILED" text="Scene probe failed: {ERROR}" />
+    <string id="AF_ILL_UI_CARD_REDRAW_FAILED" text="Redraw preparation failed: {ERROR}" />
+    <string id="AF_ILL_UI_REDRAW_IMAGE_HINT" text="Describe the changes to make to the current image. Leave blank to cancel." />
+    <string id="AF_ILL_UI_REDRAW_PROMPT_HINT" text="Describe the image you want to redraw. Leave blank to cancel." />
+    <string id="AF_ILL_UI_REDRAW_REQUIRED" text="Enter a redraw prompt; generation was not started." />
+    <string id="AF_ILL_UI_SAVE" text="Save" />
+    <string id="AF_ILL_UI_CANCEL" text="Cancel" />
+    <string id="AF_ILL_UI_WEEKLY_DEFAULT_TITLE" text="Imperial Chronicle Illustration" />
+    <string id="AF_ILL_UI_WEEKLY_THINKING" text="Preparing this week's chronicle illustration…" />
+    <string id="AF_ILL_UI_WEEKLY_DRAWING" text="Drawing a new illustration for this bulletin…" />
+    <string id="AF_ILL_UI_WEEKLY_DELETE_UNSAVED" text="This illustration has not been archived and cannot be deleted." />
+    <string id="AF_ILL_UI_WEEKLY_DELETE_FAILED" text="Delete failed. Manage this image in the gallery." />
+    <string id="AF_ILL_UI_WEEKLY_DELETED" text="Illustration moved to the recycle area. Click Redraw to create another." />
+    <string id="AF_ILL_UI_WEEKLY_LOAD_FAILED" text="The bulletin illustration could not be loaded. Click Redraw to try again." />
+    <string id="AF_ILL_UI_WEEKLY_READ_BUSY" text="Image loading is busy. Reopen this bulletin later." />
+    <string id="AF_ILL_UI_WEEKLY_PREPARE_FAILED" text="Generation preparation failed: {ERROR}" />
+    <string id="AF_ILL_UI_WEEKLY_REDRAW_LOADING" text="Redrawing from this image…" />
+    <string id="AF_ILL_UI_WEEKLY_REDRAW_SUCCESS" text="Redraw complete; saved as a new version." />
+    <string id="AF_ILL_UI_WEEKLY_REDRAW_FAILED" text="Redraw failed: {ERROR}" />
+    <string id="AF_ILL_UI_WEEKLY_BACKGROUND" text="The illustration is generating in the background. You will be notified and the gallery will update when it is ready." />
+    <string id="AF_ILL_UI_WEEKLY_COMPLETE" text="This week's chronicle illustration is complete." />
+    <string id="AF_ILL_UI_WEEKLY_NOT_SAVED" text="The illustration could not be saved." />
+    <string id="AF_ILL_UI_ENCYCLOPEDIA_BUTTON" text="Chronicle illustration" />
+    <string id="AF_ILL_UI_HERO_UNAVAILABLE" text="The current hero is unavailable." />
+    <string id="AF_ILL_UI_API_TEST_PREFIX" text="Image API test" />
+    <string id="AF_ILL_UI_API_TEST_CANCELING" text="Cancelling test…" />
+    <string id="AF_ILL_UI_API_TEST_ENABLE" text="Enable image generation first." />
+    <string id="AF_ILL_UI_API_TEST_ENDPOINT" text="Enter a valid HTTP/HTTPS image API address first." />
+    <string id="AF_ILL_UI_API_TEST_CANCELLED" text="Test cancelled." />
+    <string id="AF_ILL_UI_API_TEST_BUSY" text="Image generation is busy. Try again later." />
+    <string id="AF_ILL_UI_API_TEST_STARTED" text="Test started with the current configuration. Click again to cancel." />
+    <string id="AF_ILL_UI_API_TEST_MODEL" text="Enter an image model name first." />
+    <string id="AF_ILL_UI_API_TEST_CANVAS" text="Blank canvas for API testing; draw an apple on the canvas." />
+    <string id="AF_ILL_UI_API_TEST_SUCCESS" text="Test succeeded ({SECONDS}s). Image saved to the module Cache/Illustrator/ApiTest/last-result.png." />
+    <string id="AF_ILL_UI_API_TEST_FAILURE" text="{CHANNEL} test failed ({SECONDS}s): {ERROR}" />
+    <string id="AF_ILL_UI_API_TEST_MODE_PLAYER2_EDIT" text="Player2 /image/edit" />
+    <string id="AF_ILL_UI_API_TEST_MODE_PLAYER2_GENERATE" text="Player2 /image/generate" />
+    <string id="AF_ILL_UI_API_TEST_MODE_IMAGE" text="Image API" />
+    <string id="AF_ILL_UI_WEEKLY_DEFAULT_CHANGED" text="The new default illustration is now displayed." />
+    <string id="AF_ILL_UI_CARD_AUTOSAVE_HINT" text="You may close this panel; the completed image is saved to the gallery automatically." />
+    <string id="AF_ILL_UI_SCENE_TITLE" text="Scene illustration" />
+    <string id="AF_ILL_UI_SCENE_PROBE_TITLE" text="Independent scene panorama probe" />
+    <string id="AF_ILL_UI_SCENE_PROBE_COMPLETE" text="Panorama probe complete; preview only, no model was called." />
+    <string id="AF_ILL_UI_PORTRAIT_PREPARING" text="Preparing character references…" />
+    <string id="AF_ILL_UI_PORTRAIT_COMPLETE" text="Chronicle portrait complete." />
+    <string id="AF_ILL_UI_CONVERSATION_COMPLETE" text="Conversation illustration complete." />
+    <string id="AF_ILL_UI_PORTRAIT_TITLE" text="Chronicle portrait · {HERO}" />
+    <string id="AF_ILL_UI_CONVERSATION_TITLE" text="Conversation illustration · with {HERO}" />
+    <string id="AF_ILL_UI_GALLERY_TITLE_MARKER" text="{TITLE}{DEFAULT}{FAVORITE}" />
+    <string id="AF_ILL_UI_GALLERY_DELETED" text="Deleted: {TITLE} (moved to recycle area)" />
+    <string id="AF_ILL_UI_GALLERY_DEFAULT_MARKER" text=" [Default]" />
+    <string id="AF_ILL_UI_GALLERY_FAVORITE_MARKER" text=" [Favorite]" />
+    <string id="AF_ILL_UI_BACK" text="Back" />
+    <string id="AF_ILL_UI_SETTINGS_STYLE_TITLE" text="Edit custom style prompt" />
+    <string id="AF_ILL_UI_SETTINGS_STYLE_DESCRIPTION" text="Active only with the custom prompt style preset. Added as style instructions to every image-generation channel." />
+    <string id="AF_ILL_UI_SETTINGS_STYLE_PLACEHOLDER" text="For example: classical impasto oil painting, light watercolor, dark epic realism, cinematic lighting, pencil sketch. Leave blank to add no style instructions." />
+    <string id="AF_ILL_UI_SETTINGS_STYLE_FAILED" text="[Illustrator] Could not open the style prompt editor: {ERROR}" />
+    <string id="AF_ILL_UI_SETTINGS_DIRECTOR_TITLE" text="Edit custom director prompt" />
+    <string id="AF_ILL_UI_SETTINGS_DIRECTOR_DESCRIPTION" text="For the Visual Director only: controls composition, action, shot size, and narrative without overriding actual people, equipment, events, or the four-section output format. Inactive when the director is disabled or unconfigured." />
+    <string id="AF_ILL_UI_SETTINGS_DIRECTOR_PLACEHOLDER" text="For example: prioritize interaction between characters over static front-facing poses; choose a moment that explains the current event. Leave blank to restore default rules." />
+    <string id="AF_ILL_UI_SETTINGS_DIRECTOR_FAILED" text="[Illustrator] Could not open the director prompt editor: {ERROR}" />
+    <string id="AF_ILL_UI_SETTINGS_NEGATIVE_TITLE" text="Edit negative prompt" />
+    <string id="AF_ILL_UI_SETTINGS_NEGATIVE_DESCRIPTION" text="Added to the image prompt as exclusions, telling the model what must not appear in the image." />
+    <string id="AF_ILL_UI_SETTINGS_NEGATIVE_PLACEHOLDER" text="For example: blur, distortion, extra fingers, modern objects, watermark text, low quality. Leave blank to add no exclusions." />
+    <string id="AF_ILL_UI_SETTINGS_NEGATIVE_FAILED" text="[Illustrator] Could not open the negative prompt editor: {ERROR}" />
+    <string id="AF_ILL_UI_SETTINGS_IMAGE_FETCH_PENDING" text="[AI Image] Model list is already being fetched. Please wait." />
+    <string id="AF_ILL_UI_SETTINGS_IMAGE_FETCH_ENDPOINT" text="[AI Image] Enter the image API endpoint (Base URL) first." />
+    <string id="AF_ILL_UI_SETTINGS_IMAGE_FETCH_STARTED" text="[AI Image] Fetching available models..." />
+    <string id="AF_ILL_UI_SETTINGS_IMAGE_FETCH_ERROR" text="[AI Image] Could not fetch models: {ERROR}" />
+    <string id="AF_ILL_UI_SETTINGS_IMAGE_FETCH_BUSY" text="[AI Image] Background tasks are busy. Try again later." />
+    <string id="AF_ILL_UI_SETTINGS_IMAGE_PLAYER2" text="[AI Image] Player2 detected. Select generation/edit models in the Player2 app; the model name on this page is not sent." />
+    <string id="AF_ILL_UI_SETTINGS_IMAGE_FETCH_SUCCESS" text="[AI Image] Fetched {COUNT} available models. Current model retained: {MODEL}. The dropdown has been refreshed." />
+    <string id="AF_ILL_UI_SETTINGS_DIRECTOR_FETCH_PENDING" text="[Visual Director] Director models are already being fetched. Please wait." />
+    <string id="AF_ILL_UI_SETTINGS_DIRECTOR_FETCH_HOST" text="[Visual Director] No separate endpoint configured; fetching models from the main module's conversation API..." />
+    <string id="AF_ILL_UI_SETTINGS_DIRECTOR_FETCH_ENDPOINT" text="[Visual Director] Enter a director API endpoint or configure the main module's conversation API first." />
+    <string id="AF_ILL_UI_SETTINGS_DIRECTOR_FETCH_STARTED" text="[Visual Director] Fetching models from the separate director API endpoint..." />
+    <string id="AF_ILL_UI_SETTINGS_DIRECTOR_FETCH_ERROR" text="[Visual Director] Could not fetch models: {ERROR}" />
+    <string id="AF_ILL_UI_SETTINGS_DIRECTOR_FETCH_BUSY" text="[Visual Director] Background tasks are busy. Try again later." />
+    <string id="AF_ILL_UI_SETTINGS_DIRECTOR_FETCH_SUCCESS" text="[Visual Director] Fetched {COUNT} available models. The dropdown has been refreshed." />
+    <string id="AF_ILL_UI_SETTINGS_FETCH_EMPTY_RESULT" text="Empty result" />
+    <string id="AF_ILL_UI_SETTINGS_FETCH_HTTP_ERROR" text="Fetch failed (HTTP {STATUS}): {BODY}" />
+    <string id="AF_ILL_UI_SETTINGS_FETCH_NO_MODELS" text="The API returned success, but no usable model data could be parsed." />
+    <string id="AF_ILL_UI_OPTION_MANUAL_MODEL" text="*Manual input*" />
+    <string id="AF_ILL_UI_OPTION_DEFAULT_DIRECTOR" text="*Default (reuse conversation API)*" />
+    <string id="AF_ILL_UI_OPTION_PLAYER2_MODEL" text="Use the model selected in the Player2 app" />
+    <string id="AF_ILL_UI_OPTION_SIZE_SQUARE" text="1024x1024 (1:1 square)" />
+    <string id="AF_ILL_UI_OPTION_SIZE_WIDE" text="1280x720 (16:9 widescreen)" />
+    <string id="AF_ILL_UI_OPTION_SIZE_PORTRAIT" text="720x1280 (9:16 character portrait)" />
+    <string id="AF_ILL_UI_OPTION_SIZE_EPIC" text="1344x768 (7:4 epic widescreen)" />
+    <string id="AF_ILL_UI_OPTION_SIZE_POSTER" text="1024x1536 (2:3 portrait poster)" />
+    <string id="AF_ILL_UI_OPTION_SIZE_UHD" text="2048x2048 (1:1 ultra-high-definition square)" />
+    <string id="AF_ILL_UI_OPTION_QUALITY_DEFAULT" text="Default (omit parameter)" />
+    <string id="AF_ILL_UI_OPTION_QUALITY_STANDARD" text="standard (standard)" />
+    <string id="AF_ILL_UI_OPTION_QUALITY_HD" text="hd (high detail)" />
+    <string id="AF_ILL_UI_OPTION_QUALITY_LOW" text="low (fastest generation)" />
+    <string id="AF_ILL_UI_OPTION_QUALITY_MEDIUM" text="medium (balanced)" />
+    <string id="AF_ILL_UI_OPTION_QUALITY_HIGH" text="high (fine rendering)" />
+    <string id="AF_ILL_UI_OPTION_QUALITY_AUTO" text="auto (server decides)" />
+    <string id="AF_ILL_UI_OPTION_STYLE_CLASSIC" text="Classical oil painting (default)" />
+    <string id="AF_ILL_UI_OPTION_STYLE_VIVID" text="vivid (vivid colors; API enum)" />
+    <string id="AF_ILL_UI_OPTION_STYLE_NATURAL" text="natural (natural realism; API enum)" />
+    <string id="AF_ILL_UI_OPTION_STYLE_DARK" text="Dark epic realism (prompt instructions)" />
+    <string id="AF_ILL_UI_OPTION_STYLE_CINEMATIC" text="Cinematic lighting (prompt instructions)" />
+    <string id="AF_ILL_UI_OPTION_STYLE_CUSTOM" text="Prompt (custom style)" />
+    <string id="AF_ILL_UI_OPTION_STYLE_MOSAN" text="Mosan art: Meuse enamel decoration (prompt instructions)" />
+    <string id="AF_ILL_UI_OPTION_STYLE_ANIME" text="Japanese semi-realistic narrative illustration (prompt instructions)" />
+    <string id="AF_ILL_UI_OPTION_DISPLAY_PANEL" text="Standalone panel" />
+    <string id="AF_ILL_UI_OPTION_DISPLAY_FULLSCREEN" text="Fullscreen overlay (default)" />
+    <string id="AF_ILL_MENU_GALLERY" text="Calradia Visual Chronicle Gallery (AI illustrations)" />
+    <string id="AF_ILL_NOTIFY_GENERATION_COMPLETE" text="[AI Illustration] {TITLE} is complete and the gallery has been updated." />
+    <string id="AF_ILL_NOTIFY_GENERATION_FAILED" text="[AI Illustration] Generation failed: {ERROR}" />
+    <string id="AF_ILL_MISSION_NOTICE" text="[AI Illustration] {STATUS}" />
+    <string id="AF_ILL_MISSION_CANCELLED" text="Capture cancelled; no image generation request was sent." />
+    <string id="AF_ILL_MISSION_CAPTURE_FAILED" text="Capture failed: {ERROR}" />
+    <string id="AF_ILL_MISSION_START_FAILED" text="Could not start image generation: {ERROR}" />
+    <string id="AF_ILL_MISSION_FAILED" text="Image generation failed: {ERROR}" />
+    <string id="AF_ILL_MISSION_BATTLE_TITLE" text="Battle scene" />
+    <string id="AF_ILL_MISSION_INPUT_HINT" text="Click Generate image to frame the scene freely. Press Enter to capture one or two images, then confirm for the director to plan the illustration." />
+    <string id="AF_ILL_MISSION_INPUT_PLACEHOLDER" text="This mode only generates images from screenshots; it does not send NPC shouts." />
+    <string id="AF_ILL_MISSION_NO_DIALOGUE" text="[Scene Shout] No dialogue channel is available in this custom battle." />
+    <string id="AF_ILL_MISSION_CAPTURING" text="[AI Illustration] Capturing the scene. You can generate another image once capture is complete." />
+    <string id="AF_ILL_MISSION_FRAMING" text="Frame the scene freely: press Enter to capture up to two images. Generation starts only after confirmation." />
+    <string id="AF_ILL_MISSION_DIRECTING" text="Screenshots confirmed; the director is planning the illustration..." />
+    <string id="AF_ILL_MISSION_GENERATING" text="The director has finished; generating the illustration. You may close the panel..." />
+    <string id="AF_ILL_MISSION_SAVED" text="Illustration saved to the gallery." />
+    <string id="AF_ILL_MISSION_BUSY" text="Image generation is busy. Wait for the existing tasks to finish." />
+    <string id="AF_ILL_MISSION_PREPARING" text="Screenshots confirmed; preparing the illustration..." />
+    <string id="AF_ILL_MISSION_PANEL_UNAVAILABLE" text="[AI Illustration] The progress panel could not be opened. Generation continues in the background; view the result in the gallery when it is complete." />
+    <string id="AF_ILL_MISSION_SCOPE_CANCELLED" text="Screenshot illustration cancelled because image generation was disabled or the host changed." />
+    <string id="AF_ILL_NOTIFY_SCOPE_EXPIRED" text="The image generation context has expired because the view changed or the panel closed. Reopen it to continue." />
+    <string id="AF_ILL_NOTIFY_TIMEOUT" text="Image generation timed out: the upstream model did not respond within the time limit. Try again later." />
+    <string id="AF_ILL_NOTIFY_BUSY" text="Image generation is busy. Wait for the existing tasks to finish, then try again." />
+  <string id="AF_ILL_UI_CONVERSATION_SESSION_CHANGED" text="The previous conversation illustration was archived; the current conversation has changed." />
+  <string id="AF_ILL_UI_CONVERSATION_FIRST_IMAGE_REQUIRED" text="Click Redraw to create the first scene illustration for this conversation." />
+  <string id="AF_ILL_UI_CONVERSATION_PREPARING" text="The AI artist is analyzing the conversation and body language..." />
+  <string id="AF_ILL_UI_CONVERSATION_EQUIPMENT_UNAVAILABLE" text="The complete equipment snapshot for both characters was unavailable. Generation stopped without substituting a troop template or another outfit." />
+  <string id="AF_ILL_UI_CONVERSATION_REFERENCE_REUSE" text="Reusing the environment and character references captured at the start of this conversation" />
+  <string id="AF_ILL_UI_PORTRAIT_EQUIPMENT_UNAVAILABLE" text="The encyclopedia's current displayed equipment could not be read. Generation stopped without guessing civilian or battle clothing." />
+  <string id="AF_ILL_UI_CARD_DRAW_FAILED" text="Drawing failed: {ERROR}" />
+  <string id="AF_ILL_UI_CARD_GENERATION_EXCEPTION" text="Generation error: {ERROR}" />
+  <string id="AF_ILL_UI_CARD_NOT_SAVED_OR_DISPLAYED" text="The image could not be saved or displayed." />
+  <string id="AF_ILL_UI_SCENE_PROBE_LOADING" text="Rebuilding the nearby environment and capturing a complete panorama..." />
+  <string id="AF_ILL_UI_SCENE_PROBE_DISPLAY_FAILED" text="The exported preview could not be displayed." />
+    <string id="AF_ILL_UI_STATUS_CHRONICLE" text="Chronicle illustration" />
+    <string id="AF_ILL_UI_STATUS_THEME" text="Theme: {THEME}" />
+    <string id="AF_ILL_UI_STATUS_STYLE_CHANGED" text="The style settings have changed. Click Redraw to apply the new style." />
+    <string id="AF_ILL_UI_STATUS_DIRECTOR_DISABLED" text="The director is disabled" />
+    <string id="AF_ILL_UI_STATUS_DIRECTOR_UNCONFIGURED" text="The director API is not configured" />
+    <string id="AF_ILL_UI_STATUS_DIRECTOR_CONSTRAINT" text="The director output violated character or equipment constraints" />
+    <string id="AF_ILL_UI_STATUS_DIRECTOR_NARRATIVE" text="The director output was not converted into a visual description" />
+    <string id="AF_ILL_UI_STATUS_DIRECTOR_STRUCTURE" text="The director output did not meet structure or composition requirements" />
+    <string id="AF_ILL_UI_STATUS_DIRECTOR_EMPTY" text="The director output lacked a visual description" />
+    <string id="AF_ILL_UI_STATUS_DIRECTOR_UNAVAILABLE" text="The director output was unavailable" />
+    <string id="AF_ILL_UI_STATUS_VISION_PREFIX" text="The director does not support image input; " />
+    <string id="AF_ILL_UI_STATUS_LOCAL_FALLBACK" text="{REASON}; local composition was used" />
+    <string id="AF_ILL_UI_STATUS_SCENE_TERRAIN" text="Field conversation: composing from terrain facts without a screenshot" />
+    <string id="AF_ILL_UI_STATUS_SCENE_DISABLED_SCREENSHOT" text="Scene panorama is disabled; using the current scene screenshot" />
+    <string id="AF_ILL_UI_STATUS_SCENE_DISABLED_FACTS" text="Scene panorama is disabled; composing from text facts" />
+    <string id="AF_ILL_UI_STATUS_SCENE_PANORAMA" text="Mission scene: panorama references within 30 meters are available" />
+    <string id="AF_ILL_UI_STATUS_SCENE_PANORAMA_NO_SCREENSHOT" text="Mission scene: panorama references within 30 meters are available; the current-position screenshot was unavailable" />
+    <string id="AF_ILL_UI_STATUS_SCENE_BUDGET" text="The environment exceeded the {LIMIT}-object budget. Environment capture was skipped; drawing continues." />
+    <string id="AF_ILL_UI_STATUS_DIRECTOR_FAILED" text="{REASON}; image generation stopped" />
+    <string id="AF_ILL_UI_STATUS_DIRECTOR_TRUNCATED" text="The director output was truncated; image generation stopped" />
+    <string id="AF_ILL_UI_STATUS_DIRECTOR_TEXT_ONLY" text="The director does not support image input; text-only planning was used" />
+    <string id="AF_ILL_UI_STATUS_DIRECTOR_VALIDATED" text="The director output was validated; the API did not return a finish marker" />
+    <string id="AF_ILL_UI_STATUS_DIRECTOR_COMPLETE" text="The director finished planning" />
+    <string id="AF_ILL_UI_GALLERY_PREVIEW_UNAVAILABLE" text="The image is missing or cannot be decoded. Refresh the gallery." />
+    <string id="AF_ILL_UI_GALLERY_REDRAW_LOADING" text="Redrawing from the selected illustration. You may close the gallery while you wait." />
+    <string id="AF_ILL_UI_GALLERY_REDRAW_COMPLETE" text="Redraw complete; saved as a new illustration." />
+    <string id="AF_ILL_UI_GALLERY_CONVERSION_UNAVAILABLE" text="The illustration or current campaign is no longer available. Reopen the gallery." />
+    <string id="AF_ILL_UI_GALLERY_CONVERSION_SOURCE_MISSING" text="The original image file no longer exists. No item was created." />
+    <string id="AF_ILL_UI_GALLERY_CONVERSION_DESCRIPTION_REQUIRED" text="Enter an illustration description for NPCs to read when you show them the item." />
+    <string id="AF_ILL_UI_GALLERY_CONVERSION_CREATE_FAILED" text="The illustration item could not be created. Nothing was added to the inventory." />
+    <string id="AF_ILL_UI_GALLERY_CONVERSION_DESCRIPTION_FAILED" text="The illustration description could not be saved: {ERROR}" />
+    <string id="AF_ILL_UI_GALLERY_CONVERSION_ALREADY_OWNED" text="{ITEM} is already in your inventory. Its description was updated; no duplicate was added." />
+    <string id="AF_ILL_UI_GALLERY_CONVERSION_DELIVERED" text="{ITEM} was added to your inventory. You can show it to NPCs using Show Item during a conversation." />
+    <string id="AF_ILL_UI_GALLERY_CONVERSION_DELIVERY_FAILED" text="The illustration could not be added to your inventory. Check your inventory and try again." />
+    <string id="AF_ILL_UI_GALLERY_CONVERSION_DEFAULT_TITLE" text="Calradia Chronicles" />
+    <string id="AF_ILL_UI_GALLERY_CONVERSION_ITEM_NAME" text="{TITLE} illustration scroll" />
+    <string id="AF_ILL_UI_PHOTO_AIM" text="Enter: capture image {COUNT} - Esc: cancel" />
+    <string id="AF_ILL_UI_PHOTO_DECISION" text="Captured {COUNT} images. Start generation?" />
+    <string id="AF_ILL_UI_PHOTO_STOPPED" text="This framing session was stopped" />
+    <string id="AF_ILL_UI_PHOTO_GENERATE" text="Generate" />
+    <string id="AF_ILL_UI_PHOTO_CONTINUE" text="Capture another" />
+    <string id="AF_ILL_UI_PHOTO_RESTART" text="Capture again" />
+    <string id="AF_ILL_UI_BULLETIN_PREPARING" text="This bulletin's illustration is being prepared..." />
+    <string id="AF_ILL_UI_BULLETIN_DISCARDED" text="This bulletin event has been discarded." />
+    <string id="AF_ILL_UI_BULLETIN_CANCELLED" text="This bulletin's illustration was cancelled. Click Redraw to try again." />
+    <string id="AF_ILL_UI_BULLETIN_MISSING" text="No generated illustration is available. Click Redraw to create one." />
+    <string id="AF_ILL_UI_BULLETIN_REDRAW_CANCELLED" text="Redrawing this image was cancelled." />
+    <string id="AF_ILL_UI_BULLETIN_REDRAW_COMPLETE" text="Redraw complete; a new version was saved." />
+    <string id="AF_ILL_UI_BULLETIN_PREPARE_FAILED" text="Illustration preparation failed: {ERROR}. Click Redraw to try again." />
+    <string id="AF_ILL_UI_BULLETIN_IMAGE_FAILED" text="Illustration failed: {ERROR}. Click Redraw to try again." />
+    <string id="AF_ILL_UI_BULLETIN_RETRY" text="{ERROR}; click Redraw to try again." />
+    <string id="AF_ILL_UI_BULLETIN_SAVE_IMAGE_FAILED" text="The image could not be saved" />
+    <string id="AF_ILL_UI_BULLETIN_SAVE_UNAVAILABLE" text="Could not save" />
+    <string id="AF_ILL_UI_GALLERY_INTRODUCTION_NAME" text="This is a painting called {ITEM}." />
+    <string id="AF_ILL_UI_GALLERY_INTRODUCTION_THEME" text="Theme: {THEME}" />
+    <string id="AF_ILL_UI_GALLERY_INTRODUCTION_ACTION" text="Depicts: {ACTION}" />
+    <string id="AF_ILL_UI_GALLERY_INTRODUCTION_UNANNOTATED" text="The contents of this painting have not been described." />
+    <string id="AF_ILL_UI_GALLERY_INTRODUCTION_FICTION" text="The contents of the painting are an artistic depiction and do not mean that these events actually happened." />
+    <string id="AF_ILL_UI_SCENE_PROBE_NOTE" text="Isolated scene capture preview: six 90-degree views (front, back, left, right, up, and down) are captured from a static copy of the environment within 30 meters and projected into a 360-by-180-degree panorama. The center faces forward, the left and right edges meet behind you, and the top and bottom face up and down. Projection stretching does not mean the buildings are deformed. Characters were not copied, and the observation lighting does not represent the scene's actual lighting. No director or image model was called. This preview was not saved to the gallery or set as the default image." />
+    <string id="AF_ILL_ERROR_PORTRAIT_REFERENCE" text="The encyclopedia's complete equipped portrait could not be captured off-screen. Generation stopped; check failureCode in this request's portrait_stage_result." />
+    <string id="AF_ILL_ERROR_PLAYER_REFERENCE" text="The player's complete equipped portrait could not be captured off-screen. Generation stopped." />
+    <string id="AF_ILL_ERROR_PARTNER_REFERENCE" text="The other character's complete equipped portrait could not be captured off-screen. Generation stopped." />
+    <string id="AF_ILL_ERROR_PROBE_MISSING" text="The isolated scene capture did not return a complete panorama reference." />
+    <string id="AF_ILL_ERROR_PROBE_EMPTY" text="The isolated scene capture returned an empty reference composite." />
+    <string id="AF_ILL_ERROR_CAPTURE_QUEUE" text="The game-thread task queue is full. Illustration capture could not run." />
+    <string id="AF_ILL_ERROR_DISABLED" text="AI image generation is disabled." />
+    <string id="AF_ILL_ERROR_ENDPOINT_MISSING" text="No image API endpoint (Base URL) is configured." />
+    <string id="AF_ILL_ERROR_MISSION_UNAVAILABLE" text="No player scene is available for screenshot illustration, or image generation is disabled." />
+    <string id="AF_ILL_ERROR_CONFIGURE_API" text="Configure the image API first." />
+    <string id="AF_ILL_ERROR_REDRAW_SOURCE" text="Redrawing from this image requires a valid current image. No request was sent." />
+    <string id="AF_ILL_ERROR_EDITS_REFERENCE" text="The images/edits endpoint requires a usable reference image. Enable references and capture a character or scene reference before generating. No request was sent." />
+    <string id="AF_ILL_ERROR_GENERATIONS_REFERENCE" text="The exact images/generations endpoint cannot accept reference images. Use /images/edits or enable the conversation multimodal image channel. No request was sent." />
+    <string id="AF_ILL_ERROR_RESPONSE_IMAGE" text="No valid image data could be extracted from the server response." />
+    <string id="AF_ILL_ERROR_CANCELLED" text="The image generation request was cancelled." />
+    <string id="AF_ILL_ERROR_TIMEOUT" text="The image generation request exceeded its total budget of {SECONDS} seconds." />
+    <string id="AF_ILL_ERROR_COMMUNICATION" text="Image generation communication error: {DETAIL}" />
+    <string id="AF_ILL_UI_GALLERY_LEGACY_DEFAULT_TITLE" text="Calradia history illustration" />
+    <string id="AF_ILL_UI_DEFAULT_HERO_NAME" text="Hero" />
+    <string id="AF_ILL_UI_DEFAULT_PARTNER_NAME" text="the other person" />
+    <string id="AF_ILL_ERROR_GEMINI_NON_STREAMING" text="Native Gemini image generation requires the non-streaming :generateContent endpoint. No request was sent." />
+    <string id="AF_ILL_ERROR_GEMINI_EXACT_URL" text="The complete URL option requires /models/MODEL:generateContent. No request was sent." />
+    <string id="AF_ILL_ERROR_GEMINI_MODEL_MISSING" text="Native Gemini image generation requires a model name. No request was sent." />
+    <string id="AF_ILL_ERROR_GEMINI_MODEL_INVALID" text="The native Gemini model name is invalid. No request was sent." />
+    <string id="AF_ILL_ERROR_GEMINI_USER_CONTENT" text="The native Gemini image request is missing complete user content. No request was sent." />
+    <string id="AF_ILL_ERROR_GEMINI_PNG_REFERENCE" text="Native Gemini reference images must be validated PNG data. No request was sent." />
+    <string id="AF_ILL_ERROR_GEMINI_CONTENT_BLOCK" text="The native Gemini image request contains an unsupported content block. No request was sent." />
+    <string id="AF_ILL_ERROR_GEMINI_EMPTY_CONTENT" text="The native Gemini image request is empty. No request was sent." />
+    <string id="AF_ILL_ERROR_HTTP_ENDPOINT" text="The image endpoint must be a complete HTTP/HTTPS URL." />
+    <string id="AF_ILL_ERROR_EDITS_ENDPOINT" text="The standard image editing endpoint is /images/edits (plural), not /image/edits. Use complete URL mode for special service paths." />
+    <string id="AF_ILL_ERROR_REFERENCE_DECODE" text="Image decoding or format conversion failed" />
+    <string id="AF_ILL_ERROR_REFERENCE_EMPTY" text="Image data is empty" />
+    <string id="AF_ILL_ERROR_REFERENCE_DATA_URI" text="The data URI format is invalid" />
+    <string id="AF_ILL_ERROR_REFERENCE_SINGLE_LIMIT" text="The image exceeds the 24 MiB per-image limit" />
+    <string id="AF_ILL_ERROR_REFERENCE_TOTAL_LIMIT" text="Reference images exceed the combined 48 MiB limit" />
+    <string id="AF_ILL_ERROR_PLAYER2_UNCONFIRMED" text="The Player2 interface is unconfirmed. Check the application status later. No image request was sent." />
+    <string id="AF_ILL_ERROR_PLAYER2_UNAVAILABLE" text="The Player2 image interface could not be confirmed. Check that the application is running and signed in and that the port is correct. No image request was sent." />
+    <string id="AF_ILL_ERROR_PLAYER2_UPLOAD_BUDGET" text="The Player2 payload still exceeds its upload budget. All reference images were retained without further loss of detail. No request was sent. Shorten the prompt or custom rules." />
+    <string id="AF_ILL_ERROR_GROK_REFERENCE_LIMIT" text="Grok image editing supports at most 5 reference images. No references were discarded and no request was sent." />
+    <string id="AF_ILL_ERROR_REFERENCE_UNAVAILABLE" text="No usable reference image is available. No request was sent." />
+    <string id="AF_ILL_ERROR_SCREENSHOT_COUNT" text="Free-camera generation requires one or two scene captures. No request was sent." />
+    <string id="AF_ILL_ERROR_SCREENSHOT_KIND" text="Scene capture references are missing or have the wrong type. No request was sent." />
+    <string id="AF_ILL_ERROR_SCREENSHOT_DUPLICATE" text="The two captures are identical. Capture the scene again. Generation stopped." />
+    <string id="AF_ILL_ERROR_IMAGE_NOT_RETURNED" text="Image generation did not return an image." />
+    <string id="AF_ILL_ERROR_GALLERY_SAVE" text="The generated image could not be saved to the gallery." />
+    <string id="AF_ILL_ERROR_IMAGE_SAVE" text="The generated image could not be saved." />
+    <string id="AF_ILL_ERROR_RESPONSE_EMPTY_BODY" text="The server returned an empty response body" />
+    <string id="AF_ILL_ERROR_RESPONSE_UNRECOGNIZED" text="The response contains no recognizable image data" />
+    <string id="AF_ILL_ERROR_RESPONSE_FILTERED" text="The server refused image generation or applied content filtering" />
+    <string id="AF_ILL_ERROR_RESPONSE_LENGTH_LIMIT" text="The server output reached its length limit; no image was obtained" />
+    <string id="AF_ILL_ERROR_RESPONSE_EMPTY_REPLY" text="The server returned an empty reply without text or images" />
+    <string id="AF_ILL_ERROR_RESPONSE_EXTRACTION" text="The server returned content, but no image could be extracted. Check the response format or model output" />
+    <string id="AF_ILL_ERROR_IMAGE_ENCODING_LIMIT" text="The encoded image exceeds the limit." />
+    <string id="AF_ILL_ERROR_DIRECTOR_DISABLED" text="The director is disabled" />
+    <string id="AF_ILL_ERROR_DIRECTOR_UNCONFIGURED" text="The director interface is not configured" />
+    <string id="AF_ILL_ERROR_DIRECTOR_REDRAW_UNAVAILABLE" text="The director is disabled or unconfigured. Redrawing with a prompt did not start." />
+    <string id="AF_ILL_ERROR_DIRECTOR_CAPTURE_UNAVAILABLE" text="Scene capture generation requires an enabled and configured vision director. Capture did not start." />
+    <string id="AF_ILL_ERROR_DIRECTOR_INCOMPLETE" text="The director did not return a complete visual plan" />
+    <string id="AF_ILL_ERROR_DIRECTOR_UNSUPPORTED_FACTS" text="The director output contains unsupported shields, flags, or an unsuitable portrait action" />
+    <string id="AF_ILL_ERROR_DIRECTOR_NARRATIVE" text="The director repeated the narrative instead of translating it into a visual plan" />
+    <string id="AF_ILL_ERROR_DIRECTOR_EMPTY" text="The director returned an empty body" />
+    <string id="AF_ILL_ERROR_DIRECTOR_SCENE_INCOMPLETE" text="The director body lacks complete scene, lighting, or spatial details, or the composition does not meet the requirements" />
+    <string id="AF_ILL_ERROR_DIRECTOR_TRUNCATED" text="The director output was truncated at the token limit. The incomplete body was not used" />
+    <string id="AF_ILL_ERROR_DIRECTOR_FILTERED" text="The director refused or filtered this output" />
+    <string id="AF_ILL_ERROR_DIRECTOR_UNFINISHED" text="The director did not finish the body normally" />
+    <string id="AF_ILL_ERROR_DIRECTOR_TIMEOUT" text="The director request timed out" />
+    <string id="AF_ILL_ERROR_DIRECTOR_QUOTA" text="The director interface was rate-limited or has insufficient quota (HTTP 429)" />
+    <string id="AF_ILL_ERROR_GENERATION_STOPPED" text="{REASON} Image generation stopped." />
+    <string id="AF_ILL_ERROR_DIAGNOSTIC" text=" Diagnostic: {ID}" />
+    <string id="AF_ILL_ERROR_NO_AUTOMATIC_RETRY" text="; no automatic retry was made. You may redraw manually later." />
+    <string id="AF_ILL_ERROR_REFERENCE_INVALID" text="Reference image {INDEX} ({KIND}) is invalid: {DETAIL}. Generation stopped; no request was sent." />
+    <string id="AF_ILL_ERROR_FREE_CAMERA_DIRECTOR" text="Free-camera generation requires the vision director to plan the scene: {DETAIL}" />
+    <string id="AF_ILL_ERROR_REDRAW_DIRECTOR" text="Redrawing with a prompt cannot use a local composition: {DETAIL}" />
+    <string id="AF_ILL_ERROR_DIRECTOR_REQUEST_FAILED" text="The director request failed ({DETAIL})" />
+    <string id="AF_ILL_ERROR_DIRECTOR_PARSE_FAILED" text="The director request or response parsing failed ({DETAIL})" />
+    <string id="AF_ILL_ERROR_DIRECTOR_REGION" text="The director service denied access from the current region (HTTP {DETAIL})" />
+    <string id="AF_ILL_ERROR_DIRECTOR_ACCESS" text="Director authentication or access failed (HTTP {DETAIL})" />
+    <string id="AF_ILL_ERROR_DIRECTOR_UPSTREAM" text="The upstream director service is temporarily unavailable (HTTP {DETAIL})" />
+    <string id="AF_ILL_ERROR_DIRECTOR_HTTP" text="The director interface returned HTTP {DETAIL}" />
+    <string id="AF_ILL_UI_DEFAULT_THEME" text="Characters and circumstances" />
+    <string id="AF_ILL_ERROR_PAYLOAD_SIZE" text="The image is empty or exceeds the 24 MiB limit." />
+    <string id="AF_ILL_ERROR_PAYLOAD_FORMAT" text="Only decodable PNG or JPEG images are accepted." />
+    <string id="AF_ILL_ERROR_NORMALIZED_SIZE" text="The normalized image exceeds the 24 MiB limit." />
+    <string id="AF_ILL_ERROR_PAIR_SIZE" text="The two-view reference image exceeds the upload size limit. No reference images were discarded." />
+    <string id="AF_ILL_ERROR_CACHE_SIZE" text="The cached image exceeds the size limit." />
+    <string id="AF_ILL_ERROR_IMAGE_DIMENSIONS" text="The image exceeds the 8192-pixel edge or 16-million-pixel limit." />
+    <string id="AF_ILL_ERROR_RESPONSE_SIZE" text="The server response exceeds the size limit." />
+    <string id="AF_ILL_ERROR_CAPTURE_SIZE" text="The native capture exceeds the 96 MiB capture limit." />
+    <string id="AF_ILL_ERROR_CAPTURE_BMP_INVALID" text="The native capture is not a complete, valid BMP." />
+    <string id="AF_ILL_ERROR_CAPTURE_HEIGHT" text="The capture height is invalid." />
+    <string id="AF_ILL_ERROR_CAPTURE_BMP_INCOMPLETE" text="The native BMP is incomplete or its pixel format is unsupported." />
+    <string id="AF_ILL_ERROR_CAPTURE_DIMENSIONS" text="The capture dimensions are invalid or exceed the 24-million-pixel limit." />
+    <string id="AF_ILL_ERROR_CAPTURE_BLACK" text="The scene capture is almost entirely black; characters and surroundings cannot be identified. Generation stopped. No director or image request was sent." />
+    <string id="AF_ILL_ERROR_CAPTURE_MISSION" text="The current mission has no single-player frame available for capture." />
+    <string id="AF_ILL_ERROR_CAPTURE_PHOTO_MODE" text="Exit the native photo mode before starting capture from the illustration button." />
+    <string id="AF_ILL_ERROR_CAPTURE_ACTIVE" text="A native image capture is in progress. Wait before clicking again." />
+    <string id="AF_ILL_ERROR_CAPTURE_PAUSE_OWNER" text="The capture pause request is already in use." />
+    <string id="AF_ILL_ERROR_CAPTURE_LEFT_SCENE" text="The scene was left before capture finished. Capture was terminated." />
+    <string id="AF_ILL_ERROR_CAPTURE_CAMERA_OWNER" text="Another feature took control of the camera during capture. Capture was terminated." />
+    <string id="AF_ILL_ERROR_CAPTURE_TIMEOUT" text="Capture export timed out. The original view was restored; no image request was sent." />
+    <string id="AF_ILL_ERROR_CONTEXT_CHANGED" text="The conversation or scene for this illustration ended or changed. Reopen the scene illustration." />
+    <string id="AF_ILL_ERROR_CONTEXT_STOPPED" text="Scene context validation stopped. Reopen the scene illustration." />
+    <string id="AF_ILL_ERROR_CONTEXT_MISSING" text="No mission scene or map conversation is currently displayed. Reopen the scene illustration during a conversation." />
+    <string id="AF_ILL_ERROR_PANORAMA_PROJECTION_BUDGET" text="The scene panorama exceeds its projection budget. Image generation stopped." />
+    <string id="AF_ILL_ERROR_PANORAMA_DUPLICATE" text="The front and rear environment images are nearly identical. Different directions were not confirmed. Generation stopped." />
+    <string id="AF_ILL_ERROR_REFERENCE_UNKNOWN_KIND" text="unknown purpose" />
+    <string id="AF_ILL_ERROR_PANORAMA_NAME" text="The native panorama render name exceeds the safe length." />
+    <string id="AF_ILL_ERROR_PANORAMA_BATCH_ACTIVE" text="An environment snapshot batch is already running." />
+    <string id="AF_ILL_ERROR_LIGHTING_SCENE" text="Observation lighting requires a valid isolated scene copy." />
+    <string id="AF_ILL_ERROR_LIGHTING_POSITION_MISSING" text="Observation lighting has no off-screen camera position." />
+    <string id="AF_ILL_ERROR_LIGHTING_POSITION_INVALID" text="The off-screen observation lighting camera position is invalid." />
+    <string id="AF_ILL_ERROR_LIGHTING_COVERAGE" text="The observation lighting coverage is invalid." />
+    <string id="AF_ILL_ERROR_LIGHTING_CREATE" text="Observation lights could not be created in the isolated scene." />
+    <string id="AF_ILL_ERROR_LIGHTING_NAME" text="The native observation light name exceeds the safe length." />
+    <string id="AF_ILL_ERROR_LIGHTING_NATIVE" text="The engine did not create a valid observation light." />
+    <string id="AF_ILL_ERROR_LIGHTING_ATTACH" text="The observation light could not be attached to the isolated scene." />
+    <string id="AF_ILL_ERROR_LIGHTING_OWNER" text="The observation light does not belong to an isolated scene entity." />
+    <string id="AF_ILL_ERROR_SUPPLEMENT_CANCELLED" text="Resource supplementation was cancelled." />
+    <string id="AF_ILL_ERROR_TEMPLATE_NAME" text="The resource template scene name is too long." />
+    <string id="AF_ILL_ERROR_SUPPLEMENT_ENTITY_BUDGET" text="Resource supplementation exceeded its entity traversal budget. Capture stopped." />
+    <string id="AF_ILL_ERROR_TEMPLATE_DEPTH" text="The resource template hierarchy exceeds the traversal budget." />
+    <string id="AF_ILL_ERROR_TEMPLATE_OWNER" text="The resource template does not belong to the owned scene. Its transform was not changed." />
+    <string id="AF_ILL_ERROR_TEMPLATE_CREATE" text="A static resource template could not be created." />
+    <string id="AF_ILL_ERROR_TEMPLATE_LOAD" text="Resource geometry could not be loaded into the isolated template scene." />
+    <string id="AF_ILL_ERROR_RESOURCE_COPY" text="An independent resource mesh copy could not be obtained." />
+    <string id="AF_ILL_ERROR_RESOURCE_SCENE" text="Resource geometry did not correctly enter the isolated render scene." />
+    <string id="AF_ILL_ERROR_RESOURCE_BOUNDS" text="The resource copy mesh bounds are invalid." />
+    <string id="AF_ILL_ERROR_SNAPSHOT_ISOLATION" text="The panorama snapshot has no isolated scene. The current mission scene was not modified." />
+    <string id="AF_ILL_ERROR_SCENE_CHANGED" text="The current scene changed. Its resources cannot be read." />
+    <string id="AF_ILL_ERROR_SCENE_RESOURCE_RESOLVE" text="The current scene&apos;s actual resource file could not be resolved. Environment reconstruction stopped." />
+    <string id="AF_ILL_ERROR_SCENE_READ_SCHEDULER" text="Scene resource read scheduling stopped." />
+    <string id="AF_ILL_ERROR_SCENE_READ_CHANGED" text="The scene or visible level changed while reading resources. Capture again." />
+    <string id="AF_ILL_ERROR_SNAPSHOT_CREATE" text="The environment snapshot could not be created on the game thread." />
+    <string id="AF_ILL_ERROR_SNAPSHOT_SCHEDULER" text="Environment snapshot frame scheduling stopped." />
+    <string id="AF_ILL_ERROR_SUPPLEMENT_SCHEDULER" text="Scene resource supplementation scheduling stopped." />
+    <string id="AF_ILL_ERROR_SUPPLEMENT_FRAME_SCHEDULER" text="Scene resource supplementation frame scheduling stopped." />
+    <string id="AF_ILL_ERROR_TEMPLATE_CLEANUP_SCHEDULER" text="Scene template cleanup scheduling stopped." />
+    <string id="AF_ILL_ERROR_SNAPSHOT_GEOMETRY_EMPTY" text="Neither the scene nor its resources contains usable static geometry. A blank environment reference will not be generated." />
+    <string id="AF_ILL_ERROR_SCENE_VISIBLE_LEVEL" text="The scene&apos;s visible level changed during capture. Capture again." />
+    <string id="AF_ILL_ERROR_SNAPSHOT_NAME" text="The native panorama scene name exceeds the safe length." />
+    <string id="AF_ILL_ERROR_SNAPSHOT_CENTER_MISSING" text="The capture center for the surroundings near the player could not be determined." />
+    <string id="AF_ILL_ERROR_SNAPSHOT_CENTER_INVALID" text="The environment capture center is invalid." />
+    <string id="AF_ILL_ERROR_SNAPSHOT_SCENE_ENDED" text="The scene for the environment snapshot ended or changed." />
+    <string id="AF_ILL_ERROR_SNAPSHOT_CANCELLED" text="The environment snapshot was cancelled." />
+    <string id="AF_ILL_ERROR_STATIC_COPY" text="An independent copy of the scene&apos;s static mesh could not be obtained." />
+    <string id="AF_ILL_ERROR_STATIC_SCENE" text="The static mesh did not correctly enter the isolated scene." />
+    <string id="AF_ILL_ERROR_STATIC_BOUNDS" text="The static copy mesh bounds are invalid." />
+    <string id="AF_ILL_ERROR_RESOURCE_PATH_MISSING" text="The actual path of the current scene resource file was not obtained." />
+    <string id="AF_ILL_ERROR_RESOURCE_FILE_MISSING" text="The current scene resource file does not exist." />
+    <string id="AF_ILL_ERROR_RESOURCE_READ_BUDGET" text="The scene resource is empty or exceeds the 8 MiB read budget." />
+    <string id="AF_ILL_ERROR_RESOURCE_CHANGED_BEFORE" text="The scene resource changed before reading. Capture again." />
+    <string id="AF_ILL_ERROR_RESOURCE_CHANGED_DURING" text="The scene resource changed during reading. Capture again." />
+    <string id="AF_ILL_ERROR_RESOURCE_ACCESS" text="Access to the current scene resource file was denied." />
+    <string id="AF_ILL_ERROR_RESOURCE_SCENE_XML" text="The current resource is not valid scene XML." />
+    <string id="AF_ILL_ERROR_RESOURCE_ENTITIES_DUPLICATE" text="The scene resource contains duplicate entities nodes." />
+    <string id="AF_ILL_ERROR_RESOURCE_LEVELS_DUPLICATE" text="The scene resource contains duplicate levels nodes." />
+    <string id="AF_ILL_ERROR_RESOURCE_NODES_MISSING" text="The current scene resource lacks a scene or entities node." />
+    <string id="AF_ILL_ERROR_RESOURCE_XML_DEPTH" text="The scene XML hierarchy exceeds the 64-level budget." />
+    <string id="AF_ILL_ERROR_RESOURCE_XML_ELEMENTS" text="Scene XML streaming exceeded the 524288-element budget." />
+    <string id="AF_ILL_ERROR_RESOURCE_XML_NAMESPACE" text="The scene XML uses an unsupported namespace." />
+    <string id="AF_ILL_ERROR_RESOURCE_SUBTREE_ELEMENTS" text="A scene entity subtree exceeds the 32768-element memory budget." />
+    <string id="AF_ILL_ERROR_RESOURCE_SUBTREE_END" text="The scene entity subtree ended unexpectedly." />
+    <string id="AF_ILL_ERROR_RESOURCE_LEVEL_DEFINITION" text="The scene upgrade level definition is invalid." />
+    <string id="AF_ILL_ERROR_RESOURCE_LEVEL_MASK" text="The scene upgrade level name or mask definition is invalid." />
+    <string id="AF_ILL_ERROR_RESOURCE_GEOMETRY_BUDGET" text="The static scene geometry plan exceeds the 32768-item budget." />
+    <string id="AF_ILL_ERROR_PANORAMA_NOT_RENDERED" text="The current mission scene has not finished rendering. Nearby surroundings cannot be captured yet. Try again later." />
+    <string id="AF_ILL_ERROR_PANORAMA_SCHEDULE" text="Panorama capture could not be scheduled." />
+    <string id="AF_ILL_ERROR_PANORAMA_RENDERER_MISSING" text="The panorama renderer was not created." />
+    <string id="AF_ILL_ERROR_PANORAMA_EXPORT_ACTIVE" text="An unfinished export prevented switching the panorama camera." />
+    <string id="AF_ILL_ERROR_PANORAMA_WAIT_FRAME" text="The panorama render frame could not be awaited." />
+    <string id="AF_ILL_ERROR_PANORAMA_RENDER_INCOMPLETE" text="The panorama camera did not finish rendering. No incomplete reference image was sent." />
+    <string id="AF_ILL_ERROR_PANORAMA_EXPORT_NOT_READY" text="The panorama export is not ready." />
+    <string id="AF_ILL_ERROR_PANORAMA_EXPORT_INCOMPLETE" text="Panorama export did not produce a complete image. Repeated viewpoints were not substituted." />
+    <string id="AF_ILL_ERROR_SCENE_VALIDATION_SCHEDULER" text="Scene state validation scheduling stopped. This illustration cannot continue." />
+    <string id="AF_ILL_ERROR_PANORAMA_TIMEOUT" text="Environment panorama capture exceeded its time budget and stopped. No incomplete environment image was sent." />
+    <string id="AF_ILL_ERROR_RESOURCE_XML_PARSE" text="The current scene XML resource could not be parsed: {DETAIL}" />
+    <string id="AF_ILL_ERROR_RESOURCE_READ_FAILED" text="Reading the current scene resource failed: {DETAIL}" />
+    <string id="AF_ILL_ERROR_RESOURCE_NODE_DUPLICATE" text="The scene resource contains duplicate {DETAIL} nodes." />
+    <string id="AF_ILL_ERROR_LIGHTING_SCENE_DETAIL" text="Observation lighting requires a valid isolated scene copy.{DETAIL}" />
+    <string id="AF_ILL_ERROR_LIGHTING_POSITION_DETAIL" text="Observation lighting has no off-screen camera position.{DETAIL}" />
+    <string id="AF_ILL_ERROR_EDITS_UNSUPPORTED" text="The images/edits endpoint does not support this reference image request. Generation stopped to avoid silently losing character or scene references. Enable the preferred conversation multimodal image channel or configure a usable /images/edits endpoint." />
+    <string id="AF_ILL_ERROR_DIRECTOR_TEXT_ONLY_ATTEMPT" text="The interface explicitly does not support image input; one text-only conception attempt was made" />
+    <string id="AF_ILL_ERROR_DIRECTOR_TEXT_ONLY_DETAIL" text="{SUMMARY}; {DETAIL}" />
+      <string id="AF_ILL_MISSION_SHOUT_TITLE" text="Scene shout" />
+    <string id="AF_ILL_ERROR_PANORAMA_ROOTS_BUDGET" text="The current scene has more than 32768 root entities to traverse. The environment snapshot stopped; a truncated copy must not be marked as a complete panorama." />
+    <string id="AF_ILL_ERROR_PANORAMA_NODES_BUDGET" text="The current environment hierarchy has more than 32768 nodes. The snapshot stopped; an incomplete copy must not be marked as a complete panorama." />
+    <string id="AF_ILL_ERROR_IMAGE_PROMPT_BUDGET" text="The image prompt exceeds the {LIMIT}-character budget and cannot be shortened while preserving facts, reference-image constraints and complete paragraphs. No request was sent. Shorten custom styles or requirements, or reduce the material for this request." />
+      <string id="AF_ILL_UI_LOCAL_CACHE_PROMPT" text="(A visual chronicle is retained locally)" />
+  </strings>
+</base>

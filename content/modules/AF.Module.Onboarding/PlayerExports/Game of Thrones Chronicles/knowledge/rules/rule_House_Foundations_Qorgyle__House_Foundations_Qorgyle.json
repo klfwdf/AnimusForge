@@ -1,0 +1,133 @@
+{
+  "Id": "rule_House_Foundations_Qorgyle",
+  "Keywords": [
+    "House Qorgyle",
+    "Black Scorpions",
+    "Sandy Dorne",
+    "Martell Vassals"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Kogel family is based in Sandstone City and is a sand lord in the Dorne Desert. Their family emblem is three black scorpions on a red background. Scorpions are born in the local environment of intense heat, water shortage and cracks in rocks. When people from afar see the flag, they often think of poisonous stings and insidiousness. However, the residents of Sandstone City think of how to shake out scorpions before putting on their boots, and who is responsible for protecting wells, oases and trade routes. The Kogels hold the sandy territories as Martell vassals, and their authority thus rests on every well and every band that crosses the dry land."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Dornish nobles recognized the three black scorpions of Korgor in Sandstone City. The scorpion shows that this land is dangerous, hot and dry and should not be underestimated, but it cannot determine the temperament of the entire family. Kogel's position rested on sandy territory, vassal duties in the Martell system, and control of water sources and roads."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Sandlanders shake their boots before going to bed, and travelers take a look before reaching into a crack in the rocks. For them, scorpions are not aristocratic poetry but an everyday danger. If Kogel can maintain the well water and trade routes, the scorpion flag will be his protection; if the lord's hands are like the scorpion's tail that only stings downwards, the people will naturally hide further."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Qorgyle The Dornish lords of Sandstone City use three black scorpions as their family crest; their authority is rooted in wells, oases, trade routes and dry land territories. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Qorgyle The Dornish lords of Sandstone City use three black scorpions as their family crest; their authority is rooted in wells, oases, trade routes and dry land territories. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Qorgyle The Dornish lords of Sandstone City use three black scorpions as their family crest; their authority is rooted in wells, oases, trade routes and dry land territories. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Qorgyle The Dornish lords of Sandstone City use three black scorpions as their family crest; their authority is rooted in wells, oases, trade routes and dry land territories. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "House Qorgyle: The Dornish lords of Sandstone City use three black scorpions as their family crest; their authority is rooted in wells, oases, trade routes and dry land territories."
+  ]
+}

@@ -1,0 +1,128 @@
+{
+  "Id": "rule_Folk_Customs_Sealing_Wax_Signets_and_Letters",
+  "Keywords": [
+    "Sealing Wax, Signets, and Letters"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "A seal can bring the master's face to distant orders, and can also give the forger short-term power. Bachelors attach great importance to words and wax seals, while lords attach importance to the legitimacy it represents. People with little literacy can often only guess what is written in the letter through the expression of the sender."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Sealing Wax, Signets, and Letters"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Sealing Wax, Signets, and Letters"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Sealing Wax, Signets, and Letters"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Sealing Wax, Signets, and Letters A seal can bring the master's face to distant orders, and can also give the forger short-term power. Bachelors attach great importance to words and wax seals, while lords attach importance to the legitimacy it represents. People with little literacy can often only guess what is written in the letter through the expression of the sender. Whether it is valid depends on who can grant the rights, collect the consideration, and actually make the judgment come to fruition in the event of default."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Sealing Wax, Signets, and Letters A seal can bring the master's face to distant orders, and can also give the forger short-term power. Bachelors attach great importance to words and wax seals, while lords attach importance to the legitimacy it represents. People with little literacy can often only guess what is written in the letter through the expression of the sender. If a rule is practiced over and over again, it will find its way into rituals, crafts, and prayers; if it is sustained only by fear, cracks will show at the onset of a crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Sealing Wax, Signets, and Letters A seal can bring the master's face to distant orders, and can also give the forger short-term power. Bachelors attach great importance to words and wax seals, while lords attach importance to the legitimacy it represents. People with little literacy can often only guess what is written in the letter through the expression of the sender. They remember taxes, grain, labor, relief and who can speak for them; these grand names will eventually fall on the family's rice pot."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Sealing Wax, Signets, and Letters: A seal can bring the master's face to distant orders, and can also give the forger short-term power. Bachelors attach great importance to words and wax seals, while lords attach importance to the legitimacy it represents. People with little literacy can often only guess what is written in the letter through the expression of the sender."
+  ]
+}

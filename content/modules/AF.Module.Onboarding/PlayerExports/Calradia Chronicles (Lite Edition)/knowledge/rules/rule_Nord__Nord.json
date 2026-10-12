@@ -1,0 +1,162 @@
+{
+  "Id": "rule_Nord",
+  "Keywords": [
+    "Nord",
+    "Nordvig"
+  ],
+  "RagShortTexts": [
+    "The Nords have strong maritime power and can threaten the coast, but they lack experience in land warfare and have a limited population."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nord"
+        ],
+        "KingdomIds": [
+          "nord"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Nordvig? It is our land, but it cannot be said to be our country. We fought with Volbjorn. He was not a good person, but he was ruthless enough and could hold so many Jarls together. Now his son Haldarr sat on the throne, and he was a good man - fighting at the front and drinking well. But a king doesn't just drink and fight. We Yaers, our ancestors have had the final say in their own fjords for hundreds of years, and now we want to listen to one person? To be honest, it's awkward. Haldarr wants us to obey him, okay, he has to be like his father - not cruel, but leading us out to rob. The Nords get rusty if they don't grab it. The people of Sturgia were about the same as us, and they also robbed, but they chose the Archduke, and we chose the King. What's the difference? The difference is that their grand duke was chosen by the boyars, while our king was chosen by a fight. So Boyer on their side went against the bull with the big male, and Yaer on our side also went against the king. One thing. This place in the north is cold and the ground is thin. It is impossible to survive without fighting. We will recognize whoever leads us to grab more. A hasn't let us down yet, but that won't necessarily happen if he keeps us at home."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Nords? That's our distant relative. Across a sea, the voices have different accents, but in their hearts they have the same things: boats, axes, winter, and honor. Like us, they don't like to be controlled. The difference is that Volbjorn appeared on their side and forcibly turned the Jarls into a kingdom. The Boyars on our side can still stand up to the Grand Duke face to face. To be honest, the current situation of Nordvig's Yael group is similar to ours - there is one person who wants to centralize power, and everyone below them does not want to be centralized. A doesn't rely on witches to poison people, he is a serious warrior. We respect warriors. But soldiers who govern the country are not necessarily better than our B who can calculate. The Nords have not gone south to plunder as much as before in recent years, and most of A's energy is spent on internal fighting. Sturgia didn't have any serious feud with Nordvig. They occasionally robbed each other, occasionally did business, met and fought on the border, and drank after the fight. They are another version of us, poorer and with more boats."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Nordvig is a newly formed kingdom on the frozen soil in the north. A generation ago, the place was a mess, with a few so-called kings managing a slave market surrounded by wooden fences. Now there is a real king - the gold coins and battlefield experience Volbjorn brought back from the Imperial Guard have changed the situation. After Haldarr succeeded to the throne, he was able to secure the business established by his father, but Nordvig's political foundation was still fragile: the Jarls had their own agendas, and unification was only a matter of one generation, and the people's hearts did not follow. Strategically, the Nords' value lies in the sea, and they are the only force capable of threatening the west coast of the Empire and the coast of Sturgia from the sea. But their shortcomings are also obvious: limited population and lack of experience in land warfare. Once the longships cannot enter the inland river, the threat will be greatly reduced. Currently, Nordvig maintains a low profile in the Imperial Civil War, and his raids are not large-scale. What deserves attention is whether A will choose to use foreign war to divert internal conflicts. This is the most common way out for young kingdoms."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nord"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "King? Haldarr is the king, we know that. But what does he have to do with me? I still fish, my wife still dries fish, and she still freezes to death in winter. There was no king before, but now there is one. There is one more tax, but everything else is the same. Volbjorn was king at that time, and I heard that when he died he buried himself in a mountain of gold. Hell, the money we exchanged for fish ended up buried in his grave. A is better than him - at least he won't steal our daughter. When he fought, he divided the spoils among his men, instead of keeping them all for himself. But the Yaers under his hands are different, some are good and some are bad. The people on the island scolded the Xu Erfu family for their harsh tax collection. The ones from Ter's are okay. Anyway, whoever serves as Yaer is collecting taxes, and we don’t care who the king is. As long as you can go to sea, the boat is there, and the fish are there, life can go on. One day we will no longer be able to go to sea. Who cares about King Jarl? Is the Nord still Nord if the Nords cannot go to sea?"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Nords? The people in the fjord over there. It's quite similar to us - people who come out of cold places are all the same. They are better than us on the boat, and we are better than them on the ground. When I was a child, I heard from my grandfather that the Nords used to come south to rob them and then run away, making the old men here so angry that they couldn't catch up. Later, they also had a king themselves, so they robbed less. An acquaintance of mine runs a boat along the coast and drank with sailors from Nord. He said that their drinking capacity is about the same as ours. The people there can neither fish nor farm much, so they suffer just like us. But their king seems to be more unable to suppress his subordinates than our Grand Duke, and they fight every day. On our side, Boyer fights with the Grand Duke, and at least we sit together for a meeting. On their side, Yaer fights with the King, and it is said that he pulls out an ax at every turn. Wilder than us."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Nords? Robbers from the northern sea. In my grandfather's generation, coastal villages were most afraid of Nord longships - they would dock in the middle of the night and snatch them away before dawn. Now I heard that they don't rob so much. They have a king, and the king won't let them rob casually. But they still like to run south. Now they are not robbing, but doing business, selling whale oil and walrus tusks, and then buying things from the south. The businessman said that the place where the Nords lived was extremely cold. It was windy and snowy all year round, and they couldn't grow anything on the ground, so they had to rely on boats. So they are good at building ships, and no one on the sea can beat them. When their old king died, he buried himself alive in a pile of gold. Is this true or just a lie? If it is true, then this person is really greedy and crazy. Now the new king is said to be okay, not afraid of fighting, and giving money to his men. As long as they don't come to rob us, they can bury whomever they like."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nord"
+        ],
+        "KingdomIds": [
+          "nord"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "hero:lord_7_1"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "They want me to be king. My father defeated the Yars. When he died, he even took the gold to his grave, but left behind a throne that no one wanted to sit on. I sat on it, and every time Yaer toasted to me, his eyes were assessing my weight. I don't agree with all of my father's methods - poisoning, bribery, and burial alive. I know his methods of dealing with enemies, and the only thing I can use is a sword. Soldiers love me, they fight under me, drink at my table, take my reward, and say I am a generous master. But they don't understand that a king can't just be a generous host. The Yaers secretly longed for the days when they didn't have to take orders from others, and they put their hatred for their father on me. I can't poison them like my father did, but I can take them south. The conflicts of the Nords can never be resolved in the fjord, but on other people's shores, the ax can make them forget it. The Sturgians understand us, they are also sons of the North, but they elected an archduke, and electing an archduke does not count as unity. I am a king, and I want Nordvig not as a wartime alliance, but as a kingdom. I would take them out to fight, at the sword's sign, so that my family would not doubt themselves again when they returned home. That's all I can promise them."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "A",
+      "Kind": "kingdom_leader_name",
+      "TargetId": "nord",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "B",
+      "Kind": "kingdom_leader_name",
+      "TargetId": "sturgia",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

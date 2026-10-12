@@ -230,7 +230,7 @@ public sealed partial class CourierDeliveryBehavior
 		if (!session.DeliveryApplied)
 		{
 			string deliveryFact = BuildInboundDeliveryFactText(session, delivered: true, sender);
-			string historyLine = "【" + GetInboundLetterKindDisplayText(session) + "】" + senderName + "通过信使写道：" + visibleLetter;
+			string historyLine = "【" + GetInboundLetterKindDisplayText(session) + "】" + senderName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0618") + visibleLetter;
 			if (!TryReserveInboundDeliveredMemoryIntent(session, sender, historyLine, deliveryFact))
 			{
 				// No memory-only intent means delivery could be lost after the party is destroyed.
@@ -294,12 +294,12 @@ public sealed partial class CourierDeliveryBehavior
 	{
 		string name = string.IsNullOrWhiteSpace(senderName) ? "NPC" : senderName.Trim();
 		string cleanedLetter = CourierVisibleLetterSanitizer.Clean(letterText);
-		string body = string.IsNullOrWhiteSpace(cleanedLetter) ? "（无来信正文）" : cleanedLetter;
-		string title = "信使送来" + (string.IsNullOrWhiteSpace(letterKind) ? "来信" : letterKind.Trim());
+		string body = string.IsNullOrWhiteSpace(cleanedLetter) ? ConversationUiLocalization.Text("AF_CONV_UI_Courier_EmptyInbound", "(No letter text)") : cleanedLetter;
+		string title = ConversationUiLocalization.Text("AF_CONV_UI_Courier_InboundTitle", "The courier delivered {KIND}", "KIND", string.IsNullOrWhiteSpace(letterKind) ? ConversationUiLocalization.Text("AF_CONV_UI_Courier_InboundLetter", "a letter") : letterKind.Trim());
 		Action replyAction = string.IsNullOrWhiteSpace(senderHeroId) ? null : (() => OpenCourierReplyFlowForExternal(senderHeroId, name));
 		try
 		{
-			if (CourierLetterReplyPopup.ShowWithReply(title, name + "写道：", body, replyAction, "回信", null, "关闭"))
+			if (CourierLetterReplyPopup.ShowWithReply(title, ConversationUiLocalization.Text("AF_CONV_UI_Courier_InboundWrote", "{NAME} wrote:", "NAME", name), body, replyAction, ConversationUiLocalization.Text("AF_CONV_UI_Courier_ReplyButton", "Reply"), null, ConversationUiLocalization.Text("AF_CONV_UI_Courier_Close", "Close")))
 			{
 				return;
 			}
@@ -312,11 +312,11 @@ public sealed partial class CourierDeliveryBehavior
 		{
 			if (replyAction != null)
 			{
-				InformationManager.ShowInquiry(new InquiryData(title, name + "写道：\n\n" + body, true, true, "回信", "关闭", replyAction, null), true);
+				InformationManager.ShowInquiry(new InquiryData(title, ConversationUiLocalization.Text("AF_CONV_UI_Courier_InboundWrote", "{NAME} wrote:", "NAME", name) + "\n\n" + body, true, true, ConversationUiLocalization.Text("AF_CONV_UI_Courier_ReplyButton", "Reply"), ConversationUiLocalization.Text("AF_CONV_UI_Courier_Close", "Close"), replyAction, null), true);
 			}
 			else
 			{
-				InformationManager.ShowInquiry(new InquiryData(title, name + "写道：\n\n" + body, true, false, "知道了", "", null, null), true);
+				InformationManager.ShowInquiry(new InquiryData(title, ConversationUiLocalization.Text("AF_CONV_UI_Courier_InboundWrote", "{NAME} wrote:", "NAME", name) + "\n\n" + body, true, false, ConversationUiLocalization.Text("AF_CONV_UI_Courier_Acknowledge", "Got it"), "", null, null), true);
 			}
 		}
 		catch

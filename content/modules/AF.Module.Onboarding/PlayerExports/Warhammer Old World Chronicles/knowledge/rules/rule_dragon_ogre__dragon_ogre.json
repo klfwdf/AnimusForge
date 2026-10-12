@@ -1,0 +1,209 @@
+{
+  "Id": "rule_dragon_ogre",
+  "Keywords": [
+    "Dragon Ogre",
+    "Ancient Behemoth",
+    "Dragon-Bodied Humanoid",
+    "Awakened by Thunderstorms",
+    "Colossal Warhammer",
+    "Immortal Race",
+    "Lightning Worship",
+    "Primordial Creature"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Dragon Ogres are creatures older than human civilization itself—they possess the massive upper torso of an Ogre alongside the scaled lower body and long tail of dragonkind, and each Dragon Ogre wields a colossal warhammer heavier than a grown man. Legend holds that they slumber in the Mountains of Mourn and the thunderous peaks at the edge of the world, awakening only when the lightning in the heavens grows fierce enough."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "chaos_culture"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Ah, Dragon Ogres—that ancient and arrogant race! Traces of them can be found in the deepest gorges of the north, yet they can only be roused to battle during the season of thunderstorms. These creatures belong neither to Ogres nor to Dragons, nor even to the normal lineage of life in this world; they are an old, unsettled debt left behind before the fall of the Old Ones. When a Dragon Ogre joins a warband, it is usually not for the Dark Gods, but because the thunderstorms in the Chaos Wastes are the fiercest and the lightning the thickest. In battle they are slow, yet every strike of their hammers can shatter the spines of three ranks of spearmen at once, and the ground struck by their hammers cracks open and fills with patterns of lightning within three breaths. Do not attempt to command them—Dragon Ogres respect only violence and thunder."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Dragon Ogres are the rarest monstrous units in Chaos armies, their battlefield role falling between heavy monstrous cavalry and breakthrough monsters. The frontal impact of a unit of three Dragon Ogres is enough to tear apart an Imperial Steam Tank defensive line, yet they suffer from three fatal weaknesses: first, an extreme dependence on thunderstorm weather—under clear skies, a Dragon Ogre's combat effectiveness drops by more than a third; second, agonizingly slow speed, with mobility roughly equivalent to a Dwarf heavy artillery platform; third, an inability to conceal themselves, as the mere appearance of Dragon Ogres on the battlefield serves as a psychological warning to the enemy, making surprise attacks utterly impossible. The proper way to employ them is to assign Dragon Ogres to the second wave of assault, waiting until Chaos Knights have torn open an initial breach before sending the Dragon Ogres' great hammers to smash the entire defensive line to pieces from the gap."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "The origin of Dragon Ogres remains a disputed taxonomic enigma in the Warhammer world. Professor Julian Schwarz of the Department of Paleontology at the University of Nuln, in his work 'Lost Races and Old One Relics' (2398 IC), proposed that Dragon Ogres were a transitional species in the bio-engineering projects of the Old Ones, with fossil records tracing back to strata in the northern Worlds Edge Mountains dated to approximately -8000 IC. Another school of thought—represented by the Dwarf Loremaster Thorek Stonebeard—holds that Dragon Ogres are a natural mutant population produced when the Ogre race came into contact with mutated dragon bloodlines. Of particular note is the intact, ice-entombed Dragon Ogre carcass discovered in the Grey Mountains (unearthed in 2455 IC), measuring twenty-one feet in length with a hammer weighing one hundred and twenty stone, whose surface scales tested positive for an unknown metallic component (subsequently designated 'Dragon Ogre Steel'). As for the lightning-worshiping behavior of Dragon Ogres, the Celestial College of Magic in Altdorf defines it as 'bio-electrical sympathy'—a Dragon Ogre's nervous system can absorb and store atmospheric static electricity during thunderstorms, converting it into a combat energy source akin to warp energy."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "What Dragon Ogres inspire in me is not fear—but awe. They witnessed the glory of the Old Ones, the age of the world's creation, and the dawn of our own race. As a ruler, I prefer to regard Dragon Ogres as living ancient texts rather than mere weapons. Human Chaos Sorcerers who have traveled alongside them tell me that deep in the night during violent storms, Dragon Ogres chant toward the lightning in some ancient tongue, a sound like mountains conversing with one another."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Let me tell you a secret: the allegiance of a Dragon Ogre can be bought with lightning. My family once built an altar out of lightning-struck wood in the thunderous peaks, lighting roaring fires whenever a tempest struck—and eventually, a Dragon Ogre came down the mountain of its own accord to find us. It did not speak, yet it laid its hammer before the altar, signifying that it accepted our offerings. No Chaos Sorcerer can teach you this trick; it is an instinct of ancient bloodlines."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "When caught in a thunderstorm in the northern Worlds Edge Mountains, I hid inside a rock cave and saw a Dragon Ogre standing atop the ridge, raising its hammer toward the sky as lightning struck the hammerhead directly—I thought it would be charred crisp, yet it did not even flinch, as if thoroughly enjoying being struck by lightning. After the hammer was hit by the bolt, every rune on its surface flared to life, casting a blue-white glow across the valley for the span of a full cup of tea. Later, the local Dwarfs told me that was 'a Dragon Ogre feeding.'"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Nuln Weaponsmiths' Guild once posted a bounty for a single fragment of a Dragon Ogre's warhammer—you heard right, a single shard is enough. They say the composition of a Dragon Ogre's warhammer may contain some ancient alloy that no longer exists in this world; if it could be replicated, the lances of Imperial Knights and the halberds of infantrymen would be elevated to an incomparable level. To date, only one person has successfully brought back a fragment: a Questing Knight from Bretonnia, who claimed he traded a whole bottle of Eagle Brandy from Parravon to a wounded Dragon Ogre in exchange for chipped-off hammer shavings."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Dragon Ogre Steel: an ancient, unknown alloy component detected in Dragon Ogre scales and warhammers, with physical properties intermediate between metal and biological horn, possibly a remnant material of Old One creations.",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Dragon Ogre Ancient Behemoth Dragon-Bodied Humanoid"
+  ]
+}

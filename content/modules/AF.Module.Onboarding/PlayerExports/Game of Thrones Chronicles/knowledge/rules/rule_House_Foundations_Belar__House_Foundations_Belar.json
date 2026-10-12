@@ -1,0 +1,153 @@
+{
+  "Id": "rule_House_Foundations_Belar",
+  "Keywords": [
+    "Belar",
+    "House Belar",
+    "Fishery"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Belar is one of the noble families of Loras. For an island city shrouded in sea fog and with limited arable land, it is difficult for a family's wealth to be separated from fishing grounds, salt, whale oil, marine animal skins and cross-sea food supplies; therefore, Belar's status is not only affected by upper-level discussions, but also by the tide and the choices of ordinary crew members. It needs to maintain the credibility of scales and warehouse receipts and avoid long-term conflicts between different island communities over fishing waters and berths. Family members can change careers and alliances, and if the name Berard wants to continue to carry weight, it must prove anew in every bad season that it can keep the network intact."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nord"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "notable",
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Loras merchants valued Berard's credibility more than gold jewelry. If the warehouse receipt can still be cashed after two storms, there will be friends at home; if the scale is off once, the old friends will disappear when the next ship leaves port."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nord"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "sailor",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Fishermen judge Belar by the fishing waters and purchase price. Those who allow the boat to stay alive will receive news and loyalty, while those who push too hard will only receive unloaded fish and curses in the night."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nord"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "priest",
+          "artisan"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Both the Silent One and the Cooper understand that true abundance comes from preserving rather than showing off. If Belar is willing to repair the warehouse, prepare salt, and take care of the shipwrecked family, his noble status will be more than just a word under a dry roof."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Belar The local family of Roras relies for its survival on long-term trust between fisheries, warehouses, crews and the archipelago's communities. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Belar The local family of Roras relies for its survival on long-term trust between fisheries, warehouses, crews and the archipelago's communities. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Belar The local family of Roras relies for its survival on long-term trust between fisheries, warehouses, crews and the archipelago's communities. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Belar The local family of Roras relies for its survival on long-term trust between fisheries, warehouses, crews and the archipelago's communities. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Belar: The local family of Roras relies for its survival on long-term trust between fisheries, warehouses, crews and the archipelago's communities."
+  ]
+}

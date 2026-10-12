@@ -173,7 +173,7 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 	private const int FeastHallVisibleNobleLimit = 16;
 	private const string TavernWenchSpawnTag = "sp_tavern_wench";
 	private const string MusicianSpawnTag = "musician";
-	private const string FeastWenchDisplayName = "侍女";
+	private const string FeastWenchDisplayName = "{=AF_ADSC_Gather_WenchName}Maid";
 	private const int MaxFeastWenches = 2;
 	private const int MaxFeastMusicians = 2;
 	private const int FeastMusicGapSeconds = 8;
@@ -1795,42 +1795,42 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 			"af_noble_gathering_governor_start_main",
 			"hero_main_options",
 			"af_noble_gathering_governor_response",
-			"召开宴会",
+			NobleGatheringUiText.DialogueHostOption,
 			IsGovernorGatheringDialogueAvailable,
 			OpenGovernorGatheringFlowConsequence);
 		starter.AddPlayerLine(
 			"af_noble_gathering_governor_start_ask",
 			"lord_talk_ask_something_2",
 			"af_noble_gathering_governor_response",
-			"召开宴会",
+			NobleGatheringUiText.DialogueHostOption,
 			IsGovernorGatheringDialogueAvailable,
 			OpenGovernorGatheringFlowConsequence);
 		starter.AddPlayerLine(
 			"af_noble_gathering_companion_start_main",
 			"hero_main_options",
 			"af_noble_gathering_companion_response",
-			"我想举办一场宴会，你帮我安排。",
+			NobleGatheringUiText.DialogueCompanionOption,
 			IsCompanionGatheringDialogueAvailable,
 			OpenCompanionGatheringFlowConsequence);
 		starter.AddPlayerLine(
 			"af_noble_gathering_companion_start_ask",
 			"lord_talk_ask_something_2",
 			"af_noble_gathering_companion_response",
-			"我想举办一场宴会，你帮我安排。",
+			NobleGatheringUiText.DialogueCompanionOption,
 			IsCompanionGatheringDialogueAvailable,
 			OpenCompanionGatheringFlowConsequence);
 		starter.AddDialogLine(
 			"af_noble_gathering_governor_response",
 			"af_noble_gathering_governor_response",
 			"lord_pretalk",
-			"我会为您准备名单与请柬。",
+			NobleGatheringUiText.DialogueGovernorResponse,
 			null,
 			null);
 		starter.AddDialogLine(
 			"af_noble_gathering_companion_response",
 			"af_noble_gathering_companion_response",
 			"lord_pretalk",
-			"明白，我会按您的意思准备举办地和宾客名单。",
+			NobleGatheringUiText.DialogueCompanionResponse,
 			null,
 			null);
 	}
@@ -1890,7 +1890,7 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 	{
 		if (!NobleGatheringOptions.Capture().Enabled)
 		{
-			ShowMessage("宴会功能已在 MCM 中关闭。");
+			ShowMessage(NobleGatheringUiText.Disabled);
 			return;
 		}
 		if (requester != null && requester.GovernorOf != null && !TryResolveGovernorOwnedSettlement(requester, out suggestedSettlement, out string reject))
@@ -1906,7 +1906,7 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 		List<Settlement> settlements = GetPlayerHostSettlements(suggestedSettlement).ToList();
 		if (settlements.Count == 0)
 		{
-			ShowMessage("宴会无法召开：你的家族没有可作为举办地的城镇或城堡。");
+			ShowMessage(NobleGatheringUiText.NoHostSettlement);
 			return;
 		}
 		int enabledCount = 0;
@@ -1924,24 +1924,24 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 					firstReject = reject;
 				}
 				string label = GetSettlementName(settlement);
-				string hint = enabled ? "可作为宴会举办地。" : reject;
+				string hint = enabled ? NobleGatheringUiText.VenueAvailable : reject;
 				return new InquiryElement(settlement.StringId, label, null, enabled, hint);
 			})
 			.ToList();
 		if (enabledCount == 0)
 		{
-			ShowMessage(string.IsNullOrWhiteSpace(firstReject) ? "宴会无法召开：没有可用举办地。" : firstReject);
+			ShowMessage(string.IsNullOrWhiteSpace(firstReject) ? NobleGatheringUiText.NoVenue : firstReject);
 			return;
 		}
 		MultiSelectionInquiryData data = new MultiSelectionInquiryData(
-			"召开宴会：选择举办地",
-			"举办地必须是你的家族拥有的城镇或城堡。",
+			NobleGatheringUiText.VenueTitle,
+			NobleGatheringUiText.VenueDescription,
 			options,
 			isExitShown: true,
 			1,
 			1,
-			"下一步",
-			"取消",
+			NobleGatheringUiText.Next,
+			NobleGatheringUiText.Cancel,
 			selected =>
 			{
 				string settlementId = (selected ?? new List<InquiryElement>()).Select(x => x.Identifier as string).FirstOrDefault(x => !string.IsNullOrWhiteSpace(x));
@@ -1970,36 +1970,36 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 		List<Clan> clans = GetPlayerGatheringCandidateClans(settlement).ToList();
 		if (clans.Count == 0)
 		{
-			ShowMessage("没有可邀请的贵族家族。");
+			ShowMessage(NobleGatheringUiText.NoClans);
 			return;
 		}
 		List<string> currentHeroIds = NormalizeHeroIds(selectedHeroIds);
 		List<InquiryElement> options = new List<InquiryElement>();
 		if (currentHeroIds.Count > 0)
 		{
-			options.Add(new InquiryElement("__confirm__", "确认当前名单（" + currentHeroIds.Count + "人）", null, isEnabled: true, BuildSelectedGuestHint(currentHeroIds)));
-			options.Add(new InquiryElement("__clear__", "清空已选名单", null, isEnabled: true, "重新选择宴会宾客。"));
+			options.Add(new InquiryElement("__confirm__", NobleGatheringUiText.ConfirmCurrent(currentHeroIds.Count), null, isEnabled: true, BuildSelectedGuestHint(currentHeroIds)));
+			options.Add(new InquiryElement("__clear__", NobleGatheringUiText.ClearList, null, isEnabled: true, NobleGatheringUiText.ClearHint));
 		}
 		options.AddRange(clans.Select(clan =>
 		{
 			int selectedInClan = CountSelectedGuestsForClan(currentHeroIds, clan);
-			string label = selectedInClan > 0 ? GetClanName(clan) + "（已选 " + selectedInClan + "）" : GetClanName(clan);
+			string label = selectedInClan > 0 ? GetClanName(clan) + " (" + NobleGatheringUiText.ClanSelected(selectedInClan) + ")" : GetClanName(clan);
 			string hint = BuildClanHint(clan);
 			if (selectedInClan > 0)
 			{
-				hint += "\n该家族已选宾客 " + selectedInClan + " 人。";
+				hint += "\n" + NobleGatheringUiText.ClanSelectedHint(selectedInClan);
 			}
 			return new InquiryElement(clan.StringId, label, null, isEnabled: true, hint);
 		}));
 		MultiSelectionInquiryData data = new MultiSelectionInquiryData(
-			"召开宴会：选择家族",
-			"举办地：" + GetSettlementName(settlement) + "\n已选宾客：" + currentHeroIds.Count + " 人。\n请选择一个家族打开成员名单。",
+			NobleGatheringUiText.ClanTitle,
+			NobleGatheringUiText.ClanDescription(GetSettlementName(settlement), currentHeroIds.Count),
 			options,
 			isExitShown: true,
 			1,
 			1,
-			"下一步",
-			"取消",
+			NobleGatheringUiText.Next,
+			NobleGatheringUiText.Cancel,
 			selected =>
 			{
 				string selectedId = (selected ?? new List<InquiryElement>()).Select(x => x.Identifier as string).FirstOrDefault(x => !string.IsNullOrWhiteSpace(x));
@@ -2043,28 +2043,28 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 					enabledCount++;
 				}
 				string identityLabel = BuildGatheringHeroIdentityLabel(hero);
-				string label = (alreadySelected ? "[已选] " : "") + "[" + GetClanName(hero?.Clan) + "] " + GetHeroName(hero) + "（" + identityLabel + "）";
-				string hint = GetHeroName(hero) + " / " + GetClanName(hero?.Clan)
-					+ "\n" + BuildGatheringHeroIdentityHint(hero)
-					+ (alreadySelected ? "\n已经在当前宴会名单中。" : enabled ? "\n可发出赴宴邀请；没有独立部队者将按原版旅行机制前往主办地。" : "\n不可邀请：" + reason);
+			string label = (alreadySelected ? NobleGatheringUiText.SelectedMarker : "") + NobleGatheringUiText.HeroLabel(GetClanName(hero?.Clan), GetHeroName(hero), identityLabel);
+			string hint = GetHeroName(hero) + " / " + GetClanName(hero?.Clan)
+				+ "\n" + BuildGatheringHeroIdentityHint(hero)
+				+ "\n" + (alreadySelected ? NobleGatheringUiText.AlreadyInList : enabled ? NobleGatheringUiText.CanInvite : NobleGatheringUiText.CannotInvite(NobleGatheringTextProjection.ProjectForUi(reason)));
 				return new InquiryElement(hero.StringId, label, null, enabled, hint);
 			})
 			.ToList();
 		if (options.Count == 0)
 		{
-			ShowMessage("所选家族没有可显示的贵族成员。");
+			ShowMessage(NobleGatheringUiText.NoHeroes);
 			ShowPlayerGatheringClanSelection(settlement, currentHeroIds);
 			return;
 		}
 		MultiSelectionInquiryData data = new MultiSelectionInquiryData(
-			"召开宴会：选择宾客",
-			"家族：" + GetClanName(clan) + "\n这是玩家举办的宴会，总督仍可邀请。有独立部队的人会直接被调度；留在城里的贵族、总督、无部队英雄会按原版旅行机制前往主办地，宴会结束后返回原驻留地。\n已选宾客：" + currentHeroIds.Count + " 人。",
+			NobleGatheringUiText.HeroTitle,
+			NobleGatheringUiText.HeroDescription(GetClanName(clan), GetSettlementName(settlement), currentHeroIds.Count),
 			options,
 			isExitShown: true,
 			0,
 			Math.Max(1, enabledCount),
-			"加入名单",
-			"返回",
+			NobleGatheringUiText.AddToList,
+			NobleGatheringUiText.Back,
 			selected =>
 			{
 				List<string> addedHeroIds = (selected ?? new List<InquiryElement>()).Select(x => x.Identifier as string).Where(x => !string.IsNullOrWhiteSpace(x)).ToList();
@@ -2084,22 +2084,18 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 		List<Hero> heroes = currentHeroIds.Select(ResolveHeroById).Where(x => x != null).ToList();
 		if (heroes.Count == 0)
 		{
-			ShowMessage("宴会未召开：没有可邀请的宾客。");
+			ShowMessage(NobleGatheringUiText.NoGuests);
 			ShowPlayerGatheringClanSelection(settlement, new List<string>());
 			return;
 		}
-		string body = "举办地：" + GetSettlementName(settlement)
-			+ "\n费用：" + options.Cost + " 第纳尔"
-			+ "\n持续：" + options.DurationDays + " 天"
-			+ "\n宾客：" + heroes.Count + " 人"
-			+ "\n\n确认后将扣款并向宾客下达前往举办地的宴会邀请。";
+		string body = NobleGatheringUiText.ConfirmBody(GetSettlementName(settlement), options.Cost, options.DurationDays, heroes.Count);
 		InformationManager.ShowInquiry(new InquiryData(
-			"确认召开宴会",
+			NobleGatheringUiText.ConfirmTitle,
 			body,
 			isAffirmativeOptionShown: true,
 			isNegativeOptionShown: true,
-			"支付并发出邀请",
-			"返回",
+			NobleGatheringUiText.PayAndInvite,
+			NobleGatheringUiText.Back,
 			() =>
 			{
 				if (TryCreatePlayerHostedGathering(settlement, heroes, out string status))
@@ -2133,7 +2129,7 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 			.ToList();
 		if (safeInvitees.Count == 0)
 		{
-			status = "宴会未召开：没有可赴宴的宾客。";
+			status = NobleGatheringUiText.NoGuests;
 			return false;
 		}
 		host.ChangeHeroGold(-options.Cost);
@@ -2171,7 +2167,7 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 		ApplyInvitedClanRelationRewards(record, host);
 		IssueTravelCommands(record);
 		RecordGatheringStartedWeeklyMaterial(record);
-		status = "宴会已发出邀请：" + GetSettlementName(settlement) + "，宾客 " + safeInvitees.Count + " 人，持续 " + options.DurationDays + " 天";
+		status = NobleGatheringUiText.Created(GetSettlementName(settlement), safeInvitees.Count, options.DurationDays);
 		Log("player gathering created id=" + record.Id + " settlement=" + settlement.StringId + " invitees=" + safeInvitees.Count);
 		return true;
 	}
@@ -2225,7 +2221,7 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 			Hero host = ResolveHeroById(record.HostHeroId);
 			if (settlement == null || host == null || host.IsDead || now >= record.EndDay)
 			{
-				FinishGathering(record, now >= record.EndDay ? "宴会已经结束。" : "宴会因主办方或举办地失效而结束。");
+				FinishGathering(record, now >= record.EndDay ? DiplomacyCompatibilityTexts.Get("Gathering_EndElapsed") : DiplomacyCompatibilityTexts.Get("Gathering_EndInvalid"));
 				continue;
 			}
 			RegisterFeastAttendee(host, record);
@@ -2251,11 +2247,11 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 			.ToList();
 		foreach (NobleGatheringRecord record in activeRecords)
 		{
-			CompleteGathering(record, StateCancelled, "宴会功能已在 MCM 中关闭。", showMessage: false);
+			CompleteGathering(record, StateCancelled, DiplomacyCompatibilityTexts.Get("Gathering_DisabledReason"), showMessage: false);
 		}
 		if (activeRecords.Count > 0)
 		{
-			DisplayGatheringMessage("宴会功能已关闭，正在进行的宴会已经取消，主人和宾客将陆续返程。", new Color(0.8f, 0.95f, 1f));
+			DisplayGatheringMessage(NobleGatheringUiText.DisabledCancelled, new Color(0.8f, 0.95f, 1f));
 			Log("cancelled active gatherings because disabled count=" + activeRecords.Count);
 		}
 	}
@@ -2286,7 +2282,7 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 			{
 				return;
 			}
-			string worldMessage = "大地图命令系统未初始化。";
+			string worldMessage = DiplomacyCompatibilityTexts.Get("Gathering_WorldCommandsUnavailable");
 			if (world != null && world.TryIssueGoToSettlementUntilDayForExternal(host, settlement, holdDays, record.EndDay, BuildCommandSourceId(record), out worldMessage))
 			{
 				record.HostCommandIssued = true;
@@ -2294,7 +2290,7 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 			}
 			else
 			{
-				Log("npc host travel failed id=" + record.Id + " host=" + (host.StringId ?? "") + " message=" + (worldMessage ?? reason));
+				Log("npc host travel failed id=" + record.Id + " host=" + (host.StringId ?? "") + " message=" + NobleGatheringTextProjection.ProjectForDiagnostic(worldMessage ?? reason));
 			}
 			return;
 		}
@@ -2325,11 +2321,11 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 		if (TryIssueDelayedSettlementTravel(record, null, host, settlement, out string message))
 		{
 			record.HostCommandIssued = true;
-			Log("npc host settlement travel issued id=" + record.Id + " host=" + host.StringId + " settlement=" + settlement.StringId + " message=" + message);
+			Log("npc host settlement travel issued id=" + record.Id + " host=" + host.StringId + " settlement=" + settlement.StringId + " message=" + NobleGatheringTextProjection.ProjectForDiagnostic(message));
 		}
 		else
 		{
-			Log("npc host travel failed id=" + record.Id + " host=" + (host?.StringId ?? "") + " message=" + (message ?? reason));
+			Log("npc host travel failed id=" + record.Id + " host=" + (host?.StringId ?? "") + " message=" + NobleGatheringTextProjection.ProjectForDiagnostic(message ?? reason));
 		}
 	}
 
@@ -2398,7 +2394,7 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 			RecordNotableGatheringAttendanceWeeklyMaterial(record, hero);
 			if (record.IsPlayerHosted && showGuestArrivalMessages)
 			{
-				DisplayGatheringMessage(GetHeroName(hero) + "已抵达" + GetSettlementName(settlement) + "参加宴会。", new Color(0.4f, 1f, 0.4f));
+				DisplayGatheringMessage(NobleGatheringUiText.GuestArrived(GetHeroName(hero), GetSettlementName(settlement)), new Color(0.4f, 1f, 0.4f));
 			}
 		}
 	}
@@ -2524,7 +2520,7 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 				Log("player attendance relation failed: " + ex.Message);
 			}
 		}
-		ShowMessage("你参加了" + GetHeroName(host) + "的宴会，与主办方的好感提升了。");
+		ShowMessage(NobleGatheringUiText.AttendanceReward(GetHeroName(host)));
 	}
 
 	private void FinishGathering(NobleGatheringRecord record, string reason)
@@ -2591,7 +2587,7 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 		{
 			DisplayGatheringMessage(BuildGatheringEndMessage(record, reason), new Color(0.8f, 0.95f, 1f));
 		}
-		Log("complete gathering id=" + record.Id + " state=" + record.State + " reason=" + reason);
+		Log("complete gathering id=" + record.Id + " state=" + record.State + " reason=" + NobleGatheringTextProjection.ProjectForDiagnostic(reason));
 	}
 
 	private bool TryCancelNpcGatheringForCrisis(NobleGatheringRecord record, Hero host)
@@ -2619,8 +2615,8 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 			return false;
 		}
 		string reason = crisisLevel >= CrisisDecisionSiege
-			? "王国内的" + GetSettlementName(besiegedSettlement) + "正遭围攻，主办人决定取消宴会。"
-			: "王国已经卷入战争，主办人决定取消宴会。";
+			? NobleGatheringTextProjection.RawFormat("Gathering_CrisisSiege", ("SETTLEMENT", GetSettlementName(besiegedSettlement)))
+			: DiplomacyCompatibilityTexts.Get("Gathering_CrisisWar");
 		CancelGathering(record, reason);
 		return true;
 	}
@@ -2807,7 +2803,7 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 			IssueTravelCommands(record);
 			TrySendPlayerInvitationCourier(record);
 			RecordGatheringStartedWeeklyMaterial(record);
-			DisplayGatheringMessage(GetHeroName(host) + "将在" + GetSettlementName(settlement) + "举办宴会。", new Color(0.8f, 0.95f, 1f));
+			DisplayGatheringMessage(NobleGatheringUiText.NpcCreated(GetHeroName(host), GetSettlementName(settlement)), new Color(0.8f, 0.95f, 1f));
 			Log("npc gathering created id=" + record.Id + " host=" + host.StringId + " settlement=" + settlement.StringId);
 			status = "created:" + record.Id;
 			return true;
@@ -2838,7 +2834,7 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 			return;
 		}
 		string endDate = CampaignTime.Days((float)record.EndDay).ToString();
-		string letter = GetHeroName(host) + "致" + (Hero.MainHero?.Name?.ToString() ?? "你") + "：\n\n我将在" + GetSettlementName(settlement) + "举办一场宴会，诚邀你前来赴宴。宴会预计持续至 " + endDate + "；若你愿意，到达举办地即可。";
+		string letter = NobleGatheringUiText.CourierLetter(GetHeroName(host), Hero.MainHero?.Name?.ToString() ?? "Player", GetSettlementName(settlement), endDate);
 		if (CourierDeliveryBehavior.TrySendNpcLetterToPlayerForExternal(host, letter, "noble_gathering:" + record.Id, out string status))
 		{
 			record.PlayerInvitationCourierSent = true;
@@ -3093,7 +3089,7 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 		Settlement origin = ResolveSettlementById(invitee == null ? record.HostOriginSettlementId : invitee.OriginSettlementId) ?? ResolveHeroOriginSettlement(hero);
 		if (origin == null)
 		{
-			message = invitee == null ? "找不到主办人的原始所在城。" : "找不到宾客的原始所在城。";
+			message = invitee == null ? DiplomacyCompatibilityTexts.Get("Gathering_HostOriginMissing") : DiplomacyCompatibilityTexts.Get("Gathering_GuestOriginMissing");
 			return false;
 		}
 		if (invitee == null)
@@ -3118,17 +3114,17 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 		}
 		if (TryGetHeroTeleportTarget(hero, out Settlement currentTarget))
 		{
-			message = "正在旅行至" + GetSettlementName(currentTarget);
+			message = NobleGatheringTextProjection.RawFormat("Gathering_TravellingTo", ("SETTLEMENT", GetSettlementName(currentTarget)));
 			return false;
 		}
 		if (hero.IsTraveling)
 		{
-			message = "正在旅行";
+			message = DiplomacyCompatibilityTexts.Get("Gathering_Travelling");
 			return false;
 		}
 		if (hero.PartyBelongedTo != null)
 		{
-			message = "已有部队";
+			message = DiplomacyCompatibilityTexts.Get("Gathering_HasParty");
 			return false;
 		}
 		if (!CanHeroMoveToSettlement(hero, out string moveReason))
@@ -3145,7 +3141,7 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 		}
 		catch (Exception ex)
 		{
-			message = "原版旅行下达失败：" + ex.Message;
+			message = NobleGatheringTextProjection.RawFormat("Gathering_NativeTravelFailed", ("ERROR", ex.Message));
 			Log("settlement travel failed hero=" + (hero?.StringId ?? "") + " target=" + (targetSettlement?.StringId ?? "") + " error=" + ex);
 			return false;
 		}
@@ -3211,7 +3207,7 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 		if (!string.Equals(state, SettlementReturnPending, StringComparison.OrdinalIgnoreCase))
 		{
 			record.HostSettlementReturnState = state;
-			Log("settlement host return " + state + " id=" + (record.Id ?? "") + " host=" + (record.HostHeroId ?? "") + " origin=" + (record.HostOriginSettlementId ?? "") + " reason=" + (reason ?? "") + " message=" + (message ?? ""));
+			Log("settlement host return " + state + " id=" + (record.Id ?? "") + " host=" + (record.HostHeroId ?? "") + " origin=" + (record.HostOriginSettlementId ?? "") + " reason=" + (reason ?? "") + " message=" + NobleGatheringTextProjection.ProjectForDiagnostic(message ?? ""));
 		}
 	}
 
@@ -3227,7 +3223,7 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 		if (!string.Equals(state, SettlementReturnPending, StringComparison.OrdinalIgnoreCase))
 		{
 			invitee.SettlementReturnState = state;
-			Log("settlement invitee return " + state + " hero=" + (invitee.HeroId ?? "") + " origin=" + (invitee.OriginSettlementId ?? "") + " reason=" + (reason ?? "") + " message=" + (message ?? ""));
+			Log("settlement invitee return " + state + " hero=" + (invitee.HeroId ?? "") + " origin=" + (invitee.OriginSettlementId ?? "") + " reason=" + (reason ?? "") + " message=" + NobleGatheringTextProjection.ProjectForDiagnostic(message ?? ""));
 		}
 	}
 
@@ -3326,12 +3322,12 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 			{
 				return true;
 			}
-			reason = "当前无法移动至定居点";
+			reason = DiplomacyCompatibilityTexts.Get("Gathering_CannotMove");
 			return false;
 		}
 		catch (Exception ex)
 		{
-			reason = "移动检查失败：" + ex.Message;
+			reason = NobleGatheringTextProjection.RawFormat("Gathering_MovementCheckFailed", ("ERROR", ex.Message));
 			return false;
 		}
 	}
@@ -4034,55 +4030,55 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 				return "";
 			}
 			StringBuilder sb = new StringBuilder();
-			sb.AppendLine("【贵族宴会可用ID】");
-			sb.AppendLine("输出格式：");
+			sb.AppendLine(AdapterSceneTexts.Get("GatherLive_000"));
+			sb.AppendLine(AdapterSceneTexts.Get("GatherLive_001"));
 			sb.AppendLine("[ACTION:NOBLE_GATHERING:START:settlement=settlementId:heroes=heroId1,heroId2:clans=clanId1:kingdoms=kingdomId1:cultures=cultureId1:age=18-30:gender=female]");
 			sb.AppendLine("[ACTION:NOBLE_GATHERING:CANCEL:gathering=gatheringId]");
-			sb.AppendLine("若玩家只说邀请某家族/王国/文化/年龄/性别群体，可以省略 heroes，由系统按筛选展开。所有 id 必须优先使用下方候选，不要凭空猜。");
+			sb.AppendLine(AdapterSceneTexts.Get("GatherLive_002"));
 			NobleGatheringBehavior behavior = Instance ?? Campaign.Current?.GetCampaignBehavior<NobleGatheringBehavior>();
 			List<NobleGatheringRecord> cancellableGatherings = behavior?.GetCancellableGatheringsForConversationHero(conversationHero) ?? new List<NobleGatheringRecord>();
 			sb.AppendLine();
-			sb.AppendLine("当前对话可取消的宴会：");
+			sb.AppendLine(AdapterSceneTexts.Get("GatherLive_003"));
 			if (cancellableGatherings.Count == 0)
 			{
-				sb.AppendLine("- 无。禁止输出取消宴会标签。");
+				sb.AppendLine(AdapterSceneTexts.Get("GatherLive_004"));
 			}
 			foreach (NobleGatheringRecord record in cancellableGatherings)
 			{
 				Hero host = ResolveHeroById(record.HostHeroId);
 				Settlement venue = ResolveSettlementById(record.SettlementId);
-				string mode = record.IsPlayerHosted ? "player_order（玩家命令，当前同伴/总督必须执行）" : "host_persuasion（当前NPC是主人，只有明确接受劝说才执行）";
+				string mode = record.IsPlayerHosted ? AdapterSceneTexts.Get("GatherLive_005") : AdapterSceneTexts.Get("GatherLive_006");
 				sb.AppendLine("- gathering=" + (record.Id ?? "")
-					+ " | host=" + GetHeroName(host)
-					+ " | settlement=" + GetSettlementName(venue)
+					+ " | host=" + GetHeroNameForPrompt(host)
+					+ " | settlement=" + GetSettlementNameForPrompt(venue)
 					+ " | mode=" + mode);
 			}
 			sb.AppendLine();
-			sb.AppendLine("举办地候选：");
+			sb.AppendLine(AdapterSceneTexts.Get("GatherLive_007"));
 			foreach (Settlement settlement in GetPlayerHostSettlements(ResolveConversationSuggestedSettlement(conversationHero)).Take(24))
 			{
-				sb.AppendLine("- settlement=" + (settlement.StringId ?? "") + " | " + GetSettlementName(settlement) + " | " + (settlement.IsTown ? "town" : settlement.IsCastle ? "castle" : "settlement"));
+				sb.AppendLine("- settlement=" + (settlement.StringId ?? "") + " | " + GetSettlementNameForPrompt(settlement) + " | " + (settlement.IsTown ? "town" : settlement.IsCastle ? "castle" : "settlement"));
 			}
 			sb.AppendLine();
-			sb.AppendLine("家族候选：");
+			sb.AppendLine(AdapterSceneTexts.Get("GatherLive_008"));
 			foreach (Clan clan in GetPlayerGatheringCandidateClans(null).Take(60))
 			{
 				sb.AppendLine("- clan=" + (clan.StringId ?? "") + " | " + GetClanName(clan) + " | kingdom=" + (clan.Kingdom?.StringId ?? "") + " | culture=" + (clan.Culture?.StringId ?? ""));
 			}
 			sb.AppendLine();
-			sb.AppendLine("人物候选：");
+			sb.AppendLine(AdapterSceneTexts.Get("GatherLive_009"));
 			foreach (Hero hero in Hero.AllAliveHeroes.Where(IsGatheringGroupCandidateHero).OrderBy(hero => GetClanName(hero.Clan)).ThenBy(GetHeroName).Take(120))
 			{
-				sb.AppendLine("- hero=" + (hero.StringId ?? "") + " | " + GetHeroName(hero) + " | clan=" + (hero.Clan?.StringId ?? "") + " | kingdom=" + (hero.Clan?.Kingdom?.StringId ?? "") + " | culture=" + (hero.Culture?.StringId ?? "") + " | age=" + Math.Floor(hero.Age) + " | gender=" + (hero.IsFemale ? "female" : "male"));
+				sb.AppendLine("- hero=" + (hero.StringId ?? "") + " | " + GetHeroNameForPrompt(hero) + " | clan=" + (hero.Clan?.StringId ?? "") + " | kingdom=" + (hero.Clan?.Kingdom?.StringId ?? "") + " | culture=" + (hero.Culture?.StringId ?? "") + " | age=" + Math.Floor(hero.Age) + " | gender=" + (hero.IsFemale ? "female" : "male"));
 			}
 			sb.AppendLine();
-			sb.AppendLine("王国候选：");
+			sb.AppendLine(AdapterSceneTexts.Get("GatherLive_010"));
 			foreach (Kingdom kingdom in Kingdom.All?.Where(k => k != null && !k.IsEliminated).OrderBy(k => k.Name?.ToString() ?? k.StringId ?? "").Take(40) ?? Enumerable.Empty<Kingdom>())
 			{
 				sb.AppendLine("- kingdom=" + (kingdom.StringId ?? "") + " | " + (kingdom.Name?.ToString() ?? kingdom.StringId ?? "") + " | culture=" + (kingdom.Culture?.StringId ?? ""));
 			}
 			sb.AppendLine();
-			sb.AppendLine("文化候选：");
+			sb.AppendLine(AdapterSceneTexts.Get("GatherLive_011"));
 			foreach (CultureObject culture in MBObjectManager.Instance.GetObjectTypeList<CultureObject>()?.Where(c => c != null && !string.IsNullOrWhiteSpace(c.StringId)).OrderBy(c => c.Name?.ToString() ?? c.StringId ?? "").Take(40) ?? Enumerable.Empty<CultureObject>())
 			{
 				sb.AppendLine("- culture=" + (culture.StringId ?? "") + " | " + (culture.Name?.ToString() ?? culture.StringId ?? ""));
@@ -4136,35 +4132,35 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 			int totalDays = GetRecordDurationDays(gathering);
 			string role;
 			if (string.Equals(heroId, gathering.HostHeroId, StringComparison.OrdinalIgnoreCase))
-				role = "主办方";
+				role = AdapterSceneTexts.Get("GatherLive_012");
 			else if (hero == Hero.MainHero)
-				role = "玩家（赴宴嘉宾）";
+				role = AdapterSceneTexts.Get("GatherLive_013");
 			else
-				role = "受邀宾客";
+				role = AdapterSceneTexts.Get("GatherLive_014");
 			bool isHost = string.Equals(heroId, gathering.HostHeroId, StringComparison.OrdinalIgnoreCase);
 			bool isAtVenue = IsHeroAtSettlement(hero, settlement);
 			StringBuilder sb = new StringBuilder();
 			if (isHost && !isAtVenue)
 			{
-				sb.AppendLine("【当前宴会事实】你举办的贵族宴会已经开始执行，你正赶往" + GetSettlementName(settlement) + "主持宴会。不得把宴会说成尚未安排、只是传闻或与你无关。");
+				sb.AppendLine(AdapterSceneTexts.Get("GatherLive_015") + GetSettlementNameForPrompt(settlement) + AdapterSceneTexts.Get("GatherLive_016"));
 			}
 			else
 			{
-				sb.AppendLine("【当前宴会事实】你此刻正在" + GetSettlementName(settlement) + "参加一场正在进行的贵族宴会。不得把宴会说成尚未开始、只是计划或与你无关。");
+				sb.AppendLine(AdapterSceneTexts.Get("GatherLive_017") + GetSettlementNameForPrompt(settlement) + AdapterSceneTexts.Get("GatherLive_018"));
 			}
-			sb.AppendLine("- 主办方：" + GetHeroName(host));
-			sb.AppendLine("- 举办地：" + GetSettlementName(settlement));
-			sb.AppendLine("- 宴会已进行到第 " + dayNumber + " 天，共计 " + totalDays + " 天");
-			sb.AppendLine("- 你的身份：" + role);
+			sb.AppendLine(AdapterSceneTexts.Get("GatherLive_019") + GetHeroNameForPrompt(host));
+			sb.AppendLine(AdapterSceneTexts.Get("GatherLive_020") + GetSettlementNameForPrompt(settlement));
+			sb.AppendLine(AdapterSceneTexts.Get("GatherLive_021") + dayNumber + AdapterSceneTexts.Get("GatherLive_022") + totalDays + AdapterSceneTexts.Get("GatherLive_023"));
+			sb.AppendLine(AdapterSceneTexts.Get("GatherLive_024") + role);
 			if (isHost)
 			{
 				sb.AppendLine(isAtVenue
-					? "- 你就是这场宴会的主人和主办者。你清楚宾客是应你的邀请而来，应留在举办地并以主人身份接待、回应和谈论宴会。"
-					: "- 你就是这场宴会的主人和主办者。你必须尽快抵达举办地，并在宴会结束前留在那里接待宾客。");
+					? AdapterSceneTexts.Get("GatherLive_025")
+					: AdapterSceneTexts.Get("GatherLive_026"));
 			}
 			else
 			{
-				sb.AppendLine("- 你已经抵达并作为宾客赴宴。你清楚" + GetHeroName(host) + "是宴会主人，可以自然谈论宴席、宾客和当前局势。");
+				sb.AppendLine(AdapterSceneTexts.Get("GatherLive_027") + GetHeroNameForPrompt(host) + AdapterSceneTexts.Get("GatherLive_028"));
 			}
 			return sb.ToString().Trim();
 		}
@@ -4218,13 +4214,13 @@ internal sealed class NobleGatheringBehavior : CampaignBehaviorBase
 				}
 
 				StringBuilder line = new StringBuilder();
-				line.Append(GetHeroName(host)).Append("已经在").Append(GetSettlementName(settlement)).Append("举办贵族宴会");
+				line.Append(GetHeroNameForPrompt(host)).Append(AdapterSceneTexts.Get("GatherLive_029")).Append(GetSettlementNameForPrompt(settlement)).Append(AdapterSceneTexts.Get("GatherLive_030"));
 				if (relevantGuests.Count > 0)
 				{
-					line.Append("；与相关各国有关的已受邀或已抵达宾客包括：")
-						.Append(string.Join("、", relevantGuests.Select(GetHeroName)));
+					line.Append(AdapterSceneTexts.Get("GatherLive_031"))
+						.Append(string.Join(AdapterSceneTexts.Get("GatherLive_032"), relevantGuests.Select(GetHeroName)));
 				}
-				line.Append("。这是已经开始的公开事件，不代表任何外交协议已经成立。");
+				line.Append(AdapterSceneTexts.Get("GatherLive_033"));
 				lines.Add(line.ToString());
 				if (lines.Count >= Math.Max(1, Math.Min(3, maxCount)))
 				{
@@ -4341,7 +4337,7 @@ public static string NormalizeNobleGatheringPostprocessTagsForExternal(string ra
 		NobleGatheringBehavior behavior = Instance ?? Campaign.Current?.GetCampaignBehavior<NobleGatheringBehavior>();
 		if (behavior == null)
 		{
-			notifications.Add("宴会系统未初始化。");
+			notifications.Add(NobleGatheringTextProjection.ProjectForUi(DiplomacyCompatibilityTexts.Get("Gathering_Unavailable")));
 			return true;
 		}
 		foreach (Match match in matches)
@@ -4350,14 +4346,14 @@ public static string NormalizeNobleGatheringPostprocessTagsForExternal(string ra
 			{
 				if (behavior.TryCancelGatheringFromConversation(gatheringId, conversationHero, out string cancelStatus, out string cancelFact))
 				{
-					notifications.Add(cancelStatus);
+					notifications.Add(NobleGatheringTextProjection.ProjectForUi(cancelStatus));
 					if (!string.IsNullOrWhiteSpace(cancelFact))
 					{
 						generatedFacts.Add(cancelFact);
 					}
 					return true;
 				}
-				notifications.Add(cancelStatus);
+				notifications.Add(NobleGatheringTextProjection.ProjectForUi(cancelStatus));
 				continue;
 			}
 			NobleGatheringInvitationSelector selector = ParseInvitationSelectorTag(match.Value);
@@ -4367,18 +4363,18 @@ public static string NormalizeNobleGatheringPostprocessTagsForExternal(string ra
 			}
 			if (behavior.TryCreatePlayerHostedGatheringFromSelector(selector, conversationHero, out string status, out string fact))
 			{
-				notifications.Add(status);
+				notifications.Add(NobleGatheringTextProjection.ProjectForUi(status));
 				if (!string.IsNullOrWhiteSpace(fact))
 				{
 					generatedFacts.Add(fact);
 				}
 				return true;
 			}
-			notifications.Add(status);
+			notifications.Add(NobleGatheringTextProjection.ProjectForUi(status));
 		}
 		if (notifications.Count == 0)
 		{
-			notifications.Add("宴会指令未执行：标签参数无法解析。");
+			notifications.Add(NobleGatheringTextProjection.ProjectForUi(DiplomacyCompatibilityTexts.Get("Gathering_InvalidTag")));
 		}
 		return true;
 	}
@@ -4393,7 +4389,7 @@ public static string NormalizeNobleGatheringPostprocessTagsForExternal(string ra
 			|| record == null
 			|| !string.Equals(record.State, StateActive, StringComparison.OrdinalIgnoreCase))
 		{
-			status = "取消宴会失败：目标宴会不存在或已经结束。";
+			status = DiplomacyCompatibilityTexts.Get("Gathering_CancelMissing");
 			return false;
 		}
 		Hero host = ResolveHeroById(record.HostHeroId);
@@ -4402,25 +4398,25 @@ public static string NormalizeNobleGatheringPostprocessTagsForExternal(string ra
 		{
 			if (!IsPlayerGatheringCancellationDelegate(conversationHero))
 			{
-				status = "取消宴会失败：当前对话对象不是你的总督或同伴，不能代你执行散宴命令。";
+				status = DiplomacyCompatibilityTexts.Get("Gathering_CancelUnauthorizedDelegate");
 				return false;
 			}
 			string delegateName = GetHeroName(conversationHero);
-			CancelGathering(record, "玩家命令" + delegateName + "立即散宴。");
-			status = delegateName + "已经遵照你的命令取消了在" + GetSettlementName(settlement) + "举办的宴会。";
-			generatedFact = "[AFEF玩家行为补充] 玩家命令" + delegateName + "取消了自己在" + GetSettlementName(settlement) + "举办的宴会，宾客已经散去。";
+			CancelGathering(record, NobleGatheringTextProjection.RawFormat("Gathering_CancelPlayerReason", ("HERO", delegateName)));
+			status = NobleGatheringTextProjection.RawFormat("Gathering_CancelPlayerStatus", ("HERO", delegateName), ("SETTLEMENT", GetSettlementName(settlement)));
+			generatedFact = DiplomacyCompatibilityTexts.Get("Gathering_FactPlayerPrefix") + NobleGatheringTextProjection.RawFormat("Gathering_FactPlayerCancel", ("HERO", delegateName), ("SETTLEMENT", GetSettlementName(settlement)));
 			return true;
 		}
 		if (host == null
 			|| conversationHero == null
 			|| !string.Equals(host.StringId ?? "", conversationHero.StringId ?? "", StringComparison.OrdinalIgnoreCase))
 		{
-			status = "取消宴会失败：只有宴会主人本人才能接受劝说并取消这场宴会。";
+			status = DiplomacyCompatibilityTexts.Get("Gathering_CancelUnauthorizedHost");
 			return false;
 		}
-		CancelGathering(record, GetHeroName(host) + "接受玩家劝说后决定散宴。");
-		status = GetHeroName(host) + "已经接受你的劝说，取消了在" + GetSettlementName(settlement) + "举办的宴会。";
-		generatedFact = "[AFEF NPC行为补充] " + GetHeroName(host) + "接受玩家劝说，取消了自己在" + GetSettlementName(settlement) + "举办的宴会，宾客已经散去。";
+		CancelGathering(record, NobleGatheringTextProjection.RawFormat("Gathering_CancelNpcReason", ("HERO", GetHeroName(host))));
+		status = NobleGatheringTextProjection.RawFormat("Gathering_CancelNpcStatus", ("HERO", GetHeroName(host)), ("SETTLEMENT", GetSettlementName(settlement)));
+		generatedFact = DiplomacyCompatibilityTexts.Get("Gathering_FactNpcPrefix") + NobleGatheringTextProjection.RawFormat("Gathering_FactNpcCancel", ("HERO", GetHeroName(host)), ("SETTLEMENT", GetSettlementName(settlement)));
 		return true;
 	}
 
@@ -4479,14 +4475,14 @@ public static string NormalizeNobleGatheringPostprocessTagsForExternal(string ra
 			.ToList();
 		if (invitees.Count == 0)
 		{
-			status = "宴会未召开：没有解析到可赴宴宾客。";
+			status = DiplomacyCompatibilityTexts.Get("Gathering_NoResolvedGuests");
 			return false;
 		}
 		if (!TryCreatePlayerHostedGathering(settlement, invitees, out status))
 		{
 			return false;
 		}
-		generatedFact = "[AFEF玩家行为补充] 玩家通过对话安排在" + GetSettlementName(settlement) + "举办宴会，并邀请了" + string.Join("、", invitees.Take(12).Select(GetHeroName)) + (invitees.Count > 12 ? "等" + invitees.Count + "人。" : "。");
+		generatedFact = DiplomacyCompatibilityTexts.Get("Gathering_FactPlayerPrefix") + NobleGatheringTextProjection.RawFormat("Gathering_FactPlayerStart", ("SETTLEMENT", GetSettlementName(settlement)), ("GUESTS", string.Join(DiplomacyCompatibilityTexts.Get("Gathering_ListSeparator"), invitees.Take(12).Select(GetHeroName))), ("TAIL", invitees.Count > 12 ? NobleGatheringTextProjection.RawFormat("Gathering_GuestCountTail", ("COUNT", invitees.Count)) : DiplomacyCompatibilityTexts.Get("Gathering_SentencePeriod")));
 		return true;
 	}
 
@@ -4518,46 +4514,38 @@ public static string NormalizeNobleGatheringPostprocessTagsForExternal(string ra
 			{
 				continue;
 			}
-			switch (key)
+			switch (NobleGatheringTextProjection.NormalizeSelectorKey(key))
 			{
 				case "settlement":
 				case "place":
-				case "地点":
 					selector.SettlementId = value;
 					break;
 				case "hero":
 				case "heroes":
 				case "persons":
-				case "人物":
 					selector.SpecificHeroIds.AddRange(SplitSelectorValues(value));
 					break;
 				case "clan":
 				case "clans":
 				case "family":
 				case "families":
-				case "家族":
 					selector.ClanIds.AddRange(SplitSelectorValues(value));
 					break;
 				case "kingdom":
 				case "kingdoms":
 				case "faction":
 				case "factions":
-				case "王国":
-				case "阵营":
 					selector.KingdomIds.AddRange(SplitSelectorValues(value));
 					break;
 				case "culture":
 				case "cultures":
-				case "文化":
 					selector.CultureIds.AddRange(SplitSelectorValues(value));
 					break;
 				case "age":
-				case "年龄":
 					ParseAgeRange(value, selector);
 					break;
 				case "gender":
 				case "sex":
-				case "性别":
 					selector.Gender = NormalizeGenderToken(value);
 					break;
 			}
@@ -4574,7 +4562,7 @@ public static string NormalizeNobleGatheringPostprocessTagsForExternal(string ra
 		return (value ?? "")
 			.Split(new[] { ',', '，', '|', '/', '、' }, StringSplitOptions.RemoveEmptyEntries)
 			.Select(x => x.Trim())
-			.Where(x => !string.IsNullOrWhiteSpace(x) && !string.Equals(x, "none", StringComparison.OrdinalIgnoreCase) && !string.Equals(x, "无", StringComparison.OrdinalIgnoreCase))
+			.Where(x => !string.IsNullOrWhiteSpace(x) && !string.Equals(x, "none", StringComparison.OrdinalIgnoreCase) && !string.Equals(x, DiplomacyCompatibilityTexts.Get("Gathering_SelectorNone"), StringComparison.OrdinalIgnoreCase))
 			.ToList();
 	}
 
@@ -4593,7 +4581,7 @@ public static string NormalizeNobleGatheringPostprocessTagsForExternal(string ra
 		{
 			return;
 		}
-		Match match = Regex.Match(value ?? "", "(\\d+)\\s*[-~至到]\\s*(\\d+)");
+		Match match = Regex.Match(value ?? "", DiplomacyCompatibilityTexts.Get("Gathering_AgeRangePattern"));
 		if (match.Success && int.TryParse(match.Groups[1].Value, out int min) && int.TryParse(match.Groups[2].Value, out int max))
 		{
 			selector.MinAge = Math.Min(min, max);
@@ -4610,11 +4598,11 @@ public static string NormalizeNobleGatheringPostprocessTagsForExternal(string ra
 	private static string NormalizeGenderToken(string value)
 	{
 		string text = (value ?? "").Trim().ToLowerInvariant();
-		if (text == "female" || text == "woman" || text == "women" || text == "f" || text.Contains("女"))
+		if (text == "female" || text == "woman" || text == "women" || text == "f" || text.Contains(DiplomacyCompatibilityTexts.Get("Gathering_SelectorFemale")))
 		{
 			return "female";
 		}
-		if (text == "male" || text == "man" || text == "men" || text == "m" || text.Contains("男"))
+		if (text == "male" || text == "man" || text == "men" || text == "m" || text.Contains(DiplomacyCompatibilityTexts.Get("Gathering_SelectorMale")))
 		{
 			return "male";
 		}
@@ -4724,25 +4712,25 @@ public static string NormalizeNobleGatheringPostprocessTagsForExternal(string ra
 		reason = "";
 		if (hero == null || hero.CharacterObject == null || hero.IsTemplate)
 		{
-			reason = "无效人物";
+			reason = DiplomacyCompatibilityTexts.Get("Gathering_InvalidHero");
 			return false;
 		}
 		try
 		{
 			if (hero.IsNotSpawned)
 			{
-				reason = "尚未出现在世界";
+				reason = DiplomacyCompatibilityTexts.Get("Gathering_NotSpawned");
 				return false;
 			}
 			if (hero.IsChild || hero.Age < 18f)
 			{
-				reason = "未满十八岁";
+				reason = DiplomacyCompatibilityTexts.Get("Gathering_UnderEighteen");
 				return false;
 			}
 		}
 		catch
 		{
-			reason = "未成年或未出世";
+			reason = DiplomacyCompatibilityTexts.Get("Gathering_ChildOrUnborn");
 			return false;
 		}
 		return true;
@@ -4836,48 +4824,48 @@ public static string NormalizeNobleGatheringPostprocessTagsForExternal(string ra
 		reason = "";
 		if (!options.Enabled)
 		{
-			reason = "宴会无法召开：宴会功能已在 MCM 中关闭。";
+			reason = DiplomacyCompatibilityTexts.Get("Gathering_CannotHostDisabled");
 			return false;
 		}
 		if (host == null || settlement == null || settlement.Town == null)
 		{
-			reason = "宴会无法召开：必须选择有效城镇或城堡。";
+			reason = DiplomacyCompatibilityTexts.Get("Gathering_CannotHostVenue");
 			return false;
 		}
 		if (host.Clan == null || (host.Clan.Leader != host && !host.IsClanLeader))
 		{
-			reason = "宴会无法召开：只有家族族长能够作为宴会主人。";
+			reason = DiplomacyCompatibilityTexts.Get("Gathering_CannotHostLeader");
 			return false;
 		}
 		if (settlement.OwnerClan != Clan.PlayerClan)
 		{
-			reason = "宴会无法召开：主办地必须是你自己家族拥有的定居点。";
+			reason = DiplomacyCompatibilityTexts.Get("Gathering_CannotHostOwnership");
 			return false;
 		}
 		if (settlement.IsUnderSiege)
 		{
-			reason = "宴会无法召开：该定居点正在被围攻。";
+			reason = DiplomacyCompatibilityTexts.Get("Gathering_CannotHostSiege");
 			return false;
 		}
 		if (host.Gold < options.Cost)
 		{
-			reason = "宴会无法召开：你需要 " + options.Cost + " 第纳尔。";
+			reason = NobleGatheringTextProjection.RawFormat("Gathering_NeedGold", ("COST", options.Cost));
 			return false;
 		}
 		double now = NowDay();
 		if (_playerHostCooldowns.TryGetValue(PlayerHostCooldownKey, out double until) && now < until)
 		{
-			reason = "宴会筹备尚在冷却中，还需要约 " + Math.Ceiling(until - now) + " 天。";
+			reason = NobleGatheringTextProjection.RawFormat("Gathering_Cooldown", ("DAYS", Math.Ceiling(until - now)));
 			return false;
 		}
 		if (_gatherings.Values.Any(record => record != null && record.IsPlayerHosted && string.Equals(record.State, StateActive, StringComparison.OrdinalIgnoreCase)))
 		{
-			reason = "宴会无法召开：你已经有一场正在进行的宴会。";
+			reason = DiplomacyCompatibilityTexts.Get("Gathering_CannotHostActive");
 			return false;
 		}
 		if (_gatherings.Values.Any(record => record != null && string.Equals(record.State, StateActive, StringComparison.OrdinalIgnoreCase) && string.Equals(record.SettlementId, settlement.StringId, StringComparison.OrdinalIgnoreCase)))
 		{
-			reason = "宴会无法召开：该定居点已有正在进行的宴会。";
+			reason = DiplomacyCompatibilityTexts.Get("Gathering_CannotHostOccupied");
 			return false;
 		}
 		return true;
@@ -4916,17 +4904,17 @@ public static string NormalizeNobleGatheringPostprocessTagsForExternal(string ra
 		reason = "";
 		if (hero == null || hero == Hero.MainHero || hero.IsDead)
 		{
-			reason = "无效人物";
+			reason = DiplomacyCompatibilityTexts.Get("Gathering_InvalidHero");
 			return false;
 		}
 		if (hero.IsPrisoner)
 		{
-			reason = "被俘";
+			reason = DiplomacyCompatibilityTexts.Get("Gathering_Prisoner");
 			return false;
 		}
 		if (hero.IsWounded)
 		{
-			reason = "重伤";
+			reason = DiplomacyCompatibilityTexts.Get("Gathering_Wounded");
 			return false;
 		}
 		if (!IsHeroAdultAndSpawnedForGathering(hero, out reason))
@@ -4949,7 +4937,7 @@ public static string NormalizeNobleGatheringPostprocessTagsForExternal(string ra
 		reason = "";
 		if (hero == null || hero == Hero.MainHero || hero.IsDead)
 		{
-			reason = "无效人物";
+			reason = DiplomacyCompatibilityTexts.Get("Gathering_InvalidHero");
 			return false;
 		}
 		if (!IsHeroAdultAndSpawnedForGathering(hero, out reason))
@@ -4958,28 +4946,28 @@ public static string NormalizeNobleGatheringPostprocessTagsForExternal(string ra
 		}
 		if (hero.IsPrisoner)
 		{
-			reason = "被俘";
+			reason = DiplomacyCompatibilityTexts.Get("Gathering_Prisoner");
 			return false;
 		}
 		if (hero.IsWounded)
 		{
-			reason = "重伤";
+			reason = DiplomacyCompatibilityTexts.Get("Gathering_Wounded");
 			return false;
 		}
 		MobileParty party = hero.PartyBelongedTo;
 		if (party == null || party.LeaderHero != hero || !party.IsActive)
 		{
-			reason = "没有独立部队";
+			reason = DiplomacyCompatibilityTexts.Get("Gathering_NoIndependentParty");
 			return false;
 		}
 		if (party.Army != null && party.Army.LeaderParty != party)
 		{
-			reason = "正在军团中";
+			reason = DiplomacyCompatibilityTexts.Get("Gathering_InArmy");
 			return false;
 		}
 		if (party.MapEvent != null || party.SiegeEvent != null)
 		{
-			reason = "正在战斗或围城";
+			reason = DiplomacyCompatibilityTexts.Get("Gathering_InBattleOrSiege");
 			return false;
 		}
 		return true;
@@ -4990,17 +4978,17 @@ public static string NormalizeNobleGatheringPostprocessTagsForExternal(string ra
 		reason = "";
 		if (hero == null || hero == Hero.MainHero || hero.IsDead)
 		{
-			reason = "无效人物";
+			reason = DiplomacyCompatibilityTexts.Get("Gathering_InvalidHero");
 			return false;
 		}
 		if (hero.IsPrisoner || hero.PartyBelongedToAsPrisoner != null)
 		{
-			reason = "被俘";
+			reason = DiplomacyCompatibilityTexts.Get("Gathering_Prisoner");
 			return false;
 		}
 		if (hero.IsWounded)
 		{
-			reason = "重伤";
+			reason = DiplomacyCompatibilityTexts.Get("Gathering_Wounded");
 			return false;
 		}
 		if (!IsHeroAdultAndSpawnedForGathering(hero, out reason))
@@ -5009,22 +4997,22 @@ public static string NormalizeNobleGatheringPostprocessTagsForExternal(string ra
 		}
 		if (hero.PartyBelongedTo != null)
 		{
-			reason = "已有非独立部队或正处于部队中";
+			reason = DiplomacyCompatibilityTexts.Get("Gathering_HasNonIndependentParty");
 			return false;
 		}
 		if (TryGetHeroTeleportTarget(hero, out Settlement target))
 		{
-			reason = "正在旅行至" + GetSettlementName(target);
+			reason = NobleGatheringTextProjection.RawFormat("Gathering_TravellingTo", ("SETTLEMENT", GetSettlementName(target)));
 			return false;
 		}
 		if (hero.IsTraveling)
 		{
-			reason = "正在旅行";
+			reason = DiplomacyCompatibilityTexts.Get("Gathering_Travelling");
 			return false;
 		}
 		if (ResolveHeroOriginSettlement(hero) == null)
 		{
-			reason = "找不到原始所在城";
+			reason = DiplomacyCompatibilityTexts.Get("Gathering_OriginMissing");
 			return false;
 		}
 		if (!CanHeroMoveToSettlement(hero, out reason))
@@ -5126,19 +5114,19 @@ public static string NormalizeNobleGatheringPostprocessTagsForExternal(string ra
 		reason = "";
 		if (governor == null)
 		{
-			reason = "宴会无法召开：当前对话对象不是有效总督。";
+			reason = DiplomacyCompatibilityTexts.Get("Gathering_CannotHostInvalidGovernor");
 			return false;
 		}
 		Town town = governor.GovernorOf;
 		if (town?.Settlement == null)
 		{
-			reason = "宴会无法召开：当前对话对象不是总督。";
+			reason = DiplomacyCompatibilityTexts.Get("Gathering_CannotHostNotGovernor");
 			return false;
 		}
 		settlement = town.Settlement;
 		if (settlement.OwnerClan != Clan.PlayerClan)
 		{
-			reason = "宴会无法召开：该总督管理的定居点不属于你的家族。";
+			reason = DiplomacyCompatibilityTexts.Get("Gathering_CannotHostGovernorOwnership");
 			return false;
 		}
 		return true;
@@ -5402,10 +5390,10 @@ public static string NormalizeNobleGatheringPostprocessTagsForExternal(string ra
 			.ToList();
 		if (heroes.Count == 0)
 		{
-			return "尚未选择宾客。";
+			return NobleGatheringUiText.NotSelected;
 		}
-		string names = string.Join("、", heroes.Take(12).Select(hero => GetHeroName(hero) + "（" + BuildGatheringHeroIdentityLabel(hero) + "）"));
-		return heroes.Count > 12 ? "已选：" + names + " 等 " + heroes.Count + " 人。" : "已选：" + names;
+		string names = string.Join(", ", heroes.Take(12).Select(hero => NobleGatheringTextProjection.ProjectForUi(GetHeroName(hero)) + " (" + BuildGatheringHeroIdentityLabel(hero) + ")"));
+		return NobleGatheringUiText.SelectedGuests(names, heroes.Count, heroes.Count > 12);
 	}
 
 	private void RecordGatheringStartedWeeklyMaterial(NobleGatheringRecord record)
@@ -5437,25 +5425,20 @@ public static string NormalizeNobleGatheringPostprocessTagsForExternal(string ra
 		}
 		List<string> notableGuests = acceptedGuests
 			.Where(IsWeeklyNotableNoble)
-			.Select(hero => GetHeroName(hero) + "（" + GetWeeklyNobleRole(hero) + "）")
+			.Select(hero => NobleGatheringTextProjection.RawFormat("Gathering_WeeklyNameRole", ("HERO", GetHeroName(hero)), ("ROLE", GetWeeklyNobleRole(hero))))
 			.Distinct(StringComparer.OrdinalIgnoreCase)
 			.Take(12)
 			.ToList();
 		StringBuilder snapshot = new StringBuilder();
-		snapshot.Append(GetHeroName(host))
-			.Append("（").Append(GetWeeklyNobleRole(host)).Append("）在")
-			.Append(GetSettlementName(settlement))
-			.Append("举办了一场贵族宴会，宴会计划持续")
-			.Append(GetRecordDurationDays(record))
-			.Append("天。");
+		snapshot.Append(NobleGatheringTextProjection.RawFormat("Gathering_WeeklyStart", ("HOST", GetHeroName(host)), ("ROLE", GetWeeklyNobleRole(host)), ("SETTLEMENT", GetSettlementName(settlement)), ("DAYS", GetRecordDurationDays(record))));
 		if (notableGuests.Count > 0)
 		{
-			snapshot.Append(" 已接受邀请的重要宾客包括：").Append(string.Join("、", notableGuests)).Append("。");
+			snapshot.Append(NobleGatheringTextProjection.RawFormat("Gathering_WeeklyGuests", ("GUESTS", string.Join(DiplomacyCompatibilityTexts.Get("Gathering_ListSeparator"), notableGuests))));
 		}
-		snapshot.Append(" 这是已经实际发出邀请并开始执行的宴会事件，不是未经证实的计划；尚未抵达的宾客只能写作接受邀请或准备赴宴。");
+		snapshot.Append(DiplomacyCompatibilityTexts.Get("Gathering_WeeklyStartDisclaimer"));
 		MyBehavior.RecordNobleGatheringWeeklyMaterialForExternal(
 			"noble_gathering:" + record.Id + ":started",
-			"贵族宴会举办 - " + GetHeroName(host),
+			NobleGatheringTextProjection.RawFormat("Gathering_WeeklyStartTitle", ("HERO", GetHeroName(host))),
 			snapshot.ToString(),
 			kingdom.StringId ?? "",
 			settlement.StringId ?? "",
@@ -5477,14 +5460,12 @@ public static string NormalizeNobleGatheringPostprocessTagsForExternal(string ra
 		{
 			return;
 		}
-		string snapshot = GetHeroName(attendee) + "（" + GetWeeklyNobleRole(attendee) + "）已经实际抵达"
-			+ GetSettlementName(settlement) + "，参加了" + GetHeroName(host) + "举办的贵族宴会。"
-			+ "这是一项已经发生的出席事实，可以写入本周王国纪事。";
+		string snapshot = NobleGatheringTextProjection.RawFormat("Gathering_WeeklyAttendance", ("HERO", GetHeroName(attendee)), ("ROLE", GetWeeklyNobleRole(attendee)), ("SETTLEMENT", GetSettlementName(settlement)), ("HOST", GetHeroName(host)));
 		bool includeInWorld = IsKingdomLeaderForWeeklyMaterial(host, kingdom)
 			|| IsKingdomLeaderForWeeklyMaterial(attendee, attendee.Clan?.Kingdom);
 		MyBehavior.RecordNobleGatheringWeeklyMaterialForExternal(
 			"noble_gathering:" + record.Id + ":attendance:" + (attendee.StringId ?? ""),
-			"重要贵族赴宴 - " + GetHeroName(attendee),
+			NobleGatheringTextProjection.RawFormat("Gathering_WeeklyAttendanceTitle", ("HERO", GetHeroName(attendee))),
 			snapshot,
 			kingdom.StringId ?? "",
 			settlement.StringId ?? "",
@@ -5501,11 +5482,10 @@ public static string NormalizeNobleGatheringPostprocessTagsForExternal(string ra
 		{
 			return;
 		}
-		string snapshot = GetHeroName(host) + "取消了自己在" + GetSettlementName(settlement) + "举办的贵族宴会，宾客已经散去。"
-			+ BuildEndReasonSuffix(reason);
+		string snapshot = NobleGatheringTextProjection.RawFormat("Gathering_WeeklyCancel", ("HOST", GetHeroName(host)), ("SETTLEMENT", GetSettlementName(settlement)), ("REASON", BuildEndReasonSuffix(reason)));
 		MyBehavior.RecordNobleGatheringWeeklyMaterialForExternal(
 			"noble_gathering:" + record.Id + ":cancelled",
-			"贵族宴会取消 - " + GetHeroName(host),
+			NobleGatheringTextProjection.RawFormat("Gathering_WeeklyCancelTitle", ("HERO", GetHeroName(host))),
 			snapshot,
 			kingdom.StringId ?? "",
 			settlement.StringId ?? "",
@@ -5527,13 +5507,13 @@ public static string NormalizeNobleGatheringPostprocessTagsForExternal(string ra
 	{
 		if (hero?.Clan?.Kingdom?.Leader == hero)
 		{
-			return "国王";
+			return DiplomacyCompatibilityTexts.Get("Gathering_RoleKing");
 		}
 		if (hero?.Clan?.Leader == hero || hero?.IsClanLeader == true)
 		{
-			return "家族族长";
+			return DiplomacyCompatibilityTexts.Get("Gathering_RoleClanLeader");
 		}
-		return "贵族";
+		return DiplomacyCompatibilityTexts.Get("Gathering_RoleNoble");
 	}
 
 	private static double NowDay()
@@ -5550,58 +5530,64 @@ public static string NormalizeNobleGatheringPostprocessTagsForExternal(string ra
 
 	private static string GetHeroName(Hero hero)
 	{
-		return hero?.Name?.ToString() ?? "未知贵族";
+		return hero?.Name?.ToString() ?? DiplomacyCompatibilityTexts.Get("Gathering_UnknownHero");
+	}
+
+	private static string GetHeroNameForPrompt(Hero hero)
+	{
+		return hero?.Name?.ToString() ?? DiplomacyMiscPromptTexts.GetRequired("Gathering_UnknownHero");
+	}
+
+	private static string GetSettlementNameForPrompt(Settlement settlement)
+	{
+		return settlement?.Name?.ToString() ?? DiplomacyMiscPromptTexts.GetRequired("Gathering_UnknownSettlement");
 	}
 
 	private static string BuildGatheringHeroIdentityLabel(Hero hero)
 	{
 		if (hero == null)
 		{
-			return "身份未知";
+			return NobleGatheringUiText.IdentityUnknown;
 		}
 		List<string> identities = new List<string>();
 		if (hero.GovernorOf != null)
 		{
-			identities.Add("总督");
+			identities.Add(NobleGatheringUiText.Governor);
 		}
 		if (hero.Clan?.Kingdom?.Leader == hero)
 		{
-			identities.Add("君主");
+			identities.Add(NobleGatheringUiText.Ruler);
 		}
 		if (hero.Clan?.Leader == hero || hero.IsClanLeader)
 		{
-			identities.Add("族长");
+			identities.Add(NobleGatheringUiText.ClanLeader);
 		}
 		if (hero.IsFemale)
 		{
-			identities.Add("女士");
+			identities.Add(NobleGatheringUiText.Lady);
 		}
 		if (identities.Count == 0)
 		{
-			identities.Add("领主");
+			identities.Add(NobleGatheringUiText.Lord);
 		}
-		return string.Join("、", identities);
+		return string.Join(NobleGatheringUiText.ListSeparator, identities);
 	}
 
 	private static string BuildGatheringHeroIdentityHint(Hero hero)
 	{
-		string hint = "身份：" + BuildGatheringHeroIdentityLabel(hero);
+		string identity = BuildGatheringHeroIdentityLabel(hero);
 		Settlement governedSettlement = hero?.GovernorOf?.Settlement;
-		if (governedSettlement != null)
-		{
-			hint += "\n管辖：" + GetSettlementName(governedSettlement);
-		}
-		return hint;
+		return NobleGatheringUiText.IdentityHint(identity, governedSettlement == null ? "" : GetSettlementName(governedSettlement));
 	}
 
 	private static string GetClanName(Clan clan)
 	{
-		return clan?.Name?.ToString() ?? "未知家族";
+		return clan?.Name?.ToString() ?? NobleGatheringUiText.UnknownClan;
 	}
 
 	private static string GetSettlementName(Settlement settlement)
 	{
-		return settlement?.Name?.ToString() ?? "未知定居点";
+		return settlement?.Name?.ToString() ?? NobleGatheringUiText.UnknownSettlement;
 	}
 
 	private static string BuildClanHint(Clan clan)
@@ -5621,7 +5607,7 @@ public static string NormalizeNobleGatheringPostprocessTagsForExternal(string ra
 		{
 			settlementTravel = 0;
 		}
-		return "成员 " + members + " 人；有独立部队 " + movable + " 人；可原版旅行赴宴 " + settlementTravel + " 人。";
+		return NobleGatheringUiText.ClanHint(members, movable, settlementTravel);
 	}
 
 	private static string BuildGatheringEndMessage(NobleGatheringRecord record, string reason)
@@ -5633,18 +5619,18 @@ public static string NormalizeNobleGatheringPostprocessTagsForExternal(string ra
 		if (record?.IsPlayerHosted == true)
 		{
 			return cancelled
-				? "宴会已取消：你在" + place + "举办的宴会已经散场。" + BuildEndReasonSuffix(reason)
-				: "宴会已结束：你在" + place + "举办的宴会已经散场。";
+				? NobleGatheringUiText.EndPlayerCancelled(place, NobleGatheringUiText.Reason(NobleGatheringTextProjection.ProjectForUi(reason)))
+				: NobleGatheringUiText.EndPlayerFinished(place);
 		}
 		return cancelled
-			? "宴会已取消：" + GetHeroName(host) + "在" + place + "举办的宴会已经散场。" + BuildEndReasonSuffix(reason)
-			: "宴会已结束：" + GetHeroName(host) + "在" + place + "举办的宴会已经散场。";
+			? NobleGatheringUiText.EndNpcCancelled(GetHeroName(host), place, NobleGatheringUiText.Reason(NobleGatheringTextProjection.ProjectForUi(reason)))
+			: NobleGatheringUiText.EndNpcFinished(GetHeroName(host), place);
 	}
 
 	private static string BuildEndReasonSuffix(string reason)
 	{
 		string text = (reason ?? "").Trim();
-		return string.IsNullOrWhiteSpace(text) ? "" : " 原因：" + text;
+		return string.IsNullOrWhiteSpace(text) ? "" : NobleGatheringTextProjection.RawFormat("Gathering_ReasonSuffix", ("REASON", text));
 	}
 
 	private static int GetRecordDurationDays(NobleGatheringRecord record)
@@ -5842,7 +5828,7 @@ public static string NormalizeNobleGatheringPostprocessTagsForExternal(string ra
 		}
 		try
 		{
-			InformationManager.DisplayMessage(new InformationMessage(text, color));
+			InformationManager.DisplayMessage(new InformationMessage(NobleGatheringTextProjection.ProjectForUi(text), color));
 		}
 		catch
 		{

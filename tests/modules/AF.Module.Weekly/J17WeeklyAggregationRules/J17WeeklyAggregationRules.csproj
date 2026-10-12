@@ -9,5 +9,10 @@
     <Compile Include="../../../../src/modules/AF.Module.Weekly/Materials/WeeklyMaterialAggregationOwner.cs" Link="WeeklyMaterialAggregationOwner.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Weekly/Materials/WeeklyPromptMaterialOwner.cs" Link="WeeklyPromptMaterialOwner.cs" />
     <Compile Include="../../../../src/modules/AF.Module.Weekly/Materials/WeeklyAggregateEventLineOwner.cs" Link="WeeklyAggregateEventLineOwner.cs" />
+    <Compile Include="../../../../src/modules/AF.Module.Weekly/Materials/WeeklyMaterialTexts.cs" Link="WeeklyMaterialTexts.cs" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <EmbeddedResource Include="../../../../content/modules/AF.Module.Weekly/ModuleData/WeeklyMaterialCompatibility.json" LogicalName="AnimusForge.Weekly.MaterialCompatibility.json" />
+    <Content Include="../../../../content/modules/AF.Module.Weekly/ModuleData/WeeklyMaterialPrompts.json" Link="prompt-fixtures/cn/ModuleData/WeeklyMaterialPrompts.json" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="../../../../content/modules/AF.Module.Weekly/ModuleData/WeeklyMaterialPrompts.en.json" Link="prompt-fixtures/en/ModuleData/WeeklyMaterialPrompts.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 </Project>

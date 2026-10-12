@@ -67,10 +67,10 @@ public static class PolicySystemUi
 		List<WorldEventCountryGroup> countries = BuildCountryGroups(events);
 		WorldEventInboxPopupData data = new WorldEventInboxPopupData
 		{
-			TitleText = "世界政策",
-			SubtitleText = "只读查看各国已经发布的玩家与非玩家统治者政策及政策衍生事件。",
-			EmptyStateText = "暂无世界事件。统治者政策与政策衍生事件会出现在这里。",
-			CloseText = "关闭"
+			TitleText = PolicyUiTexts.Get("AFPOL_UI_WorldPolicyTitle", "World Policies"),
+			SubtitleText = PolicyUiTexts.Get("AFPOL_UI_WorldPolicySubtitle", "Read-only view of player and non-player ruler policies and policy-derived events published by each kingdom."),
+			EmptyStateText = PolicyUiTexts.Get("AFPOL_UI_WorldPolicyEmpty", "No world events yet. Ruler policies and policy-derived events appear here."),
+			CloseText = PolicyUiTexts.Get("AFPOL_UI_Close", "Close")
 		};
 
 		foreach (WorldEventCountryGroup country in countries)
@@ -78,7 +78,7 @@ public static class PolicySystemUi
 			WorldEventCountryData countryData = new WorldEventCountryData
 			{
 				KingdomId = country.KingdomId ?? "",
-				KingdomName = FirstNonEmpty(country.KingdomName, "未知国家"),
+				KingdomName = FirstNonEmpty(country.KingdomName, PolicyUiTexts.Get("AFPOL_UI_UnknownKingdom", "Unknown Kingdom")),
 				UnreadCount = country.Events.Count(e => e != null && !e.IsRead)
 			};
 			foreach (AnimusForgeWorldEventInboxEntry entry in country.Events)
@@ -103,8 +103,8 @@ public static class PolicySystemUi
 		{
 			return null;
 		}
-		string kind = FirstNonEmpty(entry.KindLabel, "世界事件");
-		string date = FirstNonEmpty(entry.GameDate, entry.Day > 0 ? ("第" + entry.Day.ToString(CultureInfo.InvariantCulture) + "天") : "未知日期");
+		string kind = FirstNonEmpty(entry.KindLabel, PolicyUiTexts.Get("AFPOL_UI_WorldEvent", "World Event"));
+		string date = FirstNonEmpty(entry.GameDate, entry.Day > 0 ? PolicyUiTexts.Format("AFPOL_UI_Day", "Day {DAY}", "DAY", entry.Day.ToString(CultureInfo.InvariantCulture)) : PolicyUiTexts.Get("AFPOL_UI_UnknownDate", "Unknown Date"));
 		string title = FirstNonEmpty(entry.Title, kind);
 		string body = FirstNonEmpty(entry.DetailText, entry.Summary);
 		body = (body ?? "").Replace("\r\n", "\n").Replace("\r", "\n").Trim();
@@ -119,12 +119,12 @@ public static class PolicySystemUi
 			TitleText = title,
 			MetaText = meta,
 			PolicyNameText = "",
-			BodyText = string.IsNullOrWhiteSpace(body) ? "（无详情）" : body,
-			BodySectionTitleText = FirstNonEmpty(entry.BodySectionTitleText, "事件详情"),
+			BodyText = string.IsNullOrWhiteSpace(body) ? PolicyUiTexts.Get("AFPOL_UI_NoDetails", "(No details)") : body,
+			BodySectionTitleText = FirstNonEmpty(entry.BodySectionTitleText, PolicyUiTexts.Get("AFPOL_UI_EventDetails", "Event Details")),
 			ImpactSectionTitleText = entry.ImpactSectionTitleText ?? "",
 			ImpactText = impact,
 			IndexMetaText = date + "  ·  " + kind,
-			UnreadMarkerText = entry.IsRead ? "" : "新",
+			UnreadMarkerText = entry.IsRead ? "" : PolicyUiTexts.Get("AFPOL_UI_New", "New"),
 			IsUnread = !entry.IsRead,
 			HasPolicyName = false,
 			HasImpact = !string.IsNullOrWhiteSpace(impact)
@@ -157,7 +157,7 @@ public static class PolicySystemUi
 		string actor = FirstNonEmpty(entry?.ActorHeroName);
 		if (!string.IsNullOrWhiteSpace(actor))
 		{
-			parts.Add("相关人物：" + actor);
+			parts.Add(PolicyUiTexts.Format("AFPOL_UI_RelatedHero", "Related character: {NAME}", "NAME", actor));
 		}
 		return string.Join("  ·  ", parts);
 	}
@@ -191,7 +191,7 @@ public static class PolicySystemUi
 				continue;
 			}
 			string id = (entry.KingdomId ?? "").Trim();
-			string name = FirstNonEmpty(entry.KingdomName, "未知国家");
+			string name = FirstNonEmpty(entry.KingdomName, PolicyUiTexts.Get("AFPOL_UI_UnknownKingdom", "Unknown Kingdom"));
 			WorldEventCountryGroup group = AddOrGetCountryGroup(byId, groups, id, name);
 			group.Events.Add(entry);
 		}
@@ -215,7 +215,7 @@ public static class PolicySystemUi
 	private static WorldEventCountryGroup AddOrGetCountryGroup(Dictionary<string, WorldEventCountryGroup> byId, List<WorldEventCountryGroup> groups, string kingdomId, string kingdomName)
 	{
 		string id = (kingdomId ?? "").Trim();
-		string name = FirstNonEmpty(kingdomName, "未知国家");
+		string name = FirstNonEmpty(kingdomName, PolicyUiTexts.Get("AFPOL_UI_UnknownKingdom", "Unknown Kingdom"));
 		string key = string.IsNullOrWhiteSpace(id) ? ("name:" + name.Trim()) : id;
 		if (!byId.TryGetValue(key, out WorldEventCountryGroup group))
 		{
@@ -238,11 +238,11 @@ public static class PolicySystemUi
 	{
 		try
 		{
-			return (kingdom?.Name?.ToString() ?? "未知国家").Trim();
+			return (kingdom?.Name?.ToString() ?? PolicyUiTexts.Get("AFPOL_UI_UnknownKingdom", "Unknown Kingdom")).Trim();
 		}
 		catch
 		{
-			return "未知国家";
+			return PolicyUiTexts.Get("AFPOL_UI_UnknownKingdom", "Unknown Kingdom");
 		}
 	}
 

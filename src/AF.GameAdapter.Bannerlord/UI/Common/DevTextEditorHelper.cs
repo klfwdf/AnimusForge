@@ -1,14 +1,17 @@
 using System;
 using TaleWorlds.Core;
 using TaleWorlds.Library;
+using TaleWorlds.Localization;
 using TaleWorlds.ScreenSystem;
 
 namespace AnimusForge;
 
 public static class DevTextEditorHelper
 {
-	public static void ShowLongTextEditor(string titleText, string subtitleText, string inputHintText, string initialText, Action<string> onSave, Action onCancel, string saveText = "保存", string cancelText = "返回")
+	public static void ShowLongTextEditor(string titleText, string subtitleText, string inputHintText, string initialText, Action<string> onSave, Action onCancel, string saveText = null, string cancelText = null)
 	{
+		saveText = saveText ?? new TextObject("{=AF_UI_Common_Save}Save").ToString();
+		cancelText = cancelText ?? new TextObject("{=AF_UI_Common_Back}Back").ToString();
 		string safeInitialText = AnimusForgeTextInputSanitizer.SanitizeMultiline(initialText, AnimusForgeTextInputSanitizer.MaxLongEditorChars);
 		Action<string> safeOnSave = delegate(string text)
 		{
@@ -24,13 +27,15 @@ public static class DevTextEditorHelper
     // Owned nested editors expose cancellation to their host. The ordinary inquiry fallback remains unchanged above.
     public static IDisposable ShowOwnedLongTextEditor(string titleText, string subtitleText, string inputHintText,
         string initialText, Action<string> onSave, Action onCancel, ScreenLayer inputOwner, Func<bool> isInputOwnerAlive,
-        string saveText = "保存", string cancelText = "返回")
+        string saveText = null, string cancelText = null)
     {
+        saveText = saveText ?? new TextObject("{=AF_UI_Common_Save}Save").ToString();
+        cancelText = cancelText ?? new TextObject("{=AF_UI_Common_Back}Back").ToString();
         string initial = AnimusForgeTextInputSanitizer.SanitizeMultiline(initialText, AnimusForgeTextInputSanitizer.MaxLongEditorChars);
         Action<string> save = text => onSave?.Invoke(AnimusForgeTextInputSanitizer.SanitizeMultiline(text, AnimusForgeTextInputSanitizer.MaxLongEditorChars));
         if (DevHistoryEditPopup.TryShowOwned(titleText, subtitleText, initial, initial, save, onCancel,
             inputHintText, saveText, cancelText, inputOwner, isInputOwnerAlive, onCancel, out var session)) return session;
-        throw new InvalidOperationException("文本编辑器未能打开，请关闭后重试。");
+        throw new InvalidOperationException(new TextObject("{=AF_UI_Editor_OpenFailed}The text editor could not be opened. Close it and try again.").ToString());
     }
 
 	private static string BuildFallbackDescription(string subtitleText, string inputHintText)

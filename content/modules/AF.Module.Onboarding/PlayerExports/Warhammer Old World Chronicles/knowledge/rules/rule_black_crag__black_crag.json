@@ -1,0 +1,212 @@
+{
+  "Id": "rule_black_crag",
+  "Keywords": [
+    "Black Crag",
+    "Greenskin Stronghold",
+    "Former Dwarf Hold",
+    "Waaagh! Staging Ground",
+    "Fortress of the Badlands",
+    "Karak Eight Peaks",
+    "Karak Drazh",
+    "Orc Capital",
+    "Black Crag Badlands",
+    "Gorbad Ironclaw",
+    "Greenskin Throne"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Black Crag is the largest and most notorious Greenskin stronghold in the Badlands; originally the mighty Dwarf hold of Karak Drazh, after being stormed and captured by Orc Warlords—and later made famous as the seat of Gorbad Ironclaw—it became the supreme staging hub of Greenskin military might. Looking out from its black-smoke-belching towers, countless Waaagh!s have mustered their hordes here before sweeping out across every corner of the Old World."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Black Crag! That's the 'ardest turf we Greenskins got! Used to be a stone shell built by the stunties—and truth be told, the stunties knew how to build stuff, those walls are so thick even Gork and Mork would click their tongues at 'em—but once our Warbosses and Boss Ironclaw led all the boyz of the Badlands charging in to chop every last stunty to bits, the place belonged to us! Black Crag is dead massive inside; nobody can count how many boyz are packed into those bottomless underground halls. Every time some Warboss wants to kick off a proper Waaagh!, he's gotta go to Black Crag first and bellow at the top of his lungs—whoever can roar the most Greenskin boyz out of those pitch-black halls to follow him is the new Big Boss. Best of all is the Iron Throne up on top of the keep—when the Boss sits up there and looks down, all the Greenskins in the Badlands arehollering and clattering beneath his boots, a sight that gets any Greenskin boy so worked up he'd bite his own front teeth in half!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "In military geography, the position of Black Crag is irreplaceable. Sitting at the junction of the Badlands and Death Pass, it commands the sole route passable by a grand army leading from the eastern wastes into the heartland of the Old World. Any attempt to clear out Black Crag by force of arms faces a threefold dilemma: first, the Badlands themselves are a natural defense—lack of water, scorching sun, and the threat of giant scorpions make supply lines a nightmare to maintain; second, the subterranean tunnel network beneath Black Crag (the former Dwarf mine-workings) stretches for hundreds of miles, allowing Greenskins to sally forth from any direction at any moment; third, the instant you lay siege to Black Crag, every Greenskin tribe across the Badlands will regard your army as 'the best scrap around' and come pouring in from all directions to join the defenders. The proper strategy for dealing with Black Crag is not to besiege it, but to use rapid strikes to sever the approaches leading from it to your domain, and then accept its existence as a permanent bad neighbor."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "The archaeological stratigraphy of Black Crag reveals a complex history expurgated from Dwarf chronicles. During the Dwarf Golden Age, Karak Drazh (Black Crag) was founded around -4100 IC by the Dwarf King Logan Ironbeard as a satellite fortress and ore-refining center for Karak Eight Peaks. During the 'Time of Woes' around -1500 IC, Karak Drazh bore the brunt of the great Greenskin migrations and was besieged; surviving Dwarf inscriptions record that 'Karak Drazh fell on the thirteenth day of deep winter in the year -1498 IC,' yet bone-age dating from mixed human-and-Dwarf mass graves discovered in recent years on the outskirts of Black Crag by archaeological teams from the Border Princes indicates that resistance at Black Crag may have persisted until roughly -1460 IC—Dwarf histories moved the date of the fall forward by nearly forty years, likely to lessen the culpability of the Dwarf High King for failing to send relief forces. Between -15 IC and -12 IC (and culminating in his great invasion of 1707 IC), Gorbad Ironclaw—the greatest Orc Warboss of all time—utterly destroyed all settlements around Black Crag and established a dynastic-style Greenskin hegemony atop the ruins of the hold, an institutional pattern that has endured for millennia down to the present day. According to estimates derived from ancient Dwarf engineering blueprints, the total length of the subterranean tunnels beneath Black Crag is approximately four hundred and eighty miles, roughly sixty percent of which remains unexplored by any living creature other than Greenskins."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Black Crag makes me ponder an unsettling question: can one remain in a single place for too long? The Orcs have been rooted in Black Crag for millennia, longer than the history of any castle belonging to my house. That lava-colored black tower stands upon the horizon like a lidless eye, watching the Old World day and night. It is said that from the top of the towers of the Colleges of Magic in Altdorf, using the most powerful far-seeing glass on the clearest winter morning, one can glimpse the spire of Black Crag—I do not know whether that is true, but I hope it is not."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "In my family tree there is an ancestor who, around 1700 IC, led a joint Dwarf-and-human expeditionary force to retake Black Crag. They fought their way to the outer walls of Black Crag and set up battering rams against the ramparts. And then the Orcs threw open the gates—not to surrender, but because such a vast multitude of Greenskins surged forth from within the hold that it looked like ants erupting from a breached nest. Within eleven days, my ancestor's army went from besiegers to the hunted; when the remnants limped back into the Border Princes, barely two-tenths of those who had set out remained. Their battle standard still hangs upon the walls of Black Crag to this day, used by the Orcs as a pissing-post."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Accompanying a squad of scouts from the Border Princes, I gazed upon Black Crag from afar once—just once, and I never wish to go a second time. Across the shelterless wastes of the Badlands, you can feel its presence from thirty miles away: the air carries a foul stench of charring meat mixed with rust, and that never-fading pillar of black smoke on the horizon dyes the sky a dark crimson. Our captain said that smoke rises from the Greenskins burning Dwarf slag-heaps for furnace fires, and that it has burned unbroken for two hundred years. No sooner had we taken our look than we pulled back, because in the distance a patrol of Black Orc boar-riders had wheeled around and was heading in our direction."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Black Crag causes the cost of caravan routes skirting the Badlands to climb higher every year. There are two trade routes passing around the Badlands: the northern route hugging the Worlds Edge Mountains from Barak Varr, and the southern route detouring from the port city of Myrmidens along the coast of Araby. No legitimate merchant caravan dares cut straight across the heart of the Badlands—the Greenskins of Black Crag can muster five thousand light Goblin Wolf Riders within three hours and swallow your goods and your men whole without leaving a bone behind. The insurance contracts I broker are written with particular specificity on this point: Article Five, Clause Thirteen, 'No indemnity shall be paid for any cargo lost within a radius of one hundred and fifty miles of Black Crag.'"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Originally the Dwarf hold of Karak Drazh, after falling to the Greenskins in -1498 IC it became the greatest Orc stronghold",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Geographical Location and Strategic Significance of Black Crag"
+  ]
+}

@@ -1,0 +1,213 @@
+{
+  "Id": "rule_Woodland_Guard",
+  "Keywords": [
+    "woodland guard",
+    "Wood Elf Main Force",
+    "Holy Longbow",
+    "forest defense line",
+    "Green Leaf Armor",
+    "Elf Archer",
+    "longbow sharpshooter",
+    "Athel Loren Archer",
+    "Arrows like rain",
+    "Archery Master",
+    "forest warrior",
+    "Feather Archer"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Woodland Guards are the main force of the Wood Elf Kingdom. They hold sacred longbows and wear emerald green armor. They have guarded the borders of Athel Loren for generations, and use their extremely accurate archery to kill all enemies who dare to invade the forest."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Every arrow fired by the Woodland Guard has been blessed by the Spellcaster, and when fired, it seeks for gaps in the enemy's armor, as if it has a will of its own. We learn from an early age how to listen to the whispers of the forest—the wind tells us where our enemies are, the leaves tell us where arrows are headed. Beyond Athel Loren, the woodland guards' archery skills are feared, and it is said that they can shoot a bird in the eye from three hundred paces away. When the horn blows, the entire woodland guard will release arrows at the same time, and the arrows will cover the sky and the sun, like death falling from the sky."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Glade Guard is the backbone of your army. When deploying, place the archers on high ground along the tree line and use natural bunkers to create crossfire. Don't let them get into melee combat - while the Elves are equally skilled with their one-handed swords, the Glade Guard's true value lies in ranged suppression. It works best with Dryads: Dryads take the impact in the front row, and Woodland Guards continue to deal damage in the rear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "Historical records show that the number of forest guards never exceeded 10,000, but their combat effectiveness was enough to frighten enemy troops several times their own size. Military scholar \"Iron Mask\" Balder recorded in his \"History of War in the Old World\" that in the \"Battle of Red Flame\", only 800 forest guards repelled 5,000 orc invaders. The \"Star formation\" used by the woodland guards is a unique dispersed shooting tactic - the archers do not form a dense formation, but are scattered in the forest to fight individually, using natural bunkers to conduct guerrilla shooting. This tactic was later borrowed by the Empire's hunters, forming the combat style of the Empire's \"Silver Bullet\" marksman regiment."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "I have many sisters who serve alongside me in the Glade Guard. They proved that elven women are also the deadliest archers on the battlefield, and that archery is gender-neutral, only a matter of talent and training."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Each clan is obliged to send its best archers to the Woodland Guard. This is a proud tradition of the clan, and it is a sign of your duty to Athel Loren. Remember, a well-trained unit of woodland guards is worth ten times the number of ragtag men."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "You have witnessed firsthand the terror of the Glade Guard. They seemed to blend in with the forest - one moment it was an empty forest glade, the next moment arrows were raining down from the sky."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Wardens of the Wood are not only warriors, but defenders of the Wood Elf traditions. Each forest guard must pass a rigorous trial to prove their loyalty to the forest before receiving a longbow. Their longbows are passed down from generation to generation, and the bows are engraved with the achievements of their ancestors."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Woodland Guard - The main archer force of the wood elves, the backbone of Athel Loren's defense.",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Woodland Guard Wood Elf Main Holy Longbow"
+  ]
+}

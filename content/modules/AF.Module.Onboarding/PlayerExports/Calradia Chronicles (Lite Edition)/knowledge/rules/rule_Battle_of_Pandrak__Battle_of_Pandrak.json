@@ -1,0 +1,632 @@
+{
+  "Id": "rule_Battle_of_Pandrak",
+  "Keywords": [
+    "Battle of Pandrak"
+  ],
+  "RagShortTexts": [
+    "Arenicos was left idle by Drosius at the Battle of Pandrak, but he broke through to save his blood after the war.",
+    "Galius claimed that Drosius used the Battanians to ambush him at Pandrak",
+    "Vlandia assists Sturgia at Pandrak in besieging Drosius's army"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "clan_empire_south_1"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "hero:lord_1_14"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "PANDRAK. Arenicos never said those words much. When he was alive, every year on the anniversary of the battle, he would sit alone in his study and no one would be allowed in. I have been married to him for so many years and I have never broken this rule. I knew he wasn't crying or drinking inside. He was just thinking about the people he couldn't bring back. He was left idle in the tent by Drosius at Pandrak, without giving him a single soldier, and watched helplessly as the emperor lined up his troops in a line and walked into the ambush circle. Then he gathered the remaining soldiers to break out after the war and saved the flesh and blood of the empire. Others say that he is Pandrak's hero, and he shakes his head every time he hears this statement. He said that breaking out is not victory, but coming back alive to collect the corpses. Now Arenikos is gone too. Pandrak's debt is still accruing interest - the empire is split into three pieces, and my Ila hasn't grown up yet. Garius is in the west remembering the vengeance of Drosius, Lucon is in the north talking about the old rules of the Senate, and I am holding on to the last piece of land that can still be called an empire in the south. The source of all this is that battle. The heads of the Neretse family fell to the ground on Pandrak, and the spine of the empire was broken there."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "clan_empire_north_3"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "hero:lord_1_5"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "My father died in Pandrak. I killed old Olek, I fought off the Vlandians, I held the siege of Langward for a long time, and then I watched the imperial camp burn to ashes, and my father's body was hung on the flagpole by the Sturgians. I did everything I could do, and I did everything I couldn't. Then what? The empire is still broken. After the war I retired to Sanneopa and served as a vassal to Lucon. The senators of the Northern Empire initially looked at me as if I were a walking bad luck person, but later they gradually accepted me because I was neither noisy nor fussy in the Senate and kept my word. But I know that I am not a veteran, I am just a dead person who is still alive."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "clan_empire_west_1"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "hero:lord_1_7"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "He wanted me to die in the jungle of Pandrak. Drosius Nereitses, my emperor, my commander-in-chief, had received information about the ambush, which he would not give to me. He wanted to shoot me dead in the woods of Ukarion with the arrows of the Battanians. I put on makeup and ran away. It was the most humiliating day of my life. After the war, I gathered the veterans and followed Arenicos to break out - God knows that I loved Arenicos, and from then on, I served him to the death. From then on, I never believed the nonsense of the Senate and the Emperor. I believe in the barracks, the veterans, the coach who promoted me, and the sword in my hand. Delosius wanted me dead, I survived, he died, his family collapsed, and I became emperor."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "clan_empire_north_1"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "hero:lord_1_1"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Pandrak is the most ridiculous sight I have ever seen in my life. An emperor who was familiar with the art of war lined up his troops into the dense forest; an experienced veteran Arenicos was left idle in the camp; a civilian official—that is, me—was inserted into the chain of command as a staff officer. Only later did I fully understand Delosius's intentions: he wanted to gild Peng Tong, use the enemy's hands to get rid of Gallius, and wanted me, a civil servant, to share a share of the military merits, so as to balance the situation in the court after the war. He treated the entire Imperial army like a chess game, with his family's name engraved on the chess pieces. As a result, the chessboard flipped. After the war, I gathered the remaining soldiers and saved the last bit of flesh and blood of the empire. Now I am guarding the Senate in the north, and I just want the real empire to live a few more years."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": [
+          "clan_vlandia_1"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "hero:lord_4_1"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "He called me a coward. I still remember the wording of that letter. I'm not a coward, I just don't want Vlandia to die for the Empire. He scolded me, so I led my troops and beat him. On the battlefield of Pandrak, Vlandia's crossbowmen and banner knights were one of the main forces of the Northern Army. We defeated the Kugitsulun, entangled Nimr's Salamanders, and gave the Sturgians time to surround Drosius. The battle was fierce. My barons charged too hard and suffered heavy losses. But Delosius was dead, the empire was in tatters, and the pressure on Vlandia's frontiers was lightened. He turned his allies into enemies in a letter, and then buried his head and his empire together. I thought about it for a long time later. If he had not written that letter at that time, would I have fulfilled my contract and helped him? Maybe it will, maybe it won't. But history has no possibility. He scolded me and I beat him. He died while I was still alive."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": [
+          "clan_sturgia_2"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "hero:lord_2_3"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Pandrak is the place where my father died in battle, and where he personally chopped off the Emperor's head. In that battle, Sturgia lost two of its best commanders - Grand Duke Vadinslav died in the siege of the city, and my father was killed by Peng Tong's armored cavalry when he was cutting off the rear. Afterward, Grand Duke Langward said that Olek died honorably. But both Siga and I knew that was not the truth: my father was left behind to break up the throne because the troops Langvald gave him were too few and not enough. I don't hate Peng Tong - he killed my father with dignity on the battlefield, and I give him this respect. What I hate is Langward, and our family is still settling this bloody debt."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": [
+          "clan_sturgia_1"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "hero:lord_2_1"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Pandrak was a victory for Sturgia and a personal stain on me. The victory is that we cut off the emperor's head so that those southerners never dare to look at the snowy fields of the north again. The stain is the death of his father. My father Vadinslav was our strongest battering ram. He personally led the charge against Drosius's camp and finally fell on the city walls. He is a hero. But the death of old Olek was planned by me - he dared to humiliate me in front of everyone, break the dragon flag, and make Gondar's descendants lose face. I asked him to lead a partial division to chase the defeated troops. As expected, he was blocked by Peng Tong's armored cavalry. The reinforcements I sent were half a step too late, and the old guy (old Olek) was stabbed to the core. This is what the Kulov family deserves. I won. With the Emperor's head on the ground, Sturgia no longer has to worry about threats from the south for decades. This credit belongs to me and no one can erase it."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": [
+          "clan_battania_1"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "hero:lord_5_1"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Pandrak is the ax that I personally cut into the heart of the empire. The Fianna warriors of Battania lurked in the dense forest and shot the Imperial Shield Troopers into hedgehogs, which was the first death knell of the entire battle. After that, we took advantage of the chaos and broke into the flank of the Imperial Army, cutting off many heads and filling many wine bowls. After the war, everyone said that the Northern Alliance had won, and that Battania had received its fair share of glory. But there is an account in my heart that I have not told outsiders: after our Fianna warriors exposed their position in the dense forest, the Empire's javelin fired a volley and killed a dozen of our most elite champions. Each of those dozen people was a legend on the Fiona field, and they died under the javelin. Drosius died, the empire fell apart, and Battania retained its mountains and forests. But I lost a lot of champions in Fiona. Is this deal worth it? I say it's worth it."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": [
+          "clan_battania_3"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "hero:lord_5_5"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Pandrak is our victory and our Battania's scar. I am Earl Meridir, and I will follow this battle from beginning to end. Caladog says it’s worth it, I say it’s not. We ambushed the imperial forward in the dense forest, and the arrows from the Fianna warriors really shot the shield soldiers into sieves. That was the first breakthrough in the entire battle. But after the war all we were given was a few nice words and a border that looked exactly the same as before. Drosius was dead, the empire was torn apart, and the Northern League had won. What happens after you win? Battania was still the same Battania, the chiefs went about their own business, and the High King's orders turned into suggestions in the next valley. Caladog was short-sighted in thinking that cutting off the Imperial Emperor's head would make Battania the master of the north. The ones who really took advantage were Sturgia and Vlandia - Sturgia relieved the threat to the south for decades, and Vlandia took the opportunity to weaken the western front of the empire. What did Battania get? Glory and casualties. The glory is false, but the casualties are real. We already have a small population, and one less Fiona champion died. In this battle, we won the battle and lost the future."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": [
+          "clan_khuzait_2"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "hero:lord_6_4"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Pandrak took my husband away. Suilun led the Kugit cavalry archers to open the way in front, but was attacked by the Vlandia flag knights and crossbowmen. After shooting two pots of arrows, he pulled out the moon sword and rushed into the enemy formation, and died on horseback. After the war, someone told me that the order given to him by Delosius was to \"open a road in front\", with no reinforcements and no retreat. He died for the stupidity of that damn emperor. I hate the Vlandia people, they killed my husband. But I hate Drosius Nereitses even more. His head was chopped off by a Sturgia, and my only regret is that it wasn't a Kugit. Now the men of the Kukit tribe are still recovering their strength, and the Achit tribe took advantage of our weakness to occupy Otungard. I'll keep this account in mind, and I'll have to settle it with Archit sooner or later. Pandrak's debt has not yet been paid."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": [
+          "clan_khuzait_3"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "hero:lord_6_5"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "When Pandrak started fighting, I didn't participate in the battle. It’s not that I don’t want to, it’s that the time is not right. The Archite tribe has just recovered its strength and cannot be wasted on the distant battlefield. Later, I heard about the situation of the battle: Kujit Suirun was killed in the battle, Drosius of the Empire was beheaded, and the Northern Alliance suffered a tragic victory. I knew I made the right bet. The Kugit men were almost all gone, and Otungard was empty. We took advantage of the situation and captured it in one fell swoop. Pandrak is not a battlefield for our Archite tribe, but an opportunity. I feel sorry for Suilun when he dies, but the weakness of the Kugit tribe is a God-given opportunity for us to turn around. The rules on the grassland are that the weak give way and the strong occupy the city. I am not Derosius, and I will not line up my armies to die. I won Otungard not by force, but by patience and vision."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": [
+          "clan_aserai_1"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "hero:lord_3_1"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Pandrak is the grave dug by the Empire for itself. We Aserai didn't get involved in that battle - it was separated by a sea and a whole desert, so there was no need to go. But Nimr Banu Saran brought a group of Saran soldiers to fight for the empire, and I neither stopped him nor encouraged him. The Salan people have just returned from the desert and need to earn some military merit outside. This is their freedom. After the war, Nimr came back with the remaining soldiers. He did not say any heroic words, but said that Suilun died miserably and that Vlandia was a powerful crossbowman. I heard a lesson from his words: Don't fight for the empire. The empire's own emperor can trick his own army to death, and it's not worth sacrificing his life for them. Now that the empire is split into three pieces, Aserai is relieved. After the empire was divided, we were no longer able to continuously exert influence southward as before. Our trade routes were freer, and tribal disputes had less external interference. Delosius was dead, and it was trouble for the Aserai when he was alive."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": [
+          "clan_aserai_3"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "hero:lord_3_5"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Pandrak? We, Gillard, didn’t go. Nimr Banu Saran brought a group of light infantry to work for the empire, but when he came back there were half fewer people. I asked Nimr if it was worth it. He didn't say anything, but I knew the answer. The Empire is not worth their blood. That idiot Delosius lined up his troops and walked into an ambush. This kind of emperor deserved death. But I have to admit, Pendrach split the empire into three pieces, which was a good thing for us Aserai. The Southern Empire is now huddled in Lycaron and does not dare to go south easily; the Northern Empire and the Western Empire are restraining each other and have no time to care about things in the desert. We, Gilad, advocate that the Aserai should have stronger military strength, and Pendrac's lesson can be used as an argument: don't count on allies, don't count on the emperor, count on your own swords and horses."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": [
+          "clan_aserai_2"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "hero:lord_3_3"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Pandrak is the first battle for our Saran race to stand up again. Nimr Banu Salan led the Salan soldiers to fight for the empire, but many people said he should not go. I understand why he went - Saran was driven into the desert for a hundred years, and he just came back and needed to prove that he could still fight and stand under the banner of the Empire. He did not do badly at Pandrak. After Suilun died in battle and Peng Tong came to the rescue, Nimr stabilized his position and withdrew with the remaining troops. The Emperor of the Empire is dead, and that is none of our business. The Salan soldiers did not collapse on the battlefield, which in itself is recognition of our ethnic group that has been expelled for hundreds of years. Now we have a place in the Aserai's royal council, not by anyone's gift, but by the reputation we paid for with our blood on the battlefield of Pandrak."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": [
+          "clan_khuzait_1"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "hero:lord_6_1"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Pandrak? Kujit Suilun died in that forest, and the emperor's head was chopped off. Suilun fought for me, but he did not die for me. He died for that idiot Drosius. I have heard reports of the battle, saying that Drosius arranged his army in a line, the vanguard was ambushed in the dense forest, and the rear guard was still wandering on the plain. What kind of bullshit march is this? Any three-year-old child on the prairie knows not to lead a team of horses into a canyon. I don't blame the Vlandia people for Suilun's death. On the battlefield, swords have no eyes, and anyone can kill anyone based on their ability. But Delosius put the Kukit cavalry at the front to clear the way. There were no reinforcements, no retreat, and even the ambush information was suppressed and not given to the forwards. This is not war, this is murder. After the war, the empire split into three parts. The Southern Empire and the Northern Empire controlled Silonia and Amplera respectively, facing us across Lake Tanesis. Our cavalry no longer needed to face the huge imperial legions in these two outpost battles. Pandrak got rid of Drosius for me, and he paid the price for his own stupidity."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": [
+          "clan_vlandia_3"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "hero:lord_4_5",
+          "hero:lord_4_6"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Pandrak is the most frustrating battle I have ever fought in my life. King Detail's plan was all right - the crossbowmen held the line, the knights of the square charged the flanks, and the infantry center advanced steadily. But the barons paid no attention to his arrangements. Because Catal charged too hard and took the knights too deep, Peng Tong's armored cavalry counterattacked and killed many people. Aldric stood still in the north, claiming to be covering the flanks, but in fact he was unwilling to let the king take command. Our crossbowmen did suppress the Kukit cavalry archers, and Suilun died under our crossbows, but our crossbowmen were then rushed to pieces by the armored cavalry. The victory of this battle depended on our crossbowmen, not those knights. But after the war, Ingatell continued to accuse the king of being weak, as if the heavy losses were all the king's fault, and they themselves had no responsibility at all for fighting indiscriminately. Pandrak made me fully understand the biggest weakness of Vlandia's army: not the equipment, not the morale, but the fact that the barons simply did not listen to the king. Detel realized the truth that \"a king can only lead\", at the cost of casualties throughout the battle."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": [
+          "clan_vlandia_4"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "hero:lord_4_16"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Pandlak was the most exciting day of rushing in my life, and it was also the last day that I was afraid of. We Banner Knights flattened the Aserai light infantry - those desert sheep were trampled under the hooves of our horses until they even cried. Then we ran into Kujit horse archers. Those flies on the grassland were also good at riding and shooting. They shot us in circles, but we had crossbowmen to hold the line, and they were shot to death on horseback. It's a pity that Detail is unmanly. If I were sitting on the throne, Pendrac would directly march south and eat up all the land in the western part of the empire. But what was Detail thinking about \"betraying the oath to the empire\" - Bah, the damn emperor of the empire called us cowards and traitors, and you are still feeling guilty for him. But I have to admit that Peng Tong's armored cavalry did have a few blows. The backlash broke up our knight's formation and lost many soldiers and horses. If it weren't for my personal soldiers who fought to protect me, I almost fell into Pandlak. I still scolded Detel after the war, but that didn't stop me from being satisfied with my performance in that battle."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Pandrak is the four words that our imperial nobles dare not mention at banquets. When I mentioned it, some people fell silent, some people left the table, and some people started to curse. Drosius Neretses, we once supported him, he conquered the great void, he was familiar with the art of war, he was skillful in pommeling a horse. How could he make such a mistake as a long snake formation? After the war, the truth slowly emerged: he suppressed the ambush information and refused to give it to the forward Gallius, because Gallius's achievements were so great that he shocked the master. He wanted to use the hands of his enemies to cleanse himself of dissidents, but ended up burying his head along with the spine of the empire. Now that the empire is split into three pieces, those of us in the Senate talk about unification, but we know in our hearts that no one can unify in the short term. Pandrak smashed the iron plate of the Empire into pieces. No matter how hard we work together, the cracks will always remain."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "char:bucellarii",
+          "char:empire_marine_t4",
+          "char:empire_marine_t5",
+          "char:imperial_cataphract",
+          "char:imperial_crossbowman",
+          "char:imperial_elite_cataphract",
+          "char:imperial_legionary",
+          "char:imperial_menavliaton",
+          "char:imperial_palatine_guard",
+          "char:imperial_sergeant_crossbowman"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "I survived Pandrak. We were the vanguard. When we walked into the dense forest, I told the brother next to me that the forest was so dense that the sky was covering us, so it didn’t look like a good sign. Then arrows came from behind the trees - like a heavy rain, the shield soldiers fell down row after row. General Galios ordered a retreat, and I was swept back by the defeated troops. I ran for who knows how long. When I stopped, I was surrounded by dead people, and the few who were alive didn't know where they were. Later I learned that the emperor had arranged his troops in a line, and was surrounded by tents and beheaded. We were ambushed in the front, he died in the back, and no one in the middle could save the other. Who decided on that marching route? That man should be nailed to the pillar of shame."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Pandrak is the most cost-effective battle we have in Vlandia in modern times. King Detel was scolded as a coward by Drosius. We barons didn't want to work for the empire in the first place, and that letter just gave us the reason to turn our guns. We faced Kugit Suilun and Nimr on the battlefield. The charge of the banner knights and the volley of the crossbowmen cooperated well. Suilun died under the crossbow and Nimr withdrew. Our losses were also heavy because Catal charged too deep and was counterattacked by Peng Tong's armored cavalry, which resulted in the loss of many men. But in the final analysis, we made a profit. The empire is broken. Although the Western Empire borders us, the empire's legions are no longer the same size as before, and the pressure is much less than before. With one letter, Drosius turned an ally into an enemy, and we settled the bill for him."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Pandrak? It is the king who leads the troops to fight against the emperor. There were more than a dozen crossbowmen from our village, but only half of them came back, and nine of them died. The family of the deceased received a pension, which was not much, but compared to the empire where ten people went out and one or two came back, we were lucky. I heard that the king was hesitant to help the empire at first, but the emperor named Nereitses wrote a letter calling us cowards and traitors. When the king was angry, he led his troops to join the north. You also have to look at the target when you scold someone. If you call Vlandia a coward, the price will be that his head is gone."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Nereits? That damn emperor. Of the dozen or so people from the village who went together, only two came back. Later, I heard from the soldiers who had returned that the emperor had arranged his people in a long line. There was fighting in front, and they were still walking on the road behind. There was an ambush in the dense forest, and the general in front didn't even receive a message. What kind of emperor is this? My grandma still spits whenever she mentions this name. He just died and took so many of us to be buried with him."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Pandrak is our Sturgia's glory and our scar. Grand Duke Vadinslav died in the battle at the head of Drosius's camp, and old Olek was killed by Peng Tong when he was cutting off the rear. Two of the toughest Boyes died in a battle, in exchange for the head of an imperial emperor and a divided empire. No matter how this account is calculated, some people think it is a loss, while others think it is worth it. But no matter what, from then on the empire never had the ability to make the Northern Expedition. Once the pressure in the south is relieved, we Sturgia can breathe freely in the north. The tombstones of Vadinslav and Olek are still standing in that forest. Every year when the snow melts, we will send people to take a look."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "There were people from every household in our northern territory who went to Pandlak's battle. Grand Duke Vadinslav and old Olekpoye both died there, and even the emperor's head was chopped off by us. It sounds like they won, but the price was too high - more than half of the Boyers' heavy infantry were lost, and many young men followed the Archduke in the charge and never came back. Now some villages in the north don't even have enough labor for spring plowing. The empire has split into three pieces and won't attack us anymore, which is a good thing. But after thinking about it over and over again, I still feel sorry for those young men who died outside."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "In the battle of Pandrak, our Fiona warriors from Battania shot many Imperial soldiers to death in the woods. The elders said that the battle was fought beautifully - first the imperial men were released into the dense forest, and then thousands of arrows were fired. The empire was indeed frightened by us, and from then on it never dared to enter the mountains easily again."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Pandrak is our battle in Battania. The Imperials entered our woods and never came out again. The arrows of the Fiona warriors shot out from behind the trees, the shield soldiers fell in rows, and Garius made up his makeup and fled. The Emperor's head was beheaded by the Sturgians. Although we Battanians did not behead the head ourselves, we were the first to cut off the head in the whole battle. But after the war, I have to admit that Earl Meridir was right, we lost many top Fianna champions. Battania originally had few people, and the Fiona champions were even less powerful. Caladog's fighting style was indeed too fierce."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Pandrak? It was a big battle between the empire and the northerners. Only part of our Khuzait people went there - Suilun of the Kugit tribe brought some cavalry archers to fight for the empire. As a result, Suilun died there and not many people came back. We people on the grasslands don’t know much about things in the empire. We only know that the emperor named Neretses lined up people in a line and was chopped off one by one. This is too stupid. Even a three-year-old child on the grassland knows not to pull the horse team into the canyon in a single string."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Pandrak is a lesson given to Khuzait by the Empire. Kugitsulun was killed in battle, Drosius was beheaded, and the empire was split into three pieces. We learned two things from this: first, don’t sacrifice your life for the empire, the empire’s own emperor can trick his own army to death; second, the long snake formation is courting death. Now the southern empire is shrinking in Lycaron, and the northern empire is in Diatema. One is guarding Silonia and the other is guarding Amplera. The two outposts against the steppe cavalry are controlled by two fragments of the empire. The pressure of the attack is not small. But we are not in a hurry to fight. The empire is broken and we have plenty of time to slowly waste it with them. Monchug Khan's strategy is: don't take the initiative, but don't relax either."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Pandrak? We Aserai took no part in that battle, but Nimr Banu Salan led a group of Salan soldiers to fight for the Empire. Not many people came back, but Saran's flag did not fall. For the Saran ethnic group who had just returned from the desert, this was a spectacle. After the war, the empire split into three pieces, but we Aserai were relieved. The Southern Empire is now entangled in matters in the north and west, and does not dare to go south easily. Our trade routes are freer and there is less outside interference in tribal disputes. It is not a bad thing for us that Drosius is dead."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Pandrak? It was probably the battle where the Emperor of the Empire died. I heard that the Salan tribe of our Aserai also went there and worked for the empire. Many people died, but the flag of the Salan ethnic group did not fall. The people who came back said that the emperor was a fool for arranging his troops in a line and letting the barbarians behead them. Those of us who grow date palms on the edge of the oasis also felt that this man was really stupid - we all drove camels and knew we couldn't pull the camel team into a single string to pass through the bandit's den."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Battle of Pandrak was the battle of the decline of the Empire"
+    }
+  ],
+  "TextMappings": []
+}

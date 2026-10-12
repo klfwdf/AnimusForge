@@ -5,8 +5,8 @@ import xml.etree.ElementTree as ET
 ROOT=Path(__file__).resolve().parents[4]; HERE=Path(__file__).parent
 sys.path.insert(0,str(ROOT/"tests"))
 from output_isolation import new_run_root, resolve_dotnet, minimal_test_environment
-parser=argparse.ArgumentParser();parser.add_argument("--out",type=Path,required=True);parser.add_argument("--framework",choices=["net8.0","net10.0"],default="net8.0");parser.add_argument("--prompt-storage-only",action="store_true");args=parser.parse_args()
-out=new_run_root(ROOT,"bulletin-archive",args.out);dotnet=resolve_dotnet(ROOT)
+parser=argparse.ArgumentParser();parser.add_argument("--out",type=Path,required=True);parser.add_argument("--prepare-only",action="store_true");parser.add_argument("--framework",choices=["net8.0","net10.0"],default="net8.0");parser.add_argument("--prompt-storage-only",action="store_true");args=parser.parse_args()
+out=new_run_root(ROOT,"bulletin-archive",args.out);dotnet=ROOT/"local/dotnet/8.0.425/dotnet.exe" if args.prepare_only else resolve_dotnet(ROOT)
 spec=importlib.util.spec_from_file_location("extract",ROOT/"tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py");extract=importlib.util.module_from_spec(spec);spec.loader.exec_module(extract)
 sys.path.insert(0,str(ROOT/"tests/modules/AF.Module.Memory/MemorySummaryMainThreadBoundaryTests"))
 from business_owner_fixture_support import enable_expression_declarations
@@ -23,7 +23,7 @@ assert "day, WeeklyReportArchivePolicy.CaptureKingdomIds(selection), notify: fal
 presentation=read("src/modules/AF.Module.Weekly/Generation/WorldBulletinStateOwner.Presentation.cs")
 timeline=read("src/AF.GameAdapter.Bannerlord/UI/WorldTimeline/WorldMessageTimelineUi.cs")
 # Exact declarations and exact contiguous production methods, no body substitutions.
-generated="using System;using System.IO;using System.Linq;using System.Collections.Generic;using System.Globalization;using System.Text;using System.Threading.Tasks;using Newtonsoft.Json;using TaleWorlds.CampaignSystem;using TaleWorlds.Core;using TaleWorlds.Library;using AnimusForge.Refactor.Contracts;using static AnimusForge.MyBehavior;namespace AnimusForge {public partial class MyBehavior {"
+generated="using System;using System.IO;using System.Linq;using System.Collections.Generic;using System.Globalization;using System.Text;using System.Security.Cryptography;using System.Threading.Tasks;using Newtonsoft.Json;using Newtonsoft.Json.Linq;using TaleWorlds.CampaignSystem;using TaleWorlds.Core;using TaleWorlds.Library;using TaleWorlds.Localization;using AnimusForge.Refactor.Contracts;using static AnimusForge.MyBehavior;using static AnimusForge.EventEditorUiText;namespace AnimusForge {public partial class MyBehavior {"
 generated+=spans(host,["internal sealed class EventRecordEntry","internal sealed class ApiCallResult","public sealed class WeeklyPromptSnapshot","public sealed class WorldWeeklyReportHistoryEntry","public sealed class WeeklyReportBrowserEntryData","public sealed class WeeklyReportBrowserCountryData"])+extract.declaration(records,"internal sealed class EventImportPayload")+"}"
 # Persistence adapter binds this production data-only authority; no extra record dictionary.
 weekly_state=read("src/modules/AF.Module.Weekly/Records/WeeklyEventRecordStateOwner.cs")
@@ -42,36 +42,42 @@ generated+=spans(dip_memory,["internal readonly struct WorldDiplomacyMemorySnaps
 generated+="internal sealed partial class WorldDiplomacyModuleAdapter {"+spans(dip_adapter,["private sealed class MemorySource","public System.Collections.Generic.ISet<string> CaptureKnownDocumentIds"])+"private static readonly IWorldDiplomacyMemorySource Memory = new MemorySource();}"
 generated+="internal static class WorldDiplomacyRoundLifecycleRules {"+spans(dip_rules,["public static HashSet<string> CollectKnownDocumentIds","public static string FirstNonEmpty"])+"}"
 
-generated+=extract.declaration(editor,"internal class WeeklyEditorDisplayPort")+"internal static class WeeklyEditorProjection {"+spans(editor,["internal static WeeklyReportBrowserCountryData BuildWeeklyReportBrowserCountryData","internal static List<WeeklyReportBrowserEntryData> BuildWeeklyReportBrowserEntries","internal static string BuildWeeklyReportBrowserDefaultTitle"])+"}"
+generated+=extract.declaration(editor,"internal class WeeklyEditorDisplayPort")+"internal static class WeeklyEditorProjection {"+spans(editor,["internal static WeeklyReportBrowserCountryData BuildWeeklyReportBrowserCountryData","internal static List<WeeklyReportBrowserEntryData> BuildWeeklyReportBrowserEntries","internal static string BuildWeeklyReportBrowserDefaultTitle","internal static string BuildRecentDateForDisplay"])+"}"
 generated+="internal sealed partial class WorldBulletinStateOwner { internal WorldBulletinSaveState State; internal WorldBulletinPort _port; private int _collectionEpoch;"+spans(owner,["internal void RestartCollection", "internal bool CaptureWorldBulletinEvent(string kind, string key, int score, string sentence, bool involvesPlayer, string group, string detail, params", "internal bool CaptureWorldBulletinEvent(string kind, string key, int score, string sentence, bool involvesPlayer, string group, string detail, WorldBulletinParticipant[]", "internal void CaptureCivilNewsMaterial", "internal void UpsertWorldBulletinRecord","internal WorldBulletinSaveState EnsureWorldBulletinState","internal void PublishWorldBulletin","internal async Task RunWorldBulletinRequestAsync","internal void CompleteWorldBulletin","internal void ProcessWorldBulletinMainThreadActions","internal void QueueNoticeAfterIllustration","private void ReleasePendingWorldBulletinNotice"])+spans(presentation,["internal IReadOnlyDictionary<string, List<string>> SnapshotLegacyBulletinKingdomAssociations"])+"}"
 generated+=extract.declaration(owner,"internal sealed class WorldBulletinPort")+extract.declaration(owner,"internal sealed class WorldBulletinPromptFacts")
 settings=read("src/AF.GameAdapter.Bannerlord/Configuration/Mcm/DuelSettings.cs")
 bulletin_settings=read("src/AF.GameAdapter.Bannerlord/Configuration/Mcm/DuelSettings.BulletinPrompt.cs")
 generated+='public partial class DuelSettings { private const int WorldDiplomacyPromptJsonVersion=3; private const long CustomPromptJsonMaxBytes=262144L; private static readonly Encoding CustomPromptStrictUtf8Encoding=new UTF8Encoding(false,true);'
 for name in ["WorldBulletinWritingRequirementsJsonFileName","DefaultWorldBulletinWritingRequirements"]:
- generated+=re.search(r"private const string "+name+r" = [^;]+;",bulletin_settings).group()
+ generated+=re.search(r"private (?:const|static readonly) string "+name+r" = [^;]+;",bulletin_settings).group()
 generated+=spans(bulletin_settings,["private static string MigrateLegacyWorldBulletinWritingRequirements","private static string NormalizeWorldBulletinWritingRequirementsText"])
-generated+=spans(settings,["private sealed class CustomPromptTextJson","private static bool TryReadCustomPromptTextJsonFile","private static bool TryReadCustomPromptTextJsonFileFromDirectory","private static bool IsCustomPromptTextFileTooLarge"])+"}"
-generated+="internal static class AnimusForgeModulePaths {"+extract.declaration(read("src/AF.Persistence/AnimusForgeModulePaths.cs"),"internal static void ValidateCustomPromptPath(")+"}"
+generated+=spans(settings,["private sealed class CustomPromptTextJson","private static bool TryReadCustomPromptTextJsonFile","private static bool TryReadLayeredCustomPromptTextJsonFile","private static Dictionary<string, HashSet<string>> LoadKnownPackagedCustomPromptHashes","internal static bool IsKnownPackagedCustomPromptFile","internal static string GetCustomPromptUserReadPath","private static void PersistCustomPromptTextFileUnlocked","private static void WriteCustomPromptTextJsonFileUnlocked","private static bool IsCustomPromptTextFileTooLarge"])
+for start,end in [("private static readonly Lazy<Dictionary<string, HashSet<string>>> KnownPackagedCustomPromptHashes","private static Dictionary<string, HashSet<string>> LoadKnownPackagedCustomPromptHashes"),("private static readonly object KnownPackagedPromptHashGate","internal static bool IsKnownPackagedCustomPromptFile")]:
+ generated += settings[settings.index(start):settings.index(end)]
+generated += "private static readonly Encoding CustomPromptWriteEncoding=new UTF8Encoding(false); }"
+
 npc_source=read("src/AF.GameAdapter.Bannerlord/Prompt/WorldBulletinNpcPromptCaptureAdapter.cs")
 assert "latestVisible.Anecdote" in npc_source and "ProjectBulletinForNpc" in npc_source, "NPC must project the optional digest through source visibility"
 packaged=read("content/modules/AF.Module.Weekly/CustomPrompts/WorldBulletinWritingRequirements.json")
 (out/"packaged-default.json").write_text(packaged,encoding="utf-8")
 generated+=spans(timeline,["public sealed class WorldMessageTimelineEntryData","public sealed class WorldMessageTimelineCountryReference"])
 constants="\n".join(re.search(r"(?:public|private) const (?:string|int) "+name+r" = [^;]+;",timeline).group() for name in ["WeeklyCategoryId","WorldWeeklyCountryId","UnknownCountryId","MaxWeeklySourceEntries","DetailCharacterLimit","DetailLineLimit"])
-generated+="internal static class WorldMessageTimelineUi { "+constants+"internal static List<WorldMessageTimelineEntryData> Replay(){var result=new List<WorldMessageTimelineEntryData>();AppendWeeklyEntries(result);return result;}"+spans(timeline,["private static void AppendWeeklyEntries","private static void AddCountry","private static string FormatDay","private static string LimitMultiline","private static string FirstNonEmpty"])+"}}"
+generated+="internal static class WorldMessageTimelineUi { "+constants+"internal static List<WorldMessageTimelineEntryData> Replay(){var result=new List<WorldMessageTimelineEntryData>();AppendWeeklyEntries(result);return result;}"+spans(timeline,["private static void AppendWeeklyEntries","private static void AddCountry","private static string FormatDay","private static string LimitMultiline","private static string FirstNonEmpty","private static string FormatWeeklyTitle","private static string FormatBodyTitle"])+"}}"
 navigation=read("src/AF.GameAdapter.Bannerlord/UI/Common/EncyclopediaEntityLinkNavigationCoordinator.cs")
 # Deferred request/admission code is real; native encyclopedia and its observation lifecycle are fixture boundaries.
 generated+='namespace AnimusForge { internal static class EncyclopediaEntityLinkNavigationCoordinator { private static string _pendingLink; private static Action _pendingSuspend,_pendingResume,_activeResume; private static Func<bool> _pendingIsCurrent; private static long _processSequence; private static void ProcessActiveNavigation(){} private static void PrepareActiveNavigation(Action resume){_activeResume=resume;} private static void ResumeActiveNavigation(){var r=_activeResume;_activeResume=null;r?.Invoke();}'+spans(navigation,["internal static void Request","internal static void ProcessPending"])+"}}"
 capture_ports=read("src/AF.GameAdapter.Bannerlord/Prompt/WeeklyPromptCaptureAdapter.cs")
 generated+='namespace AnimusForge.Refactor.Adapters { internal static class WeeklyPromptCaptureAdapter {'+extract.declaration(capture_ports,"internal sealed class CapturePorts")+'} internal static class MemoryEntityIdentityBannerlordAdapter {internal static int GetCurrentGameDayIndexSafe()=>5;internal static string GetKingdomId(Kingdom kingdom)=>kingdom?.StringId;} }'
 (out/"Extracted.cs").write_text(generated,encoding="utf-8")
-paths=["src/modules/AF.Module.Weekly/Panel/WeeklyReportArchivePolicy.cs","src/modules/AF.Module.Weekly/Bulletin/WorldBulletinPolicy.cs","src/modules/AF.Module.Weekly/Models/WeeklyLegacyDtos.cs","src/modules/AF.Module.Weekly/ImportExport/WeeklyEventDataImportOwner.cs","src/AF.GameAdapter.Bannerlord/Persistence/CampaignWeeklyRecordPersistenceAdapter.cs","src/AF.Persistence/CampaignSaveChunkHelper.cs","src/AF.Foundation.Runtime/Lifecycle/SaveRuntimeGuard.cs","src/AF.GameAdapter.Bannerlord/UI/Weekly/TerminalWeeklyReportBrowserPopupVM.cs"]
+paths=["src/AF.GameAdapter.Bannerlord/Composition/Gathering/NobleGatheringTextProjection.cs","src/modules/AF.Module.Diplomacy/Presentation/DiplomacyCompatibilityTexts.cs","src/modules/AF.Module.Diplomacy/Presentation/DiplomacyMiscPromptTexts.cs","src/AF.GameAdapter.Bannerlord/Records/AdapterRecordTexts.cs","src/modules/AF.Module.Prompt/Runtime/PromptComposerTexts.cs","src/modules/AF.Module.Prompt/Composition/CampaignSystemFactProjection.cs","extensions/AnimusForge.Coup/src/CoupSystem/CoupSourceTexts.cs","extensions/AnimusForge.Coup/src/CoupSystem/CoupPromptTexts.cs","src/AF.GameAdapter.Bannerlord/UI/Editors/DeveloperUiText.cs","src/AF.Persistence/AnimusForgeDataPaths.cs","src/AF.Persistence/AnimusForgeModulePaths.cs","src/modules/AF.Module.Weekly/Bulletin/WorldBulletinPolicyTexts.cs","src/modules/AF.Module.Weekly/Panel/WeeklyReportArchivePolicy.cs","src/modules/AF.Module.Weekly/Bulletin/WorldBulletinPolicy.cs","src/modules/AF.Module.Weekly/Models/WeeklyLegacyDtos.cs","src/modules/AF.Module.Weekly/ImportExport/WeeklyEventDataImportOwner.cs","src/AF.GameAdapter.Bannerlord/Persistence/CampaignWeeklyRecordPersistenceAdapter.cs","src/AF.Persistence/CampaignSaveChunkHelper.cs","src/AF.Foundation.Runtime/Lifecycle/SaveRuntimeGuard.cs","src/AF.GameAdapter.Bannerlord/UI/Weekly/TerminalWeeklyReportBrowserPopupVM.cs"]
+paths.append("src/AF.GameAdapter.Bannerlord/Composition/Gathering/NobleGatheringUiText.cs")
 paths.append("src/modules/AF.Module.Weekly/Panel/WorldBulletinPanelVM.cs")
 paths.append("src/AF.GameAdapter.Bannerlord/UI/Weekly/TerminalWeeklyReportBrowserPopupVM.Archive.cs")
 paths.append("src/modules/AF.Module.Diplomacy/Persistence/WorldDiplomacyPropagationRecords.cs")
 paths.append("src/AF.GameAdapter.Bannerlord/Prompt/WorldBulletinNpcPromptCaptureAdapter.cs")
 paths.append("src/AF.Contracts/Internal/WorldDiplomacyPresentationContracts.cs")
+paths.append("src/AF.GameAdapter.Bannerlord/UI/Editors/EventEditorUiText.cs")
+paths.append("src/AF.GameAdapter.Bannerlord/Records/WeeklyDiagnosticPreviewProjection.cs")
 for path in paths:read(path)
 ui=ET.fromstring(read("content/modules/AF.Module.UI/GUI/Prefabs/AnimusForgeTerminalPopup.xml"))
 period=next(node for node in ui.iter() if node.attrib.get("Text")=="@WeekText")
@@ -84,14 +90,48 @@ assert open_button.attrib.get("DoNotPassEventsToChildren")=="true"
 assert any(node.attrib.get("Text")=="@PreviewText" for node in ui.iter()), "Card preview missing"
 print("PASS existing XML period width, country select and report body bindings (not rendering)")
 newtonsoft=dotnet.parent/"sdk/8.0.425/Containers/tasks/net8.0/Newtonsoft.Json.dll"
-if not newtonsoft.is_file():newtonsoft=next(iter(sorted((dotnet.parent/"sdk").glob("*/Newtonsoft.Json.dll"))),ROOT/"_deps_auto/Newtonsoft.Json.dll")
-if not newtonsoft.is_file():raise RuntimeError("Missing local Newtonsoft.Json reference")
+if not args.prepare_only and not newtonsoft.is_file():newtonsoft=next(iter(sorted((dotnet.parent/"sdk").glob("*/Newtonsoft.Json.dll"))),ROOT/"_deps_auto/Newtonsoft.Json.dll")
+if not args.prepare_only and not newtonsoft.is_file():raise RuntimeError("Missing local Newtonsoft.Json reference")
 links="".join('<Compile Include="'+str(ROOT/path)+'"/>' for path in paths)
-links+="".join('<Compile Include="'+str(HERE/name)+'"/>' for name in ["Stubs.cs","Program.cs"])
-(out/"Proof.csproj").write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>'+args.framework+'</TargetFramework><ImplicitUsings>enable</ImplicitUsings><NoWarn>CS0649</NoWarn></PropertyGroup><ItemGroup>'+links+'<Reference Include="Newtonsoft.Json"><HintPath>'+str(newtonsoft)+'</HintPath></Reference></ItemGroup></Project>',encoding="utf-8")
+links+='<Compile Include="'+str(ROOT/'tests/modules/AF.Module.Weekly/EditorLifecycleTests/TextObjectFixture.cs')+'"/>'
+read('tests/modules/AF.Module.Weekly/EditorLifecycleTests/TextObjectFixture.cs')
+links+="".join('<Compile Include="'+str(HERE/name)+'"/>' for name in ["Stubs.cs"])
+resources=""
+for module,filename in [("AF.Module.UI","af_ui_strings"),("AF.Module.Weekly","afweekly_ui_strings"),("AF.Module.Weekly","afweekly_bulletin_strings"),("AF.Module.Diplomacy","afdip_ui_strings")]:
+ for chinese in [False,True]:
+  relative='content/modules/'+module+'/ModuleData/Languages/'+('CNs/'+filename+'-zh-CN.xml' if chinese else filename+'.xml')
+  name=filename+('-zh.xml' if chinese else '-en.xml')
+  read(relative)
+  resources+='<Content Include="'+str(ROOT/relative)+'" Link="'+name+'" CopyToOutputDirectory="PreserveNewest"/>'
+resources+='<EmbeddedResource Include="'+str(ROOT/'content/modules/AF.Module.Weekly/ModuleData/WorldBulletinCompatibility.json')+'" LogicalName="AnimusForge.Weekly.WorldBulletinCompatibility.json" WithCulture="false" />'
+module=out/'module-fixture'/'AnimusForge';(module/'ModuleData').mkdir(parents=True);(module/'SubModule.xml').write_text('<Module><Id value="AnimusForge" /></Module>',encoding='utf-8')
+(module/'ModuleData/WorldBulletinPromptTexts.json').write_bytes((ROOT/'content/modules/AF.Module.Weekly/ModuleData/WorldBulletinPromptTexts.json').read_bytes())
+for row in json.loads(read('content/content-map.json'))['entries']:
+ target=row['target']
+ if target.startswith('ModuleData/') and target.endswith('.json') and not target.startswith('ModuleData/Defaults/'):
+  destination=module/target;destination.parent.mkdir(parents=True,exist_ok=True);destination.write_bytes((ROOT/row['source']).read_bytes())
+ if row.get('logicalName') and row['logicalName']!='AnimusForge.Weekly.WorldBulletinCompatibility.json':
+  resources+='<EmbeddedResource Include="'+str(ROOT/row['source'])+'" LogicalName="'+row['logicalName']+'" WithCulture="false" />'
+
+fixture=(HERE/'Program.cs').read_text('utf-8-sig')
+fixture=fixture.replace('var empty=WeeklyEditorProjection','var localizedEmpty=WeeklyEditorProjection').replace('Check(empty.Title==','Check(localizedEmpty.Title==').replace('&&empty.BodyText==','&&localizedEmpty.BodyText==').replace('Check(empty.CreatedDate==','Check(localizedEmpty.CreatedDate==')
+
+writer='void WritePrompt(string text)=>File.WriteAllText(promptFile,JsonConvert.SerializeObject(new {Version=1,Text=text}));'
+assert fixture.count(writer)==1
+fixture=fixture.replace(writer,'void WritePrompt(string text)=>DuelSettings.ReplaySavePrompt(promptFile,text);')
+needle='WritePrompt("");\nCheck(DuelSettings.ReplayReadDirectory("prompt-fixtures",out var moduleBlank)'
+assert fixture.count(needle)==1
+fixture=fixture.replace(needle,'Check(DuelSettings.ReplayReadDirectory("prompt-fixtures",out var fixedFallback,"prompt-packaged")&&fixedFallback==WorldBulletinPolicy.DefaultWritingRequirements&&File.ReadAllText(promptFile)=="broken JSON","actual layered package fallback keeps corrupt user original");\nFile.WriteAllText(promptFile,JsonConvert.SerializeObject(new {Version=1,Text="independent fixture reset"}));\n'+needle)
+fixture=fixture.replace('"explicit empty module prompt remains empty");','"explicit empty module prompt remains empty");\nCheck(DuelSettings.ReplayReadDirectory("prompt-fixtures",out var layeredBlank,"prompt-packaged")&&layeredBlank=="","actual saved empty user Text overrides fixed defaults");')
+(out/'Program.cs').write_text(fixture,encoding='utf-8')
+assert all(line.replace('Check(empty.Title==','Check(localizedEmpty.Title==').replace('&&empty.BodyText==','&&localizedEmpty.BodyText==').replace('Check(empty.CreatedDate==','Check(localizedEmpty.CreatedDate==') in fixture for line in (HERE/'Program.cs').read_text('utf-8-sig').splitlines() if line.strip().startswith('Check(')), 'original assertion changed outside fixture-local rename'
+(out/"Proof.csproj").write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>'+args.framework+'</TargetFramework><ImplicitUsings>enable</ImplicitUsings><NoWarn>CS0649</NoWarn></PropertyGroup><ItemGroup>'+links+resources+'<Reference Include="Newtonsoft.Json"><HintPath>'+str(newtonsoft)+'</HintPath></Reference></ItemGroup></Project>',encoding="utf-8")
 (out/"NuGet.Config").write_text('<configuration><packageSources><clear/></packageSources></configuration>',encoding="utf-8")
 for name in ["Program.cs","Stubs.cs","run.py"]:read(str((HERE/name).relative_to(ROOT)).replace("\\","/"))
 (out/"source-manifest.json").write_text(json.dumps(manifest,indent=2),encoding="utf-8")
-result=subprocess.run([str(dotnet),"run","--project",str(out/"Proof.csproj")]+(["--","--prompt-storage-only"] if args.prompt_storage_only else []),cwd=out,env=minimal_test_environment(dotnet,out),capture_output=True,text=True,encoding="utf-8",errors="replace")
+if args.prepare_only:
+ print("PREPARED",out,"(C# compilation and replay NOT-RUN)")
+ raise SystemExit(0)
+result=subprocess.run([str(dotnet),"run","--project",str(out/"Proof.csproj")]+(["--","--prompt-storage-only"] if args.prompt_storage_only else []),cwd=out,env={**minimal_test_environment(dotnet,out),'ANIMUSFORGE_DATA_ROOT':str(module)},capture_output=True,text=True,encoding="utf-8",errors="replace")
 (out/"result.log").write_text(result.stdout+result.stderr,encoding="utf-8");print(result.stdout+result.stderr);print("OUTPUT",out)
 raise SystemExit(result.returncode)

@@ -1,0 +1,213 @@
+{
+  "Id": "rule_Gail_Maraz",
+  "Keywords": [
+    "Gail Maraz",
+    "Skull Crusher",
+    "Sigmar Holy Hammer",
+    "symbol of imperial power",
+    "Legendary Warhammer",
+    "Dwarf gift",
+    "meteorite artifact",
+    "The Oath of the Elector Count",
+    "Anvil of Karak Varn",
+    "Kurgan Ironbeard",
+    "Imperial power inheritance",
+    "Warhammer Legend"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Gal Maraz - meaning 'Skullcrusher' in Dwarven - is the sacred warhammer of God-Emperor Sigmar, forged from meteorite on the anvil of Karak Varn by the legendary dwarven runesmith Kurgan Ironbeard as a gift of the eternal covenant between humans and dwarves. Not only is it the supreme symbol of imperial power in the Empire - whoever holds a Gail Maraz is legally and theologically recognized as the sole agent of Sigmar on earth."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Gal Maraz - The Skullcrusher - If you ask about this hammer in any village in the Empire, anyone who can speak will tell you: it is the greatest weapon in the world. Forged in the deep forges of Karak Varn by the greatest runesmith of the dwarves, Kurgan Ironbeard, it was given by the dwarves to our founding God-Emperor Sigmar as a token of their covenant - and from that day until this day, Gal Maraz has never been shattered by any mortal weapon on the battlefield. When Sigmar swung it in the Blackfire Pass, greenskin skulls exploded under its hammer like monsoon pellets; when Emperor Magnus raised it during the War of Chaos, the daemon's carapace was reduced to ash in its runic light. It is now kept in the deepest recesses of the Great Basilica of Altdorf, and is only removed from the altar by the Archbishop during the Emperor's coronation ceremony - when Karl Franz appears on the battlefield holding this hammer, every Imperial soldier knows: Sigmar himself is watching everything today. This hammer is not iron - it is the soul of the Empire solidified into a grippable shape by the skill of the dwarves. An Imperial man facing a rebel can say 'I will go with the Emperor's will' - but if you hold Gael Maraz in your hand, you don't need to say that the other party has seen Sigmar's eyes in the reflection of that hammer."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The value of the Gail Maraz on a military level far outweighs its destructive power as a weapon. When the Emperor personally wields Gal Maraz on the battlefield, the morale of the entire Imperial battle line will change qualitatively within a few breaths - soldiers believe that the existence of this sacred hammer means that the will of Sigmar himself has descended on the battlefield. This belief can weld a collapsed army into an impenetrable front. But as a commander, he must also understand one thing: letting the emperor go into battle holding Gail Maraz means that the outcome of this battle is related to the survival of the entire empire - because once this hammer is lost on the battlefield or captured by the enemy, the empire will lose the physical carrier of the legitimacy of the imperial power. In the entire history of the Empire, Gal Maraz had only left the Emperor's hands twice: once in the hands of the Archbishop for a coronation ceremony, and once when he was authorized to be temporarily taken over by the Emperor's most trusted battle priest in times of crisis. Any general formulating a battle plan that involves the Emperor's personal presence in battle must deploy at least an entire squadron of Reik's Guards as personal hammer guards for Gael Maraz's safety - not to protect the Emperor, but to protect the hammer. Without the Emperor, the Empire can choose another one; without Gal Maraz, the Empire will become a loose collection of texts without legal authority."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "The issue of Gal Maraz's materials and forging has been a controversial topic in imperial and dwarven academic circles for more than two thousand years. The hammer itself weighs approximately twelve pounds - a weight designed to precisely balance the gravity of a fatal blow with the flexibility of successive swings - and is forged from a special type of meteoric iron known as 'star iron'. The authoritative dwarf literature - the chapter about the Hammer of the Covenant of Man in \"The Forge of Karak Varn\" - records that Kurgan Ironbeard spent sixty years perfecting the design of this hammer in the deep forge of Karak Varn. Research on humans is based on the academic orthodoxy of the \"Holy Hammerology\" of the Theological School of Altdorf University. The school archives preserve the theological and material analysis of the Holy Hammer by scholars from the 1st century of the Imperial Calendar to the present. The most fascinating discovery is the \"Hammer Weight Change Hypothesis\" proposed by the scholar Albrecht von Stir in 2301 of the Imperial Calendar: He claimed that after analyzing the testimonies of past hammer holders, he found that the weight of Gael Maraz was \"changed by Sigmar\". It is about two pounds lighter in the hands of the approved person than in the hands of ordinary holders, suggesting that the hammer itself has some volitional selectivity. This hypothesis has never been officially confirmed - engineers at the Gunnery School insist it was a measurement error caused by religious fervor - but it remains one of the most popular topics in theological debates at Altdorf University to this day."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Gail Maraz means something very different to me than it means to the male aristocracy - that hammer was forged by a man for a man, and only a man's hand has ever lifted it in its entire known history. But this does not mean that the woman standing in front of it does not have the right to interpret it. In the history of the Empire, there have been at least three regent duchess who have held Gael Maraz in the name of the Queen in front of the Archbishop. Although they have never used it to crush the heads of any orcs on the battlefield, every decree they signed while holding the handle of the hammer was recorded in Hansard as having the same legal effect as the emperor's personal edict. What I felt when I stood in the Altdorf cathedral and was looked down by the hammer from the altar was not inferiority, but a kind of black humorous sobriety - the hammer itself is iron, and its entire sanctity comes from what people decide to believe, and women have been silently deciding many things to believe behind the scenes of the empire's greatness for these two thousand and five hundred years."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The relationship between our family and Gal Maraz can be accurately summarized by a little ancestral secret: our genealogy records that in 1512 of the Imperial Calendar, a distant ancestor of our family was selected as Gal Maraz's 'night watch knight' - this It is an informal position that does not exist in official legal documents but has been preserved by several ancient families in the form of oral histories. Its duty is to kneel alone in front of the altar on the eve of the emperor's coronation to guard the sacred hammer and ensure that no unclean person touches it before the handover ceremony. This tradition has been officially abolished since the time of the separation of the three emperors, but there are still some people in the imperial noble families who perform similar behaviors in private ceremonies that are not open to the public. This is not a superstition, but a self-certification of family qualifications: whether your family has been personally trusted by the emperor at a certain historical point to entrust you with the safety of Gal Maraz. Families with this heritage speak in the corridors of the Imperial Council with a weight that is difficult for outsiders to detect but that we all know well - because your family once knelt before this holy hammer and swore by name and blood."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "What does Gail Maraz mean to an ordinary mercenary? It means that there is an insurmountable sky and earth between the hammer you see on the Imperial flag and you. I saw Karl Franz riding past at a distance at the Reik Guards Parade holding a hammer - the hammer was smaller than I imagined, but the moment it was raised the shouts of thousands of people around almost pierced my eardrums. Later, an old sergeant told me in the tavern that he had been on duty at a post closest to the emperor's team. The moment the hammer was pulled out of the saddle side pocket, what he felt was not heat or light, but a weight that could not be described in words - as if there was suddenly something in the air that required you to kneel down to bear it. I don't know what it is - maybe it's just the old sergeant who drank too much cheap ale - but I tell you, on the battlefield when you see that hammer-holding arm raised high, every Imperial soldier around you will unconsciously take a step forward, as if some invisible force has pushed the plate armor on their chests from the inside out. The hammer is only iron - the old sergeant said at last - but the Empire needs that iron."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Gal Maraz was known as a 'golden pledge' in the lingo of Imperial merchants - not because it could be pawned, but because in all business transactions in the Empire that required the highest level of credit endorsement, the symbolism of that hammer provided a final guarantee that could not be replaced by any gold coin. Treasury bonds issued by the Imperial Treasury - especially those long-term bonds used to raise war funds in the name of the Imperial Diet - enjoyed ultra-low interest rates on the market precisely because investors believed that the Empire as a whole would not default as long as Gael Maraz remained in the Great Temple of Altdorf. This psychological effect is manifested in the actual economic operation by the stable exchange ratio between the Imperial Treasury Debt and the Dwarf Kingdom's Gold Crown - this ratio has not fluctuated by more than 5% in the past three hundred years, even during the war. There is an unspoken hedging strategy within the Imperial Merchants' Guild: when imperial politics show signs of serious schism, we don't buy gold - we buy the bonds of the Church of Sigmar, for that hammer still shines in the Church's guardianship."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Kurgan Ironbeard - The legendary dwarven runesmith who forged Gal Maraz",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Gael Malaz Skullcrusher Sigmar Holy Hammer"
+  ]
+}

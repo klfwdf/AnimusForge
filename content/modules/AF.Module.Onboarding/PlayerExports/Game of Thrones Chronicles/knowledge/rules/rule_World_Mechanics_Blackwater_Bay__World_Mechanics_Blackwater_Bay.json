@@ -1,0 +1,155 @@
+{
+  "Id": "rule_World_Mechanics_Blackwater_Bay",
+  "Keywords": [
+    "Blackwater Bay",
+    "Sea Gate of King's Landing",
+    "Dragonstone Channel",
+    "Mouth of the Blackwater"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Blackwater Bay takes over the Blackwater and flows into the Narrow Sea. King's Landing is built on the north bank of the river mouth. Dragonstone and many small islands guard the road to the outer sea. A large amount of grain, firewood and cargo arrived in the capital through the docks in the bay, and the royal fleet shared anchorage, tidal channels and pilotage needs with merchant ships. If the enemy controls the mouth of the bay, it can threaten supplies and landings; if the defender blocks the river, it must also be responsible for crowded ships, fire attacks, and wind direction. The Battle of the Blackwater makes wildfires and burning ships one of the bay's most horrific memories, but even without the war, siltation, smuggling and delays to grain ships would have been enough to unsettle King's Landing."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "crownlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "sailor",
+          "merchant",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "King's Landing Dockers judge whether prices will rise in town based on the number of sails and draft. While the throne room continues to debate, a few less grain ships are enough to line up Flea Bottom."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "crownlands",
+          "dragonstone"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Both the king and the Dragonstone generals regard Blackwater Bay as the key to the capital. If the fleet is unfamiliar with tides and river mouths, no matter how many ships there are, they may hinder each other in narrow water."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "priest",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Outsiders can easily see the Red Fort and wealth from the bay, but those who have experienced the fire battle will remember how the green flames illuminated the entire water. The calmness of the bay has always been a bit unbelievable."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Blackwater Bay The strategic waters between King's Landing, Dragonstone and the Narrow Sea, where grain ships, commercial ports, fleets and the Blackwater Port jointly determine the safety of the capital. Whether it is valid depends on who can grant the rights, collect the consideration, and actually make the judgment come to fruition in the event of default."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Blackwater Bay The strategic waters between King's Landing, Dragonstone and the Narrow Sea, where grain ships, commercial ports, fleets and the Blackwater Port jointly determine the safety of the capital. The distant system is not empty talk only if it can be implemented in campfires, city gates and inns."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Blackwater Bay The strategic waters between King's Landing, Dragonstone and the Narrow Sea, where grain ships, commercial ports, fleets and the Blackwater Port jointly determine the safety of the capital. If a rule is practiced over and over again, it will find its way into rituals, crafts, and prayers; if it is sustained only by fear, cracks will show at the onset of a crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Blackwater Bay The strategic waters between King's Landing, Dragonstone and the Narrow Sea, where grain ships, commercial ports, fleets and the Blackwater Port jointly determine the safety of the capital. They remember taxes, grain, labor, relief and who can speak for them; these grand names will eventually fall on the family's rice pot."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Blackwater Bay: The strategic waters between King's Landing, Dragonstone and the Narrow Sea, where grain ships, commercial ports, fleets and the Blackwater Port jointly determine the safety of the capital."
+  ]
+}

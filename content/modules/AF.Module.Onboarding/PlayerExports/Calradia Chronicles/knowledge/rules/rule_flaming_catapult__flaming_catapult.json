@@ -1,0 +1,66 @@
+{
+  "Id": "rule_flaming_catapult",
+  "Keywords": [
+    "Fire Catapult",
+    "Imperial Fire Thrower"
+  ],
+  "RagShortTexts": [
+    "The explosive ammunition of the flame catapult is expensive and made of special materials."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Fire catapult? That's the stuff from hell. I saw it once, during the siege. It was getting dark, and a few fires lit up in the camp opposite. Then a big fireball dragged its black tail and fell from the sky, landing on the military shed next to the city gate. The first hit hit the roof, the second hit exploded, and sparks splashed across half of the street. The third hit burned the entire shed, including the people inside and the outside baffle. The kerosene dripped and burned everywhere, and the ground looked like molten iron had been poured on it. The people in the shed ran out, and out came the burning man. After running a few steps, he fell down and couldn't move. My brother said that one fireball burned dozens of people to death. Dozens of people, just one fireball. After the battle, I went to see the land. The bricks were all burnt and cracked. I told myself that if I hear the sound of catapults from the opposite side on the battlefield, I must not raise my head. You knew it was coming without looking up, and the voice was filled with fire."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The flaming catapult is the end of the siege. I saw with my own eyes that a siege tower that had just been pushed halfway was hit by three shells - the first one smashed the baffle on the top of the tower, the second one exploded in the middle of the tower body, kerosene poured in through the arrow window, and all the people inside choked out; the third one hit the base wheel axis, the whole tower fell over and burned into a pile of charcoal. The tower took two months to build, but it was destroyed after three bombs. All the infantrymen who pushed the tower were also lost. But the flaming catapult cannot be used by just anyone. Flowering bombs are too expensive. The ingredients for kerosene must be transported from the south, and the clay pots used to make bombs must be fired like porcelain without any blisters. The kerosene got into the sand holes and leaked out during the flight, catching him in mid-air first. That column in the munitions book, my hands were shaking every time I signed it - one round of explosive ammunition was enough to feed a platoon of infantry for a month. What's even more terrible is that there is no stock of this thing. It is burned, installed and beaten immediately. After one batch is finished and waiting for the next batch, the craftsmen have been tinkering for a long time, but it is useless to pull it out. But I still use one for every siege. It's not about hitting the city wall with it, it's about hitting the people's hearts on the other side. When a fireball hits, the opponent's morale will collapse. When you attack a city, you attack both the wall and the will. The Fire Catapult can smash both."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "engineering": 150
+        }
+      },
+      "Content": "If you don’t ask me how to make a fireball, I won’t tell you yet. Just talking about it gives me a headache. The ratio of kerosene is perfect: 70% kerosene, 20% rosin, 10% sulfur powder, and an additional half percent alcohol in winter. But it’s useless if the proportions are right, you have to cook it. When the fire oil is boiling until blue smoke is emitted, add turpentine and stir it until it can be drawn. When you dip your hand in it and you can pull out a half-foot-long oil thread, the oil in the pot is considered alive. When it is cooked, it will be put out by lighting a fire. When it is tender, it will not stick to the ground and will flow like water. After boiling a pot of good oil, my eyebrows were basically burnt off. Making bullet casings is not a human job. The clay pot should be thin, so thin that it will break into eight pieces if dropped from the roof, but not so thin that it will break when accelerated in the catapult pocket. You have to choose the soil first. The soil should be river mud mixed with fine sand, knead it thoroughly, and when it is dry, use your fingers to flick the wall of the jar and listen to the sound to judge the thickness. The pots that are cooked under low heat are either too brittle or too tough. It was crispy enough to explode on my head, but tough enough not to shatter when hit on the ground. The kerosene was stuck inside and couldn't burn. The person on the opposite side walked around and kicked it. Then load. When filling, seal the jar mouth with wax, and there should be no bubbles in the wax. Bubbles are death. The fuse is twisted into kerosene. After twisting, the jar cannot be turned upside down and must be seated. I once had an apprentice who put a jar upside down. The bottom of the jar fell off in the middle of the night, and kerosene dripped all over the floor, burning half of my workshop. I have never seen that apprentice again. After each batch of jars comes out of the kiln, I choose one to test-fry: put it on the rack, light a fire underneath, and so on. When a good jar is burned until the oil boils, the walls of the jar will make a crying sound. Then fry. The more broken it is, the better, and the farther the fire oil splashes, the better. I stood by and watched, never leaving a good mark on my face. On the battlefield, they call fireballs a killer weapon. I said that the big killer was pinched out of the mud with my two hands. It's not up to me how many people die on the other side. But my fireballs can't blind me. When my fireball flies out, it must go to the right place and be fired again. It cannot break halfway or fall dead on the ground. A dud is more embarrassing than anything else. I don't lose that person."
+    }
+  ],
+  "TextMappings": []
+}

@@ -15,4 +15,7 @@
   <Target Name="RequireInputs" BeforeTargets="PrepareForBuild">
     <Error Condition="!Exists('$(GuardReferenceDir)/TaleWorlds.CampaignSystem.dll') Or !Exists('$(GuardHarmonyDir)/0Harmony.dll')" Text="Explicit native reference and Harmony directories required." />
   </Target>
+  <ItemGroup>
+    <EmbeddedResource Include="../../../content/foundation/AF.Foundation.Localization/ModuleData/RuntimeStaleRequestCompatibility.txt" LogicalName="AnimusForge.Foundation.StaleRequestError.txt" />
+  </ItemGroup>
 </Project>

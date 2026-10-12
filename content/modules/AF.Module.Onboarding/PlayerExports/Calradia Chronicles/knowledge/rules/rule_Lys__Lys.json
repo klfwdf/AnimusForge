@@ -1,0 +1,168 @@
+{
+  "Id": "rule_Lys",
+  "Keywords": [
+    "Law Lys"
+  ],
+  "RagShortTexts": [
+    "Lys are Aserai noble cavalry, equipped with bronze armor and armor-piercing javelins."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "char:aserai_faris",
+          "char:aserai_vanguard_faris",
+          "char:aserai_veteran_faris"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "I am Dharma Lys. My bronze armor gleams in the hot sun, and the hooves of my Askel horse make no sound on the sand. There are three javelins in my javelin bag, each of which has barbs that are stuck in the flesh and cannot be pulled out. Before charging into the battle, I threw the javelin, then charged with my spear, the tip of the spear pierced the shield wall, drew my sword, fought in close combat, and after killing, I turned my horse. This is my war."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "char:aserai_mameluke_axeman",
+          "char:aserai_mameluke_cavalry",
+          "char:aserai_mameluke_guard",
+          "char:aserai_mameluke_heavy_cavalry",
+          "char:aserai_mameluke_regular",
+          "char:aserai_mameluke_soldier",
+          "char:mamluke_palace_guard"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "To be honest, Lys's javelin is really powerful. The heavy cavalry could not catch up with their fast horses, and the crossbowmen had no time to cock their javelins before they could catch them. But law Lys discipline does not work. When they charged, they each went their own way. Sometimes one of the Lys rushed in and was surrounded, and the other Lys didn't know where they were. We are different. We follow the orders. If we say we want to charge, we all charge. If we say we want to withdraw, we all withdraw. No one is left behind. Fa Lys sees us as slaves, and we see them as loose sand."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Law Lys is the blade of our Aserai. When we raise a French Lys, we have to start raising him from his grandfather's generation - allocate land to his grandfather, allocate horses to his father, and buy him armor and a gun. The money for that imported steel sword is enough to buy three Mamluks. Why keep it? Because of value. Their javelin is the most underrated weapon on the continent. Those Imperial guys and Vlandia guys relied on their thick armor and never thought that javelins could break through armor. They didn't react until their heavy cavalry was pinned to their horses by our French Lys, but it was already too late."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Law Lys? Old man. You see them riding horses past the market, and the sand kicked up by the horses' hooves can squint your eyes. The bronze armor on their bodies was so shiny that they couldn't even open their eyes under the sun. French Lys Ordinary people had better get out of the way when you pass by. This does not mean that they will bully you intentionally, but if you block your horse and get stepped on, the master will not dismount and apologize. We didn't dare to take a second look at the javelins hanging on their waists - they were thicker than our arms and had barbs that couldn't be pulled out after being pierced into them. But we still have to rely on them to fight the war. The emirs of those big tribes raise law Lys, and the sons of us little people are at most in the infantry."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "French Lys are the most tribal unit in the Aserai military system. From the equipment point of view, their heavy bronze armor and imported steel swords reflect the coverage of the Aserai trade network, while the armor-breaking performance of the javelin is close to the top level in the mainland. The streamlined structure and barbed design are extremely difficult to defend in cavalry hedges. Their mobility is between heavy cavalry and light cavalry, they can throw and charge, and their tactical adaptability is quite good in open terrain. But Lys's weaknesses are equally clear. First, loose discipline is a common feature of tribal cavalry, especially Fa Lys. Tactical execution is seriously affected by personal honor, making it difficult to maintain coordination in large-scale battles. Second, they have almost no protection against long-range firepower, their small almond-shaped shields are useless, and their copper armor's arrow-proof performance is not as good as the Imperial iron armor. Third, the cost is too high, and the development cycle of a French Lys is too long. Aserai's bronze armor and imported steel swords rely on trade routes. Once the trade routes are cut off, the equipment replenishment chain of French Lys will have problems."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The noble cavalry on the Aserai side is called Lys."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "char:imperial_cataphract",
+          "char:imperial_elite_cataphract"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Law Lys? It's those Aserai bronze men on ponies. To be honest, we suffered a loss - their javelins could be thrown farther than our lances, and their horses were faster than ours. We rushed over and they had already thrown two rounds of javelins. The javelin has barbs, which penetrate into the gap between the horse's armor and the horse's breastplate and cannot be pulled out. As soon as the horse hurts, the man stood up, and the man was thrown off, unable to continue charging. But that's all they can do. Once we are not disrupted by javelins in the first round of charge, and we really collide with each other, they are no match for us."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "char:vlandian_banner_knight",
+          "char:vlandian_champion",
+          "char:vlandian_knight"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Law Lys? We heard about it but never fought it. From what we've heard, France Lys plays differently than we do. Their horses are fast, and their javelins can be thrown far and cannot be beaten. Once Lys's barbed javelin gets stuck in the gap between the horse armor and the armor plate, it cannot be pulled out. The horse will go crazy when it is in pain and cannot continue to charge. The formation of the banner knights is denser than that of the imperial uniform cavalry, and there is no need to aim the javelins when they are thrown at them. But they definitely have weaknesses. We Vlandia crossbowmen are not decorations. France Lys To get the javelin, you have to get within range of the crossbowman. Crossbow arrows don't recognize barbs. When a spell Lys rushes over, it must first be screened by our crossbowmen. Those who survive through the crossbowmen formation will be pushed back by our wall-mounted troops. Their bronze armor and small shield can't hold crossbow arrows, and we don't even need to use Banner Knights to replace them - crossbowmen and squire knights can consume most of them."
+    }
+  ],
+  "TextMappings": []
+}

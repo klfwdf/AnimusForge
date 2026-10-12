@@ -22,7 +22,7 @@ public static class MeetingDuelBattleAgentLogicSafePatch
 			Type type = AccessTools.TypeByName("SandBox.Missions.MissionLogics.BattleAgentLogic");
 			if (type == null)
 			{
-				Logger.LogTrace("System", "❌ MeetingDuelBattleAgentLogicSafePatch: 找不到 BattleAgentLogic 类型。");
+				Logger.LogTrace("System", "❌ MeetingDuelBattleAgentLogicSafePatch: BattleAgentLogic type not found.");
 				return;
 			}
 			Harmony harmony = new Harmony("AnimusForge.battleagentlogic.meetingduel.safety");
@@ -57,16 +57,16 @@ public static class MeetingDuelBattleAgentLogicSafePatch
 			_patched = num > 0;
 			if (_patched)
 			{
-				Logger.LogTrace("System", $"✅ MeetingDuelBattleAgentLogicSafePatch 已打补丁。Patched={num}");
+				Logger.LogTrace("System", $"✅ MeetingDuelBattleAgentLogicSafePatch Patched.Patched={num}");
 			}
 			else
 			{
-				Logger.LogTrace("System", "❌ MeetingDuelBattleAgentLogicSafePatch 未找到可用目标方法。");
+				Logger.LogTrace("System", "❌ MeetingDuelBattleAgentLogicSafePatch No available target method found.");
 			}
 		}
 		catch (Exception ex)
 		{
-			Logger.LogTrace("System", "❌ MeetingDuelBattleAgentLogicSafePatch 打补丁失败: " + ex.Message);
+			Logger.LogTrace("System", "❌ MeetingDuelBattleAgentLogicSafePatch patch failed: " + ex.Message);
 		}
 	}
 

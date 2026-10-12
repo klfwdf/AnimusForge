@@ -1,0 +1,208 @@
+{
+  "Id": "rule_arkhan_the_black",
+  "Keywords": [
+    "Arkhan the Black",
+    "Liche King",
+    "Nagash's Lieutenant",
+    "Grandmaster of Necromancy",
+    "Ancient Bone King",
+    "Dark Wisdom",
+    "First High Priest of Necromancy"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Arkhan the Black is the mightiest of the ancient Liche Kings, the most loyal lieutenant of Nagash, and the grandmaster of all Necromancy across the world. This black-robed skeletal monarch operates with a dark wisdom that transcends the ages by millennia, and every appearance he makes heralds a cataclysm capable of overturning the entire Old World."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Arkhan the Black—his very name is a testament that fills us Vampires with both reverence and dread. He is the closest comrade-in-arms of the Great Necromancer Nagash, and the guardian of the source of all necromantic arts we practice. Vlad, the progenitor of the von Carstein bloodline, received his very first ancient scroll of dark rituals from Arkhan at the dawn of his rise; without Arkhan's tacit permission, the Vampire nobility of Sylvania could never have established the undead empire we see today. Yet we must remain ever vigilant—Arkhan's loyalty belongs solely to the will of Nagash, not to us. The moment Nagash's name echoes across the Old World once more, Arkhan will not hesitate to turn the power of death and reshape all Vampire factions into war machines for his master."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Analyzing the tactical mindset of Arkhan the Black is impossible—because he thinks on a scale of millennia. He is not a strategist who acts for the gain or loss of a single city, but a player who single-handedly orchestrates civilization-level collapse. Every campaign he commands is merely a single step in a grander design: a border skirmish may simply be a ploy to lure an army away from a vital position, and a seemingly failed retreat may only be a means to deliver a sacred relic to a designated site. The only effective way to counter Arkhan is to identify and destroy the nodes upon which he relies—the Books of Nagash, dark altars, and specific funerary ritual sites. Yet doing so requires a depth of intelligence equal to his own, something almost no one can achieve."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "Arkhan the Black, originally named Arkhan deNacht, hailed from the high priesthood of the cult of Ptra, the Sun God, during the late Fourth Dynasty of Nehekhara. When Nagash first unified Nehekhara around -1800 IC and founded the system of Necromancy, Arkhan was his most devoted follower and chief assistant. A thousand years later, Arkhan presided over the recompilation and revision of the Nine Books of Nagash, laying the theoretical foundation for the necromantic magic later practiced by the von Carstein bloodline. His most notorious scheme—and the one most fiercely debated in academic circles—was his careful orchestration of the rise of the von Carstein family in order to establish a proxy network in the heartland of Sigmar's Empire that Nagash could exploit at any time. Between 1366 and 1399 IC, Arkhan's 'Bones of the Desert' legion swept across Araby, slaughtering over two hundred and fifty thousand living beings to harvest enough skeletal material to construct his obsidian fortress."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "I have read fragmented texts concerning Arkhan's past life before he became a Liche. He was once a high priest of Nehekhara, a living, breathing man. He chose to follow Nagash not out of coercion, but out of conviction—which is more terrifying than any curse. A man who willingly surrenders life, sunlight, and the peace of his soul, all to pursue some grand purpose beyond our comprehension. Sometimes I wonder, when he surveys a floor strewn with withered bones during a dark ritual, can he still remember the scorching heat of the desert, the sweet, earthy scent of the Great Mortis River? Or have those human memories long since been ground to dust across millennia of dark wisdom?"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "In our family archives lies a parchment scroll marked 'In Arkhan's Own Words'—acquired by my great-grandfather during an unexpected encounter with the Liche King. Written with a skeletal finger dipped in shadow, Arkhan's message consists of only a single sentence: 'Until Nagash returns, all of the bloodlines are merely borrowing time.' For centuries, those words have hung over our family like the sword of Damocles. I dispatched three of my finest spies to seek out more intelligence regarding the prophecies of Nagash's return, yet all of them lost contact after reaching the deserts of Nehekhara. Sometimes, knowledge is not power, but a curse."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "In the mercenary taverns of the Border Princes, legends of Arkhan the Black circulate widely. An old mercenary told me that when his great-great-grandfather served in the deserts of Araby, he once saw Arkhan leading a skeletal legion on the march from afar beneath the moonlight—the old veteran claimed that the sand where the Liche King walked turned into obsidian of its own accord, and three days later an obsidian spire that had never existed before rose from that stretch of desert. I do not know how much truth there is to it, but every mercenary company in the Border Princes abides by an unwritten rule: any bounty contract whose location description mentions 'black sand' or the 'Bone Crown insignia' is turned down flat. Because taking it means you might have to face the most ancient undead power head-on."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "One of my long-term clients—an antiquities dealer from Estalia—once tried to recover a shipment of Nehekharan artifacts seized by the forces of Arkhan the Black. The value of those artifacts exceeded ten years of my total revenue, yet in the end he gave up. He said it was not because they could not be found, but because everyone who found them ended up either dead or mad. Only a single survivor escaped back to the ports of Tilea, repeating one sentence over and over: 'He is tallying the debts, and he remembers every single one.' For those of us in the antiquities trade, that is our greatest fear—when the owner of an object not only obsesses over it, but has the patience to wait thousands of years before coming to take it back, any bargaining loses all meaning."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Nagash's most loyal lieutenant and first Liche King",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Arkhan the Black Liche King Nagash's Lieutenant"
+  ]
+}

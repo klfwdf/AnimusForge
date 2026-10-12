@@ -1,3 +1,4 @@
+using AnimusForge;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -70,32 +71,32 @@ public static class WorldDiplomacyReputationRules
 		return reputation;
 	}
 
-	public static string DescribeInternationalReputationNaturalTrend(int value)
+	public static string DescribeInternationalReputationNaturalTrend(int value, Func<string, string, string> localize = null)
 	{
-		if (value >= InternationalReputationFastDecayMinimum) return "每天自然下降3点，需要持续以实际成果维护";
-		if (value >= InternationalReputationNormalDecayMinimum) return "每天自然下降2点，需要积极以实际行为维护";
-		if (value >= InternationalReputationSlowDecayMinimum) return "每天自然下降1点，正逐步回归常态";
-		if (value == InternationalReputationNaturalAnchor) return "保持稳定";
-		return "每天自然恢复1点直至稳定点，但仍需实际行为才能取得更高评价";
+		if (value >= InternationalReputationFastDecayMinimum) return WorldDiplomacyPromptContractRules.ContractText(localize, "ReputationTier_0", "Naturally decreases by 3 points daily; requires continued upkeep through actual results");
+		if (value >= InternationalReputationNormalDecayMinimum) return WorldDiplomacyPromptContractRules.ContractText(localize, "ReputationTier_1", "Naturally decreases by 2 points daily; requires active upkeep through actual conduct");
+		if (value >= InternationalReputationSlowDecayMinimum) return WorldDiplomacyPromptContractRules.ContractText(localize, "ReputationTier_2", "Naturally decreases by 1 point daily, gradually returning to normal");
+		if (value == InternationalReputationNaturalAnchor) return WorldDiplomacyPromptContractRules.ContractText(localize, "ReputationTier_3", "Remains stable");
+		return WorldDiplomacyPromptContractRules.ContractText(localize, "ReputationTier_4", "Naturally recovers by 1 point daily until the stable anchor; actual conduct is still required for a higher assessment");
 	}
 
-	public static string DescribeInternationalReputation(int value)
+	public static string DescribeInternationalReputation(int value, Func<string, string, string> localize = null)
 	{
-		if (value >= 80) return "广受信赖";
-		if (value >= 60) return "评价良好";
-		if (value >= 40) return "褒贬不一";
-		if (value >= 20) return "信誉不佳";
-		return "普遍不受信任";
+		if (value >= 80) return WorldDiplomacyPromptContractRules.ContractText(localize, "ReputationTier_5", "Widely trusted");
+		if (value >= 60) return WorldDiplomacyPromptContractRules.ContractText(localize, "ReputationTier_6", "Well regarded");
+		if (value >= 40) return WorldDiplomacyPromptContractRules.ContractText(localize, "ReputationTier_7", "Mixed reputation");
+		if (value >= 20) return WorldDiplomacyPromptContractRules.ContractText(localize, "ReputationTier_8", "Poor reputation");
+		return WorldDiplomacyPromptContractRules.ContractText(localize, "ReputationTier_9", "Widely distrusted");
 	}
 
-	public static string DescribeNationalPrestige(int value)
+	public static string DescribeNationalPrestige(int value, Func<string, string, string> localize = null)
 	{
-		if (value >= 80) return "威望卓著";
-		if (value >= 60) return "威望良好";
-		if (value >= 40) return "威望受损";
-		if (value >= 20) return "威望低下";
-		if (value >= 1) return "威信濒临崩溃";
-		return "威信尽失";
+		if (value >= 80) return WorldDiplomacyPromptContractRules.ContractText(localize, "ReputationTier_10", "Outstanding prestige");
+		if (value >= 60) return WorldDiplomacyPromptContractRules.ContractText(localize, "ReputationTier_11", "Good prestige");
+		if (value >= 40) return WorldDiplomacyPromptContractRules.ContractText(localize, "ReputationTier_12", "Damaged prestige");
+		if (value >= 20) return WorldDiplomacyPromptContractRules.ContractText(localize, "ReputationTier_13", "Low prestige");
+		if (value >= 1) return WorldDiplomacyPromptContractRules.ContractText(localize, "ReputationTier_14", "Authority near collapse");
+		return WorldDiplomacyPromptContractRules.ContractText(localize, "ReputationTier_15", "Authority completely lost");
 	}
 
 	public static int GetNationalPrestigeRelationTarget(int prestige)
@@ -115,9 +116,9 @@ public static class WorldDiplomacyReputationRules
 			: value.ToString(CultureInfo.InvariantCulture);
 	}
 
-	public static string FormatSignedStandingDelta(int value)
+	public static string FormatSignedStandingDelta(int value, Func<string, string, string> localize = null)
 	{
-		if (value == 0) return "无变化";
+		if (value == 0) return WorldDiplomacyPromptContractRules.ContractText(localize, "AF_DIP_UI_StandingNoChange", "No change");
 		return value > 0
 			? "+" + value.ToString(CultureInfo.InvariantCulture)
 			: value.ToString(CultureInfo.InvariantCulture);
@@ -125,17 +126,18 @@ public static class WorldDiplomacyReputationRules
 
 	public static string BuildInternationalReputationImpactDeltaText(
 		WorldDiplomacyDocument document,
-		WorldDiplomacyStandingChange change)
+        WorldDiplomacyStandingChange change,
+        Func<string, string, string> localize = null)
 	{
 		int actualDelta = change?.Delta ?? 0;
 		int evaluatedDelta = document?.InternationalReputationEvaluationDelta ?? 0;
-		if (actualDelta != 0 || evaluatedDelta == 0) return FormatSignedStandingDelta(actualDelta);
+		if (actualDelta != 0 || evaluatedDelta == 0) return FormatSignedStandingDelta(actualDelta, localize);
 		string boundary = change?.After >= 100 && evaluatedDelta > 0
-			? "已达上限100"
+			? WorldDiplomacyPromptContractRules.ContractText(localize, "AF_DIP_UI_StandingUpperBound", "Already at the upper limit of 100")
 			: change?.After <= 0 && evaluatedDelta < 0
-				? "已达下限0"
-				: "数值边界未产生实际位移";
-		return "无实际变化（评价" + FormatSignedStandingDelta(evaluatedDelta) + "，" + boundary + "）";
+				? WorldDiplomacyPromptContractRules.ContractText(localize, "AF_DIP_UI_StandingLowerBound", "Already at the lower limit of 0")
+				: WorldDiplomacyPromptContractRules.ContractText(localize, "AF_DIP_UI_StandingBoundaryNoChange", "The numeric boundary produced no actual change");
+		return WorldDiplomacyPromptContractRules.ContractText(localize, "AF_DIP_UI_StandingNoActualChangePrefix", "No actual change (assessment ") + FormatSignedStandingDelta(evaluatedDelta, localize) + (localize == null ? "，" : ", ") + boundary + (localize == null ? "）" : ")");
 	}
 
 	public static void ApplyInternationalReputationEvaluation(WorldDiplomacyDocument document, JObject json)
@@ -187,57 +189,57 @@ public static class WorldDiplomacyReputationRules
 			hasNegativeAction |= actionScore < 0;
 		}
 		string basis = score > 0
-			? "建设性承诺、合作或承担责任"
+			? DiplomacyMiscPromptTexts.Get("Rep_ConstructivePromise", "Constructive commitment, cooperation, or responsibility")
 			: score < 0
-				? "公开施压、毁约或冲突升级"
+				? DiplomacyMiscPromptTexts.Get("Rep_PressureOrEscalation", "Public pressure, breach of contract, or conflict escalation")
 				: "";
 		string move = WorldDiplomacyIntentVocabulary.NormalizeNegotiationMove(document.NegotiationMove);
 		if (score == 0 && document.MadeDiplomaticProgress)
 		{
 			score = 1;
-			basis = "本篇提供了新的可执行条件或谈判进展";
+			basis = DiplomacyMiscPromptTexts.Get("Rep_NewActionableTerms", "This item provided new actionable terms or negotiation progress");
 		}
 		else if (score == 0 && move is "question" or "clarification" or "acknowledge_concern"
 			or "counterproposal" or "conditional_acceptance" or "partial_concession"
 			or "request_concession" or "revise_terms")
 		{
 			score = 1;
-			basis = "本篇提出了能够继续谈判的新问题、回应或条件";
+			basis = DiplomacyMiscPromptTexts.Get("Rep_NewQuestionsOrTerms", "This item raised new questions, responses, or terms capable of continuing negotiations");
 		}
 		else if (score == 0 && move is "set_deadline" or "final_offer" or "withdraw_offer"
 			or "end_negotiation" or "declare_deadlock")
 		{
 			score = -1;
-			basis = "本篇收紧、撤回或终止了谈判空间";
+			basis = DiplomacyMiscPromptTexts.Get("Rep_TightenedOrEndedNegotiation", "This item tightened, withdrew, or terminated negotiation space");
 		}
 		else if (score == 0 && string.Equals(document.Tone, "hostile", StringComparison.OrdinalIgnoreCase))
 		{
 			score = -1;
-			basis = "本篇以敌对措辞加剧了国际疑虑";
+			basis = DiplomacyMiscPromptTexts.Get("Rep_HostileLanguageSuspicions", "This item intensified international suspicions with hostile rhetoric");
 		}
 		else if (score == 0 && intents.Any(x => x.StartsWith("reject_", StringComparison.Ordinal)))
 		{
 			score = 1;
-			basis = "本篇及时、明确地答复了正式提案";
+			basis = DiplomacyMiscPromptTexts.Get("Rep_TimelyFormalResponse", "This item responded promptly and explicitly to formal proposals");
 		}
 		else if (score == 0 && string.Equals(document.Tone, "conciliatory", StringComparison.OrdinalIgnoreCase))
 		{
 			score = 1;
-			basis = "本篇以克制且可沟通的方式公开立场";
+			basis = DiplomacyMiscPromptTexts.Get("Rep_RestrainedPublicStance", "This item stated positions publicly in a restrained and communicable manner");
 		}
 		else if (score == 0 && hasPositiveAction && hasNegativeAction)
 		{
 			score = -1;
-			basis = "同篇正负行为相互抵消，系统按冲突与毁约风险作保守判定";
+			basis = DiplomacyMiscPromptTexts.Get("Rep_OffsettingActionsConservative", "Positive and negative actions in the same item offset; evaluated conservatively by conflict and breach risk");
 		}
 		else if (score == 0)
 		{
 			score = -1;
-			basis = "本篇没有提供新的条件、解释、行动或谈判进展";
+			basis = DiplomacyMiscPromptTexts.Get("Rep_NoNewTermsOrProgress", "This item provided no new terms, explanations, actions, or negotiation progress");
 		}
 		score = Math.Max(-4, Math.Min(4, score));
 		if (score == 0) score = -1;
-		reason = "系统依据本篇已解析的外交动作作出非零保守判定：" + basis + "。";
+		reason = DiplomacyMiscPromptTexts.Get("Rep_ConservativeActionPrefix", "Conservative non-zero judgment based on parsed diplomatic actions: ") + basis + ".";
 		return score;
 	}
 	public static int GetNationalPrestige(IReadOnlyDictionary<string, int> prestigeByKingdom, string kingdomId)
@@ -315,7 +317,7 @@ public static class WorldDiplomacyReputationRules
 			Math.Min(MaximumInternationalReputationChangePerDocument, document.InternationalReputationEvaluationDelta));
 		if (rejectedAcceptance)
 		{
-			document.InternationalReputationEvaluationReason = "接受提案的外交动作在执行前被拒绝，未确认履约，本次不结算该接受宣言的声誉增减。";
+			document.InternationalReputationEvaluationReason = DiplomacyMiscPromptTexts.Get("Rep_RejectedProposalNoRepChange", "Diplomatic action accepting proposal was rejected before execution, performance unconfirmed; reputation change not settled for this declaration.");
 			document.InternationalReputationEvaluationSource = "rejected_acceptance_no_effect";
 		}
 		else if (delta == 0)
@@ -326,7 +328,7 @@ public static class WorldDiplomacyReputationRules
 		}
 		string reason = WorldDiplomacyTextRules.Limit(WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(
 			document.InternationalReputationEvaluationReason,
-			"本篇宣言的公开表现改变了国际观感。"), 240);
+			DiplomacyMiscPromptTexts.Get("Rep_PublicPerformanceShiftedPerception", "Public presentation of this declaration shifted international perception.")), 240);
 		document.InternationalReputationEvaluationDelta = delta;
 		document.InternationalReputationEvaluationReason = reason;
 		if (string.IsNullOrWhiteSpace(document.InternationalReputationEvaluationSource))

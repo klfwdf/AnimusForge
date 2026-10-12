@@ -1,0 +1,300 @@
+{
+  "Id": "rule_Perlas_Sea",
+  "Keywords": [
+    "Perlas Sea",
+    "Perras",
+    "Zhan Shanghai",
+    "West Sea",
+    "The inner lake of the empire"
+  ],
+  "RagShortTexts": [
+    "The Perlas Sea was once the inner lake of the empire, with free passage for merchant ships."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Perath Sea is a vast sea south of Calradia, connecting the coasts of the Aserai, the Empire, and Vlandia. During the empire's heyday, this sea was the empire's inner lake - all the city-states and tribes along the coast surrendered to the empire, and merchant ships traveled freely under the protection of the empire's fleet. Now that the empire is divided, the northern coast is still controlled by the Western Empire and the Southern Empire, but the southern coast has all fallen into the hands of the Aserai."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Perlas Sea? That's the inner lake of the empire! Hundreds of years ago, the fleet of Emperor Kaladius swept across this sea area, and all the city-states along the coast bowed to us. The empire's merchant ships do not need to be escorted, the empire's fleet is the law. But now? The empire was broken into three pieces, and the ports on the south coast were all owned by the Aserai. We Imperial people can only huddle in a few ports on the northern coast, watching the sails of the desert peoples floating on the sea, which makes people angry just thinking about it."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "townsfolk"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Perlas Sea used to be the inner lake of the empire. Those doing business did not need to be afraid of pirates and could walk freely from Guyaz to Onila. What now? The empire was divided, the empire's fleet became a display, and the southern coast was all owned by the Aserai. Now when we go to sea from the imperial port, there is a question as to whether we can come back alive if we don't hire an escort."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Imperial people always miss the days when the Perlas Sea was an inner lake. At that time, all the land along the coast belonged to the empire, merchant ships sailed freely on the sea, and pirates did not dare to show their faces. But now the empire is divided. The Western Empire and the Southern Empire only barely control the north coast, and the south coast is all owned by the Aserai. Do you know what the Aserai call the Sea of ​​Perath? They called it \"The Arms of the South.\" A sea, two names, behind it is the entire south that the empire has lost."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Imperials once called the Perlas Sea their inner lake. ridiculous. The sea is flowing, how can it belong to anyone? Now we Aserai control the entire southern coast, Guyaz, Sanara—all the southern ports are in our hands. The Imperials are still guarding the northern shoreline, but they can no longer control us. The southern half of the Sea of ​​Perath, now the Sea of ​​the Aserai."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "townsfolk"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Perlas Sea is the lifeblood to us Aserai. The empire's fleet once wanted to suppress everything on this sea, but that has passed. Now all the ports on the south coast belong to us Aserai, and our merchant ships can go anywhere from Sanara to Guyaz. The Imperials are still collecting their tariffs in the north, but they can no longer control us."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Sea of ​​Perath saw the fall of the Empire and the rise of the Aserai. The Imperials used to ride the waves to dominate this sea, and all the tribes along the coast had to pay taxes to them. Now the empire is divided and the south coast is all ours. The old sailor said that the sea never recognizes its owner, only the direction of the wind."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "After the empire was divided, the trade routes of the Pelas Sea were reshuffled. In the past, the empire controlled the entire sea area, and we merchants in Vlandia had to look at their faces. Now the south bank belongs to the Aserai, the north bank is divided between the two empires, and anyone can use the middle channel. Garadoc's Chamber of Commerce is already discussing how to get more of this mess."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Perlas Sea? It used to be the inner lake of the empire, but it is no longer. Once the empire was divided, their fleets retreated to port, and the southern Aserai occupied the southern shore. Our Sturgia longships can also run south along the strait without fear of Imperial patrols. Anyone can go to that sea now, and whoever has the strongest fist has the final say."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "villager",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Perlas Sea is too far away from us. But I heard from traveling merchants that that sea was once the inner lake of the empire. The imperial people took all the city-states along the coast as vassals, and the sea belonged to them. Now the empire is divided, and the southern shores belong to the Aserai. The inner lake of the empire has now become a hunting ground for all parties."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "sailor",
+          "seafarer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Perlas Sea? That's no joke. During the day, the waves are as calm as a piece of blue silk. When the sun sets, the waves can be as high as three stories high. The most terrible thing is the reef. Half a day's sail west of Guyaz Port, there is a reef area called \"Keel Cemetery\", with all sunken ships underneath. The old sailor said that was where Poseidon collected taxes. The imperial fleet once patrolled here, but now - they can hardly even see their northern coastline."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "pirate",
+          "bandit",
+          "outlaw"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Perlas Sea? That's our hunting ground. After the empire split, their fleet disappeared, the south coast belonged to the Aserai, and the north coast was divided between the two empires. Whoever has the strongest fist is the rule. The Empire's merchant ships are slow and clumsy. The Aserai's merchant ships are fast, but they have few men. Are you looking for a job? Can you sail or use an axe?"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "scholar",
+          "artisan"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "steward": 150
+        }
+      },
+      "Content": "The Perlas Sea was once called the \"Lake of the Empire\" in imperial history books. After Emperor Kaladius conquered the coastal states, the empire's fleet controlled the entire sea area, and all trade routes were under the guardianship of the empire. But after the empire split, this maritime hegemony quickly collapsed. Today, the northern coast is divided between the Western and Southern Empires, while the southern coast is entirely under the control of the Aserai Sultanate. The Perlas Sea has transformed from the \"Lake of the Empire\" into a battlefield for multi-party games, which is also the epitome of the decline of the empire."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "There are more women running boats on Perlas than you think. My aunt is the shipowner of Guyaz Port. She owns five merchant ships, all of which are female captains. It doesn't matter where you are at sea, it only matters whether you can bring the ship and cargo back safely. The storm will not blow softer just because you are a woman. The Imperials once thought the sea was theirs, but now the Aserai occupy the southern shore, and women still steer the sea."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Perlas Sea",
+      "Kind": "bound_region_name",
+      "TargetId": "__bound_region__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "Guyaz",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

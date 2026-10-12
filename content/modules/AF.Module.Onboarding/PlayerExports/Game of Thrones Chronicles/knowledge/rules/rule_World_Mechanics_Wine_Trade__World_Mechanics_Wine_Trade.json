@@ -1,0 +1,153 @@
+{
+  "Id": "rule_World_Mechanics_Wine_Trade",
+  "Keywords": [
+    "Wine",
+    "Arbor Gold",
+    "Cask Trade",
+    "Vineyards",
+    "Reach Vintners"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Wine requires suitable slopes, sunlight, pruning, picking, pressing, fermentation and clean wine vessels. The Arbor Island’s golden wine and red wine enjoy a high reputation, and the Reach, Stormland, and Dorne also have their own flavors; the wine can be packed into barrels and transported along rivers and seas to become banquets, gifts, military supplies, and high-profit commodities. Vintage, preservation, watering down and adulteration affect the price. Port closures or wars will cause good wine to stay in the place of origin, and bad wine will take the opportunity to increase in price. Vineyards require many years of investment. A single burning will not only destroy that year’s harvest, but may also wipe out years of hard work."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "reach"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Grape growers look at the weather and fruits, winemakers look at barrels and fermentation, and wine merchants look at reputation and shipping schedules. Noble people only talk about the taste in the mouth, but people from the production area know that a glass of wine begins with pruning in winter."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Nobles used famous wines to show generosity and taste, and clergy not only used wine in rituals, but also warned against excessive drinking. Expensive wine bottles are the easiest way for people to mistake price for virtue."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "sailor",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Soldiers and sailors more often drank thin or sour wine simply to be safer than bad water. For them, Arbor Gin is an encounter, not everyday life."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Wine Wine Trade: Vineyards, brewing, oak barrels, and land and sea transportation transport wine from Qingting Island and other production areas to banquets, military camps, and distant markets. Whether it is valid depends on who can grant the rights, collect the consideration, and actually make the judgment come to fruition in the event of default."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Wine Wine Trade: Vineyards, brewing, oak barrels, and land and sea transportation transport wine from Qingting Island and other production areas to banquets, military camps, and distant markets. The distant system is not empty talk only if it can be implemented in campfires, city gates and inns."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Wine Wine Trade: Vineyards, brewing, oak barrels, and land and sea transportation transport wine from Qingting Island and other production areas to banquets, military camps, and distant markets. If a rule is practiced over and over again, it will find its way into rituals, crafts, and prayers; if it is sustained only by fear, cracks will show at the onset of a crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Wine Wine Trade: Vineyards, brewing, oak barrels, and land and sea transportation transport wine from Qingting Island and other production areas to banquets, military camps, and distant markets. They remember taxes, grain, labor, relief and who can speak for them; these grand names will eventually fall on the family's rice pot."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Wine Trade: Vineyards, brewing, oak barrels, and land and sea transportation transport wine from Qingting Island and other production areas to banquets, military camps, and distant markets."
+  ]
+}

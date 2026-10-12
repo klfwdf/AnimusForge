@@ -179,7 +179,7 @@ internal Task<NativeConversationAdmission> CaptureNativeConversationAdmissionAsy
             Task winner = await Task.WhenAny(completion.Task,
                 Task.Delay(_timeoutMs)).ConfigureAwait(false);
             if (winner != completion.Task && dispatchClaim.TryExpireBeforeStart())
-                throw new NativeConversationAdmissionException("native.admission_timeout", "对话请求尚未开始：主线程暂未处理，请稍后重试。");
+                throw new NativeConversationAdmissionException("native.admission_timeout", ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0619"));
             // 一旦捕获已开始，就必须接收它的结果；不放弃一个可能已占用后端票据的返回值。
             return await completion.Task.ConfigureAwait(false);
         }
@@ -198,7 +198,7 @@ internal NativeConversationAdmission CaptureNativeConversationAdmissionOnMainThr
             || !_nativeAdmissionOwner.IsConversationEpochCurrent(conversationEpoch)) return null;
         if (!_canSubmit()) return null;
         if (IsNativeConversationAdmissionCurrent(_nativeAdmissionOwner.Current, out _))
-            throw new NativeConversationAdmissionException("native.busy", "上一轮对话仍在处理，请稍后再提交。");
+            throw new NativeConversationAdmissionException("native.busy", ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0620"));
         NativeConversationAdmission admission = CaptureNativeConversationContext(generation, conversationEpoch);
         if (admission == null)
         {

@@ -1,0 +1,29 @@
+from pathlib import Path
+import json,subprocess,shutil,sys,tempfile,hashlib
+from xml.sax.saxutils import escape
+R=Path(__file__).resolve().parents[4];H=Path(__file__).resolve().parent
+out=R/'artifacts/localization/campaign-system-fact-run';out.mkdir(parents=True,exist_ok=True)
+paths=['src/modules/AF.Module.Prompt/Composition/CampaignSystemFactProjection.cs','src/modules/AF.Module.Prompt/Runtime/PromptComposerTexts.cs','src/modules/AF.Module.Weekly/Bulletin/WorldBulletinPolicy.cs','src/modules/AF.Module.Weekly/Bulletin/WorldBulletinPolicyTexts.cs','extensions/AnimusForge.Coup/src/CoupSystem/CoupSourceTexts.cs','extensions/AnimusForge.Coup/src/CoupSystem/CoupPromptTexts.cs','src/AF.GameAdapter.Bannerlord/Memory/MemoryActionFactProjection.cs','src/AF.GameAdapter.Bannerlord/Records/AdapterRecordTexts.cs','src/modules/AF.Module.Memory/Records/ExecutionTranscriptStore.cs','src/modules/AF.Module.Memory/Runtime/MemoryTextResources.cs']
+import importlib.util
+spec=importlib.util.spec_from_file_location('decl',R/'tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py');ex=importlib.util.module_from_spec(spec);spec.loader.exec_module(ex)
+adapter=ex.declaration((R/'src/AF.GameAdapter.Bannerlord/Memory/MemoryEntityIdentityBannerlordAdapter.cs').read_text('utf-8-sig'),'internal static string BuildWeeklyReportMaterialLine(')
+model=ex.declaration((R/'src/modules/AF.Module.Weekly/Models/WeeklyLegacyDtos.cs').read_text('utf-8-sig'),'internal sealed class EventMaterialReference')
+(out/'ActualWeeklyRenderer.cs').write_text('using System;using System.Collections.Generic;using AnimusForge;using EventMaterialReference=AnimusForge.MyBehavior.EventMaterialReference;namespace AnimusForge {public partial class MyBehavior {'+model+'} internal static class ActualWeeklyRenderer {'+adapter+'private static string ResolveKingdomDisplay(string id)=>id;}internal static class PlayerNotorietyBehavior {internal static string RenderPlayerNamedReferenceForExternal(string value)=>value;}internal static class WeeklyGenerationRules {internal static string NeutralizeWeeklyReportScenarioName(string value)=>value;}internal static class AdapterSceneTexts{internal static string Get(string key)=>throw new NotSupportedException("opening summaries outside campaign-fact test scope");}}',encoding='utf-8')
+(out/'Program.cs').write_text((H/'Program.cs.txt').read_text('utf-8-sig'),encoding='utf-8')
+(out/'GatheringBoundary.cs').write_text('namespace AnimusForge { internal static class NobleGatheringTextProjection { internal static string ProjectWeeklyMaterialForPrompt(string type, string key, string raw) => raw; } }',encoding='utf-8')
+shutil.copyfile(R/'tests/modules/AF.Module.Weekly/WorldBulletinPolicy.SmokeTests/LayoutStub.cs',out/'LayoutStub.cs')
+links=''.join('<Compile Include="'+escape(str(R/p))+'" />' for p in paths)
+resources=[('content/modules/AF.Module.Prompt/ModuleData/PromptCompatibility.json','AnimusForge.Prompt.Compatibility.json'),('content/foundation/AF.Foundation.Localization/ModuleData/AdapterRecordCompatibility.json','AnimusForge.Adapter.RecordCompatibility.json'),('content/modules/AF.Module.Memory/ModuleData/MemorySourceTexts.json','AnimusForge.Memory.SourceTexts.json'),('content/modules/AF.Module.Weekly/ModuleData/WorldBulletinCompatibility.json','AnimusForge.Weekly.WorldBulletinCompatibility.json')]
+for p,name in resources:links+='<EmbeddedResource Include="'+escape(str(R/p))+'"><LogicalName>'+name+'</LogicalName></EmbeddedResource>'
+for name in ['TaleWorlds.Localization','TaleWorlds.Library']:links+='<Reference Include="'+name+'"><HintPath>'+escape(str(R/'_deps_auto'/(name+'.dll')))+'</HintPath></Reference>'
+links+='<Reference Include="Newtonsoft.Json"><HintPath>'+escape(str(R/'local/dotnet/8.0.425/sdk/8.0.425/Newtonsoft.Json.dll'))+'</HintPath></Reference>'
+(out/'Tests.csproj').write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><LangVersion>latest</LangVersion><ImplicitUsings>enable</ImplicitUsings><NoWarn>CS0649</NoWarn></PropertyGroup><ItemGroup>'+links+'</ItemGroup></Project>',encoding='utf-8')
+(out/'NuGet.Config').write_text('<configuration><packageSources><clear/></packageSources></configuration>',encoding='utf-8')
+dotnet=R/'local/dotnet/8.0.425/dotnet.exe'
+build=subprocess.run([str(dotnet),'build',str(out/'Tests.csproj'),'--nologo'],capture_output=True,text=True,encoding='utf-8',errors='replace');(out/'build.log').write_text(build.stdout+build.stderr,encoding='utf-8');print(build.stdout+build.stderr);assert build.returncode==0
+for lang in ['zh-CN','en']:
+ pack=out/lang;pack.mkdir(exist_ok=True)
+ sources=[('content/modules/AF.Module.Prompt/ModuleData/PromptComposerTexts.'+lang+'.json','PromptComposerTexts.json'),('content/modules/AF.Module.Weekly/ModuleData/WorldBulletinPromptTexts'+('.en' if lang=='en' else '')+'.json','WorldBulletinPromptTexts.json'),('content/foundation/AF.Foundation.Localization/ModuleData/AdapterRecordPromptTexts'+('.en' if lang=='en' else '')+'.json','AdapterRecordPromptTexts.json')]
+ for p,name in sources:shutil.copyfile(R/p,pack/name)
+ run=subprocess.run([str(dotnet),str(out/'bin/Debug/net8.0/Tests.dll'),str(pack),lang,str(R/'artifacts/localization/campaign-fact-template-evidence.json'),str(R/'artifacts/localization/public-kill-template-evidence.json')],capture_output=True,text=True,encoding='utf-8',errors='replace');(out/(lang+'.log')).write_text(run.stdout+run.stderr,encoding='utf-8');print(run.stdout+run.stderr);assert run.returncode==0
+(out/'receipt.json').write_text(json.dumps({'sources':{p:hashlib.sha256((R/p).read_bytes()).hexdigest() for p in paths},'scope':'complete real projector, WorldBulletinPolicy, MemoryActionFactProjection, ExecutionTranscriptStore and packaged readers; no engine capture/network/save mutation'},indent=2),encoding='utf-8')

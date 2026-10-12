@@ -8,6 +8,7 @@ using TaleWorlds.Engine.GauntletUI;
 using TaleWorlds.Library;
 using TaleWorlds.MountAndBlade;
 using AnimusForge.Illustrator.Core;
+using AnimusForge.Illustrator.UI;
 using AnimusForge.Illustrator.UI.Gallery;
 using AnimusForge.Illustrator.UI.Patches;
 using AnimusForge.Illustrator.UI.Overlays;
@@ -148,7 +149,7 @@ namespace AnimusForge.Illustrator
                 starter.AddGameMenuOption(
                     "camp",
                     "af_illustrator_gallery",
-                    "卡拉迪亚纪事画廊 (AI 画卷)",
+                    IllustratorUiText.GalleryMenu,
                     args =>
                     {
                         args.optionLeaveType = GameMenuOption.LeaveType.Submenu;

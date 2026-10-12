@@ -1,0 +1,213 @@
+{
+  "Id": "rule_vampire_history",
+  "Keywords": [
+    "Vampire History",
+    "Nagash",
+    "Origins of the Midnight Aristocracy",
+    "Vampire Wars",
+    "Neferata",
+    "Vampire History Vlad",
+    "Vampire History Mannfred",
+    "Konrad",
+    "Vampire History Books of Nagash",
+    "Lahmia",
+    "Carstein Ring",
+    "Vampire Bloodlines"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The origins of vampires are inextricably linked to Nagash, the Lord of the Undead of ancient Nehekhara; legend holds that it was he who created the curse of immortality. Millennia later, the vampire progenitor Vlad von Carstein descended upon Sylvania, turning the land into a kingdom of night and launching the First Vampire War against the Empire. The most recent of the Vampire Wars was instigated by Mannfred von Carstein, and to this day the elders of the Empire still use these tales to frighten disobedient children."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Our history began with Nagash's forbidden experiments in the Great Desert, yet he merely unlocked the door—the true Midnight Aristocracy was born beneath the crimson lips of Neferata. Her blood-kin wandered north until at last Vlad—or rather Vashanesh, who called himself Vlad—arrived in crude Sylvania, wed Isabella, the only daughter of Otto von Drak, and henceforth transformed this land into an eternal realm of night. Vlad nearly conquered the entire Empire in the First Vampire War; had a traitor not betrayed the secret of his reliance on the Carstein Ring for resurrection, the Empire would have fallen long ago. Konrad continued the war but knew only frenzied slaughter, whereas Mannfred—the most cunning and feared of heirs—ignited the flames of war time and again. We are never truly defeated; we merely lie dormant for a time."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The three Vampire Wars are the darkest chapters in the history of the Empire. Vlad von Carstein launched the first war in 2010 IC, exploiting the advantage of undead needing no rest and fearing neither hunger nor cold to drive deep into Imperial territory in winter, before finally being destroyed during the Siege of Altdorf when the Carstein Ring was stolen. Konrad launched the second war in 2100 IC; though his tactics were crude, his bloody slaughter turned the northern Empire into an uninhabited realm of ghosts. The third war, waged by Mannfred, was the most insidious: he marched while negotiating, nearly succeeding in tearing apart the entire Imperial defensive line. Any commander who has studied these military histories understands: what is most terrifying about a vampire army is not its numbers, but the millennial wisdom of its general."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 100
+        },
+        "IdentityIds": null
+      },
+      "Content": "The complete genealogy of vampires is a dark epic of blood and curses. Around -1600 IC, Nagash brewed the forbidden Elixir of Life atop Cripple Peak in Nehekhara, sealing the formula within the Nine Books of Nagash. Neferata—Queen of Lahmia—seized the books after Nagash's first fall and drank the elixir using herself as the test subject, becoming the First Drinker and the first true vampire. She created the Lahmian bloodline, and these Midnight Aristocrats initially hid their fangs behind elegant veils in the courts of Nehekhara. Over time, the blood-kin spread northward and fractured into five great bloodlines. Vlad, progenitor of the von Carsteins, was originally the Lahmian noble Vashanesh; he appeared in Sylvania under a new identity in 1797 IC and swiftly took control of this province forsaken by the Empire. The Blood Dragon bloodline, meanwhile, originated from the transformation of Lahmia's martial saint Abhorash, who slew a great dragon and drank its blood dry, thereby founding a new lineage devoted to the pinnacle of martial prowess."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "A dimension of vampire history systematically overlooked by male historians is the central role of women within it—not as victims, but as architects. Neferata was the first vampire, which in itself says everything. Isabella von Carstein is portrayed in official narratives merely as Vlad's bride, yet in truth she single-handedly maintained the ruling apparatus of Sylvania for decades after Vlad was temporarily destroyed, ensuring that von Carstein power did not completely disintegrate before Mannfred's rise. And the entire organization of the Lahmian Sisterhood—an infiltration network dominated by female vampires operating across the great courts of the Old World—is one of the most influential and least understood female power structures in the Old World, founded by none other than Neferata herself. Viewed from a female perspective, vampire history is a millennia-long experiment in female power—once the curse erased the physical strength disparity between the sexes, female vampires proved, through their natural advantages in social grace, patience, and survival strategy, that they were far more adept than many male vampires at surviving in this eternal nocturnal politics."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The thousand-year history of the vampires serves as the most solemn cautionary tale for noble houses—because the lessons of the Vampire Wars have repeatedly validated the same rule: internal division within houses is more destructive than any external invasion. The reason Vlad nearly conquered the Empire was not that he possessed more armies than the Empire, but that when faced with his invasion, the Elector Counts of the Empire first considered how to use the vampires' hand to weaken their respective rivals. The most important lesson our house drew from the three Vampire Wars is that when confronting a common immortal enemy, noble families must establish a military mutual-protection mechanism driven by shared survival interests that transcends electoral votes and marriage alliances. The informal joint defense pact our house reached with three other families along the Sylvanian border has held for three generations—its existence has never been publicly discussed in the Imperial Diet, yet whenever vampire patrol cavalry appear on the distant hills, couriers from our four houses notify one another within two hours without waiting for official military orders from Altdorf."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "In the mouths of wanderers, the history of vampires is not a chronicle—it is a collection of horror stories, each beginning with the name of some village closest to the direction of Sylvania. While wandering between outposts in Ostermark, I once stayed in the ruins of an abandoned village that had been slaughtered to the last soul by Konrad a hundred years ago and marked on official maps as 'Cleared.' Yet on my very first night sleeping there, I understood why Imperial engineers never consider rebuilding a village on that land—at midnight the soil emits a faint bluish glow, not a reflection of moonlight, but the residual necromantic energy that seeped into the earth when the last undead host marched through; a hundred years have passed, and it is still slowly oozing out of the soil. To the living, the history of vampires is a geological record of catastrophe—the Vampire Wars are not wars that end within a single generation; they alter the soil, the water sources, the texture of the air, and the fertility rates of the people, and this damage is slowly passed down in insidious ways across several generations."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The economic history of the Vampire Wars is the most overlooked yet undeniable field of study in the Old World. After the First Vampire War ended, the price of arable land in Ostland plummeted to one-tenth of its pre-war level—not because the land had been destroyed, but because not a single freeholder was willing to buy farmland that might be trampled by corpses again within three years. After the Third Vampire War, our merchant house purchased vast timber-felling rights in the borderlands of Sylvania at rock-bottom prices from desperate Imperial nobles. It was a high-risk gamble—if Mannfred returned in force, those felling rights would be worthless—but if peace holds for more than three generations, that timber can be sold in Altdorf's construction market for prices sufficient to make our family an Elector-level economic power. The very existence of vampires is a market distortion—land around Sylvania can never be priced according to its actual productive potential, because an unquantifiable parameter must be factored into every commercial calculation: the probability of war."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Neferata's First Draught — the forbidden moment around -1600 IC when the first vampire was born",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "The origins of vampires are inextricably linked to Nagash, the Lord of the Undead of ancient Nehekhara"
+  ]
+}

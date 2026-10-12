@@ -1,0 +1,320 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base type="string">
+  <tags>
+    <tag language="English" />
+  </tags>
+  <strings>
+    <string id="AF_MEMORY_UI_JsonEmptyFieldGroup" text="(none)" />
+    <string id="AF_MEMORY_UI_JsonFieldGroups" text="{PRIMARY} + {SECONDARY}" />
+    <string id="AF_MEMORY_UI_AddAfef" text="Add AFEF line" />
+    <string id="AF_MEMORY_UI_AddAfefHint" text="Add an AFEF mechanism line excluded from LLM dialogue compression text." />
+    <string id="AF_MEMORY_UI_AddAfefShortHint" text="Add an AFEF mechanism line." />
+    <string id="AF_MEMORY_UI_AddAfefTitle" text="Add AFEF line - " />
+    <string id="AF_MEMORY_UI_AddLinePrompt" text="Enter the new line body; empty cancels." />
+    <string id="AF_MEMORY_UI_AddNormal" text="Add normal memory line" />
+    <string id="AF_MEMORY_UI_AddNormalHint" text="Add a raw line included in LLM dialogue memory." />
+    <string id="AF_MEMORY_UI_AddNormalTitle" text="Add normal memory line - " />
+    <string id="AF_MEMORY_UI_AfefLabel" text="AFEF: " />
+    <string id="AF_MEMORY_UI_AfefLinesLabel" text="AFEF lines: " />
+    <string id="AF_MEMORY_UI_AfefLlmConflict" text="An AFEF line cannot be marked as LLM dialogue." />
+    <string id="AF_MEMORY_UI_AfefPreviewLabel" text="AFEF preview: " />
+    <string id="AF_MEMORY_UI_Back" text="Back" />
+    <string id="AF_MEMORY_UI_BackToDates" text="Back to date list" />
+    <string id="AF_MEMORY_UI_BackToDayMenu" text="Back to this day's menu" />
+    <string id="AF_MEMORY_UI_BackToLines" text="Back to line list" />
+    <string id="AF_MEMORY_UI_BackToList" text="Back to list" />
+    <string id="AF_MEMORY_UI_BlockAfefUpdated" text="Memory-block AFEF lines updated." />
+    <string id="AF_MEMORY_UI_BlockBodyUpdated" text="Memory-block body updated." />
+    <string id="AF_MEMORY_UI_BlockCount" text="Compressed memory blocks:" />
+    <string id="AF_MEMORY_UI_BlockDeleteNotFound" text="The compressed memory block to delete could not be found." />
+    <string id="AF_MEMORY_UI_BlockDeleted" text="Compressed memory block deleted." />
+    <string id="AF_MEMORY_UI_BlockEditOverviewClearNotice" text="Editing or deleting clears this NPC's memory overview and queues organization again." />
+    <string id="AF_MEMORY_UI_BlockList" text="Compressed memory block list" />
+    <string id="AF_MEMORY_UI_BlockListDescription" text="Select a compressed memory block to edit.&#10;Compressed memory blocks: " />
+    <string id="AF_MEMORY_UI_BlockListResult" text=" blocks; current results: " />
+    <string id="AF_MEMORY_UI_BlockNotFound" text="The compressed memory block to edit could not be found." />
+    <string id="AF_MEMORY_UI_BlockPagePrefix" text=" blocks; page " />
+    <string id="AF_MEMORY_UI_BlockScenesUpdated" text="Memory-block scene list updated." />
+    <string id="AF_MEMORY_UI_BlockTitle" text="Memory block - " />
+    <string id="AF_MEMORY_UI_BlockTitleUpdated" text="Memory-block title updated." />
+    <string id="AF_MEMORY_UI_BlockUpdated" text="Compressed memory block updated." />
+    <string id="AF_MEMORY_UI_Blocks" text=" blocks" />
+    <string id="AF_MEMORY_UI_BlocksTitle" text="Compressed memory blocks" />
+    <string id="AF_MEMORY_UI_BodyPrefix" text="Body:&#10;" />
+    <string id="AF_MEMORY_UI_BodyPreviewLabel" text="Body preview: " />
+    <string id="AF_MEMORY_UI_BodyUpdated" text="Uncompressed memory body updated." />
+    <string id="AF_MEMORY_UI_Cancel" text="Cancel" />
+    <string id="AF_MEMORY_UI_ClearBodyPrefix" text="Delete " />
+    <string id="AF_MEMORY_UI_ClearBodySuffix" text="'s today history, pending summary queue, compressed blocks, and memory overview.&#10;This action cannot be undone. Continue?" />
+    <string id="AF_MEMORY_UI_ClearLlm" text="Clear LLM dialogue marker" />
+    <string id="AF_MEMORY_UI_ClearNewData" text="Clear this NPC's new memory data" />
+    <string id="AF_MEMORY_UI_ClearSearch" text="Clear search" />
+    <string id="AF_MEMORY_UI_ClearSearchHint" text="Show all uncompressed memory again." />
+    <string id="AF_MEMORY_UI_ClearedNewData" text="This NPC's new compressed-memory data was cleared." />
+    <string id="AF_MEMORY_UI_CompressedMemoryBlockNotFound" text="Compressed memory block could not be found." />
+    <string id="AF_MEMORY_UI_CompressionMenu" text="Compressed memory management - " />
+    <string id="AF_MEMORY_UI_ConfirmClear" text="Confirm clearing compressed memory" />
+    <string id="AF_MEMORY_UI_ConfirmClearButton" text="Clear" />
+    <string id="AF_MEMORY_UI_ConfirmDelete" text="Delete" />
+    <string id="AF_MEMORY_UI_ConfirmDeleteBlock" text="Confirm deleting compressed memory block" />
+    <string id="AF_MEMORY_UI_ConfirmDeleteDay" text="Confirm deleting uncompressed memory" />
+    <string id="AF_MEMORY_UI_ConfirmDeleteDayBody" text="Delete all uncompressed raw history for this day and remove its pending summary job.&#10;This action cannot be undone. Continue?" />
+    <string id="AF_MEMORY_UI_ConfirmDeleteDialogue" text="Confirm deleting dialogue history" />
+    <string id="AF_MEMORY_UI_ConfirmDeleteLine" text="Confirm deleting uncompressed memory line" />
+    <string id="AF_MEMORY_UI_ContentLabel" text="Content: " />
+    <string id="AF_MEMORY_UI_CurrentBlocks" text="Current compressed memory blocks: " />
+    <string id="AF_MEMORY_UI_CurrentDate" text="Current date: " />
+    <string id="AF_MEMORY_UI_CurrentDateNewline" text="&#10;Current date: " />
+    <string id="AF_MEMORY_UI_CurrentSearch" text="&#10;Current search: " />
+    <string id="AF_MEMORY_UI_DailyCompressionHeader" text="[Daily dialogue compression]" />
+    <string id="AF_MEMORY_UI_DateLabel" text="Date: " />
+    <string id="AF_MEMORY_UI_Day" text="Day {DAY}" />
+    <string id="AF_MEMORY_UI_DayDeleted" text="This day's uncompressed memory was deleted." />
+    <string id="AF_MEMORY_UI_DaysComma" text=" days, " />
+    <string id="AF_MEMORY_UI_DeleteAllDialogue" text="Delete all dialogue history for this NPC" />
+    <string id="AF_MEMORY_UI_DeleteBlock" text="Delete this memory block" />
+    <string id="AF_MEMORY_UI_DeleteBlockBody" text="'s compressed memory and reorganize the overview.&#10;This action cannot be undone. Continue?" />
+    <string id="AF_MEMORY_UI_DeleteBlockBodyPrefix" text="&#10;&#10;Delete this block from " />
+    <string id="AF_MEMORY_UI_DeleteBlockHint" text="Deleting clears this NPC's overview and queues organization again." />
+    <string id="AF_MEMORY_UI_DeleteDay" text="Delete this day's uncompressed memory" />
+    <string id="AF_MEMORY_UI_DeleteDayHint" text="Delete all raw history for this day and remove its pending summary job." />
+    <string id="AF_MEMORY_UI_DeleteDialogueBody" text="Delete all dialogue history for {HERO} ({COUNT} lines).&#10;This action cannot be undone. Continue?" />
+    <string id="AF_MEMORY_UI_DeleteLine" text="Delete line" />
+    <string id="AF_MEMORY_UI_DeleteLineHint" text="Deleting also removes the matching legacy dialogue-history line." />
+    <string id="AF_MEMORY_UI_DialogueDeleted" text="All dialogue history for this NPC was deleted." />
+    <string id="AF_MEMORY_UI_DialogueLineNotFound" text="The dialogue line to edit could not be found." />
+    <string id="AF_MEMORY_UI_DialogueLineUpdated" text="Dialogue line updated." />
+    <string id="AF_MEMORY_UI_Edit" text="Edit" />
+    <string id="AF_MEMORY_UI_EditAfef" text="Edit AFEF lines" />
+    <string id="AF_MEMORY_UI_EditAfefHint" text="Open the large editor to change AFEF one per line; keep at most 80 items." />
+    <string id="AF_MEMORY_UI_EditBlockAfefPrompt" text="One AFEF per line; empty clears them; keep at most 80 items." />
+    <string id="AF_MEMORY_UI_EditBlockAfefTitle" text="Edit memory-block AFEF - " />
+    <string id="AF_MEMORY_UI_EditBlockBodyHint" text="Open the large editor to change block body; empty clears the body." />
+    <string id="AF_MEMORY_UI_EditBlockBodyPrompt" text="Enter the new memory body; empty clears the body." />
+    <string id="AF_MEMORY_UI_EditBlockBodyTitle" text="Edit memory-block body - " />
+    <string id="AF_MEMORY_UI_EditBlockScenesPrompt" text="One scene per line; empty clears the scene list; keep at most 16 items." />
+    <string id="AF_MEMORY_UI_EditBlockScenesTitle" text="Edit memory-block scenes - " />
+    <string id="AF_MEMORY_UI_EditBlockTitle" text="Edit memory-block title - " />
+    <string id="AF_MEMORY_UI_EditBlockTitlePrompt" text="Enter the new rich title; empty clears the title." />
+    <string id="AF_MEMORY_UI_EditBlocks" text="Edit compressed memory blocks" />
+    <string id="AF_MEMORY_UI_EditBlocksTitle" text="Edit compressed memory blocks - " />
+    <string id="AF_MEMORY_UI_EditBody" text="Edit body" />
+    <string id="AF_MEMORY_UI_EditBodyHint" text="Open the large text editor to change the body; leave it empty to delete the line." />
+    <string id="AF_MEMORY_UI_EditBodyPrompt" text="Enter the new body; empty deletes the line." />
+    <string id="AF_MEMORY_UI_EditBodyTitle" text="Edit uncompressed memory body - " />
+    <string id="AF_MEMORY_UI_EditDialogueHistory" text="Edit dialogue history - " />
+    <string id="AF_MEMORY_UI_EditDialogueLine" text="Edit dialogue line - " />
+    <string id="AF_MEMORY_UI_EditDialogueLineHint" text="Edit the entire line in the field below; leave it empty to delete the line." />
+    <string id="AF_MEMORY_UI_EditDialogueLineLoadedHint" text="&#10;The original content is loaded below and can be edited.&#10;Leave it empty to delete the line." />
+    <string id="AF_MEMORY_UI_EditHour" text="Edit hour" />
+    <string id="AF_MEMORY_UI_EditHourHint" text="Change the in-game hour for this line." />
+    <string id="AF_MEMORY_UI_EditHourPrompt" text="&#10;Enter an integer from 0 to 23." />
+    <string id="AF_MEMORY_UI_EditHourTitle" text="Edit uncompressed memory hour" />
+    <string id="AF_MEMORY_UI_EditOverview" text="Edit memory overview" />
+    <string id="AF_MEMORY_UI_EditOverviewPrompt" text="Enter the new past-memory overview; empty clears it and waits for regeneration." />
+    <string id="AF_MEMORY_UI_EditOverviewTitle" text="Edit memory overview - " />
+    <string id="AF_MEMORY_UI_EditRawHistory" text="Edit today/pending raw history" />
+    <string id="AF_MEMORY_UI_EditRawLineTitle" text="Edit uncompressed memory line - " />
+    <string id="AF_MEMORY_UI_EditRawLines" text="Edit raw lines" />
+    <string id="AF_MEMORY_UI_EditRawLinesHint" text="View and edit every uncompressed memory line for this day." />
+    <string id="AF_MEMORY_UI_EditRawTitle" text="Edit uncompressed memory - " />
+    <string id="AF_MEMORY_UI_EditScene" text="Edit scene" />
+    <string id="AF_MEMORY_UI_EditSceneHint" text="Change the scene assigned to this line." />
+    <string id="AF_MEMORY_UI_EditScenePrompt" text="Enter a scene; empty uses unknown scene." />
+    <string id="AF_MEMORY_UI_EditSceneTitle" text="Edit uncompressed memory scene - " />
+    <string id="AF_MEMORY_UI_EditScenes" text="Edit scene list" />
+    <string id="AF_MEMORY_UI_EditScenesHint" text="Open the large editor to change scenes one per line; keep at most 16 items." />
+    <string id="AF_MEMORY_UI_EditSpeaker" text="Edit speaker" />
+    <string id="AF_MEMORY_UI_EditSpeakerHint" text="Change the speaker shown and synchronized for this line." />
+    <string id="AF_MEMORY_UI_EditSpeakerPrompt" text="Enter a speaker; empty uses the default speaker automatically." />
+    <string id="AF_MEMORY_UI_EditSpeakerTitle" text="Edit uncompressed memory speaker - " />
+    <string id="AF_MEMORY_UI_EditTitle" text="Edit title" />
+    <string id="AF_MEMORY_UI_EditTitleHint" text="Open the large editor to change the rich title; empty clears the title." />
+    <string id="AF_MEMORY_UI_Empty" text="(empty)" />
+    <string id="AF_MEMORY_UI_Enter" text="Enter" />
+    <string id="AF_MEMORY_UI_ErrorRecordedNotice" text="Recorded (details shown in bottom-left when triggered)" />
+    <string id="AF_MEMORY_UI_Execute" text="Execute" />
+    <string id="AF_MEMORY_UI_FlagHasError" text="Has error" />
+    <string id="AF_MEMORY_UI_FlagQueued" text="Queued" />
+    <string id="AF_MEMORY_UI_FlagWeeklyMaterialCount" text="Weekly material x{COUNT}" />
+    <string id="AF_MEMORY_UI_HistoryLineTitle" text="{DATE} / line {LINE}: {PREVIEW}" />
+    <string id="AF_MEMORY_UI_HourSeparator" text="h | " />
+    <string id="AF_MEMORY_UI_HourSuffix" text="h" />
+    <string id="AF_MEMORY_UI_HourUpdated" text="Uncompressed memory hour updated." />
+    <string id="AF_MEMORY_UI_IdLabel" text="ID: " />
+    <string id="AF_MEMORY_UI_IncludedBlockIds" text="Included block IDs:" />
+    <string id="AF_MEMORY_UI_IncludedBlockLabel" text="Included memory blocks: " />
+    <string id="AF_MEMORY_UI_IncludedBlocks" text=" blocks; included: " />
+    <string id="AF_MEMORY_UI_InvalidHour" text="Enter an integer from 0 to 23." />
+    <string id="AF_MEMORY_UI_IrreversibleConfirm" text="&#10;&#10;This action cannot be undone. Continue?" />
+    <string id="AF_MEMORY_UI_Items" text=" items" />
+    <string id="AF_MEMORY_UI_LastFailure" text="Last failure: " />
+    <string id="AF_MEMORY_UI_LatestError" text="; latest error: " />
+    <string id="AF_MEMORY_UI_LatestSummaryErrorLabel" text="Latest summary error: " />
+    <string id="AF_MEMORY_UI_LegacyHistoryNotice" text="Legacy _dialogueHistory_v2 is no longer injected into the main memory pipeline." />
+    <string id="AF_MEMORY_UI_LineAdded" text="Uncompressed memory line added." />
+    <string id="AF_MEMORY_UI_LineCount" text="Lines: " />
+    <string id="AF_MEMORY_UI_LineCountSuffix" text=" ({COUNT} lines)" />
+    <string id="AF_MEMORY_UI_LineDeleted" text="Uncompressed memory line deleted." />
+    <string id="AF_MEMORY_UI_LineListDescription" text="&#10;&#10;There are currently " />
+    <string id="AF_MEMORY_UI_LineListDescriptionSuffix" text=" lines. Select an item on the right to open line details." />
+    <string id="AF_MEMORY_UI_LineTypeUpdated" text="Uncompressed memory line type updated." />
+    <string id="AF_MEMORY_UI_Lines" text=" lines" />
+    <string id="AF_MEMORY_UI_ListSeparator" text=", " />
+    <string id="AF_MEMORY_UI_LlmDialogue" text="LLM dialogue" />
+    <string id="AF_MEMORY_UI_LlmMarkerUpdated" text="Uncompressed memory LLM marker updated." />
+    <string id="AF_MEMORY_UI_Manual" text="Manual" />
+    <string id="AF_MEMORY_UI_NextPage" text="Next page" />
+    <string id="AF_MEMORY_UI_NextPageHint" text="View the next page of results." />
+    <string id="AF_MEMORY_UI_NextStep" text="Next" />
+    <string id="AF_MEMORY_UI_No" text="no" />
+    <string id="AF_MEMORY_UI_NoBlocks" text="This NPC has no compressed memory blocks." />
+    <string id="AF_MEMORY_UI_NoData" text="(No data)" />
+    <string id="AF_MEMORY_UI_NoDialogueLinesForDate" text="There are no dialogue lines for this date." />
+    <string id="AF_MEMORY_UI_NoHistory" text="This NPC has no dialogue history." />
+    <string id="AF_MEMORY_UI_NoMatches" text="&#10;&#10;No matching results." />
+    <string id="AF_MEMORY_UI_NoRawHistory" text="This NPC has no uncompressed raw history." />
+    <string id="AF_MEMORY_UI_None" text="None" />
+    <string id="AF_MEMORY_UI_Normal" text="Normal" />
+    <string id="AF_MEMORY_UI_NormalLinesLabel" text="Normal lines: " />
+    <string id="AF_MEMORY_UI_NotGenerated" text="not generated" />
+    <string id="AF_MEMORY_UI_Overview" text="Memory overview:" />
+    <string id="AF_MEMORY_UI_OverviewCleared" text="Memory overview cleared; pending organization queue checked again." />
+    <string id="AF_MEMORY_UI_OverviewEditHint" text=" blocks.&#10;Saving non-empty content marks all current compressed blocks as included so the pending update queue does not overwrite it immediately." />
+    <string id="AF_MEMORY_UI_OverviewGenerated" text="generated, includes " />
+    <string id="AF_MEMORY_UI_OverviewHeader" text="[Memory overview]" />
+    <string id="AF_MEMORY_UI_OverviewQueue" text="; pending update queue: " />
+    <string id="AF_MEMORY_UI_OverviewTitle" text="Memory overview" />
+    <string id="AF_MEMORY_UI_OverviewUpdated" text="Memory overview updated." />
+    <string id="AF_MEMORY_UI_PagePrefix" text=" days; page " />
+    <string id="AF_MEMORY_UI_PageSuffix" text="." />
+    <string id="AF_MEMORY_UI_PastOverviewHeader" text="[Past-memory overview]" />
+    <string id="AF_MEMORY_UI_PendingUpdatesHeader" text="[Pending updates]" />
+    <string id="AF_MEMORY_UI_PreviewLabel" text="Preview: " />
+    <string id="AF_MEMORY_UI_PreviousPage" text="Previous page" />
+    <string id="AF_MEMORY_UI_PreviousPageHint" text="View the previous page of results." />
+    <string id="AF_MEMORY_UI_ProcessQueue" text="Process summary queue now" />
+    <string id="AF_MEMORY_UI_QueueCheckTriggered" text="Compressed-memory summary queue check started." />
+    <string id="AF_MEMORY_UI_QueueTitle" text="Pending summary queue" />
+    <string id="AF_MEMORY_UI_Queued" text="; queued: " />
+    <string id="AF_MEMORY_UI_QueuedForSummaryLabel" text="Queued for summary: " />
+    <string id="AF_MEMORY_UI_QueuedParenthetical" text=" (queued for summary)" />
+    <string id="AF_MEMORY_UI_RawDaysList" text="Uncompressed raw-history day list" />
+    <string id="AF_MEMORY_UI_RawHistory" text="Raw history" />
+    <string id="AF_MEMORY_UI_RawHistoryCount" text="Today/pending raw history:" />
+    <string id="AF_MEMORY_UI_RawLineList" text="Uncompressed raw-history lines" />
+    <string id="AF_MEMORY_UI_RawLineNotFound" text="The uncompressed memory line to edit could not be found." />
+    <string id="AF_MEMORY_UI_RawLineTitle" text="Uncompressed memory line - " />
+    <string id="AF_MEMORY_UI_RawLineUpdated" text="Uncompressed memory line updated." />
+    <string id="AF_MEMORY_UI_RawListDescription" text="Select a day of uncompressed raw history to edit.&#10;Raw history: " />
+    <string id="AF_MEMORY_UI_RawListResult" text=" days; current results: " />
+    <string id="AF_MEMORY_UI_RawMemoryNotFound" text="Uncompressed memory could not be found." />
+    <string id="AF_MEMORY_UI_RawMemoryTitle" text="Uncompressed memory - " />
+    <string id="AF_MEMORY_UI_RawNotFound" text="The uncompressed memory to edit could not be found." />
+    <string id="AF_MEMORY_UI_Save" text="Save" />
+    <string id="AF_MEMORY_UI_SceneLabel" text="Scene: " />
+    <string id="AF_MEMORY_UI_SceneUpdated" text="Uncompressed memory scene updated." />
+    <string id="AF_MEMORY_UI_Search" text="Search" />
+    <string id="AF_MEMORY_UI_SearchBlocks" text="Search compressed memory blocks" />
+    <string id="AF_MEMORY_UI_SearchBlocksPrompt" text="Enter keywords to match title, body, scenes, AFEF, date, or memory-block ID." />
+    <string id="AF_MEMORY_UI_SearchDialogue" text="Search dialogue history" />
+    <string id="AF_MEMORY_UI_SearchDialoguePrompt" text="Enter keywords to fuzzy-match this NPC's dialogue history by content.&#10;Leave empty to keep the current search." />
+    <string id="AF_MEMORY_UI_SearchDialogueTitle" text="Search dialogue history - " />
+    <string id="AF_MEMORY_UI_SearchNpcHistory" text="Search this NPC's history" />
+    <string id="AF_MEMORY_UI_SearchRaw" text="Search uncompressed memory" />
+    <string id="AF_MEMORY_UI_SearchRawHint" text="Filter by date, scene, speaker, body, or AFEF." />
+    <string id="AF_MEMORY_UI_SearchRawPrompt" text="Enter keywords to match dates, scenes, speakers, body text, or AFEF." />
+    <string id="AF_MEMORY_UI_SelectDate" text="Select a date to view/edit." />
+    <string id="AF_MEMORY_UI_SelectDialogueLine" text="Select a dialogue line to edit." />
+    <string id="AF_MEMORY_UI_SetLlm" text="Mark as LLM dialogue" />
+    <string id="AF_MEMORY_UI_SpeakerLabel" text="Speaker: " />
+    <string id="AF_MEMORY_UI_SpeakerUpdated" text="Uncompressed memory speaker updated." />
+    <string id="AF_MEMORY_UI_SummaryQueue" text="Pending summary queue:" />
+    <string id="AF_MEMORY_UI_SystemData" text="New compressed-memory system data:" />
+    <string id="AF_MEMORY_UI_TitleLabel" text="Title: " />
+    <string id="AF_MEMORY_UI_ToggleAfef" text="Change to AFEF line" />
+    <string id="AF_MEMORY_UI_ToggleNormal" text="Change to normal line" />
+    <string id="AF_MEMORY_UI_TriggerKingdomItem" text="- kingdom=" />
+    <string id="AF_MEMORY_UI_TriggerMoreCount" text="- ...and {COUNT} more" />
+    <string id="AF_MEMORY_UI_TypeLabel" text="Type: " />
+    <string id="AF_MEMORY_UI_UncompressedMemoryLineNotFound" text="Uncompressed memory line could not be found." />
+    <string id="AF_MEMORY_UI_UnknownScene" text="Unknown scene" />
+    <string id="AF_MEMORY_UI_Untitled" text="(untitled)" />
+    <string id="AF_MEMORY_UI_UpdatedTicks" text="Last update Ticks: " />
+    <string id="AF_MEMORY_UI_ViewBlocks" text="View compressed memory blocks" />
+    <string id="AF_MEMORY_UI_ViewOverview" text="View memory overview" />
+    <string id="AF_MEMORY_UI_ViewQueue" text="View pending summary queue" />
+    <string id="AF_MEMORY_UI_ViewRawHistory" text="View today/pending raw history" />
+    <string id="AF_MEMORY_UI_WeeklyMaterialLabel" text="Weekly material: " />
+    <string id="AF_MEMORY_UI_WeeklyMaterialTriggersLabel" text="Weekly material triggers: " />
+    <string id="AF_MEMORY_UI_Yes" text="yes" />
+    <string id="AF_MEMORY_UI_UnknownError" text="Unknown error" />
+    <string id="AF_MEMORY_UI_SummaryStarted" text="AnimusForge started {TOTAL} end-of-day summary jobs: {DAILY} dialogue memories, {MAJOR} major histories, {OVERVIEW} memory overviews; limit {RPM} per minute." />
+    <string id="AF_MEMORY_UI_SummaryFailedTitle" text="End-of-day summary failed" />
+    <string id="AF_MEMORY_UI_SummaryFailedBody" text="The following end-of-day summary jobs still failed after 3 attempts:&#10;&#10;{FAILURES}&#10;&#10;Fix the API or lower the memory summary RPM, then retry." />
+    <string id="AF_MEMORY_UI_SummaryCompleted" text="AnimusForge end-of-day summaries completed: {DAILY} dialogue memories, {MAJOR} major histories, {OVERVIEW} memory overviews." />
+    <string id="AF_MEMORY_UI_SummaryExceptionTitle" text="Memory summary exception" />
+    <string id="AF_MEMORY_UI_SummaryExceptionBody" text="Some results may already have been saved. This run has stopped; check the log before retrying.&#10;&#10;{ERROR}" />
+    <string id="AF_MEMORY_UI_DailyFailureLine" text="{NAME}, day {DAY}: {ERROR}" />
+    <string id="AF_MEMORY_UI_MajorFailureLine" text="{NAME}, major history: {ERROR}" />
+    <string id="AF_MEMORY_UI_OverviewFailureLine" text="{NAME}, memory overview: {ERROR}" />
+    <string id="AF_MEMORY_UI_RecallBlockedTitle" text="Compressed memory recall blocked" />
+    <string id="AF_MEMORY_UI_RecallEmbeddingUnavailable" text="Local ONNX embedding is unavailable; rich-title RAG cannot select compressed memories above the candidate limit.&#10;&#10;Fix the embedding model or reduce the number of memory blocks, then retry. The system will not silently fall back to dates or full text." />
+    <string id="AF_MEMORY_UI_RecallTitleEmbeddingFailed" text="Embedding failed for every compressed memory rich title.&#10;&#10;Fix the embedding model, then retry." />
+    <string id="AF_MEMORY_UI_RecallExceptionTitle" text="Compressed memory recall exception" />
+    <string id="AF_MEMORY_UI_PreprocessFailedTitle" text="Compressed memory preprocessing failed" />
+    <string id="AF_MEMORY_UI_PreprocessRequestException" text="Memory preprocessing request exception: {ERROR}" />
+    <string id="AF_MEMORY_UI_PreprocessUnsuccessful" text="Memory preprocessing did not succeed: {ERROR}&#10;&#10;Fix the preprocessing API, then retry." />
+    <string id="AF_MEMORY_UI_SelectionRequestFailed" text="Memory selection request failed: {ERROR}&#10;&#10;Fix the preprocessing API, then retry." />
+    <string id="AF_MEMORY_UI_PreprocessInvalidReply" text="Memory preprocessing returned an invalid response: {ERROR}. Return only one JSON object containing rule_codes and memory_ids arrays.&#10;&#10;Full model reply:&#10;{REPLY}&#10;&#10;Fix the preprocessing prompt or API output, then retry." />
+    <string id="AF_MEMORY_UI_NoModelReply" text="No model reply was received or could be parsed" />
+    <string id="AF_MEMORY_UI_SummaryEmpty" text="SUMMARY is empty." />
+    <string id="AF_MEMORY_UI_TitleOrSummaryEmpty" text="TITLE or SUMMARY is empty." />
+    <string id="AF_MEMORY_UI_UnknownParseError" text="Unknown parsing error." />
+    <string id="AF_MEMORY_UI_SummaryParseFailed" text="Summary response format could not be parsed: {ERROR}&#10;&#10;Full model reply:&#10;{REPLY}" />
+    <string id="AF_MEMORY_UI_ApiRequestFailed" text="API request failed" />
+    <string id="AF_MEMORY_UI_JsonParseFailed" text="JSON parsing failed." />
+    <string id="AF_MEMORY_UI_JsonObjectMissing" text="No JSON object could be found." />
+    <string id="AF_MEMORY_UI_JsonRequiredFieldsMissing" text="No JSON object contained the required fields: {FIELDS}." />
+    <string id="AF_MEMORY_UI_HourSingle" text="{HOUR}h" />
+    <string id="AF_MEMORY_UI_HourRange" text="{START}-{END}h" />
+    <string id="AF_MEMORY_UI_TagConfirmedGold" text="Confirmed gold payment" />
+    <string id="AF_MEMORY_UI_TagConfirmedAsset" text="Confirmed asset transfer" />
+    <string id="AF_MEMORY_UI_TagConfirmedDebtCreate" text="Confirmed debt creation" />
+    <string id="AF_MEMORY_UI_TagConfirmedDebtResolve" text="Confirmed debt repayment" />
+    <string id="AF_MEMORY_UI_TagConfirmedSettlement" text="Confirmed settlement asset transfer" />
+    <string id="AF_MEMORY_UI_TagDuel" text="Duel" />
+    <string id="AF_MEMORY_UI_TagGold" text="Gold payment" />
+    <string id="AF_MEMORY_UI_TagDebtCreate" text="New debt" />
+    <string id="AF_MEMORY_UI_TagDebtResolve" text="Debt repayment" />
+    <string id="AF_MEMORY_UI_TagTroops" text="Troop transfer" />
+    <string id="AF_MEMORY_UI_TagPrisoners" text="Prisoner transfer" />
+    <string id="AF_MEMORY_UI_TagAsset" text="Asset transfer" />
+    <string id="AF_MEMORY_UI_TagService" text="Kingdom service change" />
+    <string id="AF_MEMORY_UI_TagMarriage" text="Formal marriage" />
+    <string id="AF_MEMORY_UI_TagElopement" text="Marriage by elopement" />
+    <string id="AF_MEMORY_UI_TagDivorce" text="Divorce" />
+    <string id="AF_MEMORY_UI_TagAgenda" text="Kingdom agenda commitment" />
+    <string id="AF_MEMORY_UI_TagSiege" text="Siege aftermath: {ACTION}" />
+    <string id="AF_MEMORY_UI_ExportInvalid" text="Invalid compressed-memory file. Choose JSON exported from Compressed Memory." />
+    <string id="AF_MEMORY_UI_ExportPersona" text="This is a personality/background file, not compressed memory. Import it under Single Hero NPC &gt; Personality/background. Existing memories were not changed." />
+    <string id="AF_MEMORY_UI_ExportNoFields" text="The file has no compressed-memory fields. Choose JSON exported from Compressed Memory; existing memories were not changed." />
+    <string id="AF_MEMORY_UI_ExportFieldType" text="Compressed-memory field '{FIELD}' has the wrong type. Choose a valid compressed-memory export." />
+    <string id="AF_MEMORY_UI_DeleteUnavailable" text="This record cannot be deleted." />
+    <string id="AF_MEMORY_UI_DeleteChanged" text="The record changed. Reopen the history before deleting it." />
+    <string id="AF_MEMORY_UI_DeleteDone" text="The record was deleted." />
+    <string id="AF_MEMORY_UI_DeleteDoneCompressed" text="The record was deleted. That day was already compressed; compressed memory is unchanged." />
+    <string id="AF_MEMORY_UI_HistoryEditUnavailable" text="This record cannot be edited." />
+    <string id="AF_MEMORY_UI_HistoryEditMainThread" text="Records can only be edited on the game main thread." />
+    <string id="AF_MEMORY_UI_HistoryStoreUnavailable" text="No record storage is currently available." />
+    <string id="AF_MEMORY_UI_HistoryEditFailed" text="Editing failed; the record was not changed." />
+    <string id="AF_MEMORY_UI_HistoryEditEmpty" text="Content cannot be empty; use Delete to remove the record." />
+    <string id="AF_MEMORY_UI_HistoryEditChanged" text="The record changed. Reopen the history before editing it." />
+    <string id="AF_MEMORY_UI_HistoryEditFormat" text="This record's format cannot be edited safely." />
+    <string id="AF_MEMORY_UI_HistoryEditUnchanged" text="The content is unchanged." />
+    <string id="AF_MEMORY_UI_HistoryEditDone" text="The record was edited." />
+    <string id="AF_MEMORY_UI_HistoryEditDoneCompressed" text="The record was edited. That day was already compressed; compressed memory is unchanged." />
+    <string id="AF_MEMORY_UI_HistoryDeleteMainThread" text="Records can only be deleted on the game main thread." />
+    <string id="AF_MEMORY_UI_HistoryDeleteFailed" text="Deletion failed; the record was not changed." />
+  </strings>
+</base>

@@ -273,7 +273,7 @@ public static class PromptListRetrievalService
 		return SelectCandidates(candidates, mentions, GetSettlementTransferAliases, maxCount);
 	}
 
-	public static string BuildRemainingRewardItemsSummary(IEnumerable<RewardSystemBehavior.RewardItemInfo> allCandidates, IEnumerable<RewardSystemBehavior.RewardItemInfo> shownCandidates, string ownerLabel = "你")
+	public static string BuildRemainingRewardItemsSummary(IEnumerable<RewardSystemBehavior.RewardItemInfo> allCandidates, IEnumerable<RewardSystemBehavior.RewardItemInfo> shownCandidates, string ownerLabel = null)
 	{
 		Dictionary<string, int> counts = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
 		HashSet<RewardSystemBehavior.RewardItemInfo> shown = new HashSet<RewardSystemBehavior.RewardItemInfo>((shownCandidates ?? Enumerable.Empty<RewardSystemBehavior.RewardItemInfo>()).Where((RewardSystemBehavior.RewardItemInfo x) => x != null));
@@ -285,10 +285,10 @@ public static class PromptListRetrievalService
 			}
 			AddRemainderCount(counts, GetRewardItemRemainderTypeLabel(item), Math.Max(1, item.Count));
 		}
-		return BuildRemainingSummaryText(counts, ownerLabel);
+		return BuildRemainingSummaryText(counts, ownerLabel ?? PromptRetrievalTexts.Prompt("DefaultOwner"));
 	}
 
-	public static string BuildRemainingPartyTransferSummary(IEnumerable<MyBehavior.PartyTransferPromptEntry> allCandidates, IEnumerable<MyBehavior.PartyTransferPromptEntry> shownCandidates, bool isPrisoner, string ownerLabel = "你")
+	public static string BuildRemainingPartyTransferSummary(IEnumerable<MyBehavior.PartyTransferPromptEntry> allCandidates, IEnumerable<MyBehavior.PartyTransferPromptEntry> shownCandidates, bool isPrisoner, string ownerLabel = null)
 	{
 		Dictionary<string, int> counts = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
 		HashSet<MyBehavior.PartyTransferPromptEntry> shown = new HashSet<MyBehavior.PartyTransferPromptEntry>((shownCandidates ?? Enumerable.Empty<MyBehavior.PartyTransferPromptEntry>()).Where((MyBehavior.PartyTransferPromptEntry x) => x != null));
@@ -300,10 +300,10 @@ public static class PromptListRetrievalService
 			}
 			AddRemainderCount(counts, GetPartyTransferRemainderTypeLabel(entry, isPrisoner), Math.Max(1, entry.Count));
 		}
-		return BuildRemainingSummaryText(counts, ownerLabel);
+		return BuildRemainingSummaryText(counts, ownerLabel ?? PromptRetrievalTexts.Prompt("DefaultOwner"));
 	}
 
-	public static string BuildRemainingSettlementTransferSummary(IEnumerable<MyBehavior.SettlementTransferPromptEntry> allCandidates, IEnumerable<MyBehavior.SettlementTransferPromptEntry> shownCandidates, string ownerLabel = "你")
+	public static string BuildRemainingSettlementTransferSummary(IEnumerable<MyBehavior.SettlementTransferPromptEntry> allCandidates, IEnumerable<MyBehavior.SettlementTransferPromptEntry> shownCandidates, string ownerLabel = null)
 	{
 		Dictionary<string, int> counts = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
 		HashSet<MyBehavior.SettlementTransferPromptEntry> shown = new HashSet<MyBehavior.SettlementTransferPromptEntry>((shownCandidates ?? Enumerable.Empty<MyBehavior.SettlementTransferPromptEntry>()).Where((MyBehavior.SettlementTransferPromptEntry x) => x != null));
@@ -315,7 +315,7 @@ public static class PromptListRetrievalService
 			}
 			AddRemainderCount(counts, GetSettlementTransferRemainderTypeLabel(entry), 1);
 		}
-		return BuildRemainingSummaryText(counts, ownerLabel);
+		return BuildRemainingSummaryText(counts, ownerLabel ?? PromptRetrievalTexts.Prompt("DefaultOwner"));
 	}
 
 	public static IEnumerable<string> GetRewardItemAliases(RewardSystemBehavior.RewardItemInfo item)
@@ -348,9 +348,12 @@ public static class PromptListRetrievalService
 		}
 		if (item.IsPrivateEquipment)
 		{
-			AddAlias(aliases, "私人装备");
-			AddAlias(aliases, "装备");
-			AddAlias(aliases, "身上装备");
+			AddAlias(aliases, PromptRetrievalTexts.Raw("Raw_7b165403022c"));
+			AddAlias(aliases, "private equipment");
+			AddAlias(aliases, PromptRetrievalTexts.Raw("Raw_144a327039fe"));
+			AddAlias(aliases, "equipment");
+			AddAlias(aliases, PromptRetrievalTexts.Raw("Raw_cecbde9ca1e4"));
+			AddAlias(aliases, "worn equipment");
 		}
 		return aliases;
 	}
@@ -369,6 +372,7 @@ public static class PromptListRetrievalService
 			AddAlias(aliases, character.Name?.ToString());
 			AddAlias(aliases, character.StringId);
 			AddAlias(aliases, MyBehavior.GetPartyTransferTroopTypeLabelForExternal(character));
+			AddAlias(aliases, EconomyPromptTexts.ProjectSource(MyBehavior.GetPartyTransferTroopTypeLabelForExternal(character)));
 			try
 			{
 				AddAlias(aliases, character.Culture?.Name?.ToString());
@@ -381,42 +385,62 @@ public static class PromptListRetrievalService
 		}
 		int tier = Math.Max(0, character?.Tier ?? 0);
 		AddAlias(aliases, "T" + tier.ToString(CultureInfo.InvariantCulture));
-		AddAlias(aliases, tier.ToString(CultureInfo.InvariantCulture) + "阶");
-		AddAlias(aliases, tier.ToString(CultureInfo.InvariantCulture) + "级");
+		AddAlias(aliases, tier.ToString(CultureInfo.InvariantCulture) + PromptRetrievalTexts.Raw("Raw_0e13242a813e"));
+		AddAlias(aliases, tier.ToString(CultureInfo.InvariantCulture) + PromptRetrievalTexts.Raw("Raw_6e2d7f7c077c"));
+        AddAlias(aliases, "tier " + tier.ToString(CultureInfo.InvariantCulture));
+        AddAlias(aliases, "level " + tier.ToString(CultureInfo.InvariantCulture));
 		if (tier >= 4)
 		{
-			AddAlias(aliases, "高阶");
-			AddAlias(aliases, "高级");
-			AddAlias(aliases, "精锐");
+			AddAlias(aliases, PromptRetrievalTexts.Raw("Raw_a5399ff0bbbb"));
+			AddAlias(aliases, "high tier");
+			AddAlias(aliases, PromptRetrievalTexts.Raw("Raw_d6e61888b078"));
+			AddAlias(aliases, "high level");
+			AddAlias(aliases, PromptRetrievalTexts.Raw("Raw_0425e9c31a48"));
+			AddAlias(aliases, "elite");
 		}
 		else if (tier > 0 && tier <= 2)
 		{
-			AddAlias(aliases, "低阶");
-			AddAlias(aliases, "低级");
-			AddAlias(aliases, "新兵");
+			AddAlias(aliases, PromptRetrievalTexts.Raw("Raw_463dd3e3d8a1"));
+			AddAlias(aliases, "low tier");
+			AddAlias(aliases, PromptRetrievalTexts.Raw("Raw_b65f8cbdeece"));
+			AddAlias(aliases, "low level");
+			AddAlias(aliases, PromptRetrievalTexts.Raw("Raw_9a30fea1d2a7"));
+			AddAlias(aliases, "recruits");
 		}
 		if (isPrisoner || entry.Section == MyBehavior.PartyTransferEntrySection.NpcPrisoners || entry.Section == MyBehavior.PartyTransferEntrySection.PlayerPrisoners)
 		{
-			AddAlias(aliases, "俘虏");
-			AddAlias(aliases, "囚犯");
-			AddAlias(aliases, "战俘");
+			AddAlias(aliases, PromptRetrievalTexts.Raw("Raw_d4d7cb2d3fda"));
+			AddAlias(aliases, "prisoners");
+			AddAlias(aliases, PromptRetrievalTexts.Raw("Raw_d16bf156e5f9"));
+			AddAlias(aliases, "captives");
+			AddAlias(aliases, PromptRetrievalTexts.Raw("Raw_995318f779e6"));
+			AddAlias(aliases, "prisoners of war");
 			if (entry.IsHero || character?.IsHero == true)
 			{
-				AddAlias(aliases, "英雄俘虏");
-				AddAlias(aliases, "贵族俘虏");
-				AddAlias(aliases, "领主俘虏");
+				AddAlias(aliases, PromptRetrievalTexts.Raw("Raw_5adcca8021b4"));
+				AddAlias(aliases, "hero prisoners");
+				AddAlias(aliases, PromptRetrievalTexts.Raw("Raw_1574b70d3435"));
+				AddAlias(aliases, "noble prisoners");
+				AddAlias(aliases, PromptRetrievalTexts.Raw("Raw_8559f30ae6fa"));
+				AddAlias(aliases, "lord prisoners");
 			}
 		}
 		else
 		{
-			AddAlias(aliases, "部队");
-			AddAlias(aliases, "士兵");
-			AddAlias(aliases, "兵种");
+			AddAlias(aliases, PromptRetrievalTexts.Raw("Raw_3a4927628668"));
+			AddAlias(aliases, "troops");
+			AddAlias(aliases, PromptRetrievalTexts.Raw("Raw_eaa8dd04fd68"));
+			AddAlias(aliases, "soldiers");
+			AddAlias(aliases, PromptRetrievalTexts.Raw("Raw_ec172417f61d"));
+			AddAlias(aliases, "troop type");
 			if (entry.Section == MyBehavior.PartyTransferEntrySection.NpcVolunteers)
 			{
-				AddAlias(aliases, "要人募兵");
-				AddAlias(aliases, "志愿兵");
-				AddAlias(aliases, "可招募");
+				AddAlias(aliases, PromptRetrievalTexts.Raw("Raw_fd0aaa452708"));
+				AddAlias(aliases, "notable recruitment");
+				AddAlias(aliases, PromptRetrievalTexts.Raw("Raw_177bbc8721a2"));
+				AddAlias(aliases, "volunteers");
+				AddAlias(aliases, PromptRetrievalTexts.Raw("Raw_4eaf93b3f318"));
+				AddAlias(aliases, "recruitable");
 			}
 		}
 		return aliases;
@@ -446,13 +470,17 @@ public static class PromptListRetrievalService
 			AddAlias(aliases, settlement.OwnerClan?.StringId);
 			if (settlement.IsTown)
 			{
-				AddAlias(aliases, "城市");
-				AddAlias(aliases, "城镇");
+				AddAlias(aliases, PromptRetrievalTexts.Raw("Raw_ed84a1665f79"));
+				AddAlias(aliases, "city");
+				AddAlias(aliases, PromptRetrievalTexts.Raw("Raw_f8e6a6ef09fb"));
+				AddAlias(aliases, "town");
 			}
 			if (settlement.IsCastle)
 			{
-				AddAlias(aliases, "城堡");
-				AddAlias(aliases, "堡垒");
+				AddAlias(aliases, PromptRetrievalTexts.Raw("Raw_f6f854a2bc96"));
+				AddAlias(aliases, "castle");
+				AddAlias(aliases, PromptRetrievalTexts.Raw("Raw_ec48dc10a769"));
+				AddAlias(aliases, "fortress");
 			}
 		}
 		try
@@ -473,22 +501,34 @@ public static class PromptListRetrievalService
 		switch (entry.AssetKind)
 		{
 		case MyBehavior.SettlementTransferAssetKind.Settlement:
-			AddAlias(aliases, "固定资产");
-			AddAlias(aliases, "封地");
-			AddAlias(aliases, "领地");
-			AddAlias(aliases, "城市");
-			AddAlias(aliases, "城堡");
+			AddAlias(aliases, PromptRetrievalTexts.Raw("Raw_49be60b1a1b2"));
+			AddAlias(aliases, "fixed assets");
+			AddAlias(aliases, PromptRetrievalTexts.Raw("Raw_21ee56440eca"));
+			AddAlias(aliases, "fief");
+			AddAlias(aliases, PromptRetrievalTexts.Raw("Raw_f9bab1c5399d"));
+			AddAlias(aliases, "holdings");
+			AddAlias(aliases, PromptRetrievalTexts.Raw("Raw_ed84a1665f79"));
+			AddAlias(aliases, "city");
+			AddAlias(aliases, PromptRetrievalTexts.Raw("Raw_f6f854a2bc96"));
+			AddAlias(aliases, "castle");
 			break;
 		case MyBehavior.SettlementTransferAssetKind.Workshop:
-			AddAlias(aliases, "固定资产");
-			AddAlias(aliases, "工坊");
-			AddAlias(aliases, "作坊");
-			AddAlias(aliases, "店铺");
+			AddAlias(aliases, PromptRetrievalTexts.Raw("Raw_49be60b1a1b2"));
+			AddAlias(aliases, "fixed assets");
+			AddAlias(aliases, PromptRetrievalTexts.Raw("Raw_c647c592b70e"));
+			AddAlias(aliases, "workshop");
+			AddAlias(aliases, PromptRetrievalTexts.Raw("Raw_fcd1cf260b43"));
+			AddAlias(aliases, "workshop");
+			AddAlias(aliases, PromptRetrievalTexts.Raw("Raw_7c517652a3a7"));
+			AddAlias(aliases, "shop");
 			break;
 		case MyBehavior.SettlementTransferAssetKind.Caravan:
-			AddAlias(aliases, "固定资产");
-			AddAlias(aliases, "商队");
-			AddAlias(aliases, "商船队");
+			AddAlias(aliases, PromptRetrievalTexts.Raw("Raw_49be60b1a1b2"));
+			AddAlias(aliases, "fixed assets");
+			AddAlias(aliases, PromptRetrievalTexts.Raw("Raw_2f05eb3e6e27"));
+			AddAlias(aliases, "caravan");
+			AddAlias(aliases, PromptRetrievalTexts.Raw("Raw_6162ae9bab6c"));
+			AddAlias(aliases, "trade fleet");
 			break;
 		}
 		return aliases;
@@ -499,21 +539,21 @@ public static class PromptListRetrievalService
 		ItemObject item = itemInfo?.Item;
 		if (item == null)
 		{
-			return itemInfo?.IsPrivateEquipment == true ? "装备" : "物品";
+			return itemInfo?.IsPrivateEquipment == true ? AdapterPromptCaptureTexts.PcapCompat("Project_Remainder_1") : AdapterPromptCaptureTexts.PcapCompat("Project_Remainder_2");
 		}
 		try
 		{
 			if (item.IsFood)
 			{
-				return "食物";
+				return AdapterPromptCaptureTexts.PcapCompat("Project_Remainder_3");
 			}
 			if (item.HasHorseComponent || item.Type == ItemObject.ItemTypeEnum.Horse)
 			{
-				return "马匹";
+				return AdapterPromptCaptureTexts.PcapCompat("Project_Remainder_4");
 			}
 			if (item.IsAnimal || item.Type == ItemObject.ItemTypeEnum.Animal)
 			{
-				return "牲畜";
+				return AdapterPromptCaptureTexts.PcapCompat("Project_Remainder_5");
 			}
 		}
 		catch
@@ -522,24 +562,24 @@ public static class PromptListRetrievalService
 		switch (item.Type)
 		{
 		case ItemObject.ItemTypeEnum.OneHandedWeapon:
-			return "单手武器";
+			return AdapterPromptCaptureTexts.PcapCompat("Project_Remainder_6");
 		case ItemObject.ItemTypeEnum.TwoHandedWeapon:
-			return "双手武器";
+			return AdapterPromptCaptureTexts.PcapCompat("Project_Remainder_7");
 		case ItemObject.ItemTypeEnum.Polearm:
-			return "长柄武器";
+			return AdapterPromptCaptureTexts.PcapCompat("Project_Remainder_8");
 		case ItemObject.ItemTypeEnum.Bow:
-			return "弓";
+			return AdapterPromptCaptureTexts.PcapCompat("Project_Remainder_9");
 		case ItemObject.ItemTypeEnum.Crossbow:
-			return "弩";
+			return AdapterPromptCaptureTexts.PcapCompat("Project_Remainder_10");
 		case ItemObject.ItemTypeEnum.Arrows:
 		case ItemObject.ItemTypeEnum.Bolts:
 		case ItemObject.ItemTypeEnum.SlingStones:
 		case ItemObject.ItemTypeEnum.Bullets:
-			return "弹药";
+			return AdapterPromptCaptureTexts.PcapCompat("Project_Remainder_11");
 		case ItemObject.ItemTypeEnum.Shield:
-			return "盾牌";
+			return AdapterPromptCaptureTexts.PcapCompat("Project_Remainder_12");
 		case ItemObject.ItemTypeEnum.Thrown:
-			return "投掷武器";
+			return AdapterPromptCaptureTexts.PcapCompat("Project_Remainder_13");
 		case ItemObject.ItemTypeEnum.HeadArmor:
 		case ItemObject.ItemTypeEnum.BodyArmor:
 		case ItemObject.ItemTypeEnum.ChestArmor:
@@ -547,53 +587,53 @@ public static class PromptListRetrievalService
 		case ItemObject.ItemTypeEnum.HandArmor:
 		case ItemObject.ItemTypeEnum.Cape:
 		case ItemObject.ItemTypeEnum.HorseHarness:
-			return "护甲";
+			return AdapterPromptCaptureTexts.PcapCompat("Project_Remainder_14");
 		case ItemObject.ItemTypeEnum.Goods:
-			return "贸易品";
+			return AdapterPromptCaptureTexts.PcapCompat("Project_Remainder_15");
 		}
 		string label = RewardSystemBehavior.GetItemPromptTypeLabelForExternal(item);
-		return string.IsNullOrWhiteSpace(label) ? (itemInfo?.IsPrivateEquipment == true ? "装备" : "物品") : label.Trim();
+		return string.IsNullOrWhiteSpace(label) ? (itemInfo?.IsPrivateEquipment == true ? AdapterPromptCaptureTexts.PcapCompat("Project_Remainder_1") : AdapterPromptCaptureTexts.PcapCompat("Project_Remainder_2")) : label.Trim();
 	}
 
 	private static string GetPartyTransferRemainderTypeLabel(MyBehavior.PartyTransferPromptEntry entry, bool isPrisoner)
 	{
 		if (entry?.IsHero == true || entry?.Character?.IsHero == true)
 		{
-			return isPrisoner ? "英雄俘虏" : "英雄";
+			return isPrisoner ? AdapterPromptCaptureTexts.PcapCompat("Project_Remainder_16") : AdapterPromptCaptureTexts.PcapCompat("Project_Remainder_17");
 		}
 		string type = MyBehavior.GetPartyTransferTroopTypeLabelForExternal(entry?.Character);
 		if (string.IsNullOrWhiteSpace(type))
 		{
-			type = "步兵";
+			type = AdapterPromptCaptureTexts.PcapCompat("Project_Remainder_18");
 		}
 		int tier = Math.Max(0, entry?.Character?.Tier ?? 0);
 		string prefix = "";
 		if (tier >= 4)
 		{
-			prefix = "高阶";
+			prefix = AdapterPromptCaptureTexts.PcapCompat("Project_Remainder_19");
 		}
 		else if (tier > 0 && tier <= 2)
 		{
-			prefix = "低阶";
+			prefix = AdapterPromptCaptureTexts.PcapCompat("Project_Remainder_20");
 		}
 		string label = prefix + type.Trim();
-		return isPrisoner ? (label + "俘虏") : label;
+		return isPrisoner ? (label + AdapterPromptCaptureTexts.PcapCompat("Project_Remainder_21")) : label;
 	}
 
 	private static string GetSettlementTransferRemainderTypeLabel(MyBehavior.SettlementTransferPromptEntry entry)
 	{
 		if (entry == null)
 		{
-			return "固定资产";
+			return AdapterPromptCaptureTexts.PcapCompat("Project_Remainder_22");
 		}
 		Settlement settlement = entry.Settlement;
 		if (settlement?.IsTown == true)
 		{
-			return "城市";
+			return AdapterPromptCaptureTexts.PcapCompat("Project_Remainder_23");
 		}
 		if (settlement?.IsCastle == true)
 		{
-			return "城堡";
+			return AdapterPromptCaptureTexts.PcapCompat("Project_Remainder_24");
 		}
 		if (!string.IsNullOrWhiteSpace(entry.TypeLabel))
 		{
@@ -602,13 +642,13 @@ public static class PromptListRetrievalService
 		switch (entry.AssetKind)
 		{
 		case MyBehavior.SettlementTransferAssetKind.Workshop:
-			return "工坊";
+			return AdapterPromptCaptureTexts.PcapCompat("Project_Remainder_25");
 		case MyBehavior.SettlementTransferAssetKind.Caravan:
-			return "商队";
+			return AdapterPromptCaptureTexts.PcapCompat("Project_Remainder_26");
 		case MyBehavior.SettlementTransferAssetKind.Settlement:
-			return "领地";
+			return AdapterPromptCaptureTexts.PcapCompat("Project_Remainder_27");
 		default:
-			return "固定资产";
+			return AdapterPromptCaptureTexts.PcapCompat("Project_Remainder_22");
 		}
 	}
 
@@ -621,7 +661,7 @@ public static class PromptListRetrievalService
 		string key = (label ?? "").Trim();
 		if (string.IsNullOrWhiteSpace(key))
 		{
-			key = "其他";
+			key = AdapterPromptCaptureTexts.PcapCompat("Project_Remainder_28");
 		}
 		counts.TryGetValue(key, out var current);
 		counts[key] = current + amount;
@@ -639,13 +679,14 @@ public static class PromptListRetrievalService
 			return "";
 		}
 		int hiddenTypeCount = Math.Max(0, parts.Count - 8);
-		string body = string.Join("、", parts.Take(8).Select((KeyValuePair<string, int> x) => x.Key + " x" + Math.Max(1, x.Value).ToString(CultureInfo.InvariantCulture)));
+		string separator = AdapterPromptCaptureTexts.PcapText("remainder_separator", ", ");
+		string body = string.Join(separator, parts.Take(8).Select((KeyValuePair<string, int> x) => AdapterPromptCaptureTexts.PcapProjectKnown(x.Key) + " x" + Math.Max(1, x.Value).ToString(CultureInfo.InvariantCulture)));
 		if (hiddenTypeCount > 0)
 		{
-			body += " 等" + hiddenTypeCount.ToString(CultureInfo.InvariantCulture) + "类";
+			body += AdapterPromptCaptureTexts.PcapFormat("remainder_more_types", " and {COUNT} more types", ("COUNT", hiddenTypeCount.ToString(CultureInfo.InvariantCulture)));
 		}
-		string owner = string.IsNullOrWhiteSpace(ownerLabel) ? "你" : ownerLabel.Trim();
-		return "除此之外，" + owner + "还有未逐条展示的候选类型：" + body + "。";
+		string owner = string.IsNullOrWhiteSpace(ownerLabel) ? AdapterPromptCaptureTexts.PcapText("Project_Remainder_29") : AdapterPromptCaptureTexts.PcapProjectKnown(ownerLabel.Trim());
+		return AdapterPromptCaptureTexts.PcapFormat("remainder_summary", "In addition, {OWNER} have candidate types not listed individually: {BODY}.", ("OWNER", owner), ("BODY", body));
 	}
 
 	private static void AddItemTypeAliases(List<string> aliases, ItemObject item)
@@ -658,21 +699,30 @@ public static class PromptListRetrievalService
 		{
 			if (item.IsFood)
 			{
-				AddAlias(aliases, "食物");
-				AddAlias(aliases, "粮食");
-				AddAlias(aliases, "粮草");
-				AddAlias(aliases, "口粮");
+				AddAlias(aliases, PromptRetrievalTexts.Raw("Raw_ab2775f0d353"));
+				AddAlias(aliases, "food");
+				AddAlias(aliases, PromptRetrievalTexts.Raw("Raw_661b85c39112"));
+				AddAlias(aliases, "grain");
+				AddAlias(aliases, PromptRetrievalTexts.Raw("Raw_fc6b568be3c6"));
+				AddAlias(aliases, "supplies");
+				AddAlias(aliases, PromptRetrievalTexts.Raw("Raw_7db734f85dc9"));
+				AddAlias(aliases, "rations");
 			}
 			if (item.IsAnimal)
 			{
-				AddAlias(aliases, "牲畜");
-				AddAlias(aliases, "动物");
+				AddAlias(aliases, PromptRetrievalTexts.Raw("Raw_9fa24900d772"));
+				AddAlias(aliases, "livestock");
+				AddAlias(aliases, PromptRetrievalTexts.Raw("Raw_7ebb07e850a4"));
+				AddAlias(aliases, "animals");
 			}
 			if (item.HasHorseComponent)
 			{
-				AddAlias(aliases, "马");
-				AddAlias(aliases, "马匹");
-				AddAlias(aliases, "坐骑");
+				AddAlias(aliases, PromptRetrievalTexts.Raw("Raw_a25ee73c98d1"));
+				AddAlias(aliases, "horse");
+				AddAlias(aliases, PromptRetrievalTexts.Raw("Raw_39185c90ef7a"));
+				AddAlias(aliases, "horses");
+				AddAlias(aliases, PromptRetrievalTexts.Raw("Raw_f57b69e8b31c"));
+				AddAlias(aliases, "mount");
 			}
 		}
 		catch
@@ -681,82 +731,127 @@ public static class PromptListRetrievalService
 		switch (item.Type)
 		{
 		case ItemObject.ItemTypeEnum.Horse:
-			AddAlias(aliases, "马");
-			AddAlias(aliases, "马匹");
-			AddAlias(aliases, "坐骑");
+			AddAlias(aliases, PromptRetrievalTexts.Raw("Raw_a25ee73c98d1"));
+			AddAlias(aliases, "horse");
+			AddAlias(aliases, PromptRetrievalTexts.Raw("Raw_39185c90ef7a"));
+			AddAlias(aliases, "horses");
+			AddAlias(aliases, PromptRetrievalTexts.Raw("Raw_f57b69e8b31c"));
+			AddAlias(aliases, "mount");
 			break;
 		case ItemObject.ItemTypeEnum.OneHandedWeapon:
-			AddAlias(aliases, "单手武器");
-			AddAlias(aliases, "剑");
-			AddAlias(aliases, "刀");
+			AddAlias(aliases, PromptRetrievalTexts.Raw("Raw_21dd82d786f4"));
+			AddAlias(aliases, "one-handed weapons");
+			AddAlias(aliases, PromptRetrievalTexts.Raw("Raw_391aa9b897c3"));
+			AddAlias(aliases, "sword");
+			AddAlias(aliases, PromptRetrievalTexts.Raw("Raw_f7bff9ed8550"));
+			AddAlias(aliases, "blade");
 			break;
 		case ItemObject.ItemTypeEnum.TwoHandedWeapon:
-			AddAlias(aliases, "双手武器");
-			AddAlias(aliases, "大剑");
-			AddAlias(aliases, "长柄武器");
+			AddAlias(aliases, PromptRetrievalTexts.Raw("Raw_1dd52a9c6a4f"));
+			AddAlias(aliases, "two-handed weapons");
+			AddAlias(aliases, PromptRetrievalTexts.Raw("Raw_accf680837c8"));
+			AddAlias(aliases, "greatsword");
+			AddAlias(aliases, PromptRetrievalTexts.Raw("Raw_b4cc81a2dab8"));
+			AddAlias(aliases, "polearms");
 			break;
 		case ItemObject.ItemTypeEnum.Polearm:
-			AddAlias(aliases, "长柄武器");
-			AddAlias(aliases, "长枪");
-			AddAlias(aliases, "枪矛");
+			AddAlias(aliases, PromptRetrievalTexts.Raw("Raw_b4cc81a2dab8"));
+			AddAlias(aliases, "polearms");
+			AddAlias(aliases, PromptRetrievalTexts.Raw("Raw_6263e32ea5d9"));
+			AddAlias(aliases, "lance");
+			AddAlias(aliases, PromptRetrievalTexts.Raw("Raw_6a446fa79174"));
+			AddAlias(aliases, "spear");
 			break;
 		case ItemObject.ItemTypeEnum.Arrows:
 		case ItemObject.ItemTypeEnum.Bolts:
-			AddAlias(aliases, "箭");
-			AddAlias(aliases, "箭矢");
-			AddAlias(aliases, "弩矢");
-			AddAlias(aliases, "弹药");
+			AddAlias(aliases, PromptRetrievalTexts.Raw("Raw_674650b36c70"));
+			AddAlias(aliases, "arrows");
+			AddAlias(aliases, PromptRetrievalTexts.Raw("Raw_a392322b6893"));
+			AddAlias(aliases, "arrows");
+			AddAlias(aliases, PromptRetrievalTexts.Raw("Raw_69186efbd61f"));
+			AddAlias(aliases, "bolts");
+			AddAlias(aliases, PromptRetrievalTexts.Raw("Raw_5a8114a4b332"));
+			AddAlias(aliases, "ammunition");
 			break;
 		case ItemObject.ItemTypeEnum.Shield:
-			AddAlias(aliases, "盾");
-			AddAlias(aliases, "盾牌");
+			AddAlias(aliases, PromptRetrievalTexts.Raw("Raw_345a74c4fc37"));
+			AddAlias(aliases, "shield");
+			AddAlias(aliases, PromptRetrievalTexts.Raw("Raw_589c31669663"));
+			AddAlias(aliases, "shields");
 			break;
 		case ItemObject.ItemTypeEnum.Bow:
 		case ItemObject.ItemTypeEnum.Crossbow:
-			AddAlias(aliases, "弓");
-			AddAlias(aliases, "弓箭");
-			AddAlias(aliases, "弩");
-			AddAlias(aliases, "远程武器");
+			AddAlias(aliases, PromptRetrievalTexts.Raw("Raw_d97da89d3d05"));
+			AddAlias(aliases, "bow");
+			AddAlias(aliases, PromptRetrievalTexts.Raw("Raw_eab85d88711e"));
+			AddAlias(aliases, "bows");
+			AddAlias(aliases, PromptRetrievalTexts.Raw("Raw_e86ef966639c"));
+			AddAlias(aliases, "crossbow");
+			AddAlias(aliases, PromptRetrievalTexts.Raw("Raw_6cd042cf5f15"));
+			AddAlias(aliases, "ranged weapons");
 			break;
 		case ItemObject.ItemTypeEnum.Thrown:
-			AddAlias(aliases, "投掷武器");
-			AddAlias(aliases, "标枪");
-			AddAlias(aliases, "飞刀");
+			AddAlias(aliases, PromptRetrievalTexts.Raw("Raw_9d93b20d2e46"));
+			AddAlias(aliases, "throwing weapons");
+			AddAlias(aliases, PromptRetrievalTexts.Raw("Raw_36b9cf058f18"));
+			AddAlias(aliases, "javelin");
+			AddAlias(aliases, PromptRetrievalTexts.Raw("Raw_e45ae22bb0b1"));
+			AddAlias(aliases, "throwing knife");
 			break;
 		case ItemObject.ItemTypeEnum.HeadArmor:
-			AddAlias(aliases, "头盔");
-			AddAlias(aliases, "盔");
-			AddAlias(aliases, "甲");
+			AddAlias(aliases, PromptRetrievalTexts.Raw("Raw_730da70298b5"));
+			AddAlias(aliases, "helmet");
+			AddAlias(aliases, PromptRetrievalTexts.Raw("Raw_820b0aaf4da8"));
+			AddAlias(aliases, "helm");
+			AddAlias(aliases, PromptRetrievalTexts.Raw("Raw_33e3580c0931"));
+			AddAlias(aliases, "armor");
 			break;
 		case ItemObject.ItemTypeEnum.BodyArmor:
 		case ItemObject.ItemTypeEnum.ChestArmor:
-			AddAlias(aliases, "甲");
-			AddAlias(aliases, "盔甲");
-			AddAlias(aliases, "护甲");
-			AddAlias(aliases, "身甲");
-			AddAlias(aliases, "铠甲");
+			AddAlias(aliases, PromptRetrievalTexts.Raw("Raw_33e3580c0931"));
+			AddAlias(aliases, "armor");
+			AddAlias(aliases, PromptRetrievalTexts.Raw("Raw_9172f60d7869"));
+			AddAlias(aliases, "armor");
+			AddAlias(aliases, PromptRetrievalTexts.Raw("Raw_c18d8f09cb26"));
+			AddAlias(aliases, "armor");
+			AddAlias(aliases, PromptRetrievalTexts.Raw("Raw_c888afcc3ef5"));
+			AddAlias(aliases, "body armor");
+			AddAlias(aliases, PromptRetrievalTexts.Raw("Raw_9a5d41c11c6b"));
+			AddAlias(aliases, "armor");
 			break;
 		case ItemObject.ItemTypeEnum.LegArmor:
-			AddAlias(aliases, "腿甲");
-			AddAlias(aliases, "甲");
+			AddAlias(aliases, PromptRetrievalTexts.Raw("Raw_d7cc552a69ee"));
+			AddAlias(aliases, "leg armor");
+			AddAlias(aliases, PromptRetrievalTexts.Raw("Raw_33e3580c0931"));
+			AddAlias(aliases, "armor");
 			break;
 		case ItemObject.ItemTypeEnum.HandArmor:
-			AddAlias(aliases, "手甲");
-			AddAlias(aliases, "甲");
+			AddAlias(aliases, PromptRetrievalTexts.Raw("Raw_958e2745d2cf"));
+			AddAlias(aliases, "hand armor");
+			AddAlias(aliases, PromptRetrievalTexts.Raw("Raw_33e3580c0931"));
+			AddAlias(aliases, "armor");
 			break;
 		case ItemObject.ItemTypeEnum.HorseHarness:
-			AddAlias(aliases, "马具");
-			AddAlias(aliases, "马甲");
-			AddAlias(aliases, "甲");
+			AddAlias(aliases, PromptRetrievalTexts.Raw("Raw_9726cd4b1434"));
+			AddAlias(aliases, "horse harness");
+			AddAlias(aliases, PromptRetrievalTexts.Raw("Raw_bb2a92e89c3d"));
+			AddAlias(aliases, "horse armor");
+			AddAlias(aliases, PromptRetrievalTexts.Raw("Raw_33e3580c0931"));
+			AddAlias(aliases, "armor");
 			break;
 		case ItemObject.ItemTypeEnum.Goods:
-			AddAlias(aliases, "货物");
-			AddAlias(aliases, "商品");
+			AddAlias(aliases, PromptRetrievalTexts.Raw("Raw_0883a49c383f"));
+			AddAlias(aliases, "goods");
+			AddAlias(aliases, PromptRetrievalTexts.Raw("Raw_58fdb0941f36"));
+			AddAlias(aliases, "trade goods");
 			break;
 		case ItemObject.ItemTypeEnum.Animal:
-			AddAlias(aliases, "牲畜");
-			AddAlias(aliases, "动物");
-			AddAlias(aliases, "马");
+			AddAlias(aliases, PromptRetrievalTexts.Raw("Raw_9fa24900d772"));
+			AddAlias(aliases, "livestock");
+			AddAlias(aliases, PromptRetrievalTexts.Raw("Raw_7ebb07e850a4"));
+			AddAlias(aliases, "animals");
+			AddAlias(aliases, PromptRetrievalTexts.Raw("Raw_a25ee73c98d1"));
+			AddAlias(aliases, "horse");
 			break;
 		}
 	}
@@ -769,28 +864,40 @@ public static class PromptListRetrievalService
 		}
 		string type = MyBehavior.GetPartyTransferTroopTypeLabelForExternal(character);
 		AddAlias(aliases, type);
-		if (string.Equals(type, "弓手", StringComparison.Ordinal))
+		AddAlias(aliases, EconomyPromptTexts.ProjectSource(type));
+		if (string.Equals(type, PromptRetrievalTexts.Raw("Raw_ee0c3b2a23bf"), StringComparison.Ordinal))
 		{
-			AddAlias(aliases, "弓箭手");
-			AddAlias(aliases, "射手");
-			AddAlias(aliases, "远程");
+			AddAlias(aliases, PromptRetrievalTexts.Raw("Raw_d94e4628ead1"));
+			AddAlias(aliases, "archer");
+			AddAlias(aliases, PromptRetrievalTexts.Raw("Raw_9844debaf067"));
+			AddAlias(aliases, "archers");
+			AddAlias(aliases, PromptRetrievalTexts.Raw("Raw_7ba00927dde9"));
+			AddAlias(aliases, "ranged");
 		}
-		if (string.Equals(type, "骑兵", StringComparison.Ordinal))
+		if (string.Equals(type, PromptRetrievalTexts.Raw("Raw_fc088c205262"), StringComparison.Ordinal))
 		{
-			AddAlias(aliases, "马兵");
-			AddAlias(aliases, "骑手");
-			AddAlias(aliases, "骑士");
+			AddAlias(aliases, PromptRetrievalTexts.Raw("Raw_9a6f752a85a1"));
+			AddAlias(aliases, "cavalry");
+			AddAlias(aliases, PromptRetrievalTexts.Raw("Raw_4ae5af8543e0"));
+			AddAlias(aliases, "rider");
+			AddAlias(aliases, PromptRetrievalTexts.Raw("Raw_0551caec03ab"));
+			AddAlias(aliases, "knight");
 		}
-		if (string.Equals(type, "骑射手", StringComparison.Ordinal))
+		if (string.Equals(type, PromptRetrievalTexts.Raw("Raw_80e617d1ecec"), StringComparison.Ordinal))
 		{
-			AddAlias(aliases, "骑射");
-			AddAlias(aliases, "马弓手");
-			AddAlias(aliases, "骑弓手");
+			AddAlias(aliases, PromptRetrievalTexts.Raw("Raw_5f34654a09e3"));
+			AddAlias(aliases, "horse archers");
+			AddAlias(aliases, PromptRetrievalTexts.Raw("Raw_5cd71bcf1a75"));
+			AddAlias(aliases, "mounted archer");
+			AddAlias(aliases, PromptRetrievalTexts.Raw("Raw_d4b0a71d03b5"));
+			AddAlias(aliases, "horse archer");
 		}
-		if (string.Equals(type, "步兵", StringComparison.Ordinal))
+		if (string.Equals(type, PromptRetrievalTexts.Raw("Raw_8c69262092a7"), StringComparison.Ordinal))
 		{
-			AddAlias(aliases, "步卒");
-			AddAlias(aliases, "近战");
+			AddAlias(aliases, PromptRetrievalTexts.Raw("Raw_78a516f1005d"));
+			AddAlias(aliases, "infantry");
+			AddAlias(aliases, PromptRetrievalTexts.Raw("Raw_6a85ccf586ba"));
+			AddAlias(aliases, "melee");
 		}
 	}
 

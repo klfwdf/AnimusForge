@@ -1,0 +1,1187 @@
+<?xml version='1.0' encoding='utf-8'?>
+<base type="string">
+  <tags>
+    <tag language="English" />
+  </tags>
+  <strings>
+    <string id="AF_DIP_UI_Common_Acknowledge" text="Got it" />
+    <string id="AF_DIP_UI_Common_Close" text="Close" />
+    <string id="AF_DIP_UI_Common_UnknownDate" text="Unknown date" />
+    <string id="AF_DIP_UI_Compose_Title" text="Write diplomatic declaration" />
+    <string id="AF_DIP_UI_Compose_ReplyTitle" text="Reply to diplomatic declaration" />
+    <string id="AF_DIP_UI_Compose_Hint" text="Write a title or outline first, then ask the scribe to draft it." />
+    <string id="AF_DIP_UI_Compose_HintEmpty" text="Write a title or outline first." />
+    <string id="AF_DIP_UI_Compose_Cancel" text="Cancel" />
+    <string id="AF_DIP_UI_Compose_Publish" text="Publish diplomatic document" />
+    <string id="AF_DIP_UI_Compose_AutoDraft" text="Ask scribe to draft" />
+    <string id="AF_DIP_UI_Compose_AutoDrafting" text="Scribe is drafting..." />
+    <string id="AF_DIP_UI_Compose_AutoDraftingHint" text="The scribe is drafting. Please wait." />
+    <string id="AF_DIP_UI_Compose_DraftCancelled" text="Drafting was cancelled; the original text was kept." />
+    <string id="AF_DIP_UI_Compose_DraftFailed" text="The scribe could not draft the document; the original text was kept. Try again." />
+    <string id="AF_DIP_UI_Compose_DraftUnavailable" text="The scribe is temporarily unavailable; the original text was kept. Try again." />
+    <string id="AF_DIP_UI_Compose_DraftEdited" text="The text changed while drafting; your current text was kept." />
+    <string id="AF_DIP_UI_Compose_DraftReady" text="The draft has been inserted. Edit it before publishing; drafting again will replace it." />
+    <string id="AF_DIP_UI_Presentation_NotInitialized" text="AI diplomacy is not initialized yet." />
+    <string id="AF_DIP_UI_Presentation_RulerOnlyTitle" text="Cannot publish diplomatic declaration" />
+    <string id="AF_DIP_UI_Presentation_RulerOnlyBody" text="Only a kingdom ruler can publish a diplomatic declaration." />
+    <string id="AF_DIP_UI_Vote_AgendaDescription" text="Click to view this kingdom agenda." />
+    <string id="AF_DIP_UI_Vote_AgendaTitle" text="New kingdom agenda" />
+    <string id="AF_DIP_UI_Vote_AgendaTitleWithName" text="Kingdom agenda: {TITLE}" />
+    <string id="AF_DIP_UI_Vote_Invalidated" text="This kingdom agenda is no longer valid." />
+    <string id="AF_DIP_UI_Vote_CannotView" text="The kingdom agenda cannot be viewed right now." />
+    <string id="AF_DIP_UI_Vote_CannotOpen" text="The kingdom agenda cannot be opened right now." />
+    <string id="AF_DIP_UI_Vote_OpenFailed" text="The kingdom agenda could not be opened. Try again later." />
+    <string id="AF_DIP_UI_Vote_AgendaFuture" text="You can participate in this agenda. Voting begins in about {DAYS} days. Click to view the details." />
+    <string id="AF_DIP_UI_Vote_AgendaVoting" text="This agenda has entered the voting phase. Click to open the voting screen." />
+    <string id="AF_DIP_UI_Vote_AgendaDetails" text="You can participate in this kingdom agenda. Click to view the details." />
+    <string id="AF_DIP_UI_Vote_ProposalRejectedNotAllowed" text="Agenda submission failed: the current kingdom rules do not allow this agenda." />
+    <string id="AF_DIP_UI_Vote_ProposalRejectedNotRetained" text="Agenda submission failed: the kingdom did not retain this agenda." />
+    <string id="AF_DIP_UI_Vote_ProposalSubmitted" text="{CLAN} proposed a new agenda." />
+    <string id="AF_DIP_UI_Vote_DealFulfilledChoice" text="Vote deal fulfilled: {NPC} voted for “{OPTION}” as promised." />
+    <string id="AF_DIP_UI_Vote_DealFulfilled" text="Vote deal fulfilled: {NPC} voted as promised." />
+    <string id="AF_DIP_UI_Vote_DealPromised" text="{CLAN} promised to vote for “{OPTION}” on “{AGENDA}”." />
+    <string id="AF_DIP_UI_Vote_MeetingInvalidated" text="This agenda is no longer valid; the vote meeting cannot be opened." />
+    <string id="AF_DIP_UI_Vote_MeetingOpened" text="Vote meeting opened: {TITLE}" />
+    <string id="AF_DIP_UI_Vote_MeetingOpenFailed" text="Could not open the vote meeting. Check the AnimusForge log." />
+    <string id="AF_DIP_UI_Vassalage_ManagementTitle" text="Vassalage management" />
+    <string id="AF_DIP_UI_Vassalage_TributeHistoryTitle" text="Tribute records" />
+    <string id="AF_DIP_UI_Vassalage_TributeHistoryEmpty" text="No tribute deposits have been recorded." />
+    <string id="AF_DIP_UI_Vassalage_TributeHistoryClose" text="Back to vassalage management" />
+    <string id="AF_DIP_UI_Vassalage_ContractNotice" text="An envoy presents a vassalage treaty bearing the royal seal." />
+    <string id="AF_DIP_UI_Vassalage_ContractNoticeTitle" text="Vassalage treaty signed" />
+    <string id="AF_DIP_UI_Vassalage_TributaryNotice" text="Envoys report a tributary treaty from another kingdom." />
+    <string id="AF_DIP_UI_Vassalage_TributaryNoticeTitle" text="Tributary treaty" />
+    <string id="AF_DIP_UI_Vassalage_InfoNotice" text="A border envoy delivers an urgent vassalage report." />
+    <string id="AF_DIP_UI_Vassalage_InfoNoticeTitle" text="Vassalage report" />
+    <string id="AF_DIP_UI_Vassalage_ProtectionNotice" text="A subject sends an urgent envoy asking the suzerain to decide its wartime obligation." />
+    <string id="AF_DIP_UI_Vassalage_ProtectionNoticeTitle" text="Subject requests protection" />
+    <string id="AF_DIP_UI_Vassalage_TributePaymentNotice" text="A tributary caravan has arrived at court and the tribute has been recorded." />
+    <string id="AF_DIP_UI_Vassalage_TributePaymentNoticeTitle" text="Tribute deposited" />
+    <string id="AF_DIP_UI_Vassalage_VassalWarNoticeTitle" text="Vassal attacked" />
+    <string id="AF_DIP_UI_Vassalage_TributaryProtectionTitle" text="Tributary requests protection" />
+    <string id="AF_DIP_UI_Vassalage_GarrisonProtectionTitle" text="Garrison requests protection" />
+    <string id="AF_DIP_UI_Vassalage_Protect" text="Protect" />
+    <string id="AF_DIP_UI_Vassalage_RefuseTributaryProtection" text="Refuse protection" />
+    <string id="AF_DIP_UI_Vassalage_SendProtection" text="Send protection" />
+    <string id="AF_DIP_UI_Vassalage_RefuseGarrisonProtection" text="Refuse to send protection" />
+    <string id="AF_DIP_UI_Archive_NoticeDescription" text="Click to view the diplomatic declaration." />
+    <string id="AF_DIP_UI_Archive_NoticeTitle" text="New diplomatic declaration" />
+    <string id="AF_DIP_UI_Archive_Reanalyze" text="Re-analyze" />
+    <string id="AF_DIP_UI_Archive_Reply" text="Reply" />
+    <string id="AF_DIP_UI_Archive_CustomPolicy" text="Custom policy" />
+    <string id="AF_DIP_UI_Archive_PolicyRecord" text="Policy record" />
+    <string id="AF_DIP_UI_Archive_PolicyImpact" text="Policy effects" />
+    <string id="AF_DIP_UI_Archive_UnknownCountry" text="Unknown kingdom" />
+    <string id="AF_DIP_UI_Archive_NoDetails" text="(No details.)" />
+    <string id="AF_DIP_UI_Archive_AnnouncementDetails" text="Announcement details" />
+    <string id="AF_DIP_UI_Archive_NewMarker" text="New" />
+    <string id="AF_DIP_UI_Archive_ReviewPolicy" text="Review policy again" />
+    <string id="AF_DIP_UI_Archive_Title" text="Kingdom announcements" />
+    <string id="AF_DIP_UI_Archive_Empty" text="There are no kingdom announcements yet." />
+    <string id="AF_DIP_UI_Archive_Day" text="Day {DAY}" />
+    <string id="AF_DIP_UI_KingdomProfile_EditCurrent" text="Edit current kingdom…" />
+    <string id="AF_DIP_UI_KingdomProfile_ExportAll" text="Export all kingdom strategy and personality" />
+    <string id="AF_DIP_UI_KingdomProfile_ImportAll" text="Import all kingdom strategy and personality" />
+    <string id="AF_DIP_UI_KingdomProfile_ResetAll" text="Restore all kingdom default profiles" />
+    <string id="AF_DIP_UI_Common_Back" text="Back" />
+    <string id="AF_DIP_UI_KingdomProfile_MenuDescription" text="Independent kingdom profile data; it is not injected into AI diplomacy requests.&#10;" />
+    <string id="AF_DIP_UI_KingdomProfile_ProfileCount" text="Profiles: " />
+    <string id="AF_DIP_UI_KingdomProfile_ProfileCountSuffix" text=" entries; player overrides: " />
+    <string id="AF_DIP_UI_KingdomProfile_CountSuffix" text=" entries.&#10;" />
+    <string id="AF_DIP_UI_KingdomProfile_MenuDescriptionTail" text="A new kingdom’s LLM founding profile is saved as a fixed default; player edits take priority." />
+    <string id="AF_DIP_UI_KingdomProfile_Title" text="Kingdom strategy and personality" />
+    <string id="AF_DIP_UI_Common_Enter" text="Enter" />
+    <string id="AF_DIP_UI_KingdomProfile_ExportAllFolderTitle" text="Export all kingdom strategy and personality - Select folder" />
+    <string id="AF_DIP_UI_KingdomProfile_ImportAllFolderTitle" text="Import all kingdom strategy and personality - Select folder" />
+    <string id="AF_DIP_UI_KingdomProfile_NoEditableKingdoms" text="There are no editable kingdoms." />
+    <string id="AF_DIP_UI_KingdomProfile_SelectTitle" text="Edit kingdom strategy and personality" />
+    <string id="AF_DIP_UI_KingdomProfile_SelectDescription" text="Select a kingdom. Only kingdom names are shown; profiles for eliminated kingdoms are retained." />
+    <string id="AF_DIP_UI_Common_Edit" text="Edit" />
+    <string id="AF_DIP_UI_KingdomProfile_NotFound" text="The selected kingdom could not be found." />
+    <string id="AF_DIP_UI_KingdomProfile_InitFailed" text="The kingdom profile could not be initialized." />
+    <string id="AF_DIP_UI_KingdomProfile_EditPersonality" text="Edit kingdom personality" />
+    <string id="AF_DIP_UI_KingdomProfile_EditStrategy" text="Edit long-term strategy" />
+    <string id="AF_DIP_UI_KingdomProfile_ResetOne" text="Restore this kingdom default profile" />
+    <string id="AF_DIP_UI_KingdomProfile_ExportOne" text="Export this kingdom" />
+    <string id="AF_DIP_UI_KingdomProfile_ImportOne" text="Import this kingdom" />
+    <string id="AF_DIP_UI_KingdomProfile_FoundingRunning" text="LLM founding profile is being generated…" />
+    <string id="AF_DIP_UI_KingdomProfile_Regenerate" text="Regenerate this kingdom’s LLM founding default profile" />
+    <string id="AF_DIP_UI_KingdomProfile_BackToList" text="Back to kingdom list" />
+    <string id="AF_DIP_UI_KingdomProfile_DetailTitlePrefix" text="Kingdom profile - " />
+    <string id="AF_DIP_UI_KingdomProfile_ExportOneFolderTitle" text="Export single kingdom profile - Select folder" />
+    <string id="AF_DIP_UI_KingdomProfile_ImportOneFolderTitle" text="Import single kingdom profile - Select folder" />
+    <string id="AF_DIP_UI_KingdomProfile_PersonalityTitlePrefix" text="Edit kingdom personality - " />
+    <string id="AF_DIP_UI_KingdomProfile_PersonalityDescription" text="Describe the kingdom’s decision style, values, responses to risk and humiliation, and non-negotiable boundaries. Saving creates a player override." />
+    <string id="AF_DIP_UI_KingdomProfile_PersonalityPrompt" text="Enter the kingdom personality; leaving it empty is allowed." />
+    <string id="AF_DIP_UI_KingdomProfile_PersonalityUpdated" text="Kingdom personality updated." />
+    <string id="AF_DIP_UI_KingdomProfile_StrategyTitlePrefix" text="Edit long-term strategy - " />
+    <string id="AF_DIP_UI_KingdomProfile_StrategyDescription" text="Describe the kingdom’s long-term, stable, and sustainable direction. Saving creates a player override." />
+    <string id="AF_DIP_UI_KingdomProfile_StrategyPrompt" text="Enter the long-term strategy; leaving it empty is allowed." />
+    <string id="AF_DIP_UI_KingdomProfile_StrategyUpdated" text="Long-term strategy updated." />
+    <string id="AF_DIP_UI_KingdomProfile_ResetTitle" text="Restore kingdom default profile" />
+    <string id="AF_DIP_UI_KingdomProfile_ResetDescriptionPrefix" text="This clears the player override for “" />
+    <string id="AF_DIP_UI_KingdomProfile_ResetDescriptionSuffix" text="”. The kingdom returns to its current default baseline (which may come from an authored preset, the initial bundle, or a locked-in LLM founding profile). Continue?" />
+    <string id="AF_DIP_UI_Common_RestoreDefault" text="Restore default" />
+    <string id="AF_DIP_UI_Common_Cancel" text="Cancel" />
+    <string id="AF_DIP_UI_KingdomProfile_ResetDonePrefix" text="Restored “" />
+    <string id="AF_DIP_UI_KingdomProfile_ResetDoneSuffix" text="” to its default kingdom profile." />
+    <string id="AF_DIP_UI_KingdomProfile_ResetAllTitle" text="Restore all kingdom default profiles" />
+    <string id="AF_DIP_UI_KingdomProfile_ResetAllDescription" text="This clears player overrides for every kingdom, but does not delete authored or initial-bundle defaults, or a founding default already locked in by LLM for a new kingdom. Export a backup first. Continue?" />
+    <string id="AF_DIP_UI_KingdomProfile_ResetAllButton" text="Restore all defaults" />
+    <string id="AF_DIP_UI_KingdomProfile_ResetAllDone" text="All kingdom default profiles restored." />
+    <string id="AF_DIP_UI_KingdomProfile_RegenerateEliminated" text="The eliminated kingdom keeps its current profile; no LLM regeneration will be requested." />
+    <string id="AF_DIP_UI_KingdomProfile_RegenerateUnavailable" text="This kingdom does not have a regenerable dynamic founding profile." />
+    <string id="AF_DIP_UI_KingdomProfile_RegenerateRunning" text="This kingdom’s LLM founding profile is already being generated." />
+    <string id="AF_DIP_UI_KingdomProfile_RegenerateQueued" text="Regeneration has been queued; when it finishes it will become this kingdom’s new default profile. Player overrides will not be replaced." />
+    <string id="AF_DIP_UI_KingdomProfile_ExportFailed" text="Export failed: " />
+    <string id="AF_DIP_UI_KingdomProfile_ExportAllExists" text="This folder already contains a full kingdom profile export." />
+    <string id="AF_DIP_UI_KingdomProfile_ExportDone" text="Export complete: " />
+    <string id="AF_DIP_UI_KingdomProfile_ExportOneExists" text="This folder already contains a single-kingdom export." />
+    <string id="AF_DIP_UI_KingdomProfile_OverwriteExport" text="Overwrite export" />
+    <string id="AF_DIP_UI_KingdomProfile_UseNewFolder" text="Use a new folder (automatic)" />
+    <string id="AF_DIP_UI_KingdomProfile_ExistingExportTitle" text="Existing export detected" />
+    <string id="AF_DIP_UI_Common_Select" text="Select" />
+    <string id="AF_DIP_UI_KingdomProfile_ImportFailed" text="Import failed: " />
+    <string id="AF_DIP_UI_KingdomProfile_NoSafeMatchesPrefix" text="No safely matching kingdom profiles; invalid or unmatched " />
+    <string id="AF_DIP_UI_KingdomProfile_ItemsSuffix" text=" entries." />
+    <string id="AF_DIP_UI_KingdomProfile_ImportDone" text="Import complete: " />
+    <string id="AF_DIP_UI_KingdomProfile_DuplicateAllTitle" text="Duplicates detected - kingdom strategy and personality" />
+    <string id="AF_DIP_UI_KingdomProfile_DuplicateAllDescriptionPrefix" text="Matching profiles: " />
+    <string id="AF_DIP_UI_KingdomProfile_DuplicateAllDescriptionMiddle" text="; existing player overrides, bundle defaults, or LLM founding defaults: " />
+    <string id="AF_DIP_UI_KingdomProfile_DuplicateAllDescriptionSkipped" text="; invalid or unmatched: " />
+    <string id="AF_DIP_UI_KingdomProfile_DuplicateAllDescriptionSuffix" text=". Choosing “Skip” skips the entire kingdom profile." />
+    <string id="AF_DIP_UI_KingdomProfile_DuplicateOneTitlePrefix" text="Duplicates detected - " />
+    <string id="AF_DIP_UI_KingdomProfile_DuplicateOneDescription" text="This kingdom already has a player override, bundle default, or LLM founding default. Choosing “Skip” skips the entire kingdom profile." />
+    <string id="AF_DIP_UI_KingdomProfile_OverwriteImport" text="Overwrite import" />
+    <string id="AF_DIP_UI_KingdomProfile_ImportNonDuplicates" text="Import non-duplicate information only" />
+    <string id="AF_DIP_UI_KingdomProfile_PlayerExportsUnavailable" text="PlayerExports path is unavailable: " />
+    <string id="AF_DIP_UI_KingdomProfile_ManualExportFolder" text="Enter a folder name manually…" />
+    <string id="AF_DIP_UI_KingdomProfile_ManualImportPath" text="Enter a folder name/path manually…" />
+    <string id="AF_DIP_UI_KingdomProfile_UseLatestExport" text="Use latest player export (automatic)" />
+    <string id="AF_DIP_UI_KingdomProfile_SelectExportFolder" text="Select a destination folder." />
+    <string id="AF_DIP_UI_KingdomProfile_SelectImportFolder" text="Select a source folder; you may also enter a read-only absolute directory or JSON file." />
+    <string id="AF_DIP_UI_KingdomProfile_EnterExportFolder" text="Enter export folder name" />
+    <string id="AF_DIP_UI_KingdomProfile_EnterImportPath" text="Enter import folder name/path" />
+    <string id="AF_DIP_UI_KingdomProfile_ExportFolderHint" text="Leave empty for an automatic timestamp; exports are always restricted to PlayerExports." />
+    <string id="AF_DIP_UI_KingdomProfile_ImportPathHint" text="Leave empty for the latest player export; names search the mod directory first, and you may also enter a read-only absolute directory or .json file." />
+    <string id="AF_DIP_UI_Common_Confirm" text="Confirm" />
+    <string id="AF_DIP_UI_KingdomProfile_InvalidExportFolder" text="The export folder name is invalid." />
+    <string id="AF_DIP_UI_KingdomProfile_ExportOutsideRoot" text="The export destination must be inside PlayerExports." />
+    <string id="AF_DIP_UI_KingdomProfile_InvalidImportPath" text="The absolute path does not exist or is not a JSON file." />
+    <string id="AF_DIP_UI_KingdomProfile_NoImportFolders" text="There are no import folders under PlayerExports." />
+    <string id="AF_DIP_UI_KingdomProfile_ImportFolderNotFound" text="The folder was not found in the mod directory or PlayerExports." />
+    <string id="AF_DIP_UI_KingdomProfile_IdLabel" text="ID: " />
+    <string id="AF_DIP_UI_KingdomProfile_CultureLabel" text="Culture: " />
+    <string id="AF_DIP_UI_KingdomProfile_Unknown" text="Unknown" />
+    <string id="AF_DIP_UI_KingdomProfile_StatusLabel" text="Status: " />
+    <string id="AF_DIP_UI_KingdomProfile_Eliminated" text="Eliminated (profile retained)" />
+    <string id="AF_DIP_UI_KingdomProfile_Active" text="Active" />
+    <string id="AF_DIP_UI_KingdomProfile_CurrentSourceLabel" text="Current source: " />
+    <string id="AF_DIP_UI_KingdomProfile_PlayerOverride" text="Player override" />
+    <string id="AF_DIP_UI_KingdomProfile_DefaultSourceLabel" text="Default source: " />
+    <string id="AF_DIP_UI_KingdomProfile_FoundingLabel" text="LLM founding profile: " />
+    <string id="AF_DIP_UI_KingdomProfile_LastErrorLabel" text="Latest error: " />
+    <string id="AF_DIP_UI_KingdomProfile_AuthoredDefault" text="Authored kingdom default" />
+    <string id="AF_DIP_UI_KingdomProfile_GenericDefault" text="Culture/generic default" />
+    <string id="AF_DIP_UI_KingdomProfile_FoundingFallback" text="New kingdom temporary default (awaiting LLM)" />
+    <string id="AF_DIP_UI_KingdomProfile_LlmFoundingDefault" text="LLM founding default (locked in)" />
+    <string id="AF_DIP_UI_KingdomProfile_BundleDefault" text="Initial bundle default" />
+    <string id="AF_DIP_UI_KingdomProfile_GenerationRunning" text="Generating" />
+    <string id="AF_DIP_UI_KingdomProfile_GenerationFailedPrefix" text="Generation failed; it will retry after cooldown or can be retried manually (" />
+    <string id="AF_DIP_UI_KingdomProfile_GenerationAttemptsSuffix" text=" )" />
+    <string id="AF_DIP_UI_KingdomProfile_GenerationComplete" text="Completed and locked in" />
+    <string id="AF_DIP_UI_KingdomProfile_GenerationPausedEliminated" text="Kingdom eliminated; automatic generation stopped" />
+    <string id="AF_DIP_UI_KingdomProfile_GenerationWaitingPrefix" text="Awaiting generation (" />
+    <string id="AF_DIP_UI_KingdomProfile_Empty" text="(empty)" />
+    <string id="AF_DIP_UI_CivilWar_ActionSuppress" text="Suppress" />
+    <string id="AF_DIP_UI_CivilWar_ActionNegotiate" text="Negotiate" />
+    <string id="AF_DIP_UI_CivilWar_ActionConcede" text="Concede" />
+    <string id="AF_DIP_UI_CivilWar_ActionDissolve" text="Force dissolve" />
+    <string id="AF_DIP_UI_CivilWar_ActionLeaveCrown" text="Leave the crown faction" />
+    <string id="AF_DIP_UI_CivilWar_ActionJoinFaction" text="Join selected faction" />
+    <string id="AF_DIP_UI_CivilWar_ActionFound" text="Found a faction" />
+    <string id="AF_DIP_UI_CivilWar_ActionJoinCrown" text="Join the crown" />
+    <string id="AF_DIP_UI_CivilWar_ActionProposeRebellion" text="Propose rebellion" />
+    <string id="AF_DIP_UI_CivilWar_ActionLeaveFaction" text="Leave faction" />
+    <string id="AF_DIP_UI_CivilWar_ActionAcceptDissolve" text="Accept dissolution" />
+    <string id="AF_DIP_UI_CivilWar_ActionAcceptCompensation" text="Accept compensation" />
+    <string id="AF_DIP_UI_CivilWar_ActionRefuseDissolve" text="Refuse and rebel" />
+    <string id="AF_DIP_UI_CivilWar_ActionRefuseCompensation" text="Refuse compensation" />
+    <string id="AF_DIP_UI_CivilWar_ActionImmediateRebellion" text="Rebel now" />
+    <string id="AF_DIP_UI_CivilWar_ActionDissolveOwn" text="Dissolve faction" />
+    <string id="AF_DIP_UI_CivilWar_ActionChangeDemand" text="Change demand" />
+    <string id="AF_DIP_UI_CivilWar_TitleKingSelected" text="Kingdom governance · {FACTION}" />
+    <string id="AF_DIP_UI_CivilWar_TitleKingChoose" text="Kingdom governance · select a faction" />
+    <string id="AF_DIP_UI_CivilWar_TitleKingEmpty" text="Kingdom governance · no faction to govern" />
+    <string id="AF_DIP_UI_CivilWar_TitleCrown" text="Crown vassal · clan grievance {GRIEVANCE} · relation with king {RELATION}" />
+    <string id="AF_DIP_UI_CivilWar_TitleMember" text="{TAG} member · clan grievance {GRIEVANCE} · relation with leader {RELATION}" />
+    <string id="AF_DIP_UI_CivilWar_TitleLeader" text="{TAG} leader" />
+    <string id="AF_DIP_UI_CivilWar_TitleMiddle" text="Uncommitted vassal · clan grievance {GRIEVANCE} · relation with king {RELATION}" />
+    <string id="AF_DIP_UI_CivilWar_PendingResponse" text="pending response: {RESPONSE}" />
+    <string id="AF_DIP_UI_CivilWar_DissolutionOrder" text="the king's dissolution order" />
+    <string id="AF_DIP_UI_CivilWar_NegotiationCompensation" text="the king's negotiated compensation" />
+    <string id="AF_DIP_UI_CivilWar_Grievance" text="clan grievance {GRIEVANCE}" />
+    <string id="AF_DIP_UI_CivilWar_SelectFactionFirst" text="Select a faction in the list first" />
+    <string id="AF_DIP_UI_CivilWar_NoOpposition" text="No opposition faction" />
+    <string id="AF_DIP_UI_CivilWar_NoDemand" text="No demand is available" />
+    <string id="AF_DIP_UI_CivilWar_SelectCompensationTier" text="Select a compensation tier" />
+    <string id="AF_DIP_UI_CivilWar_ConcedeDemand" text="Honor {DEMAND}" />
+    <string id="AF_DIP_UI_CivilWar_Demand" text="the demand" />
+    <string id="AF_DIP_UI_CivilWar_StandWithKing" text="Stand with the king" />
+    <string id="AF_DIP_UI_CivilWar_ReevaluateMembers" text="Other members reassess participation" />
+    <string id="AF_DIP_UI_CivilWar_DissolveRelationLoss" text="Relations with other members −10" />
+    <string id="AF_DIP_UI_CivilWar_JoinFactionSub" text="Join {FACTION}" />
+    <string id="AF_DIP_UI_CivilWar_SelectedFaction" text="the selected faction" />
+    <string id="AF_DIP_UI_CivilWar_LeadershipTransfer" text="Leadership passes to a successor" />
+    <string id="AF_DIP_UI_CivilWar_LeaveNeutral" text="{DAYS} days of neutrality · relations suffer" />
+    <string id="AF_DIP_UI_CivilWar_FoundSlots" text="Select a demand · slots {USED} / {MAX}" />
+    <string id="AF_DIP_UI_CivilWar_FoundingProcess" text="Enter the kingdom-founding process" />
+    <string id="AF_DIP_UI_CivilWar_LeaderDecision" text="Let the leader decide" />
+    <string id="AF_DIP_UI_CivilWar_FactionDissolved" text="Faction dissolved" />
+    <string id="AF_DIP_UI_CivilWar_AcceptOffer" text="Take {OFFER} · dissolve" />
+    <string id="AF_DIP_UI_CivilWar_RebellionProcess" text="Enter the rebellion process" />
+    <string id="AF_DIP_UI_CivilWar_FactionRetained" text="Faction retained · no cost" />
+    <string id="AF_DIP_UI_CivilWar_Compensation" text="compensation" />
+    <string id="AF_DIP_UI_CivilWar_Gold" text="{AMOUNT} gold" />
+    <string id="AF_DIP_UI_CivilWar_Influence" text="{AMOUNT} influence" />
+    <string id="AF_DIP_UI_CivilWar_NoFixedCost" text="No fixed cost" />
+    <string id="AF_DIP_UI_CivilWar_Cooldown" text="Cooldown until day {DAY}" />
+    <string id="AF_DIP_UI_CivilWar_Unavailable" text="Unavailable · click to view" />
+    <string id="AF_DIP_UI_CivilWar_SelectFactionNotice" text="Select the faction to govern in the list first." />
+    <string id="AF_DIP_UI_CivilWar_NoOppositionNotice" text="There is no opposition faction in the kingdom." />
+    <string id="AF_DIP_UI_CivilWar_AcceptDissolveBody" text="Accept the dissolution order: the faction will dissolve, but the grievance remains." />
+    <string id="AF_DIP_UI_CivilWar_RefuseDissolveBody" text="Refuse the order: reject dissolution and enter the rebellion process." />
+    <string id="AF_DIP_UI_CivilWar_AcceptCompensationBody" text="Accept compensation: take {OFFER}, withdraw the demand, and dissolve the faction." />
+    <string id="AF_DIP_UI_CivilWar_RefuseCompensationBody" text="Refuse compensation: the faction remains and no payment is taken." />
+    <string id="AF_DIP_UI_CivilWar_ActionFailed" text="Faction operation failed; see the log for details." />
+    <string id="AF_DIP_UI_CivilWar_ChangeDemandTitle" text="Change faction demand" />
+    <string id="AF_DIP_UI_CivilWar_FoundTitle" text="Found faction" />
+    <string id="AF_DIP_UI_CivilWar_ChangeDemandDescription" text="The faction identity remains; other members immediately reassess participation. This does not start a rebellion automatically." />
+    <string id="AF_DIP_UI_CivilWar_FoundDescription" text="No grievance or relation threshold is required, but post-war cooldown still applies; founding costs −10 relation with the ruler, while refounding carries the old faction's relation loss." />
+    <string id="AF_DIP_UI_CivilWar_LedByClan" text="Led by this clan" />
+    <string id="AF_DIP_UI_CivilWar_NegotiateTitle" text="Negotiated compensation" />
+    <string id="AF_DIP_UI_CivilWar_NegotiateDescription" text="Compensation transfers only if the other side accepts; refusal still consumes the action cooldown." />
+    <string id="AF_DIP_UI_CivilWar_NoLegalOptions" text="There are no legal options right now." />
+    <string id="AF_DIP_UI_CivilWar_ConfirmTitle" text="Confirm faction operation" />
+    <string id="AF_DIP_UI_Common_Continue" text="Continue" />
+    <string id="AF_DIP_CivilWar_LoyaltyText" text="Civil-war opposition fief" />
+    <string id="AF_DIP_CivilWar_RoyalNegotiationTitle" text="Royal negotiation" />
+    <string id="AF_DIP_CivilWar_RoyalNegotiationAccept" text="Accept / obey" />
+    <string id="AF_DIP_CivilWar_RoyalNegotiationRefuse" text="Refuse / defy" />
+    <string id="AF_DIP_CivilWar_FollowRebelsTitle" text="Follow the rebels" />
+    <string id="AF_DIP_CivilWar_FollowRebelsAccept" text="Follow the rebels" />
+    <string id="AF_DIP_CivilWar_FollowRebelsRefuse" text="Stay in the kingdom" />
+    <string id="AF_DIP_CivilWar_UltimatumTitle" text="Opposition ultimatum" />
+    <string id="AF_DIP_CivilWar_UltimatumAccept" text="Accept the demand" />
+    <string id="AF_DIP_CivilWar_UltimatumRefuse" text="Refuse" />
+    <string id="AF_DIP_UI_Vassalage_DeclareWarBlocked" text="The kingdom council cannot declare war on {TARGET} while a vassalage treaty is active. Use formal negotiations to end the treaty first." />
+    <string id="AF_DIP_UI_Vassalage_ProtectedPeaceBlocked" text="This war began to protect {SUBJECT}; the enemy cannot bypass the protected subject and seek a separate peace with the suzerain." />
+    <string id="AF_DIP_UI_Vassalage_ProtectedPeaceAllowed" text="This war began to protect {SUBJECT}; peace for the suzerain will also end the protected tributary's war." />
+    <string id="AF_DIP_UI_Vassalage_ProtectionApplied" text="{SUZERAIN} fulfilled its protection obligation toward {SUBJECT} and {ACTION} against {ENEMY}." />
+    <string id="AF_DIP_UI_Vassalage_SubjectWarSync" text="{PREFIX} {DECLARED} subjects joined the war, {QUEUED} will join when conditions are safe, and {ALREADY} were already at war." />
+    <string id="AF_DIP_UI_Vassalage_IndependenceChanged" text="{SUBJECT} independence changed from {BEFORE} to {AFTER}/100; the current breakaway threshold is {THRESHOLD} ({RULER} relation {RELATION})." />
+    <string id="AF_DIP_UI_Vassalage_IndependenceChangedNoName" text="{SUBJECT} independence changed from {BEFORE} to {AFTER}; the current breakaway threshold is {THRESHOLD} (ruler relation {RELATION})." />
+    <string id="AF_DIP_UI_Vassalage_IndependenceReduced" text="Because the suzerain fulfilled its protection obligation, {SUBJECT} independence fell from {BEFORE} to {AFTER}/100; the current breakaway threshold is {THRESHOLD} ({RULER} relation {RELATION})." />
+    <string id="AF_DIP_UI_Vassalage_VassalWarNotice" text="{ATTACKER} has declared war on {SUBJECT}. The vassal is under the suzerain's direct protection; the court has joined the war under the treaty." />
+    <string id="AF_DIP_UI_Vassalage_TributaryProtectionRequest" text="{SUBJECT} has been attacked by {ATTACKER}. The tributary pays tribute in exchange for suzerain protection but has no duty to send troops.&#10;&#10;Fulfill the protection obligation and declare war on the attacker? If you refuse, the tributary treaty ends immediately." />
+    <string id="AF_DIP_UI_Vassalage_GarrisonProtectionRequest" text="{SUBJECT} has been attacked by {ATTACKER}. The garrison kingdom is the suzerain's military shield, must campaign with the suzerain, and expects protection in return.&#10;&#10;Protect the garrison kingdom? Refusing will sharply reduce loyalty; if it falls too low, the kingdom will leave the vassalage." />
+    <string id="AF_DIP_UI_Vassalage_SubjectFallback" text="the subject kingdom" />
+    <string id="AF_DIP_UI_Vassalage_EstablishedTributaryDescription" text="{SUBJECT} has sworn as a tributary, sending regular tribute in exchange for your protection." />
+    <string id="AF_DIP_UI_Vassalage_EstablishedGarrisonDescription" text="{SUBJECT} has sworn as a garrison kingdom, accepting the suzerain's command and its border-defense and campaign duties." />
+    <string id="AF_DIP_UI_Vassalage_EstablishedVassalDescription" text="{SUBJECT} has sworn as a vassal, accepting suzerain rule and its tribute and military duties." />
+    <string id="AF_DIP_UI_Vassalage_NpcTributaryDescription" text="{VASSAL} has recognized {SUZERAIN} as its suzerain and become a tributary." />
+    <string id="AF_DIP_UI_Vassalage_EstablishedDetail" text="An envoy presents a vassal oath sealed with the royal mark:&#10;&#10;[VASSALAGE TREATY]&#10;Suzerain: {SUZERAIN}&#10;Subject: {VASSAL}&#10;Treaty type: {TYPE}&#10;Signed: {DATE}&#10;&#10;[BASIC TERMS]&#10;1. The {TYPE} recognizes {SUZERAIN} as suzerain and continues under this treaty identity.&#10;2. The {TYPE} keeps its crown, court, clans, and internal governance; this treaty is not annexation.&#10;{CLAUSES}" />
+    <string id="AF_DIP_UI_Vassalage_TributaryClauses" text="3. The tributary sends regular tribute in exchange for {SUZERAIN}'s protection.&#10;4. The tributary keeps military autonomy and does not campaign with the suzerain; the suzerain need not join wars the tributary starts.&#10;5. When attacked, the tributary may request protection; refusal ends the tributary treaty.&#10;6. Wars already affecting the tributary when the treaty is signed are handled by the suzerain under the protection obligation." />
+    <string id="AF_DIP_UI_Vassalage_GarrisonClauses" text="3. The garrison kingdom enters {SUZERAIN}'s military system and must campaign with the suzerain and guard the borders, but pays no tribute.&#10;4. The garrison kingdom may not declare war or handle wars separately from the suzerain.&#10;5. Refusing defense, attacking the garrison kingdom, or failing to keep it safe will reduce loyalty; when loyalty collapses, it may leave suzerain control." />
+    <string id="AF_DIP_UI_Vassalage_VassalClauses" text="3. The vassal accepts {SUZERAIN}'s control and owes tribute and military service.&#10;4. The vassal may not declare war or make peace alone and normally follows the suzerain's wars; the suzerain protects it when attacked.&#10;5. The vassal's crown is bound by the suzerain; it does not leave automatically under garrison rules unless the suzerain releases it or a new treaty says so." />
+    <string id="AF_DIP_UI_Vassalage_ProtectionDescriptionTributary" text="{SUBJECT} has been attacked by {ATTACKER}; an urgent envoy requests protection." />
+    <string id="AF_DIP_UI_Vassalage_ProtectionDescriptionGarrison" text="{SUBJECT} has been attacked by {ATTACKER}; the court must decide whether to send protection." />
+    <string id="AF_DIP_UI_Vassalage_ProtectionDescriptionVassal" text="{SUBJECT} has been attacked by {ATTACKER}; the suzerain has intervened automatically under the treaty." />
+    <string id="AF_DIP_UI_Vassalage_TributePaymentDescriptionEmpty" text="A tributary caravan has arrived at court and the tribute has been recorded." />
+    <string id="AF_DIP_UI_Vassalage_TributePaymentDescription" text="{TRIBUTARY} delivered its tribute on schedule; the suzerain's fiefs have recorded the payment." />
+    <string id="AF_DIP_UI_Vassalage_TributePaymentDetailInvalid" text="The tribute ledger is no longer valid." />
+    <string id="AF_DIP_UI_Vassalage_TributePaymentDetail" text="The tributary caravan has reached the court. The ledger records:&#10;&#10;Subject: {TRIBUTARY}&#10;Recorded: {DATE}&#10;Tribute value: {VALUE}&#10;&#10;[SUZERAIN FIEF GAINS]&#10;{GAINS}&#10;[TRIBUTARY COST]&#10;{COST}" />
+    <string id="AF_DIP_UI_KingdomProfile_EliminatedGenerationSkipped" text="The eliminated kingdom keeps its current profile; no new LLM generation will be requested." />
+    <string id="AF_DIP_UI_KingdomProfile_GenerationConfigError" text="The kingdom founding profile could not be generated because the event/rebellion API is not configured." />
+    <string id="AF_DIP_UI_KingdomProfile_GenerationCompletedPrefix" text="Generated and locked the national personality and long-term strategy for new kingdom “" />
+    <string id="AF_DIP_UI_KingdomProfile_GenerationCompletedSuffix" text="”." />
+    <string id="AF_DIP_UI_WorldDiplomacy_ManagedByAi" text="This action is managed by AI diplomacy. Publish a diplomatic declaration from Kingdom Bulletins." />
+    <string id="AF_DIP_UI_Reward_VassalageTitle" text="Vassalage treaty" />
+    <string id="AF_DIP_UI_Reward_AnnexationTitle" text="Kingdom annexation" />
+    <string id="AF_DIP_UI_Reward_FailureSuffix" text=" failed" />
+    <string id="AF_DIP_UI_Faction_CatalogCount" text="{COUNT} factions  ·  threshold {THRESHOLD}" />
+    <string id="AF_DIP_UI_Faction_CatalogEmpty" text="No factions  ·  threshold {THRESHOLD}" />
+    <string id="AF_DIP_UI_Faction_AboveFormationThreshold" text="Above formation threshold {THRESHOLD}" />
+    <string id="AF_DIP_UI_Faction_BelowFormationThreshold" text="Below formation threshold {THRESHOLD}" />
+    <string id="AF_DIP_UI_Faction_PowerUnit" text="Crown {CROWN}%  ·  {FORTIFICATIONS} fiefs" />
+    <string id="AF_DIP_UI_Faction_NoRecentChronicle" text="No recent chronicle" />
+    <string id="AF_DIP_UI_Faction_GrievanceThreshold" text="Clan grievance  ·  threshold {THRESHOLD}" />
+    <string id="AF_DIP_UI_Faction_Grievance" text="Clan grievance" />
+    <string id="AF_DIP_UI_Faction_FormationTickLegend" text="Red tick marks the formation threshold" />
+    <string id="AF_DIP_UI_Faction_DataUnavailable" text="Faction data unavailable" />
+    <string id="AF_DIP_UI_Faction_DataReadFailed" text="Failed to read faction data" />
+    <string id="AF_DIP_UI_Faction_Crown" text="Crown faction" />
+    <string id="AF_DIP_UI_Faction_Undecided" text="Undecided" />
+    <string id="AF_DIP_UI_Faction_PlayerLeads" text="You lead · " />
+    <string id="AF_DIP_UI_Faction_PlayerFaction" text="Your faction · " />
+    <string id="AF_DIP_UI_Faction_TabMeta" text="{COUNT} clans · grievance {GRIEVANCE}" />
+    <string id="AF_DIP_UI_Faction_GrievanceLedger" text="Noble grievance ledger" />
+    <string id="AF_DIP_UI_Faction_LedgerMeta" text="{COUNT} clans · highest {GRIEVANCE}" />
+    <string id="AF_DIP_UI_Faction_PowerMeta" text="{COUNT} clans · power {POWER}%{PLAYER}" />
+    <string id="AF_DIP_UI_Faction_IncludesYou" text=" · includes you" />
+    <string id="AF_DIP_UI_Faction_Ultimatum" text="Ultimatum" />
+    <string id="AF_DIP_UI_Faction_SupportingClans" text="Supporting clans" />
+    <string id="AF_DIP_UI_Faction_LatestPrefix" text="Latest  ·  " />
+    <string id="AF_DIP_UI_Faction_NoFaction" text="No faction formed" />
+    <string id="AF_DIP_UI_Faction_StabilityMeta" text="Stability {TIER}  ·  grievance and stability are calculated separately" />
+    <string id="AF_DIP_UI_Faction_NoOppositionFormed" text="No opposition faction has formed in the kingdom" />
+    <string id="AF_DIP_UI_Faction_NoEligibleVassal" text="No formal vassal clan can form a faction." />
+    <string id="AF_DIP_UI_Faction_FormationPending" text="Highest clan grievance is {GRIEVANCE}; formation threshold is {THRESHOLD}. A probability check runs at most once every seven days." />
+    <string id="AF_DIP_UI_Faction_FormationReady" text="Highest clan grievance is {GRIEVANCE}; formation threshold {THRESHOLD} reached. A probability check runs every seven days." />
+    <string id="AF_DIP_UI_Faction_FormationGap" text="To formation threshold" />
+    <string id="AF_DIP_UI_Faction_FormationThreshold" text="Formation threshold" />
+    <string id="AF_DIP_UI_Faction_Reached" text="Reached" />
+    <string id="AF_DIP_UI_Faction_Points" text="points" />
+    <string id="AF_DIP_UI_Faction_NobleClans" text="Noble clans" />
+    <string id="AF_DIP_UI_Faction_SortGrievance" text="Sorted by clan grievance, highest first" />
+    <string id="AF_DIP_UI_Faction_MilitaryMeta" text="{COUNT} clans  ·  military power {POWER}%" />
+    <string id="AF_DIP_UI_Faction_CrownRespond" text="Crown faction · stand with the king against factions" />
+    <string id="AF_DIP_UI_Faction_UndecidedClans" text="Undecided clans" />
+    <string id="AF_DIP_UI_Faction_CrownNote" text="If a faction rebels, crown clans fight with the king; a clan withdraws support when grievance reaches {THRESHOLD}." />
+    <string id="AF_DIP_UI_Faction_UndecidedNote" text="Not yet in a faction; may join the crown or any pre-war faction." />
+    <string id="AF_DIP_UI_Faction_CrownClans" text="Crown faction clans" />
+    <string id="AF_DIP_UI_Faction_KingFirst" text="King first, " />
+    <string id="AF_DIP_UI_Faction_PlayerClanFirst" text="your clan first, " />
+    <string id="AF_DIP_UI_Faction_OthersByGrievance" text="others by grievance, highest first" />
+    <string id="AF_DIP_UI_Gathering_NoHostSettlement" text="The clan has no town or castle available as a gathering venue." />
+    <string id="AF_DIP_UI_Gathering_NoVenue" text="No eligible gathering venue is available." />
+    <string id="AF_DIP_UI_Gathering_VenueTitle" text="Host a gathering: choose a venue" />
+    <string id="AF_DIP_UI_Gathering_VenueDescription" text="The venue must be a town or castle owned by your clan." />
+    <string id="AF_DIP_UI_Gathering_Next" text="Next" />
+    <string id="AF_DIP_UI_Gathering_Cancel" text="Cancel" />
+    <string id="AF_DIP_UI_Gathering_VenueAvailable" text="Available as the gathering venue." />
+    <string id="AF_DIP_UI_Gathering_NoClans" text="There are no noble clans available to invite." />
+    <string id="AF_DIP_UI_Gathering_ConfirmCurrent" text="Confirm current list ({COUNT})" />
+    <string id="AF_DIP_UI_Gathering_ClearList" text="Clear selected guests" />
+    <string id="AF_DIP_UI_Gathering_ClearHint" text="Choose the gathering guests again." />
+    <string id="AF_DIP_UI_Gathering_ClanSelected" text="selected {COUNT}" />
+    <string id="AF_DIP_UI_Gathering_ClanSelectedHint" text="This clan has {COUNT} selected guest(s)." />
+    <string id="AF_DIP_UI_Gathering_ClanTitle" text="Host a gathering: choose clans" />
+    <string id="AF_DIP_UI_Gathering_ClanDescription" text="Venue: {SETTLEMENT}&#10;Selected guests: {COUNT}.&#10;Choose a clan to open its member list." />
+    <string id="AF_DIP_UI_Gathering_NoHeroes" text="The selected clan has no noble members to show." />
+    <string id="AF_DIP_UI_Gathering_SelectedMarker" text="[Selected] " />
+    <string id="AF_DIP_UI_Gathering_HeroLabel" text="[{CLAN}] {HERO} ({IDENTITY})" />
+    <string id="AF_DIP_UI_Gathering_HeroHint" text="{HERO} / {CLAN}&#10;{IDENTITY}&#10;{STATE}" />
+    <string id="AF_DIP_UI_Gathering_AlreadyInList" text="Already on the current guest list." />
+    <string id="AF_DIP_UI_Gathering_CanInvite" text="Available to invite; heroes without an independent party will travel to the venue using the native travel system." />
+    <string id="AF_DIP_UI_Gathering_CannotInvite" text="Cannot invite: {REASON}" />
+    <string id="AF_DIP_UI_Gathering_HeroTitle" text="Host a gathering: choose guests" />
+    <string id="AF_DIP_UI_Gathering_HeroDescription" text="Clan: {CLAN}&#10;This is a player-hosted gathering; governors may still be invited. Heroes with independent parties are dispatched directly. Nobles remaining in towns, governors, and heroes without parties travel to the venue using the native system, then return to their original settlement after the gathering.&#10;Selected guests: {COUNT}." />
+    <string id="AF_DIP_UI_Gathering_AddToList" text="Add to list" />
+    <string id="AF_DIP_UI_Gathering_Back" text="Back" />
+    <string id="AF_DIP_UI_Gathering_NoGuests" text="Gathering not started: no guests were selected." />
+    <string id="AF_DIP_UI_Gathering_ConfirmTitle" text="Confirm gathering" />
+    <string id="AF_DIP_UI_Gathering_ConfirmBody" text="Venue: {SETTLEMENT}&#10;Cost: {COST} denars&#10;Duration: {DAYS} days&#10;Guests: {GUESTS}&#10;&#10;Confirming will deduct the cost and send gathering invitations to the guests." />
+    <string id="AF_DIP_UI_Gathering_PayAndInvite" text="Pay and send invitations" />
+    <string id="AF_DIP_UI_Gathering_NotSelected" text="No guests selected yet." />
+    <string id="AF_DIP_UI_Gathering_IdentityUnknown" text="Unknown identity" />
+    <string id="AF_DIP_UI_Gathering_Governor" text="Governor" />
+    <string id="AF_DIP_UI_Gathering_Ruler" text="Ruler" />
+    <string id="AF_DIP_UI_Gathering_ClanLeader" text="Clan leader" />
+    <string id="AF_DIP_UI_Gathering_Lady" text="Lady" />
+    <string id="AF_DIP_UI_Gathering_Lord" text="Lord" />
+    <string id="AF_DIP_UI_Gathering_IdentityHint" text="Identity: {IDENTITY}" />
+    <string id="AF_DIP_UI_Gathering_IdentityHintGoverned" text="Identity: {IDENTITY}&#10;Governed settlement: {SETTLEMENT}" />
+    <string id="AF_DIP_UI_Gathering_UnknownClan" text="Unknown clan" />
+    <string id="AF_DIP_UI_Gathering_UnknownSettlement" text="Unknown settlement" />
+    <string id="AF_DIP_UI_Gathering_ClanHint" text="Members: {MEMBERS}; independent parties: {MOVABLE}; can travel to a gathering by the native system: {TRAVEL}." />
+    <string id="AF_DIP_UI_Gathering_EndPlayerCancelled" text="Gathering cancelled: your gathering at {PLACE} has ended.{REASON}" />
+    <string id="AF_DIP_UI_Gathering_EndPlayerFinished" text="Gathering ended: your gathering at {PLACE} has ended." />
+    <string id="AF_DIP_UI_Gathering_EndNpcCancelled" text="Gathering cancelled: {HOST}'s gathering at {PLACE} has ended.{REASON}" />
+    <string id="AF_DIP_UI_Gathering_EndNpcFinished" text="Gathering ended: {HOST}'s gathering at {PLACE} has ended." />
+    <string id="AF_DIP_UI_Gathering_Reason" text=" Reason: {REASON}" />
+    <string id="AF_DIP_UI_Gathering_DialogueHostOption" text="Host a gathering" />
+    <string id="AF_DIP_UI_Gathering_DialogueCompanionOption" text="I want to host a gathering. Help me arrange it." />
+    <string id="AF_DIP_UI_Gathering_DialogueGovernorResponse" text="I will prepare the guest list and invitations." />
+    <string id="AF_DIP_UI_Gathering_DialogueCompanionResponse" text="Understood. I will prepare the venue and guest list." />
+    <string id="AF_DIP_UI_Gathering_Disabled" text="Gatherings are disabled in MCM." />
+    <string id="AF_DIP_UI_Gathering_Created" text="Gathering invitations sent: {SETTLEMENT}; {GUESTS} guest(s), {DAYS} days." />
+    <string id="AF_DIP_UI_Gathering_DisabledCancelled" text="Gatherings were disabled; active gatherings have been cancelled and hosts and guests will return over time." />
+    <string id="AF_DIP_UI_Gathering_GuestArrived" text="{HERO} arrived at {SETTLEMENT} for the gathering." />
+    <string id="AF_DIP_UI_Gathering_AttendanceReward" text="You attended {HOST}'s gathering and your relation with the host increased." />
+    <string id="AF_DIP_UI_Gathering_CrisisWar" text="The kingdom has entered a war; the host decided to cancel the gathering." />
+    <string id="AF_DIP_UI_Gathering_CrisisSiege" text="{SETTLEMENT} in the kingdom is under siege; the host decided to cancel the gathering." />
+    <string id="AF_DIP_UI_Gathering_NpcCreated" text="{HOST} will host a gathering at {SETTLEMENT}." />
+    <string id="AF_DIP_UI_Gathering_CourierLetter" text="{HOST} to {PLAYER}:&#10;&#10;I will host a gathering at {SETTLEMENT} and invite you to attend. It is expected to last until {DATE}; arrive at the venue if you wish to join." />
+    <string id="AF_DIP_UI_Gathering_SelectedGuestsMore" text="Selected: {NAMES} and others, {COUNT} in total." />
+    <string id="AF_DIP_UI_Gathering_SelectedGuestsExact" text="Selected: {NAMES}" />
+    <string id="AF_DIP_UI_KingdomProfile_ExportDirectoryEmpty" text="The export directory is empty." />
+    <string id="AF_DIP_UI_KingdomProfile_ExportedCount" text="Exported {COUNT} kingdom profile(s)." />
+    <string id="AF_DIP_UI_KingdomProfile_ExportTargetNotFound" text="The kingdom to export could not be found." />
+    <string id="AF_DIP_UI_KingdomProfile_ExportProfileNotFound" text="The kingdom profile does not exist." />
+    <string id="AF_DIP_UI_KingdomProfile_ExportedPrefix" text="Exported: {KINGDOM}" />
+    <string id="AF_DIP_UI_KingdomProfile_InvalidProfileCount" text="The package contains {COUNT} invalid or duplicate kingdom profile(s)." />
+    <string id="AF_DIP_UI_KingdomProfile_CannotMatchWorld" text="A kingdom in the package could not be safely matched to the current world: {REASON}" />
+    <string id="AF_DIP_UI_KingdomProfile_UnknownReason" text="unknown reason" />
+    <string id="AF_DIP_UI_KingdomProfile_DuplicateTarget" text="The package contains a duplicate or invalid kingdom target: {TARGET}" />
+    <string id="AF_DIP_UI_KingdomProfile_NoReloadableProfiles" text="The package contains no kingdom profiles that can be reloaded." />
+    <string id="AF_DIP_UI_KingdomProfile_SerializationEmpty" text="The serialized rollback snapshot is empty." />
+    <string id="AF_DIP_UI_KingdomProfile_RollbackSnapshotEmpty" text="The rollback snapshot is empty." />
+    <string id="AF_DIP_UI_KingdomProfile_RollbackSnapshotInvalid" text="The rollback snapshot is invalid." />
+    <string id="AF_DIP_UI_KingdomProfile_ReloadPlanEmpty" text="The kingdom reload plan is empty." />
+    <string id="AF_DIP_UI_KingdomProfile_ReloadCloneFailed" text="The kingdom profile reload copy could not be created." />
+    <string id="AF_DIP_UI_KingdomProfile_ReloadTargetMissing" text="The world changed and the kingdom target could not be found: {TARGET}" />
+    <string id="AF_DIP_UI_KingdomProfile_ReloadComplete" text="Reloaded {IMPORTED} kingdom profile(s); the other {RESET} current kingdom profile(s) returned to their defaults." />
+    <string id="AF_DIP_UI_KingdomProfile_ImportNoSafeMatch" text="The import contains no safely matching profile for “{KINGDOM}”. Dynamic kingdom IDs match only when the names agree." />
+    <string id="AF_DIP_UI_KingdomProfile_ImportComplete" text="Imported {IMPORTED}; skipped duplicates {DUPLICATES}; invalid or unmatched {UNMATCHED}." />
+    <string id="AF_DIP_UI_KingdomProfile_SingleImportTargetOrPathEmpty" text="The single-kingdom import target or path is empty." />
+    <string id="AF_DIP_UI_KingdomProfile_InvalidImportPathPrefix" text="The import path is invalid: " />
+    <string id="AF_DIP_UI_KingdomProfile_ImportDirectoryNotFound" text="The import directory does not exist." />
+    <string id="AF_DIP_UI_KingdomProfile_MultipleSingleImports" text="Multiple single-kingdom files match this kingdom. Delete old copies or select the target JSON file directly." />
+    <string id="AF_DIP_UI_KingdomProfile_SingleImportNoSafeMatch" text="The import directory contains no safely matching profile for “{KINGDOM}”." />
+    <string id="AF_DIP_UI_KingdomProfile_ImportPathEmpty" text="The import path is empty." />
+    <string id="AF_DIP_UI_KingdomProfile_OnlyJson" text="Only JSON files can be imported." />
+    <string id="AF_DIP_UI_KingdomProfile_NoImportFiles" text="Could not find {FULL} or single-kingdom JSON files." />
+    <string id="AF_DIP_UI_KingdomProfile_ImportFileLimit" text="The import contains more than the safe limit of {COUNT} files." />
+    <string id="AF_DIP_UI_KingdomProfile_ImportFileError" text="{FILE}: {ERROR}" />
+    <string id="AF_DIP_UI_KingdomProfile_ProfileLimit" text="The package contains more than the safe limit of {COUNT} kingdom profiles." />
+    <string id="AF_DIP_UI_KingdomProfile_FileEmpty" text="The file does not exist or is empty." />
+    <string id="AF_DIP_UI_KingdomProfile_FileTooLarge" text="The file exceeds the 32 MB safety limit." />
+    <string id="AF_DIP_UI_KingdomProfile_RootObjectRequired" text="The root element must be a JSON object." />
+    <string id="AF_DIP_UI_KingdomProfile_SingleCardInvalid" text="The single-kingdom profile has no valid ID, profile text, default text, or explicit override marker." />
+    <string id="AF_DIP_UI_KingdomProfile_ExportFormatRequired" text="The JSON structure is not a kingdom profile export." />
+    <string id="AF_DIP_UI_KingdomProfile_InvalidUtf8" text="The file is not valid UTF-8." />
+    <string id="AF_DIP_UI_KingdomProfile_EmptyCard" text="The kingdom profile is empty." />
+    <string id="AF_DIP_UI_KingdomProfile_DynamicNameMismatch" text="The dynamic kingdom ID matches, but the names differ." />
+    <string id="AF_DIP_UI_KingdomProfile_NoUniqueMatch" text="The current world has no unique matching kingdom." />
+    <string id="AF_DIP_UI_KingdomProfile_NoJsonObject" text="The LLM response did not contain a JSON object." />
+    <string id="AF_DIP_UI_KingdomProfile_MissingFields" text="The LLM JSON is missing national_personality or long_term_strategy." />
+    <string id="AF_DIP_UI_KingdomProfile_JsonParseFailed" text="LLM JSON parsing failed: {ERROR}" />
+    <string id="AF_DIP_UI_Vassalage_Terminal_NoKingdom" text="You do not have a kingdom yet." />
+    <string id="AF_DIP_UI_Vassalage_Terminal_NotRuler" text="Current kingdom: {KINGDOM}&#10;&#10;You are not this kingdom’s ruler and cannot view the suzerain’s subject roster." />
+    <string id="AF_DIP_UI_Vassalage_Terminal_Description" text="Suzerain: {KINGDOM}&#10;Select a subject with a tribute obligation to view recorded deposits." />
+    <string id="AF_DIP_UI_Vassalage_Terminal_NoSubjects" text="Your kingdom has no subjects yet." />
+    <string id="AF_DIP_UI_Vassalage_Terminal_BuildFailed" text="The subject roster could not be generated. Try again later." />
+    <string id="AF_DIP_UI_Vassalage_Terminal_Roster" text="Subject roster:" />
+    <string id="AF_DIP_UI_Vassalage_Terminal_Treaty" text="   Treaty: {TYPE}" />
+    <string id="AF_DIP_UI_Vassalage_Terminal_Signed" text="   Signed: {DATE}" />
+    <string id="AF_DIP_UI_Vassalage_Terminal_Duration" text="   Duration: {DAYS}" />
+    <string id="AF_DIP_UI_Vassalage_Terminal_Independence" text="   Independence: {VALUE}" />
+    <string id="AF_DIP_UI_Vassalage_Terminal_TributeRecords" text="   Tribute records: select “View tribute records” in subject management ({COUNT} entries)." />
+    <string id="AF_DIP_UI_Vassalage_Terminal_NoTribute" text="   Tribute records: this subject type does not pay tribute." />
+    <string id="AF_DIP_UI_Vassalage_Terminal_NoPaymentRecords" text="No tribute deposits have been recorded." />
+    <string id="AF_DIP_UI_Vassalage_Terminal_NotRulerShort" text="You are not the current kingdom’s ruler." />
+    <string id="AF_DIP_UI_Vassalage_Terminal_CannotViewLedger" text="The suzerain’s subject tribute ledger cannot be viewed." />
+    <string id="AF_DIP_UI_Vassalage_Terminal_AgreementNotFound" text="The subject treaty could not be found." />
+    <string id="AF_DIP_UI_Vassalage_Terminal_HistoryTitle" text="{SUBJECT} · Tribute records" />
+    <string id="AF_DIP_UI_Vassalage_Terminal_HistorySubtitle" text="{TYPE} · Signed: {DATE} · Duration: {DAYS} days" />
+    <string id="AF_DIP_UI_Vassalage_Terminal_TypeNoTribute" text="This subject type does not generate tribute records." />
+    <string id="AF_DIP_UI_Vassalage_Terminal_LedgerBuildFailed" text="The tribute ledger could not be generated." />
+    <string id="AF_DIP_UI_Vassalage_Terminal_IndependenceShort" text="Independence {VALUE}" />
+    <string id="AF_DIP_UI_Vassalage_Terminal_TributeCount" text="{COUNT} tribute records" />
+    <string id="AF_DIP_UI_Vassalage_Terminal_NoTributeShort" text="No tribute" />
+    <string id="AF_DIP_UI_Vassalage_Terminal_SubjectHint" text="Treaty: {TYPE}&#10;Signed: {DATE}&#10;Duration: {DAYS}{INDEPENDENCE}{TRIBUTE}" />
+    <string id="AF_DIP_UI_Vassalage_Terminal_InvalidRecordLine" text="- This tribute record is no longer valid." />
+    <string id="AF_DIP_UI_Vassalage_Terminal_NoSettlementGain" text="This tribute could not be distributed to the suzerain’s fiefs." />
+    <string id="AF_DIP_UI_Vassalage_Terminal_TributeValue" text="Tribute value: {VALUE}" />
+    <string id="AF_DIP_UI_Vassalage_Terminal_GainsSummary" text="This tribute was deposited; suzerain fief gains are listed below:" />
+    <string id="AF_DIP_UI_Vassalage_Terminal_InvalidRecord" text="This tribute record is no longer valid." />
+    <string id="AF_DIP_UI_Vassalage_AgreementRevisedTitle" text="Vassalage treaty revised" />
+    <string id="AF_DIP_UI_Vassalage_AgreementBrokenTitle" text="Vassalage treaty ended" />
+    <string id="AF_DIP_UI_Vassalage_TributaryBreachTitle" text="Tributary treaty breached" />
+    <string id="AF_DIP_UI_Vassalage_TributariesAtWarTitle" text="Tributaries at war" />
+    <string id="AF_DIP_UI_Vote_MeetingButton" text="Open vote meeting" />
+    <string id="AF_DIP_UI_Vote_ActiveCount" text="{COUNT} active" />
+    <string id="AF_DIP_UI_Vote_None" text="None" />
+    <string id="AF_DIP_UI_Vote_RulerDecision" text="Ruler decision" />
+    <string id="AF_DIP_UI_Vote_CouncilMember" text="Council member" />
+    <string id="AF_DIP_UI_Vote_Spectate" text="Spectate" />
+    <string id="AF_DIP_UI_Vote_OtherKingdom" text="another kingdom" />
+    <string id="AF_DIP_UI_Vote_DecideNow" text="Decide now" />
+    <string id="AF_DIP_UI_Vote_AgendaTab" text="Kingdom agenda" />
+    <string id="AF_DIP_UI_Vote_SupporterCount" text="{COUNT} clans" />
+    <string id="AF_DIP_UI_Vote_MoreSupporters" text="{COUNT} more clans support this" />
+    <string id="AF_DIP_UI_Vote_AgendaQuotedTitle" text="Agenda “{TITLE}”" />
+    <string id="AF_DIP_UI_Vote_RulerHint" text="Forcing a war, peace, or policy against the majority can deepen discontent among all vassals; losing fief claimants also grow dissatisfied." />
+    <string id="AF_DIP_UI_Vote_CouncilHint" text="State your support after the vote meeting begins; you can also negotiate support with other clans in conversation." />
+    <string id="AF_DIP_UI_Vote_SpectateHint" text="Agendas in other kingdoms are view-only; you cannot vote." />
+    <string id="AF_DIP_UI_Vote_CurrentKingdomAgenda" text="{KINGDOM} agenda" />
+    <string id="AF_DIP_UI_Vote_UnknownKingdom" text="Unknown kingdom" />
+    <string id="AF_DIP_UI_Vote_NoKingdom" text="No kingdom" />
+    <string id="AF_DIP_UI_Vote_Unknown" text="Unknown" />
+    <string id="AF_DIP_UI_Vote_ProposerUnknown" text="Proposer: unknown" />
+    <string id="AF_DIP_UI_Vote_ProposerDaysRemaining" text="Proposer: {PROPOSER} · {DAYS} days remaining" />
+    <string id="AF_DIP_UI_Vote_ProposerCanVote" text="Proposer: {PROPOSER} · Voting open" />
+    <string id="AF_DIP_UI_Vote_Info" text="{TYPE} · Proposer {PROPOSER}" />
+    <string id="AF_DIP_UI_Vote_BadgeDecide" text="Decision" />
+    <string id="AF_DIP_UI_Vote_BadgeVoting" text="Voting" />
+    <string id="AF_DIP_UI_Vote_BadgeDays" text="{DAYS} days" />
+    <string id="AF_DIP_UI_Vote_Meta" text="Proposer  {PROPOSER}   ·   {STATUS}{OPTIONS}" />
+    <string id="AF_DIP_UI_Vote_OnlyClanCanDecide" text="Only your clan can decide" />
+    <string id="AF_DIP_UI_Vote_VotingOpen" text="Voting open" />
+    <string id="AF_DIP_UI_Vote_DaysRemaining" text="{DAYS} days remaining" />
+    <string id="AF_DIP_UI_Vote_OptionCount" text="{COUNT} options" />
+    <string id="AF_DIP_UI_Vote_SingleClanKingdom" text="Single-clan kingdom" />
+    <string id="AF_DIP_UI_Vote_Anytime" text="Anytime" />
+    <string id="AF_DIP_UI_Vote_DecideImmediatelyHint" text="No waiting required; decide immediately." />
+    <string id="AF_DIP_UI_Vote_SingleClanFooter" text="Only your clan can decide in this kingdom. Click “Decide now” to approve or reject." />
+    <string id="AF_DIP_UI_Vote_Voting" text="Voting" />
+    <string id="AF_DIP_UI_Vote_UntilVoting" text="Until voting starts" />
+    <string id="AF_DIP_UI_Vote_Started" text="Started" />
+    <string id="AF_DIP_UI_Vote_DaysUnit" text="days" />
+    <string id="AF_DIP_UI_Vote_OpenMeetingHint" text="A vote meeting can be opened." />
+    <string id="AF_DIP_UI_Vote_UrgentHint" text="Less than 1 day · urgent" />
+    <string id="AF_DIP_UI_Vote_AfterDeadlineHint" text="Voting begins after the deadline." />
+    <string id="AF_DIP_UI_Vote_FooterOpen" text="Agenda “{TITLE}” is open for voting" />
+    <string id="AF_DIP_UI_Vote_FooterFuture" text="Agenda “{TITLE}” opens for voting in {DAYS} days" />
+    <string id="AF_DIP_UI_Vote_Deals" text="Vote deals agreed with {COUNT} clans" />
+    <string id="AF_DIP_UI_Vote_SlightlyFavor" text="Slightly favor" />
+    <string id="AF_DIP_UI_Vote_StronglyFavor" text="Strongly favor" />
+    <string id="AF_DIP_UI_Vote_FullyPush" text="Push fully" />
+    <string id="AF_DIP_UI_Vote_Neutral" text="Neutral" />
+    <string id="AF_DIP_UI_Vote_NoSponsor" text="No sponsor" />
+    <string id="AF_DIP_UI_Vote_You" text="you" />
+    <string id="AF_DIP_UI_Vote_OnlyClanDecides" text="Only your clan can decide · You decide" />
+    <string id="AF_DIP_UI_Vote_NoOtherVoters" text="No other clans are voting" />
+    <string id="AF_DIP_UI_Vote_NoCouncilTrend" text="The council has no trend yet (excluding you)" />
+    <string id="AF_DIP_UI_Annexation_Processing" text="Annexation paused: {TARGET} integration is already being processed." />
+    <string id="AF_DIP_UI_Annexation_NoClans" text="Annexation aborted: {TARGET} has no valid clans left to swear allegiance." />
+    <string id="AF_DIP_UI_Annexation_SettlementsPending" text="Annexation aborted: {TARGET} still has settlements awaiting transfer. The former kingdom was not dissolved to prevent ownership errors." />
+    <string id="AF_DIP_UI_Annexation_ClansPending" text="Annexation aborted: {TARGET} still has clans that have not completed their allegiance. The former kingdom was not dissolved to prevent clan ownership errors." />
+    <string id="AF_DIP_UI_Annexation_DestroyFailed" text="Annexation aborted: all clans of {TARGET} have sworn allegiance to {PLAYER}, but the former kingdom could not be dissolved." />
+    <string id="AF_DIP_UI_Annexation_Completed" text="Annexation complete: {TARGET} has joined {PLAYER}. All clans of {TARGET} have sworn allegiance to {PLAYER}; {TARGET} has ceased to exist." />
+    <string id="AF_DIP_UI_Annexation_NotPlayerRuler" text="Annexation not established: you must be the ruler of your own kingdom." />
+    <string id="AF_DIP_UI_Annexation_TargetInvalid" text="Annexation not established: the target kingdom does not exist or has already been eliminated." />
+    <string id="AF_DIP_UI_Annexation_SameKingdom" text="Annexation not established: you cannot annex your own kingdom." />
+    <string id="AF_DIP_UI_Annexation_TargetRulerRequired" text="Annexation not established: the other party cannot renounce the target kingdom's sovereignty without being its ruler." />
+    <string id="AF_DIP_UI_Annexation_VassalageEndedReason" text="{TARGET} has joined your kingdom; its former vassalage treaties are now void." />
+    <string id="AF_KINGDOM_CW_Action_AcceptedAgreementSettling" text="An accepted agreement is still settling; the faction cannot be dissolved." />
+    <string id="AF_KINGDOM_CW_Action_AgreementAlreadyAccepted" text="The agreement was accepted and is settling; it cannot be answered again or withdrawn. Wait for the safe retry." />
+    <string id="AF_KINGDOM_CW_Action_AgreementSettling" text="An agreement is still settling; the faction cannot be refounded." />
+    <string id="AF_KINGDOM_CW_Action_AlreadyNeutral" text="You are already uncommitted." />
+    <string id="AF_KINGDOM_CW_Action_AwaitingFactionResponse" text="Waiting for the faction to respond." />
+    <string id="AF_KINGDOM_CW_Action_ChangeDemandConsequence" text="Change your faction's demand and immediately reassess whether every other member stays involved; those who leave return to uncommitted, with no extra relation loss, no outside clan recruitment, and no rebellion." />
+    <string id="AF_KINGDOM_CW_Action_ChangeOwnDemandOnly" text="You can only change the demand of a pre-war faction you lead." />
+    <string id="AF_KINGDOM_CW_Action_ClanAllegianceChanged" text="The clan's allegiance changed; the original agreement can no longer be answered." />
+    <string id="AF_KINGDOM_CW_Action_ClanLeaderIneligible" text="The clan leader is not eligible." />
+    <string id="AF_KINGDOM_CW_Action_ConcedeConsequence" text="The current demand is honored in full; a claim to the throne means abdication, and a war of independence means recognizing independence." />
+    <string id="AF_KINGDOM_CW_Action_DemandChangeLocked" text="A royal negotiation or agreement settlement is in progress; the demand cannot be changed yet." />
+    <string id="AF_KINGDOM_CW_Action_DemandInvalid" text="The demand or target is not valid, or the required holdings are missing." />
+    <string id="AF_KINGDOM_CW_Action_DemandUnchanged" text="The demand and target are unchanged; members do not need to be reassessed." />
+    <string id="AF_KINGDOM_CW_Action_DetonateLeaderConsequence" text="Enter the rebellion and kingdom-founding process immediately." />
+    <string id="AF_KINGDOM_CW_Action_DetonateOwnOnly" text="You can only call your own pre-war faction to rise." />
+    <string id="AF_KINGDOM_CW_Action_DetonateProposalConsequence" text="Propose it to the leader; after a refusal you cannot propose again for 7 days." />
+    <string id="AF_KINGDOM_CW_Action_Disabled" text="Civil war factions are disabled, or the kingdom is no longer valid." />
+    <string id="AF_KINGDOM_CW_Action_DissolveOwnConsequence" text="Dissolve the faction you lead: −10 relation with every other member clan. Grievance is kept and any existing kingdom cooldown is not extended." />
+    <string id="AF_KINGDOM_CW_Action_DissolveOwnOnly" text="You can only dissolve a pre-war faction you lead." />
+    <string id="AF_KINGDOM_CW_Action_ExitCooldown" text="Exit cooldown runs until day {A}; changing kingdoms does not bypass it." />
+    <string id="AF_KINGDOM_CW_Action_FactionLeaderChanged" text="The faction leader changed; wait for the succession to resolve." />
+    <string id="AF_KINGDOM_CW_Action_FactionSlotsFull" text="Faction slots are full, or the kingdom is still on cooldown." />
+    <string id="AF_KINGDOM_CW_Action_ForceDissolveConsequence" text="Members take +7.5 grievance and −10 relation with the king; obedience dissolves the faction, defiance starts a rebellion." />
+    <string id="AF_KINGDOM_CW_Action_FoundConsequence" text="Found a faction: −10 relation with the ruler. If you are already in a camp, you leave it first and bear the member relation loss, and your old faction dissolves. A player leader only starts a rebellion manually." />
+    <string id="AF_KINGDOM_CW_Action_GovernanceCooldown" text="Political actions are on cooldown until day {A}." />
+    <string id="AF_KINGDOM_CW_Action_InvalidOfferTier" text="Invalid compensation tier." />
+    <string id="AF_KINGDOM_CW_Action_KingCannotJoin" text="The king cannot join, leave, or found an opposition faction on their own." />
+    <string id="AF_KINGDOM_CW_Action_KingdomCooldownFound" text="The kingdom is on post-war cooldown until day {A}; founding a player faction must wait too." />
+    <string id="AF_KINGDOM_CW_Action_LeaderSuccession" text="{A} succeeds as faction leader." />
+    <string id="AF_KINGDOM_CW_Action_LeaveConsequence" text="−10 relation with the former member leader and −20 with the faction leader (not cumulative); you cannot join or found a faction for 7 days." />
+    <string id="AF_KINGDOM_CW_Action_MembershipLocked" text="Membership management is locked during a founding request or civil war." />
+    <string id="AF_KINGDOM_CW_Action_MembershipPendingReview" text="A faction operation result is still awaiting review; membership and factions cannot be changed yet." />
+    <string id="AF_KINGDOM_CW_Action_MustLeaveCampFirst" text="You must leave your current camp first, bearing the relation loss and the 7-day cooldown." />
+    <string id="AF_KINGDOM_CW_Action_NegotiateConsequence" text="Accepting transfers the compensation, withdraws the demand, and dissolves the faction; refusing costs nothing but consumes the 7-day cooldown. During a war, make peace first and return home." />
+    <string id="AF_KINGDOM_CW_Action_NewDemandInvalid" text="The new demand or target is not valid, or the required holdings are missing." />
+    <string id="AF_KINGDOM_CW_Action_NoDissolveWarBlocked" text="The domestic/world war cap or player-kingdom immunity blocks a defiant rebellion, so the dissolution order cannot be issued." />
+    <string id="AF_KINGDOM_CW_Action_NoOperation" text="No such operation." />
+    <string id="AF_KINGDOM_CW_Action_NoSuccessor" text="The faction has no eligible successor and is dissolved." />
+    <string id="AF_KINGDOM_CW_Action_NoSuppressAfterFounding" text="Once the kingdom-founding request has started, the faction cannot be suppressed or administratively dissolved." />
+    <string id="AF_KINGDOM_CW_Action_NothingToRespond" text="There is nothing for this clan to respond to." />
+    <string id="AF_KINGDOM_CW_Action_PlayerKingdomDisabled" text="Player-kingdom factions are disabled in settings." />
+    <string id="AF_KINGDOM_CW_Action_PreviousOperationPendingReview" text="A previous operation is still awaiting review; no further operation is possible yet." />
+    <string id="AF_KINGDOM_CW_Action_ProposalRefusedCooldown" text="After a proposal to rise is refused, you must wait 7 days." />
+    <string id="AF_KINGDOM_CW_Action_RebelsFoundingKingdom" text="The rebels are founding their kingdom; wait for it to finish." />
+    <string id="AF_KINGDOM_CW_Action_RespondAcceptConsequence" text="Accepting compensation withdraws the demand and dissolves the faction." />
+    <string id="AF_KINGDOM_CW_Action_RespondDissolveConsequence" text="Obedience dissolves the faction; defiance starts a rebellion." />
+    <string id="AF_KINGDOM_CW_Action_ResponseDeadline" text="&#10;Reply deadline: day {A}; missing it counts as {B}." />
+    <string id="AF_KINGDOM_CW_Action_ResponseDeadlineDefy" text="defiance" />
+    <string id="AF_KINGDOM_CW_Action_ResponseDeadlinePassed" text="The response deadline has passed." />
+    <string id="AF_KINGDOM_CW_Action_ResponseDeadlineRefuse" text="refusal" />
+    <string id="AF_KINGDOM_CW_Action_ResponseDissolve" text="The crown orders the faction dissolved. Obey and it dissolves; defy and it rises in rebellion." />
+    <string id="AF_KINGDOM_CW_Action_ResponseOffer" text="The crown offers {A} in exchange for withdrawing the demand; accepting dissolves the faction." />
+    <string id="AF_KINGDOM_CW_Action_ResponseOfferGold" text="{A} gold" />
+    <string id="AF_KINGDOM_CW_Action_ResponseOfferInfluence" text="{A} influence" />
+    <string id="AF_KINGDOM_CW_Action_RisingBlocked" text="The domestic/world war cap or rebellion immunity prevents a rebellion." />
+    <string id="AF_KINGDOM_CW_Action_RulingClanOnly" text="Only the ruling clan of the original kingdom can do this." />
+    <string id="AF_KINGDOM_CW_Action_RulingClanResources" text="The ruling clan lacks the resources." />
+    <string id="AF_KINGDOM_CW_Action_SelectExistingFaction" text="Select a faction that still exists." />
+    <string id="AF_KINGDOM_CW_Action_SelectJoinableFaction" text="Select a pre-war faction you can join." />
+    <string id="AF_KINGDOM_CW_Action_StateChanged" text="The faction state changed; please confirm again." />
+    <string id="AF_KINGDOM_CW_Action_SuppressConsequence" text="Members lose up to 20 influence; the leader takes +7.5 grievance and the rest +4; −5 relation with the king. The first suppression delays the deadline by 7 days." />
+    <string id="AF_KINGDOM_CW_Action_Unsupported" text="This operation is not supported." />
+    <string id="AF_KINGDOM_CW_Action_VassalOnly" text="You must be a full vassal of this kingdom." />
+    <string id="AF_KINGDOM_CW_Behavior_ClanDestroyed" text="{CLAN} was destroyed" />
+    <string id="AF_KINGDOM_CW_Behavior_CurrentPolicy" text="the current policy" />
+    <string id="AF_KINGDOM_CW_Behavior_FiefGranted" text="{SETTLEMENT} was granted to {CLAN}" />
+    <string id="AF_KINGDOM_CW_Behavior_FiefLost" text="{CLAN} lost its fief" />
+    <string id="AF_KINGDOM_CW_Behavior_LandsRaided" text="The lands of {CLAN} were raided" />
+    <string id="AF_KINGDOM_CW_Behavior_PeaceImposed" text="The kingdom was forced to make peace" />
+    <string id="AF_KINGDOM_CW_Behavior_PeaceImposedByKing" text="The king overrode the council majority and forced a peace" />
+    <string id="AF_KINGDOM_CW_Behavior_PolicyImposed" text="The kingdom imposed a policy: {POLICY}" />
+    <string id="AF_KINGDOM_CW_Behavior_RoyalExecution" text="The crown executed a member of {CLAN}" />
+    <string id="AF_KINGDOM_CW_Behavior_WarImposed" text="The kingdom was forced into war" />
+    <string id="AF_KINGDOM_CW_Behavior_WarImposedByKing" text="The king overrode the council majority and forced a war" />
+    <string id="AF_KINGDOM_CW_Core_AftermathEmboldened" text="The rebels' victory has emboldened the remaining factions, but they still need time to regroup" />
+    <string id="AF_KINGDOM_CW_Core_AftermathSettled" text="The civil war has calmed; the remaining factions hold back their pressure" />
+    <string id="AF_KINGDOM_CW_Core_AftermathSuppressed" text="The crown's suppression has cowed the remaining factions; for now they fall quiet" />
+    <string id="AF_KINGDOM_CW_Core_AftermathTruce" text="{MOOD} (no ultimatums for {WEEKS} weeks)" />
+    <string id="AF_KINGDOM_CW_Core_CauseThreshold" text="discontent has reached the threshold" />
+    <string id="AF_KINGDOM_CW_Core_CauseWeariness" text="the kingdom is war-weary ({VALUE})" />
+    <string id="AF_KINGDOM_CW_Core_DemandTurnedToAbdication" text="{FACTION} has been refused repeatedly and now demands the king's abdication" />
+    <string id="AF_KINGDOM_CW_Core_DissolvedKingDelays" text="The king kept delaying {FACTION}; the faction falls apart" />
+    <string id="AF_KINGDOM_CW_Core_DissolvedRepeatedRefusals" text="{FACTION} was refused repeatedly and still did not rise; the faction falls apart" />
+    <string id="AF_KINGDOM_CW_Core_EnemyKingdom" text="an enemy kingdom" />
+    <string id="AF_KINGDOM_CW_Core_EscalationRollFailed" text="but the escalation roll failed" />
+    <string id="AF_KINGDOM_CW_Core_FactionDissolvedInvalid" text="{FACTION}'s demand target or leader is no longer valid; the faction dissolves" />
+    <string id="AF_KINGDOM_CW_Core_FactionFounded" text="{FACTION} is founded; demand: {DEMAND}" />
+    <string id="AF_KINGDOM_CW_Core_FactionRetained" text="{REASON}; the faction has been retained." />
+    <string id="AF_KINGDOM_CW_Core_FollowAccepted" text="Your clan follows {FACTION} and defects to {REBEL}." />
+    <string id="AF_KINGDOM_CW_Core_FollowDeclined" text="Your clan refuses to follow {FACTION} and sides with the crown." />
+    <string id="AF_KINGDOM_CW_Core_FollowEnded" text="This uprising is already over." />
+    <string id="AF_KINGDOM_CW_Core_FollowFailed" text="The defection to the rebels failed; your clan stays with the kingdom." />
+    <string id="AF_KINGDOM_CW_Core_FollowPromptFollow" text="&#10;&#10;Follow: your clan takes its fiefs over to {REBEL}; when the civil war ends you return with the outcome (if the crown wins, you will be punished)." />
+    <string id="AF_KINGDOM_CW_Core_FollowPromptIntro" text="The {FACTION} you belong to has risen and founded {REBEL}, going to war with the crown." />
+    <string id="AF_KINGDOM_CW_Core_FollowPromptStay" text="&#10;Stay: your clan sides with the crown and turns against its former comrades." />
+    <string id="AF_KINGDOM_CW_Core_FormationRollFailed" text="{CLAN} {CAUSE}, but the faction-formation roll failed ({CHANCE})" />
+    <string id="AF_KINGDOM_CW_Core_KingDefers" text="The king defers his answer to {FACTION}; the ultimatum is postponed" />
+    <string id="AF_KINGDOM_CW_Core_KingRefusedDemand" text="The king refused {FACTION}'s demand, {REASON}" />
+    <string id="AF_KINGDOM_CW_Core_LeaderGoneNoRising" text="{FACTION}'s leader no longer exists; the uprising is called off" />
+    <string id="AF_KINGDOM_CW_Core_NoPendingUltimatum" text="There is no ultimatum awaiting an answer." />
+    <string id="AF_KINGDOM_CW_Core_NoSlotDomesticWar" text="{FACTION} is resolved to rise, but a civil war is already running in the realm; it holds back for now" />
+    <string id="AF_KINGDOM_CW_Core_NoSlotWorldLimit" text="{FACTION} is resolved to rise, but the world rebellion limit has been reached ({COUNT}/{MAX}); it holds back for now" />
+    <string id="AF_KINGDOM_CW_Core_OthersCoolingDown" text="{FACTION} has risen; the other factions enter a cooldown (no ultimatums before day {DAY})" />
+    <string id="AF_KINGDOM_CW_Core_OutbreakHistory" text="{FACTION} establishes {REBEL}; the civil war breaks out" />
+    <string id="AF_KINGDOM_CW_Core_PlayerKingAccepted" text="The player king accepted {FACTION}'s ultimatum" />
+    <string id="AF_KINGDOM_CW_Core_PlayerKingRefused" text="The player king refused {FACTION}'s ultimatum" />
+    <string id="AF_KINGDOM_CW_Core_PledgeBroken" text="The king broke his pledge and made peace with {OTHER}" />
+    <string id="AF_KINGDOM_CW_Core_ReasonFoundingTimeout" text="the founding request timed out" />
+    <string id="AF_KINGDOM_CW_Core_RebelKingdomEstablished" text="The rebel kingdom has been established; the civil war breaks out." />
+    <string id="AF_KINGDOM_CW_Core_RebellionCooldown" text="The kingdom has just been through a rebellion; no new faction will form for {WEEKS} weeks." />
+    <string id="AF_KINGDOM_CW_Core_RebellionImmunityBlocked" text="The player kingdom's stability-rebellion immunity stopped {FACTION} from rising" />
+    <string id="AF_KINGDOM_CW_Core_RebellionIncomplete" text="The uprising is not yet complete: {REASON}" />
+    <string id="AF_KINGDOM_CW_Core_RefusalCountNotMet" text="but the faction has not been refused enough times ({COUNT}/{MIN}); it will not rise yet" />
+    <string id="AF_KINGDOM_CW_Core_RisingRebelKingdom" text="{FACTION} has risen and is founding a temporary rebel kingdom" />
+    <string id="AF_KINGDOM_CW_Core_UltimatumAcceptPending" text="The demand could not be fulfilled; the faction remains pending action." />
+    <string id="AF_KINGDOM_CW_Core_UltimatumAcceptedDissolved" text="The ultimatum was accepted; the faction has disbanded." />
+    <string id="AF_KINGDOM_CW_Core_UltimatumDelivered" text="{FACTION} has delivered an ultimatum: {DEMAND}" />
+    <string id="AF_KINGDOM_CW_Core_UltimatumExpired" text="The ultimatum is no longer valid." />
+    <string id="AF_KINGDOM_CW_Core_UltimatumRefusedNoRevolt" text="You refused the ultimatum; the faction has not revolted yet." />
+    <string id="AF_KINGDOM_CW_Core_UltimatumRefusedRevolt" text="You refused the ultimatum; the faction has risen in revolt." />
+    <string id="AF_KINGDOM_CW_Core_UltimatumRefusedWaiting" text="You refused the ultimatum; the faction is resolved to revolt and awaits its moment." />
+    <string id="AF_KINGDOM_CW_Core_UltimatumStatus" text="&#10;&#10;Refused {COUNT} times. Without an answer it will be decided automatically on day {DAY}. A refusal may lead to civil war." />
+    <string id="AF_KINGDOM_CW_Core_UltimatumToPlayerKing" text="{FACTION}'s ultimatum has been delivered to the player king; awaiting an explicit answer" />
+    <string id="AF_KINGDOM_CW_Coup_AlreadyRegistered" text="The coup civil war is already registered." />
+    <string id="AF_KINGDOM_CW_Coup_ConditionsUnmet" text="Coup civil war registration requirements are not met." />
+    <string id="AF_KINGDOM_CW_Coup_IdentityConflict" text="Coup civil war identity conflict; the existing record is kept." />
+    <string id="AF_KINGDOM_CW_Coup_RebelKingdomEliminated" text="The coup rebels were eliminated; the rebellion ends." />
+    <string id="AF_KINGDOM_CW_Coup_RestorationIdentityMissing" text="The former royal clan has not joined the rebels, or the restoration identity/original kingdom name is missing; registration is postponed." />
+    <string id="AF_KINGDOM_CW_Coup_RulerKingdomEliminated" text="The former ruler's kingdom was eliminated; the coup outcome is recognized." />
+    <string id="AF_KINGDOM_CW_Demand_autonomy" text="Recognize autonomy for this faction's fiefs" />
+    <string id="AF_KINGDOM_CW_Demand_continue_war" text="Do not make peace with {TARGET}" />
+    <string id="AF_KINGDOM_CW_Demand_make_peace" text="End the war with {TARGET} and negotiate peace" />
+    <string id="AF_KINGDOM_CW_Demand_redress" text="Pay compensation and hold those responsible to account" />
+    <string id="AF_KINGDOM_CW_Demand_revoke_policy" text="Repeal {TARGET}" />
+    <string id="AF_KINGDOM_CW_Demand_unknown" text="Pursue the faction's demand" />
+    <string id="AF_KINGDOM_CW_Demand_usurp" text="The king abdicates and the faction leader succeeds" />
+    <string id="AF_KINGDOM_CW_Event_KingExecuted" text="The king was executed; the kingdom has fallen into civil war." />
+    <string id="AF_KINGDOM_CW_Event_ProposalPartiesChanged" text="The parties to the negotiation changed; the unaccepted old proposal has been withdrawn." />
+    <string id="AF_KINGDOM_CW_FactionTag_autonomy" text="Separation faction" />
+    <string id="AF_KINGDOM_CW_FactionTag_continue_war" text="War faction" />
+    <string id="AF_KINGDOM_CW_FactionTag_make_peace" text="Anti-war faction" />
+    <string id="AF_KINGDOM_CW_FactionTag_redress" text="Retribution faction" />
+    <string id="AF_KINGDOM_CW_FactionTag_revoke_policy" text="Reform faction" />
+    <string id="AF_KINGDOM_CW_FactionTag_unknown" text="Opposition faction" />
+    <string id="AF_KINGDOM_CW_FactionTag_usurp" text="Claimant faction" />
+    <string id="AF_KINGDOM_CW_Panel_ChronicleWeek" text="Week {WEEK}  ·  {TEXT}" />
+    <string id="AF_KINGDOM_CW_Panel_CivilWar" text="Civil war" />
+    <string id="AF_KINGDOM_CW_Panel_CivilWarWeek" text="Civil war week {WEEK}" />
+    <string id="AF_KINGDOM_CW_Panel_ConditionFactionSlots" text="Faction slots in this kingdom" />
+    <string id="AF_KINGDOM_CW_Panel_ConditionFormalVassal" text="Formal vassal eligibility" />
+    <string id="AF_KINGDOM_CW_Panel_ConditionGrievanceThreshold" text="Grievance threshold {THRESHOLD}" />
+    <string id="AF_KINGDOM_CW_Panel_ConditionMet" text="Met" />
+    <string id="AF_KINGDOM_CW_Panel_ConditionNoEligibleClan" text="No eligible clan" />
+    <string id="AF_KINGDOM_CW_Panel_ConditionNotReached" text="Not reached" />
+    <string id="AF_KINGDOM_CW_Panel_ConditionOrWeariness" text="or war weariness {VALUE}" />
+    <string id="AF_KINGDOM_CW_Panel_ConditionPlayerKingdomFactions" text="Player-kingdom factions" />
+    <string id="AF_KINGDOM_CW_Panel_ConditionPostWarCooldown" text="Post-war cooldown" />
+    <string id="AF_KINGDOM_CW_Panel_ConditionReached" text="Reached" />
+    <string id="AF_KINGDOM_CW_Panel_CrownExitHint" text="Leaving the crown faction: king −{LEADER}, other crown clans −{MEMBER}; you stay neutral for {DAYS} days." />
+    <string id="AF_KINGDOM_CW_Panel_CrownRespondedFirst" text="The crown responded first" />
+    <string id="AF_KINGDOM_CW_Panel_DayOf" text="Day {DAY}" />
+    <string id="AF_KINGDOM_CW_Panel_DaysLeft" text="{DAYS} days left" />
+    <string id="AF_KINGDOM_CW_Panel_DeliverUltimatum" text="Deliver ultimatum" />
+    <string id="AF_KINGDOM_CW_Panel_Delivered" text="Delivered" />
+    <string id="AF_KINGDOM_CW_Panel_DeliveringSoon" text="Delivering soon" />
+    <string id="AF_KINGDOM_CW_Panel_DemandTag" text="{TAG} demand" />
+    <string id="AF_KINGDOM_CW_Panel_DemandTitle" text="Demand: {DEMAND}" />
+    <string id="AF_KINGDOM_CW_Panel_DemandTitleExpired" text="Demand no longer valid" />
+    <string id="AF_KINGDOM_CW_Panel_DissolveOrder" text="Dissolution order" />
+    <string id="AF_KINGDOM_CW_Panel_EmptyDisabled" text="Civil war factions are disabled" />
+    <string id="AF_KINGDOM_CW_Panel_EmptyNoKingdom" text="You have not joined any kingdom" />
+    <string id="AF_KINGDOM_CW_Panel_Enabled" text="Enabled" />
+    <string id="AF_KINGDOM_CW_Panel_ExitCost" text="Leader −{LEADER}, members −{MEMBER}; cannot join or found a faction for {DAYS} days." />
+    <string id="AF_KINGDOM_CW_Panel_FactionNameFallback" text="{LEADER}'s opposition faction" />
+    <string id="AF_KINGDOM_CW_Panel_GoalPressure" text="Pressure the throne" />
+    <string id="AF_KINGDOM_CW_Panel_GoalSecede" text="Independence" />
+    <string id="AF_KINGDOM_CW_Panel_GoalUsurp" text="Usurpation" />
+    <string id="AF_KINGDOM_CW_Panel_GoldAmount" text="{AMOUNT} gold" />
+    <string id="AF_KINGDOM_CW_Panel_IdentityKing" text="You are the king  ·  Crown faction" />
+    <string id="AF_KINGDOM_CW_Panel_IdentityNotVassal" text="{CLAN}  ·  Not a formal vassal; cannot join a faction" />
+    <string id="AF_KINGDOM_CW_Panel_IdentityVassal" text="Vassal  ·  {CLAN}  ·  {ROLE}" />
+    <string id="AF_KINGDOM_CW_Panel_InfluenceAmount" text="{AMOUNT} influence" />
+    <string id="AF_KINGDOM_CW_Panel_JoinedDaysAgo" text=" · joined {DAYS} days ago" />
+    <string id="AF_KINGDOM_CW_Panel_JoinedToday" text=" · joined today" />
+    <string id="AF_KINGDOM_CW_Panel_KingHintActive" text="Suppression, negotiation and force-dissolution share a {DAYS}-day cooldown; concession is unlimited but honors the demand." />
+    <string id="AF_KINGDOM_CW_Panel_KingHintIdle" text="Once an opposition faction forms, suppression, negotiation, concession and force-dissolution become available." />
+    <string id="AF_KINGDOM_CW_Panel_LeaderHint" text="This faction never rebels automatically; a manual rebellion needs this clan to hold {THRESHOLD}% of the kingdom's military power (currently {CURRENT}%). It can be dissolved or refounded, still subject to the post-war cooldown." />
+    <string id="AF_KINGDOM_CW_Panel_LeaderLine" text="Leader  {CLAN}{YOU}   ·   Relation with king {RELATION}" />
+    <string id="AF_KINGDOM_CW_Panel_MemberHint" text="Rebellion is the leader's decision; after a refused proposal you cannot raise it again for {DAYS} days. Leaving: {EXIT}" />
+    <string id="AF_KINGDOM_CW_Panel_MembersLocked" text="During a founding request or open civil war, member membership is locked." />
+    <string id="AF_KINGDOM_CW_Panel_MiddleCooldown" text="Exit cooldown runs until day {DAY}; until then you cannot join or found a faction." />
+    <string id="AF_KINGDOM_CW_Panel_MiddleSwitchHint" text="To switch factions after joining, leave first: {EXIT}" />
+    <string id="AF_KINGDOM_CW_Panel_NoAnswer" text="No answer" />
+    <string id="AF_KINGDOM_CW_Panel_NoUltimatum" text="No ultimatum" />
+    <string id="AF_KINGDOM_CW_Panel_None" text="None" />
+    <string id="AF_KINGDOM_CW_Panel_NoteAwaitKingReply" text="Waiting for the king's answer within the deadline" />
+    <string id="AF_KINGDOM_CW_Panel_NoteAwaitYourConfirm" text="Waiting for your confirmation" />
+    <string id="AF_KINGDOM_CW_Panel_NoteAwaitingLeaderAnswer" text="Waiting for the faction leader's answer" />
+    <string id="AF_KINGDOM_CW_Panel_NoteAwaitingYourAnswer" text="Awaiting your answer  ·  timeout counts as {OUTCOME}" />
+    <string id="AF_KINGDOM_CW_Panel_NoteCheckLog" text="State kept; check the log" />
+    <string id="AF_KINGDOM_CW_Panel_NoteCompensationAwaitsLeader" text="The king offers compensation for withdrawing the demand; the faction leader has yet to answer." />
+    <string id="AF_KINGDOM_CW_Panel_NoteCompensationOffer" text="The king offers {OFFER} in compensation for withdrawing the demand and dissolving the faction; if you accept, the compensation goes to your clan." />
+    <string id="AF_KINGDOM_CW_Panel_NoteConcedeAbdication" text="Conceding means abdication, with the faction leader taking the throne" />
+    <string id="AF_KINGDOM_CW_Panel_NoteConcedeHonors" text="Conceding will honor the demand" />
+    <string id="AF_KINGDOM_CW_Panel_NoteCrownFightsWithKing" text="If the faction rebels, crown-faction clans fight alongside the king." />
+    <string id="AF_KINGDOM_CW_Panel_NoteDecidedOnRefusal" text="Decided after refusal" />
+    <string id="AF_KINGDOM_CW_Panel_NoteDefaultRisk" text="If the king concedes the demand is honored; if refused, the faction decides by chance whether to rebel." />
+    <string id="AF_KINGDOM_CW_Panel_NoteDeliveringUltimatum" text="About to deliver the ultimatum" />
+    <string id="AF_KINGDOM_CW_Panel_NoteDissolveAwaitsLeader" text="The king has ordered dissolution; the faction leader may obey or defy." />
+    <string id="AF_KINGDOM_CW_Panel_NoteFoundingGoal" text="The rebels are founding a kingdom. War goal: {GOAL}." />
+    <string id="AF_KINGDOM_CW_Panel_NoteHoldingStillHomeWar" text="Holding still while the kingdom is at war" />
+    <string id="AF_KINGDOM_CW_Panel_NoteKingDissolveOrder" text="The king has ordered the faction dissolved: obey and it disbands, defy and it rebels." />
+    <string id="AF_KINGDOM_CW_Panel_NoteKingRuling" text="The king is deciding" />
+    <string id="AF_KINGDOM_CW_Panel_NoteLowEscalation" text=" If refused, the chance of rebellion is lower (×{SCALE})." />
+    <string id="AF_KINGDOM_CW_Panel_NoteOpenWarGoal" text="The rebel kingdom has gone to war with the crown. War goal: {GOAL}." />
+    <string id="AF_KINGDOM_CW_Panel_NotePlayerFactionRisk" text="If the king refuses, the faction decides by chance whether to rebel; once a founding request or open civil war begins, member membership is locked." />
+    <string id="AF_KINGDOM_CW_Panel_NoteRebelAtWarWithCrown" text="The rebel kingdom has gone to war with the crown" />
+    <string id="AF_KINGDOM_CW_Panel_NoteRefusalRollSuffix" text="; if refused, the faction decides by chance whether to rebel." />
+    <string id="AF_KINGDOM_CW_Panel_NoteRefusedRetry" text="Refused {COUNT} times; raised again  ·  {NOTE}" />
+    <string id="AF_KINGDOM_CW_Panel_NoteResolvedWaitWarEnd" text="Resolved; waiting for the war to end" />
+    <string id="AF_KINGDOM_CW_Panel_NoteRetryNextDay" text="Retry next day" />
+    <string id="AF_KINGDOM_CW_Panel_NoteWaitingRebelFounding" text="Waiting for the rebel kingdom to be founded" />
+    <string id="AF_KINGDOM_CW_Panel_NoteWaitingRebellionSlot" text="Waiting for a rebellion slot to free up" />
+    <string id="AF_KINGDOM_CW_Panel_NoteWillDeliverUltimatum" text="Will deliver an ultimatum to the king after that" />
+    <string id="AF_KINGDOM_CW_Panel_OutcomeDefiance" text="defiance" />
+    <string id="AF_KINGDOM_CW_Panel_OutcomeRefusal" text="refusal" />
+    <string id="AF_KINGDOM_CW_Panel_Paused" text="Paused" />
+    <string id="AF_KINGDOM_CW_Panel_PlayerLedNote" text="A faction you lead never rebels automatically; you can change the demand and re-evaluate members, but a rebellion needs manual confirmation and must meet the strength threshold." />
+    <string id="AF_KINGDOM_CW_Panel_PreviouslyRefused" text="Previously refused" />
+    <string id="AF_KINGDOM_CW_Panel_RebelFounding" text="The rebel kingdom is being founded" />
+    <string id="AF_KINGDOM_CW_Panel_Rebellion" text="Rebellion" />
+    <string id="AF_KINGDOM_CW_Panel_RefusalUnit" text=" times" />
+    <string id="AF_KINGDOM_CW_Panel_RefusalUnitDeferred" text=" times  ·  deferred {COUNT}" />
+    <string id="AF_KINGDOM_CW_Panel_Refused" text="Refused" />
+    <string id="AF_KINGDOM_CW_Panel_ResolvedToRebel" text="Resolved to rebel" />
+    <string id="AF_KINGDOM_CW_Panel_RoyalLetter" text="Royal letter" />
+    <string id="AF_KINGDOM_CW_Panel_RoyalTalks" text="Royal talks" />
+    <string id="AF_KINGDOM_CW_Panel_RulingKingAccepts" text="The king accepts" />
+    <string id="AF_KINGDOM_CW_Panel_RulingKingDefers" text="The king defers" />
+    <string id="AF_KINGDOM_CW_Panel_RulingKingRefuses" text="The king refuses" />
+    <string id="AF_KINGDOM_CW_Panel_RulingKingRefusesRebels" text="The king refuses; the faction rises" />
+    <string id="AF_KINGDOM_CW_Panel_RulingPending" text="Under review" />
+    <string id="AF_KINGDOM_CW_Panel_SettingDisabled" text="Disabled in settings" />
+    <string id="AF_KINGDOM_CW_Panel_Settlement" text="Settlement" />
+    <string id="AF_KINGDOM_CW_Panel_ShortName" text="{CLAN} {TAG}" />
+    <string id="AF_KINGDOM_CW_Panel_StageAwaitingResponse" text="Awaiting faction response  ·  {DAYS} days left" />
+    <string id="AF_KINGDOM_CW_Panel_StageCivilWarWeek" text="Civil war  ·  week {WEEK}" />
+    <string id="AF_KINGDOM_CW_Panel_StageCooldown" text="Settling after civil war  ·  no faction can form before day {DAY}" />
+    <string id="AF_KINGDOM_CW_Panel_StageEmboldened" text="Emboldened by rebel victories  ·  ultimatum in {DAYS} days" />
+    <string id="AF_KINGDOM_CW_Panel_StageFormed" text="{COUNT} opposition factions have formed" />
+    <string id="AF_KINGDOM_CW_Panel_StageFormedUltimatumIn" text="Formed  ·  ultimatum in {DAYS} days" />
+    <string id="AF_KINGDOM_CW_Panel_StageFormedUltimatumSoon" text="Formed  ·  ultimatum imminent" />
+    <string id="AF_KINGDOM_CW_Panel_StageNoneFormed" text="No factions have formed yet" />
+    <string id="AF_KINGDOM_CW_Panel_StageOpenWar" text="{COUNT} factions are in civil war" />
+    <string id="AF_KINGDOM_CW_Panel_StagePausedHomeWar" text="Paused  ·  holding still while the kingdom is at war" />
+    <string id="AF_KINGDOM_CW_Panel_StagePlayerKingdomDisabled" text="Factions are disabled by settings in the player's kingdom" />
+    <string id="AF_KINGDOM_CW_Panel_StageRebelling" text="Rebellion under way  ·  the rebel kingdom is being founded" />
+    <string id="AF_KINGDOM_CW_Panel_StageResolvedWaitingSlot" text="Resolved to rebel  ·  waiting for a rebellion slot" />
+    <string id="AF_KINGDOM_CW_Panel_StageSettlementError" text="Settlement error  ·  state kept; check the log" />
+    <string id="AF_KINGDOM_CW_Panel_StageSettlementIncomplete" text="Settlement incomplete  ·  retrying next day" />
+    <string id="AF_KINGDOM_CW_Panel_StageSuppressed" text="Deterred by the suppression  ·  ultimatum in {DAYS} days" />
+    <string id="AF_KINGDOM_CW_Panel_StageUltimatum" text="{COUNT} factions have issued an ultimatum" />
+    <string id="AF_KINGDOM_CW_Panel_StageUltimatumAwaitKing" text="Ultimatum  ·  awaiting the king's answer ({DAYS} days left)" />
+    <string id="AF_KINGDOM_CW_Panel_StageUltimatumAwaitRuling" text="Ultimatum  ·  awaiting a ruling" />
+    <string id="AF_KINGDOM_CW_Panel_StanceCrown" text="Crown faction" />
+    <string id="AF_KINGDOM_CW_Panel_StanceFactionLeader" text="Faction leader" />
+    <string id="AF_KINGDOM_CW_Panel_StanceKing" text="King" />
+    <string id="AF_KINGDOM_CW_Panel_StanceSupporter" text="{TAG} supporter" />
+    <string id="AF_KINGDOM_CW_Panel_StanceUndeclared" text="Undeclared" />
+    <string id="AF_KINGDOM_CW_Panel_StandingBy" text="Standing by" />
+    <string id="AF_KINGDOM_CW_Panel_StepFounded" text="Founded" />
+    <string id="AF_KINGDOM_CW_Panel_StepKingAnswer" text="King's answer" />
+    <string id="AF_KINGDOM_CW_Panel_StepManualRebellion" text="Manual rebellion" />
+    <string id="AF_KINGDOM_CW_Panel_StepMayRebel" text="May rebel" />
+    <string id="AF_KINGDOM_CW_Panel_Ultimatum" text="Ultimatum" />
+    <string id="AF_KINGDOM_CW_Panel_UnitDays" text="d" />
+    <string id="AF_KINGDOM_CW_Panel_UnitWeeks" text="w" />
+    <string id="AF_KINGDOM_CW_Panel_UntilDay" text="until day {DAY}" />
+    <string id="AF_KINGDOM_CW_Panel_ValueError" text="Error" />
+    <string id="AF_KINGDOM_CW_Panel_ValueFounding" text="Founding" />
+    <string id="AF_KINGDOM_CW_Panel_ValueSoon" text="Soon" />
+    <string id="AF_KINGDOM_CW_Panel_ValueWeekNumber" text="{WEEK}" />
+    <string id="AF_KINGDOM_CW_Panel_WeekOf" text="Week {WEEK}" />
+    <string id="AF_KINGDOM_CW_Panel_YouSuffix" text=" (you)" />
+    <string id="AF_KINGDOM_CW_PlayerControl_KingdomCooldown" text="The kingdom is in post-war cooldown until day {A}; the player cannot raise a rebellion by hand either." />
+    <string id="AF_KINGDOM_CW_PlayerControl_StrengthBelowThreshold" text="Your clan holds {A}% of the kingdom's military strength, below the {B}% needed to raise a rebellion by hand." />
+    <string id="AF_KINGDOM_CW_Role_Leader" text="{TAG} leader" />
+    <string id="AF_KINGDOM_CW_Role_Member" text="{TAG} member" />
+    <string id="AF_KINGDOM_CW_Source_broken_pledge" text="Royal pledge broken" />
+    <string id="AF_KINGDOM_CW_Source_demand_refused" text="Demand refused" />
+    <string id="AF_KINGDOM_CW_Source_fief_denied" text="Fief denied" />
+    <string id="AF_KINGDOM_CW_Source_fief_lost" text="Fief lost" />
+    <string id="AF_KINGDOM_CW_Source_lands_raided" text="Lands raided" />
+    <string id="AF_KINGDOM_CW_Source_peace_imposed" text="Peace imposed" />
+    <string id="AF_KINGDOM_CW_Source_policy_imposed" text="Policy imposed" />
+    <string id="AF_KINGDOM_CW_Source_royal_execution" text="Royal execution" />
+    <string id="AF_KINGDOM_CW_Source_royal_suppression" text="Royal suppression" />
+    <string id="AF_KINGDOM_CW_Source_unknown" text="Unknown grievance" />
+    <string id="AF_KINGDOM_CW_Source_war_imposed" text="War imposed" />
+    <string id="AF_KINGDOM_CW_Stability_Average" text="Average" />
+    <string id="AF_KINGDOM_CW_Stability_ExtremelyHigh" text="Extremely high" />
+    <string id="AF_KINGDOM_CW_Stability_ExtremelyPoor" text="Extremely poor" />
+    <string id="AF_KINGDOM_CW_Stability_FairlyHigh" text="Fairly high" />
+    <string id="AF_KINGDOM_CW_Stability_High" text="High" />
+    <string id="AF_KINGDOM_CW_Stability_Poor" text="Poor" />
+    <string id="AF_KINGDOM_CW_Stability_VeryPoor" text="Very poor" />
+    <string id="AF_DIP_UI_Vassalage_TypeTributary" text="tributary" />
+    <string id="AF_DIP_UI_Vassalage_TypeGarrison" text="garrison kingdom" />
+    <string id="AF_DIP_UI_Vassalage_TypeVassal" text="vassal" />
+    <string id="AF_DIP_UI_Vassalage_SubjectWarNoticeName" text="your {TYPE}{KINGDOM}" />
+    <string id="AF_DIP_UI_Vassalage_SubjectWarNoticeKingdomFallback" text=" subject kingdom" />
+    <string id="AF_DIP_UI_Vassalage_PlayerKingdomFallback" text="the player kingdom" />
+    <string id="AF_DIP_UI_Vassalage_CampaignDate" text="Year {YEAR}, {SEASON} {DAY}" />
+    <string id="AF_DIP_UI_Vassalage_SeasonSpring" text="spring" />
+    <string id="AF_DIP_UI_Vassalage_SeasonSummer" text="summer" />
+    <string id="AF_DIP_UI_Vassalage_SeasonAutumn" text="autumn" />
+    <string id="AF_DIP_UI_Vassalage_SeasonWinter" text="winter" />
+    <string id="AF_DIP_UI_Vassalage_SeasonUnknown" text="unknown season" />
+    <string id="AF_DIP_UI_Vassalage_FiefTown" text="Towns" />
+    <string id="AF_DIP_UI_Vassalage_FiefCastle" text="Castles" />
+    <string id="AF_DIP_UI_Vassalage_PerFiefUnit" text=" per fief" />
+    <string id="AF_DIP_UI_Vassalage_PerVillageUnit" text=" per village" />
+    <string id="AF_DIP_UI_Vassalage_Terminal_Obedience" text="{VALUE}/100; breakaway threshold {THRESHOLD}; {RULER} relation {RELATION}" />
+    <string id="AF_DIP_UI_Vassalage_Terminal_ElapsedDays" text="{DAYS} days" />
+    <string id="AF_DIP_UI_Vassalage_Terminal_IndependenceLabel" text="&#10;Independence:  " />
+    <string id="AF_DIP_UI_Vassalage_Terminal_TributeClickHint" text="&#10;Click to view detailed tribute records." />
+    <string id="AF_DIP_UI_Vassalage_Terminal_TypeNoTributeHint" text="&#10;This subject type does not generate tribute records." />
+    <string id="AF_DIP_UI_Vassalage_Terminal_HistoryLine" text=" · Subject strength: {STRENGTH}; deposited: prosperity +{PROSPERITY}, food +{FOOD}, village hearth +{HEARTH}; tribute cost: prosperity -{COST_PROSPERITY}, food -{COST_FOOD}, village hearth -{COST_HEARTH}." />
+    <string id="AF_DIP_UI_Vassalage_Terminal_CostFallback" text="Prosperity -{PROSPERITY} (towns {TOWNS}, castles {CASTLES})&#10;Food -{FOOD}&#10;Hearth -{HEARTH} (villages {VILLAGES})" />
+    <string id="AF_DIP_UI_Vassalage_Terminal_NoSettlementGainLine" text="This tribute could not be distributed to the suzerain's fiefs." />
+    <string id="AF_DIP_UI_Vassalage_PerFiefFortificationLine" text="{LABEL} ({COUNT}): each fief deposits prosperity {PROSPERITY}, food {FOOD}{FOOD_LIMIT}&#10;" />
+    <string id="AF_DIP_UI_Vassalage_PerVillageLine" text="Villages ({COUNT}): each village gains hearth {HEARTH}&#10;" />
+    <string id="AF_DIP_UI_Vassalage_PerFiefBaseline" text=" (was +{ORIGINAL}/{UNIT}, settled at {RATIO})" />
+    <string id="AF_DIP_UI_Vassalage_GainRatioNote" text=" (expected +{PLANNED}, settled at {RATIO}" />
+    <string id="AF_DIP_UI_Vassalage_TownPaymentLine" text="Towns ({COUNT}): each pays prosperity -{PROSPERITY}, food stock -{FOOD}&#10;" />
+    <string id="AF_DIP_UI_Vassalage_CastlePaymentLine" text="Castles ({COUNT}): each pays prosperity -{PROSPERITY}, food stock -{FOOD}&#10;" />
+    <string id="AF_DIP_UI_Vassalage_VillagePaymentLine" text="Villages ({COUNT}): each pays hearth -{HEARTH}" />
+    <string id="AF_DIP_UI_Vassalage_SettlementFortificationGain" text="{SETTLEMENT}: prosperity +{PROSPERITY}, food +{FOOD}" />
+    <string id="AF_DIP_UI_Vassalage_SettlementVillageGain" text="{SETTLEMENT}: hearth +{HEARTH}" />
+    <string id="AF_DIP_UI_Vassalage_AgreementRevisedSummary" text="The vassalage treaty of {SUBJECT} has been revised from {OLD} to {NEW}." />
+    <string id="AF_DIP_UI_Vassalage_AgreementRevisedDetail" text="The court scribe has rewritten the vassalage treaty:&#10;&#10;Subject: {SUBJECT}&#10;Previous treaty type: {OLD}&#10;New treaty type: {NEW}&#10;Previous signing date: {OLD_DATE}&#10;New signing date: {NEW_DATE}&#10;&#10;The old treaty is void: the signing date resets, and the old treaty's tribute records, loyalty, and protection arrangements are archived." />
+    <string id="AF_DIP_UI_Vassalage_AgreementBrokenSummary" text="The {TYPE} treaty with {SUBJECT} has ended." />
+    <string id="AF_DIP_UI_Vassalage_AgreementBrokenDetail" text="Urgent court dispatch:&#10;&#10;Subject: {SUBJECT}&#10;Treaty type: {TYPE}&#10;Signed: {SIGNED}&#10;Ended: {ENDED}&#10;Reason: {REASON}&#10;&#10;{MESSAGE}" />
+    <string id="AF_DIP_UI_Vassalage_BreakReasonReleased" text="The suzerain released the subject, which regains independence." />
+    <string id="AF_DIP_UI_Vassalage_BreakReasonPlayerBroke" text="The suzerain tore up the vassal oath." />
+    <string id="AF_DIP_UI_Vassalage_BreakReasonProtectionRefused" text="The suzerain refused to honour the tributary protection obligation." />
+    <string id="AF_DIP_UI_Vassalage_BreakReasonProtectionDismissed" text="The suzerain did not answer the tributary's plea for aid." />
+    <string id="AF_DIP_UI_Vassalage_BreakReasonGarrisonCollapsed" text="The garrison kingdom's independence reached the breakaway threshold." />
+    <string id="AF_DIP_UI_Vassalage_BreakReasonVassalCollapsed" text="The vassal's independence reached the breakaway threshold." />
+    <string id="AF_DIP_UI_Vassalage_BreakReasonRelationThreshold" text="Independence reached the breakaway threshold set by the current ruler's relation." />
+    <string id="AF_DIP_UI_Vassalage_BreakReasonAnnexation" text="The kingdom was annexed." />
+    <string id="AF_DIP_UI_Vassalage_BreakReasonVassalageEnded" text="The vassalage ended." />
+    <string id="AF_DIP_UI_Vassalage_TributaryBreachSummary" text="{DECLARING} declared war on {TARGET}; the tributary treaty has ended and the suzerain has moved to restore subject order." />
+    <string id="AF_DIP_UI_Vassalage_TributaryBreachDetail" text="Border dispatch:&#10;&#10;Party breaking the treaty: {DECLARING}&#10;Party declared upon: {TARGET}&#10;&#10;{BREAKER} attacked a subject under the suzerain's control, so the tributary treaty has ended.&#10;{SUZERAIN} has automatically protected {TARGET_NAME} and ordered all garrison kingdoms and vassals to join the war against the former tributary." />
+    <string id="AF_DIP_UI_Vassalage_TributariesAtWarSummary" text="{DECLARING} declared war on {TARGET}; this is an autonomous war between tributaries, and the suzerain stays out." />
+    <string id="AF_DIP_UI_Vassalage_TributariesAtWarDetail" text="Border dispatch:&#10;&#10;Declaring party: {DECLARING}&#10;Party declared upon: {TARGET}&#10;&#10;Both tributaries keep military autonomy. This war is treated as an autonomous war between tributaries: the suzerain will not protect automatically, will not join automatically, and will not dissolve any tributary treaty." />
+    <string id="AF_DIP_UI_WorldDiplomacy_PersistenceUnavailable" text="Diplomacy save data is inconsistent. Diplomacy is paused and the original data kept. Check the WorldDiplomacy log under Logs/Mod_Logic; the current diplomatic operation was refused." />
+    <string id="AF_DIP_UI_WorldDiplomacy_SessionEnded" text="The session this diplomatic operation belongs to has ended. Please reopen it." />
+    <string id="AF_DIP_UI_WorldDiplomacy_PersistenceUnreadable" text="Diplomacy save data could not be read. Diplomacy is paused to protect the original save. Do not overwrite the original save; check the WorldDiplomacy log under Logs/Mod_Logic." />
+    <string id="AF_DIP_UI_WorldDiplomacy_DeclareBodyEmpty" text="The diplomatic declaration body cannot be empty." />
+    <string id="AF_DIP_UI_WorldDiplomacy_DeclareNotRuler" text="You are no longer the ruler of your kingdom, so the diplomatic declaration was not published." />
+    <string id="AF_DIP_UI_WorldDiplomacy_DeclarePublished" text="The diplomatic declaration has been published; the system is resolving its target, demands, and diplomatic actions in the background." />
+    <string id="AF_DIP_UI_WorldDiplomacy_ReplyBodyEmpty" text="The diplomatic reply body cannot be empty." />
+    <string id="AF_DIP_UI_WorldDiplomacy_ReplyNotRuler" text="You are no longer the ruler of your kingdom, so the diplomatic reply was not published." />
+    <string id="AF_DIP_UI_WorldDiplomacy_ReplyNoRound" text="The diplomatic reply was not published: no negotiation round could be established." />
+    <string id="AF_DIP_UI_WorldDiplomacy_ReplyPublished" text="The diplomatic reply has been published; the system is resolving its demands and diplomatic actions in the background." />
+    <string id="AF_DIP_UI_WorldDiplomacy_ImpactResultSection" text="【Diplomatic result】" />
+    <string id="AF_DIP_UI_WorldDiplomacy_ImpactReputationSection" text="【International reputation】" />
+    <string id="AF_DIP_UI_WorldDiplomacy_ImpactPrestigeSection" text="【National prestige】" />
+    <string id="AF_DIP_UI_WorldDiplomacy_ImpactOtherKingdomsSection" text="【Impact on other kingdoms】" />
+    <string id="AF_DIP_UI_WorldDiplomacy_ImpactDeltaLabel" text="Change:  " />
+    <string id="AF_DIP_UI_WorldDiplomacy_ImpactReasonLabel" text="Reason:  " />
+    <string id="AF_DIP_UI_WorldDiplomacy_ImpactNoReputationChange" text="This declaration produced no clear change in international reputation." />
+    <string id="AF_DIP_UI_WorldDiplomacy_ImpactNoPrestigeChange" text="This declaration triggered no national prestige settlement." />
+    <string id="AF_DIP_UI_WorldDiplomacy_ImpactNoReason" text="no explanation given" />
+    <string id="AF_DIP_UI_WorldDiplomacy_UnknownKingdom" text="Unknown kingdom" />
+    <string id="AF_DIP_UI_WorldDiplomacy_BodyArchived" text="(This older declaration's body has been compressed into an annual summary.)" />
+    <string id="AF_DIP_UI_WorldDiplomacy_BodyCompressed" text="This older declaration's body has been compressed; see the matching annual diplomatic summary." />
+    <string id="AF_DIP_UI_WorldDiplomacy_BodySectionTitle" text="Declaration body" />
+    <string id="AF_DIP_UI_WorldDiplomacy_ImpactSectionTitle" text="Diplomatic result and impact" />
+    <string id="AF_DIP_UI_WorldDiplomacy_WorldBulletin" text="World bulletin" />
+    <string id="AF_DIP_UI_WorldDiplomacy_IndexMetaDeclaration" text="Diplomatic declaration:  " />
+    <string id="AF_DIP_UI_WorldDiplomacy_UnreadMarker" text="New" />
+    <string id="AF_DIP_UI_WorldDiplomacy_ChronicleArchive" text="Diplomatic chronicle archive" />
+    <string id="AF_DIP_UI_WorldDiplomacy_AnnualSummaryKind" text="Annual diplomatic summary" />
+    <string id="AF_DIP_UI_WorldDiplomacy_WorldSharedMemory" text="World shared memory" />
+    <string id="AF_DIP_UI_WorldDiplomacy_YearLabel" text="Year {YEAR}" />
+    <string id="AF_DIP_UI_WorldDiplomacy_AnnualRecordTitle" text="Year {YEAR} diplomatic record" />
+    <string id="AF_DIP_UI_WorldDiplomacy_AnnualCompressedArchive" text="Annual compressed archive" />
+    <string id="AF_DIP_UI_WorldDiplomacy_AnnualSummarySection" text="Annual summary" />
+    <string id="AF_DIP_UI_WorldDiplomacy_MajorEventsSection" text="Major event index" />
+    <string id="AF_DIP_UI_WorldDiplomacy_HistoryCompactionKind" text="Diplomatic history compaction" />
+    <string id="AF_DIP_UI_WorldDiplomacy_LongTermMemory" text="Long-term diplomatic memory" />
+    <string id="AF_DIP_UI_WorldDiplomacy_HistoryCompactionTitle" text="Diplomatic history compaction record" />
+    <string id="AF_DIP_UI_WorldDiplomacy_CompactionMeta" text="Compacted after {TOKENS} accumulated tokens" />
+    <string id="AF_DIP_UI_WorldDiplomacy_DiplomaticRecordSection" text="Diplomatic record" />
+    <string id="AF_DIP_UI_WorldDiplomacy_GameConfirmedResultsSection" text="Game-confirmed results" />
+    <string id="AF_DIP_UI_WorldDiplomacy_StandingSection" text="【National prestige and international reputation】" />
+    <string id="AF_DIP_UI_WorldDiplomacy_StandingPrestigeLabel" text="National prestige:  " />
+    <string id="AF_DIP_UI_WorldDiplomacy_StandingPrestigeHint" text="/100 (this kingdom's diplomatic credit and deterrence; too low a value damages relations with its nobles)" />
+    <string id="AF_DIP_UI_WorldDiplomacy_StandingReputationLabel" text="International reputation:  " />
+    <string id="AF_DIP_UI_WorldDiplomacy_StandingReputationHint" text="/100 (how other kingdoms judge this one; affects willingness to cooperate and to apply pressure)" />
+    <string id="AF_DIP_UI_WorldDiplomacy_ArchiveSubtitleIdle" text="Review custom policies, policy-derived events, and diplomatic declarations published by every kingdom in one place." />
+    <string id="AF_DIP_UI_WorldDiplomacy_DefaultTopic" text="diplomatic negotiation" />
+    <string id="AF_DIP_UI_WorldDiplomacy_ActiveEventPrefix" text="Current diplomatic event:  " />
+    <string id="AF_DIP_UI_WorldDiplomacy_ActiveEventInProgress" text="  ·  In progress" />
+    <string id="AF_DIP_UI_WorldDiplomacy_ActiveEventParticipants" text="  ·  Participants:  " />
+    <string id="AF_DIP_UI_WorldDiplomacy_Reject_SourceUnavailable" text="The original proposal has not reached your kingdom, has expired, or does not exist, so this reply cannot be executed." />
+    <string id="AF_DIP_UI_WorldDiplomacy_Reject_TradeTermsChanged" text="Accepting a trade proposal cannot change its duration or add clauses; issue a new proposal for different terms." />
+    <string id="AF_DIP_UI_WorldDiplomacy_Reject_NoOpenOffer" text="No still-valid formal proposal from the other party could be matched. Confirm their proposal declaration has arrived and is still open, or accept directly on that declaration." />
+    <string id="AF_DIP_UI_WorldDiplomacy_Reject_TreatyRoles" text="The treaty's receiving and joining kingdoms (or suzerain and subject) must be exactly the two parties to this negotiation." />
+    <string id="AF_DIP_UI_WorldDiplomacy_Reject_AcceptChangesTerms" text="Accepting a proposal cannot change its terms; issue a new proposal for different terms." />
+    <string id="AF_DIP_UI_WorldDiplomacy_Reject_TreatyCycle" text="That treaty would create a cycle of vassalage." />
+    <string id="AF_DIP_UI_WorldDiplomacy_Reject_SubjectHasTreaty" text="The subject kingdom already has a vassalage treaty." />
+    <string id="AF_DIP_UI_WorldDiplomacy_Reject_TreatyParticipantsUnavailable" text="A kingdom or ruler party to the treaty is currently unavailable." />
+    <string id="AF_DIP_UI_WorldDiplomacy_Reject_UnsupportedClause" text="That treaty does not support extra tribute, duration, or cession clauses." />
+    <string id="AF_DIP_UI_WorldDiplomacy_Reject_NotAtWar" text="The two parties are not currently at war." />
+    <string id="AF_DIP_UI_WorldDiplomacy_Reject_PeaceTerms" text="The peace terms cannot currently be executed as written." />
+    <string id="AF_DIP_UI_WorldDiplomacy_Reject_DeclareWarNotLegal" text="The conditions for declaring war are not currently met." />
+    <string id="AF_DIP_UI_WorldDiplomacy_Reject_StateConflict" text="This conflicts with the two parties' current alliance or trade status." />
+    <string id="AF_DIP_UI_WorldDiplomacy_Reject_NotInLegalActions" text="That action is not among the diplomatic actions the two parties can currently execute." />
+    <string id="AF_DIP_UI_WorldDiplomacy_Reject_NoLiveTarget" text="The target kingdom does not exist, has been destroyed, or has no independent diplomatic authority." />
+    <string id="AF_DIP_UI_WorldDiplomacy_Reject_UnsupportedByState" text="The current situation does not support the parsed action." />
+    <string id="AF_DIP_UI_WorldDiplomacy_DeclarePublishedMechanicRejected" text="The diplomatic declaration has been published, but the diplomatic action parsed from it was not executed: " />
+    <string id="AF_DIP_UI_WorldDiplomacy_Reject_DeclareWarNotExecuted" text="Declaration of war not executed: " />
+    <string id="AF_DIP_UI_Vote_AbolishPolicyTitle" text="Abolish policy: {POLICY}" />
+    <string id="AF_DIP_UI_Vote_BilateralCannotCreate" text="Bilateral diplomacy agenda: cannot create the reciprocal review agenda, no diplomatic effect took place." />
+    <string id="AF_DIP_UI_Vote_BilateralCounterpartCreateFailed" text="Bilateral diplomacy agenda: creating the reciprocal review agenda failed, no diplomatic effect took place." />
+    <string id="AF_DIP_UI_Vote_BilateralCounterpartTitle" text="Bilateral diplomacy review: {TITLE}" />
+    <string id="AF_DIP_UI_Vote_BilateralCounterpartType" text="Reciprocal review" />
+    <string id="AF_DIP_UI_Vote_BilateralEffective" text="Bilateral diplomacy agenda: {FIRST} and {SECOND} both approved the {KIND}, the agreement is now in effect." />
+    <string id="AF_DIP_UI_Vote_BilateralFirstApproved" text="Bilateral diplomacy agenda: {SOURCE} approved the {KIND} proposal, it has been submitted to {TARGET} for reciprocal review." />
+    <string id="AF_DIP_UI_Vote_BilateralInvalid" text="Bilateral diplomacy agenda lapsed: the {KIND} conditions between {FIRST} and {SECOND} have changed, the agreement did not take effect." />
+    <string id="AF_DIP_UI_Vote_BilateralKindAlliance" text="Alliance" />
+    <string id="AF_DIP_UI_Vote_BilateralKindDiplomacy" text="Diplomacy" />
+    <string id="AF_DIP_UI_Vote_BilateralKindPeace" text="Peace" />
+    <string id="AF_DIP_UI_Vote_BilateralKindTrade" text="Trade agreement" />
+    <string id="AF_DIP_UI_Vote_BilateralPendingDuplicate" text="Bilateral diplomacy agenda: {FIRST} and {SECOND} already have a {KIND} proposal awaiting reciprocal review." />
+    <string id="AF_DIP_UI_Vote_BilateralRejected" text="Bilateral diplomacy agenda: {SECOND} rejected {FIRST}'s {KIND} proposal, no diplomatic effect took place." />
+    <string id="AF_DIP_UI_Vote_DeadlineMemberAction" text="Review the agenda and prepare to vote." />
+    <string id="AF_DIP_UI_Vote_DeadlineOneDay" text="Kingdom agenda “{TITLE}” ends within a day; {ACTION}" />
+    <string id="AF_DIP_UI_Vote_DeadlineRulerAction" text="You will enter the final vote and make the decision." />
+    <string id="AF_DIP_UI_Vote_DescAgainstAbolish" text="This option will keep the policy." />
+    <string id="AF_DIP_UI_Vote_DescAgainstEnact" text="This option will not enact the policy." />
+    <string id="AF_DIP_UI_Vote_DescFavorAbolish" text="This option will abolish the policy." />
+    <string id="AF_DIP_UI_Vote_DescFavorEnact" text="This option will enact the policy." />
+    <string id="AF_DIP_UI_Vote_EnactPolicyTitle" text="Enact policy: {POLICY}" />
+    <string id="AF_DIP_UI_Vote_NoProposer" text="None" />
+    <string id="AF_DIP_UI_Vote_OutcomeAgainstAbolish" text="Oppose abolition, keep the policy (no)" />
+    <string id="AF_DIP_UI_Vote_OutcomeAgainstEnact" text="Oppose enactment, keep it not in force (no)" />
+    <string id="AF_DIP_UI_Vote_OutcomeFavorAbolish" text="Abolish (yes)" />
+    <string id="AF_DIP_UI_Vote_OutcomeFavorEnact" text="Enact (yes)" />
+    <string id="AF_DIP_UI_Vote_ProposalVoteSoon" text="Proposal “{TITLE}” will open for voting in {DAYS} days" />
+    <string id="AF_DIP_UI_Vote_RequiredDecisionDue" text="Agenda “{TITLE}” is due, make the final decision." />
+    <string id="AF_DIP_UI_Vote_TypeAlliance" text="Alliance" />
+    <string id="AF_DIP_UI_Vote_TypeDecision" text="Decision" />
+    <string id="AF_DIP_UI_Vote_TypeDeclareWar" text="War" />
+    <string id="AF_DIP_UI_Vote_TypeExpelClan" text="Expel clan" />
+    <string id="AF_DIP_UI_Vote_TypeFief" text="Fief" />
+    <string id="AF_DIP_UI_Vote_TypeKingSelection" text="King selection" />
+    <string id="AF_DIP_UI_Vote_TypeMakePeace" text="Peace" />
+    <string id="AF_DIP_UI_Vote_TypePolicy" text="Policy" />
+    <string id="AF_DIP_UI_Vote_TypeTrade" text="Trade" />
+    <string id="AF_DIP_UI_Vote_UnknownClan" text="Unknown clan" />
+    <string id="AF_DIP_UI_Vote_UnknownKingdomName" text="Unknown kingdom" />
+    <string id="AF_DIP_UI_Vote_UnknownOption" text="Unknown option" />
+    <string id="AF_DIP_UI_Vote_UnnamedPolicy" text="Unnamed policy" />
+    <string id="AF_DIP_UI_Vote_UnnamedProposal" text="Unnamed proposal" />
+    <string id="AF_DIP_UI_WorldDiplomacy_AnalysisFailedTruncated" text="The declaration has been published; the model output was cut off by the length limit, so no diplomatic action has been executed yet. Raise the output limit of the corresponding API and then choose Re-analyze." />
+    <string id="AF_DIP_UI_WorldDiplomacy_AnalysisFailedAcceptAndAmend" text="The declaration has been published; the analysis returned both acceptance of the original proposal and amended terms, so no diplomatic action was executed. You can re-analyze the original text; the amended terms should be submitted as a new proposal." />
+    <string id="AF_DIP_UI_WorldDiplomacy_AnalysisFailedTreatyRoles" text="The declaration has been published; the analysis could not tell the two parties' roles in the treaty apart, so the proposal was not executed. You can re-analyze the original text." />
+    <string id="AF_DIP_UI_WorldDiplomacy_AnalysisFailed" text="The declaration has been published; the analysis failed and no diplomatic action was executed. You can choose Re-analyze to process the original text again." />
+    <string id="AF_DIP_UI_WorldDiplomacy_DeclarePublishedMechanicRejectedDetail" text="The diplomatic declaration has been published, but the diplomatic action parsed from it was not executed: {REASON}" />
+    <string id="AF_DIP_UI_WorldDiplomacy_Reject_WithCode" text="{DETAIL} ({CODE})" />
+    <string id="AF_DIP_UI_WorldDiplomacy_Reject_DeclareWarNotExecutedDetail" text="Declaration of war not executed: {REASON}" />
+    <string id="AF_DIP_UI_KingdomProfile_GenerationKingdomEliminated" text="The kingdom was eliminated, so automatic founding profile generation stopped." />
+    <string id="AF_DIP_UI_KingdomProfile_GenerationKingdomMissing" text="The kingdom object no longer exists, so the founding profile cannot be generated." />
+    <string id="AF_DIP_UI_KingdomProfile_GenerationApiSettingsMissing" text="Check the MCM policy API source or main API settings." />
+    <string id="AF_DIP_UI_KingdomProfile_GenerationApiMainConfigIncomplete" text="The main API configuration is incomplete, so policy generation cannot start." />
+    <string id="AF_DIP_UI_KingdomProfile_GenerationApiSelectedAndMainIncomplete" text="The selected policy API configuration is incomplete and the main API is incomplete too, so policy generation cannot start." />
+    <string id="AF_DIP_UI_KingdomProfile_ApiRequestFailed" text="The API request failed." />
+    <string id="AF_DIP_UI_KingdomProfile_StaleRequest" text="Request discarded because the game was loaded again." />
+    <string id="AF_DIP_UI_KingdomProfile_ExportDirectoryInvalid" text="The export directory is invalid." />
+    <string id="AF_DIP_UI_KingdomProfile_ImportSourceModDirectory" text="Mod directory" />
+    <string id="AF_DIP_UI_KingdomProfile_ImportSourcePlayerExports" text="Player exports" />
+    <string id="AF_KINGDOM_CW_Chronicle_NoOutcome" text="{FACTION}'s civil war could not be settled: no outcome was available" />
+    <string id="AF_KINGDOM_CW_Chronicle_OppositionFounded" text="An opposition faction is founded: {FACTION}, demanding {DEMAND}" />
+    <string id="AF_KINGDOM_CW_Chronicle_Outbreak" text="{FACTION} establishes {REBEL} and goes to war with {KINGDOM}; the civil war breaks out" />
+    <string id="AF_KINGDOM_CW_Chronicle_RecruitedCrown" text="{CLAN} joins the crown faction." />
+    <string id="AF_KINGDOM_CW_Chronicle_RecruitedFaction" text="{CLAN} joins {FACTION}." />
+    <string id="AF_KINGDOM_CW_Chronicle_ResolutionFailed" text="{FACTION}'s civil war could not be settled: {REASON}" />
+    <string id="AF_KINGDOM_CW_Chronicle_SupportWithdrawn" text="{CLANS} grow discontent over {SOURCE} and withdraw their support for the crown, turning neutral" />
+    <string id="AF_KINGDOM_CW_Chronicle_WarResolved" text="{FACTION}'s civil war ends ({OUTCOME}): {NOTES}" />
+    <string id="AF_KINGDOM_CW_Core_RebellionIncompleteRetained" text="The uprising did not complete; the faction has been retained." />
+    <string id="AF_KINGDOM_CW_Coup_ChronicleCoup" text="Civil war registered after the coup: the deposed king and his clan do not join this rebellion." />
+    <string id="AF_KINGDOM_CW_Coup_ChronicleRestoration" text="Restoration civil war registered: only a rebel victory restores the old dynasty and the original kingdom name; a negotiated peace will not restore them." />
+    <string id="AF_KINGDOM_CW_Event_ClaimSatisfied" text="The faction leader has already taken the throne; the claim is satisfied." />
+    <string id="AF_KINGDOM_CW_Event_DemandChanged" text="The faction changes its demand to {DEMAND}" />
+    <string id="AF_KINGDOM_CW_Event_KingdomGoneWarEnded" text="The original kingdom has been destroyed; the faction and its civil war are terminated, and the surviving clans and kingdom ownership stay as they are." />
+    <string id="AF_KINGDOM_CW_Event_PeaceMade" text="The two sides have made peace; the demand is satisfied." />
+    <string id="AF_KINGDOM_CW_Event_PolicyRevoked" text="The target policy has been repealed; the demand is satisfied." />
+    <string id="AF_KINGDOM_CW_Event_TargetKingdomGone" text="The target kingdom no longer exists; the old demand is closed." />
+    <string id="AF_KINGDOM_CW_Event_WarEnded" text="The war has ended; the old demand to keep fighting is void." />
+    <string id="AF_KINGDOM_CW_Outcome_CrownVictory" text="Crown victory" />
+    <string id="AF_KINGDOM_CW_Outcome_Negotiated" text="Negotiated settlement" />
+    <string id="AF_KINGDOM_CW_Outcome_RebelsCoerce" text="Rebels force concessions" />
+    <string id="AF_KINGDOM_CW_Outcome_RebelsSecede" text="Rebels secede" />
+    <string id="AF_KINGDOM_CW_Outcome_RebelsUsurp" text="Rebels take the throne" />
+    <string id="AF_DIP_UI_Notice_ThirdPartyReceived" text="Third-party diplomacy: {TITLE}. The news has reached your kingdom; read the full text in the kingdom bulletin." />
+    <string id="AF_DIP_UI_Notice_PlayerCourtDelivery" text="Your declaration has reached {RECEIVER}." />
+    <string id="AF_DIP_UI_StandingNoChange" text="No change" />
+    <string id="AF_DIP_UI_StandingUpperBound" text="Already at the upper limit of 100" />
+    <string id="AF_DIP_UI_StandingLowerBound" text="Already at the lower limit of 0" />
+    <string id="AF_DIP_UI_StandingBoundaryNoChange" text="The numeric boundary produced no actual change" />
+    <string id="AF_DIP_UI_StandingNoActualChangePrefix" text="No actual change (assessment " />
+    <string id="AF_DIP_Source_072" text="Diplomatic announcement" />
+    <string id="AF_DIP_Source_073" text="Negotiation reminder" />
+    <string id="AF_DIP_Source_074" text="Compound diplomatic declaration" />
+    <string id="AF_DIP_Source_075" text="War declaration notice" />
+    <string id="AF_DIP_Source_076" text="Peace request" />
+    <string id="AF_DIP_Source_077" text="Peace response" />
+    <string id="AF_DIP_Source_078" text="Peace rejection" />
+    <string id="AF_DIP_Source_079" text="Alliance request" />
+    <string id="AF_DIP_Source_080" text="Alliance response" />
+    <string id="AF_DIP_Source_081" text="Alliance rejection" />
+    <string id="AF_DIP_Source_082" text="Alliance dissolution notice" />
+    <string id="AF_DIP_Source_083" text="Trade request" />
+    <string id="AF_DIP_Source_084" text="Trade response" />
+    <string id="AF_DIP_Source_085" text="Trade rejection" />
+    <string id="AF_DIP_Source_086" text="Trade termination" />
+    <string id="AF_DIP_Source_087" text="Subject independence notice" />
+    <string id="AF_DIP_Source_088" text="Concession" />
+    <string id="AF_DIP_Source_089" text="Ultimatum" />
+    <string id="AF_DIP_Source_090" text="Condemnation" />
+    <string id="AF_DIP_Source_091" text="Public condemnation" />
+    <string id="AF_DIP_Source_092" text="Diplomatic apology" />
+    <string id="AF_DIP_Source_093" text="Diplomatic concession" />
+    <string id="AF_DIP_Source_094" text="Negotiation response" />
+    <string id="AF_DIP_Source_095" text="Awaiting negotiation" />
+    <string id="AF_DIP_Source_118" text=" publishes a diplomatic declaration" />
+    <string id="AF_DIP_Source_119" text="Diplomatic declaration" />
+    <string id="AF_DIP_Source_136" text="Click to view the diplomatic declaration." />
+    <string id="AF_DIP_Source_137" text=". Click to read the full text." />
+    <!-- Player drafting UI error notices -->
+    <string id="AF_DIP_UI_Compose_DraftNeedBody" text="Write a title or draft notes first." />
+    <string id="AF_DIP_UI_Compose_DraftStaleWindow" text="The current draft window was invalidated by loading a game; please reopen it." />
+    <string id="AF_DIP_UI_Compose_DraftApiMissing" text="The scribe cannot draft documents right now. Check the event/rebellion API or main API settings." />
+    <string id="AF_DIP_UI_Compose_DraftIncomplete" text="The scribe failed to return a complete draft; original text was kept. Please try again." />
+    <string id="AF_DIP_UI_Compose_DraftFormatError" text="The draft returned by the scribe was in an invalid format; original text was kept. Please try again." />
+    <string id="AF_DIP_UI_Compose_DraftTooLong" text="The scribe returned a draft exceeding the editor capacity; original text was kept. Please try again." />
+    <string id="AF_DIP_UI_Compose_DraftLengthMismatch" text="The draft did not meet the diplomacy character length settings ({MIN}-{MAX} characters); original text was kept. Please try again or adjust settings." />
+    <string id="AF_DIP_UI_Compose_DraftTruncated" text="The draft was truncated by the output limit; original text was kept. Please raise the API output limit." />
+    <!-- Document Execution Notifications -->
+    <string id="AF_DIP_UI_DocExec_MustContainAction" text="The diplomatic declaration was not published: the text must clearly include an actionable diplomatic action." />
+    <string id="AF_DIP_UI_DocExec_IncompatibleAction" text="The diplomatic declaration was not published: the diplomatic action in the text is incompatible with the current realm state." />
+    <string id="AF_DIP_UI_DocExec_CapacityReached" text="The diplomatic declaration was not published: no more kingdoms can be added to this diplomatic round." />
+    <string id="AF_DIP_UI_DocExec_MustRespondPeace" text="The diplomatic declaration was not published: this document must first accept or reject the pending peace proposal." />
+    <!-- Orchestration Notifications -->
+    <string id="AF_DIP_UI_Orch_DailyQuotaUsed" text="Today's diplomatic request quota is exhausted; your declaration is published and pending responses are saved to continue next day." />
+    <string id="AF_DIP_UI_Orch_ProcessingIncomplete" text="The diplomatic declaration has been published, but diplomatic processing did not complete fully; check the document outcome and current situation." />
+    <string id="AF_DIP_UI_Orch_SourceAuthorUnavailable" text="The kingdom of your original declaration no longer exists; unanswered diplomatic responses have stopped. Prior commitments are not transferred to the suzerain." />
+    <string id="AF_DIP_UI_Orch_SourceOrTargetUnavailable" text="The original declaration or responding kingdom no longer exists; incomplete responses have stopped. Check the original document and current situation." />
+    <string id="AF_DIP_UI_Orch_TargetUnavailable" text="The original responding kingdom no longer exists; that kingdom's response cannot continue." />
+    <string id="AF_DIP_UI_Orch_ResponsesEndedUnresolved" text="Follow-up diplomatic responses have concluded, but some kingdoms could not reply; original declarations and incomplete records are preserved and new declarations may be issued without restoring prior proposals." />
+    <string id="AF_DIP_UI_Orch_RoundTransitionFollowup" text="The prior diplomatic exchange has ended; declarations that have not yet replied to you have been transferred to priority follow-up." />
+    <string id="AF_DIP_UI_Gathering_CancelPlayerReason" text="The player ordered {HERO} to end the gathering immediately." />
+    <string id="AF_DIP_UI_Gathering_CancelPlayerStatus" text="{HERO} followed your order and cancelled the gathering at {SETTLEMENT}." />
+    <string id="AF_DIP_UI_Gathering_CancelNpcReason" text="{HERO} accepted the player’s persuasion and decided to end the gathering." />
+    <string id="AF_DIP_UI_Gathering_CancelNpcStatus" text="{HERO} accepted your persuasion and cancelled the gathering at {SETTLEMENT}." />
+    <string id="AF_DIP_UI_Gathering_NeedGold" text="Cannot host the gathering: you need {COST} denars." />
+    <string id="AF_DIP_UI_Gathering_Cooldown" text="Gathering preparation is still on cooldown for about {DAYS} days." />
+    <string id="AF_DIP_UI_Gathering_TravellingTo" text="Travelling to {SETTLEMENT}" />
+    <string id="AF_DIP_UI_Gathering_NativeTravelFailed" text="Native travel request failed: {ERROR}" />
+    <string id="AF_DIP_UI_Gathering_MovementCheckFailed" text="Movement check failed: {ERROR}" />
+    <string id="AF_DIP_UI_Gathering_WeeklyStartTitle" text="Noble gathering hosted - {HERO}" />
+    <string id="AF_DIP_UI_Gathering_WeeklyAttendanceTitle" text="Notable noble attends a gathering - {HERO}" />
+    <string id="AF_DIP_UI_Gathering_WeeklyCancelTitle" text="Noble gathering cancelled - {HERO}" />
+    <string id="AF_DIP_UI_Gathering_ReasonSuffix" text=" Reason: {REASON}" />
+    <string id="AF_DIP_UI_Gathering_EndElapsed" text="The gathering has ended." />
+    <string id="AF_DIP_UI_Gathering_EndInvalid" text="The gathering ended because its host or venue became invalid." />
+    <string id="AF_DIP_UI_Gathering_DisabledReason" text="Gatherings are disabled in MCM." />
+    <string id="AF_DIP_UI_Gathering_WorldCommandsUnavailable" text="The world-map command system is not initialized." />
+    <string id="AF_DIP_UI_Gathering_HostOriginMissing" text="The host’s original settlement could not be found." />
+    <string id="AF_DIP_UI_Gathering_GuestOriginMissing" text="The guest’s original settlement could not be found." />
+    <string id="AF_DIP_UI_Gathering_Travelling" text="Travelling" />
+    <string id="AF_DIP_UI_Gathering_HasParty" text="Already has a party" />
+    <string id="AF_DIP_UI_Gathering_CannotMove" text="Cannot currently move to a settlement" />
+    <string id="AF_DIP_UI_Gathering_Unavailable" text="The gathering system is not initialized." />
+    <string id="AF_DIP_UI_Gathering_InvalidTag" text="Gathering instruction was not executed: tag parameters could not be parsed." />
+    <string id="AF_DIP_UI_Gathering_CancelMissing" text="Cannot cancel the gathering: it does not exist or has already ended." />
+    <string id="AF_DIP_UI_Gathering_CancelUnauthorizedDelegate" text="Cannot cancel the gathering: the current speaker is neither your governor nor your companion and cannot carry out your order to end it." />
+    <string id="AF_DIP_UI_Gathering_CancelUnauthorizedHost" text="Cannot cancel the gathering: only its host can accept persuasion and cancel it." />
+    <string id="AF_DIP_UI_Gathering_NoResolvedGuests" text="Gathering not started: no eligible guests could be resolved." />
+    <string id="AF_DIP_UI_Gathering_InvalidHero" text="Invalid hero" />
+    <string id="AF_DIP_UI_Gathering_NotSpawned" text="Has not appeared in the world" />
+    <string id="AF_DIP_UI_Gathering_UnderEighteen" text="Under eighteen" />
+    <string id="AF_DIP_UI_Gathering_ChildOrUnborn" text="Underage or not yet born" />
+    <string id="AF_DIP_UI_Gathering_CannotHostDisabled" text="Cannot host the gathering: gatherings are disabled in MCM." />
+    <string id="AF_DIP_UI_Gathering_CannotHostVenue" text="Cannot host the gathering: select a valid town or castle." />
+    <string id="AF_DIP_UI_Gathering_CannotHostLeader" text="Cannot host the gathering: only a clan leader may host it." />
+    <string id="AF_DIP_UI_Gathering_CannotHostOwnership" text="Cannot host the gathering: the venue must belong to your clan." />
+    <string id="AF_DIP_UI_Gathering_CannotHostSiege" text="Cannot host the gathering: the settlement is under siege." />
+    <string id="AF_DIP_UI_Gathering_CannotHostActive" text="Cannot host the gathering: you already have an active gathering." />
+    <string id="AF_DIP_UI_Gathering_CannotHostOccupied" text="Cannot host the gathering: the settlement already has an active gathering." />
+    <string id="AF_DIP_UI_Gathering_Prisoner" text="Captured" />
+    <string id="AF_DIP_UI_Gathering_Wounded" text="Seriously wounded" />
+    <string id="AF_DIP_UI_Gathering_NoIndependentParty" text="No independent party" />
+    <string id="AF_DIP_UI_Gathering_InArmy" text="In an army" />
+    <string id="AF_DIP_UI_Gathering_InBattleOrSiege" text="In a battle or siege" />
+    <string id="AF_DIP_UI_Gathering_HasNonIndependentParty" text="Already has a non-independent party or is in a party" />
+    <string id="AF_DIP_UI_Gathering_OriginMissing" text="Original settlement could not be found" />
+    <string id="AF_DIP_UI_Gathering_CannotHostInvalidGovernor" text="Cannot host the gathering: the current speaker is not a valid governor." />
+    <string id="AF_DIP_UI_Gathering_CannotHostNotGovernor" text="Cannot host the gathering: the current speaker is not a governor." />
+    <string id="AF_DIP_UI_Gathering_CannotHostGovernorOwnership" text="Cannot host the gathering: the governor’s settlement does not belong to your clan." />
+    <string id="AF_DIP_UI_Gathering_RoleKing" text="king" />
+    <string id="AF_DIP_UI_Gathering_RoleClanLeader" text="clan leader" />
+    <string id="AF_DIP_UI_Gathering_RoleNoble" text="noble" />
+    <string id="AF_DIP_UI_Gathering_UnknownHero" text="Unknown noble" />
+    <string id="AF_DIP_UI_Gathering_ListSeparator" text=", " />
+    <string id="AF_DIP_UI_Gathering_WeeklyStartWithGuests" text="{HOST} ({ROLE}) hosted a noble gathering at {SETTLEMENT}, planned to last {DAYS} days. Notable guests who accepted the invitation include: {GUESTS}. This gathering has actually issued invitations and begun; it is not an unverified plan. Guests who have not arrived may only be described as having accepted an invitation or preparing to attend." />
+    <string id="AF_DIP_UI_Gathering_WeeklyStartWithoutGuests" text="{HOST} ({ROLE}) hosted a noble gathering at {SETTLEMENT}, planned to last {DAYS} days. This gathering has actually issued invitations and begun; it is not an unverified plan. Guests who have not arrived may only be described as having accepted an invitation or preparing to attend." />
+    <string id="AF_DIP_UI_Gathering_WeeklyAttendance" text="{HERO} ({ROLE}) has actually arrived at {SETTLEMENT} and attended the noble gathering hosted by {HOST}. This attendance has occurred and may be included in this week’s kingdom chronicle." />
+    <string id="AF_DIP_UI_Gathering_WeeklyCancel" text="{HOST} cancelled their noble gathering at {SETTLEMENT}; the guests have dispersed.{REASON}" />
+    <string id="AF_DIP_UI_Gathering_WeeklyNameRole" text="{HERO} ({ROLE})" />
+    <string id="AF_DIP_UI_WorldDiplomacy_ReplySourceUnavailable" text="The original document is no longer available. Please reopen the drafting window." />
+    <string id="AF_DIP_UI_OralGeneration_DelayedFact" text="The diplomatic declaration previously promised has not yet been published and awaits redrafting; the agreed terms have not changed." />
+    <string id="AF_DIP_UI_OralGeneration_WithdrawalFact" text="I have explicitly agreed to withdraw the earlier public diplomatic proposal, pending publication of the formal withdrawal declaration; the original proposal has not become invalid as a result yet." />
+    <string id="AF_DIP_UI_WorldDiplomacy_Reject_PeaceNotExecutedDetail" text="Peace proposal not executed: {REASON}" />
+  </strings>
+</base>

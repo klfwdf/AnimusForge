@@ -205,10 +205,10 @@ internal static partial class VanillaIssueOfferBridge
 
     internal static string GetPlayerDirectIssueUnavailableReason(Hero speaker, bool turnIn)
     {
-        if (speaker == null) return "原版任务需要当前目标是已有英雄。";
+        if (speaker == null) return ConversationUiLocalization.Text("AF_CONV_UI_Direct_IssueHero", "Vanilla quests require an existing hero as the current target.");
         if (turnIn)
-            return IssueRuntimeStateOwner.TryGetInProgressIssue(speaker, out _) ? null : "当前英雄没有进行中的原版任务；交付条件仍由原执行入口检查。";
-        return IssueRuntimeStateOwner.TryGetOfferableIssue(speaker, out _) ? null : "当前英雄没有可接取的原版任务。";
+            return IssueRuntimeStateOwner.TryGetInProgressIssue(speaker, out _) ? null : ConversationUiLocalization.Text("AF_CONV_UI_Direct_IssueProgress", "This hero has no ongoing vanilla quest. Turn-in conditions are still checked by the original execution entry.");
+        return IssueRuntimeStateOwner.TryGetOfferableIssue(speaker, out _) ? null : ConversationUiLocalization.Text("AF_CONV_UI_Direct_IssueOffer", "This hero has no available vanilla quest.");
     }
 
 	public static void ApplyIssueOfferTags(Hero speaker, ref string responseText)
@@ -261,7 +261,7 @@ internal static partial class VanillaIssueOfferBridge
 		}
 		catch (Exception ex)
 		{
-			Logger.Log("Logic", "[IssueOffer] ApplyIssueOfferTags 异常: " + ex);
+			Logger.Log("Logic", "[IssueOffer] ApplyIssueOfferTags exception: " + ex);
 		}
 		responseText = IssueAcceptSelfRegex.Replace(responseText ?? "", "").Trim();
 		responseText = IssueAcceptAltRegex.Replace(responseText, "").Trim();
@@ -284,7 +284,7 @@ internal static partial class VanillaIssueOfferBridge
 		{
 			_dispatchOwner.TryTake(expected, out _);
 			SafeRestoreAlternativeRoster(expected.Issue);
-			ShowInfo("已取消同伴代办派兵。", isError: true);
+			ShowInfo(ConversationUiLocalization.Text("AF_CONV_UI_Issue_DispatchCancelled", "Companion mission troop dispatch was cancelled."), isError: true);
 			return;
 		}
 		TextObject explanation;
@@ -292,7 +292,9 @@ internal static partial class VanillaIssueOfferBridge
 		{
 			_dispatchOwner.TryTake(expected, out _);
 			SafeRestoreAlternativeRoster(expected.Issue);
-			ShowInfo("当前派兵结果不满足任务要求" + (string.IsNullOrWhiteSpace(GetText(explanation)) ? "。" : ("：" + GetText(explanation))), isError: true);
+			ShowInfo(string.IsNullOrWhiteSpace(GetText(explanation))
+				? ConversationUiLocalization.Text("AF_CONV_UI_Issue_TroopsNotSatisfied", "Selected troops do not meet the quest requirements.")
+				: ConversationUiLocalization.Text("AF_CONV_UI_Issue_TroopsNotSatisfiedReason", "Selected troops do not meet the quest requirements: {REASON}", ("REASON", GetText(explanation))), isError: true);
 			return;
 		}
 		if (_dispatchOwner.TryTake(expected, out PendingAlternativeDispatch pendingAlternativeDispatch))
@@ -317,7 +319,7 @@ internal static partial class VanillaIssueOfferBridge
 		failureReason = "";
 		if (issue == null || giver == null)
 		{
-			failureReason = "未找到任务或发放者。";
+			failureReason = IssueDisplayMatchCatalog.Get("NoQuestOrGiver");
 			return false;
 		}
 		try
@@ -333,7 +335,7 @@ internal static partial class VanillaIssueOfferBridge
 		}
 		catch (Exception ex)
 		{
-			Logger.Log("Logic", "[IssueOffer] CheckPreconditions 反射失败: " + ex.Message);
+			Logger.Log("Logic", "[IssueOffer] CheckPreconditions reflection failed: " + ex.Message);
 			return true;
 		}
 	}
@@ -345,7 +347,7 @@ internal static partial class VanillaIssueOfferBridge
 		if (issueQuest == null)
 		{
 			Logger.Log("Logic", "[IssueOffer] FinalizeClassicQuestAcceptance fail=no_issueQuest issue=" + (issue?.StringId ?? ""));
-			error = "任务对象未创建。";
+			error = IssueDisplayMatchCatalog.Get("QuestNotCreated");
 			return false;
 		}
 		try
@@ -364,21 +366,21 @@ internal static partial class VanillaIssueOfferBridge
 			if (!IsIssueQuestStillAttached(issue, issueQuest))
 			{
 				Logger.Log("Logic", "[IssueOffer] FinalizeClassicQuestAcceptance fail=quest_detached_or_finalized issue=" + (issue?.StringId ?? "") + " quest=" + (issueQuest?.StringId ?? "") + " hook=" + (text ?? "") + " questOngoing=" + issueQuest.IsOngoing + " logs=" + issueQuest.JournalEntries.Count);
-				error = "原版接取分支已立即结束或移除了任务，未能进入普通进行中状态。";
+				error = IssueDisplayMatchCatalog.Get("AcceptBranchEnded");
 				return false;
 			}
 			if (!issueQuest.IsOngoing)
 			{
-				error = "任务没有进入进行中状态。";
+				error = IssueDisplayMatchCatalog.Get("QuestNotOngoing");
 				return false;
 			}
-			Logger.Log("Logic", "[IssueOffer] 经典任务接受收尾完成 quest=" + (issueQuest.StringId ?? "") + " hook=" + (text ?? "") + " logs=" + issueQuest.JournalEntries.Count);
+			Logger.Log("Logic", "[IssueOffer] Classic quest acceptance finalized quest=" + (issueQuest.StringId ?? "") + " hook=" + (text ?? "") + " logs=" + issueQuest.JournalEntries.Count);
 			return true;
 		}
 		catch (Exception ex)
 		{
-			Logger.Log("Logic", "[IssueOffer] FinalizeClassicQuestAcceptance 异常: " + ex);
-			error = "原版任务接受收尾异常。";
+			Logger.Log("Logic", "[IssueOffer] FinalizeClassicQuestAcceptance exception: " + ex);
+			error = IssueDisplayMatchCatalog.Get("AcceptFinalizeException");
 			return false;
 		}
 	}
@@ -417,12 +419,12 @@ internal static partial class VanillaIssueOfferBridge
 				return false;
 			}
 			method.Invoke(quest, null);
-			Logger.Log("Logic", "[IssueOffer] 调用任务接受钩子 quest=" + (quest.StringId ?? "") + " method=" + methodName);
+			Logger.Log("Logic", "[IssueOffer] Invoking quest acceptance hook quest=" + (quest.StringId ?? "") + " method=" + methodName);
 			return true;
 		}
 		catch (Exception ex)
 		{
-			Logger.Log("Logic", "[IssueOffer] 调用任务接受钩子失败 quest=" + (quest?.StringId ?? "") + " method=" + methodName + " ex=" + ex.Message);
+			Logger.Log("Logic", "[IssueOffer] Quest acceptance hook failed quest=" + (quest?.StringId ?? "") + " method=" + methodName + " ex=" + ex.Message);
 			return false;
 		}
 	}
@@ -471,12 +473,12 @@ internal static partial class VanillaIssueOfferBridge
 			ConversationSentence.OnConsequenceDelegate onConsequenceDelegate = list[0];
 			consequenceName = "OfferDialogFlow." + (onConsequenceDelegate.Method?.Name ?? "anonymous");
 			onConsequenceDelegate();
-			Logger.Log("Logic", "[IssueOffer] 调用 OfferDialogFlow 自动接取收尾 quest=" + (quest.StringId ?? "") + " consequence=" + consequenceName);
+			Logger.Log("Logic", "[IssueOffer] Invoking OfferDialogFlow acceptance finalization quest=" + (quest.StringId ?? "") + " consequence=" + consequenceName);
 			return true;
 		}
 		catch (Exception ex)
 		{
-			Logger.Log("Logic", "[IssueOffer] OfferDialogFlow 自动接取收尾失败 quest=" + (quest?.StringId ?? "") + " ex=" + ex.Message);
+			Logger.Log("Logic", "[IssueOffer] OfferDialogFlow acceptance finalization failed quest=" + (quest?.StringId ?? "") + " ex=" + ex.Message);
 			return false;
 		}
 	}
@@ -548,7 +550,7 @@ internal static partial class VanillaIssueOfferBridge
 		}
 		catch (Exception ex)
 		{
-			Logger.Log("Logic", "[IssueOffer] RestoreAlternativeRoster 异常: " + ex.Message);
+			Logger.Log("Logic", "[IssueOffer] RestoreAlternativeRoster exception: " + ex.Message);
 		}
 	}
 
@@ -571,12 +573,12 @@ internal static partial class VanillaIssueOfferBridge
 		{
 			return text;
 		}
-		return NormalizePromptText(GetText(issue?.Description)) ?? "未命名任务";
+		return NormalizePromptText(GetText(issue?.Description)) ?? IssueDisplayMatchCatalog.Get("UnnamedQuestFallback");
 	}
 
 	private static string GetHeroName(Hero hero)
 	{
-		return (hero?.Name?.ToString() ?? hero?.StringId ?? "未知同伴").Trim();
+		return (hero?.Name?.ToString() ?? hero?.StringId ?? IssueDisplayMatchCatalog.Get("UnknownCompanion")).Trim();
 	}
 
 	private static string GetPlayerDisplayNameForPrompt()
@@ -591,7 +593,7 @@ internal static partial class VanillaIssueOfferBridge
 			text = "";
 		}
 		text = (text ?? "").Trim();
-		return string.IsNullOrWhiteSpace(text) ? "玩家" : text;
+		return string.IsNullOrWhiteSpace(text) ? IssueDisplayMatchCatalog.Get("Raw_046") : text;
 	}
 
 	private static string GetText(TextObject textObject)
@@ -634,7 +636,7 @@ internal static partial class VanillaIssueOfferBridge
 		{
 			return;
 		}
-		sb.AppendLine("原版任务日志摘要：");
+		sb.AppendLine(IssueDisplayMatchCatalog.Get("RecentJournalHeading"));
 		int num = Math.Max(0, list.Count - 3);
 		for (int j = num; j < list.Count; j++)
 		{
@@ -648,6 +650,7 @@ internal static partial class VanillaIssueOfferBridge
 		{
 			return;
 		}
+		text = IssueDisplayTexts.ForDisplay(text);
 		InformationManager.DisplayMessage(new InformationMessage(text, isError ? Color.FromUint(4294923605u) : new Color(0f, 1f, 0f)));
 	}
 
@@ -658,26 +661,26 @@ internal static partial class VanillaIssueOfferBridge
 		QuestBase issueQuest = issue?.IssueQuest;
 		if (giver == null || issue == null || issueQuest == null || !issueQuest.IsOngoing)
 		{
-			error = "当前没有进行中的原版任务。";
+			error = IssueDisplayMatchCatalog.Get("NoOngoingVanillaQuest");
 			return false;
 		}
 		DialogFlow dialogFlow = GetDiscussDialogFlow(issueQuest);
 		if (dialogFlow == null)
 		{
-			error = "当前任务没有可用的原版 discuss 流。";
+			error = IssueDisplayMatchCatalog.Get("NoDiscussFlow");
 			return false;
 		}
 		Agent agent = FindAgentForHeroInMission(giver);
 		Agent agent2 = Mission.Current?.MainAgent ?? Agent.Main;
 		if (agent == null || agent2 == null)
 		{
-			error = "当前场景中找不到原版 discuss 探测所需的 Agent。";
+			error = IssueDisplayMatchCatalog.Get("DiscussAgentMissing");
 			return false;
 		}
 		ConversationManager conversationManager = Campaign.Current?.ConversationManager;
 		if (conversationManager == null || conversationManager.IsConversationInProgress)
 		{
-			error = "当前原版 ConversationManager 不可用于静默任务交付。";
+			error = IssueDisplayMatchCatalog.Get("ConversationManagerUnavailable");
 			return false;
 		}
 		ConversationManagerSnapshot conversationManagerSnapshot = CaptureConversationManagerSnapshot(conversationManager);
@@ -689,7 +692,7 @@ internal static partial class VanillaIssueOfferBridge
 			if (turnInProbeResult == null || !turnInProbeResult.IsConfident)
 			{
 				probe = turnInProbeResult;
-				error = "当前原版 discuss 流里没有足够明确的可交付成功选项。";
+				error = IssueDisplayMatchCatalog.Get("NoClearTurnInOption");
 				return false;
 			}
 			probe = turnInProbeResult;
@@ -702,8 +705,8 @@ internal static partial class VanillaIssueOfferBridge
 		}
 		catch (Exception ex)
 		{
-			error = "静默原版任务交付异常: " + ex.Message;
-			Logger.Log("Logic", "[IssueOffer] TryProbeQuestTurnIn 异常: " + ex);
+			error = IssueDisplayMatchCatalog.Get("TurnInProbeExceptionPrefix") + ex.Message;
+			Logger.Log("Logic", "[IssueOffer] TryProbeQuestTurnIn exception: " + ex);
 			return false;
 		}
 		finally
@@ -736,7 +739,7 @@ internal static partial class VanillaIssueOfferBridge
 		error = "";
 		if (conversationManager == null || quest == null || probe == null || string.IsNullOrWhiteSpace(probe.SuccessOptionId))
 		{
-			error = "缺少原版任务交付执行参数。";
+			error = IssueDisplayMatchCatalog.Get("TurnInMissingArgs");
 			return false;
 		}
 		int num = 0;
@@ -775,7 +778,7 @@ internal static partial class VanillaIssueOfferBridge
 				}
 				if (num2 < 0 && list.Count > 1)
 				{
-					error = "原版交付链在中途出现多条分支，且无法高置信度自动选择。";
+					error = IssueDisplayMatchCatalog.Get("TurnInAmbiguousBranch");
 					return false;
 				}
 			}
@@ -795,7 +798,7 @@ internal static partial class VanillaIssueOfferBridge
 		{
 			return true;
 		}
-		error = "原版交付链已运行，但任务仍未完成。";
+		error = IssueDisplayMatchCatalog.Get("TurnInNotCompleted");
 		return false;
 	}
 
@@ -902,7 +905,7 @@ internal static partial class VanillaIssueOfferBridge
 		}
 		catch (Exception ex)
 		{
-			Logger.Log("Logic", "[IssueOffer] EndConversation 异常: " + ex.Message);
+			Logger.Log("Logic", "[IssueOffer] EndConversation exception: " + ex.Message);
 		}
 	}
 

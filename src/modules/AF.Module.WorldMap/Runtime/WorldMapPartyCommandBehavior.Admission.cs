@@ -59,13 +59,13 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 				}
 				if (sequenceDecision == WorldMapOrderSequenceDecision.RejectNonLeadingStop)
 				{
-					notifications.Add("大地图命令顺序错误：STOP 只能位于本轮首个有效世界地图标签，已忽略该 STOP。");
+					notifications.Add(WorldMapUiText.Result("AF_WM_Admission_StopOrder", "Invalid world-map command order: STOP is only valid as the first effective world-map tag in this round; the STOP was ignored."));
 					Log("ignored non-leading STOP tag");
 					continue;
 				}
 				if (IsKind(command, CommandKind.ClearHideout) && !CanOfferHideoutClearTarget(ResolveSettlementById(command.TargetId)))
 				{
-					notifications.Add("清剿命令未接取：藏身处未发现、已清空、被任务占用、正在战斗，或安全接口未就绪。");
+					notifications.Add(WorldMapUiText.Result("AF_WM_Admission_HideoutUnavailable", "The hideout-clear command was not accepted: the hideout was not found, already empty, occupied by a quest, in battle, or the safe interface was not ready."));
 					continue;
 				}
 				if (command != null)
@@ -83,7 +83,7 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			WorldMapPartyCommandBehavior behavior = Instance ?? Campaign.Current?.GetCampaignBehavior<WorldMapPartyCommandBehavior>();
 			if (behavior == null)
 			{
-				notifications.Add("大地图命令系统未初始化。");
+				notifications.Add(WorldMapUiText.Result("AF_WM_Admission_NotReady", "The world-map command system is not initialized."));
 				return false;
 			}
 			targetHero = targetHero ?? targetCharacter?.HeroObject;
@@ -97,7 +97,7 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			{
 				if (!TryResolveNonHeroPartyActorForExternal(targetCharacter, targetAgentIndex, out MobileParty nonHeroParty))
 				{
-					notifications.Add("大地图命令失败：当前非英雄说话对象没有可接管的野外部队。");
+					notifications.Add(WorldMapUiText.Result("AF_WM_Admission_NoParty", "World-map command failed: the current non-hero speaker has no field party that can be taken over."));
 					return false;
 				}
 				string actorName = GetActorName(null, null, nonHeroParty);
@@ -109,7 +109,7 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 					{
 						generatedFacts.Add(stopFact);
 					}
-					notifications.Add(actorName + "已清空旧的大地图命令清单。");
+					notifications.Add(WorldMapUiText.Result("AF_WM_Admission_QueueCleared", "{ACTOR} cleared the previous world-map command queue.", ("ACTOR", actorName)));
 				}
 				List<PartyCommandEntry> nonHeroCommands = commands.Where(IsExecutableNonHeroPartyCommand).Select(CloneCommand).ToList();
 				if (nonHeroCommands.Count == 0)
@@ -119,7 +119,7 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 						result.Handled = true;
 						return true;
 					}
-					notifications.Add("大地图命令失败：当前非英雄部队只能执行移动、巡逻、跟随、攻击等队伍级命令。");
+					notifications.Add(WorldMapUiText.Result("AF_WM_Admission_NonHeroLimit", "World-map command failed: a non-hero party can only execute party-level move, patrol, follow, and attack commands."));
 					return false;
 				}
 				if (!behavior.TryAppendQueueForParty(nonHeroParty, nonHeroCommands, out string nonHeroFact, out string nonHeroMessage))
@@ -147,7 +147,7 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 				{
 					generatedFacts.Add(stopFact);
 				}
-				notifications.Add(GetHeroName(targetHero) + "已清空旧的大地图命令清单。");
+				notifications.Add(WorldMapUiText.Result("AF_WM_Admission_QueueCleared", "{ACTOR} cleared the previous world-map command queue.", ("ACTOR", GetHeroName(targetHero))));
 			}
 			if (commands.Count == 0)
 			{
@@ -156,7 +156,7 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 					result.Handled = true;
 					return true;
 				}
-				notifications.Add("大地图命令失败：没有可执行的有效目标 ID。");
+				notifications.Add(WorldMapUiText.Result("AF_WM_Admission_NoTarget", "World-map command failed: there is no valid executable target ID."));
 				return false;
 			}
 			if (admissionRoute == WorldMapOrderAdmissionRoute.CompanionPartyCreation)
@@ -167,13 +167,13 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 					List<PartyCommandEntry> createCommands = commands.Skip(firstTaskIndex).Select(CloneCommand).ToList();
 					if (firstTaskIndex > 0)
 					{
-						notifications.Add("大地图命令顺序错误：建队前的归队命令无法执行，已从首个有效任务命令开始处理。");
+						notifications.Add(WorldMapUiText.Result("AF_WM_Admission_CompanionOrder", "Invalid world-map command order: a merge command before party creation cannot run; processing starts at the first effective task command."));
 					}
 					bool opened = behavior.TryOpenCreateCompanionParty(targetHero, createCommands, out string createMessage);
 					notifications.Add(createMessage);
-					generatedFacts.Add("[AFEF NPC行为补充] " + GetHeroName(targetHero) + (opened
-						? "接受了新的大地图任务；将先从玩家主队分兵，随后按输出顺序执行命令。"
-						: "无法创建同伴部队：" + createMessage));
+					generatedFacts.Add(WorldMapSourceTexts.Get("raw_literals.wm_lit_0001") + GetHeroName(targetHero) + (opened
+						? WorldMapSourceTexts.Get("raw_literals.wm_lit_0002")
+						: WorldMapSourceTexts.Get("raw_literals.wm_lit_0003") + createMessage));
 					result.Handled = opened;
 					result.CompanionPartyCreationQueued = opened;
 					result.AddedCommandCount = opened ? createCommands.Count : 0;
@@ -185,19 +185,19 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 				int firstTaskIndex = commands.FindIndex(IsTaskCommandForImplicitPartyCreation);
 				if (firstTaskIndex < 0)
 				{
-					notifications.Add("大地图命令失败：驻城总督需要至少一道移动、巡逻、跟随或攻击任务才能组建远征队。");
+					notifications.Add(WorldMapUiText.Result("AF_WM_Admission_GovernorNoTask", "World-map command failed: a governor in a settlement needs at least one move, patrol, follow, or attack task to form an expedition."));
 					return false;
 				}
 				List<PartyCommandEntry> expeditionCommands = commands.Skip(firstTaskIndex).Select(CloneCommand).ToList();
 				if (firstTaskIndex > 0)
 				{
-					notifications.Add("大地图命令顺序错误：总督建队前的归队命令无法执行，已从首个有效任务命令开始处理。");
+					notifications.Add(WorldMapUiText.Result("AF_WM_Admission_GovernorOrder", "Invalid world-map command order: a merge command before governor party creation cannot run; processing starts at the first effective task command."));
 				}
 				bool accepted = behavior.TryStartGovernorExpeditionRequest(targetHero, expeditionCommands, out string expeditionMessage, out bool queuedForChannelExit);
 				notifications.Add(expeditionMessage);
-				generatedFacts.Add("[AFEF NPC行为补充] " + GetHeroName(targetHero) + (accepted
-					? "接受了新的大地图任务；将从管辖地驻军抽调兵力组建临时远征队，任务结束后返城交还兵员并尝试复职。"
-					: "无法组建总督远征队：" + expeditionMessage));
+				generatedFacts.Add(WorldMapSourceTexts.Get("raw_literals.wm_lit_0001") + GetHeroName(targetHero) + (accepted
+					? WorldMapSourceTexts.Get("raw_literals.wm_lit_0004")
+					: WorldMapSourceTexts.Get("raw_literals.wm_lit_0005") + expeditionMessage));
 				result.Handled = accepted;
 				result.GovernorExpeditionCreationQueued = accepted && queuedForChannelExit;
 				result.AddedCommandCount = accepted ? expeditionCommands.Count : 0;
@@ -223,7 +223,7 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		catch (Exception ex)
 		{
 			content = StripWorldMapOrderTags(original);
-			notifications.Add("大地图命令处理失败：" + ex.Message);
+			notifications.Add(WorldMapUiText.Result("AF_WM_Admission_ProcessingFailed", "World-map command processing failed: {ERROR}", ("ERROR", ex.Message)));
 			Log("apply tags failed: " + ex);
 			return false;
 		}
@@ -263,7 +263,12 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 		{
 			if (!string.IsNullOrWhiteSpace(notification))
 			{
-				InformationManager.DisplayMessage(new InformationMessage(notification, notification.IndexOf("失败", StringComparison.OrdinalIgnoreCase) >= 0 ? new Color(1f, 0.45f, 0.25f) : new Color(0.4f, 1f, 0.4f)));
+				bool failure = notification.IndexOf(WorldMapSourceTexts.Get("attack_detail_outcomes.failure"), StringComparison.OrdinalIgnoreCase) >= 0
+					|| notification.IndexOf("failed", StringComparison.OrdinalIgnoreCase) >= 0
+					|| notification.IndexOf("invalid", StringComparison.OrdinalIgnoreCase) >= 0
+					|| notification.IndexOf("cannot", StringComparison.OrdinalIgnoreCase) >= 0
+					|| notification.IndexOf("not initialized", StringComparison.OrdinalIgnoreCase) >= 0;
+				InformationManager.DisplayMessage(new InformationMessage(CommandMessageForDisplay(notification), failure ? new Color(1f, 0.45f, 0.25f) : new Color(0.4f, 1f, 0.4f)));
 			}
 		}
 		return result;

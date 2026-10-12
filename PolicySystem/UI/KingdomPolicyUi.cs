@@ -158,7 +158,7 @@ public sealed class CustomPolicyComposePopup
 		}
 		if (_onAutoDraft == null)
 		{
-			_dataSource.ApplyAutoDraftResult(request, PlayerPolicyAutoDraftResult.Failed("AI编写入口不可用。"));
+			_dataSource.ApplyAutoDraftResult(request, PlayerPolicyAutoDraftResult.Failed(PolicyUiTexts.Get("AFPOL_UI_AiDraftUnavailable", "AI drafting is unavailable.")));
 			return;
 		}
 		try
@@ -174,7 +174,7 @@ public sealed class CustomPolicyComposePopup
 		catch (Exception ex)
 		{
 			PolicySystemLog.Failure("UI", "compose-auto-draft-dispatch-failed", ex.Message, ex.ToString());
-			_dataSource.ApplyAutoDraftResult(request, PlayerPolicyAutoDraftResult.Failed("AI编写遇到界面错误，请查看日志。"));
+			_dataSource.ApplyAutoDraftResult(request, PlayerPolicyAutoDraftResult.Failed(PolicyUiTexts.Get("AFPOL_UI_AiDraftUiError", "AI drafting encountered a UI error; see the log.")));
 		}
 	}
 
@@ -257,6 +257,8 @@ public sealed class CustomPolicyComposePopup
 
 public sealed class CustomPolicyComposePopupVM : ViewModel
 {
+	private readonly string _rawDateText;
+
 	private readonly Action<string, string, string, string, string> _onPublish;
 
 	private readonly Action<PlayerPolicyAutoDraftRequest> _onAutoDraft;
@@ -315,22 +317,23 @@ public sealed class CustomPolicyComposePopupVM : ViewModel
 		_externalCanPublish = canPublish;
 		_requireExplicitDuration = prefill?.RequireExplicitDuration == true;
 		_requireExplicitTargetSelection = prefill?.RequireExplicitTargetSelection == true;
-		TitleText = string.IsNullOrWhiteSpace(titleText) ? "发布王国政策" : titleText;
-		NameLabelText = string.IsNullOrWhiteSpace(nameLabelText) ? "政策名" : nameLabelText;
-		ContentLabelText = string.IsNullOrWhiteSpace(contentLabelText) ? "政策内容" : contentLabelText;
-		DurationLabelText = "效果持续天数（留空为永久）";
-		DateText = string.IsNullOrWhiteSpace(dateText) ? "未知日期" : dateText;
+		TitleText = string.IsNullOrWhiteSpace(titleText) ? PolicyUiTexts.Get("AFPOL_UI_KingdomPublishTitle", "Publish Kingdom Policy") : titleText;
+		NameLabelText = string.IsNullOrWhiteSpace(nameLabelText) ? PolicyUiTexts.Get("AFPOL_UI_PolicyNameLabel", "Policy Name") : nameLabelText;
+		ContentLabelText = string.IsNullOrWhiteSpace(contentLabelText) ? PolicyUiTexts.Get("AFPOL_UI_PolicyContentLabel", "Policy Content") : contentLabelText;
+		DurationLabelText = PolicyUiTexts.Get("AFPOL_UI_DurationLabel", "Effect duration in days (leave blank for permanent)");
+		_rawDateText = dateText ?? "";
+		DateText = string.IsNullOrWhiteSpace(dateText) ? PolicyUiTexts.Get("AFPOL_UI_UnknownDate", "Unknown Date") : PolicyDateTextProjection.ForUi(dateText);
 		PolicyName = prefill?.PolicyName ?? "";
 		PolicyContent = prefill?.PolicyContent ?? "";
 		DurationText = prefill?.DurationText ?? "";
-		PublishText = string.IsNullOrWhiteSpace(prefill?.PublishText) ? "发布王国政策" : prefill.PublishText;
-		AutoDraftText = "AI编写";
-		CancelText = "取消";
+		PublishText = string.IsNullOrWhiteSpace(prefill?.PublishText) ? PolicyUiTexts.Get("AFPOL_UI_KingdomPublishTitle", "Publish Kingdom Policy") : prefill.PublishText;
+		AutoDraftText = PolicyUiTexts.Get("AFPOL_UI_AiDraft", "AI Draft");
+		CancelText = PolicyUiTexts.Get("AFPOL_UI_Cancel", "Cancel");
 		TargetItems = new MBBindingList<PolicyComposeTargetItemVM>();
 		List<PolicyComposeTargetData> availableTargets = (targets ?? new List<PolicyComposeTargetData>()).Where(x => x != null).ToList();
 		if (availableTargets.Count == 0 && !_requireExplicitTargetSelection)
 		{
-			availableTargets.Add(new PolicyComposeTargetData { TargetId = "", ScopeKind = "kingdom", DisplayText = "玩家王国", IsSelected = true });
+			availableTargets.Add(new PolicyComposeTargetData { TargetId = "", ScopeKind = "kingdom", DisplayText = PolicyUiTexts.Get("AFPOL_UI_PlayerKingdom", "Player Kingdom"), IsSelected = true });
 		}
 		for (int i = 0; i < availableTargets.Count; i++)
 		{
@@ -342,8 +345,8 @@ public sealed class CustomPolicyComposePopupVM : ViewModel
 		{
 			SelectTarget(selected ?? TargetItems.FirstOrDefault());
 		}
-		_readyStatusText = string.IsNullOrWhiteSpace(blockReason) ? "填写政策名和政策内容后即可发布。" : blockReason;
-		StatusText = canPublish ? _readyStatusText : (string.IsNullOrWhiteSpace(blockReason) ? "当前不能发布政策。" : blockReason);
+		_readyStatusText = string.IsNullOrWhiteSpace(blockReason) ? PolicyUiTexts.Get("AFPOL_UI_PolicyReady", "Fill in a policy name and content to publish.") : blockReason;
+		StatusText = canPublish ? _readyStatusText : (string.IsNullOrWhiteSpace(blockReason) ? PolicyUiTexts.Get("AFPOL_UI_CannotPublishPolicy", "The policy cannot be published right now.") : blockReason);
 		RefreshCanPublish();
 	}
 
@@ -603,11 +606,11 @@ public sealed class CustomPolicyComposePopupVM : ViewModel
 		{
 			if (string.IsNullOrWhiteSpace(StatusText))
 			{
-				StatusText = "当前不能发布政策。";
+				StatusText = PolicyUiTexts.Get("AFPOL_UI_CannotPublishPolicy", "The policy cannot be published right now.");
 			}
 			return;
 		}
-		_onPublish?.Invoke(PolicyName ?? "", PolicyContent ?? "", DurationText ?? "", DateText ?? "", SelectedTargetId ?? "");
+		_onPublish?.Invoke(PolicyName ?? "", PolicyContent ?? "", DurationText ?? "", _rawDateText, SelectedTargetId ?? "");
 	}
 
 	public void ExecuteCancel()
@@ -622,7 +625,7 @@ public sealed class CustomPolicyComposePopupVM : ViewModel
 		{
 			if (!PlayerPolicyAutoDraftInputContract.HasInput(PolicyName, PolicyContent))
 			{
-				StatusText = "请先填写政策标题或政策内容。";
+				StatusText = PolicyUiTexts.Get("AFPOL_UI_FillTitleOrContent", "Enter a policy title or content first.");
 			}
 			return;
 		}
@@ -634,11 +637,11 @@ public sealed class CustomPolicyComposePopupVM : ViewModel
 			ScopeKind = TargetItems?.FirstOrDefault(item => item.IsSelected)?.ScopeKind ?? "kingdom",
 			TargetKingdomId = SelectedTargetId ?? "",
 			TargetKingdomName = TargetItems?.FirstOrDefault(item => item.IsSelected)?.DisplayText ?? "",
-			DateText = DateText ?? ""
+			DateText = _rawDateText
 		};
 		_isAutoDrafting = true;
-		AutoDraftText = "AI编写中…";
-		StatusText = "AI正在按照玩家可编辑提示词扩写当前内容；不会读取政策通用提示词、世界上下文或历史政策，也不会自动发布。";
+		AutoDraftText = PolicyUiTexts.Get("AFPOL_UI_AiDrafting", "AI drafting…");
+		StatusText = PolicyUiTexts.Get("AFPOL_UI_AiDraftStatus", "AI is expanding the current input using the player-editable prompt; it does not read the general policy prompt, world context, or policy history, and it will not publish automatically.");
 		RefreshCanPublish();
 		try
 		{
@@ -647,14 +650,14 @@ public sealed class CustomPolicyComposePopupVM : ViewModel
 		catch (Exception ex)
 		{
 			PolicySystemLog.Failure("UI", "compose-auto-draft-start-failed", ex.Message, ex.ToString());
-			ApplyAutoDraftResult(request, PlayerPolicyAutoDraftResult.Failed("AI编写遇到界面错误，请查看日志。"));
+			ApplyAutoDraftResult(request, PlayerPolicyAutoDraftResult.Failed(PolicyUiTexts.Get("AFPOL_UI_AiDraftUiError", "AI drafting encountered a UI error; see the log.")));
 		}
 	}
 
 	internal void ApplyAutoDraftResult(PlayerPolicyAutoDraftRequest request, PlayerPolicyAutoDraftResult result)
 	{
 		_isAutoDrafting = false;
-		AutoDraftText = "AI编写";
+		AutoDraftText = PolicyUiTexts.Get("AFPOL_UI_AiDraft", "AI Draft");
 		bool formUnchanged = request != null
 			&& string.Equals(PolicyName ?? "", request.ExistingPolicyName ?? "", StringComparison.Ordinal)
 			&& string.Equals(PolicyContent ?? "", request.PlayerDescription ?? "", StringComparison.Ordinal)
@@ -663,19 +666,19 @@ public sealed class CustomPolicyComposePopupVM : ViewModel
 		if (!formUnchanged)
 		{
 			RefreshCanPublish();
-			StatusText = "AI编写期间表单已改变，已丢弃过期结果。";
+			StatusText = PolicyUiTexts.Get("AFPOL_UI_AiDraftFormChanged", "The form changed while AI drafting was running; the stale result was discarded.");
 			return;
 		}
 		if (result?.Success != true)
 		{
 			RefreshCanPublish();
-			StatusText = string.IsNullOrWhiteSpace(result?.Error) ? "AI编写失败，原输入已保留。" : result.Error;
+			StatusText = string.IsNullOrWhiteSpace(result?.Error) ? PolicyUiTexts.Get("AFPOL_UI_AiDraftFailed", "AI drafting failed; the original input was kept.") : result.Error;
 			return;
 		}
 		PolicyName = result.PolicyName ?? "";
 		PolicyContent = result.PolicyContent ?? "";
 		RefreshCanPublish();
-		StatusText = "AI编写内容已回填；请检查并修改后再发布。";
+		StatusText = PolicyUiTexts.Get("AFPOL_UI_AiDraftCompleted", "AI draft filled the form; review and edit it before publishing.");
 	}
 
 	public void StartTyping()
@@ -699,10 +702,10 @@ public sealed class CustomPolicyComposePopupVM : ViewModel
 		SelectedTargetId = selected.TargetId;
 		TargetHintText = selected.HintText;
 		bool isVassalPolicy = string.Equals(selected.ScopeKind, "vassal", StringComparison.OrdinalIgnoreCase);
-		PublishText = isVassalPolicy ? "发布附庸国政策" : "发布王国政策";
+		PublishText = isVassalPolicy ? PolicyUiTexts.Get("AFPOL_UI_VassalPublishTitle", "Publish Vassal Policy") : PolicyUiTexts.Get("AFPOL_UI_KingdomPublishTitle", "Publish Kingdom Policy");
 		DurationLabelText = isVassalPolicy
-			? "效果持续天数（留空为永久）"
-			: "效果持续天数（留空为永久）";
+			? PolicyUiTexts.Get("AFPOL_UI_DurationLabel", "Effect duration in days (leave blank for permanent)")
+			: PolicyUiTexts.Get("AFPOL_UI_DurationLabel", "Effect duration in days (leave blank for permanent)");
 		RefreshCanPublish();
 	}
 
@@ -722,29 +725,29 @@ public sealed class CustomPolicyComposePopupVM : ViewModel
 		{
 			if (!hasName && !hasContent)
 			{
-				StatusText = "请填写政策标题或政策内容后使用AI编写。";
+				StatusText = PolicyUiTexts.Get("AFPOL_UI_FillForAiDraft", "Enter a policy title or content before using AI Draft.");
 			}
 			else if (!hasName)
 			{
-				StatusText = "可点击AI编写补全政策标题和正文。";
+				StatusText = PolicyUiTexts.Get("AFPOL_UI_AiCompleteTitle", "Click AI Draft to complete the policy title and content.");
 			}
 			else if (!hasContent)
 			{
-				StatusText = "可点击AI编写，根据政策标题补全正文。";
+				StatusText = PolicyUiTexts.Get("AFPOL_UI_AiCompleteContent", "Click AI Draft to complete the content from the policy title.");
 			}
 			else if (!hasTarget)
 			{
-				StatusText = "原目标当前无效，请明确重新选择一个当前可用目标。";
+				StatusText = PolicyUiTexts.Get("AFPOL_UI_InvalidPolicyTarget", "The original target is no longer valid; choose an available target again.");
 			}
 			else if (!durationValid)
 			{
 				StatusText = _requireExplicitDuration && string.IsNullOrWhiteSpace(DurationText)
-					? "旧记录无法确认原持续时间，请明确填写正整数天数。"
-					: "持续天数必须留空或填写正整数。";
+					? PolicyUiTexts.Get("AFPOL_UI_DurationRequired", "The old record has no confirmed duration; enter a positive integer number of days.")
+					: PolicyUiTexts.Get("AFPOL_UI_DurationPositive", "Duration must be blank or a positive integer number of days.");
 			}
 			else
 			{
-				StatusText = string.IsNullOrWhiteSpace(_readyStatusText) ? "点击发布后将等待智能评议；成功落地时扣除已配置成本。" : _readyStatusText;
+				StatusText = string.IsNullOrWhiteSpace(_readyStatusText) ? PolicyUiTexts.Get("AFPOL_UI_PublishAwaitingReview", "After publishing, the policy waits for intelligent review; configured costs are deducted when it takes effect.") : _readyStatusText;
 			}
 		}
 	}
@@ -762,7 +765,7 @@ public sealed class PolicyComposeTargetItemVM : ViewModel
 		_select = select;
 		TargetId = source.TargetId ?? "";
 		ScopeKind = source.ScopeKind ?? "kingdom";
-		DisplayText = string.IsNullOrWhiteSpace(source.DisplayText) ? "未知国家" : source.DisplayText.Trim();
+		DisplayText = string.IsNullOrWhiteSpace(source.DisplayText) ? PolicyUiTexts.Get("AFPOL_UI_UnknownKingdom", "Unknown Kingdom") : source.DisplayText.Trim();
 		HintText = source.HintText ?? "";
 		SelectionText = DisplayText;
 		IsSelected = source.IsSelected;
@@ -779,13 +782,13 @@ public sealed class PolicyComposeTargetItemVM : ViewModel
 
 public sealed class PolicyHistoryData
 {
-	public string TitleText { get; set; } = "政策记录";
+	public string TitleText { get; set; } = PolicyUiTexts.Get("AFPOL_UI_PolicyRecordsTitle", "Policy Records");
 
 	public string SubtitleText { get; set; } = "";
 
-	public string EmptyStateText { get; set; } = "尚无成功落地的政策记录。";
+	public string EmptyStateText { get; set; } = PolicyUiTexts.Get("AFPOL_UI_PolicyHistoryEmpty", "No successfully enacted policy records yet.");
 
-	public string CloseText { get; set; } = "返回政策管理";
+	public string CloseText { get; set; } = PolicyUiTexts.Get("AFPOL_UI_BackToPolicyManagement", "Back to Policy Management");
 
 	public List<PolicyHistoryRecordData> Records { get; set; } = new List<PolicyHistoryRecordData>();
 }
@@ -798,7 +801,7 @@ public sealed class PolicyHistoryRecordData
 
 	public bool CanReReview { get; set; }
 
-	public string ReReviewText { get; set; } = "重新评议";
+	public string ReReviewText { get; set; } = PolicyUiTexts.Get("AFPOL_UI_ReReview", "Re-review");
 
 	public string DateText { get; set; }
 
@@ -1135,10 +1138,10 @@ public sealed class CustomPolicyResultPopupVM : ViewModel
 		_onClose = onClose;
 		_onRetry = onRetry;
 		_onDismiss = onDismiss;
-		TitleText = string.IsNullOrWhiteSpace(titleText) ? "政策已经发布" : titleText.Trim();
+		TitleText = string.IsNullOrWhiteSpace(titleText) ? PolicyUiTexts.Get("AFPOL_UI_PolicyPublished", "Policy Published") : titleText.Trim();
 		BodyText = (bodyText ?? "").Trim();
-		CloseText = string.IsNullOrWhiteSpace(closeText) ? "知道了" : closeText.Trim();
-		RetryText = string.IsNullOrWhiteSpace(retryText) ? "手动重试" : retryText.Trim();
+		CloseText = string.IsNullOrWhiteSpace(closeText) ? PolicyUiTexts.Get("AFPOL_UI_Acknowledge", "Got it") : closeText.Trim();
+		RetryText = string.IsNullOrWhiteSpace(retryText) ? PolicyUiTexts.Get("AFPOL_UI_RetryManually", "Retry Manually") : retryText.Trim();
 		ShowRetryButton = showRetryButton;
 		ShowCloseButton = !showRetryButton;
 		ShowDismissButton = showDismissButton;
@@ -1406,10 +1409,10 @@ public sealed class CustomPolicyHistoryPopupVM : ViewModel
 		_onReReview = onReReview;
 		_onClose = onClose;
 		PolicyHistoryData source = data ?? new PolicyHistoryData();
-		TitleText = string.IsNullOrWhiteSpace(source.TitleText) ? "政策记录" : source.TitleText.Trim();
+		TitleText = string.IsNullOrWhiteSpace(source.TitleText) ? PolicyUiTexts.Get("AFPOL_UI_PolicyRecordsTitle", "Policy Records") : source.TitleText.Trim();
 		SubtitleText = (source.SubtitleText ?? "").Trim();
-		EmptyStateText = string.IsNullOrWhiteSpace(source.EmptyStateText) ? "尚无成功落地的政策记录。" : source.EmptyStateText.Trim();
-		CloseText = string.IsNullOrWhiteSpace(source.CloseText) ? "返回政策管理" : source.CloseText.Trim();
+		EmptyStateText = string.IsNullOrWhiteSpace(source.EmptyStateText) ? PolicyUiTexts.Get("AFPOL_UI_PolicyHistoryEmpty", "No successfully enacted policy records yet.") : source.EmptyStateText.Trim();
+		CloseText = string.IsNullOrWhiteSpace(source.CloseText) ? PolicyUiTexts.Get("AFPOL_UI_BackToPolicyManagement", "Back to Policy Management") : source.CloseText.Trim();
 		RecordItems = new MBBindingList<CustomPolicyHistoryRecordItemVM>();
 		if (source.Records != null)
 		{
@@ -1437,7 +1440,7 @@ public sealed class CustomPolicyHistoryRecordItemVM : ViewModel
 	private readonly Action<string> _onDelete;
 	public string HistoryKey { get; }
 	[DataSourceProperty] public bool CanDelete { get; }
-	[DataSourceProperty] public string DeleteText => "删除记录";
+	[DataSourceProperty] public string DeleteText => PolicyUiTexts.Get("AFPOL_UI_DeleteRecord", "Delete Record");
 
 	[DataSourceProperty] public string RecordId { get; set; }
 
@@ -1600,15 +1603,15 @@ public sealed class CustomPolicyHistoryRecordItemVM : ViewModel
 		CanDelete = record?.CanDelete == true;
 		RecordId = record?.RecordId ?? string.Empty;
 		CanReReview = record?.CanReReview == true;
-		ReReviewText = string.IsNullOrWhiteSpace(record?.ReReviewText) ? "重新评议" : record.ReReviewText.Trim();
-		DateText = (record?.DateText ?? "未知日期").Trim();
-		PolicyNameText = (record?.PolicyNameText ?? "未命名政策").Trim();
+		ReReviewText = string.IsNullOrWhiteSpace(record?.ReReviewText) ? PolicyUiTexts.Get("AFPOL_UI_ReReview", "Re-review") : record.ReReviewText.Trim();
+		DateText = PolicyDateTextProjection.ForUi((record?.DateText ?? PolicyUiTexts.Get("AFPOL_UI_UnknownDate", "Unknown Date")).Trim());
+		PolicyNameText = (record?.PolicyNameText ?? PolicyUiTexts.Get("AFPOL_UI_UnnamedPolicy", "Unnamed Policy")).Trim();
 		CostText = (record?.CostText ?? "").Trim();
-		ContentSectionTitleText = string.IsNullOrWhiteSpace(record?.ContentSectionTitleText) ? "【政策内容】" : record.ContentSectionTitleText.Trim();
+		ContentSectionTitleText = string.IsNullOrWhiteSpace(record?.ContentSectionTitleText) ? PolicyUiTexts.Get("AFPOL_UI_PolicyContentSection", "[Policy Content]") : record.ContentSectionTitleText.Trim();
 		ContentSummaryText = (record?.ContentSummaryText ?? "").Trim();
-		FeedbackSectionTitleText = string.IsNullOrWhiteSpace(record?.FeedbackSectionTitleText) ? "【民众反馈】" : record.FeedbackSectionTitleText.Trim();
+		FeedbackSectionTitleText = string.IsNullOrWhiteSpace(record?.FeedbackSectionTitleText) ? PolicyUiTexts.Get("AFPOL_UI_PolicyFeedbackSection", "[Public Feedback]") : record.FeedbackSectionTitleText.Trim();
 		FeedbackSummaryText = (record?.FeedbackSummaryText ?? "").Trim();
-		ImpactSectionTitleText = string.IsNullOrWhiteSpace(record?.ImpactSectionTitleText) ? "【每日影响】" : record.ImpactSectionTitleText.Trim();
+		ImpactSectionTitleText = string.IsNullOrWhiteSpace(record?.ImpactSectionTitleText) ? PolicyUiTexts.Get("AFPOL_UI_PolicyDailyImpactSection", "[Daily Impact]") : record.ImpactSectionTitleText.Trim();
 		ImpactSummaryText = (record?.ImpactSummaryText ?? "").Trim();
 	}
 

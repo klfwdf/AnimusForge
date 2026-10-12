@@ -123,7 +123,7 @@ public sealed partial class CourierDeliveryBehavior
 		catch (Exception ex)
 		{
 			Log("open courier flow failed: " + ex);
-			InformationManager.DisplayMessage(new InformationMessage("信使与邮递打开失败：" + ex.Message, Colors.Red));
+			InformationManager.DisplayMessage(new InformationMessage(ConversationUiLocalization.Text("AF_CONV_UI_Courier_OpenFailed", "Could not open courier mail: {ERROR}", ("ERROR", ex.Message)), Colors.Red));
 		}
 	}
 
@@ -133,14 +133,14 @@ public sealed partial class CourierDeliveryBehavior
 		{
 			if (Instance == null)
 			{
-				InformationManager.DisplayMessage(new InformationMessage("信使系统尚未初始化，暂时不能回信。", Colors.Yellow));
+				InformationManager.DisplayMessage(new InformationMessage(ConversationUiLocalization.Text("AF_CONV_UI_Courier_NotReady", "The courier system is not initialized; replies are unavailable."), Colors.Yellow));
 				return;
 			}
 			Hero target = ResolveHeroByIdForCourier(targetHeroId);
 			if (target == null)
 			{
-				string name = string.IsNullOrWhiteSpace(targetName) ? "该角色" : targetName.Trim();
-				InformationManager.DisplayMessage(new InformationMessage("找不到" + name + "，暂时不能回信。", Colors.Yellow));
+				string name = string.IsNullOrWhiteSpace(targetName) ? ConversationUiLocalization.Text("AF_CONV_UI_Courier_Character", "this character") : targetName.Trim();
+				InformationManager.DisplayMessage(new InformationMessage(ConversationUiLocalization.Text("AF_CONV_UI_Courier_ReplyTargetMissing", "Could not find {NAME}; replies are unavailable.", ("NAME", name)), Colors.Yellow));
 				return;
 			}
 			Instance.OpenCourierFlow(target, allowLetterReply: true);
@@ -148,7 +148,7 @@ public sealed partial class CourierDeliveryBehavior
 		catch (Exception ex)
 		{
 			Log("open courier reply flow failed target=" + (targetHeroId ?? "") + " error=" + ex);
-			InformationManager.DisplayMessage(new InformationMessage("回信打开失败：" + ex.Message, Colors.Red));
+			InformationManager.DisplayMessage(new InformationMessage(ConversationUiLocalization.Text("AF_CONV_UI_Courier_OpenReplyFailed", "Could not open the reply: {ERROR}", ("ERROR", ex.Message)), Colors.Red));
 		}
 	}
 
@@ -200,39 +200,39 @@ public sealed partial class CourierDeliveryBehavior
 		}
 		if (recipient == null || recipient == Hero.MainHero || recipient.CharacterObject?.IsHero != true)
 		{
-			InformationManager.DisplayMessage(new InformationMessage("找不到可通信的收件人。", Colors.Yellow));
+			InformationManager.DisplayMessage(new InformationMessage(ConversationUiLocalization.Text("AF_CONV_UI_Courier_NoRecipient", "No available recipient could be found."), Colors.Yellow));
 			return;
 		}
 		if (IsHeroInPlayerPartyForCourier(recipient))
 		{
-			InformationManager.DisplayMessage(new InformationMessage("该角色正在你的队伍中，不能通过信使写信。", Colors.Yellow));
+			InformationManager.DisplayMessage(new InformationMessage(ConversationUiLocalization.Text("AF_CONV_UI_Courier_InPlayerParty", "This character is in your party and cannot receive a courier letter."), Colors.Yellow));
 			return;
 		}
 		if (recipient.IsDead)
 		{
-			InformationManager.DisplayMessage(new InformationMessage("该角色已经死亡，不能通过信使写信。", Colors.Yellow));
+			InformationManager.DisplayMessage(new InformationMessage(ConversationUiLocalization.Text("AF_CONV_UI_Courier_RecipientDead", "This character has died and cannot receive a courier letter."), Colors.Yellow));
 			return;
 		}
 		if (!allowLetterReply && !ShouldShowCourierButtonForExternal(recipient, informationHidden: false))
 		{
-			InformationManager.DisplayMessage(new InformationMessage("你尚未掌握此人的信息，不能寄信。", Colors.Yellow));
+			InformationManager.DisplayMessage(new InformationMessage(ConversationUiLocalization.Text("AF_CONV_UI_Courier_RecipientUnknown", "You do not yet have information about this person and cannot send a letter."), Colors.Yellow));
 			return;
 		}
 		if (HasActiveCourierForHero(recipient))
 		{
-			InformationManager.DisplayMessage(new InformationMessage("已经有一支信使队正在处理发往此人的信件。", Colors.Yellow));
+			InformationManager.DisplayMessage(new InformationMessage(ConversationUiLocalization.Text("AF_CONV_UI_Courier_AlreadyActive", "A courier party is already handling a letter to this person."), Colors.Yellow));
 			return;
 		}
 		MobileParty mainParty = MobileParty.MainParty;
 		if (mainParty?.MemberRoster == null)
 		{
-			InformationManager.DisplayMessage(new InformationMessage("当前找不到玩家部队。", Colors.Red));
+			InformationManager.DisplayMessage(new InformationMessage(ConversationUiLocalization.Text("AF_CONV_UI_Courier_NoPlayerParty", "The player party could not be found."), Colors.Red));
 			return;
 		}
 		TroopRoster available = BuildSelectableCrewRoster(mainParty.MemberRoster);
 		if (available.TotalManCount <= 0)
 		{
-			InformationManager.DisplayMessage(new InformationMessage("你当前没有可派出的信使成员。", Colors.Yellow));
+			InformationManager.DisplayMessage(new InformationMessage(ConversationUiLocalization.Text("AF_CONV_UI_Courier_NoCrew", "You currently have no members available to dispatch as couriers."), Colors.Yellow));
 			return;
 		}
 		_pendingFlow = new PendingCourierFlow
@@ -252,8 +252,8 @@ public sealed partial class CourierDeliveryBehavior
 			TroopRoster.CreateDummyTroopRoster(),
 			TroopRoster.CreateDummyTroopRoster(),
 			TroopRoster.CreateDummyTroopRoster(),
-			new TextObject("可选信使成员"),
-			new TextObject("信使部队"),
+			ConversationUiLocalization.Object("AF_CONV_UI_Courier_SelectableCrew", "Available courier members"),
+			ConversationUiLocalization.Object("AF_CONV_UI_Courier_CrewParty", "Courier party"),
 			Math.Max(available.TotalManCount, 0),
 			Math.Max(1, available.TotalManCount),
 			new PartyPresentationDoneButtonConditionDelegate(CrewSelectionDoneCondition),
@@ -269,7 +269,7 @@ public sealed partial class CourierDeliveryBehavior
 	{
 		if (rightMemberRoster == null || rightMemberRoster.TotalManCount <= 0)
 		{
-			return new Tuple<bool, TextObject>(false, new TextObject("信使部队必须至少 1 人。"));
+			return new Tuple<bool, TextObject>(false, ConversationUiLocalization.Object("AF_CONV_UI_Courier_MinCrew", "The courier party must contain at least 1 member."));
 		}
 		return new Tuple<bool, TextObject>(true, TextObject.GetEmpty());
 	}
@@ -295,7 +295,7 @@ public sealed partial class CourierDeliveryBehavior
 			if (selected.TotalManCount <= 0)
 			{
 				ResetPendingCourierFlow(flow, revision, "crew_empty");
-				InformationManager.DisplayMessage(new InformationMessage("信使部队必须至少 1 人。", Colors.Yellow));
+				InformationManager.DisplayMessage(new InformationMessage(ConversationUiLocalization.Text("AF_CONV_UI_Courier_MinCrew", "The courier party must contain at least 1 member."), Colors.Yellow));
 				return;
 			}
 			flow.CrewRoster = selected;
@@ -307,7 +307,7 @@ public sealed partial class CourierDeliveryBehavior
 		{
 			Log("crew close failed: " + ex);
 			ResetPendingCourierFlow(flow, revision, "crew_exception");
-			InformationManager.DisplayMessage(new InformationMessage("信使部队选择失败：" + ex.Message, Colors.Red));
+			InformationManager.DisplayMessage(new InformationMessage(ConversationUiLocalization.Text("AF_CONV_UI_Courier_CrewSelectionFailed", "Courier party selection failed: {ERROR}", ("ERROR", ex.Message)), Colors.Red));
 		}
 	}
 
@@ -321,25 +321,25 @@ public sealed partial class CourierDeliveryBehavior
 			ResetPendingFlow("mode_no_flow");
 			return;
 		}
-		string targetName = flow.Recipient.Name?.ToString() ?? "收件人";
+		string targetName = flow.Recipient.Name?.ToString() ?? ConversationUiLocalization.Text("AF_CONV_UI_Courier_Recipient", "recipient");
 		List<InquiryElement> items = new List<InquiryElement>
 		{
-			new InquiryElement("normal", "单纯写信", null, true, ""),
-			new InquiryElement("give", "发送物品并写信", null, true, ""),
-			new InquiryElement("show", "展示物品并写信", null, true, ""),
-			new InquiryElement("give_troops", "转移部队并写信", null, true, ""),
-			new InquiryElement("give_prisoners", "转移俘虏并写信", null, true, ""),
-			new InquiryElement("give_settlements", "转移固定资产并写信", null, true, "")
+			new InquiryElement("normal", ConversationUiLocalization.Text("AF_CONV_UI_Courier_ModeNormal", "Write a letter"), null, true, ""),
+			new InquiryElement("give", ConversationUiLocalization.Text("AF_CONV_UI_Courier_ModeGive", "Send items and write a letter"), null, true, ""),
+			new InquiryElement("show", ConversationUiLocalization.Text("AF_CONV_UI_Courier_ModeShow", "Show items and write a letter"), null, true, ""),
+			new InquiryElement("give_troops", ConversationUiLocalization.Text("AF_CONV_UI_Courier_ModeTroops", "Transfer troops and write a letter"), null, true, ""),
+			new InquiryElement("give_prisoners", ConversationUiLocalization.Text("AF_CONV_UI_Courier_ModePrisoners", "Transfer prisoners and write a letter"), null, true, ""),
+			new InquiryElement("give_settlements", ConversationUiLocalization.Text("AF_CONV_UI_Courier_ModeAssets", "Transfer fixed assets and write a letter"), null, true, "")
 		};
 		MBInformationManager.ShowMultiSelectionInquiry(new MultiSelectionInquiryData(
-			"信使与邮递 - " + targetName,
-			"当前收件人：" + targetName + "\n请选择寄送方式：",
+			ConversationUiLocalization.Text("AF_CONV_UI_Courier_ModeTitle", "Courier mail - {TARGET}", ("TARGET", targetName)),
+			ConversationUiLocalization.Text("AF_CONV_UI_Courier_ModeDescription", "Current recipient: {TARGET}\nChoose a delivery method:", ("TARGET", targetName)),
 			items,
 			true,
 			1,
 			1,
-			"确定",
-			"取消",
+			ConversationUiLocalization.Text("AF_CONV_UI_Courier_Confirm", "Confirm"),
+			ConversationUiLocalization.Text("AF_CONV_UI_Courier_Cancel", "Cancel"),
 			selected =>
 			{
 				if (!IsPendingCourierFlowCurrent(flow, revision)) return;
@@ -394,19 +394,19 @@ public sealed partial class CourierDeliveryBehavior
 		flow.Mode = mode;
 		if (mode == CourierPayloadMode.GiveTroops && !MyBehavior.IsPartyTransferLordEligibleForExternal(flow.Recipient, flow.Recipient.CharacterObject))
 		{
-			InformationManager.DisplayMessage(new InformationMessage("只有领主才能谈部队转移。", Colors.Yellow));
+			InformationManager.DisplayMessage(new InformationMessage(ConversationUiLocalization.Text("AF_CONV_UI_Courier_TroopRecipientIneligible", "Only lords can discuss troop transfers."), Colors.Yellow));
 			ResetPendingFlow("payload_troop_ineligible");
 			return;
 		}
 		if (mode == CourierPayloadMode.GivePrisoners && !MyBehavior.IsPartyTransferLordEligibleForExternal(flow.Recipient, flow.Recipient.CharacterObject))
 		{
-			InformationManager.DisplayMessage(new InformationMessage("只有领主才能谈俘虏转移。", Colors.Yellow));
+			InformationManager.DisplayMessage(new InformationMessage(ConversationUiLocalization.Text("AF_CONV_UI_Courier_PrisonerRecipientIneligible", "Only lords can discuss prisoner transfers."), Colors.Yellow));
 			ResetPendingFlow("payload_prisoner_ineligible");
 			return;
 		}
 		if (mode == CourierPayloadMode.GiveSettlements && !MyBehavior.IsSettlementTransferLeaderEligibleForExternal(flow.Recipient, flow.Recipient.CharacterObject))
 		{
-			InformationManager.DisplayMessage(new InformationMessage("当前收件人没有可接收或可谈的固定资产。", Colors.Yellow));
+			InformationManager.DisplayMessage(new InformationMessage(ConversationUiLocalization.Text("AF_CONV_UI_Courier_AssetRecipientIneligible", "This recipient has no fixed assets available to receive or discuss."), Colors.Yellow));
 			ResetPendingFlow("payload_settlement_ineligible");
 			return;
 		}
@@ -423,32 +423,32 @@ public sealed partial class CourierDeliveryBehavior
 		for (int i = 0; i < flow.TradeOptions.Count; i++)
 		{
 			CourierTradeOption option = flow.TradeOptions[i];
-			string hint = "可用数量: " + Math.Max(0, option.AvailableAmount);
+			string hint = ConversationUiLocalization.Text("AF_CONV_UI_Courier_AvailableAmount", "Available: {AMOUNT}", ("AMOUNT", Math.Max(0, option.AvailableAmount)));
 			if (option.PartyEntry != null)
 			{
 				hint = option.PartyEntry.Section == MyBehavior.PartyTransferEntrySection.PlayerTroops
-					? $"可用数量: {option.AvailableAmount} | 日薪: {option.PartyEntry.WageDenarsPerDay}第纳尔/天 | 雇佣价: {option.PartyEntry.HirePriceDenarsPerUnit}第纳尔/人"
-					: $"可用数量: {option.AvailableAmount} | 购买价: {option.PartyEntry.BuyPriceDenarsPerUnit}第纳尔/人";
+					? ConversationUiLocalization.Text("AF_CONV_UI_Courier_TroopHint", "Available: {AMOUNT} | Wage: {WAGE} denars/day | Hire price: {PRICE} denars/person", ("AMOUNT", option.AvailableAmount), ("WAGE", option.PartyEntry.WageDenarsPerDay), ("PRICE", option.PartyEntry.HirePriceDenarsPerUnit))
+					: ConversationUiLocalization.Text("AF_CONV_UI_Courier_PrisonerHint", "Available: {AMOUNT} | Purchase price: {PRICE} denars/person", ("AMOUNT", option.AvailableAmount), ("PRICE", option.PartyEntry.BuyPriceDenarsPerUnit));
 				string sourceLabel = MyBehavior.GetPartyTransferPrisonerSourceLabelForExternal(option.PartyEntry);
 				if (!string.IsNullOrWhiteSpace(sourceLabel))
 				{
-					hint += " | 来源: " + sourceLabel;
+					hint += ConversationUiLocalization.Text("AF_CONV_UI_Courier_SourceHint", " | Source: {SOURCE}", ("SOURCE", sourceLabel));
 				}
 			}
 			else if (option.SettlementEntry != null)
 			{
-				hint = $"类型: {(string.IsNullOrWhiteSpace(option.SettlementEntry.TypeLabel) ? "固定资产" : option.SettlementEntry.TypeLabel)} | 每日收益: {Math.Max(0, option.SettlementEntry.DailyIncomeDenars)} 第纳尔 | 一次结清指导价: {Math.Max(0, option.SettlementEntry.GuidePriceDenars)} 第纳尔";
+				hint = ConversationUiLocalization.Text("AF_CONV_UI_Courier_AssetHint", "Type: {TYPE} | Daily income: {INCOME} denars | Suggested full payment: {PRICE} denars", ("TYPE", string.IsNullOrWhiteSpace(option.SettlementEntry.TypeLabel) ? ConversationUiLocalization.Text("AF_CONV_UI_Courier_FixedAssets", "Fixed assets") : option.SettlementEntry.TypeLabel), ("INCOME", Math.Max(0, option.SettlementEntry.DailyIncomeDenars)), ("PRICE", Math.Max(0, option.SettlementEntry.GuidePriceDenars)));
 			}
 			string displayName = option.Name;
 			displayName = GetCourierLetterTransferDisplayTitleForExternal(displayName);
 			string prisonerSourceLabel = MyBehavior.GetPartyTransferPrisonerSourceLabelForExternal(option.PartyEntry);
 			if (!string.IsNullOrWhiteSpace(prisonerSourceLabel))
 			{
-				displayName += "（来源：" + prisonerSourceLabel + "）";
+				displayName += ConversationUiLocalization.Text("AF_CONV_UI_Courier_SourceSuffix", " (Source: {SOURCE})", ("SOURCE", prisonerSourceLabel));
 			}
 			list.Add(new InquiryElement(i, displayName + " (×" + Math.Max(1, option.AvailableAmount) + ")", null, true, hint));
 		}
-		string targetName = flow.Recipient.Name?.ToString() ?? "收件人";
+		string targetName = flow.Recipient.Name?.ToString() ?? ConversationUiLocalization.Text("AF_CONV_UI_Courier_Recipient", "recipient");
 		MBInformationManager.ShowMultiSelectionInquiry(new MultiSelectionInquiryData(
 			BuildPayloadTitle(mode, targetName),
 			BuildPayloadDescription(mode, targetName),
@@ -456,8 +456,8 @@ public sealed partial class CourierDeliveryBehavior
 			true,
 			1,
 			list.Count,
-			"确定",
-			"取消",
+			ConversationUiLocalization.Text("AF_CONV_UI_Courier_Confirm", "Confirm"),
+			ConversationUiLocalization.Text("AF_CONV_UI_Courier_Cancel", "Cancel"),
 			selected =>
 			{
 				if (!IsPendingCourierFlowCurrent(flow, revision)) return;
@@ -541,15 +541,15 @@ public sealed partial class CourierDeliveryBehavior
 			ShowPayloadAmountInquiry();
 			return;
 		}
-		string title = flow.Mode == CourierPayloadMode.Show ? "展示数量" : (flow.Mode == CourierPayloadMode.Give ? "发送数量" : "转移数量");
+		string title = flow.Mode == CourierPayloadMode.Show ? ConversationUiLocalization.Text("AF_CONV_UI_Courier_ShowAmount", "Amount to show") : (flow.Mode == CourierPayloadMode.Give ? ConversationUiLocalization.Text("AF_CONV_UI_Courier_SendAmount", "Amount to send") : ConversationUiLocalization.Text("AF_CONV_UI_Courier_TransferAmount", "Amount to transfer"));
 		string entryDisplayName = GetCourierLetterTransferDisplayTitleForExternal(entry.Name);
-		string text = $"[{flow.PendingAmountIndex + 1}/{flow.SelectedEntries.Count}] {entryDisplayName} 最多可填 {max}。\n请输入 1 到 {max} 的整数：";
-		InformationManager.ShowTextInquiry(new TextInquiryData(title, text, true, true, "确定", "返回", input =>
+		string text = ConversationUiLocalization.Text("AF_CONV_UI_Courier_AmountDescription", "[{INDEX}/{COUNT}] {ITEM}: maximum {MAX}.\nEnter an integer from 1 to {MAX}:", ("INDEX", flow.PendingAmountIndex + 1), ("COUNT", flow.SelectedEntries.Count), ("ITEM", entryDisplayName), ("MAX", max));
+		InformationManager.ShowTextInquiry(new TextInquiryData(title, text, true, true, ConversationUiLocalization.Text("AF_CONV_UI_Courier_Confirm", "Confirm"), ConversationUiLocalization.Text("AF_CONV_UI_Courier_Back", "Back"), input =>
 		{
 			if (!IsPendingCourierFlowCurrent(flow, revision)) return;
 			if (!int.TryParse(input, out var amount) || amount <= 0 || amount > max)
 			{
-				InformationManager.DisplayMessage(new InformationMessage("请输入合法的数量。", Colors.Yellow));
+				InformationManager.DisplayMessage(new InformationMessage(ConversationUiLocalization.Text("AF_CONV_UI_Courier_InvalidAmount", "Enter a valid amount."), Colors.Yellow));
 				ShowPayloadAmountInquiry();
 				return;
 			}
@@ -572,9 +572,10 @@ public sealed partial class CourierDeliveryBehavior
 			ResetPendingFlow("letter_no_flow");
 			return;
 		}
-		string targetName = flow.Recipient.Name?.ToString() ?? "收件人";
+		string targetName = flow.Recipient.Name?.ToString() ?? ConversationUiLocalization.Text("AF_CONV_UI_Courier_Recipient", "recipient");
 		_letterInputOpen = true;
-		bool opened = CourierLetterInputPopup.Show("写给 " + targetName + " 的信", "", "", "", input =>
+		string letterTitle = ConversationUiLocalization.Text("AF_CONV_UI_Courier_WriteTitle", "Letter to {TARGET}", "TARGET", targetName);
+		bool opened = CourierLetterInputPopup.Show(letterTitle, "", "", "", input =>
 		{
 			if (!IsPendingCourierFlowCurrent(flow, revision)) return;
 			_letterInputOpen = false;
@@ -585,7 +586,7 @@ public sealed partial class CourierDeliveryBehavior
 		});
 		if (!opened)
 		{
-			InformationManager.ShowTextInquiry(new TextInquiryData("写给 " + targetName + " 的信", "", true, true, "发送", "取消", input =>
+			InformationManager.ShowTextInquiry(new TextInquiryData(letterTitle, "", true, true, ConversationUiLocalization.Text("AF_CONV_UI_Courier_Send", "Send"), ConversationUiLocalization.Text("AF_CONV_UI_Courier_Cancel", "Cancel"), input =>
 			{
 				if (!IsPendingCourierFlowCurrent(flow, revision)) return;
 				_letterInputOpen = false;
@@ -617,14 +618,14 @@ public sealed partial class CourierDeliveryBehavior
 			if (DispatchCourierDraft(flow, revision, input, out string reason) == null)
 			{
 				ResetPendingCourierFlow(flow, revision, "confirm_rejected");
-				InformationManager.DisplayMessage(new InformationMessage("信使草稿已失效，请重新选择成员和附件。", Colors.Yellow));
+				InformationManager.DisplayMessage(new InformationMessage(ConversationUiLocalization.Text("AF_CONV_UI_Courier_DraftExpired", "The courier draft has expired. Select the members and attachments again."), Colors.Yellow));
 				Log("courier draft rejected reason=" + reason);
 			}
 		}
 		catch (Exception ex)
 		{
 			Log("confirm failed: " + ex);
-			InformationManager.DisplayMessage(new InformationMessage("信使出发失败：" + ex.Message, Colors.Red));
+			InformationManager.DisplayMessage(new InformationMessage(ConversationUiLocalization.Text("AF_CONV_UI_Courier_DispatchFailed", "Courier dispatch failed: {ERROR}", ("ERROR", ex.Message)), Colors.Red));
 			ResetPendingCourierFlow(flow, revision, "confirm_exception", allowClaimed: true);
 		}
 	}
@@ -663,7 +664,7 @@ public sealed partial class CourierDeliveryBehavior
 			AddCourierRuntimeIndex(session);
 			Log("session created id=" + session.Id + " recipient=" + session.RecipientHeroId + " party=" + session.CourierPartyId + " mode=" + session.PayloadMode + " entries=" + session.Entries.Count);
 			StartCourierReplyGeneration(session, "created_preflight");
-			InformationManager.DisplayMessage(new InformationMessage("信使队已出发，正在前往 " + session.RecipientName + "。", Colors.Green));
+			InformationManager.DisplayMessage(new InformationMessage(ConversationUiLocalization.Text("AF_CONV_UI_Courier_Dispatched", "The courier party has departed for {TARGET}.", ("TARGET", session.RecipientName)), Colors.Green));
 			ResetPendingCourierFlow(flow, revision, "confirm_done", allowClaimed: true);
 			ProcessSession(session);
 			return session;
@@ -676,21 +677,21 @@ public sealed partial class CourierDeliveryBehavior
 		MobileParty mainParty = MobileParty.MainParty;
 		if (mainParty == null || flow?.Recipient == null || flow.CrewRoster == null || flow.CrewRoster.TotalManCount <= 0)
 		{
-			throw new InvalidOperationException("信使队数据不完整。");
+			throw new InvalidOperationException(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0615"));
 		}
 		string id = NewSessionId();
 		TroopRoster emptyMembers = TroopRoster.CreateDummyTroopRoster();
 		TroopRoster emptyPrisoners = TroopRoster.CreateDummyTroopRoster();
 		float speed = Math.Max(4f, mainParty.Speed) * 4f;
-		TextObject name = new TextObject("AnimusForge 信使队");
+		TextObject name = ConversationUiLocalization.Object("AF_CONV_UI_Courier_PartyBaseName", "AnimusForge Courier Party");
 		MobileParty courier = CustomPartyComponent.CreateCustomPartyWithTroopRoster(mainParty.Position, 0.05f, mainParty.CurrentSettlement, name, Clan.PlayerClan, emptyMembers, emptyPrisoners, Hero.MainHero, "", "", speed, true);
 		if (courier == null)
 		{
-			throw new InvalidOperationException("创建信使队失败。");
+			throw new InvalidOperationException(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0616"));
 		}
 		courier.IsVisible = true;
 		ApplyCourierMapBannerVisual(courier, "create");
-		courier.Party.SetCustomName(new TextObject("信使队 - " + (flow.Recipient.Name?.ToString() ?? "收件人")));
+		courier.Party.SetCustomName(ConversationUiLocalization.Object("AF_CONV_UI_Courier_PartyName", "Courier party - {NAME}", ("NAME", flow.Recipient.Name ?? ConversationUiLocalization.Object("AF_CONV_UI_Courier_Recipient", "recipient"))));
 		courier.SetMoveModeHold();
 		ApplyCourierAiOverrides(courier, "create");
 
@@ -798,7 +799,7 @@ public sealed partial class CourierDeliveryBehavior
 			}
 			float baseSpeed = Math.Max(4f, sender.PartyBelongedTo?.Speed ?? MobileParty.MainParty?.Speed ?? 4f);
 			Clan ownerClan = sender.Clan ?? sender.Clan?.Kingdom?.RulingClan ?? Clan.PlayerClan;
-			MobileParty courier = CustomPartyComponent.CreateCustomPartyWithTroopRoster(startPosition, 0.05f, startSettlement, new TextObject("AnimusForge NPC Courier"), ownerClan, members, prisoners, sender, "", "", baseSpeed * 4f, true);
+			MobileParty courier = CustomPartyComponent.CreateCustomPartyWithTroopRoster(startPosition, 0.05f, startSettlement, ConversationUiLocalization.Object("AF_CONV_UI_Courier_NpcPartyBaseName", "AnimusForge NPC Courier"), ownerClan, members, prisoners, sender, "", "", baseSpeed * 4f, true);
 			if (courier == null)
 			{
 				status = "create_party_failed";
@@ -806,7 +807,7 @@ public sealed partial class CourierDeliveryBehavior
 			}
 			courier.IsVisible = true;
 			ApplyCourierMapBannerVisual(courier, "create_npc_initiated_inbound");
-			courier.Party.SetCustomName(new TextObject("信使队 - " + (sender.Name?.ToString() ?? "NPC")));
+			courier.Party.SetCustomName(ConversationUiLocalization.Object("AF_CONV_UI_Courier_PartyName", "Courier party - {NAME}", ("NAME", sender.Name ?? ConversationUiLocalization.Object("AF_CONV_UI_Courier_Npc", "NPC"))));
 			courier.SetMoveModeHold();
 			ApplyCourierAiOverrides(courier, "create_npc_initiated_inbound");
 			CourierSession session = new CourierSession
@@ -887,7 +888,7 @@ public sealed partial class CourierDeliveryBehavior
 			}
 			float baseSpeed = Math.Max(4f, sender.PartyBelongedTo?.Speed ?? MobileParty.MainParty?.Speed ?? 4f);
 			Clan ownerClan = sender.Clan ?? sender.Clan?.Kingdom?.RulingClan ?? Clan.PlayerClan;
-			TextObject name = new TextObject("AnimusForge NPC Courier");
+			TextObject name = ConversationUiLocalization.Object("AF_CONV_UI_Courier_NpcPartyBaseName", "AnimusForge NPC Courier");
 			MobileParty courier = CustomPartyComponent.CreateCustomPartyWithTroopRoster(startPosition, 0.05f, startSettlement, name, ownerClan, members, prisoners, sender, "", "", baseSpeed * 4f, true);
 			if (courier == null)
 			{
@@ -896,7 +897,7 @@ public sealed partial class CourierDeliveryBehavior
 			}
 			courier.IsVisible = true;
 			ApplyCourierMapBannerVisual(courier, "create_inbound");
-			courier.Party.SetCustomName(new TextObject("信使队 - " + (sender.Name?.ToString() ?? "NPC")));
+			courier.Party.SetCustomName(ConversationUiLocalization.Object("AF_CONV_UI_Courier_PartyName", "Courier party - {NAME}", ("NAME", sender.Name ?? ConversationUiLocalization.Object("AF_CONV_UI_Courier_Npc", "NPC"))));
 			courier.SetMoveModeHold();
 			ApplyCourierAiOverrides(courier, "create_inbound");
 			CourierSession session = new CourierSession
@@ -914,7 +915,7 @@ public sealed partial class CourierDeliveryBehavior
 				InboundFallbackLetter = letterText.Trim(),
 				InboundLetterKind = InboundLetterKindDiplomacy,
 				InboundMotiveType = LetterMotiveDiplomacy,
-				InboundIntentText = "围绕当前真实外交事项写信，不得虚构已达成的结果。",
+				InboundIntentText = ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0617"),
 				IsNpcInitiated = true,
 				CrewEntries = BuildCargoEntriesFromRoster(members, "crew")
 			};
@@ -981,7 +982,7 @@ public sealed partial class CourierDeliveryBehavior
 			}
 			float baseSpeed = Math.Max(4f, sender.PartyBelongedTo?.Speed ?? MobileParty.MainParty?.Speed ?? 4f);
 			Clan ownerClan = sender.Clan ?? sender.Clan?.Kingdom?.RulingClan ?? Clan.PlayerClan;
-			TextObject name = new TextObject("AnimusForge NPC Courier");
+			TextObject name = ConversationUiLocalization.Object("AF_CONV_UI_Courier_NpcPartyBaseName", "AnimusForge NPC Courier");
 			MobileParty courier = CustomPartyComponent.CreateCustomPartyWithTroopRoster(startPosition, 0.05f, startSettlement, name, ownerClan, members, prisoners, sender, "", "", baseSpeed * 4f, true);
 			if (courier == null)
 			{
@@ -990,7 +991,7 @@ public sealed partial class CourierDeliveryBehavior
 			}
 			courier.IsVisible = true;
 			ApplyCourierMapBannerVisual(courier, "create_inbound_generic");
-			courier.Party.SetCustomName(new TextObject("信使队 - " + (sender.Name?.ToString() ?? "NPC")));
+			courier.Party.SetCustomName(ConversationUiLocalization.Object("AF_CONV_UI_Courier_PartyName", "Courier party - {NAME}", ("NAME", sender.Name ?? ConversationUiLocalization.Object("AF_CONV_UI_Courier_Npc", "NPC"))));
 			courier.SetMoveModeHold();
 			ApplyCourierAiOverrides(courier, "create_inbound_generic");
 			CourierSession session = new CourierSession

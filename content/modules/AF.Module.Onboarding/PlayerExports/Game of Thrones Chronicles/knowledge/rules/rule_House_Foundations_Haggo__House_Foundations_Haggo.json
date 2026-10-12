@@ -1,0 +1,156 @@
+{
+  "Id": "rule_House_Foundations_Haggo",
+  "Keywords": [
+    "Haggo",
+    "Haggo Khalasar",
+    "Dothraki",
+    "Khal"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The name Haggo belongs to the khalasar tradition of the Dothraki Sea of ​​Grass. It has no castle deeds to define its boundaries, nor maesters to stamp each succession; the khal's power is recognized by kin, bloodriders, tribesmen, and ordinary riders, and rises and falls with courage, gifts, marriage, and judgment. The khalasar migrates with livestock, tents, captives and memories. The women, children and elders in the camp also determine how far it can go. Hago's troops may change their route and number of people due to the war, but they cannot escape the basic constraints of Caohai: horses must have grass, people must have water, and followers must believe that the leader will not waste their lives in vain."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Dothraki warriors respect Hargo for daring to face the enemy at the front, and will secretly weigh whether his victory is worth the cost. Kaa may ask for courage, but he cannot forever cover up his mistakes with the bells of the dead."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "wanderer",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Those who followed the movement of the camp were more concerned about whether Hago would leave time for mothers, young children, and injured horses. Caohai respects the strong, but any khalasar relies on those who walk slower to continue to the next generation."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sarnor",
+          "ghiscari"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "notable",
+          "slave"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The tone in which the merchants spoke of Hago depended on whether they had seen gifts exchanged or looting dust. For those without horses, the honor of the khalasar is far away, and the real judgement is whether it can keep the family away from conflict."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Haggo Dothraki One of the khalasar, its roots are in the following relationships formed by riders, rather than in the northern woods or fixed fiefdoms. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Haggo Dothraki One of the khalasar, its roots are in the following relationships formed by riders, rather than in the northern woods or fixed fiefdoms. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Haggo Dothraki One of the khalasar, its roots are in the following relationships formed by riders, rather than in the northern woods or fixed fiefdoms. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Haggo Dothraki One of the khalasar, its roots are in the following relationships formed by riders, rather than in the northern woods or fixed fiefdoms. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Haggo: Dothraki One of the khalasar, its roots are in the following relationships formed by riders, rather than in the northern woods or fixed fiefdoms."
+  ]
+}

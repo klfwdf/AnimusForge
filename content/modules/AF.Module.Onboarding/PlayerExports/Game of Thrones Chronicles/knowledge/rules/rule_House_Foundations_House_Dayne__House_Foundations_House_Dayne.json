@@ -1,0 +1,153 @@
+{
+  "Id": "rule_House_Foundations_House_Dayne",
+  "Keywords": [
+    "House Dayne",
+    "Sword of the Morning",
+    "Falling Star"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "House Dain, with its roots in Starfall, is one of the oldest houses in Dorne and even Westeros. Legend has it that the ancestor followed the falling meteor to the island and forged the milky-white giant sword \"Dawn\" from the heart of the meteor. The family emblem is a sword and a falling white star on a purple background; unlike ordinary family heirloom swords, Dawn is inherited by the eldest son. Only knights deemed worthy enough by the family can obtain the title of \"Dawn Sword\" and hold the sword. Dane members occasionally have silver hair and purple eyes, but they belong to the ancestors' bloodline rather than the Targaryen branch. Ashara's fate and Jon's life experience are still rumors and speculations, and cannot be written into the fixed facts of the family."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Dornish lords' respect for Dain spanned many old disputes. Starfall City is ancient, and the legend of the falling star and \"Dawn\" give the family an almost mythical aura; but what truly earns respect is that only knights deemed worthy can become the \"Sword of Dawn.\" This honor does not proceed by eldest son and is therefore more demanding than an ordinary title."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "When Dornish swordsmen talk about \"Dawn\", they will say that it is as color as opal glass and as sharp as Valyrian steel, and they will immediately argue about which Dawn Sword is most worthy of it. Famous swords make people look up to them, but the real heaviness of the Dane family is that every generation of sword holders has to face the scale left by the dead."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania",
+          "crownlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "People outside of Dorne may not be familiar with the land of Starfall, but they have probably heard of Arthur Dayne and the Sword of Dawn. Such a reputation takes Dain beyond the confines of a local family, and makes every clan member live in the long shadow cast by a legendary knight. Respect transcends friend and foe, and rumors can turn real people into overly shiny statues."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Dayne The ancient Dornish people of Starfall City have a family emblem of a purple sword and a falling star, and own the meteorite sword Dawn; only those who are recognized can become the Dawn Sword. Proverbs is unknown, and the life stories of Ashara and Jon should not be regarded as facts. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Dayne The ancient Dornish people of Starfall City have a family emblem of a purple sword and a falling star, and own the meteorite sword Dawn; only those who are recognized can become the Dawn Sword. Proverbs is unknown, and the life stories of Ashara and Jon should not be regarded as facts. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Dayne The ancient Dornish people of Starfall City have a family emblem of a purple sword and a falling star, and own the meteorite sword Dawn; only those who are recognized can become the Dawn Sword. Proverbs is unknown, and the life stories of Ashara and Jon should not be regarded as facts. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Dayne The ancient Dornish people of Starfall City have a family emblem of a purple sword and a falling star, and own the meteorite sword Dawn; only those who are recognized can become the Dawn Sword. Proverbs is unknown, and the life stories of Ashara and Jon should not be regarded as facts. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "House Dayne: The ancient Dornish people of Starfall City have a family emblem of a purple sword and a falling star, and own the meteorite sword Dawn; only those who are recognized can become the Dawn Sword. Proverbs is unknown, and the life stories of Ashara and Jon should not be regarded as facts."
+  ]
+}

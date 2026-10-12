@@ -8,18 +8,38 @@ public static class SiegeCastleSoldierProposalProfile
     public const uint PendingMessageColor = 0xFFFFD27Fu;
 
     public static string BuildPendingMessage(SiegeCastlePrisonerDispositionKind disposition)
+        => BuildPendingMessage( disposition, false);
+
+    public static string BuildPendingMessage(SiegeCastlePrisonerDispositionKind disposition, bool isEnglish)
     {
-        return "【城堡处置】当前说话者提出“"
-            + SiegeCastlePrisonerDispositionKindProfile.Describe(disposition)
-            + "”，尚未执行；需要玩家明确同意。";
+        if (isEnglish)
+        {
+            return "[Castle aftermath] The current speaker proposed \u0027"
+                + SiegeCastlePrisonerDispositionKindProfile.Describe( disposition, true)
+                + "\u0027; not yet executed, explicit player approval is required.";
+        }
+        return CastleAftermathCompatibilityTexts.Raw("proposal_msg_prefix")
+            + SiegeCastlePrisonerDispositionKindProfile.Describe( disposition, false)
+            + CastleAftermathCompatibilityTexts.Raw("proposal_msg_suffix");
     }
 
     public static string BuildPendingContext(SiegeCastlePrisonerDispositionKind disposition)
+        => BuildPendingContext( disposition, false);
+
+    public static string BuildPendingContext(SiegeCastlePrisonerDispositionKind disposition, bool isEnglish)
     {
+        if (isEnglish)
+        {
+            return disposition == SiegeCastlePrisonerDispositionKind.None
+                ? "There is no soldier proposal awaiting player confirmation currently."
+                : "The current speaker previously proposed \u0027"
+                    + SiegeCastlePrisonerDispositionKindProfile.Describe( disposition, true)
+                    + "\u0027; not yet executed, settlement can only occur after the player explicitly agrees this turn.";
+        }
         return disposition == SiegeCastlePrisonerDispositionKind.None
-            ? "当前没有等待玩家确认的士兵提议。"
-            : "当前说话者此前提出了“"
-                + SiegeCastlePrisonerDispositionKindProfile.Describe(disposition)
-                + "”，尚未执行；只有玩家本轮明确同意后才能结算。";
+            ? CastleAftermathCompatibilityTexts.Raw("proposal_ctx_empty")
+            : CastleAftermathCompatibilityTexts.Raw("proposal_ctx_prefix")
+                + SiegeCastlePrisonerDispositionKindProfile.Describe( disposition, false)
+                + CastleAftermathCompatibilityTexts.Raw("proposal_ctx_suffix");
     }
 }

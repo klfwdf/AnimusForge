@@ -33,13 +33,13 @@
               <Children>
                 <ButtonWidget DoNotPassEventsToChildren="true" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="210" SuggestedHeight="44" Brush="Popup.Cancel.Button" Command.Click="ExecuteCancel" UpdateChildrenStates="true">
                   <Children>
-                    <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="24" VerticalAlignment="Center" MarginLeft="20" MarginRight="20" Brush="AFCourierLetter.Button.Text" Text="取消" DoNotAcceptEvents="true" />
+                    <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="24" VerticalAlignment="Center" MarginLeft="20" MarginRight="20" Brush="AFCourierLetter.Button.Text" Text="@CancelText" DoNotAcceptEvents="true" />
                   </Children>
                 </ButtonWidget>
                 <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="24" SuggestedHeight="1" />
                 <ButtonWidget IsEnabled="@CanPublish" DoNotPassEventsToChildren="true" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="210" SuggestedHeight="44" Brush="Popup.Done.Button" Command.Click="ExecutePublish" UpdateChildrenStates="true">
                   <Children>
-                    <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="24" VerticalAlignment="Center" MarginLeft="20" MarginRight="20" Brush="AFCourierLetter.Button.Text" Text="发布外交文书" DoNotAcceptEvents="true" />
+                    <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="24" VerticalAlignment="Center" MarginLeft="20" MarginRight="20" Brush="AFCourierLetter.Button.Text" Text="@PublishText" DoNotAcceptEvents="true" />
                   </Children>
                 </ButtonWidget>
                 <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="24" SuggestedHeight="1" />

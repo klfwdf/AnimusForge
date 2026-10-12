@@ -313,7 +313,7 @@ internal sealed class CastleAftermathLordDuelMissionBehavior : MissionLogic
 				+ restoredSceneTargets + " releasedAllocations=" + releasedAllocations);
 			if (restoredSceneTargets > 0 || releasedAllocations > 0)
 			{
-				AnimusForgeQuickInfo.Show("【城堡决斗】已停止尚未完成的屠戮命令；未死亡战俘恢复为未分配状态。");
+				AnimusForgeQuickInfo.Show(SiegeAftermathUiText.DuelSlaughterStopped);
 			}
 		}
 		if (player == null || !player.IsActive() || player.State == AgentState.Killed || player.State == AgentState.Unconscious)
@@ -348,9 +348,12 @@ internal sealed class CastleAftermathLordDuelMissionBehavior : MissionLogic
 		string selectedWeaponName = _duelWeaponItem.Name?.ToString() ?? _duelWeaponItem.StringId ?? "N/A";
 		int selectedShieldTier = GetDisplayTier(_duelShieldItem);
 		string selectedShieldName = _duelShieldItem?.Name?.ToString() ?? _duelShieldItem?.StringId ?? string.Empty;
-		string loadoutDescription = _duelLoadoutKind == DuelLoadoutKind.OneHandedAndShield
-			? selectedWeaponName + "（" + selectedWeaponTier + "级）和" + selectedShieldName + "（" + selectedShieldTier + "级）"
-			: selectedWeaponName + "（" + selectedWeaponTier + "级）";
+		string loadoutDescription = SiegeAftermathUiText.DuelLoadout(
+			selectedWeaponName,
+			selectedWeaponTier,
+			selectedShieldName,
+			selectedShieldTier,
+			_duelLoadoutKind == DuelLoadoutKind.OneHandedAndShield);
 
 		_lordHero = hero;
 		_lordAgent = agent;
@@ -432,8 +435,7 @@ internal sealed class CastleAftermathLordDuelMissionBehavior : MissionLogic
 			+ " mounted=" + _playerWasMountedWhenAccepted
 			+ " carriesRanged=" + _playerCarriedRangedWeaponWhenAccepted
 			+ " wieldsRanged=" + _playerWieldedRangedWeaponWhenAccepted);
-		AnimusForgeQuickInfo.Show("【城堡决斗】标签已生效：俘虏领主已在你正前方约20米处拿起"
-			+ loadoutDescription + "；双方短暂就位后开打，生命降至最后一点即判负，不会死亡。",
+		AnimusForgeQuickInfo.Show(SiegeAftermathUiText.DuelStarted(loadoutDescription),
 			agent.Character as CharacterObject);
 		return true;
 	}
@@ -691,7 +693,7 @@ internal sealed class CastleAftermathLordDuelMissionBehavior : MissionLogic
 		GcczDiagnosticLog.Log("CastleLordDuel", "cancelled hero=" + heroId + " source=" + (source ?? "N/A"));
 		if (showMessage)
 		{
-			AnimusForgeQuickInfo.Show("【城堡决斗】决斗未能继续，双方已恢复为战后处置状态。");
+			AnimusForgeQuickInfo.Show(SiegeAftermathUiText.DuelInterrupted);
 		}
 	}
 
@@ -735,8 +737,8 @@ internal sealed class CastleAftermathLordDuelMissionBehavior : MissionLogic
 		Logger.Log("CastleAftermath", "Completed captive-lord duel. " + outcome);
 		GcczDiagnosticLog.Log("CastleLordDuel", "completed " + outcome);
 		AnimusForgeQuickInfo.Show(playerWon
-			? "【城堡决斗】你击败了俘虏领主；对方已认输并恢复俘虏姿态。"
-			: "【城堡决斗】俘虏领主击败了你并放下武器；双方仍留在处置现场。");
+			? SiegeAftermathUiText.DuelPlayerWon
+			: SiegeAftermathUiText.DuelPlayerLost);
 		if (targetIndex >= 0)
 		{
 			ShoutBehavior.TriggerImmediateSceneBehaviorReactionForExternal(
@@ -1194,7 +1196,7 @@ internal sealed class CastleAftermathLordDuelMissionBehavior : MissionLogic
 		GcczDiagnosticLog.Log("CastleLordDuel", "fighting hero=" + (_lordHero?.StringId ?? "N/A")
 			+ " immediateTeleport=true targetAgent=" + player.Index
 			+ " targetObserved=" + _combatTargetObserved);
-		AnimusForgeQuickInfo.Show("【城堡决斗】双方就位，决斗开始。", lord.Character as CharacterObject);
+		AnimusForgeQuickInfo.Show(SiegeAftermathUiText.DuelCombatStarted, lord.Character as CharacterObject);
 	}
 
 	private bool TryEquipDuelLoadout(Agent lord)

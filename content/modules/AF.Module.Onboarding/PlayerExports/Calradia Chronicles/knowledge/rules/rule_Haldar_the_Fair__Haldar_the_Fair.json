@@ -1,0 +1,100 @@
+{
+  "Id": "rule_Haldar_the_Fair",
+  "Keywords": [
+    "Haldar the Fair",
+    "King Haldar"
+  ],
+  "RagShortTexts": [
+    "King Haldar rules over an unwilling land."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nord"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "commoner",
+          "lord",
+          "notable",
+          "townsfolk",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Had Haldar the Fair been merely a minor chieftain or lord, he would undoubtedly be beloved by all the warriors who follow him into battle, feast with him afterward, and receive his praise and rewards. Yet he is a king ruling a land that remains unwilling to be a kingdom. His jarls blame him for the sins of his father, Volbjorn the Hungry, who founded Nordvyg through blood and treachery, and many long to return to the old days when they answered to no one."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Haldar? Who is he? Never heard of him—some Nord grand prince, maybe? I don't know, they are too far away for us to know much about them."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Haldar is the King of the Nords, ruling over B. He is fierce and skilled in battle, a rare warrior indeed, and a seasoned navigator at sea—though as for his statecraft? It leaves something to be desired."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "nord"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Long live the King!!!!!!! We swear loyalty unto death to the King!!!!!!!"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "B",
+      "Kind": "clan_all_towns",
+      "TargetId": "clan_nord_1",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

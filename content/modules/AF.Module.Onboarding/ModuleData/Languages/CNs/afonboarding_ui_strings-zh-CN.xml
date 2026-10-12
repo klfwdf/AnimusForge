@@ -1,0 +1,306 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base type="string">
+  <tags><tag language="简体中文" /></tags>
+  <strings>
+    <string id="AF_ONBOARDING_YJ_LATENCY_TITLE" text="YJ 线路测速" />
+    <string id="AF_COMMON_CANCEL" text="取消" />
+    <string id="AF_ONBOARDING_YJ_LATENCY_FAILED" text="YJ 三条线路均未通过测速，请检查网络后重试，或使用自定义配置。" />
+    <string id="AF_ONBOARDING_YJ_SELECTED" text="YJ 已选线路：" />
+    <string id="AF_ONBOARDING_YJ_RESPONSE_TIME" text="，响应约 " />
+    <string id="AF_ONBOARDING_API_AUXILIARY" text="前处理API" />
+    <string id="AF_ONBOARDING_API_POSTPROCESS" text="后处理API" />
+    <string id="AF_ONBOARDING_API_EVENTS" text="事件/叛乱API" />
+    <string id="AF_ONBOARDING_API_PRIMARY" text="主API" />
+    <string id="AF_ONBOARDING_API_AUXILIARY_URL" text="前处理API Base URL" />
+    <string id="AF_ONBOARDING_API_POSTPROCESS_URL" text="后处理API Base URL" />
+    <string id="AF_ONBOARDING_API_EVENTS_URL" text="事件/叛乱API Base URL" />
+    <string id="AF_ONBOARDING_API_PRIMARY_URL" text="主API Base URL" />
+    <string id="AF_ONBOARDING_API_AUXILIARY_KEY" text="前处理API Key" />
+    <string id="AF_ONBOARDING_API_POSTPROCESS_KEY" text="后处理API Key" />
+    <string id="AF_ONBOARDING_API_EVENTS_KEY" text="事件/叛乱API Key" />
+    <string id="AF_ONBOARDING_API_PRIMARY_KEY" text="主API Key" />
+    <string id="AF_ONBOARDING_API_AUXILIARY_MODEL" text="前处理模型名称" />
+    <string id="AF_ONBOARDING_API_POSTPROCESS_MODEL" text="后处理模型名称" />
+    <string id="AF_ONBOARDING_API_EVENTS_MODEL" text="事件/叛乱模型名称" />
+    <string id="AF_ONBOARDING_API_PRIMARY_MODEL" text="主模型名称" />
+    <string id="AF_ONBOARDING_API_AUXILIARY_HINT" text="前处理API：建议优先选择速度快且价格较低的模型。" />
+    <string id="AF_ONBOARDING_API_POSTPROCESS_HINT" text="后处理API：建议选择分析与推理能力较强的模型，例如 GPT。" />
+    <string id="AF_ONBOARDING_API_EVENTS_HINT" text="周报与叛乱API：周报生成建议选择文采较好的模型，例如 Gemini；叛乱命名也会共用此模型。" />
+    <string id="AF_ONBOARDING_API_PRIMARY_HINT" text="主API（NPC 正文）：建议选择文采较好的模型，例如 Gemini。" />
+    <string id="AF_ONBOARDING_COMPAT_WARNING_TITLE" text="兼容性提示" />
+    <string id="AF_COMMON_CONTINUE" text="继续" />
+    <string id="AF_COMMON_BACK" text="返回" />
+    <string id="AF_ONBOARDING_MCM_SAVE_URL_FAILED" text="无法读取 MCM 设置，暂时不能保存 Base URL。" />
+    <string id="AF_ONBOARDING_MODEL_FETCH_FAILED" text="模型列表拉取失败" />
+    <string id="AF_ONBOARDING_API_CONNECTION_FAILED" text="API 连接失败" />
+    <string id="AF_ONBOARDING_STARTED" text="AnimusForge 已启动，版本号：" />
+    <string id="AF_ONBOARDING_MOD_WARNING" text="当前版本不建议搭配其他功能性 Mod 游玩；若出现崩溃，请先排查你的 Mod 加载清单！" />
+    <string id="AF_ONBOARDING_BUSY" text="当前已有 AnimusForge 引导或 API 测试正在进行，请先完成或取消当前流程。" />
+    <string id="AF_ONBOARDING_RECONFIGURE_FAILED" text="打开 API 重新配置失败：" />
+    <string id="AF_ONBOARDING_RECONFIGURED_CANCELLED" text="已取消 API 重新配置。" />
+    <string id="AF_ONBOARDING_RECONFIGURED_DONE" text="API 重新配置已完成：配置已写入 MCM，已返回游戏，不会进入数据库导入或首次使用流程。" />
+    <string id="AF_ONBOARDING_SETUP_CLOSED" text="已关闭首次配置，可从终端重新打开；AI 功能仍需完成引导。" />
+    <string id="AF_ONBOARDING_SUPPORT" text="支持AnimusForge制作组" />
+    <string id="AF_ONBOARDING_SUPPORT_HINT" text="打开爱发电支持页面。" />
+    <string id="AF_ONBOARDING_DEEPSEEK_FLASH" text="使用官方deepseek-flash推荐API组合进行游玩" />
+    <string id="AF_ONBOARDING_DEEPSEEK_FLASH_HINT" text="自动填写 DeepSeek Flash 预设，只需输入一次 API Key。" />
+    <string id="AF_ONBOARDING_DEEPSEEK_PRO" text="使用官方deepseek-pro推荐API组合进行游玩" />
+    <string id="AF_ONBOARDING_DEEPSEEK_PRO_HINT" text="自动填写 DeepSeek Pro 预设，只需输入一次 API Key。" />
+    <string id="AF_ONBOARDING_CUSTOM" text="使用完全自定义的API进行游玩" />
+    <string id="AF_ONBOARDING_CUSTOM_HINT" text="进入旧路径，逐项填写 Base URL、API Key 和模型。" />
+    <string id="AF_ONBOARDING_EXISTING" text="使用现有配置进行游玩" />
+    <string id="AF_ONBOARDING_EXISTING_HINT" text="直接测试当前 MCM 配置；周报和叛乱API未配置完整时会跳过该项。" />
+    <string id="AF_ONBOARDING_YJ_PRESET" text="使用 YJ API 中转站进行游玩" />
+    <string id="AF_ONBOARDING_YJ_PRESET_HINT" text="先测速选择响应较快的 YJ 线路；可选择单分组或多分组 API Key 配置。" />
+    <string id="AF_ONBOARDING_SAVE_EXIT" text="保存存档并退出" />
+    <string id="AF_ONBOARDING_SAVE_EXIT_HINT" text="保存当前存档后退出到主界面。" />
+    <string id="AF_ONBOARDING_API_QUICK_SETUP" text="AnimusForge - API 快捷配置" />
+    <string id="AF_COMMON_CONFIRM" text="确定" />
+    <string id="AF_COMMON_CLOSE" text="关闭" />
+    <string id="AF_ONBOARDING_BACK_RECONFIGURE" text="返回 API 重新配置菜单" />
+    <string id="AF_ONBOARDING_BACK_WELCOME" text="返回首次引导菜单" />
+    <string id="AF_ONBOARDING_BACK_RECONFIGURE_HINT" text="返回 AnimusForge 的 API 重新配置菜单。" />
+    <string id="AF_ONBOARDING_BACK_WELCOME_HINT" text="返回 AnimusForge 的首次 API 配置菜单。" />
+    <string id="AF_ONBOARDING_YJ_ACCOUNT" text="获取 API Key 并购买额度" />
+    <string id="AF_ONBOARDING_YJ_ACCOUNT_HINT" text="依次打开 YJ API Key 管理页和额度购买页。" />
+    <string id="AF_ONBOARDING_YJ_MULTI" text="多分组 API Key 输入" />
+    <string id="AF_ONBOARDING_YJ_MULTI_HINT" text="主API、前处理API、后处理API、周报与叛乱API分别输入一个 Key，并分别拉取该分组的模型。" />
+    <string id="AF_ONBOARDING_YJ_SINGLE" text="单分组 API Key 输入" />
+    <string id="AF_ONBOARDING_YJ_SINGLE_HINT" text="只输入一次 Key，自动写入四条 API；随后仍会为四条 API 分别拉取模型并选择。" />
+    <string id="AF_ONBOARDING_YJ_COPY_QQ" text="复制YJ中转站 QQ 群号" />
+    <string id="AF_ONBOARDING_YJ_COPY_QQ_HINT" text="复制 QQ 群号 " />
+    <string id="AF_ONBOARDING_TO_CLIPBOARD" text=" 到剪贴板。" />
+    <string id="AF_ONBOARDING_YJ_MENU" text="YJ API 中转站" />
+    <string id="AF_ONBOARDING_YJ_MENU_FAILED" text="打开 YJ API 中转站菜单失败：" />
+    <string id="AF_ONBOARDING_DEEPSEEK_KEY_TITLE" text="DeepSeek API Key 确认" />
+    <string id="AF_COMMON_YES" text="有" />
+    <string id="AF_COMMON_NO" text="无" />
+    <string id="AF_ONBOARDING_DEEPSEEK_KEY_FAILED" text="打开 DeepSeek API Key 确认框失败：" />
+    <string id="AF_ONBOARDING_DEEPSEEK_APPLY_FAILED" text="写入 DeepSeek 推荐配置失败：" />
+    <string id="AF_ONBOARDING_DEEPSEEK_MCM_FAILED" text="无法读取 MCM 设置，暂时不能写入 DeepSeek 推荐配置。" />
+    <string id="AF_ONBOARDING_DEEPSEEK_KEY_INPUT" text="填写 DeepSeek API Key" />
+    <string id="AF_ONBOARDING_SAVE_TEST_APIS" text="保存并测试四条API" />
+    <string id="AF_ONBOARDING_KEY_EMPTY" text="API Key 不能为空。" />
+    <string id="AF_ONBOARDING_DEEPSEEK_APPLIED" text="DeepSeek 推荐配置已写入 MCM，正在测试四条 API。" />
+    <string id="AF_ONBOARDING_DEEPSEEK_INPUT_FAILED" text="打开 DeepSeek API Key 输入框失败：" />
+    <string id="AF_ONBOARDING_YJ_LATENCY_BODY" text="正在比较三条 YJ 线路，完成后进入接入方式选择。\n不携带 Key，不调用模型生成。" />
+    <string id="AF_ONBOARDING_RECONFIGURE_BODY" text="你正在从 AnimusForge 终端重新配置 API。\n\n本流程只会写入并测试主API、前处理API、后处理API、周报和叛乱API配置；测试通过后会直接返回游戏，不会进入数据库导入或首次使用流程。" />
+    <string id="AF_ONBOARDING_QUICK_SETUP_BODY" text="请选择首次使用的 API 配置方式。\n\n推荐组合会自动写入主API、前处理API、后处理API、周报和叛乱API的 Base URL、模型、思维链和温度；你只需要填写一次 API Key。" />
+    <string id="AF_ONBOARDING_YJ_BODY" text="【开始游玩前必须完成】\n点击“获取 API Key 并购买额度”会依次打开 Key 管理页和额度购买页；请创建有效 Key 并充值足够额度。\n\n缺少有效 API Key 或可用额度时，无法拉取模型、通过连接测试或使用 AI 进行游玩。\n单分组 Key 只需输入一次；多分组 Key 需要为四条 API 分别输入。" />
+    <string id="AF_ONBOARDING_YJ_RECONFIGURE_SUFFIX" text="\n\n当前为终端 API 重新配置：四条 API 完成连接测试后会直接返回游戏，不会进入数据库导入。" />
+    <string id="AF_ONBOARDING_YJ_QQ_COPIED" text="YJ 交流 QQ 群号已复制到剪贴板：" />
+    <string id="AF_ONBOARDING_YJ_QQ_COPY_FAILED" text="复制 QQ 群号失败，请手动复制：" />
+    <string id="AF_ONBOARDING_YJ_KEY_PAGE" text="API Key 管理" />
+    <string id="AF_ONBOARDING_YJ_CREDIT_PAGE" text="额度购买" />
+    <string id="AF_ONBOARDING_SYSTEM_YJ_FALLBACK" text="[系统] 默认浏览器无法启动，已使用本机浏览器打开 YJ API " />
+    <string id="AF_ONBOARDING_SYSTEM_YJ_OPENING" text="[系统] 正在打开 YJ API " />
+    <string id="AF_ONBOARDING_SYSTEM_YJ_FAILED" text="[系统] 打开 YJ API " />
+    <string id="AF_ONBOARDING_PAGE_SUFFIX" text="页面。" />
+    <string id="AF_ONBOARDING_PAGE_FAILED_SUFFIX" text="页面失败：" />
+    <string id="AF_ONBOARDING_MCM_CONFIG_FAILED" text="无法读取 MCM 设置，暂时不能配置 " />
+    <string id="AF_ONBOARDING_MCM_INPUT_FAILED" text="无法读取 MCM 设置，暂时不能填写 " />
+    <string id="AF_ONBOARDING_YJ_SINGLE_KEY_TITLE" text="填写 YJ API 单分组 Key" />
+    <string id="AF_ONBOARDING_YJ_KEY_TITLE_PREFIX" text="填写 YJ API " />
+    <string id="AF_ONBOARDING_YJ_SINGLE_KEY_BODY" text="请输入一个 YJ API Key。确认后会将测速选中的 Base URL 和该 Key 写入主API、前处理API、后处理API、周报与叛乱API；随后会依次拉取四次模型列表并为每条 API 选择模型。" />
+    <string id="AF_ONBOARDING_YJ_MULTI_KEY_BODY_PREFIX" text="请输入当前 " />
+    <string id="AF_ONBOARDING_YJ_MULTI_KEY_BODY_SUFFIX" text=" 所属分组的 YJ API Key。确认后只会写入当前 API，并拉取该 Key 可用的模型。" />
+    <string id="AF_COMMON_NEXT" text="下一步" />
+    <string id="AF_ONBOARDING_YJ_SINGLE_KEY_LABEL" text="YJ API 单分组 Key" />
+    <string id="AF_ONBOARDING_WRITTEN_FETCHING" text=" 已写入 MCM，正在拉取 " />
+    <string id="AF_ONBOARDING_AVAILABLE_MODELS_SUFFIX" text=" 可用模型。" />
+    <string id="AF_ONBOARDING_YJ_INPUT_FAILED" text="打开 YJ API Key 输入框失败：" />
+    <string id="AF_ONBOARDING_DEEPSEEK_KEY_BODY" text="你是否拥有 DeepSeek 官方 API Key？\n\n如果没有，请点击“无”，前往 DeepSeek 官方开放平台创建 API Key 并充值。完成后返回游戏，再次选择推荐组合。" />
+    <string id="AF_ONBOARDING_SYSTEM_DEEPSEEK_FALLBACK" text="[系统] 默认浏览器无法启动，已使用本机浏览器打开 DeepSeek 官方 API Keys 页面。" />
+    <string id="AF_ONBOARDING_SYSTEM_DEEPSEEK_OPENING" text="[系统] 正在打开 DeepSeek 官方 API Keys 页面。" />
+    <string id="AF_ONBOARDING_SYSTEM_DEEPSEEK_FAILED" text="[系统] 打开 DeepSeek 官方页面失败：" />
+    <string id="AF_ONBOARDING_PRESET_WRITTEN_PREFIX" text="已写入 " />
+    <string id="AF_ONBOARDING_PRESET_KEY_BODY" text=" 推荐 API 组合。\n请输入 DeepSeek API Key；该 Key 会同时写入主API、前处理API、后处理API、周报和叛乱API。" />
+    <string id="AF_ONBOARDING_TEST_MCM_FAILED" text="无法读取 MCM 设置，暂时不能测试 API 组合。" />
+    <string id="AF_ONBOARDING_API_SET_FAILED" text="API 组合连接测试失败。" />
+    <string id="AF_ONBOARDING_API_SET_CANCEL_HINT" text="你已手动取消本次测试，可以回到首次菜单重新选择配置方式。" />
+    <string id="AF_ONBOARDING_API_SET_CANCELLED" text="API 组合测试已取消。" />
+    <string id="AF_ONBOARDING_API_SET_ERROR_HINT" text="通常是网络异常、证书或代理设置异常，或者某条 API 配置不正确。" />
+    <string id="AF_ONBOARDING_API_SET_EXCEPTION" text="API 组合测试异常：" />
+    <string id="AF_ONBOARDING_API_INCOMPLETE_SUFFIX" text="未配置完整，请检查 Base URL、API Key 和模型名称。" />
+    <string id="AF_ONBOARDING_API_INCOMPLETE_TITLE" text="API 配置不完整" />
+    <string id="AF_ONBOARDING_API_INCOMPLETE_BODY" text="API 配置未填写完整，无法开始组合测试。" />
+    <string id="AF_ONBOARDING_API_TARGET_EMPTY" text="API 组合测试失败：目标配置为空。" />
+    <string id="AF_ONBOARDING_RETURN_SETUP" text="请回到首次菜单重新选择配置方式。" />
+    <string id="AF_ONBOARDING_RESPONSE_NO_MODEL" text="接口返回了 HTTP 成功状态，但响应结构中没有可用的模型回复。" />
+    <string id="AF_ONBOARDING_REPLY_PARSE_FAILED" text="回复解析失败。" />
+    <string id="AF_ONBOARDING_CONNECTION_SUCCESS" text="连接测试成功。" />
+    <string id="AF_ONBOARDING_RESPONSE_INVALID" text="接口返回了 HTTP 成功状态，但响应不是可解析的聊天补全格式。" />
+    <string id="AF_ONBOARDING_REPLY_PARSE_EXCEPTION" text="回复解析失败：" />
+    <string id="AF_ONBOARDING_CONNECTION_ERROR_HINT_PREFIX" text="通常是网络异常、证书或代理设置异常，或者 " />
+    <string id="AF_ONBOARDING_CONNECTION_ERROR_HINT_SUFFIX" text=" 的 Base URL 填写不正确。" />
+    <string id="AF_ONBOARDING_CONNECTION_FAILED" text="连接测试失败：" />
+    <string id="AF_ONBOARDING_UNKNOWN_ERROR" text="未知错误" />
+    <string id="AF_ONBOARDING_CONNECTION_FAILED_NEWLINE" text="连接测试失败。\n" />
+    <string id="AF_ONBOARDING_CONNECTION_EXCEPTION" text="连接测试异常：" />
+    <string id="AF_ONBOARDING_EXISTING_TEST_PASSED" text="现有配置测试通过" />
+    <string id="AF_ONBOARDING_API_SET_PASSED" text="API 组合测试通过" />
+    <string id="AF_ONBOARDING_CONFIGURED_APIS" text="已配置API" />
+    <string id="AF_ONBOARDING_EVENTS_SKIPPED" text="周报与叛乱API未配置完整，已跳过该项测试。" />
+    <string id="AF_ONBOARDING_ADJUST_API_TITLE" text="调整 API 信息" />
+    <string id="AF_ONBOARDING_ENTER_API" text="填写 API 信息" />
+    <string id="AF_ONBOARDING_TEST_EXISTING" text="测试已有配置" />
+    <string id="AF_ONBOARDING_WEEKLY_EVENT_FAILED" text="周事件自动生成失败，请检查你的 Base URL、API Key、模型名或当前网络环境。" />
+    <string id="AF_ONBOARDING_AUXILIARY_UNAVAILABLE_EXISTING" text="前处理API（规则检索/规则路由）当前不可用。你可以直接测试 MCM 中的现有配置，也可以重新填写前处理API信息。前处理API为必填，不提供回退RAG选项。" />
+    <string id="AF_ONBOARDING_AUXILIARY_UNAVAILABLE" text="前处理API（规则检索/规则路由）当前不可用，请检查前处理API的 Base URL、API Key、模型名称，或当前网络环境。前处理API为必填，不提供回退RAG选项。" />
+    <string id="AF_ONBOARDING_AUXILIARY_ADJUST" text="调整前处理API信息" />
+    <string id="AF_ONBOARDING_AUXILIARY_ENTER" text="填写前处理API信息" />
+    <string id="AF_ONBOARDING_POSTPROCESS_UNAVAILABLE_EXISTING" text="后处理API当前不可用。你可以直接测试 MCM 中的现有配置，也可以重新填写后处理API信息。\n\n后处理任务对判定稳定性要求较高，建议优先选择带思考模式的模型，或直接使用更高级模型。" />
+    <string id="AF_ONBOARDING_POSTPROCESS_UNAVAILABLE" text="后处理API当前不可用。你可以重新填写后处理API信息，或继续回退使用主API处理后处理任务。\n\n后处理任务对判定稳定性要求较高，建议优先选择带思考模式的模型，或直接使用更高级模型。" />
+    <string id="AF_ONBOARDING_FALLBACK_PRIMARY" text="继续使用主API" />
+    <string id="AF_ONBOARDING_POSTPROCESS_ADJUST" text="调整后处理API信息" />
+    <string id="AF_ONBOARDING_POSTPROCESS_ENTER_SHORT" text="填写后处理API" />
+    <string id="AF_ONBOARDING_EVENTS_UNAVAILABLE_EXISTING" text="事件/叛乱API当前不可用。你可以直接测试 MCM 中的现有配置，也可以重新填写事件/叛乱API信息。\n\n这个接口用于周报生成与叛乱建国命名；叛乱命名失败后不会再使用本地国名兜底。" />
+    <string id="AF_ONBOARDING_EVENTS_UNAVAILABLE" text="事件/叛乱API当前不可用。请重新填写事件/叛乱API的 Base URL、API Key、模型名称，或检查当前网络环境。\n\n这个接口用于周报生成与叛乱建国命名；叛乱命名失败后不会再使用本地国名兜底。" />
+    <string id="AF_ONBOARDING_EVENTS_ADJUST" text="调整事件/叛乱API信息" />
+    <string id="AF_ONBOARDING_EVENTS_ENTER" text="填写事件/叛乱API" />
+    <string id="AF_ONBOARDING_WELCOME_TITLE" text="欢迎使用 AnimusForge" />
+    <string id="AF_ONBOARDING_WELCOME_BODY" text="开始游玩前，请先确认主API信息。主API用于NPC正文生成，如果未正确配置，AI 对话功能将无法使用。" />
+    <string id="AF_ONBOARDING_PRIMARY_ENTER" text="填写主API信息" />
+    <string id="AF_ONBOARDING_AUXILIARY_TITLE" text="配置前处理API（必填）" />
+    <string id="AF_ONBOARDING_AUXILIARY_BODY" text="前处理API专门用于规则检索/规则路由。启用后，规则话题会先走一次低成本筛选，再进入主API正文生成。前处理API为必填，不提供回退RAG选项。" />
+    <string id="AF_ONBOARDING_AUXILIARY_ENTER_SHORT" text="填写前处理API" />
+    <string id="AF_ONBOARDING_POSTPROCESS_TITLE" text="配置后处理API" />
+    <string id="AF_ONBOARDING_POSTPROCESS_BODY" text="后处理API专门用于动作标签/情绪标签判定。配置后可以把后处理链路和前处理、主API正文生成彻底拆开；如果你暂时不想配置，也可以继续回退使用主API处理后处理任务。\n\n后处理任务对判定稳定性要求较高，建议优先选择带思考模式的模型，或直接使用更高级模型。" />
+    <string id="AF_ONBOARDING_BASE_URL_TITLE" text="填写 Base URL" />
+    <string id="AF_ONBOARDING_ENTER_PREFIX" text="请输入 " />
+    <string id="AF_ONBOARDING_EXAMPLE_SUFFIX" text="。\n示例：" />
+    <string id="AF_ONBOARDING_EMPTY_SUFFIX" text=" 不能为空。" />
+    <string id="AF_ONBOARDING_OPEN_PREFIX" text="打开 " />
+    <string id="AF_ONBOARDING_INPUT_FAILED_SUFFIX" text=" 输入框失败：" />
+    <string id="AF_ONBOARDING_BASE_URL_PASSED" text="Base URL 检查通过，可以继续填写 API Key。" />
+    <string id="AF_ONBOARDING_BASE_URL_FAILED" text="Base URL 检查失败：" />
+    <string id="AF_ONBOARDING_BASE_URL_CANCELLED" text="Base URL 检查已取消。" />
+    <string id="AF_ONBOARDING_BASE_URL_EMPTY" text="Base URL 不能为空。" />
+    <string id="AF_ONBOARDING_BASE_URL_INVALID" text="Base URL 格式不正确，请填写完整的 http/https 地址。" />
+    <string id="AF_ONBOARDING_BASE_URL_CHECKING_TITLE" text="正在检查base URL" />
+    <string id="AF_ONBOARDING_BASE_URL_CHECKING_BODY" text="正在检查你填写的 Base URL 是否可用，请稍候……\n\n只有检查通过后，才可以进入下一步填写 API Key。" />
+    <string id="AF_ONBOARDING_EXIT_SAVE" text="退出当前存档" />
+    <string id="AF_ONBOARDING_BACK_PREVIOUS" text="返回上一界面" />
+    <string id="AF_ONBOARDING_BASE_URL_UNAVAILABLE" text="你填写的 Base URL 当前不可用，请重新检查后再试。" />
+    <string id="AF_ONBOARDING_BASE_URL_FAILED_LOWER" text="base URL 检查失败" />
+    <string id="AF_ONBOARDING_BASE_URL_NEXT_TITLE" text="下一步怎么做？" />
+    <string id="AF_ONBOARDING_BASE_URL_NEXT_BODY" text="Base URL 当前不可用。请选择重新填写，或退出当前存档。" />
+    <string id="AF_ONBOARDING_BASE_URL_REENTER" text="重新填写base URL" />
+    <string id="AF_ONBOARDING_API_KEY_TITLE" text="填写 API Key" />
+    <string id="AF_ONBOARDING_MCM_WRITTEN_SUFFIX" text=" 已写入 MCM。" />
+    <string id="AF_ONBOARDING_MODEL_FETCH_MCM_FAILED" text="无法读取 MCM 设置，暂时不能拉取模型列表。" />
+    <string id="AF_ONBOARDING_NEED_BASE_URL" text="请先填写 Base URL。" />
+    <string id="AF_ONBOARDING_NEED_API_KEY" text="请先填写 API Key。" />
+    <string id="AF_ONBOARDING_MODELS_FETCHED" text="已成功拉取可用模型列表，请选择模型名称。" />
+    <string id="AF_ONBOARDING_MODELS_UNRECOGNIZED" text="接口已返回响应，但没有识别出可用模型列表。你也可以手动输入模型名称。" />
+    <string id="AF_ONBOARDING_MODELS_FAILED" text="拉取模型列表失败：" />
+    <string id="AF_ONBOARDING_MODELS_CANCELLED" text="模型列表拉取已取消。" />
+    <string id="AF_ONBOARDING_MODELS_FETCHING_TITLE" text="正在拉取模型列表" />
+    <string id="AF_ONBOARDING_MODELS_FETCHING_BODY" text="正在根据你填写的 Base URL 和 API Key 拉取当前接口可用的模型，请稍候……\n\n拉取完成后将自动进入下一步。\n如果始终无法拉取模型列表，你也可以返回上一界面重新填写，或稍后手动输入模型名称。" />
+    <string id="AF_ONBOARDING_MODEL_INPUT_MCM_FAILED" text="无法读取 MCM 设置，暂时不能填写" />
+    <string id="AF_ONBOARDING_MODEL_MANUAL_TITLE" text="手动输入模型名称" />
+    <string id="AF_ONBOARDING_MODEL_REENTER_KEY" text="重新填写API key" />
+    <string id="AF_ONBOARDING_MODEL_REFRESH" text="重新拉取模型列表" />
+    <string id="AF_ONBOARDING_MODEL_SELECT_BODY" text="请选择一个可用模型名称。" />
+    <string id="AF_ONBOARDING_MODEL_NO_LIST" text="\n\n当前没有拉取到模型列表，你可以手动输入模型名称。" />
+    <string id="AF_ONBOARDING_MODEL_RECOMMEND_PREFIX" text="\n\n【本通道模型选择建议（仅供参考）】\n" />
+    <string id="AF_ONBOARDING_MODEL_RECOMMEND_SUFFIX" text="\n最终选择由你自行决定。" />
+    <string id="AF_ONBOARDING_MODEL_RECOVERY_HINT" text="\n\n如果你的base URL或API key填写错误，那你也可以将本菜单的滑条拉到最底部重新返回填写。" />
+    <string id="AF_ONBOARDING_MODEL_SELECT_TITLE" text="选择模型名称" />
+    <string id="AF_ONBOARDING_MODEL_TESTING_PREFIX" text=" 已写入 MCM，正在测试完整连接：" />
+    <string id="AF_ONBOARDING_MODEL_SELECT_FAILED" text="打开模型选择界面失败：" />
+    <string id="AF_ONBOARDING_MODEL_MANUAL_INPUT" text="手动填写模型名称" />
+    <string id="AF_ONBOARDING_START_TEST" text="开始测试" />
+    <string id="AF_ONBOARDING_MODEL_INPUT_FAILED" text="打开模型名称输入框失败：" />
+    <string id="AF_ONBOARDING_MCM_OF" text="MCM 中的" />
+    <string id="AF_ONBOARDING_CONNECTION_SUCCESS_PREFIX" text="连接测试成功：" />
+    <string id="AF_ONBOARDING_CONNECTION_HINT" text="通常是网络异常、证书或代理设置异常，或者 Base URL 填写不正确。" />
+    <string id="AF_ONBOARDING_TEST_CANCEL_HINT" text="你已手动取消本次测试，可以返回上一界面重新测试，或改填 API 信息。" />
+    <string id="AF_ONBOARDING_TEST_CANCELLED" text="测试已取消，已退回上一界面。" />
+    <string id="AF_ONBOARDING_MCM_READ_FAILED" text="无法读取 MCM 设置。" />
+    <string id="AF_ONBOARDING_MCM_MISSING_PREFIX" text="MCM 中尚未填写 " />
+    <string id="AF_ONBOARDING_MCM_MISSING_PREFIX_NO_SPACE" text="MCM 中尚未填写" />
+    <string id="AF_ONBOARDING_SET_TESTING_BODY" text="正在按当前 MCM 配置并发测试 API 组合，请稍候……\n\n测试完成后将自动进入下一步；任意必测 API 不通过都会返回首次菜单。" />
+    <string id="AF_ONBOARDING_SINGLE_TESTING_PREFIX" text="正在使用 MCM 中的" />
+    <string id="AF_ONBOARDING_SINGLE_TESTING_SUFFIX" text="信息进行连接测试，请稍候……\n\n测试完成后将自动进入下一步。\n如果你的 API 测试始终未成功，你也可以在此界面直接退出存档。" />
+    <string id="AF_ONBOARDING_TESTING_TITLE" text="正在测试现有配置" />
+    <string id="AF_ONBOARDING_COMPAT_CONTINUE" text="\n\n是否继续当前流程？" />
+    <string id="AF_ONBOARDING_TROUBLESHOOT" text="\n\n排查建议：" />
+    <string id="AF_ONBOARDING_ENTER_MODEL_PREFIX" text="请输入" />
+    <string id="AF_ONBOARDING_MODEL_EXAMPLE" text="。\n示例：gpt-4o-mini" />
+    <string id="AF_ONBOARDING_EXIT_FAILED" text="退出当前存档失败：" />
+    <string id="AF_ONBOARDING_SAVE_HANDLER_MISSING" text="未找到存档保存器，将直接退出当前存档。" />
+    <string id="AF_ONBOARDING_SAVE_IN_PROGRESS" text="检测到当前已有保存进行中，完成后将再保存一次并自动退出。" />
+    <string id="AF_ONBOARDING_SAVING_EXIT" text="正在保存当前存档，保存完成后将自动退出。" />
+    <string id="AF_ONBOARDING_SAVE_EXIT_FAILED" text="保存并退出失败：" />
+    <string id="AF_ONBOARDING_SAVE_EXIT_NO_HANDLER" text="保存并退出失败：未找到存档保存器。" />
+    <string id="AF_ONBOARDING_SAVE_CANCELLED" text="保存当前存档失败，已取消退出。" />
+    <string id="AF_ONBOARDING_IMPORT_BODY" text="此内容包括世界观、角色信息、各王国开局概括，以及国家性格和长期战略，可以极大提升游戏体验。\n\n但是一些世界观也会加大 CPU 的负担。" />
+    <string id="AF_ONBOARDING_IMPORT_TITLE" text="知识库数据导入" />
+    <string id="AF_ONBOARDING_IMPORT_ALL" text="一键导入" />
+    <string id="AF_ONBOARDING_SKIP" text="跳过" />
+    <string id="AF_ONBOARDING_SKIP_IMPORT_BODY" text="你确定不载入数据库吗？\n不载入数据库，NPC将对您当前世界的设定几乎完全不理解。" />
+    <string id="AF_ONBOARDING_SKIP_IMPORT_TITLE" text="跳过数据库导入" />
+    <string id="AF_ONBOARDING_IMPORT_DONE" text="首次导入完成。接下来请填写玩家称呼、外貌与背景；这些内容也可以直接跳过。" />
+    <string id="AF_ONBOARDING_IMPORT_SKIPPED" text="已跳过数据库导入。接下来请填写玩家称呼、外貌与背景；这些内容也可以直接跳过。" />
+    <string id="AF_ONBOARDING_PERSONA_FAILED" text="打开玩家角色介绍失败：" />
+    <string id="AF_ONBOARDING_SCENE_CONFLICT_BODY" text="是否允许玩家直接攻击触发场景冲突？\n\n开启后，玩家直接攻击城镇、领主会面等和平场景内的 NPC 可以触发本模组的场景冲突。\n\n关闭后，本模组不会再把直接攻击转成场景冲突，伤害结算完全交回原版；对话中的吵架/挑衅仍然可以触发冲突升级。\n\n这个选择会同步写入 MCM，之后可在“场景喊话”中随时修改。" />
+    <string id="AF_ONBOARDING_SCENE_CONFLICT_TITLE" text="AnimusForge - 场景冲突" />
+    <string id="AF_ONBOARDING_ENABLE" text="开启" />
+    <string id="AF_ONBOARDING_SCENE_CONFLICT_SHOW_FAILED" text="[WARN] 显示和平场景冲突设置失败：" />
+    <string id="AF_ONBOARDING_SCENE_CONFLICT_MCM_FAILED" text="无法读取 MCM 设置，暂时不能保存和平场景冲突选项。" />
+    <string id="AF_ONBOARDING_SCENE_CONFLICT_ENABLED" text="已允许玩家直接攻击触发场景冲突。" />
+    <string id="AF_ONBOARDING_SCENE_CONFLICT_DISABLED" text="已关闭直接攻击触发场景冲突；伤害结算回到原版逻辑。" />
+    <string id="AF_ONBOARDING_SCENE_CONFLICT_SAVE_FAILED" text="保存和平场景冲突选项失败：" />
+    <string id="AF_ONBOARDING_MCM_PERSIST_WARN" text="[WARN] 持久化 MCM 设置失败：" />
+    <string id="AF_ONBOARDING_API_VALIDATION_FAILED" text="MCM 中的 API 信息连接测试失败，暂时不能进入下一步。" />
+    <string id="AF_ONBOARDING_API_ENDPOINT_LABEL" text="\n接口：" />
+    <string id="AF_ONBOARDING_API_MODEL_LABEL" text="\n模型：" />
+    <string id="AF_ONBOARDING_API_STATUS_LABEL" text="\n状态码：" />
+    <string id="AF_ONBOARDING_API_HINT_URL_MODEL" text="\n排查建议：请检查 Base URL 尾缀和模型名称是否正确。" />
+    <string id="AF_ONBOARDING_API_HINT_KEY" text="\n排查建议：请检查 API Key 是否有效。" />
+    <string id="AF_ONBOARDING_API_HINT_UPSTREAM" text="\n排查建议：网关已收到请求，但上游源站不可达。" />
+    <string id="AF_ONBOARDING_HTTP_400" text="请求格式不符合接口要求，通常是 Base URL 尾缀不对，或当前接口并不兼容聊天补全请求格式。" />
+    <string id="AF_ONBOARDING_HTTP_401" text="API Key 无效、为空，或鉴权格式不正确。" />
+    <string id="AF_ONBOARDING_HTTP_402" text="账号额度不足、套餐受限，或当前渠道要求先充值后才能调用模型。" />
+    <string id="AF_ONBOARDING_HTTP_403" text="当前 Key 没有访问该模型或该接口的权限，也可能被平台风控拦截。" />
+    <string id="AF_ONBOARDING_HTTP_404" text="Base URL 尾缀错误、接口路径不对，或模型名称在当前服务商侧不存在。" />
+    <string id="AF_ONBOARDING_HTTP_408" text="服务端长时间未返回，通常是网络质量较差，或上游响应过慢。" />
+    <string id="AF_ONBOARDING_HTTP_429_QUOTA" text="账号额度可能已经用尽，或账户余额不足，导致请求被限流或拒绝。" />
+    <string id="AF_ONBOARDING_HTTP_429_RATE" text="请求过于频繁、并发超限，或账号触发了速率限制。稍等片刻后再试。" />
+    <string id="AF_ONBOARDING_HTTP_500" text="服务端内部处理失败，通常不是本地填写错误，建议稍后重试。" />
+    <string id="AF_ONBOARDING_HTTP_UPSTREAM" text="网关或上游服务暂时不可用，通常是服务商侧故障，或当前网络到上游链路异常。" />
+    <string id="AF_ONBOARDING_HTTP_UNKNOWN" text="请优先检查 Base URL、API Key、模型名称和当前网络环境是否正确。" />
+    <string id="AF_ONBOARDING_BASE_URL_ERROR" text="Base URL 检查失败。" />
+    <string id="AF_ONBOARDING_BASE_URL_ERROR_404" text=" 当前地址很可能不正确，常见原因是 Base URL 尾缀或接口路径填写错误。" />
+    <string id="AF_ONBOARDING_BASE_URL_ERROR_400" text=" 当前地址返回了无效请求，说明这个接口大概率不兼容当前的 OpenAI 风格地址。" />
+    <string id="AF_ONBOARDING_BASE_URL_ERROR_UPSTREAM" text=" 当前地址暂时不可用，可能是服务端异常，或网络到服务商链路异常。" />
+    <string id="AF_ONBOARDING_BASE_URL_ERROR_DEFAULT" text=" 请检查 Base URL 是否填写正确。" />
+    <string id="AF_ONBOARDING_MODEL_ERROR" text="拉取模型列表失败。" />
+    <string id="AF_ONBOARDING_MODEL_ERROR_KEY" text=" 当前 API Key 无效，或鉴权未通过。" />
+    <string id="AF_ONBOARDING_MODEL_ERROR_CREDITS" text=" 当前账号额度不足，或渠道限制了接口调用。" />
+    <string id="AF_ONBOARDING_MODEL_ERROR_ACCESS" text=" 当前 Key 没有访问模型列表接口的权限，或被服务商风控拦截。" />
+    <string id="AF_ONBOARDING_MODEL_ERROR_URL" text=" 当前 Base URL 很可能不正确，或该服务商不支持 /models 接口。" />
+    <string id="AF_ONBOARDING_MODEL_ERROR_RATE" text=" 当前请求过于频繁，或账户触发了速率限制。" />
+    <string id="AF_ONBOARDING_MODEL_ERROR_MANUAL" text=" 你可以手动输入模型名称继续。" />
+    <string id="AF_ONBOARDING_IMPORT_MANUAL_PATH" text="手动输入文件夹名/路径" />
+    <string id="AF_ONBOARDING_IMPORT_LATEST" text="使用最新玩家导出（自动）" />
+    <string id="AF_ONBOARDING_IMPORT_PICKER_TITLE" text="选择导入文件夹" />
+    <string id="AF_ONBOARDING_IMPORT_PICKER_BODY" text="请选择模组目录或玩家导出的世界书：" />
+    <string id="AF_ONBOARDING_IMPORT_BUTTON" text="导入" />
+    <string id="AF_ONBOARDING_IMPORT_MANUAL_HINT" text="名称优先查找模组目录，再查找玩家导出；留空=最新玩家导出。" />
+    <string id="AF_ONBOARDING_IMPORT_PICKER_FAILED" text="打开导入选择失败：" />
+    <string id="AF_ONBOARDING_IMPORT_KINGDOM_FAILED" text="导入失败：无法执行国家战略与性格导入。原因：" />
+    <string id="AF_ONBOARDING_IMPORT_FAILED" text="导入失败：" />
+    <string id="AF_ONBOARDING_UNKNOWN_VERSION" text="未知版本" />
+    <string id="AF_ONBOARDING_LATENCY_SUFFIX" text=" ms。" />
+    <string id="AF_COMMON_PERIOD" text="。" />
+          <string id="AF_ONBOARDING_INITIAL_GUIDE_TITLE" text="欢迎使用 AnimusForge" />
+    <string id="AF_ONBOARDING_INITIAL_GUIDE_BODY" text="若要配置 API 信息，你无需进入 MCM 页面；进入存档之后的首次引导会引导你填写 API 信息。" />
+    <string id="AF_COMMON_GOT_IT" text="知道了" />
+    <string id="AF_ONBOARDING_BUILTIN_BOOK_CALRADIA" text="卡拉迪亚编年史" />
+    <string id="AF_ONBOARDING_BUILTIN_BOOK_CALRADIALITE" text="低配版卡拉迪亚编年史（如果你的CPU（比如12400f性能较差，请选择这个。）" />
+    <string id="AF_ONBOARDING_BUILTIN_BOOK_WARHAMMER" text="战锤旧世界编年史" />
+    <string id="AF_ONBOARDING_BUILTIN_BOOK_GAMEOFTHRONES" text="权游国度编年史-大帝版" />
+</strings>
+</base>

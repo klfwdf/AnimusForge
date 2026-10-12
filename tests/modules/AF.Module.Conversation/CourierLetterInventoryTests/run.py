@@ -1,6 +1,7 @@
 """Check Courier letter inventory sanitization and retry ownership."""
 from pathlib import Path
 import importlib.util
+import re
 
 ROOT = Path(__file__).resolve().parents[4]
 SOURCE = ROOT / "src/modules/AF.Module.Conversation/Channels/Courier/CourierDeliveryBehavior.LetterInventory.cs"
@@ -52,11 +53,19 @@ ordered(retry,
         "_courierLetterInventoryRestoreRetryRemaining--;",
         "RestoreCourierLetterInventoryItems(reason);")
 
-detail = extract.declaration(source, "public static bool TryGetCourierLetterInventoryDetailForExternal(")
+require('public static bool TryGetCourierLetterInventoryDetailForExternal(string itemStringId, uint objectId, out string letterBody) =>' in source,
+        "original public three-argument API remains available")
+require('TryGetCourierLetterInventoryDetailForExternal(itemStringId, objectId, out letterBody, forUi: true);' in source,
+        "public inventory read resolves UI at display time")
+detail = extract.declaration(source, "private static bool TryGetCourierLetterInventoryDetailForExternal(")
 ordered(detail,
         "instance.EnsureCourierLetterInventoryData();",
         "instance._courierLetterInventoryRecords.TryGetValue(",
         "instance.NormalizeCourierLetterInventoryRecord(",
-        "letterBody = record.LetterBody;")
+        "letterBody = record.DiplomacyReplyBody == null ? record.LetterBody :",
+        "CourierVisibleLetterSanitizer.Clean(StripCourierActionTags(DiplomacyConversationBridge.ComposeReply(record.DiplomacyReplyBody, record.DiplomacyReplyReceipts, forUi: forUi)))")
+require('forUi: false)' in source, "fact-producing caller keeps raw package receipts")
+require(not re.search(r'record\.(?:LetterBody|DiplomacyReplyBody|DiplomacyReplyReceipts)\s*=(?!=)', detail),
+        "reading a letter must not persist its localized projection")
 
 print("PASS CourierLetterInventory sanitize=2 discardGuard=1 delayedRetryLegacy=1 detailLookup=1 live=NOT_RUN save=NOT_RUN")

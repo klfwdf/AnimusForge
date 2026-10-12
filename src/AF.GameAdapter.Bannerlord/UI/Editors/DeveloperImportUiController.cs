@@ -113,18 +113,18 @@ internal sealed class DeveloperImportUiController
 		}
 		catch (Exception ex)
 		{
-			InformationManager.DisplayMessage(new InformationMessage("PlayerExports 路径不可用：" + ex.Message));
+			InformationManager.DisplayMessage(new InformationMessage(DeveloperUiText.T("AF_UI_Developer_PlayerExports_path_is_unavailable","PlayerExports path is unavailable: ") + ex.Message));
 			if (isExport) { onReturn(); return; }
 		}
 		List<InquiryElement> list = new List<InquiryElement>();
-		list.Add(new InquiryElement("__input__", isExport ? "手动输入文件夹名…" : "手动输入文件夹名/路径…", null));
+		list.Add(new InquiryElement("__input__", isExport ? DeveloperUiText.T("AF_UI_Developer_Enter_a_folder_name_manually","Enter a folder name manually...") : DeveloperUiText.T("AF_UI_Developer_Enter_a_folder_name_or_path_manually","Enter a folder name or path manually..."), null));
 		if (!isExport && playerExportsRootPath != null)
 		{
-			list.Add(new InquiryElement("__latest__", "使用最新玩家导出（自动）", null));
+			list.Add(new InquiryElement("__latest__", DeveloperUiText.T("AF_UI_Developer_Use_the_latest_player_export_automatic","Use the latest player export (automatic)"), null));
 		}
 		AddFolderChoices(list, isExport, playerExportsRootPath);
-		string descriptionText = (isExport ? "选择目标文件夹（可覆盖已有）。" : "选择模组目录或玩家导出的资料；也可输入只读绝对路径。");
-		MultiSelectionInquiryData data = new MultiSelectionInquiryData(title, descriptionText, list, isExitShown: true, 0, 1, "选择", "返回", delegate(List<InquiryElement> selected)
+		string descriptionText = (isExport ? DeveloperUiText.T("AF_UI_Developer_Choose_a_target_folder_existing_contents_may_be_overwrit","Choose a target folder (existing contents may be overwritten).") : DeveloperUiText.T("AF_UI_Developer_Choose_a_mod_folder_or_player_export_a_read_only_absolut","Choose a mod folder or player export; a read-only absolute path is also accepted."));
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData(title, descriptionText, list, isExitShown: true, 0, 1, DeveloperUiText.T("AF_UI_Developer_Choose","Choose"), DeveloperUiText.T("AF_UI_Developer_Back","Back"), delegate(List<InquiryElement> selected)
 		{
     if (!_port.IsCurrent(generation)) return;
 			if (selected == null || selected.Count == 0)
@@ -136,7 +136,7 @@ internal sealed class DeveloperImportUiController
 				string text = selected[0].Identifier as string;
 				if (text == "__input__")
 				{
-					InformationManager.ShowTextInquiry(new TextInquiryData(isExport ? "输入导出文件夹名" : "输入导入文件夹名/路径", isExport ? "留空=自动时间戳；输入已存在名称=覆盖导出。" : "留空=自动选择最新玩家导出；也可输入完整路径（文件夹或 .json 文件）。", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "确定", "取消", delegate(string input)
+					InformationManager.ShowTextInquiry(new TextInquiryData(isExport ? DeveloperUiText.T("AF_UI_Developer_Enter_export_folder_name","Enter export folder name") : DeveloperUiText.T("AF_UI_Developer_Enter_import_folder_name_path","Enter import folder name/path"), isExport ? DeveloperUiText.T("AF_UI_Developer_Leave_blank_for_an_automatic_timestamp_an_existing_name_","Leave blank for an automatic timestamp; an existing name overwrites that export.") : DeveloperUiText.T("AF_UI_Developer_Leave_blank_to_choose_the_latest_player_export_a_full_fo","Leave blank to choose the latest player export; a full folder or .json path is also accepted."), isAffirmativeOptionShown: true, isNegativeOptionShown: true, DeveloperUiText.T("AF_UI_Developer_Confirm","Confirm"), DeveloperUiText.T("AF_UI_Developer_Cancel","Cancel"), delegate(string input)
 					{
     if (!_port.IsCurrent(generation)) return;
 						onSelectedFolder(input);
@@ -172,7 +172,7 @@ internal sealed class DeveloperImportUiController
 		if (!isExport)
 		{
 			foreach (var folder in PlayerExportsStore.GetImportFolders())
-				elements.Add(new InquiryElement(folder.FullPath, folder.Name + "  [" + folder.SourceLabel + "]  (" + folder.LastWriteTime.ToString("yyyy-MM-dd HH:mm") + ")", null));
+				elements.Add(new InquiryElement(folder.FullPath, folder.Name + "  [" + (folder.SourceLabel == "Module directory" ? new TaleWorlds.Localization.TextObject("{=AF_UI_ImportSource_ModuleDirectory}Module directory").ToString() : folder.SourceLabel == "Player exports" ? new TaleWorlds.Localization.TextObject("{=AF_UI_ImportSource_PlayerExports}Player exports").ToString() : folder.SourceLabel) + "]  (" + folder.LastWriteTime.ToString("yyyy-MM-dd HH:mm") + ")", null));
 			return;
 		}
 		try
@@ -218,11 +218,11 @@ internal sealed class DeveloperImportUiController
 			}
 			List<InquiryElement> inquiryElements = new List<InquiryElement>
 			{
-				new InquiryElement("__overwrite__", "覆盖导入", null),
-				new InquiryElement("__skip__", "只导入非重复信息", null),
-				new InquiryElement("__cancel__", "取消", null)
+				new InquiryElement("__overwrite__", DeveloperUiText.T("AF_UI_Developer_Overwrite_import","Overwrite import"), null),
+				new InquiryElement("__skip__", DeveloperUiText.T("AF_UI_Developer_Import_non_duplicate_data_only","Import non-duplicate data only"), null),
+				new InquiryElement("__cancel__", DeveloperUiText.T("AF_UI_Developer_Cancel","Cancel"), null)
 			};
-			MultiSelectionInquiryData data = new MultiSelectionInquiryData(title, text, inquiryElements, isExitShown: true, 0, 1, "选择", "取消", delegate(List<InquiryElement> selected)
+			MultiSelectionInquiryData data = new MultiSelectionInquiryData(title, text, inquiryElements, isExitShown: true, 0, 1, DeveloperUiText.T("AF_UI_Developer_Choose","Choose"), DeveloperUiText.T("AF_UI_Developer_Cancel","Cancel"), delegate(List<InquiryElement> selected)
 			{
     if (!_port.IsCurrent(generation)) return;
 				string text2 = ((selected != null && selected.Count > 0) ? (selected[0].Identifier as string) : "");
@@ -305,11 +305,11 @@ internal sealed class DeveloperImportUiController
 			}
 			List<InquiryElement> inquiryElements = new List<InquiryElement>
 			{
-				new InquiryElement("__overwrite__", "覆盖导出", null),
-				new InquiryElement("__new__", "改用新文件夹（自动）", null),
-				new InquiryElement("__cancel__", "取消", null)
+				new InquiryElement("__overwrite__", DeveloperUiText.T("AF_UI_Developer_Overwrite_export","Overwrite export"), null),
+				new InquiryElement("__new__", DeveloperUiText.T("AF_UI_Developer_Use_a_new_folder_automatic","Use a new folder (automatic)"), null),
+				new InquiryElement("__cancel__", DeveloperUiText.T("AF_UI_Developer_Cancel","Cancel"), null)
 			};
-			MultiSelectionInquiryData data = new MultiSelectionInquiryData(title, text, inquiryElements, isExitShown: true, 0, 1, "选择", "取消", delegate(List<InquiryElement> selected)
+			MultiSelectionInquiryData data = new MultiSelectionInquiryData(title, text, inquiryElements, isExitShown: true, 0, 1, DeveloperUiText.T("AF_UI_Developer_Choose","Choose"), DeveloperUiText.T("AF_UI_Developer_Cancel","Cancel"), delegate(List<InquiryElement> selected)
 			{
     if (!_port.IsCurrent(generation)) return;
 				string text2 = ((selected != null && selected.Count > 0) ? (selected[0].Identifier as string) : "");
@@ -355,18 +355,18 @@ internal sealed class DeveloperImportUiController
 		}
 		catch (Exception ex)
 		{
-			InformationManager.DisplayMessage(new InformationMessage("PlayerExports 路径不可用：" + ex.Message));
+			InformationManager.DisplayMessage(new InformationMessage(DeveloperUiText.T("AF_UI_Developer_PlayerExports_path_is_unavailable","PlayerExports path is unavailable: ") + ex.Message));
 			if (isExport) { onReturn(); return; }
 		}
 		List<InquiryElement> list = new List<InquiryElement>();
-		list.Add(new InquiryElement("__input__", isExport ? "手动输入文件夹名…" : "手动输入文件夹名/路径…", null));
+		list.Add(new InquiryElement("__input__", isExport ? DeveloperUiText.T("AF_UI_Developer_Enter_a_folder_name_manually","Enter a folder name manually...") : DeveloperUiText.T("AF_UI_Developer_Enter_a_folder_name_or_path_manually","Enter a folder name or path manually..."), null));
 		if (!isExport && playerExportsRootPath != null)
 		{
-			list.Add(new InquiryElement("__latest__", "使用最新玩家导出（自动）", null));
+			list.Add(new InquiryElement("__latest__", DeveloperUiText.T("AF_UI_Developer_Use_the_latest_player_export_automatic","Use the latest player export (automatic)"), null));
 		}
 		AddFolderChoices(list, isExport, playerExportsRootPath);
-		string descriptionText = (isExport ? "选择要导出的目标文件夹（可覆盖已有）。" : "选择模组目录或玩家导出的资料；也可输入只读绝对路径。");
-		MultiSelectionInquiryData data = new MultiSelectionInquiryData(title, descriptionText, list, isExitShown: true, 0, 1, "选择", "返回", delegate(List<InquiryElement> selected)
+		string descriptionText = (isExport ? DeveloperUiText.T("AF_UI_Developer_Choose_the_export_target_folder_existing_contents_may_be","Choose the export target folder (existing contents may be overwritten).") : DeveloperUiText.T("AF_UI_Developer_Choose_a_mod_folder_or_player_export_a_read_only_absolut","Choose a mod folder or player export; a read-only absolute path is also accepted."));
+		MultiSelectionInquiryData data = new MultiSelectionInquiryData(title, descriptionText, list, isExitShown: true, 0, 1, DeveloperUiText.T("AF_UI_Developer_Choose","Choose"), DeveloperUiText.T("AF_UI_Developer_Back","Back"), delegate(List<InquiryElement> selected)
 		{
     if (!_port.IsCurrent(generation)) return;
 			if (selected == null || selected.Count == 0)
@@ -378,7 +378,7 @@ internal sealed class DeveloperImportUiController
 				string text = selected[0].Identifier as string;
 				if (text == "__input__")
 				{
-					InformationManager.ShowTextInquiry(new TextInquiryData(isExport ? "输入导出文件夹名" : "输入导入文件夹名/路径", isExport ? "留空=自动时间戳；输入已存在名称=覆盖导出。" : "留空=最新玩家导出；名称优先查找模组目录，也可输入完整路径。", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "确定", "取消", delegate(string input)
+					InformationManager.ShowTextInquiry(new TextInquiryData(isExport ? DeveloperUiText.T("AF_UI_Developer_Enter_export_folder_name","Enter export folder name") : DeveloperUiText.T("AF_UI_Developer_Enter_import_folder_name_path","Enter import folder name/path"), isExport ? DeveloperUiText.T("AF_UI_Developer_Leave_blank_for_an_automatic_timestamp_an_existing_name_","Leave blank for an automatic timestamp; an existing name overwrites that export.") : DeveloperUiText.T("AF_UI_Developer_Leave_blank_for_the_latest_player_export_names_search_th","Leave blank for the latest player export; names search the mod folder first, or enter a full path."), isAffirmativeOptionShown: true, isNegativeOptionShown: true, DeveloperUiText.T("AF_UI_Developer_Confirm","Confirm"), DeveloperUiText.T("AF_UI_Developer_Cancel","Cancel"), delegate(string input)
 					{
     if (!_port.IsCurrent(generation)) return;
 						if (string.IsNullOrEmpty(heroId))
@@ -483,14 +483,14 @@ internal sealed class DeveloperImportUiController
 				try { playerExportsRootPath = PlayerExportsStore.GetPlayerExportsRootPath(); }
 				catch (Exception ex)
 				{
-					InformationManager.DisplayMessage(new InformationMessage("PlayerExports 路径不可用：" + ex.Message));
+					InformationManager.DisplayMessage(new InformationMessage(DeveloperUiText.T("AF_UI_Developer_PlayerExports_path_is_unavailable","PlayerExports path is unavailable: ") + ex.Message));
 					return;
 				}
 				string path = PlayerExportsStore.ResolveExportFolderName(folderName);
 				string text = Path.Combine(playerExportsRootPath, path);
 				if (IsDirectoryNonEmpty(text))
 				{
-					ShowOverwriteExportInquiry("导出文件夹已存在", "目标文件夹已存在且包含内容：\n" + text + "\n是否覆盖导出？", delegate
+					ShowOverwriteExportInquiry(DeveloperUiText.T("AF_UI_Developer_Export_folder_already_exists","Export folder already exists"), DeveloperUiText.F("AF_UI_Developer_Export_folder_exists_body","The target folder already exists and contains:\n{PATH}\nOverwrite this export?", "PATH", text), delegate
 					{
     if (!_port.IsCurrent(generation)) return;
 						run();
@@ -553,7 +553,7 @@ internal sealed class DeveloperImportUiController
 		string id = (heroId ?? "").Trim();
 		if (string.IsNullOrEmpty(id))
 		{
-			InformationManager.DisplayMessage(new InformationMessage("该NPC缺少编号，无法导入导出。"));
+			InformationManager.DisplayMessage(new InformationMessage(DeveloperUiText.T("AF_UI_Developer_This_NPC_has_no_ID_and_cannot_be_imported_or_exported","This NPC has no ID and cannot be imported or exported.")));
 		}
 		else if (isExport)
 		{
@@ -580,14 +580,14 @@ internal sealed class DeveloperImportUiController
 				try { playerExportsRootPath = PlayerExportsStore.GetPlayerExportsRootPath(); }
 				catch (Exception ex)
 				{
-					InformationManager.DisplayMessage(new InformationMessage("PlayerExports 路径不可用：" + ex.Message));
+					InformationManager.DisplayMessage(new InformationMessage(DeveloperUiText.T("AF_UI_Developer_PlayerExports_path_is_unavailable","PlayerExports path is unavailable: ") + ex.Message));
 					return;
 				}
 				string path = PlayerExportsStore.ResolveExportFolderName(folderName);
 				string text = Path.Combine(playerExportsRootPath, path);
 				if (IsDirectoryNonEmpty(text))
 				{
-					ShowOverwriteExportInquiry("导出文件夹已存在", "目标文件夹已存在且包含内容：\n" + text + "\n是否覆盖导出？", delegate
+					ShowOverwriteExportInquiry(DeveloperUiText.T("AF_UI_Developer_Export_folder_already_exists","Export folder already exists"), DeveloperUiText.F("AF_UI_Developer_Export_folder_exists_body","The target folder already exists and contains:\n{PATH}\nOverwrite this export?", "PATH", text), delegate
 					{
     if (!_port.IsCurrent(generation)) return;
 						run();
@@ -631,18 +631,18 @@ internal sealed class DeveloperImportUiController
 		{
 			List<InquiryElement> list = new List<InquiryElement>
 			{
-				new InquiryElement("__input__", "手动输入资料包文件夹/路径…", null)
+				new InquiryElement("__input__", DeveloperUiText.T("AF_UI_Developer_Enter_a_package_folder_path_manually","Enter a package folder/path manually..."), null)
 			};
 			string playerExportsRootPath = null;
 			try { playerExportsRootPath = PlayerExportsStore.GetPlayerExportsRootPath(); }
 			catch (Exception)
 			{
-				InformationManager.DisplayMessage(new InformationMessage("PlayerExports 路径不可用；仍可用只读绝对路径导入。"));
+				InformationManager.DisplayMessage(new InformationMessage(DeveloperUiText.T("AF_UI_Developer_PlayerExports_path_is_unavailable_a_read_only_absolute_p","PlayerExports path is unavailable; a read-only absolute path can still be imported.")));
 			}
 			if (playerExportsRootPath != null)
-				list.Add(new InquiryElement("__latest__", "使用最新玩家导出（自动）", null));
+				list.Add(new InquiryElement("__latest__", DeveloperUiText.T("AF_UI_Developer_Use_the_latest_player_export_automatic","Use the latest player export (automatic)"), null));
 			AddFolderChoices(list, false, playerExportsRootPath);
-			MultiSelectionInquiryData data = new MultiSelectionInquiryData("重载数据库 - 选择资料包", "选择来源资料包；系统会在确认前校验知识、王国性格/战略和声音数据。", list, isExitShown: true, 1, 1, "选择", "返回", delegate(List<InquiryElement> selected)
+			MultiSelectionInquiryData data = new MultiSelectionInquiryData(DeveloperUiText.T("AF_UI_Developer_Reload_database_choose_a_package","Reload database - choose a package"), DeveloperUiText.T("AF_UI_Developer_Choose_a_source_package_Knowledge_kingdom_strategy_perso","Choose a source package. Knowledge, kingdom strategy/personality, and voice data are validated before confirmation."), list, isExitShown: true, 1, 1, DeveloperUiText.T("AF_UI_Developer_Choose","Choose"), DeveloperUiText.T("AF_UI_Developer_Back","Back"), delegate(List<InquiryElement> selected)
 			{
     if (!_port.IsCurrent(generation)) return;
 				if (selected == null || selected.Count == 0)
@@ -653,7 +653,7 @@ internal sealed class DeveloperImportUiController
 				string text = selected[0].Identifier as string;
 				if (string.Equals(text, "__input__", StringComparison.Ordinal))
 				{
-					InformationManager.ShowTextInquiry(new TextInquiryData("输入资料包文件夹/路径", playerExportsRootPath == null ? "请输入只读的完整资料包文件夹路径。" : "留空=最新玩家导出；名称优先查找模组目录，也可输入完整资料包路径。", isAffirmativeOptionShown: true, isNegativeOptionShown: true, "继续", "返回", delegate(string input)
+					InformationManager.ShowTextInquiry(new TextInquiryData(DeveloperUiText.T("AF_UI_Developer_Enter_package_folder_path","Enter package folder/path"), playerExportsRootPath == null ? DeveloperUiText.T("AF_UI_Developer_Enter_the_complete_read_only_package_folder_path","Enter the complete read-only package folder path.") : DeveloperUiText.T("AF_UI_Developer_Leave_blank_for_the_latest_player_export_names_search_th","Leave blank for the latest player export; names search the mod folder first, or enter a full package path."), isAffirmativeOptionShown: true, isNegativeOptionShown: true, DeveloperUiText.T("AF_UI_Developer_Continue","Continue"), DeveloperUiText.T("AF_UI_Developer_Back","Back"), delegate(string input)
 					{
     if (!_port.IsCurrent(generation)) return;
 						BeginDatabaseReloadPreflight(input, action);
@@ -675,7 +675,7 @@ internal sealed class DeveloperImportUiController
 		catch (Exception)
 		{
 			Logger.Log("DatabaseReload", "[WARN] Failed to open source picker.");
-			InformationManager.DisplayMessage(new InformationMessage("无法打开资料包选择器；请检查 PlayerExports 路径。"));
+			InformationManager.DisplayMessage(new InformationMessage(DeveloperUiText.T("AF_UI_Developer_Unable_to_open_the_package_picker_check_the_PlayerExport","Unable to open the package picker; check the PlayerExports path.")));
 			action();
 		}
 	}
@@ -691,7 +691,7 @@ internal sealed class DeveloperImportUiController
 		};
 		if (!_port.TryBuildDatabaseReloadPlan(folderName, out var plan, out var error))
 		{
-			InformationManager.ShowInquiry(new InquiryData("数据库资料包校验失败", "本次重载尚未修改存档。\n\n" + error, isAffirmativeOptionShown: true, isNegativeOptionShown: false, "重新选择", "", delegate
+			InformationManager.ShowInquiry(new InquiryData(DeveloperUiText.T("AF_UI_Developer_Database_package_validation_failed","Database package validation failed"), DeveloperUiText.F("AF_UI_Developer_Database_package_validation_body","This reload has not modified the save.\n\n{ERROR}", "ERROR", error), isAffirmativeOptionShown: true, isNegativeOptionShown: false, DeveloperUiText.T("AF_UI_Developer_Choose_again","Choose again"), "", delegate
 			{
     if (!_port.IsCurrent(generation)) return;
 				OpenDatabaseReloadFolderPicker(action);
@@ -699,49 +699,49 @@ internal sealed class DeveloperImportUiController
 			return;
 		}
 		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.AppendLine("来源资料包：");
+		stringBuilder.AppendLine(DeveloperUiText.T("AF_UI_Developer_Source_package","Source package:"));
 		stringBuilder.AppendLine(plan.ImportDirectory);
 		stringBuilder.AppendLine();
-		stringBuilder.AppendLine("将删除并重载：");
-		stringBuilder.AppendLine("• 非主角知识 " + plan.KnowledgeRules.Count + " 条");
+		stringBuilder.AppendLine(DeveloperUiText.T("AF_UI_Developer_Will_delete_and_reload","Will delete and reload:"));
+		stringBuilder.AppendLine(DeveloperUiText.F("AF_UI_Developer_Reload_NonPlayerKnowledge","• Non-player Knowledge: {COUNT} entries", "COUNT", plan.KnowledgeRules.Count.ToString()));
 		if (plan.KnowledgeRuleIdDisambiguationCount > 0)
 		{
-			stringBuilder.AppendLine("• 资料包内 " + plan.KnowledgeRuleIdDisambiguationCount + " 个同 ID 知识条目将按文件名生成稳定 ID（不修改资料包文件）");
+			stringBuilder.AppendLine(DeveloperUiText.F("AF_UI_Developer_Reload_DuplicateKnowledgeIds","• {COUNT} package entries with duplicate IDs will receive stable file-name-based IDs (package files are not modified)", "COUNT", plan.KnowledgeRuleIdDisambiguationCount.ToString()));
 		}
 		if (plan.KnowledgeKeywordDeduplicationCount > 0)
 		{
-			stringBuilder.AppendLine("• 其中 " + plan.KnowledgeKeywordDeduplicationCount + " 个重复触发词只保留在原条目，避免拆分后的知识争抢同一关键词");
+			stringBuilder.AppendLine(DeveloperUiText.F("AF_UI_Developer_Reload_DuplicateKeywords","• {COUNT} duplicate trigger words stay on the original entry so split Knowledge entries do not compete for the same keyword", "COUNT", plan.KnowledgeKeywordDeduplicationCount.ToString()));
 		}
-		stringBuilder.AppendLine("• 世界开局知识 1 份，以及王国开局知识 " + plan.OpeningKnowledge.KingdomSummaries.Count + " 条");
-		stringBuilder.AppendLine("• 上述开局知识的第 0 日派生记录（游戏日达到 7 天后，可能按现有 API 设置请求 LLM 生成短摘要）");
-		stringBuilder.AppendLine("• 王国性格与长期战略 " + (plan.KingdomProfilePlan?.SourceProfilesByTargetId?.Count ?? 0) + " 个王国");
-		stringBuilder.AppendLine("• 声音映射 1 份，以及 NPC 声音 ID " + plan.NpcVoiceIds.Count + " 条");
+		stringBuilder.AppendLine(DeveloperUiText.F("AF_UI_Developer_Reload_OpeningKnowledge","• One world-opening Knowledge entry and {COUNT} kingdom-opening entries", "COUNT", plan.OpeningKnowledge.KingdomSummaries.Count.ToString()));
+		stringBuilder.AppendLine(DeveloperUiText.T("AF_UI_Developer_Reload_DayZero","• Day-zero derived records for the opening Knowledge (after day 7, the current API settings may request short summaries from the LLM)"));
+		stringBuilder.AppendLine(DeveloperUiText.F("AF_UI_Developer_Reload_KingdomProfiles","• Kingdom personality and long-term strategy for {COUNT} kingdoms", "COUNT", (plan.KingdomProfilePlan?.SourceProfilesByTargetId?.Count ?? 0).ToString()));
+		stringBuilder.AppendLine(DeveloperUiText.F("AF_UI_Developer_Reload_VoiceMapping","• One voice mapping and {COUNT} NPC voice IDs", "COUNT", plan.NpcVoiceIds.Count.ToString()));
 		if (plan.CurrentKingdomProfilesResetToDefaultCount > 0)
 		{
-			stringBuilder.AppendLine("• 未出现在资料包的当前王国 " + plan.CurrentKingdomProfilesResetToDefaultCount + " 个，将恢复为其当前默认资料（不会因此自动请求王国 LLM）");
+			stringBuilder.AppendLine(DeveloperUiText.F("AF_UI_Developer_Reload_DefaultKingdoms","• {COUNT} current kingdoms absent from the package will be restored to their current defaults (this does not automatically request a kingdom LLM)", "COUNT", plan.CurrentKingdomProfilesResetToDefaultCount.ToString()));
 		}
 		stringBuilder.AppendLine();
-		stringBuilder.AppendLine("会保留且不会从资料包导入：");
-		stringBuilder.AppendLine("• 主角外貌、背景、主角专用知识和直接声音 ID");
-		stringBuilder.AppendLine("• NPC 个性、背景、记忆和外貌");
-		stringBuilder.AppendLine("• 动态事件记录、API 配置、LLM 提示词及其他设置");
+		stringBuilder.AppendLine(DeveloperUiText.T("AF_UI_Developer_Kept_and_not_imported_from_the_package","Kept and not imported from the package:"));
+		stringBuilder.AppendLine(DeveloperUiText.T("AF_UI_Developer_Reload_KeepPlayer","• Player appearance, background, player-only Knowledge, and direct voice ID"));
+		stringBuilder.AppendLine(DeveloperUiText.T("AF_UI_Developer_Reload_KeepNpc","• NPC personality, background, memory, and appearance"));
+		stringBuilder.AppendLine(DeveloperUiText.T("AF_UI_Developer_Reload_KeepSettings","• Dynamic event records, API configuration, LLM Prompts, and other settings"));
 		stringBuilder.AppendLine();
-		stringBuilder.Append("此操作会覆盖当前存档中的上述数据库数据，是否继续？");
+		stringBuilder.Append(DeveloperUiText.T("AF_UI_Developer_This_overwrites_the_database_data_listed_above_in_the_cu","This overwrites the database data listed above in the current save. Continue?"));
 		Action apply = delegate
 		{
     if (!_port.IsCurrent(generation)) return;
 			if (_port.ApplyDatabaseReloadPlan(plan, out var detail))
 			{
-				InformationManager.DisplayMessage(new InformationMessage("数据库重载完成：" + detail));
+				InformationManager.DisplayMessage(new InformationMessage(DeveloperUiText.T("AF_UI_Developer_Database_reload_completed","Database reload completed:") + detail));
 			}
 			else
 			{
-				InformationManager.DisplayMessage(new InformationMessage("数据库重载失败：" + detail));
+				InformationManager.DisplayMessage(new InformationMessage(DeveloperUiText.T("AF_UI_Developer_Database_reload_failed","Database reload failed:") + detail));
 			}
 			action();
 		};
   Action[] choices = _confirmation.BeginConfirmation(apply, null, action);
-  InformationManager.ShowInquiry(new InquiryData("确认重载数据库", stringBuilder.ToString().TrimEnd(), isAffirmativeOptionShown: true, isNegativeOptionShown: true, "确认重载", "取消", choices[0], choices[2]), pauseGameActiveState: true, prioritize: false);
+  InformationManager.ShowInquiry(new InquiryData(DeveloperUiText.T("AF_UI_Developer_Confirm_database_reload","Confirm database reload"), stringBuilder.ToString().TrimEnd(), isAffirmativeOptionShown: true, isNegativeOptionShown: true, DeveloperUiText.T("AF_UI_Developer_Confirm_reload","Confirm reload"), DeveloperUiText.T("AF_UI_Developer_Cancel","Cancel"), choices[0], choices[2]), pauseGameActiveState: true, prioritize: false);
 	}
 
 

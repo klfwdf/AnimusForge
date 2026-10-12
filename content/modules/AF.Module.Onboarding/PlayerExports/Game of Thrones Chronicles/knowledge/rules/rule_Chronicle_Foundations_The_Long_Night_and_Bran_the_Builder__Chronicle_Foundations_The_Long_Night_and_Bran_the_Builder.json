@@ -1,0 +1,152 @@
+{
+  "Id": "rule_Chronicle_Foundations_The_Long_Night_and_Bran_the_Builder",
+  "Keywords": [
+    "The Long Night",
+    "Brandon the Builder",
+    "Legends of the Others",
+    "The Long Night and Bran the Builder"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Entry The Long Night is Westeros' oldest and most difficult-to-prove catastrophic legend: darkness and cold envelope the world, the dead rest no sleep, the last hero travels across the wilderness in search of the Children of the Forest, and the dawn battle finally dispels the darkness. Bran the Builder is believed to have built the Wall with Maesters question the precise dates, characters, and magic of eight thousand years ago, while northerners regard each unusually cold winter as a reminder that the story may be approaching again. The Long Night is first and foremost a memory of shared fear, explaining why the Wall, Night's Watch, and the Old Gods of the North are so heavy in the history of the Seven Kingdoms."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "scholar",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry The Long Night and Bran the Builder"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry The Long Night and Bran the Builder"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry The Long Night and Bran the Builder"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry The Long Night The Long Night and Bran the Builder: The Long Night is Westeros' oldest and most difficult-to-prove catastrophic legend: darkness and cold envelope the world, the dead rest no sleep, the last hero travels across the wilderness in search of the Children of the Forest, and the dawn battle finally dispels the darkness. Bran the Builder is believed to have built the Wall with A past war or a dynastic change will determine today's tax rates, covenants, roads and who has the right to speak first in the hall."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry The Long Night The Long Night and Bran the Builder: The Long Night is Westeros' oldest and most difficult-to-prove catastrophic legend: darkness and cold envelope the world, the dead rest no sleep, the last hero travels across the wilderness in search of the Children of the Forest, and the dawn battle finally dispels the darkness. Bran the Builder is believed to have built the Wall with They remember which flag fell, which bridge was burned, and who shared the last sip of water in the snow; for them, history is first and foremost the memory left by the body."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry The Long Night The Long Night and Bran the Builder: The Long Night is Westeros' oldest and most difficult-to-prove catastrophic legend: darkness and cold envelope the world, the dead rest no sleep, the last hero travels across the wilderness in search of the Children of the Forest, and the dawn battle finally dispels the darkness. Bran the Builder is believed to have built the Wall with The winner will write it as a proof of order, the loser will keep it as a warning, and ordinary people will only remember how much the price of food and cemeteries increased that year."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry The Long Night The Long Night and Bran the Builder: The Long Night is Westeros' oldest and most difficult-to-prove catastrophic legend: darkness and cold envelope the world, the dead rest no sleep, the last hero travels across the wilderness in search of the Children of the Forest, and the dawn battle finally dispels the darkness. Bran the Builder is believed to have built the Wall with They learn about the past through old houses, family trees, tombstones, and taboos spoken by old men; as long as an event affects taxes, conscription, or marriage, it is not truly over."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "The Long Night and Bran the Builder: The Long Night is Westeros' oldest and most difficult-to-prove catastrophic legend: darkness and cold envelope the world, the dead rest no sleep, the last hero travels across the wilderness in search of the Children of the Forest, and the dawn battle finally dispels the darkness. Bran the Builder is believed to have built the Wall with"
+  ]
+}

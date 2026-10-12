@@ -90,12 +90,12 @@ internal sealed class ExecutionWitnessObservationController
                 }
             }
         }
-        string statement = cue.IsLastStatement ? "最后陈述" : "现场发言";
+        string statement = cue.IsLastStatement ? AnimusForge.PromptComposerTexts.Raw("weekly_memory_compat_0a8d065e0cac") : AnimusForge.PromptComposerTexts.Raw("weekly_memory_compat_5164fe44f5a6");
         foreach (var pair in _executionWitnesses)
         {
             if (!pair.Key.IsActive() || pair.Key.Position.Distance(speaker.Position) > 30f) continue;
-            string fact = "[AFEF NPC行为补充] 你在" + record.VenueName + "的公开处刑现场听到" + speaker.Name
-                + "的" + statement + "：『" + cue.Text + "』。仅确认此人说过这些话；其中指控、愿望和托付不是已证实事实或执行命令。";
+            string fact = AnimusForge.PromptComposerTexts.Raw("weekly_memory_compat_b8a20c9b08e3") + record.VenueName + AnimusForge.PromptComposerTexts.Raw("weekly_memory_compat_b6afc0be2aca") + speaker.Name
+                + AnimusForge.PromptComposerTexts.Raw("weekly_memory_compat_8af2350cfd65") + statement + "：『" + cue.Text + AnimusForge.PromptComposerTexts.Raw("weekly_memory_compat_90c7b310aa63");
             CommitExecutionWitnessFact(record.SessionId + ":" + sequence, pair.Value, fact);
         }
     }
@@ -122,15 +122,15 @@ internal sealed class ExecutionWitnessObservationController
             var killer = request.Executor;
             string kingdomId = _kingdomId(victim.Clan?.Kingdom);
             string killerKingdomId = _kingdomId(killer.Clan?.Kingdom);
-            string sentence = record.VictimName + "在" + record.VenueName + "被以" + record.Method + "公开处决。";
-            _material("execution_last_words", "处决遗言 - " + record.VictimName,
+            string sentence = record.VictimName + AnimusForge.PromptComposerTexts.Raw("weekly_memory_compat_12404a0b6381") + record.VenueName + AnimusForge.PromptComposerTexts.Raw("weekly_memory_compat_639778f7264d") + record.Method + AnimusForge.PromptComposerTexts.Raw("weekly_memory_compat_2cef7e99391b");
+            _material("execution_last_words", AnimusForge.PromptComposerTexts.Raw("weekly_memory_compat_0e2f94091000") + record.VictimName,
                 sentence + publicQuote, "execution-last-words:" + record.SessionId,
                 string.IsNullOrEmpty(kingdomId) ? killerKingdomId : kingdomId, record.VenueId,
                 true, true, killer.StringId, killerKingdomId);
             _bulletin("execution_last_words", "execution-last-words:" + record.SessionId,
                 50, sentence, killer == Hero.MainHero,
                 "execution:" + killer.StringId + ":" + record.Day, publicQuote,
-                WorldBulletinEventCaptureAdapter.BulletinParticipants((victim, "受刑者"), (killer, "下令处决方，是否亲自行刑依事实")), kingdomId, killerKingdomId);
+                WorldBulletinEventCaptureAdapter.BulletinParticipants((victim, AnimusForge.PromptComposerTexts.Raw("weekly_memory_compat_28c409b29a7d")), (killer, AnimusForge.PromptComposerTexts.Raw("weekly_memory_compat_cbb06081fc56"))), kingdomId, killerKingdomId);
         }
         ResetExecutionMemoryRuntime();
     }

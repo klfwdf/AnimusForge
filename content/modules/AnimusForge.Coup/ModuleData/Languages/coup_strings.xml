@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base type="string">
+  <tags>
+    <tag language="English" />
+  </tags>
+  <strings>
+    <string id="AF_COUP_DEFENDER_INTERVAL" text="Defender Reinforcement Interval" />
+    <string id="AF_COUP_DEFENDER_INTERVAL_HINT" text="Default 30 seconds. The first wave appears when combat starts, then reinforcements arrive at this interval, subject to active-wave and remaining-force limits. Applies to the next coup." />
+    <string id="AF_COUP_DEFENDER_WAVE_SIZE" text="Defenders per Wave" />
+    <string id="AF_COUP_DEFENDER_WAVE_SIZE_HINT" text="Default 30. Maximum defenders spawned per wave in the street and hall; limited by remaining defenders and never created from nothing. Applies to the next coup." />
+    <string id="AF_COUP_DISPLAY" text="AnimusForge - Coup" />
+    <string id="AF_COUP_ENABLED" text="Enable Coup" />
+    <string id="AF_COUP_ENABLED_HINT" text="Launch an armed coup in the town where your kingdom's ruler resides. Disabling prevents new coups; ongoing battles finish safely. Troop and reinforcement settings apply to the next coup." />
+    <string id="AF_COUP_GATE_GUARD_LIMIT" text="Gate Guard Limit" />
+    <string id="AF_COUP_GATE_GUARD_LIMIT_HINT" text="Default 10. Assigned from healthy defenders; fewer are used when unavailable. The hall can be attacked after the gate guards are cleared. Applies to the next coup." />
+    <string id="AF_COUP_GROUP_ASSAULT" text="Assault Parties" />
+    <string id="AF_COUP_GROUP_GUARDS" text="Guards and Reinforcements" />
+    <string id="AF_COUP_GROUP_MAIN" text="Armed Coup" />
+    <string id="AF_COUP_GROUP_REQUIREMENTS" text="Entry Requirements" />
+    <string id="AF_COUP_HALL_GUARD_LIMIT" text="Hall Guard Limit" />
+    <string id="AF_COUP_HALL_GUARD_LIMIT_HINT" text="Default 20, excluding the ruler. Assigned first from healthy defenders; remaining troops are assigned to gate and street guards. Applies to the next coup." />
+    <string id="AF_COUP_HALL_LIMIT" text="Hall Assault Party Limit" />
+    <string id="AF_COUP_HALL_LIMIT_HINT" text="Default 20, excluding the player. Selected only from street survivors. Applies to the next coup; larger parties may crowd the hall." />
+    <string id="AF_COUP_MAX_WAVES" text="Maximum Active Defender Waves" />
+    <string id="AF_COUP_MAX_WAVES_HINT" text="Default 4 waves. A wave occupies a slot while any defender remains alive; reinforcements wait for an open slot. Applies to the next coup." />
+    <string id="AF_COUP_MIN_CLAN_TIER" text="Minimum Clan Tier" />
+    <string id="AF_COUP_MIN_CLAN_TIER_HINT" text="Default 4; 0 means unrestricted. Applies only to new coups and is checked again when troops are confirmed." />
+    <string id="AF_COUP_MIN_INFLUENCE" text="Minimum Influence" />
+    <string id="AF_COUP_MIN_INFLUENCE_HINT" text="Default 300; 0 means unrestricted. Checked but not spent. The threshold is fixed when the confirmation window opens and checked again when troops are confirmed." />
+    <string id="AF_COUP_MIN_TROOPS" text="Minimum Assault Party Size" />
+    <string id="AF_COUP_MIN_TROOPS_HINT" text="Default 60 healthy regular soldiers must be selected, with one additional person left as a reserve. The player, heroes, and wounded do not count. Cannot exceed the street limit; the hall requires at least one survivor regardless of this threshold." />
+    <string id="AF_COUP_STREET_LIMIT" text="Street Assault Party Limit" />
+    <string id="AF_COUP_STREET_LIMIT_HINT" text="Default 60, excluding the player. Healthy regular soldiers only, with at least one reserve. Applies to the next coup; larger parties increase scene load." />
+    <string id="AF_COUP_UNIT_SECONDS" text="0 sec" />
+    <string id="AF_COUP_UNIT_TIER" text="0 tier" />
+    <string id="AF_COUP_UNIT_TROOPS" text="0 troops" />
+    <string id="AF_COUP_UNIT_WAVES" text="0 waves" />
+    <string id="AF_COUP_UI_PREFIX" text="[Coup] " />
+    <string id="AF_COUP_UI_NAMING_PROGRESS_TITLE" text="Generating post-coup rebellion name" />
+    <string id="AF_COUP_UI_NAMING_PROGRESS_BODY" text="AF's existing naming service is generating a kingdom name and description. Clan defection and kingdom creation will run only after it completes." />
+    <string id="AF_COUP_UI_NAMING_FAILURE_TITLE" text="Post-coup rebellion naming failed" />
+    <string id="AF_COUP_UI_NAMING_FAILURE_BODY" text="AF did not return a usable kingdom name and description. No clans have moved or founded a kingdom yet. You can retry the existing naming service or skip this rebellion attempt.{DETAIL}" />
+    <string id="AF_COUP_UI_NAMING_RETRY" text="Generate Again" />
+    <string id="AF_COUP_UI_NAMING_SKIP" text="Skip This Attempt" />
+    <string id="AF_COUP_UI_NAMING_SKIPPED" text="Skipped this post-coup rebellion attempt; clans were not reselected." />
+    <string id="AF_COUP_UI_PASSAGE_BLOCKED" text="[Coup] The other passage cannot be used during the battle; withdraw through the battle exit." />
+    <string id="AF_COUP_UI_GATE_NOT_CLEARED" text="[Coup] The hall guards at the entrance have not been cleared; the hall cannot be entered yet." />
+    <string id="AF_COUP_UI_HALL_OBJECTIVE" text="[Coup] Subdue the ruler and defeat all hall guards. Falling or withdrawing counts as a defeat." />
+    <string id="AF_COUP_UI_STREET_OBJECTIVE" text="[Coup] Defeat the guards at the hall entrance, then press F at the entrance to attack the hall. Falling or withdrawing counts as a defeat." />
+    <string id="AF_COUP_UI_HALL_BREAKTHROUGH" text="[Coup] The hall entrance has been breached. Street reinforcements have stopped; enemies already present will continue fighting. Press F at the entrance to attack the hall." />
+    <string id="AF_COUP_UI_HALL_SELECTION_PROMPT" text="[Coup] The hall entrance has been breached. Press F to select soldiers for the hall assault." />
+    <string id="AF_COUP_UI_KING_SUBDUED" text="[Coup] The ruler has been subdued and the hall is under control. Confirm the former ruler's disposition before leaving and settling the coup." />
+    <string id="AF_COUP_UI_SAVE_INVALID" text="The coup save state is invalid; the original record was retained and new coups are disabled. Check the log." />
+    <string id="AF_COUP_UI_MENU_ARMED_COUP" text="Armed Coup" />
+    <string id="AF_COUP_UI_MENU_RETRY_WAR" text="Retry Post-Coup Civil War Registration" />
+    <string id="AF_COUP_UI_MENU_ENTER_STREET" text="Lead the Coup Assault into the Town" />
+    <string id="AF_COUP_UI_MENU_ENTER_HALL" text="Lead the Coup Assault into the Lord's Hall" />
+    <string id="AF_COUP_UI_MENU_VICTORY_REPORT" text="View Coup Coronation Report" />
+    <string id="AF_COUP_UI_MENU_RESUME" text="Retry Coup Settlement" />
+    <string id="AF_COUP_UI_BEGIN_TOOLTIP" text="Select an assault party using the coup MCM troop requirements, take the hall, and seize the throne; leave one healthy soldier as a reserve. Failure causes defection with land and war." />
+    <string id="AF_COUP_UI_ENTER_TOOLTIP" text="Enter with the selected roster; falling or withdrawing counts as a coup defeat." />
+    <string id="AF_COUP_UI_NO_PENDING_ENTRY" text="There is no coup assault waiting to enter a scene." />
+    <string id="AF_COUP_UI_SCENE_INTERFACE_UNAVAILABLE" text="The coup scene interface is not ready. Check the log." />
+    <string id="AF_COUP_UI_ENCOUNTER_CHANGED" text="The current town encounter changed; the coup scene cannot be entered." />
+    <string id="AF_COUP_UI_BLOCKING_TOWN_FLOW" text="A town conflict or post-battle resolution is still pending." />
+    <string id="AF_COUP_UI_SCENE_MISSING" text="The coup target scene does not exist." />
+    <string id="AF_COUP_UI_SCENE_OPEN_FAILED" text="The coup scene could not be opened." />
+    <string id="AF_COUP_UI_DISABLED" text="Armed coups are disabled." />
+    <string id="AF_COUP_UI_SAVE_RECORD_INVALID" text="The coup save record is invalid. Resolve the logged error first." />
+    <string id="AF_COUP_UI_MISSION_PROTECTION_UNAVAILABLE" text="Coup scene compatibility protection was not registered. Check the log and game version." />
+    <string id="AF_COUP_UI_SEAM_UNAVAILABLE" text="The coup integration seam is unavailable in this AF version. Check the log." />
+    <string id="AF_COUP_UI_PENDING_FEEDBACK" text="Another coup or coronation report is still awaiting confirmation." />
+    <string id="AF_COUP_UI_ELIGIBLE_LEADER_ONLY" text="Only the leader of a formal vassal clan in this kingdom can launch a coup." />
+    <string id="AF_COUP_UI_OWN_TOWN_REQUIRED" text="You must be in a town belonging to your kingdom." />
+    <string id="AF_COUP_UI_PLAYER_CANNOT_FIGHT" text="The player cannot join a battle right now." />
+    <string id="AF_COUP_UI_RULER_MUST_BE_HERE" text="The current ruler of your kingdom must be in this town and not imprisoned." />
+    <string id="AF_COUP_UI_BLOCKING_BATTLE" text="A siege, battle, or special mission is in progress; a coup cannot be launched." />
+    <string id="AF_COUP_UI_PENDING_CONFLICT" text="A town conflict or post-battle resolution is still pending." />
+    <string id="AF_COUP_UI_LEAVE_ARMY" text="Leave the army before launching a coup with your own party." />
+    <string id="AF_COUP_UI_BEGIN_TITLE" text="Armed Coup" />
+    <string id="AF_COUP_UI_BEGIN_BODY" text="Target: {RULER}\nLocation: {TOWN}\nEntry requirements: clan tier at least {TIER}; influence at least {INFLUENCE} (checked but not spent; 0 means unrestricted).\nSelect at least {MIN_TROOPS} healthy regular soldiers and leave one additional reserve.\nAssault party: up to {STREET_LIMIT} in the street and {HALL_LIMIT} in the hall (excluding the player); at least one soldier must remain as reserve.\nGuards: up to {GATE_LIMIT} at the entrance and {HALL_GUARD_LIMIT} in the hall (excluding the ruler), based on available troops.\nReinforcements: up to {WAVE_SIZE} per wave, every {WAVE_INTERVAL} seconds, with at most {MAX_WAVES} active waves.\nThese parameters are fixed for this coup. Once you enter, falling or withdrawing makes the clan defect with its land and declare war on the former kingdom." />
+    <string id="AF_COUP_UI_BEGIN_CONFIRM" text="Select Assault Party" />
+    <string id="AF_COUP_UI_CANCEL" text="Cancel" />
+    <string id="AF_COUP_UI_INSUFFICIENT_TROOPS" text="There are not enough healthy soldiers for the assault party and reserve. The coup was cancelled." />
+    <string id="AF_COUP_UI_STREET_SELECTION_TITLE" text="Coup Assault Party" />
+    <string id="AF_COUP_UI_SELECTION_INVALID" text="The troop selection is no longer valid. Select at least {MINIMUM} healthy regular soldiers and leave one healthy soldier as reserve." />
+    <string id="AF_COUP_UI_ROSTER_CHANGED" text="The party roster changed; select again." />
+    <string id="AF_COUP_UI_STREET_REGISTERED" text="The assault party is registered. Use the town menu to lead it into the town." />
+    <string id="AF_COUP_UI_CONTEXT_CHANGED" text="The ruler, player, or town state changed; the coup cannot continue." />
+    <string id="AF_COUP_UI_ADMISSION_UNAVAILABLE" text="The coup admission record is unavailable." />
+    <string id="AF_COUP_UI_NO_ASSAULT_TROOPS" text="No assault soldiers remain; withdraw from the coup." />
+    <string id="AF_COUP_UI_COMBAT_INTERRUPTED" text="The assault was withdrawn or the battle was interrupted." />
+    <string id="AF_COUP_UI_RESOLUTION_PENDING_PREFIX" text="Coup settlement is incomplete: " />
+    <string id="AF_COUP_UI_SUSPENDED_PREFIX" text="Coup temporarily suspended: " />
+    <string id="AF_COUP_UI_POLITICAL_CHANGES_RETAINED" text=" Political changes already made were retained; retry the remaining settlement from the town menu." />
+    <string id="AF_COUP_UI_CASUALTIES_RETAINED" text=" Casualties were retained; no victory or defection penalty was granted." />
+    <string id="AF_COUP_UI_REPORT_NOT_OPENED" text="The coronation result was settled, but the report did not open. Retry from the target town's coup report menu." />
+    <string id="AF_COUP_UI_HALL_SELECTION_TITLE" text="Assault the Lord's Hall" />
+    <string id="AF_COUP_UI_HALL_SELECTION_LIMIT" text="The hall selection exceeds this coup's party limit." />
+    <string id="AF_COUP_UI_HALL_ROSTER_MISMATCH" text="The hall selection roster does not match." />
+    <string id="AF_COUP_UI_HALL_SELECTION_ABANDONED" text="The hall assault was abandoned." />
+    <string id="AF_COUP_UI_HALL_REGISTERED" text="The hall assault party is selected. Use the town menu to lead it into the lord's hall." />
+    <string id="AF_COUP_UI_HALL_SELECTION_CANCELLED" text="The hall assault was cancelled; withdraw from the coup." />
+    <string id="AF_COUP_UI_RELEASE_RULER" text="Force the former ruler to abdicate and release him" />
+    <string id="AF_COUP_UI_CAPTURE_RULER" text="Capture the former ruler" />
+    <string id="AF_COUP_UI_CAPTURE_EXCLUDES_FAMILY" text="Capturing the former ruler excludes his clan from this rebellion." />
+    <string id="AF_COUP_UI_CAPTURE_UNAVAILABLE" text="Captivity protection is unavailable in this version; the former ruler can only be released." />
+    <string id="AF_COUP_UI_FORMER_RULER_FALLBACK" text="former ruler" />
+    <string id="AF_COUP_UI_DISPOSITION_TITLE" text="Coup Victory: Former Ruler's Disposition" />
+    <string id="AF_COUP_UI_DISPOSITION_BODY" text="Ruler {NAME} has been subdued and the hall is under control.\nChoose the former ruler's disposition; the assault will end and the throne and town will be settled afterward.\nReleasing him may allow his clan to join the rebellion; capturing him excludes that clan from this rebellion." />
+    <string id="AF_COUP_UI_DISPOSITION_CONFIRM" text="Confirm Disposition and Leave" />
+    <string id="AF_COUP_UI_DECIDE_LATER" text="Decide Later" />
+    <string id="AF_COUP_UI_DISPOSITION_NOT_CONFIRMED" text="The former ruler's disposition is not confirmed; remain in the hall and choose again with the battle exit key or an exit." />
+    <string id="AF_COUP_UI_LEAVE_NOT_READY" text="The victory exit is not ready." />
+    <string id="AF_COUP_UI_DISPOSITION_LEAVE_FAILED" text="The disposition was confirmed, but leaving the scene has not completed: {DETAIL}" />
+    <string id="AF_COUP_UI_POLITICAL_SETTLEMENT_COMPLETE" text="Political settlement is complete. The coronation scene and report will be shown next." />
+    <string id="AF_COUP_UI_CORONATION_UNAVAILABLE" text="The native coronation scene is unavailable; the coronation result was retained and the report will be shown." />
+    <string id="AF_COUP_UI_VICTORY_TITLE" text="Armed Coup Successful" />
+    <string id="AF_COUP_UI_CONFIRM_RETURN_TOWN" text="Confirm and Return to Town" />
+    <string id="AF_COUP_UI_FAILURE_COMMITTED" text="The coup failed. The reserve party withdrew and recovered. Your clan kept its land, left the former kingdom, and is now at war with it." />
+    <string id="AF_COUP_UI_VICTORY_REPORT" text="The coup is complete.\n\nKingdom: {KINGDOM}\nCurrent ruler: {RULER}\nTown taken: {TOWN}\nTown owner: {OWNER}\nFormer ruler: {KING} {CUSTODY}\n\nRecorded casualties:\nAssault party: {ALLY_KILLED} killed, {ALLY_WOUNDED} wounded\nDefenders: {DEF_KILLED} killed, {DEF_WOUNDED} wounded\n\nAftermath: rebellion eligibility was assessed and the request was registered; whether a rebellion actually begins depends on later campaign results." />
+    <string id="AF_COUP_UI_FORMER_RULER_HELD" text="is captured and still held by your party." />
+    <string id="AF_COUP_UI_FORMER_RULER_NOT_HELD" text="was captured but is no longer held by your party." />
+    <string id="AF_COUP_UI_FORMER_RULER_RELEASED" text="was forced to abdicate; you chose not to capture him." />
+    <string id="AF_COUP_UI_REPORT_INTRO" text="{PLAYER} launched an armed coup against {KING} in {TOWN} of {KINGDOM} with {ALLIES} assault troops." />
+    <string id="AF_COUP_UI_REPORT_PROCESS_LABEL" text="Process: " />
+    <string id="AF_COUP_UI_REPORT_NO_ENTRY" text="The assault party was assembled, but no actual scene entry was recorded." />
+    <string id="AF_COUP_UI_REPORT_STREET" text="entered the town street" />
+    <string id="AF_COUP_UI_REPORT_GATE" text="breached the hall entrance" />
+    <string id="AF_COUP_UI_REPORT_HALL" text="led {ALLIES} assault troops into the lord's hall" />
+    <string id="AF_COUP_UI_REPORT_SUBDUED" text="subdued the ruler" />
+    <string id="AF_COUP_UI_REPORT_RESULT_LABEL" text="Result: " />
+    <string id="AF_COUP_UI_REPORT_SUCCESS_CAPTURED" text="The coup succeeded: {PLAYER} took the throne of {KINGDOM} and seized {TOWN}; the former ruler was captured." />
+    <string id="AF_COUP_UI_REPORT_SUCCESS_RELEASED" text="The coup succeeded: {PLAYER} took the throne of {KINGDOM} and seized {TOWN}; you chose not to capture the former ruler." />
+    <string id="AF_COUP_UI_REPORT_FAILURE" text="The coup failed; the throne was not taken. The clan left the former kingdom with its existing land and went to war with it." />
+    <string id="AF_COUP_UI_REPORT_CASUALTIES" text="Recorded casualties: assault party {ALLY_KILLED} killed, {ALLY_WOUNDED} wounded; defenders {DEF_KILLED} killed, {DEF_WOUNDED} wounded." />
+    <string id="AF_COUP_UI_SELECTION_PARTY_REQUIRED" text="Troop selection requires a valid player party." />
+    <string id="AF_COUP_UI_SELECTION_DETACHED_ROSTER_REQUIRED" text="Troop selection requires a separate temporary roster." />
+    <string id="AF_COUP_UI_AVAILABLE_SOLDIERS" text="Available soldiers" />
+    <string id="AF_COUP_UI_SELECTION_PARTY_NAME" text="{TITLE} ({MINIMUM} to {LIMIT} soldiers)" />
+    <string id="AF_COUP_UI_SELECTION_COUNT_HINT" text="Select {MINIMUM} to {LIMIT} soldiers." />
+    <string id="AF_COUP_UI_REPORT_FAILURE_NO_WAR" text="The coup failed; the throne was not taken. The clan left the former kingdom with its existing land." />
+  </strings>
+</base>

@@ -7,6 +7,7 @@ using TaleWorlds.CampaignSystem;
 using TaleWorlds.Library;
 using TaleWorlds.ScreenSystem;
 using AnimusForge.Illustrator.Engine;
+using AnimusForge.Illustrator.UI;
 using Newtonsoft.Json.Linq;
 
 namespace AnimusForge.Illustrator.Core
@@ -105,10 +106,8 @@ namespace AnimusForge.Illustrator.Core
                 divisor = remainder;
                 remainder = next;
             }
-            string orientation = width == height ? "正方形" : width > height ? "横向" : "竖向";
-            return "最终成图必须为" + orientation + (width / divisor) + ":" + (height / divisor)
-                + "，目标尺寸" + imageSize
-                + "。按此画幅重新组织完整画面，保持人物与场景的自然比例；参考图只提供其标注用途，不决定输出画幅。不得改用其他比例，不要拉伸或加边框伪造目标画幅。此画幅要求适用于普通生成和重绘。";
+            string orientation = width == height ? IllustratorText.Get("Frame_Square") : width > height ? IllustratorText.Get("Frame_Landscape") : IllustratorText.Get("Frame_Portrait");
+            return IllustratorText.Format("Frame_OutputRequirement", orientation, width / divisor, height / divisor, imageSize);
         }
 
         // Map the existing presets to exact 16:9 sizes with both edges divisible by 16.
@@ -325,9 +324,9 @@ namespace AnimusForge.Illustrator.Core
         {
             AssertMainThread();
             if (update.Saved != null)
-                InformationManager.DisplayMessage(new InformationMessage("[AI画卷] " + update.Saved.Title + " 绘制完成，已更新到画廊。"));
+                InformationManager.DisplayMessage(new InformationMessage(IllustratorUiText.GenerationComplete(IllustratorUiText.ProjectKnownDefaultTitle(update.Saved.Title, update.Saved.Category))));
             else
-                InformationManager.DisplayMessage(new InformationMessage("[AI画卷] 绘制失败：" + update.Error));
+                InformationManager.DisplayMessage(new InformationMessage(IllustratorUiText.GenerationFailed(update.Error)));
             var listeners = GenerationUpdated;
             if (listeners == null) return;
             foreach (Action<IllustrationGenerationUpdate> listener in listeners.GetInvocationList())
@@ -469,7 +468,7 @@ namespace AnimusForge.Illustrator.Core
             {
                 Debug.Print($"[Illustrator] Run rejected: scope not current (closed={_closed}, topScreenMismatch={!ReferenceEquals(_screen, ScreenManager.TopScreen)}, finalized={_screen?.IsFinalized}).");
                 GenerationDiagnostics.WriteDelivery(null, "scope_rejected", "scope stale/closed/screen changed; category=" + _category);
-                fail("生图上下文已失效（界面已切换或弹窗已关闭），请重新打开。");
+                fail(IllustratorUiText.GenerationScopeExpired);
                 return false;
             }
             _request?.Cancel();
@@ -520,7 +519,7 @@ namespace AnimusForge.Illustrator.Core
                     bool valid = item != null && item.CampaignKey == CampaignKey && item.Category == _category && item.SubjectKey == subjectKey;
                     update = new IllustrationGenerationUpdate { Source = this, CampaignKey = CampaignKey, Category = _category,
                         SubjectKey = subjectKey, SessionKey = sessionKey, Saved = valid ? item : null,
-                        Error = error?.Message ?? (valid ? null : resultError?.Invoke(result) ?? "未能保存图像") };
+                        Error = error?.Message ?? (valid ? null : resultError?.Invoke(result) ?? IllustratorText.Raw("Residual_IllustratorRuntime_cdf7c2522d1c")) };
                 }
                 try
                 {
@@ -532,7 +531,7 @@ namespace AnimusForge.Illustrator.Core
                             catch (Exception ex) { GenerationDiagnostics.WriteDelivery(diagnosticId, "ui_callback_failed", ex.GetType().Name); fail(ex.Message); }
                         }
                         else if (!(error is OperationCanceledException)) fail(error.Message);
-                        else fail("生成请求超时：上游模型在限定时间内无响应，请稍后重试。");
+                        else fail(IllustratorUiText.GenerationTimeout);
                     }
                     if (update != null)
                     {
@@ -548,7 +547,7 @@ namespace AnimusForge.Illustrator.Core
                 _request = null;
                 source.Dispose();
                 GenerationDiagnostics.WriteDelivery(null, "worker_admission_rejected", "four-worker capacity or host unavailable");
-                fail("生图任务繁忙，请等待已有任务完成后重试。");
+                fail(IllustratorUiText.GenerationBusy);
             }
             return started;
         }

@@ -1,0 +1,151 @@
+{
+  "Id": "rule_Gold_Veined_Westerlands_Cleganes_Keep",
+  "Keywords": [
+    "Clegane's Keep"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Clegane Keep is the western stronghold of House Clegane. The family's status is not derived from the blood of the oldest king, but from the tradition of knights serving the Lannister; it is a microcosm of the order of the Westerland: the power of Casterly Rock requires the support of many smaller families with force, land management and personal loyalty. The manors, stables, blacksmiths and tenant farmers surrounding the castle explain its existence better than any single military name. The nobility of the Westerlands valued respectability, debt, and family reputation, and Cleganeburg operated within this society."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Clegane's Keep Local families also relied on mining tunnels, pastures, mountain roads, gold and silver circulation and the market sheltered by Casterly Rock; if any road, well or dock failed, the price would fall first on them."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Clegane's Keep Entry Clegane's Keep"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Clegane's Keep They also recognize the accents, laws, and credentials of the West; reputations can travel great distances from taverns, but true distances must still be measured by wheel, oar, or horse's hooves."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Clegane's Keep Entry Clegane's Keep"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Clegane's Keep If you can supply supplies, avoid danger, and find a guide, it is worth marking in your itinerary; if you don't have these three things, no matter how loud your family name is, it won't be able to save the lost."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Clegane Keep is not just the Lord's Hall; stone walls, wooden beams, iron doors, tombs, and the seams left by generations of repairs also shape the place as much as the stone carvings left by the Seven Gods, family tombs, and the authority of the lords. A stronghold was therefore not just a lord's hall, but also a place where weddings and funerals, vows, labor and local memories recurred."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Clegane's Keep They care about the mines, pastures, mountain roads, the circulation of gold and silver, and the market under the protection of Casterly Rock. They also look at whether seeds are left after the grain collection and whether the city gates are open in times of disaster. When people from afar see the coat of arms, what they see is whether there will be food to eat tomorrow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Clegane's Keep: Clegane Keep is the western stronghold of House Clegane. The family's status is not derived from the blood of the oldest king, but from the tradition of knights serving the Lannister; it is a microcosm of the order of the Westerland: the power of Casterly Rock requires the support of many smaller families with force, land management and personal loyalty. The manors, stables, blacksmiths and tenant farmers surrounding the castle explain its existence better than any single military name. The nobility of the Westerlands valued respectability, debt, and family reputation, and Cleganeburg operated within this society."
+  ]
+}

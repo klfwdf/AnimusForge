@@ -1,0 +1,147 @@
+{
+  "Id": "rule_Sarnor_Grasslands_Locations_Lotsra_Keep",
+  "Keywords": [
+    "Lotsra Keep"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Fort Rathylar is located in the old land of Sanor on the northern edge of the Dothraki Sea. Politically, it is within the area where the remnants of Sanor, the steppe tribes and the remaining towns intersect. It is a castle mainly responsible for local garrison, tax collection and sheltering the nearby population. Walls and roads tied the surrounding population, storage, and garrison here; even if the flags were changed, this stronghold would still affect how nearby people paid taxes, traded, and sought refuge."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The people near Lotzla Fort seldom talk about borders. What they deal with every day is well water, stalls, food prices, wages and roads to the market. Local families also relied on pastures, ruined wells, horse teams, remaining fields and defense khalasas; if any road, well or dock failed, the price would fall first on them."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "After the recruitment order arrived at Lotzla Castle, what really determined success or failure were the city gates, streets, granaries, the number of guards and the exits for evacuating the people. Entry Lotsra Keep"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "When talking about Fort Lotzlar with people at the dock, the market day, warehouse rent, customs duties, coin quality and the journey to neighboring cities cannot be avoided. They will also recognize the accents, laws, and credentials of the old lands of Sarnor; reputations can travel great distances from taverns, and real distances must still be measured by wheels, oars, or horse hooves."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Lotsra Keep Entry Lotsra Keep"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The most easily hidden things on the map near Lotzlar Castle are the inn, stables, wells and whether it is possible to enter the city before nightfall. If you can supply supplies, avoid danger, and find a guide, it is worth marking in your itinerary; if you don't have these three things, no matter how loud your family name is, it won't be able to save the lost."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The craftsmen saw workshops, markets, roof tiles, church bells, and alleys that had expanded over the past generations in Lotzla Castle. The priests guarded the past high kings, the memory of the ruined city, and the gods swallowed by the sea of ​​grass. A stronghold was therefore not just a lord's hall, but also a place where weddings and funerals, vows, labor and local memories recurred."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Lotsra Keep They care about pastures, ruined wells, horse teams, remaining acres of land, and the defense of the khalasa. They also look at whether seeds are left after the grain collection, and whether the city gates are open in times of disaster. When people from afar see the coat of arms, what they see is whether there will be food to eat tomorrow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Lotsra Keep: Fort Rathylar is located in the old land of Sanor on the northern edge of the Dothraki Sea. Politically, it is within the area where the remnants of Sanor, the steppe tribes and the remaining towns intersect. It is a castle mainly responsible for local garrison, tax collection and sheltering the nearby population. Walls and roads tied the surrounding population, storage, and garrison here; even if the flags were changed, this stronghold would still affect how nearby people paid taxes, traded, and sought refuge."
+  ]
+}

@@ -1,0 +1,155 @@
+{
+  "Id": "rule_House_Foundations_Pandaris",
+  "Keywords": [
+    "Pandaris",
+    "House Pandaris",
+    "Blood of Valyria"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Panda Lys is the noble family of Lys, and the name of the family has the color of Valyrian descendants. Lys Many retain the pride of silver-gold hair, light eyes, and ancient bloodlines, but looks alone cannot pay the fare, nor can they automatically buy a majority in deliberations. Panda Lys' status rested on its ability to transform genealogy, marriage, and ritual into reliable allies, respected public obligations, and an estate sufficient to support a family. Attitudes towards old Targaryen connections can vary from person to person and era to era; what is truly stable is that Lys magnates often use bloodlines to package real competition, while smaller houses must guard their reputations more carefully than the rich."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "lyseni",
+          "valyrian"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "scholar",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "People who value Valyrian blood will carefully study the family tree and marriage of Panda Lys, but they also know that there are too many descendants and too few dragon kings left after the doomsday catastrophe. Pedigree brings invitations, not guaranteed seats."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "lyseni"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Lys citizens are more willing to evaluate Panda Lys on a credit basis. Purple eyes won't make a cargo ship dock faster, checking out on time and taking care of the crew after a storm will."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "lyseni"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "slave",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The dominated are generally indifferent to arguments about noble blood. No matter which Valyrian manor the master claimed to have ancestry from, the fall of the whip hurt just as much."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Pandaris Lys's Valyrian descendant family maintains dignity with bloodline memory, city-state relations and limited resources. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Pandaris Lys's Valyrian descendant family maintains dignity with bloodline memory, city-state relations and limited resources. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Pandaris Lys's Valyrian descendant family maintains dignity with bloodline memory, city-state relations and limited resources. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Pandaris Lys's Valyrian descendant family maintains dignity with bloodline memory, city-state relations and limited resources. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Pandaris: Lys's Valyrian descendant family maintains dignity with bloodline memory, city-state relations and limited resources."
+  ]
+}

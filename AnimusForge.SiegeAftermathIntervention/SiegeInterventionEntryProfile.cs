@@ -27,44 +27,55 @@ public static class SiegeInterventionEntryProfile
 
     public const uint SummonedTroopsMessageColor = 0xFFB6F7A8u;
 
-    public const string EntryMenuOptionText = "亲自进城决定";
-
+    public const string EntryMenuOptionText = "Decide in person at town";
+    public const string EntryMenuOptionTextEn = "Decide in person at town";
+    
     public const string SelectionUnavailableMissionSource = "selection_unavailable";
-
     public const string TroopSelectionDoneMissionSource = "game_menu_troop_selection_done";
-
     public const string SceneEntryCleanupSource = "siege_intervention_enter_isolated_scene";
-
     public const string AutoEnterSummonSource = "auto_enter";
-
     public const string EnsureAlliedTroopsSummonSource = "ensure";
 
-    public static readonly string EnabledTooltip = "{=!}暂不立即处置战后事务；你将披甲带约" + DefaultAutoSummonCount + "名健康士兵进城，普通民众仍散在城内街区，再由现场对话或行动决定安抚、宽恕、搜掠或血洗。";
+    public static readonly string EnabledTooltip = "Do not immediately settle aftermath affairs; enter the town in battle gear leading about " + DefaultAutoSummonCount + " healthy troops, while civilians remain in the streets, deciding reassurance, mercy, plunder, or massacre through dialogue or action.";
+    public static readonly string EnabledTooltipEn = "Do not immediately settle aftermath affairs; enter the town in battle gear leading about " + DefaultAutoSummonCount + " healthy troops, while civilians remain in the streets, deciding reassurance, mercy, plunder, or massacre through dialogue or action.";
 
+    public const string MissingSceneTooltip = "No victorious siege settlement scene is currently available to enter.";
+    public const string MissingSceneTooltipEn = "No victorious siege settlement scene is currently available to enter.";
+    
+    public const string EntryMemoryTitle = "Entry disposition";
+    public const string EntryMemoryTitleEn = "Entry disposition";
+    
+    public const string MissingSceneMessage = "[Siege aftermath] No captured settlement scene is currently available to enter.";
+    public const string MissingSceneMessageEn = "[Siege aftermath] No captured settlement scene is currently available to enter.";
+    
+    public const string DecisionPolicyMessage = "[Siege aftermath] Disposition is decided by you on-site: departing directly settles as plunder; explicit mercy, reassurance, or relief protects civilians; massacre or colonization may be ordered.";
+    public const string DecisionPolicyMessageEn = "[Siege aftermath] Disposition is decided by you on-site: departing directly settles as plunder; explicit mercy, reassurance, or relief protects civilians; massacre or colonization may be ordered.";
 
-    public const string MissingSceneTooltip = "{=!}当前没有可进入的攻城胜利定居点场景。";
+    public const string EntryFailedMessage = "[Siege aftermath] Temporarily unable to enter the captured settlement scene.";
+    public const string EntryFailedMessageEn = "[Siege aftermath] Temporarily unable to enter the captured settlement scene.";
+    
+    public const string SelectionFallbackMessage = "[Siege aftermath] No followers selected; healthy regular troops will be brought automatically.";
+    public const string SelectionFallbackMessageEn = "[Siege aftermath] No followers selected; healthy regular troops will be brought automatically.";
 
-    public const string EntryMemoryTitle = "入城处置";
-
-    public const string MissingSceneMessage = "【攻城处置】当前没有可进入的被攻陷定居点场景。";
-
-    public const string DecisionPolicyMessage = "【攻城处置】处置方式由你现场决定：直接离场按搜掠结算；明确宽恕、安抚或宣抚会按对应处置结算；搜掠仍可因后续宽恕/宣抚回退；血洗不能回退为搜掠或正向处置，但仍可继续升级为屠民迁殖；屠民迁殖也可一开始直接触发。";
-
-
-    public const string EntryFailedMessage = "【攻城处置】暂时无法进入被攻陷的定居点场景。";
-
-    public const string SelectionFallbackMessage = "【攻城处置】未选择随行队员，将自动带入健康普通士兵。";
-
-    public const string BattleEquipmentAppliedMessage = "【攻城处置】你已披甲执兵入城。";
-
-    public const string NoHealthyTroopsMessage = "【攻城处置】主部队没有可入城的健康士兵或同伴。";
-
+    public const string BattleEquipmentAppliedMessage = "[Siege aftermath] You entered the city in battle gear.";
+    public const string BattleEquipmentAppliedMessageEn = "[Siege aftermath] You entered the city in battle gear.";
+    
+    public const string NoHealthyTroopsMessage = "[Siege aftermath] The main party has no healthy soldiers or companions eligible to enter.";
+    public const string NoHealthyTroopsMessageEn = "[Siege aftermath] The main party has no healthy soldiers or companions eligible to enter.";
+    
     public static string BuildEntryMemoryText(string settlementName)
+        => BuildEntryMemoryText(settlementName, false);
+
+    public static string BuildEntryMemoryText(string settlementName, bool isEnglish)
     {
         string safeSettlementName = string.IsNullOrWhiteSpace(settlementName)
-            ? "这座刚被攻下的定居点"
+            ? (isEnglish ? "this newly captured settlement" : SiegeAftermathCompatibilityTexts.Raw("entry_settlement_default"))
             : settlementName.Trim();
-        return "玩家已经攻陷" + safeSettlementName + "并亲自进入城内处置战后秩序；旧守军已失败，旧领主已被打败，平民、商人、工匠、头人和要人都应知道自己处在胜利方处置现场，同时保留本文化、本定居点和个人旧记忆作为反应细节。";
+        if (isEnglish)
+        {
+            return "The player captured " + safeSettlementName + " and entered in person to oversee post-siege order; defeated garrison and lords fell, and civilians, merchants, artisans, headmen, and notables should recognize they are in a victor disposition scene, while retaining their cultural and personal memories.";
+        }
+        return SiegeAftermathCompatibilityTexts.Raw("entry_memory_prefix") + safeSettlementName + SiegeAftermathCompatibilityTexts.Raw("entry_memory_suffix");
     }
 
     public static bool IsSupportedSettlementKind(bool isTown, bool isCastle)
@@ -73,17 +84,27 @@ public static class SiegeInterventionEntryProfile
     }
 
     public static string BuildEnabledTooltip(bool isCastle)
+        => BuildEnabledTooltip(isCastle, false);
+
+    public static string BuildEnabledTooltip(bool isCastle, bool isEnglish)
     {
-        return isCastle
-            ? "{=!}暂不立即结算；你将先选择最多50名我方士兵与200名战俘，再进入城堡战争场景亲自处置。"
-            : EnabledTooltip;
+        if (isCastle)
+        {
+            return isEnglish
+                ? "{=!}Do not settle immediately; you will select up to 50 allied troops and 200 prisoners, then enter the castle war scene to handle aftermath in person."
+                : SiegeAftermathCompatibilityTexts.Raw("entry_tooltip_castle");
+        }
+        return isEnglish ? EnabledTooltipEn : EnabledTooltip;
     }
 
     public static string BuildDecisionPolicyMessage(bool isCastle)
+        => BuildDecisionPolicyMessage(isCastle, false);
+
+    public static string BuildDecisionPolicyMessage(bool isCastle, bool isEnglish)
     {
         return isCastle
-            ? SiegeCastleRosterSelectionProfile.BuildDecisionPolicyMessage()
-            : DecisionPolicyMessage;
+            ? SiegeCastleRosterSelectionProfile.BuildDecisionPolicyMessage(isEnglish)
+            : (isEnglish ? DecisionPolicyMessageEn : DecisionPolicyMessage);
     }
 
     public static string[] GetPreferredLocationIds(bool isTown, bool isCastle)
@@ -92,20 +113,41 @@ public static class SiegeInterventionEntryProfile
     }
 
     public static string BuildTroopSelectionInstructionMessage(int maxCount)
+        => BuildTroopSelectionInstructionMessage(maxCount, false);
+
+    public static string BuildTroopSelectionInstructionMessage(int maxCount, bool isEnglish)
     {
         int safeMaxCount = maxCount < 0 ? 0 : maxCount;
-        return "【攻城处置】先选择最多 " + safeMaxCount + " 名入城随行士兵或同伴；未选择则自动带入健康普通士兵。";
+        if (isEnglish)
+        {
+            return "[Siege aftermath] Select up to " + safeMaxCount + " followers/companions to enter; unselected slots automatically bring healthy soldiers.";
+        }
+        return SiegeAftermathCompatibilityTexts.Raw("entry_selection_instr_prefix") + safeMaxCount + SiegeAftermathCompatibilityTexts.Raw("entry_selection_instr_suffix");
     }
 
     public static string BuildSelectionConfirmedMessage(int selectedCount)
+        => BuildSelectionConfirmedMessage(selectedCount, false);
+
+    public static string BuildSelectionConfirmedMessage(int selectedCount, bool isEnglish)
     {
         int safeSelectedCount = selectedCount < 0 ? 0 : selectedCount;
-        return "【攻城处置】已选择 " + safeSelectedCount + " 名随行队员入城。";
+        if (isEnglish)
+        {
+            return "[Siege aftermath] Selected " + safeSelectedCount + " followers to enter the town.";
+        }
+        return SiegeAftermathCompatibilityTexts.Raw("entry_selected_summary_prefix") + safeSelectedCount + SiegeAftermathCompatibilityTexts.Raw("entry_selected_summary_suffix");
     }
 
     public static string BuildSummonedTroopsMessage(int spawnedCount)
+        => BuildSummonedTroopsMessage(spawnedCount, false);
+
+    public static string BuildSummonedTroopsMessage(int spawnedCount, bool isEnglish)
     {
         int safeSpawnedCount = spawnedCount < 0 ? 0 : spawnedCount;
-        return "【攻城处置】已带入 " + safeSpawnedCount + " 名随行士兵/同伴，默认编入一队并保持列队跟随。";
+        if (isEnglish)
+        {
+            return "[Siege aftermath] Brought " + safeSpawnedCount + " escort soldiers/companions, grouped and following in formation by default.";
+        }
+        return SiegeAftermathCompatibilityTexts.Raw("entry_spawned_prefix") + safeSpawnedCount + SiegeAftermathCompatibilityTexts.Raw("entry_spawned_suffix");
     }
 }

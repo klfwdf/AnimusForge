@@ -1,3 +1,4 @@
+using AnimusForge;
 using System;
 using System.Collections.Generic;
 using AnimusForge.DiplomacyDialogue;
@@ -6,6 +7,10 @@ namespace AnimusForge;
 
 public sealed class WorldDiplomacyDialogueArrangement
 {
+    // Empty in legacy saves: old public proposals never gain inferred player consent.
+    public string ConfirmedPlayerRulerId { get; set; } = "";
+    public int GenerationRetryAfterDay { get; set; } = -1;
+    public bool IsWithdrawal { get; set; }
     public string Fingerprint { get; set; } = "";
     public bool ExplicitlyDeferred { get; set; }
     public string ArrangementId { get; set; } = ""; public int Version { get; set; } = 1;
@@ -47,7 +52,7 @@ public sealed class WorldDiplomacyDialogueMemoryReceipt
 {
     public string SourceId { get; set; } = ""; public string RulerId { get; set; } = "";
     public string Fact { get; set; } = ""; public int Day { get; set; }
-    public int Hour { get; set; } public string NpcName { get; set; } = "统治者";
+    public int Hour { get; set; } public string NpcName { get; set; } = DiplomacyMiscPromptTexts.Get("Prompt_RulerFallback", "Ruler");
     public string GameDate { get; set; } = "";
     public string LocationId { get; set; } = ""; public bool Delivered { get; set; }
     public string LastError { get; set; } = "";

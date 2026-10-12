@@ -1,0 +1,128 @@
+{
+  "Id": "rule_Folk_Customs_Singers_and_Ballads",
+  "Keywords": [
+    "Singers and Ballads"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Singers take their harps through castles, taverns, and camps, making heroes more heroic and failures more listenable. Nobles are happy to hear their ancestors being praised, common people find solace in songs, and those who have seen battlefields know many parts that are inappropriate to sing."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Singers and Ballads"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Singers and Ballads"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Singers and Ballads"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Singers and Ballads Singers take their harps through castles, taverns, and camps, making heroes more heroic and failures more listenable. Nobles are happy to hear their ancestors being praised, common people find solace in songs, and those who have seen battlefields know many parts that are inappropriate to sing. Whether it is valid depends on who can grant the rights, collect the consideration, and actually make the judgment come to fruition in the event of default."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Singers and Ballads Singers take their harps through castles, taverns, and camps, making heroes more heroic and failures more listenable. Nobles are happy to hear their ancestors being praised, common people find solace in songs, and those who have seen battlefields know many parts that are inappropriate to sing. If a rule is practiced over and over again, it will find its way into rituals, crafts, and prayers; if it is sustained only by fear, cracks will show at the onset of a crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Singers and Ballads Singers take their harps through castles, taverns, and camps, making heroes more heroic and failures more listenable. Nobles are happy to hear their ancestors being praised, common people find solace in songs, and those who have seen battlefields know many parts that are inappropriate to sing. They remember taxes, grain, labor, relief and who can speak for them; these grand names will eventually fall on the family's rice pot."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Singers and Ballads: Singers take their harps through castles, taverns, and camps, making heroes more heroic and failures more listenable. Nobles are happy to hear their ancestors being praised, common people find solace in songs, and those who have seen battlefields know many parts that are inappropriate to sing."
+  ]
+}

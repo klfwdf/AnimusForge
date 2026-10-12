@@ -1,0 +1,210 @@
+{
+  "Id": "rule_Chaos_Politics",
+  "Keywords": [
+    "chaos politics",
+    "Cthulhu competition",
+    "tribal unity",
+    "God's Chosen Champion",
+    "Chaos Politics Eternal Chosen",
+    "law of force",
+    "duel of champions",
+    "Chaos Warlock",
+    "Accumulation of divine grace"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The politics of the Chaos tribes are based on eternal competition - the strong rule, the weak surrender or perish. Hundreds of tribes across Norsca and the Chaos Wastes are constantly at war with each other, each chief eager to gain the attention of the evil god through his exploits. In this cruel order, only the strongest warriors can unite the tribes and become the king of war. And when a divinely chosen champion is jointly recognized by the four evil gods and crowned as the Eternal Chosen God, all internal fighting will temporarily stop, and all battle axes will point south in unison."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "chaos_culture"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The \"politics\" of chaos has only one law - the law of power. The rivalry between the gods is the source of our strength: Khorne demands that we prove our loyalty in blood, Nurgle tests us to the limits of pain and decay, Sinlage weaves the web of destiny in our strategies and intrigues, and Slaanesh spurs us on to the ultimate perfection and ecstasy. The tribes were unified not by diplomacy but by beheading the former chief, burning his flag, and taking his women and land for themselves. When the Everchosen rises, any chief who refuses to surrender will be crushed - because the Chosen does not lead by persuasion, his very existence is the final verdict of the Four Gods."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The divisive nature of chaotic politics is the most effective defensive weapon in the civilized world. The four evil gods hated each other - Khorne and Slaanesh, Nurgle and Xin'lage were on particularly bad terms - which meant that the forces of the Chaos Alliance were always in a fragile balance. A wise commander can take advantage of this: by inciting feuds between tribes, by spreading rumors that a certain chieftain has received greater favor from a god, or by slaying the champion of a particular evil god on the battlefield to demoralize the corresponding warband. But we also need to be wary. When a powerful enough divine champion appears, all internal conflicts will be temporarily put aside."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 100
+        },
+        "IdentityIds": null
+      },
+      "Content": "The power structure of the Chaos tribe is an extreme Darwinian system based on \"competition for divine grace.\" Jarls gain power by challenging previous chiefs, but power itself is unstable - any worthy warrior can challenge it at any time. Chaos Champions are a higher level of existence. They have obtained a special mark from an evil god, which makes other tribe warriors dare not challenge easily. The God's Chosen Champion is a being who has received the \"God's Choice\" mark from the evil god, and usually possesses some kind of god-given power. The competition between the four evil gods reflects a philosophical conflict on a cosmic level: Khorne represents pure violence and war, Nurgle represents the tenacity in despair and rebirth in corruption, Sinlage represents the unknowability of fate and the danger of knowledge, and Slaanesh represents the ultimate of the senses and the collapse of the soul. As priests and spell-users of the evil gods, Chaos Warlocks play a unique role in politics - they are both advisors to the chieftains and often the real manipulators behind the scenes, as only they can read the will of the gods."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "There is an unwritten rule in Norsca power politics: the most dangerous chieftains are usually assisted by the most silent women. While Norsca's shieldmaidens and prophetesses rarely openly compete for chieftaincy—because that would require killing their predecessors in public duels—they exercise power in another way: by controlling the longhouse fires, and thus the night's narrative. Whose story is told, whose shame is forgotten, whose name is cut from the war song - it all depends on the eldest woman in the longhouse. I once saw an arrogant champion of Khorne stop his rants as soon as his old mother entered the longhouse—not out of fear of violence, but because she alone knew his true name, and it contained a vulnerability he never dared reveal."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The clan politics of the Chaos tribes are far more complex than southerners imagine. A Norsca clan is not just a blood unit, but a network of psychic pacts - each clan member is bound at birth to a clan-specific 'totem spirit' - usually the soul remnant of some defeated powerful being. My clan totem is the spirit of an ancient hoarfrost dragon, which became our guardian after the first clan leader nailed it to an ice cliff with a rune spear. All political decisions within the clan - from launching raids to choosing a successor - must first be made through a 'totem dream ritual': the entire clan smokes hallucinogenic mushroom smoke in the longhouse until the totem spirit appears in the collective dream and gives guidance. The weakness of this system is this: if two clans merge (which is forced to happen after a defeat), a soul-level war can break out between the totem spirits, causing members of the merged clan to fight each other in nightmares every night for an entire year."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "My years among the Norsca people have taught me that one aspect of their politics that is most underestimated by Southern diplomats is that the Norsca take 'words' themselves extremely seriously. When a Norsca warrior says he will 'winter at your fireside,' it is more than a courtesy, but a complete promise that includes the right to shelter, the sharing of food, and the obligations of an alliance. I have seen two tribes engage in a blood feud that lasted for three generations because a chief said drunkenly, 'Your mother was a good woman' - because he was looking at the chief's mother when he said this, which in their rules was equivalent to declaring the right to marry. When talking to northerners, every word can be a political act."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The political and economic logic of the Chaos tribe is completely different from that of the south. Southerners assumed that northern chiefs accumulated wealth through raiding - which was superficially true, but it missed a crucial point: the true 'capital' of a Norsca chieftain was not gold, but the promise of a name. In the distribution of the spoils after each successful raid, the chief deliberately gave up his lion's share and gave it to the young warriors - this was not generosity, but an investment. Each young warrior who accepts an additional share owes a 'name debt' to the chief, a debt that will be repaid with heightened fighting fervor at the next raid, or settled in the form of loyalty when the chief is challenged. It’s a sophisticated cycle of converting violence into political capital and then reinvesting political capital in future violence."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "The Law of Power - the only criterion for chaotic tribal politics: the strong rule, the weak surrender or die",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Chaotic power structure and decision-making mechanism"
+  ]
+}

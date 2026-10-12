@@ -1,0 +1,210 @@
+{
+  "Id": "rule_Chaos_History",
+  "Keywords": [
+    "chaotic history",
+    "Stargate collapses",
+    "Chaos Invasion (Chaos History)",
+    "Chaos History Eternal Choice",
+    "The Age of the Ancient Saints",
+    "Long Night Era",
+    "Tide of Destruction",
+    "Moka",
+    "Rise of Archaon"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The history of Chaos' invasion is a chronicle written in blood and ashes. Legend has it that in ancient times, the star gate at the pole of the world - the ancient gateway to another world - collapsed, and the wind of chaos poured into the mortal world. Since then, every few decades or hundreds of years, an eternal god will be born in the north, who will unite the chaotic tribes and set off a wave of destruction sweeping the south."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "chaos_culture"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The collapse of the Star Gate is the greatest gift given by the gods to mortals - before that, the winds of chaos were imprisoned in another world, and mortals could only glimpse fragments of truth in trance dreams. The great Everchosen are the true architects of history, each hand-picked by the gods to bring destruction: Morkar the Unifier united all of Norsca under one banner, and Archaon is the ultimate embodiment of the gods' will. Those Southerners can only lament \"invasions\" and \"disasters,\" but they do not know that every wave of destruction is the necessary fire to cleanse the fallen world."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The historical cycle of Chaos invasions shows that the threat from the North never really goes away - it only gathers strength. In history, the empire has faced the army of destruction led by the Eternal Chosen many times. The most tragic one almost pushed the entire old world into the abyss. Understanding these historical cycles is crucial to formulating a defense strategy: when the tribes of the north begin to unite, when the magical winds of the Chaos Wastes become unusually active, and when dark omens appear frequently, the next invasion is approaching."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 100
+        },
+        "IdentityIds": null
+      },
+      "Content": "The history of Chaos invasion can be divided into several key eras: the Age of the Ancient Saints before the collapse of the Star Gate, Chaos was isolated from the subspace, and the mortal race prospered under the guidance of the Ancient Saints; the Long Night Era after the collapse, the earth was ruled by Chaos for thousands of years, until the first generation of elves and dwarf alliances forced Chaos back; after that was the beginning of the Eternal Chosen Era, and the invasion cycle every few hundred years profoundly shaped the political and geographical pattern of the old world - Kislev The establishment of the Empire, the militarization of the empire's provinces, and the gradual fall of the dwarven fortresses are all closely related to this cycle. As the latest Eternal Chosen, Archaon's life story itself is a dark legend: he was originally a fanatical Templar in the Empire, who fell into Chaos in the process of pursuing the truth, and finally collected six Chaos Artifacts and was crowned the Lord of Doom."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "There is an often overlooked dimension to the history of Chaos: the hidden role of women in the rise and fall of its forces. Norsca's shieldmaidens are more than just participants in battle—they are the bearers of the tribe's oral history. The mothers, wives and sisters of each Norsca chief passed down the deeds of the previous generation of warriors to the next through longhouse night talks, deciding which heroes' stories would be told and whose names would be forgotten. What's more, the Seers of Chaos - those old witches who live in seclusion on the edge of the wasteland - who predict the arrival of the Everchosen through dream interpretation and visceral divination, sometimes even before any Chaos sorcerer's astrological deductions. The rise of at least three Eternal Chosen in history is inseparable from the guidance of a female prophet."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The way the Chaos Horde records clan history is completely different from the chronicles of the civilized world - we don't write books, we inscribe the time, place and number of skulls of every battle on the rafters of the longhouse. There are more than 3,700 inscriptions carved on the rafters of the longhouse of my family, the Black Wolf Clan. The earliest one can be traced back to the time of Moka, the first Eternal God Chosen. Every historical narrative of the clan wars is one-sided and highly exaggerated, but if you compare the records on the longhouse pillars of five neighboring Norsca tribes, you can piece together the true scale of the Chaos invasion at any given time. At the heart of the matter is a feud between the clans that leaves no one willing to share their 'pillar of glory' - unless you cut off each other's heads to count."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "In Kislev's Veterans Tavern, you can hear the original oral history of the Chaos Invasion. Those veterans - if they have survived more than one invasion - will tell you that there is a terrifying regularity between the waves of destruction: a major invasion occurs every three generations or so, while small-scale Norsca raids never stop. What frightened them most was not Archaon's name, but 'the year when all the crows flew south' - a common omen that preceded the past three major invasions. Kislev people learn history not from books but from the warnings their grandfathers told around the fire on snowy nights."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The historical cycle of chaos invasion is a macro risk factor that cannot be ignored in business. The Imperial Chamber of Commerce has a secret risk assessment calendar - based on the time intervals between nineteen major Chaos invasions recorded in the past two thousand years, it calculates the possible window period for the next invasion. In the 'high-risk years' marked on this calendar, grain futures prices in the northern provinces will be bid up by at least 40% by hoarders before the autumn harvest, while orders for defense building materials from the Imperial College of Engineering will be sold out in advance. What were the savviest investors buying during the Chaos Invasion? Not gold—gold buys no bread in a siege—but a lease on underground storage space in a dwarven fortress."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Cataclysm - the stargate collapse event, the starting point where chaotic energy begins to pour into the material world",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "The history of the invasion of Chaos is a chronicle written in blood and ashes"
+  ]
+}

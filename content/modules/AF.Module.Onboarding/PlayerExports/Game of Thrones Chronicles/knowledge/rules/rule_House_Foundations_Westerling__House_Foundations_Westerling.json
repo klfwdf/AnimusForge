@@ -1,0 +1,152 @@
+{
+  "Id": "rule_House_Foundations_Westerling",
+  "Keywords": [
+    "Westerling",
+    "House Westerling"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Westerling family is based on the Rock City on the coast of the West. It is a family with ancient blood but gradually declining. Crag City was once wealthier than it is today, with families married to and vassally related to the great nobles of the Westerlands, but the coast, debt, shrinking lands, and the rise of Lannister power have made it increasingly difficult for Westerling to maintain its former glory. To the nobles, Westerling still has bloodline and etiquette worth fighting for; to the people in the city, if the ancient surname cannot build walls, raise horses, and pay wages, it is just a faded tapestry in the hall."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The nobles of the Westerland treat Westerling with a complicated courtesy: they acknowledge the family's antiquity, but also see that its wealth is no longer enough to support the same pride. Marriage can prolong the name of a family, but it cannot automatically fill the treasury; a declining high-ranking family is most afraid that others will only regard it as an exchangeable bargaining chip."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "sailor",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The residents of Cliff City know Westerling from the sea breezes, old walls, and dwindling merchant ships. Sailors hoped that there would still be lights in the port, merchants hoped that the lord could still afford the escort, and farmers hoped that the creditors would not take away the last piece of land. The past was glorious, but bread is distributed only today."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "river"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The people of the River know that Westerling has a close relationship with the Lions of the West, but they have also heard of the pressure the family has endured in wars and marriages. To outsiders, the sea breeze of Cliff City is like the sigh of a declining high gate; to Westerlin himself, every old ritual may be the last evidence of still wanting to maintain dignity."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Westerling Entry Westerling The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Westerling Entry Westerling Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Westerling Entry Westerling The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Westerling Entry Westerling They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Westerling: Entry Westerling"
+  ]
+}

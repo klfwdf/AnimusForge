@@ -1,0 +1,213 @@
+{
+  "Id": "rule_great_eagles",
+  "Keywords": [
+    "Great Eagles",
+    "Mountain Peak Raptors",
+    "Aerial Allies",
+    "Swooping Grasp",
+    "Wood Elf Companions",
+    "Giant Birds of Prey",
+    "Eagles Striking the Sky",
+    "Sky Hunters",
+    "Razor Talons",
+    "Aerial Reconnaissance",
+    "Eyrie Mountains",
+    "Companions of the Wind"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Great Eagles are the most magnificent flying creatures in Athel Loren; nesting atop the highest mountain peaks, they have forged an ancient and profound alliance with the Wood Elves, sweeping across the skies above the battlefield with razor-sharp talons and pinpoint diving strikes."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Great Eagles are not our pets—they are our companions, and even our teachers. In ancient days, when the Elves were still puzzling out how to use the bow and arrow, the Great Eagles had already taught us how to read the wind and exploit the advantage of altitude. Their eyes can spot a field mouse ten leagues away, and their wings can bear an Elf aloft for an entire day without tiring. Every Wood Elf rider dreams of partnering with a Great Eagle. When a Great Eagle stoops from the high heavens, the sheer speed takes your breath away—before the foe can even react, he has already been snatched into the sky by its talons."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Great Eagles grant you battlefield air superiority and reconnaissance capabilities. Deploy Great Eagles at the very forefront of your scouting screen, where they can detect ambushes and enemy movements well in advance. In battle, use the Great Eagles' diving attacks to target enemy commanders or war machines—pull up into the sky immediately after a strike hits home, and never let them get bogged down in prolonged melee. Great Eagles excel against enemy flying units as well. Take care to protect your eyries: losing an eyrie will deprive you of the ability to recruit new Great Eagle companions."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "According to the 'Chronicles of Pinion,' the pact between the Great Eagles and the Elves began in the 'Year of the Eagle-Pact'—roughly twelve thousand years ago. At that time, Orodas 'Cloud-Wing,' King of the Great Eagles, and Raselan 'the Bow-King,' chieftain of the Wood Elves, sealed their covenant atop 'Storm Peak.' The biological traits of Great Eagles are remarkably unique: their bones are hollow yet harder than steel, with wingspans reaching twelve to fifteen meters; their visual organs contain an additional transparent nictitating eyelid capable of filtering magical energy, allowing them to see clearly even through magical mists. Fifteen active eyries are known to be distributed across the mountain peaks of Athel Loren, each guarded jointly by a mated pair of Great Eagles that breed only once every five hundred years."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "My Great Eagle companion is named 'Swiftwind,' and he saved my life on a night of howling storm. Great Eagles never act on orders; they respond only to requests—that is the most precious lesson I have ever learned."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Every kindred reveres an eyrie atop a particular mountain peak, where the Great Eagles have served your bloodline for generations. Never forget to present regular offerings—preferably fresh game, as Great Eagles disdain carrion. Maintaining a strong bond with the Great Eagles is both your wisdom and your duty as head of the kindred."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "A Great Eagle sweeps across the sky, its vast wingspan blotting out the sunlight for a fleeting moment. You instinctively duck your head, but the Great Eagle merely glides past overhead, leaving a rushing gale in its wake."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "In Wood Elf culture, the Great Eagle symbolizes freedom and foresight. They are regarded as messengers of the heavens; before every major decision, Elven lords watch the flight path of the eagles to interpret omens. A Great Eagle bonds with only a single Elven rider in its lifetime, remaining loyal unto death."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Great Eagles—giant birds of prey nesting atop the highest peaks, aerial allies of the Wood Elves for millennia.",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Great Eagles Mountain Peak Raptors Aerial Allies"
+  ]
+}

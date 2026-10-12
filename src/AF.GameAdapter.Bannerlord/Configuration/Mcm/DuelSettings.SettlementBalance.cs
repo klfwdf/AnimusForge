@@ -6,9 +6,9 @@ namespace AnimusForge;
 
 public partial class DuelSettings
 {
-    [SettingPropertyBool("取消繁荣度耗粮", Order = 5, RequireRestart = false,
-        HintText = "默认关闭，保留原版繁荣度带来的粮食消耗。开启后，玩家和 NPC 的城市、城堡不再因繁荣度消耗粮食；驻军耗粮、围城、供粮和政策粮食变化仍保留。与数值上限、粮仓容量开关独立，保存后无需重启，再次关闭后恢复原版繁荣耗粮。仅适用于使用原版粮食计算的模型。")]
-    [SettingPropertyGroup("16. 政策系统", GroupOrder = 0)]
+    [SettingPropertyBool("{=AF_MCM_Settlement_DisableProsperity}Disable prosperity food consumption", Order = 5, RequireRestart = false,
+        HintText = "{=AF_MCM_Settlement_DisableProsperity_Hint}When enabled, towns and castles no longer consume food from prosperity. Garrison, siege, supply, and policy food changes remain unchanged.")]
+    [SettingPropertyGroup("{=AF_MCM_Group_PolicySystem}Policy system", GroupOrder = 0)]
     public bool DisableProsperityFoodConsumption { get; set; } = false;
 
     public static bool ShouldDisableProsperityFoodConsumption()

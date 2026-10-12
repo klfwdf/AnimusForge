@@ -1,0 +1,151 @@
+{
+  "Id": "rule_Folk_Customs_Town_Guilds",
+  "Keywords": [
+    "Town Guilds",
+    "Craft Guilds",
+    "Apprentices",
+    "Master Craftsmen",
+    "Market Access"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "In more populous towns, bakers, blacksmiths, weavers, cobblers, shipowners, or merchants organized guilds and fraternal organizations to coordinate prices, quality, apprenticeship training, festival donations, and negotiations with the government. Apprentices serve their masters for many years. After completing their studies, they may become helpers, and then use their works, fees, and connections to start their own businesses. Guilds could prevent bad goods from ruining the industry, or they could allow wealthy masters to monopolize stalls, drive down wages for helpers, and exclude newcomers from the countryside. The lords needed guild taxes and supplies, and the guilds needed judicial protection. Cooperation between both parties can make the city prosperous, and excessive demands from either party will lead to the creation of black markets and secret workshops."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "merchant",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The master calls the rules a guarantee of craftsmanship, while the helper asks when it will be his turn to open a shop. The guild is both a protective net and a door guarded by the vested."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The rulers hoped that the guilds would provide stable supplies, pay taxes, and complete military supplies in times of war. Pushing too hard will make craftsmen flee, and allowing monopoly will make citizens resentful."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "wanderer",
+          "slave"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Country people often find that when they move to the city, they still need a guarantee, a fee, and the approval of a master to earn a living freely. People without connections can only start with the dirtiest and cheapest jobs."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Town Guilds Fellow craftsmen and merchants protect their craftsmanship through rules, apprenticeships, and joint bargaining, and also limit competition by outsiders and poor people through thresholds. Whether it is valid depends on who can grant the rights, collect the consideration, and actually make the judgment come to fruition in the event of default."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Town Guilds Fellow craftsmen and merchants protect their craftsmanship through rules, apprenticeships, and joint bargaining, and also limit competition by outsiders and poor people through thresholds. The distant system is not empty talk only if it can be implemented in campfires, city gates and inns."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Town Guilds Fellow craftsmen and merchants protect their craftsmanship through rules, apprenticeships, and joint bargaining, and also limit competition by outsiders and poor people through thresholds. If a rule is practiced over and over again, it will find its way into rituals, crafts, and prayers; if it is sustained only by fear, cracks will show at the onset of a crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Town Guilds Fellow craftsmen and merchants protect their craftsmanship through rules, apprenticeships, and joint bargaining, and also limit competition by outsiders and poor people through thresholds. They remember taxes, grain, labor, relief and who can speak for them; these grand names will eventually fall on the family's rice pot."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Town Guilds: Fellow craftsmen and merchants protect their craftsmanship through rules, apprenticeships, and joint bargaining, and also limit competition by outsiders and poor people through thresholds."
+  ]
+}

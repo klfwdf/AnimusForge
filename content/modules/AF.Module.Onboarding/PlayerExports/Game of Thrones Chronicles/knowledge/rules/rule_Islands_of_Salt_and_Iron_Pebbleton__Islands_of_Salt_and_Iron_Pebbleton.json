@@ -1,0 +1,153 @@
+{
+  "Id": "rule_Islands_of_Salt_and_Iron_Pebbleton",
+  "Keywords": [
+    "Pebbleton",
+    "Harbor Town",
+    "Pebbles"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Pebble Town is the port town of the Iron Islands, and its coast is dotted with wave-polished boulders. Such a bay is not necessarily wide, but it can provide a recognizable landing place for small boats and long boats; beside the dock are dried fish, salt, nets, ship materials and ironware exchanged from other places. The ironborn are not always on the march, and the harbor towns also need to repair roofs, bargain, store food for the winter, and wait for the return of relatives from sea. Pebbletown embodies the more mundane side of the Iron Islands beyond the ancient paths: the barren land forces the people to rely on the sea, which allows them both to trade and to be easily involved in plunder."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Pebbleton Local families also relied on salt fish, ore, barren fields, sheltered anchorages, and longships to return home; if any road, well, or dock failed, the price would fall first on them."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Pebbleton Entry Pebbleton"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Pebbleton They will also recognize the accents, laws and credentials of the Iron Islands; reputations may travel great distances from taverns, but true distances must still be measured by wheel, oar or horse's hoof."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Pebbleton Entry Pebbleton"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Pebbleton If you can supply supplies, avoid danger, and find a guide, it is worth marking in your itinerary; if you don't have these three things, no matter how loud your family name is, it won't be able to save the lost."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Pebbleton A stronghold was therefore not just a lord's hall, but also a place where weddings and funerals, vows, labor and local memories recurred."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Pebbleton They care about salt fish, ore, barren fields, sheltered anchorages, and the return of longships. They also look at whether seeds are left after collecting grain and whether the city gates are open in times of disaster. When people from afar see coats of arms, what they see is whether there will be food to eat tomorrow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Pebbleton: Pebble Town is the port town of the Iron Islands, and its coast is dotted with wave-polished boulders. Such a bay is not necessarily wide, but it can provide a recognizable landing place for small boats and long boats; beside the dock are dried fish, salt, nets, ship materials and ironware exchanged from other places. The ironborn are not always on the march, and the harbor towns also need to repair roofs, bargain, store food for the winter, and wait for the return of relatives from sea. Pebbletown embodies the more mundane side of the Iron Islands beyond the ancient paths: the barren land forces the people to rely on the sea, which allows them both to trade and to be easily involved in plunder."
+  ]
+}

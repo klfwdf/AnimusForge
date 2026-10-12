@@ -61,13 +61,13 @@ public static class SiegeRegionalConflictProfile
 
     public static string BuildConflictNoticeMessage(string targetName, bool victimDown)
     {
-        string name = NormalizeTargetName(targetName, "一名平民");
+        string name = NormalizeTargetName(targetName, "a civilian");
         if (victimDown)
         {
-            return "【区域冲突】" + name + "倒地，附近逃散。";
+            return "[Regional conflict] " + name + " fell, and nearby people scattered.";
         }
 
-        return "【区域冲突】" + name + "遭袭，附近恐慌。";
+        return "[Regional conflict] " + name + " was attacked, causing local panic.";
     }
 
     private static string NormalizeTargetName(string targetName, string fallback)

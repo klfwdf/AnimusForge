@@ -1,0 +1,155 @@
+{
+  "Id": "rule_World_Mechanics_Stepstones",
+  "Keywords": [
+    "Stepstones",
+    "Shattering of the Arm of Dorne",
+    "Narrow Sea Shipping Lanes",
+    "Ninepenny Kings"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Stepstones lie scattered between the eastern tip of Dorne and Essos, said in legend to be the shattered remnants of the Arm of Dorne after the children of the forest broke the land bridge between the continents. Reefs, shallow coves, and countless islets suit hiding ships, taking on water, and laying ambushes, making the chain a natural lair for pirates and privateers; at the same time, merchantmen passing between the Narrow Sea and the Summer Sea can hardly avoid these waters altogether. The Free Cities, kings of Westeros, and sellsword adventurers have fought over the islands again and again in hopes of guarding trade or exacting tolls from passing wealth. Old conflicts such as the War of the Ninepenny Kings proved that a power seated in the islands, even without broad lands, can make great realms on both shores pay a heavy price."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai",
+          "tyroshi",
+          "myrish",
+          "lyseni"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "sailor",
+          "merchant",
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Folk on the neighboring coasts treat the Stepstones as a threshold that cannot be ignored. Whoever holds a few good anchorages can escort ships, collect tolls, or plunder them—and at times the three differ only by the flag at the masthead."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Sellswords and adventurers see in the islands a chance to grow rich quickly and make a name, while veterans remember fevers, lack of water, and men who died for a nameless rock."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "slave",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Those carried off by pirates do not romance the Stepstones. To coastal families, the island chain is no stage for legend, but the direction in which kin may vanish without word of ransom ever returning."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Stepstones The broken chain of islands between Dorne and Essos commanding the lanes between the Narrow Sea and the Summer Sea, long drawing pirates, privateers, and great powers contending for tolls. Whether it is valid depends on who can grant the rights, collect the consideration, and actually make the judgment come to fruition in the event of default."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Stepstones The broken chain of islands between Dorne and Essos commanding the lanes between the Narrow Sea and the Summer Sea, long drawing pirates, privateers, and great powers contending for tolls. The distant system is not empty talk only if it can be implemented in campfires, city gates and inns."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Stepstones The broken chain of islands between Dorne and Essos commanding the lanes between the Narrow Sea and the Summer Sea, long drawing pirates, privateers, and great powers contending for tolls. If a rule is practiced over and over again, it will find its way into rituals, crafts, and prayers; if it is sustained only by fear, cracks will show at the onset of a crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Stepstones The broken chain of islands between Dorne and Essos commanding the lanes between the Narrow Sea and the Summer Sea, long drawing pirates, privateers, and great powers contending for tolls. They remember taxes, grain, labor, relief and who can speak for them; these grand names will eventually fall on the family's rice pot."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Stepstones: The broken chain of islands between Dorne and Essos commanding the lanes between the Narrow Sea and the Summer Sea, long drawing pirates, privateers, and great powers contending for tolls."
+  ]
+}

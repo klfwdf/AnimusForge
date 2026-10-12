@@ -1,0 +1,81 @@
+{
+  "Id": "rule_Khuzait_political_system",
+  "Keywords": [
+    "Khuzait political system"
+  ],
+  "RagShortTexts": [
+    "The core of the Khuzait political system is the ongoing tension between centralization and tribal decentralization."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Monchug Khan sat on the throne, and his eyes on those of us never changed - not trust, but consideration. Each of us has a price tag, a bottom line, and a threshold of betrayal in his heart, and he calculates it better than we do ourselves. So we are not against it. We Nayans have the final say in our own tribes, whether it’s taxing, recruiting troops, or settling cases, and the Khan doesn’t interfere. But beyond the tribal boundaries, the Khan's order is iron. The rules set by Ulhun Khan are still on paper, and the rules of Monchug Khan are in our bones. The difference is that Wuerhun uses his sword to carve rules, while Monchug uses propriety. Proportion is more difficult to deal with than a sword - you can dodge with a sword, but not with propriety. The Archite tribe always feels that they are the oldest and should take the throne. They were not convinced by Monchug, but they did not dare to rebel. Monchug never suppressed them or favored them, and he had an excellent sense of proportion. The chief of the Ulhunnaite tribe is the Khan himself. Our power comes from our bloodline, but maintaining our bloodline is not based on genealogy but on our ability. We all admire Khan's abilities. Over there in Karakulgit it was a different story. They don't listen to orders, don't know where to live, and don't want fiefdoms. The Khan sent money, slaves, and fiefdoms, but they refused to accept any of them. Other khans would have sent troops long ago, but Monchug did not. It's not mercy, it's calculation - sending troops deep into the grassland to chase them is like shooting at the wind with arrows. So he endured it."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Who is Khan? Monchug. I know him, he is in charge of all the tribes, and the Yan people lower their heads and talk in front of him. My father said that when Wuerhun Dahan was around, the rules were strict, and everyone would be beheaded if he violated the rules. Everyone was afraid. Now Monchug Khan does not behead people casually, but the Yan people are also afraid of him. I think this is good - beheading is always a bad thing. To make those Yan Yans afraid but not behead them shows that the Khan understands."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The political system of Khuzait is a typical steppe khanate system, and its core contradiction lies in the continuous tension between the legal demands for centralization and the practical inertia of tribal decentralization. Wuerhun used an iron fist to knead the scattered nomadic tribes into a unified khanate, but his institutional design relied heavily on personal authority and failed to institutionalize power. The Monchug inherited this system, maintaining the authority of the Khan's court with a precise sense of proportion and unchallenged personal intimidation, but the Nayan's obedience was based on calculation rather than loyalty. From the perspective of comparative politics, the power structure of the Khuzait Khanate has similarities with the early empire - both faced the difficult problem of how to translate military conquest into stable governance. The empire's solution was the senate and the standing army, and the Khuzait's solution was the Khan's Council and the Tibetan Guards. However, the Council of Khans is not a legislative body, and the Jingxue Guards are far less than the size and discipline of the Imperial Legion. The level of institutionalization of the Khanate was much lower than that of the Empire, and its stability relied heavily on the Khan's personal abilities."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Khuzait? Those on horseback to the east. There seems to be a khan over there called Monchug, who is the biggest head. But there are many tribal leaders under him, called Na Yan, who all take care of their own affairs, and the Khan may not be able to control them. I met Khuzait merchants on the border. They said that the Khan was in charge of the trade routes and Nayan was in charge of the pastures. It would be fine if the two families were separated. If Khan and Nayan quarreled, there would be a war."
+    }
+  ],
+  "TextMappings": []
+}

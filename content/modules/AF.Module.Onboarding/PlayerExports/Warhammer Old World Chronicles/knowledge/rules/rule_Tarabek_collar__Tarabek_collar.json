@@ -1,0 +1,169 @@
+{
+  "Id": "rule_Tarabek_collar",
+  "Keywords": [
+    "Tara Baker Collar",
+    "Tarabek Province_TB",
+    "Talabek Collar Elector Count _TB",
+    "Tara Beckham_TB",
+    "Tarabek River_TB",
+    "Helmut Feuerbach_TB",
+    "Tarabek Forest_TB",
+    "God of Taal_TB"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Tarabek Territory is the largest province in the heart of the empire. The vast Tarabek Forest covers more than 70% of its land. The capital, Tarabekheim, is a geological wonder in itself - the entire city is located in a huge crater, and the towering crater walls form a natural wall, making this forest capital one of the most difficult cities to capture in the empire. The Tarabek River runs through the center of the province from south to north and is a golden waterway connecting the north and south of the empire for trade. The people here devoutly believe in Tal, the god of nature, and hunters and loggers make up the main body of the provincial militia."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Talabek Territory is the \"Central Plains Heartland\" of the empire - not the richest, not the strongest, but definitely the most self-righteous. Their Elector Count, Helmut Feuerbach, was Emperor Karl Franz's most formidable opponent in the Imperial Parliament. He always wanted to oppose everything. Every time the emperor proposed a plan, Feuerbach would always propose another one - not because he had a better idea, but because there was an old score between Talabek Territory and Reikland that dated back to the era of the Three Emperors. Tarabeckheim is a stunning city, built in a crater so that anyone attempting to attack it would have to descend to the bottom and then climb back up - this alone would be enough for Feuerbach to smile with the legs of his chair in front of the Imperial Diet in the face of any military threat. But the real power of Talabek lies not in the cities, but in the forests - the great forests are home to countless beastmen, and the provincial army has far more combat experience than the guards in Reikland who have only received training in city parades."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Talabek Territory is the geographical center of the empire—controlling the Talabek River controls the flow of materials between the north and the south of the empire. Helmut Feuerbach knew this well: the toll he imposed on the Talabek River crossing was the subject of one of the most heated debates in the Reichstag, but no one could get around the river. Militarily, the crater terrain of Tarabekheim provided the empire with a unique defensive advantage - the crater walls themselves were impenetrable walls, and siege troops had to descend to the bottom of the crater before attacking the city gates, and every inch of land at the bottom of the crater was within the coverage of the city's archers and artillery. Feuerbach's diplomatic strategy was based on one core idea: keeping the empire divided would allow the Talabek realm to remain important. He will support any proposal in the Imperial Council that would weaken Reikland's dominance, regardless of whether the proposal's content is justified. Feuerbach is no ally to anyone trying to unite the empire - he's an obstacle you'll always have to expend political resources to appease."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "The governance of the Talabek Territory faces a unique spatial contradiction: a severe mismatch between the geographical centrality of the province and its political status. The average annual freight volume of the Talabek River is 40% that of the Reik River, and the customs revenue should theoretically make it the second richest province in the empire - but actual financial data show that the province's average annual surplus is only slightly higher than that of the impoverished Stirland. There are three reasons: first, the beastman eradication operations in the Great Forest consumed more than half of the provincial army budget; second, the Feuerbach family's huge maintenance expenditures on the noble area in the Tarabekheim Crater - the drainage system and heating network in the area are the most expensive municipal projects in the empire; third, the timber trade in Tarabek Territory was severely marginalized by the coastal advantages of Middenland and Nordland. Feuerbach responded by increasing the toll tax—a typically political decision rather than an economic one, as exorbitant tolls were driving caravans to develop overland alternative routes around the upper Talabek River. In the long term, the province will either need to reach a timber trade agreement with Middenland to develop real resource advantages, or it will continue to comfort itself with its historical glory in a fiscal deficit."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "As a noble woman in Talabek Territory, the first thing you have to learn is to distinguish the sounds in the forest-howling wolves, roaring bears, and the horns of beastmen. Although Talabekheim is a miraculous city, as soon as you leave the crater, you enter the most dangerous primeval forest in the empire. There is no noble woman in the Talabek territory who has never encountered the threat of a beastman attack. Noble society here is completely different from the court of Reikland: you don't wear silk - silk is useless in the great forest - you wear tanned deerskin and woolen cloaks from the Taal church. Your status is determined not by how many big shots you know in Altdorf, but by how many hunters and loggers you can mobilize to form patrols on the borders of your territory. But the women of Talabek Territory also enjoy a freedom that is unimaginable for noble women in Reikland: the Taal Church's respect for female hunters is unique in the empire. A Talabek Territory noble woman who can hunt a black bear alone has the right to speak on an equal footing with the male lords in the council chamber."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "There is a premise for running a family in Talabek territory that no imperial literature will teach you: your family is not competing with other families—it is competing with the great forest itself. The history of noble families in the Talabek Territory is essentially a history of survival against the forest: every manor needs to cut down the trees on the edge of the forest year after year to prevent the hideouts of beastmen from approaching, and every family cemetery needs armed guards to prevent the cult in the forest from using the remains of ancestors to perform dark rituals. The secret of the Feuerbach family's ability to rule the Talabek Territory for more than four centuries lies not in their wealth - the counts in other provinces were much richer - but in their control of all the major altars of the Tarl Church in the province. Whoever has the power to appoint Taal priests in the forest effectively controls the loyalty of the hunter and lumberjack guilds. The correct way to build your family power in Talabek Territory is not to invest in land, but to invest in the knowledge of altars and forest paths - these intangible assets are far more weighty in Talabek Territory than a piece of land deed."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Talabek Neck is a disturbingly beautiful place to outsiders. The Crater City is the most shocking architectural wonder I have ever seen in the old world - you stand on the edge of the crater and look down, and the entire city is like a spoonful of light scooped out by a giant. Even in the darkest night, it exudes a stubborn light that belongs to mankind. But once you leave the edge of the pit, the silence of the big forest will make you rethink the wisdom of your decision to take the risk here. The density of beastmen in the forest far exceeds the official statement of the empire - when I was working in a logging camp last year, the camp was raided by more than thirty horned beasts in one night. Only the cook and I survived because he poured a pot of boiling oil on the leading horned beast. The employment business in Talabek Territory focuses on armed guards in logging camps and river escorts for caravans. The pay is moderate, but the living environment - let's put it this way, spending the night in a hotel by the Talabek River, you have to negotiate with fleas, river mosquitoes, and the occasional dryad vines that come in from the window."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The commercial core of the Talabek Territory is on the Talabek River - if you control the river crossing, you will control the tariff lifeline of the empire's north-south trade. Commerce on the river is jointly monopolized by Tara Beckheim's three old boat operations, the largest of which is related to the Feuerbach family by marriage for more than six generations. It is almost impossible for outsiders to enter the Talabek River shipping market - not because there is a formal legal ban on them (Imperial law prohibits trade monopolies at the provincial level), but because every ferry on both sides of the river is guarded by a station controlled by a guild family, and you can't even rent a loading dock without their cooperation. But Talabek has an undervalued business opportunity: the rare woods of the Great Forest—particularly ebony and blood oak— command a steep premium in the fine furniture markets of Nuln and Altdorf. The challenge is to get the wood out of the forest alive: you'll need at least an experienced Orion escort, a fortified wagon capable of navigating swampy terrain, and permission from the Church of Taal (loggers are reluctant to work in the deep forests densely populated by beastmen without the blessing of the priests)."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Tarabek Territory - a forest province in the heart of the empire, home to the crater city of Tarabekheim",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Tarabekheim Great Forest, Imperial Province of Tarabek Territory"
+  ]
+}

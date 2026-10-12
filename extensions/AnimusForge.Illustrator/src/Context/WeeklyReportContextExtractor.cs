@@ -70,21 +70,21 @@ namespace AnimusForge.Illustrator.Context
         public string BuildHardFacts()
         {
             var sb = new StringBuilder();
-            sb.AppendLine("【事件行动与结果证据】");
+            sb.AppendLine(IllustratorText.Get("Weekly_579"));
             sb.AppendLine(!string.IsNullOrWhiteSpace(Snapshot?.EventFacts) ? Snapshot.EventFacts
                 : NarrativeFactRouter.BuildEventEvidence(Title, Subtitle, HeadlineSummary));
-            sb.AppendLine("以上是事件内容而非画面文字。保留各句的当事人、地点、否定、计划与结果，不把人物或结果跨事件拼接；未明确的结果保持未知。");
+            sb.AppendLine(IllustratorText.Get("Weekly_580"));
 
             if (IsFrozenEvent)
-                sb.AppendLine("【已选定事件】事实区已锁定本期配图事件。只画这一事件；不能改选其他消息，不能因标题或措辞变化换事件。事件发生时的角色身份优先于人物目前的头衔；相关君主或领主不等于亲临现场。");
+                sb.AppendLine(IllustratorText.Get("Weekly_581"));
             foreach (var person in Characters)
             {
                 sb.AppendLine();
-                sb.AppendLine("=== 【人物：" + person.Name + "；事件角色：" + person.Role + "】 ===");
-                sb.AppendLine("【对应事实】" + person.Evidence);
-                sb.AppendLine(person.Profile?.BuildVisualSummary() ?? "该人物外貌未能提取，不能借用其他人的脸或装备。");
+                sb.AppendLine(IllustratorText.Get("Weekly_582") + person.Name + IllustratorText.Get("Weekly_583") + person.Role + "】 ===");
+                sb.AppendLine(IllustratorText.Get("Weekly_584") + person.Evidence);
+                sb.AppendLine(person.Profile?.BuildVisualSummary() ?? IllustratorText.Get("Weekly_585"));
             }
-            sb.AppendLine("各人物的全身图与同名头肩图必须一一对应，只锁定身份外貌，不复制站姿或背景。是否入画服从事件事实，不把相关人物全部强塞入现场；未提供参考的角色不得套用其他人的脸。");
+            sb.AppendLine(IllustratorText.Get("Weekly_586"));
 
             if (EnvironmentProfile != null && (Snapshot == null || Snapshot.EventSettlement != null))
             {
@@ -92,17 +92,17 @@ namespace AnimusForge.Illustrator.Context
                 if (!string.IsNullOrWhiteSpace(facts))
                 {
                     sb.AppendLine();
-                    sb.AppendLine("=== 【本期提及地点资料，并非已选事件现场】 ===");
+                    sb.AppendLine(IllustratorText.Get("Weekly_587"));
                     if (!string.IsNullOrWhiteSpace(Snapshot?.EventSettlementEvidence))
-                        sb.AppendLine("【此地点对应原文】" + Snapshot.EventSettlementEvidence);
-                    sb.AppendLine("只在所选事件原文明确关联此地点时使用其资料；提及地点不等于行动发生于此，不能把其他事件的地点、文化或地貌移入本画。未采集该历史现场的实际场景图。");
+                        sb.AppendLine(IllustratorText.Get("Weekly_588") + Snapshot.EventSettlementEvidence);
+                    sb.AppendLine(IllustratorText.Get("Weekly_589"));
                     sb.AppendLine(facts);
                 }
             }
             if (Snapshot != null && Snapshot.EventSettlement == null)
             {
                 sb.AppendLine();
-                sb.AppendLine("【地点证据边界】未解析到具体定居点；所选事件的发生地以原文为准，不能用玩家或参考人物当前所在地替代。允许设计与该事件及时代相容的非具名艺术环境，但不得声称是实际地点的精确还原。");
+                sb.AppendLine(IllustratorText.Get("Weekly_590"));
             }
 
             return sb.ToString().TrimEnd();
@@ -111,12 +111,12 @@ namespace AnimusForge.Illustrator.Context
         public string BuildDirectorOnlyFacts()
         {
             var sb = new StringBuilder();
-            if (!string.IsNullOrWhiteSpace(Title)) sb.AppendLine("【报头原文】" + Title);
-            if (!string.IsNullOrWhiteSpace(Subtitle)) sb.AppendLine("【核心局势原文】" + Subtitle);
-            if (!string.IsNullOrWhiteSpace(HeadlineSummary)) sb.AppendLine("【事件要闻原文】" + HeadlineSummary);
+            if (!string.IsNullOrWhiteSpace(Title)) sb.AppendLine(IllustratorText.Get("Weekly_591") + Title);
+            if (!string.IsNullOrWhiteSpace(Subtitle)) sb.AppendLine(IllustratorText.Get("Weekly_592") + Subtitle);
+            if (!string.IsNullOrWhiteSpace(HeadlineSummary)) sb.AppendLine(IllustratorText.Get("Weekly_593") + HeadlineSummary);
             foreach (var person in Characters)
             {
-                sb.AppendLine("【人物背景：" + person.Name + "】当前身份仅供辨识，不改写事件角色：" + person.Role);
+                sb.AppendLine(IllustratorText.Get("Weekly_594") + person.Name + IllustratorText.Get("Weekly_595") + person.Role);
                 sb.AppendLine(person.Profile?.BuildDirectorOnlyFacts());
             }
             if (EnvironmentProfile != null) sb.AppendLine(EnvironmentProfile.BuildDirectorOnlyFacts());
@@ -130,14 +130,14 @@ namespace AnimusForge.Illustrator.Context
         {
             var sb = new StringBuilder();
             if (!string.IsNullOrWhiteSpace(SceneThemeDirective)) sb.AppendLine(SceneThemeDirective);
-            sb.AppendLine("【事件张力】冲突、突袭、俘获、政变报道优先抓住行动进行中的可信瞬间，明确一方施加行动、另一方的身体回应和双方力量关系；不要把事件画成并排站立、面向观众合影或安静巡视。可用重心偏移、前后错位、局部遮挡、斜向动势和远近对比突出行动，景别由叙事选择，主体足够大以读出表情与动作。被俘用失去行动自由与控制关系表达，不能画成贵宾陪同出游。艺术动作不得新增伤亡、刑罚、反抗、肢体伤害或颠倒胜负；和平、议和、自然死亡报道按真实情绪表现，不强行改成战斗。光影增强层次但不涂黑背景，环境仍然可读。");
+            sb.AppendLine(IllustratorText.Get("Weekly_596"));
             // 周报是历史事件的艺术再现，不复用实时会话中“未知陈设一律不补”的现场复原规则。
             return sb.ToString().TrimEnd();
         }
 
         public string BuildCompositeContext()
         {
-            return BuildHardFacts() + "\n\n【导演专属背景】\n" + BuildDirectorOnlyFacts() + "\n\n【开放艺术指导】\n" + BuildArtDirection();
+            return BuildHardFacts() + IllustratorText.Get("Weekly_597") + BuildDirectorOnlyFacts() + IllustratorText.Get("Weekly_598") + BuildArtDirection();
         }
     }
 
@@ -183,7 +183,7 @@ namespace AnimusForge.Illustrator.Context
                 foreach (var hero in heroes.Where(h => !string.IsNullOrWhiteSpace(h.Name?.ToString()) && h.Name.ToString().Length >= 2)
                     .Select(h => new { Hero = h, Index = snapshot.EventFacts.IndexOf(h.Name.ToString(), StringComparison.Ordinal) })
                     .Where(h => h.Index >= 0).OrderBy(h => h.Index).ThenByDescending(h => h.Hero.IsFactionLeader).Take(4))
-                    AddCharacter(context, hero.Hero, hero.Hero.StringId, hero.Hero.Name.ToString(), "正文当事人，具体角色依对应事实");
+                    AddCharacter(context, hero.Hero, hero.Hero.StringId, hero.Hero.Name.ToString(), IllustratorText.Get("Weekly_599"));
             }
             var first = context.Characters.FirstOrDefault(c => c.Hero != null);
             context.ProtagonistHero = snapshot.ProtagonistHero = first?.Hero;
@@ -243,8 +243,8 @@ namespace AnimusForge.Illustrator.Context
             try
             {
                 int seasonIndex = (int)CampaignTime.Now.GetSeasonOfYear;
-                string seasonName = seasonIndex == 0 ? "春" : seasonIndex == 1 ? "夏" : seasonIndex == 2 ? "秋" : "冬";
-                snapshot.ReportDateLabel = $"卡拉迪亚历 {CampaignTime.Now.GetYear} 年 · {seasonName}季 · 第 {CampaignTime.Now.GetDayOfSeason + 1} 日（周报发布日，事件发生在本周期内）";
+                string seasonName = seasonIndex == 0 ? IllustratorText.Get("Weekly_600") : seasonIndex == 1 ? IllustratorText.Get("Weekly_601") : seasonIndex == 2 ? IllustratorText.Get("Weekly_602") : IllustratorText.Get("Weekly_603");
+                snapshot.ReportDateLabel = IllustratorText.Format("Weekly_604", CampaignTime.Now.GetYear, seasonName, CampaignTime.Now.GetDayOfSeason + 1);
             }
             catch
             {
@@ -335,79 +335,79 @@ namespace AnimusForge.Illustrator.Context
             string lower = text.ToLowerInvariant();
 
             // 处决/行刑（强信号优先——"劫掠并俘虏"不该盖过处决要闻）
-            if (lower.Contains("处决") || lower.Contains("斩首") || lower.Contains("绞刑") ||
-                lower.Contains("行刑") || lower.Contains("处刑") || lower.Contains("execution") ||
+            if (lower.Contains(IllustratorText.Raw("Weekly_605")) || lower.Contains(IllustratorText.Raw("Weekly_606")) || lower.Contains(IllustratorText.Raw("Weekly_607")) ||
+                lower.Contains(IllustratorText.Raw("Weekly_608")) || lower.Contains(IllustratorText.Raw("Weekly_609")) || lower.Contains("execution") ||
                 lower.Contains("beheaded") || lower.Contains("executed"))
             {
                 return WeeklyReportEventTheme.PrisonerExecution;
             }
 
             // 海上交战/舰队行动
-            if (lower.Contains("海战") || lower.Contains("舰队") || lower.Contains("战船") ||
-                lower.Contains("海上") || lower.Contains("港口") || lower.Contains("水师") ||
+            if (lower.Contains(IllustratorText.Raw("Weekly_610")) || lower.Contains(IllustratorText.Raw("Weekly_611")) || lower.Contains(IllustratorText.Raw("Weekly_612")) ||
+                lower.Contains(IllustratorText.Raw("Weekly_613")) || lower.Contains(IllustratorText.Raw("Weekly_614")) || lower.Contains(IllustratorText.Raw("Weekly_615")) ||
                 lower.Contains("naval") || lower.Contains("fleet") || lower.Contains("fleet"))
             {
                 return WeeklyReportEventTheme.Naval;
             }
 
             // 定居点陷落/易主（战后状态，区别于进行中的围攻）
-            if (lower.Contains("陷落") || lower.Contains("失垒") || lower.Contains("易主") ||
-                lower.Contains("失守") || lower.Contains("攻陷") || lower.Contains("占领") ||
-                lower.Contains("收复") || lower.Contains("投降") || lower.Contains("献出") ||
+            if (lower.Contains(IllustratorText.Raw("Weekly_616")) || lower.Contains(IllustratorText.Raw("Weekly_617")) || lower.Contains(IllustratorText.Raw("Weekly_618")) ||
+                lower.Contains(IllustratorText.Raw("Weekly_619")) || lower.Contains(IllustratorText.Raw("Weekly_620")) || lower.Contains(IllustratorText.Raw("Weekly_621")) ||
+                lower.Contains(IllustratorText.Raw("Weekly_622")) || lower.Contains(IllustratorText.Raw("Weekly_623")) || lower.Contains(IllustratorText.Raw("Weekly_624")) ||
                 lower.Contains("fallen") || lower.Contains("captured") || lower.Contains("surrendered") || lower.Contains("ceded"))
             {
                 return WeeklyReportEventTheme.SettlementChange;
             }
 
             // 村庄遭扰、袭击、劫掠
-            if (lower.Contains("袭击") || lower.Contains("劫掠") || lower.Contains("烧毁") ||
-                lower.Contains("掠夺") || lower.Contains("遭扰") || lower.Contains("袭扰") ||
+            if (lower.Contains(IllustratorText.Raw("Weekly_625")) || lower.Contains(IllustratorText.Raw("Weekly_626")) || lower.Contains(IllustratorText.Raw("Weekly_627")) ||
+                lower.Contains(IllustratorText.Raw("Weekly_628")) || lower.Contains(IllustratorText.Raw("Weekly_629")) || lower.Contains(IllustratorText.Raw("Weekly_630")) ||
                 lower.Contains("raid") || lower.Contains("pillage") || lower.Contains("loot"))
             {
                 return WeeklyReportEventTheme.VillageRaid;
             }
 
             // 围攻防守战
-            if (lower.Contains("围攻") || lower.Contains("攻城") || lower.Contains("围城") ||
-                lower.Contains("云梯") || lower.Contains("攻城塔") || lower.Contains("破城") ||
+            if (lower.Contains(IllustratorText.Raw("Weekly_631")) || lower.Contains(IllustratorText.Raw("Weekly_632")) || lower.Contains(IllustratorText.Raw("Weekly_633")) ||
+                lower.Contains(IllustratorText.Raw("Weekly_634")) || lower.Contains(IllustratorText.Raw("Weekly_635")) || lower.Contains(IllustratorText.Raw("Weekly_636")) ||
                 lower.Contains("siege") || lower.Contains("assault"))
             {
                 return WeeklyReportEventTheme.Siege;
             }
 
             // 野外战役交锋
-            if (lower.Contains("交战") || lower.Contains("大捷") || lower.Contains("击溃") ||
-                lower.Contains("激战") || lower.Contains("溃败") || lower.Contains("野战") ||
-                lower.Contains("阵亡") || lower.Contains("合围") || lower.Contains("battle") || lower.Contains("clash"))
+            if (lower.Contains(IllustratorText.Raw("Weekly_637")) || lower.Contains(IllustratorText.Raw("Weekly_638")) || lower.Contains(IllustratorText.Raw("Weekly_639")) ||
+                lower.Contains(IllustratorText.Raw("Weekly_640")) || lower.Contains(IllustratorText.Raw("Weekly_641")) || lower.Contains(IllustratorText.Raw("Weekly_642")) ||
+                lower.Contains(IllustratorText.Raw("Weekly_643")) || lower.Contains(IllustratorText.Raw("Weekly_644")) || lower.Contains("battle") || lower.Contains("clash"))
             {
                 return WeeklyReportEventTheme.FieldBattle;
             }
 
             // 重要人物亡故/权力交接
-            if (lower.Contains("驾崩") || lower.Contains("逝世") || lower.Contains("薨逝") ||
-                lower.Contains("去世") || lower.Contains("继位") || lower.Contains("继承") ||
+            if (lower.Contains(IllustratorText.Raw("Weekly_645")) || lower.Contains(IllustratorText.Raw("Weekly_646")) || lower.Contains(IllustratorText.Raw("Weekly_647")) ||
+                lower.Contains(IllustratorText.Raw("Weekly_648")) || lower.Contains(IllustratorText.Raw("Weekly_649")) || lower.Contains(IllustratorText.Raw("Weekly_650")) ||
                 lower.Contains("died") || lower.Contains("succession") || lower.Contains("abdicated"))
             {
                 return WeeklyReportEventTheme.DynastyDeath;
             }
 
             // 宴会、比武竞技
-            if (lower.Contains("宴会") || lower.Contains("竞技") || lower.Contains("比武") ||
-                lower.Contains("加冕") || lower.Contains("婚礼") || lower.Contains("tournament") || lower.Contains("feast"))
+            if (lower.Contains(IllustratorText.Raw("Weekly_651")) || lower.Contains(IllustratorText.Raw("Weekly_652")) || lower.Contains(IllustratorText.Raw("Weekly_653")) ||
+                lower.Contains(IllustratorText.Raw("Weekly_654")) || lower.Contains(IllustratorText.Raw("Weekly_655")) || lower.Contains("tournament") || lower.Contains("feast"))
             {
                 return WeeklyReportEventTheme.FeastTournament;
             }
 
             // 外交和谈、宣战
-            if (lower.Contains("和平") || lower.Contains("宣战") || lower.Contains("条约") ||
-                lower.Contains("停火") || lower.Contains("进贡") || lower.Contains("peace") || lower.Contains("war") || lower.Contains("treaty"))
+            if (lower.Contains(IllustratorText.Raw("Weekly_656")) || lower.Contains(IllustratorText.Raw("Weekly_657")) || lower.Contains(IllustratorText.Raw("Weekly_658")) ||
+                lower.Contains(IllustratorText.Raw("Weekly_659")) || lower.Contains(IllustratorText.Raw("Weekly_660")) || lower.Contains("peace") || lower.Contains("war") || lower.Contains("treaty"))
             {
                 return WeeklyReportEventTheme.Diplomacy;
             }
 
             // 俘虏/囚禁（弱信号，靠后——处决词已在前命中）
-            if (lower.Contains("俘虏") || lower.Contains("囚禁") || lower.Contains("赎俘") ||
-                lower.Contains("越狱") || lower.Contains("captive") || lower.Contains("prisoner"))
+            if (lower.Contains(IllustratorText.Raw("Weekly_661")) || lower.Contains(IllustratorText.Raw("Weekly_662")) || lower.Contains(IllustratorText.Raw("Weekly_663")) ||
+                lower.Contains(IllustratorText.Raw("Weekly_664")) || lower.Contains("captive") || lower.Contains("prisoner"))
             {
                 return WeeklyReportEventTheme.PrisonerExecution;
             }
@@ -421,12 +421,12 @@ namespace AnimusForge.Illustrator.Context
         /// </summary>
         private static string GenerateSceneDirective(WeeklyReportEventTheme theme, Settlement settlement, string headline)
         {
-            return "【周报事件纪事管线】依据给出的事件事实选取有叙事力的瞬间；事实区已选定事件时必须保持该事件，再推导行动、空间关系和机位。" +
-                "让画面通过参与方正在做什么、事件如何发生及已知结果说明本期纪事；不能仅让领主站立或骑马展示，再把事件地点缩成远处布景。" +
-                "并非每次都要战斗、群像或广角：安静的谈判、重整、交接等瞬间也可以，只要确实属于选中事件，画面的关系与行动能让人读懂发生了什么。" +
-                "人物与环境篇幅随事件需要决定，不罗列整套装备；图中的具名人物、参与阵营、地点关联、计划、否定、未遂与胜负结局必须有正文依据，不把不同要闻拼成一次事件。" +
-                "允许自由设计与事件、文化和时代相容的非具名建筑细部、地貌、生活痕迹、材质、必要的匿名参与者与氛围，使环境参与叙事；这些是艺术再现，不是假称实测的现场。" +
-                "艺术细节不能新增关键行动、特定参与者、伤亡、胜败或历史结果。已有结果只按证据表现，未知结果不替报道作结论。";
+            return IllustratorText.Get("Weekly_665") +
+                IllustratorText.Get("Weekly_666") +
+                IllustratorText.Get("Weekly_667") +
+                IllustratorText.Get("Weekly_668") +
+                IllustratorText.Get("Weekly_669") +
+                IllustratorText.Get("Weekly_670");
         }
 
         private static string ExtractHeadline(string body)
@@ -436,7 +436,7 @@ namespace AnimusForge.Illustrator.Context
                 return string.Empty;
             }
             // 按完整句提取证据前不能截断，否则尾部的失败/撤退/未遂会丢失。
-            int minorStart = body.IndexOf("【其他消息】", StringComparison.Ordinal);
+            int minorStart = body.IndexOf(IllustratorText.Raw("Weekly_671"), StringComparison.Ordinal);
             if (minorStart >= 0) body = body.Substring(0, minorStart);
             return NarrativeFactRouter.CleanText(body);
         }

@@ -20,7 +20,7 @@ internal bool OpenWeeklyReportNoticeFromMap(string eventId)
 		EventRecordEntry eventRecordEntry = _findRecord(text);
 		if (eventRecordEntry == null)
 		{
-			InformationManager.DisplayMessage(new InformationMessage("这条周报记录已经不存在。"));
+			InformationManager.DisplayMessage(new InformationMessage(ImportExportUiText.WeeklyMissing()));
 			_state.MarkRead(text);
 			return true;
 		}
@@ -43,7 +43,7 @@ internal bool OpenWeeklyReportNoticeFromMap(string eventId)
 		}
 		else
 		{
-			InformationManager.DisplayMessage(new InformationMessage("打开周报失败。"));
+			InformationManager.DisplayMessage(new InformationMessage(ImportExportUiText.WeeklyOpenFailed()));
 		}
 		return flag;
 	}
@@ -155,7 +155,7 @@ internal void TryAwardWeeklyReportReadingXp(string eventId)
 		_state.ReadingXpPendingCharm = 0;
 		_state.ReadingXpPendingLeadership = 0;
 		_state.ReadingXpPendingSteward = 0;
-		InformationManager.DisplayMessage(new InformationMessage("周报研读突破：累计研读 " + batchCount + " 篇，魅力 +" + batchCharm + "，统御 +" + batchLeadership + "，管理 +" + batchSteward + "。"));
+		InformationManager.DisplayMessage(new InformationMessage(ImportExportUiText.WeeklyXpBatch(batchCount, batchCharm, batchLeadership, batchSteward)));
 		Logger.Log("EventWeeklyReport", "[ReadingXp] batch_awarded count=" + batchCount + " charm=" + batchCharm + " leadership=" + batchLeadership + " steward=" + batchSteward);
 	}
 
@@ -306,6 +306,6 @@ internal static string BuildWeeklyReportNoticeTitle(EventRecordEntry entry, Func
 internal static string BuildWeeklyReportNoticeDescription(EventRecordEntry entry, Func<EventRecordEntry,string> subtitle)
 	{
 		string text = subtitle(entry);
-		return string.IsNullOrWhiteSpace(text) ? "点击查看当前周报。" : ("点击查看：" + text);
+		return string.IsNullOrWhiteSpace(text) ? ImportExportUiText.WeeklyNoticeOpenHint(ImportExportUiText.T("AF_UI_Weekly_Notice_Current", "current weekly report")) : ImportExportUiText.WeeklyNoticeOpenHint(text);
 	}
 }

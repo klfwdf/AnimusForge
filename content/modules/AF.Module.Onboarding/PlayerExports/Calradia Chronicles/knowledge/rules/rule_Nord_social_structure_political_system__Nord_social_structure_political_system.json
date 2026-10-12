@@ -1,0 +1,114 @@
+{
+  "Id": "rule_Nord_social_structure_political_system",
+  "Keywords": [
+    "Nord social structure? political system",
+    "Nord’s political system and social system"
+  ],
+  "RagShortTexts": [
+    "The political system of Nordvig was an early feudal royal power, which took shape in less than two generations."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nord"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "King? Jar? My father told me that there used to be no kings in this fjord, only Yael. Above Yaer was the god, so there was no need to put another person in the middle. Later, Volbjorn came and merged our fjord with the fjord next door. From now on, you will be members of the same kingdom, and you will not be allowed to rob each other from now on. How many lifetimes have you robbed each other? If you say you don't want to rob, don't you let rob? As a result, we no longer rob each other, and we pay more taxes. In the past, one portion was paid to Yael, but now after paying it to Yael, one must also pay another portion to the king, which is called royal tax. I asked my father, what would the king do for me after paying this tax? He couldn't stop the storm, he couldn't control the fish flood, and the Sturgians were still slow to come ashore to snatch him. My dad said he didn't know either. Anyway, when Yaer's soldiers go to the royal city to hold some meeting, they don't ask us to collect tolls, so they just pay for the passage. As we Nords say, a good leader is one who doesn't cause you any trouble. Haldarr gives me no trouble, and Jarr gives me no trouble, and I will give them no trouble. Days passed. The boat goes out to sea, the net is fine, and it doesn't matter who the hell it is when a storm comes."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nord"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Nordvig’s current political system is something people of my grandfather’s generation don’t want to see. When Volbjorn was fighting the war of unification, my grandfather stood with him - he stood with him because he was afraid of him, not because he obeyed him. He relied on money, knives, and the conditions he entered into your tent in the middle of the night and read into your ears to keep you awake. In the end, no one could hold on. When it comes to A's generation, we have no hatred for him. He is more reasonable than his father, and he also knows that he cannot imitate his father. But when he sits in that seat, he has to do one thing: get money and soldiers from us. We don’t collect enough taxes on our own territory to feed our troops, and he still wants to take a share. What can you give us? A Yare seat. I banged the table so many times at the Yaer meeting, and he sat at the main seat and listened half-smilingly. After listening, he still said the same thing - a kingdom has its own difficulties. The kingdom is in trouble, and so is Yael. No one at this table should blame anyone. We recognize him as the king and that this kingdom still exists, not because he can make us obey, but because he himself knows that he can't control us, so he doesn't care too much. This is a loose king. The Xuerf family always wants to reach out to Beinland, and Asgatha is guarding her island and winking at us. The people below each have their own accounts. We ourselves know that this kingdom will not last long, but it probably will not fall apart in His hands. Whether they disperse or not is not entirely up to us. One day Sturgia and Khuzait come from the south, and this kingdom may be suppressed."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nord"
+        ],
+        "KingdomIds": [
+          "nord"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "hero:lord_7_1"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "I am Haldarr. My father beat out the throne, and when I sat on it, it was still stained with his murderous blood. In Nordvig, the gap between legal principles and reality is the sins my father has committed throughout his life. The Yaers respect me because they are afraid that I will imitate him, not because they believe in me. I want them to believe me. At the Yaer meeting, I opened up the matter, showed the accounts, and divided the spoils more generously than my father did at that time. As peaceful as possible without fighting, I will send people to arbitrate which family is fighting over the land boundary. Common people say I'm weak, and I admit it. I don't want to be another him. My mother still wanders the forest—at least some people see her shadow on moonless nights. They said she left only after ensuring that I would have no rivals for the throne. I didn't expect her to help me anymore, but I didn't expect her to come back either. This system can still hold up for now, because I won't draw my sword casually, and the Yaers don't want to quarrel. The people under the Yaers want too much, and I can’t give them all, so I can only coax them one by one. One day I can't coax anymore, I will either follow my father's example, or give up the throne to the Xu Erfu family."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Who has the final say over the Nords? I heard that there was a king whose surname was hard to pronounce, and his name was A. But it seems that the king's words may not always have the final say. The Yaers under his command have their own soldiers. That's all I know about the Nords. There were no horses in this place, it was cold, and there was a large sea across it. If you came to grab things, you had to row a boat. The boat capsized and froze to death. The southerners who run ships are not afraid of pirates, but of the storms on their side. But the whale oil candles they have are very useful. Who told them who the king is? I buy candles without looking at the king."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Nordvig’s political system is a transitional form of early feudal kingship, which took shape less than two generations ago. The legal framework is seriously out of touch with the actual distribution of power. The king has nominal supreme authority, and can convene the Yar Council, declare war, appoint and remove Yar, and collect royal taxes. These four powers are the only solid results of the institutionalization of Nord's royal power in the transition from a tribal alliance to a kingdom. However, the tradition of autonomy of the Yaers is deeply rooted. Their obligations to the king are limited to the three most basic vassal responsibilities of sending troops, paying taxes, and attending meetings. Even these three obligations are unevenly fulfilled at the individual level due to differences in strength. The Yare itself retains a strong original discussion tradition and is more like an enlarged version of a free people's assembly than an institutionalized legislative or judicial body. The allegiance of the Carl class at the bottom of society to their lords was based on military exploits and sharing of spoils. Channels for class advancement existed but were tightened by aristocratic forces. The existence of the slave class provided continuous low-cost labor for the Nordic economy, and the wars in the southern countries continued to provide them with prisoners. From an outside perspective, the prospects for Nordic kingship depended on two variables. First, whether A can have a strong enough successor who can both accept his softness and make up for his weakness; second, whether the number one conflict within Nord - the game between Jarl and the royal family - will be catalyzed into an open split by external pressure (Sturgia's eastern pressure or Khuzait's southward movement). Nord's military advantage lies in the sea, and its political weakness lies in the land - not because of the lack of cavalry, but because of the lack of centripetal force that can maintain common interests. Currently, Nordvig's centrifugal force has been temporarily delayed under A's care, but its inherent structural fragility has not been fundamentally resolved. The suggestion to A is: gradually establish a financial pillar in the royal income that is independent of the Yar tribute, and rely on the control of longships to grasp the fundamental lifeline of maritime trade. Without the king's own purse, Nordvig has always been a temporary shell for the Jarls to take turns sitting in the bank."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "A",
+      "Kind": "kingdom_leader_name",
+      "TargetId": "nord",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

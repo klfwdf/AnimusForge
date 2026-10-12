@@ -1,3 +1,4 @@
+using AnimusForge;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -27,7 +28,8 @@ namespace AnimusForge.Refactor.Domain
 
     public static string BuildPeaceOfferTermsFact(
         WorldDiplomacyDocument source,
-        string targetKingdomId)
+        string targetKingdomId,
+        Func<string, string, string> localize = null)
     {
         if (source == null || string.IsNullOrWhiteSpace(targetKingdomId)) return "";
         if (source.Actions?.Count > 0)
@@ -35,33 +37,34 @@ namespace AnimusForge.Refactor.Domain
             WorldDiplomacyDocumentAction action = ResolveSourceActionForTarget(source, targetKingdomId);
             return action != null
                 && string.Equals(WorldDiplomacyIntentVocabulary.NormalizeIntent(action.Intent), "propose_peace", StringComparison.OrdinalIgnoreCase)
-                ? "action=" + (action.ActionId ?? "") + ":" + WorldDiplomacyOfferContractRules.FormatPeaceTermsForPrompt(action.PeaceTerms)
+                ? "action=" + (action.ActionId ?? "") + ":" + WorldDiplomacyOfferContractRules.FormatPeaceTermsForPrompt(action.PeaceTerms, localize)
                 : "";
         }
         if (string.Equals(WorldDiplomacyIntentVocabulary.NormalizeIntent(source.Intent), "propose_peace", StringComparison.OrdinalIgnoreCase)
             && string.Equals(source.TargetKingdomId, targetKingdomId, StringComparison.OrdinalIgnoreCase))
         {
-            return WorldDiplomacyOfferContractRules.FormatPeaceTermsForPrompt(source.PeaceTerms);
+            return WorldDiplomacyOfferContractRules.FormatPeaceTermsForPrompt(source.PeaceTerms, localize);
         }
         return "";
     }
 
     public static string BuildSourceActionFactForTarget(
         WorldDiplomacyDocument source,
-        string targetKingdomId)
+        string targetKingdomId,
+        Func<string, string, string> localize = null)
     {
         if (source == null) return "";
         WorldDiplomacyDocumentAction action = ResolveSourceActionForTarget(source, targetKingdomId);
         if (action != null)
         {
             return "action=" + (action.ActionId ?? "")
-                + "|对象国=" + (action.TargetKingdomId ?? "")
-                + "|意图=" + WorldDiplomacyIntentVocabulary.NormalizeIntent(action.Intent);
+                + WorldDiplomacyPromptContractRules.ContractText(localize, "SourceActionTarget", "|target kingdom=") + (action.TargetKingdomId ?? "")
+                + WorldDiplomacyPromptContractRules.ContractText(localize, "SourceActionIntent", "|intent=") + WorldDiplomacyIntentVocabulary.NormalizeIntent(action.Intent);
         }
         if (source.Actions?.Count > 0
             || (!string.IsNullOrWhiteSpace(targetKingdomId)
                 && !string.Equals(source.TargetKingdomId, targetKingdomId, StringComparison.OrdinalIgnoreCase))) return "";
-        return "对象国=" + (source.TargetKingdomId ?? "") + "|意图=" + WorldDiplomacyIntentVocabulary.NormalizeIntent(source.Intent);
+        return WorldDiplomacyPromptContractRules.ContractText(localize, "SourceTarget", "Target kingdom=") + (source.TargetKingdomId ?? "") + WorldDiplomacyPromptContractRules.ContractText(localize, "SourceActionIntent", "|intent=") + WorldDiplomacyIntentVocabulary.NormalizeIntent(source.Intent);
     }
 
     public static int DiplomacyDocumentQueryRelevance(WorldDiplomacyDocument document, string input)
@@ -189,8 +192,8 @@ public static string FormatRoundFactForPrompt(WorldDiplomacyRoundFact fact)
 		string text = fact.Text.Trim();
 		if (text.StartsWith("[", StringComparison.Ordinal)) return text;
 		return string.Equals(fact.Kind, "confirmed_result", StringComparison.OrdinalIgnoreCase)
-			? "[游戏已执行] " + text
-			: "[宣言记录，不代表执行] " + text;
+			? DiplomacyCompatibilityTexts.Get("Fact_ExecutedPrefix") + text
+			: DiplomacyCompatibilityTexts.Get("Fact_DeclarationRecordPrefix") + text;
 	}
 public static bool IsMajorDiplomaticDocument(WorldDiplomacyDocument document)
 	{
@@ -308,8 +311,8 @@ public static bool IsMajorDiplomaticDocument(WorldDiplomacyDocument document)
     public static string BuildPeaceKingdomReferencePattern(string kingdomName, bool isAuthor, bool isTarget)
     {
         string name = Regex.Escape(kingdomName ?? "");
-        if (isAuthor) return "(?:我国|本国|本王国|" + name + ")";
-        if (isTarget) return "(?:贵国|" + name + ")";
+        if (isAuthor) return "(?:" + DiplomacyCompatibilityTexts.Get("Regex_AuthorKingdomKeywords") + "|" + name + ")";
+        if (isTarget) return "(?:" + DiplomacyCompatibilityTexts.Get("Regex_TargetKingdomKeywords") + "|" + name + ")";
         return "(?:" + name + ")";
     }
         public static bool ContainsDirectedPeaceTerm(string text,
@@ -322,7 +325,7 @@ public static bool IsMajorDiplomaticDocument(WorldDiplomacyDocument document)
         string toPattern = BuildPeaceKingdomReferencePattern(toName, toIsAuthor, toIsTarget);
         string body = text ?? "";
         return Regex.IsMatch(body, fromPattern + @"[^。；\n]{0,40}(?:" + actionPattern + @")[^。；\n]{0,40}" + toPattern, RegexOptions.CultureInvariant)
-            || Regex.IsMatch(body, fromPattern + @"[^。；\n]{0,24}(?:向|给|予)" + toPattern + @"[^。；\n]{0,24}(?:" + actionPattern + @")", RegexOptions.CultureInvariant);
+            || Regex.IsMatch(body, fromPattern + DiplomacyCompatibilityTexts.Get("Regex_TransferInfix") + toPattern + DiplomacyCompatibilityTexts.Get("Regex_TransferInfixSuffix") + actionPattern + ")", RegexOptions.CultureInvariant);
     }
 
     public static void RecordDiplomaticStandingChange(WorldDiplomacyDocument document,
@@ -422,7 +425,7 @@ public static bool IsMajorDiplomaticDocument(WorldDiplomacyDocument document)
 				&& string.Equals(x.TargetKingdomId, targetId, StringComparison.OrdinalIgnoreCase))
 			.OrderByDescending(x => x.Day)
 			.Take(4)
-			.Select(x => "- 第" + x.Day.ToString(CultureInfo.InvariantCulture) + "天：" + x.Reason));
+			.Select(x => DiplomacyCompatibilityTexts.Get("History_DayPrefix") + x.Day.ToString(CultureInfo.InvariantCulture) + DiplomacyCompatibilityTexts.Get("History_DaySuffix") + x.Reason));
 	}
 	public static string BuildRelevantCompletedRoundContext(IEnumerable<WorldDiplomacyRoundSummary> summaries,
 		string activeRoundId, string sourceId, string targetId)
@@ -435,7 +438,7 @@ public static bool IsMajorDiplomaticDocument(WorldDiplomacyDocument document)
 				&& !WorldDiplomacyRoundLifecycleRules.IsRecordInRound(x.RoundId, activeRoundId))
 			.OrderByDescending(x => x.CreatedDay)
 			.FirstOrDefault();
-		return summary == null ? "" : "- [已结束] " + WorldDiplomacyTextRules.Limit(summary.Summary, 700);
+		return summary == null ? "" : DiplomacyCompatibilityTexts.Get("History_ClosedPrefix") + WorldDiplomacyTextRules.Limit(summary.Summary, 700);
 	}
 	public static string BuildRelevantCompressedDiplomacyContext(IEnumerable<WorldDiplomacyRoundSummary> summaries,
 		string sourceId, string targetId, int maxCount)
@@ -446,7 +449,7 @@ public static bool IsMajorDiplomaticDocument(WorldDiplomacyDocument document)
 				&& (x.KingdomIds ?? new List<string>()).Contains(sourceId, StringComparer.OrdinalIgnoreCase)
 				&& (x.KingdomIds ?? new List<string>()).Contains(targetId, StringComparer.OrdinalIgnoreCase))
 			.OrderByDescending(x => x.CreatedDay).Take(maxCount)
-			.Select(x => "- [已整理回合；宣言经过与游戏结果分列] " + WorldDiplomacyTextRules.Limit(x.Summary, 900)));
+			.Select(x => DiplomacyCompatibilityTexts.Get("History_OrganizedRoundPrefix") + WorldDiplomacyTextRules.Limit(x.Summary, 900)));
 	}
 	public static string BuildKnownRoundContext(IEnumerable<WorldDiplomacyKingdomKnowledge> kingdomKnowledge,
 		IEnumerable<WorldDiplomacyDocument> documents,

@@ -1,0 +1,47 @@
+{
+  "Id": "rule_Oakes_Lake",
+  "Keywords": [
+    "Lake Oaks",
+    "Lake Maud Lys"
+  ],
+  "RagShortTexts": [
+    "The original name of Lake Oaks is Lin Maud Lys. It was originally a swamp pond. Legend has it that Lake Maud Lys is located in the crater of a volcano and is the footprints of a giant. The water spirit queen of Battania built her palace here and locals made sacrifices to her.",
+    "After the Vlandia warlord Oka conquered the land, he drained the swamps to create farmland and built a grand hall on the highlands. The Battania tribe was forced to move inland across the Reynold River, taking their legends with them."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Centered on Maud Lys - a marshy pond said to be centered on Lake Maud Lys - a lake located in the crater of a volcano and said to be the footprints of a giant. It was later built as a palace by the Queen of the Water Spirit, the deity of Badania, and the locals made sacrifices to her. However, the land was eventually desecrated by the Vlandian warlord Oka. He drained marshy ponds and reclaimed them for farmland, and built his grand hall on the high ground. The Battania tribe was forced to move inland, across the Reynold River, taking their legends with them."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Lake Oaks, or to the Batdanians, formerly known as Lake Lin Maud Lys - This lake is located in the crater of a volcano and is said to be the footprints of a giant. It was later conquered by Oak, a warlord of Vlandia, after whom Lake Oak was named. He drained marshy ponds and reclaimed them for farmland, and built his grand hall on the high ground. This gave rise to the prototype of the subsequent town of Oaks Hall."
+    }
+  ],
+  "TextMappings": []
+}

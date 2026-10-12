@@ -4,6 +4,7 @@ using MCM.Abstractions.Attributes;
 using MCM.Abstractions.Attributes.v2;
 using MCM.Abstractions.Base.Global;
 using MCM.Common;
+using TaleWorlds.Localization;
 
 namespace AnimusForge.DialogueUI
 {
@@ -17,15 +18,15 @@ namespace AnimusForge.DialogueUI
     public sealed class DialogueUiSettings : AttributeGlobalSettings<DialogueUiSettings>
     {
         public override string Id => "AnimusForge_DialogueUI_v1";
-        public override string DisplayName => "AnimusForge - 对话界面 (DialogueUI)";
+        public override string DisplayName => new TextObject("{=AFD_MCM_DisplayName}AnimusForge - Dialogue UI").ToString();
         public override string FolderName => "AnimusForge";
         public override string FormatType => "json";
 
-        [SettingPropertyDropdown("对话界面", Order = 0, RequireRestart = false,
-            HintText = "原版：使用原版对话，场景喊话保留卷轴式（暂停）输入。新 UI：使用羊皮纸对话、地图对话与历史/给予面板。默认新 UI，下次打开界面生效，无需重启。")]
-        [SettingPropertyGroup("1. 界面", GroupOrder = 1)]
+        [SettingPropertyDropdown("{=AFD_MCM_InterfaceStyle}Interface style", Order = 0, RequireRestart = false,
+            HintText = "{=AFD_MCM_InterfaceStyle_Hint}Original uses native conversation; scene shouts keep the paused scroll input. New UI uses parchment conversation, map conversation, and history/give panels. New UI is the default and applies when the interface is opened again; no restart is required.")]
+        [SettingPropertyGroup("{=AFD_MCM_InterfaceGroup}1. Interface", GroupOrder = 1)]
         public Dropdown<string> InterfaceStyleDropdown { get; set; } =
-            new Dropdown<string>(new[] { "原版", "新 UI" }, 1);
+            new Dropdown<string>(new[] { Localize("AFD_MCM_Interface_Original", "Original"), Localize("AFD_MCM_Interface_New", "New UI") }, 1);
 
         // Compatibility accessor for existing integrations. MCM persists only
         // attributed properties, so the new selector has its own saved key;
@@ -36,36 +37,39 @@ namespace AnimusForge.DialogueUI
             set
             {
                 if (InterfaceStyleDropdown == null)
-                    InterfaceStyleDropdown = new Dropdown<string>(new[] { "原版", "新 UI" }, value ? 1 : 0);
+                    InterfaceStyleDropdown = new Dropdown<string>(new[] { Localize("AFD_MCM_Interface_Original", "Original"), Localize("AFD_MCM_Interface_New", "New UI") }, value ? 1 : 0);
                 else InterfaceStyleDropdown.SelectedIndex = value ? 1 : 0;
             }
         }
 
-        [SettingPropertyInteger("正文字号", 14, 36, "0", Order = 5, RequireRestart = false,
-            HintText = "新 UI 的对话正文、对话选项、历史和输入文字大小。默认 24，下次打开界面生效；不改变按钮、人物名或原版界面的字号。")]
-        [SettingPropertyGroup("1. 界面", GroupOrder = 1)]
+        [SettingPropertyInteger("{=AFD_MCM_BodyFontSize}Body font size", 14, 36, "0", Order = 5, RequireRestart = false,
+            HintText = "{=AFD_MCM_BodyFontSize_Hint}Font size for New UI conversation text, options, history, and input. Default: 24. Applies when the interface is opened again; buttons, names, and the native interface are unchanged.")]
+        [SettingPropertyGroup("{=AFD_MCM_InterfaceGroup}1. Interface", GroupOrder = 1)]
         public int BodyFontSize { get; set; } = 24;
 
-        [SettingPropertyDropdown("场景喊话面板风格", Order = 1, RequireRestart = false,
-            HintText = "卷轴式（暂停）：复用底部卷轴输入，打开时暂停，不显示受众名录，也用于兜底。卷轴式：底部卷轴输入 + 右侧受众挂札。右侧手札：右侧竖版对谈手札。后两种在和平场景使用持续多人会话；战斗中按喊话键直接打开暂停输入。三种面板均提供手动生图按钮（需启用生图）。")]
-        [SettingPropertyGroup("1. 界面", GroupOrder = 1)]
+        [SettingPropertyDropdown("{=AFD_MCM_ShoutStyle}Scene shout panel style", Order = 1, RequireRestart = false,
+            HintText = "{=AFD_MCM_ShoutStyle_Hint}Paused scroll reuses the bottom scroll input, pauses the game, hides the audience docket, and is also the fallback. Scroll keeps the input at the bottom with an audience docket on the right. Side folio uses a vertical conversation folio. The latter two use a persistent multi-person session in peaceful scenes; during battles, the shout key opens paused input directly. All three panels provide a manual illustration button when image generation is enabled.")]
+        [SettingPropertyGroup("{=AFD_MCM_InterfaceGroup}1. Interface", GroupOrder = 1)]
         public Dropdown<string> ShoutPanelStyleDropdown { get; set; } =
-            new Dropdown<string>(new[] { "卷轴式（暂停）", "卷轴式", "右侧手札" }, 1);
+            new Dropdown<string>(new[] { Localize("AFD_MCM_ShoutStyle_PausedScroll", "Paused scroll"), Localize("AFD_MCM_ShoutStyle_Scroll", "Scroll"), Localize("AFD_MCM_ShoutStyle_SideFolio", "Side folio") }, 1);
 
-        [SettingPropertyBool("自动进入 AI 模式", Order = 3, RequireRestart = false,
-            HintText = "开启时，打开场景或地图对话自动进入 AI 输入模式；可配合「仅 Hero 自动进入 AI 模式」限制对象。关闭时先显示普通对话选项，仍可手动切换 AI。下次打开对话生效。")]
-        [SettingPropertyGroup("1. 界面", GroupOrder = 1)]
+        [SettingPropertyBool("{=AFD_MCM_AutoAi}Enter AI mode automatically", Order = 3, RequireRestart = false,
+            HintText = "{=AFD_MCM_AutoAi_Hint}When enabled, scene or map conversations enter AI input mode automatically. Pair with Only Hero enters AI mode automatically to limit the targets. When disabled, ordinary conversation options appear first and AI can still be selected manually. Applies when the next conversation opens.")]
+        [SettingPropertyGroup("{=AFD_MCM_InterfaceGroup}1. Interface", GroupOrder = 1)]
         public bool AutoEnterAiMode { get; set; } = true;
 
-        [SettingPropertyBool("仅 Hero 自动进入 AI 模式", Order = 4, RequireRestart = false,
-            HintText = "仅在「自动进入 AI 模式」开启时生效。开启后，只对 Hero（领主、同伴、要人等有独立身份的人物）自动进入 AI；普通劫匪、逃兵、士兵等非 Hero 保持普通模式。关闭后不限制对象，恢复原来的自动切换。均可手动切换，下次打开对话生效。")]
-        [SettingPropertyGroup("1. 界面", GroupOrder = 1)]
+        [SettingPropertyBool("{=AFD_MCM_AutoAiHeroOnly}Only Hero enters AI mode automatically", Order = 4, RequireRestart = false,
+            HintText = "{=AFD_MCM_AutoAiHeroOnly_Hint}Applies only when automatic AI mode is enabled. When enabled, only Heroes (lords, companions, notable characters, and other individually identified people) enter AI mode automatically; ordinary bandits, deserters, and soldiers stay in ordinary mode. Disable it to restore automatic switching for all targets. Manual switching remains available.")]
+        [SettingPropertyGroup("{=AFD_MCM_InterfaceGroup}1. Interface", GroupOrder = 1)]
         public bool AutoEnterAiModeHeroOnly { get; set; } = true;
 
-        [SettingPropertyBool("对话历史显示删除按钮", Order = 2, RequireRestart = false,
-            HintText = "开启后，对话历史面板的每条持久记录旁显示删除按钮。删除会同时移除该条可见历史与当日尚未压缩的记忆草稿；已压缩进记忆块的内容不受影响。")]
-        [SettingPropertyGroup("1. 界面", GroupOrder = 1)]
+        [SettingPropertyBool("{=AFD_MCM_HistoryDelete}Show delete buttons in conversation history", Order = 2, RequireRestart = false,
+            HintText = "{=AFD_MCM_HistoryDelete_Hint}Show a delete button beside each persistent conversation-history line. Deleting removes the visible line and that day's uncompressed memory draft; content already compressed into memory blocks is unaffected.")]
+        [SettingPropertyGroup("{=AFD_MCM_InterfaceGroup}1. Interface", GroupOrder = 1)]
         public bool ShowHistoryDelete { get; set; } = true;
+
+        private static string Localize(string id, string fallback)
+            => new TextObject("{=" + id + "}" + fallback).ToString();
     }
 
     // Reads happen at movie load, hotkey release and panel open, never per frame.

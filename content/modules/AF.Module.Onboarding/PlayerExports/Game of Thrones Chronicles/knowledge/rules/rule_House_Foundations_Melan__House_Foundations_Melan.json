@@ -1,0 +1,132 @@
+{
+  "Id": "rule_House_Foundations_Melan",
+  "Keywords": [
+    "Melan",
+    "House Melan"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Merlan family is the old blood nobles of Volantis, whose life and power are concentrated in the network of cities inside and outside the Black Wall. There are not many unique legends about this family. The roots that can be determined are Valyrian descent, kinship marriage, business assets and the qualifications to participate in free folk politics. If Mei Lan runs shipping, he will have to face river taxes and pirates; if he runs a manor, he will depend on slaves and food prices. The name of the family provides entrance, and what really determines success or failure is the ability to protect property, fulfill contracts, and avoid isolation between the tiger and elephant parties."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "volantine"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Volantis nobles regarded Meilan as one of the Black Wall families. They recognized their bloodline politely, but politically they only calculated how many marriage alliances, votes and funds it could bring. The smile between old blood is often colder than outsiders imagine."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "volantine"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "artisan",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "When dealing with Meilan, free merchants only care about whether the scale is fair and whether the debt is repaid. The black wall can distinguish who is eligible to live, but it cannot automatically turn a bad debt into a good one."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Melan Melan is an old-blood noble family of Volantis, and its influence comes from black wall qualifications, kin network and urban economy, rather than a fixed fiefdom. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Melan Melan is an old-blood noble family of Volantis, and its influence comes from black wall qualifications, kin network and urban economy, rather than a fixed fiefdom. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Melan Melan is an old-blood noble family of Volantis, and its influence comes from black wall qualifications, kin network and urban economy, rather than a fixed fiefdom. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Melan Melan is an old-blood noble family of Volantis, and its influence comes from black wall qualifications, kin network and urban economy, rather than a fixed fiefdom. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Melan: Melan is an old-blood noble family of Volantis, and its influence comes from black wall qualifications, kin network and urban economy, rather than a fixed fiefdom."
+  ]
+}

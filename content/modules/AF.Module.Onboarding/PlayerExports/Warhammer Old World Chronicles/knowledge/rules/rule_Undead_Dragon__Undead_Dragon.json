@@ -1,0 +1,212 @@
+{
+  "Id": "rule_Undead_Dragon",
+  "Keywords": [
+    "Undead Dragon",
+    "Ancient Dragon Skeleton",
+    "dark magic",
+    "Breath of Decay",
+    "ultimate deterrence",
+    "Immortal Behemoth",
+    "zombie dragon",
+    "Immortal Dragon",
+    "Skeleton Dragon",
+    "Deathdramon",
+    "behemoth"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The undead dragon is an ancient dragon corpse resurrected by dark magic by the most powerful vampire or necromancer. It is the ultimate behemoth bound by the curse of immortality. They exhale the aura of bone-eroding decay, and their wingspan covers the sky. They are the most desperate existence among the undead army."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Undead Dragon - the black diamond in the crown of our undead army! To drag an ancient dragon back to the present world from its eternal slumber requires a vampire lord who has practiced necromancy for at least three hundred years to infuse tons of death energy into the skeleton that may have been sleeping for thousands of centuries in a valley that has never been illuminated by the sun. When the pale green soul fire finally ignites in the giant dragon's empty eye sockets, and when its broken membrane wings are re-expanded in the vast amount of dark magic, at that moment the earth in the entire area will be cracked. The breath of the undead dragon is not fire - it is a concentrated wind of decay, which can turn an entire queue of heavily armored Imperial knights' horses and riders into withered dust within three breaths. Its very existence is the ultimate crushing of enemy morale."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Undead Dragon is the highest-priority threat on the battlefield - it combines air mobility, area-of-effect damage, and morale-destroying capabilities. An Undead Dragon can determine the outcome of a battle. The key to fighting it is to limit its air superiority: use enough ballistas and siege weapons to create a web of anti-aircraft fire, control its movement with magic, or entangle it with your own flying units. The undead dragon is different from the living dragon - it does not need to breathe, is tireless, and cannot be affected by pain - but it relies on the controller's continuous supply of magic, and cutting off this supply chain is more feasible than killing the dragon directly."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "The undead dragon belongs to the highest level \"undead titan\" category in the necromancy spectrum. The dragon bones required for summoning must come from a real dragon that died at least two thousand years ago, and cannot be replaced by pseudo-dragon subspecies such as dragon beasts and wyverns. The complete summoning ritual requires seven major steps: dragon bone collection - magic purification - dark baptism - blood sacrifice injection - soul binding - wing membrane regeneration - first awakening control. The entire process lasts from three to six months, and any interruption during this period will cause the keel to be shattered and energy to be reversed. The decaying breath of the undead dragon is classified as a \"purple flame vortex\" in magic. It is compressed and accelerated by the wind of death (Shash) and then ejected. Its effects include: the body rots, the metal accelerates oxidation, and magic items temporarily become incapacitated. No more than five undead dragons are known to be in service in the Old World, all controlled by either the von Carstein family or extremely powerful independent necromancers."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The undead dragon is a sacrilege - to force a once sacred and proud creature back from its eternal rest and put it in chains of darkness is to trample on the laws of nature. But at the same time, I have to admit that when an undead dragon appeared in the sky above the enemy, the overwhelming terror gave me a more bitter understanding of the \"dark side of power.\""
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The day the undead dragon flew over our territory changed everything. We no longer hoped for frontal resistance, but instead invested all our resources in the construction of underground shelters. When the sky is obscured by dark bone wings, the only sensible option is to dive underground. This is not cowardice, this is a clear understanding of the power that cannot be resisted."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Deep in the Gray Mountains, I saw an ancient dragon tomb with its bones dug out - all the trees within a mile of it were dead, and the ground was covered with a strange layer of hoarfrost. The local nomads said that it was the \"mark of death\" left by the undead dragon when it was awakened. They say that as long as you stand on that frosty ground, you can hear in the wind the crunching sound of the dragon's bones struggling in hell."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The total price of the undead dragon's \"materials\"—a complete ancient dragon bone, enough magic crystals, and the sacrifices needed to summon it—may exceed the annual income of a small principality. So these transactions were never settled in gold crowns, but instead were paid for in land, political immunity, or some kind of promise of immortality. I once handled the transportation of a keel - or part of a keel - and the delivery point was a mountain top on a moonless night."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "The undead dragon is an ancient dragon skeleton resurrected by dark magic, the ultimate behemoth of the undead army.",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Undead Dragon Ancient Dragon Skeleton Dark Magic"
+  ]
+}

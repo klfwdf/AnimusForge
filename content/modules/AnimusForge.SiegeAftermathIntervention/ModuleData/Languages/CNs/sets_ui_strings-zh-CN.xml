@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" type="string">
+  <tags><tag language="简体中文" /></tags>
+  <strings>
+    <string id="AF_SETS_Noun_Castle" text="城堡" />
+    <string id="AF_SETS_Noun_Village" text="村庄" />
+    <string id="AF_SETS_Noun_Town" text="城镇" />
+    <string id="AF_SETS_Noun_Settlement" text="定居点" />
+    <string id="AF_SETS_Defenders_Castle" text="守卫、民兵、驻军与驻堡领主部队" />
+    <string id="AF_SETS_Defenders_Village" text="村庄民兵" />
+    <string id="AF_SETS_Defenders_Town" text="守卫、民兵、驻军与驻城领主部队" />
+    <string id="AF_SETS_Defenders_Default" text="守军" />
+    <string id="AF_SETS_Spawn_Castle" text="领主大厅门口" />
+    <string id="AF_SETS_Spawn_Village" text="村庄地图边缘" />
+    <string id="AF_SETS_Spawn_Town" text="城镇工坊区" />
+    <string id="AF_SETS_Spawn_Default" text="场景边缘" />
+    <string id="AF_SETS_Phase_VillageMilitia" text="村庄民兵" />
+    <string id="AF_SETS_Phase_Garrison" text="{NOUN}驻军" />
+    <string id="AF_SETS_Phase_Militia" text="{NOUN}民兵" />
+    <string id="AF_SETS_Phase_Lord" text="敌对领主部队" />
+    <string id="AF_SETS_Civilians_None" text="【SETS】当前没有可召集的成年平民。" />
+    <string id="AF_SETS_Civilians_Queued" text="【SETS】正在召集 {COUNT} 名成年平民，完成后将编入3号民众编队。" />
+    <string id="AF_SETS_Civilians_Gathered" text="【SETS】已召集 {COUNT} 名成年平民并编入3号民众编队。" />
+    <string id="AF_SETS_VillageReward" text="【SETS村庄战果】获得 {GOLD} 第纳尔；{ITEMS} 件村庄物资已送入原版战利品界面。" />
+    <string id="AF_SETS_ConflictStarted" text="【SETS内部暴乱】{DEFENDERS}已进入敌对状态（第0波）。选中的随行士兵、同伴与家族成员已加入你的编队，等待你的指挥。" />
+    <string id="AF_SETS_ReserveWave" text="【SETS内部暴乱】{PHASE}从{SPAWN}加入战斗（第{WAVE}波，场上最多{MAX}波）。" />
+    <string id="AF_SETS_ExitBlocked" text="内部暴乱尚未结束。击溃{DEFENDERS}后才能退出。" />
+    <string id="AF_SETS_Victory_Village" text="【SETS内部暴乱】村庄民兵已被击溃。按 TAB 退出后领取金钱，并进入原版战利品界面。" />
+    <string id="AF_SETS_Victory" text="【SETS内部暴乱】{DEFENDERS}已被击溃。按 TAB 退出后进入原版围城战胜利处置菜单，可选择原版处置或 GCCZ 攻城处置。" />
+    <string id="AF_SETS_OwnedIncident_Village" text="【SETS】自有/附属村庄事件已触发，村民正在逃散。可随时按 TAB 退出并进入 GCCZ 村庄处置菜单。" />
+    <string id="AF_SETS_OwnedIncident" text="【SETS】自有/附属{NOUN}事件已触发，居民正在逃散。可随时按 TAB 退出后进入 SETS 专用处置菜单。" />
+    <string id="AF_SETS_ConflictTitle" text="内部暴乱" />
+    <string id="AF_SETS_Confirm" text="确定" />
+    <string id="AF_SETS_Memory_UnknownCommander" text="未知统帅" />
+    <string id="AF_SETS_Memory_Aftermath" text="当事人“{ACTOR}”在该城的战后处置已结算为“{OUTCOME}”。" />
+    <string id="AF_SETS_Memory_Completed" text="{AFTERMATH}已结算物资掠取估值{LOOT}，掠取第纳尔{GOLD}，平民死亡{CIVILIANS}，要人死亡{NOTABLES}；已落实救济第纳尔{RELIEF_GOLD}、食物{RELIEF_FOOD}。上述为实际结算记录，不代表后续承诺已兑现。" />
+    <string id="AF_SETS_Memory_Policy" text="地方政策《{TITLE}》在该城{STATUS}。这只确认政策状态，不代表预期经济或民心效果已经发生。" />
+    <string id="AF_SETS_Policy_Published" text="已发布" />
+    <string id="AF_SETS_Policy_Renewed" text="已续期" />
+    <string id="AF_SETS_Policy_Abolished" text="已废除" />
+    <string id="AF_SETS_Policy_Expired" text="已到期" />
+    <string id="AF_SETS_Action_Pillage" text="劫掠" />
+    <string id="AF_SETS_Action_Devastate" text="摧毁" />
+    <string id="AF_SETS_Action_Mercy" text="宽恕" />
+    <string id="AF_SETS_Village_Activated" text="【GCCZ村庄】你可以在本村执行贵族处置；普通 AF 与原版对话功能保持可用。" />
+    <string id="AF_SETS_Village_CultureAfterDialogue" text="【GCCZ村庄】对话结束后将打开文化改造确认界面。" />
+    <string id="AF_SETS_Village_InsufficientGold" text="【GCCZ村庄】第纳尔不足，无法执行{ACTION}。" />
+    <string id="AF_SETS_Village_ActionApplied" text="【GCCZ村庄】已执行{ACTION}：炉户 {OLD} → {NEW}{EXTRA}。" />
+    <string id="AF_SETS_Village_Action_GatherElders" text="召集长老" />
+    <string id="AF_SETS_Village_Action_RestrainTroops" text="约束军纪" />
+    <string id="AF_SETS_Village_Action_Pacify" text="平息村情" />
+    <string id="AF_SETS_Village_Action_Relief" text="赈济" />
+    <string id="AF_SETS_Village_Action_Fine" text="罚赎村庄" />
+    <string id="AF_SETS_Village_Action_RequisitionFood" text="征收粮食" />
+    <string id="AF_SETS_Village_Action_RequisitionProduce" text="征收物产" />
+    <string id="AF_SETS_Village_Action_RequisitionLivestock" text="征收牲畜" />
+    <string id="AF_SETS_Village_Action_LevyRecruits" text="征募民兵" />
+    <string id="AF_SETS_Village_Action_PunishRingleader" text="惩办首恶" />
+    <string id="AF_SETS_Village_Action_ConfiscateProperty" text="查抄村产" />
+    <string id="AF_SETS_Village_Action_DestroyLivelihood" text="毁坏生计" />
+    <string id="AF_SETS_Village_Action_Massacre" text="屠村" />
+    <string id="AF_SETS_Village_Action_CulturalReform" text="改造文化" />
+    <string id="AF_SETS_Village_CultureMode_Gradual" text="教化改俗" />
+    <string id="AF_SETS_Village_CultureMode_Migration" text="迁民改俗" />
+    <string id="AF_SETS_Village_CultureMode_Purge" text="屠村迁殖" />
+    <string id="AF_SETS_Village_CultureMode_GradualHint" text="180 天后改为目标文化；不立即损失炉户。" />
+    <string id="AF_SETS_Village_CultureMode_MigrationHint" text="立即改为目标文化；炉户损失 25%，清空旧募兵槽。" />
+    <string id="AF_SETS_Village_CultureMode_PurgeHint" text="立即改为目标文化；炉户损失 60%，清除旧农村要人并重建募兵来源。" />
+    <string id="AF_SETS_Village_CultureInquiryTitle" text="GCCZ村庄：文化改造" />
+    <string id="AF_SETS_Village_CultureInquiryDescription" text="先选择改造方式。该标签不会替你自动决定。" />
+    <string id="AF_SETS_Next" text="下一步" />
+    <string id="AF_SETS_Cancel" text="取消" />
+    <string id="AF_SETS_Back" text="返回" />
+    <string id="AF_SETS_Village_NoTargetCulture" text="【GCCZ村庄】没有可用的目标文化。" />
+    <string id="AF_SETS_Village_CultureTargetTitle" text="GCCZ村庄：选择目标文化" />
+    <string id="AF_SETS_Village_CultureTargetDescription" text="改造方式：{MODE}" />
+    <string id="AF_SETS_Village_CultureGradualStarted" text="【GCCZ村庄】已开始教化改俗：约 180 天后转为{CULTURE}。" />
+    <string id="AF_SETS_Village_CultureChanged" text="【GCCZ村庄】{MODE}完成：文化改为{CULTURE}，炉户 {OLD} → {NEW}。" />
+    <string id="AF_SETS_Village_CultureFailureLocked" text="【GCCZ村庄】文化改造执行异常，已锁定本次处置以避免重复扣除；请导出 GCCZ 日志。" />
+    <string id="AF_SETS_Village_CultureFailure" text="【GCCZ村庄】文化改造执行失败，本次未生效；请导出 GCCZ 日志。" />
+    <string id="AF_SETS_Village_CultureGradualCompleted" text="【GCCZ村庄】{VILLAGE}的教化改俗完成，文化已转为{CULTURE}。" />
+    <string id="AF_SETS_Village_EntryUnavailable" text="【GCCZ村庄】当前无法进入村庄处置场景。" />
+    <string id="AF_SETS_Village_StatePrepareFailed" text="【GCCZ村庄】村庄处置状态准备失败。" />
+    <string id="AF_SETS_Village_SceneNotReady" text="【GCCZ村庄】村庄处置场景尚未就绪，请重试。" />
+    <string id="AF_SETS_Village_SceneOpenFailed" text="【GCCZ村庄】进入村庄处置场景失败。" />
+    <string id="AF_SETS_NativeVictoryMenu" text="【SETS内部暴乱】{NOUN}守军已被击溃，已进入原版围城战胜利处置菜单；可选择原版处置或 GCCZ 攻城处置。" />
+    <string id="AF_SETS_SettlementCaptured" text="【SETS内部暴乱】{SETTLEMENT} 已由你的家族接管。" />
+    <string id="AF_SETS_IncidentEntryTooltip" text="亲自进入{NOUN}，继续决定剩余居民的命运。" />
+    <string id="AF_SETS_IncidentEntryUnavailableTooltip" text="当前没有可进入的 SETS 自有/附属定居点事件场景。" />
+    <string id="AF_SETS_SettlementFallback" text="这座{NOUN}" />
+    <string id="AF_SETS_CastleInspectionPrepareFailed" text="城堡处置准备失败，队伍状态已恢复。" />
+    <string id="AF_SETS_Execution_Approach" text="{ACTOR}走向{PRISONER}，准备行刑。" />
+    <string id="AF_SETS_Execution_Completed" text="{ACTOR}处决了{PRISONER}。" />
+    <string id="AF_SETS_Execution_HeadGiven" text="{ACTOR}将{ITEM}交给了玩家。" />
+    <string id="AF_SETS_Execution_HeadFailed" text="【贵族俘虏随行】处决完成，但首级 RP 道具生成失败。" />
+    <string id="AF_SETS_Execution_Cancelled" text="【贵族俘虏随行】已取消处决。" />
+    <string id="AF_SETS_Execution_Aborted" text="【贵族俘虏随行】处决行动中止，未写入处决结果。" />
+    <string id="AF_SETS_Duel_SlaughterStopped" text="【城堡决斗】已停止尚未完成的屠戮命令；未死亡战俘恢复为未分配状态。" />
+    <string id="AF_SETS_Duel_Started" text="【城堡决斗】标签已生效：俘虏领主已在你正前方约20米处拿起{LOADOUT}；双方短暂就位后开打，生命降至最后一点即判负，不会死亡。" />
+    <string id="AF_SETS_Duel_LoadoutWithShield" text="{WEAPON}（{WEAPON_TIER}级）和{SHIELD}（{SHIELD_TIER}级）" />
+    <string id="AF_SETS_Duel_LoadoutWeapon" text="{WEAPON}（{WEAPON_TIER}级）" />
+    <string id="AF_SETS_Duel_Interrupted" text="【城堡决斗】决斗未能继续，双方已恢复为战后处置状态。" />
+    <string id="AF_SETS_Duel_PlayerWon" text="【城堡决斗】你击败了俘虏领主；对方已认输并恢复俘虏姿态。" />
+    <string id="AF_SETS_Duel_PlayerLost" text="【城堡决斗】俘虏领主击败了你并放下武器；双方仍留在处置现场。" />
+    <string id="AF_SETS_Duel_CombatStarted" text="【城堡决斗】双方就位，决斗开始。" />
+    <string id="AF_SETS_Entry_ConfigUnavailable" text="只能在战役地图上配置进城随行。" />
+    <string id="AF_SETS_Entry_ProfileOwnOption" text="自有定居点随行（{LIMIT}人）" />
+    <string id="AF_SETS_Entry_ProfileOtherOption" text="他方定居点随行（{LIMIT}人）" />
+    <string id="AF_SETS_Entry_ConfigTitle" text="【SETS】进城随行配置" />
+    <string id="AF_SETS_Entry_ConfigDescription" text="选择城镇、城堡或村庄进城时使用的随行名单：" />
+    <string id="AF_SETS_Entry_Configure" text="配置" />
+    <string id="AF_SETS_Entry_Close" text="关闭" />
+    <string id="AF_SETS_Entry_ConfigOpenFailed" text="【SETS】打开进城随行配置失败。" />
+    <string id="AF_SETS_Entry_PlayerPartyUnavailable" text="玩家部队不可用，无法配置随行。" />
+    <string id="AF_SETS_Entry_PartyRightName" text="{TITLE}（上限 {LIMIT} 人）" />
+    <string id="AF_SETS_Entry_PartyLeftName" text="可选健康普通士兵" />
+    <string id="AF_SETS_Entry_PartyHeader" text="配置 {TITLE}" />
+    <string id="AF_SETS_Entry_SelectionScopeOther" text="；只列出健康普通士兵；冲突开始后，现场主队同伴与家族成员会原地加入玩家编队。" />
+    <string id="AF_SETS_Entry_SelectionScopeOwn" text="；只列出健康普通士兵。" />
+    <string id="AF_SETS_Entry_Configuring" text="正在配置 {TITLE}{SCOPE}" />
+    <string id="AF_SETS_Entry_OpenFailed" text="【SETS】打开随行配置界面失败。" />
+    <string id="AF_SETS_Entry_LimitExceeded" text="随行配置不能超过 {LIMIT} 人。当前：{COUNT}" />
+    <string id="AF_SETS_Entry_Cancelled" text="【SETS】已取消进城随行配置。" />
+    <string id="AF_SETS_Entry_SavedWithCapacity" text="{TITLE}已保存 {COUNT}/{LIMIT}。仍可带入 {FREE} 人，可按 U 重新配置城镇、城堡或村庄随行。" />
+    <string id="AF_SETS_Entry_Saved" text="{TITLE}已保存 {COUNT}/{LIMIT}。" />
+    <string id="AF_SETS_Entry_SaveFailed" text="【SETS】保存进城随行配置失败。" />
+    <string id="AF_SETS_Entry_ProfileTitleOwn" text="自有定居点随行" />
+    <string id="AF_SETS_Entry_ProfileTitleOther" text="他方定居点随行" />
+    <string id="AF_SETS_Entry_RelationOwn" text="玩家直属领地；玩家为统治者时，同国附属领主领地也走这套。" />
+    <string id="AF_SETS_Entry_RelationOther" text="非自有领地；玩家不是统治者时，同国领主城镇也走这套。" />
+    <string id="AF_SETS_Entry_ProfileHint" text="已配置 {CONFIGURED}/{LIMIT}，当前健康可带入 {LIVE}/{LIMIT}。{RELATION}" />
+    <string id="AF_SETS_Entry_ProfileUnavailable" text=" 有 {COUNT} 个配置名额因受伤或离队不可用。" />
+    <string id="AF_SETS_Entry_ProfileFallbackOther" text="配置进入他方城镇、城堡或村庄时带入的健康普通士兵（人数上限可在 MCM 调整）；现场主队英雄会在冲突开始后加入玩家编队。" />
+    <string id="AF_SETS_Entry_ProfileFallbackOwn" text="配置进入自有城镇、城堡或村庄时自动带入的普通士兵。" />
+    <string id="AF_SETS_Entry_SettlementFallback" text="定居点" />
+    <string id="AF_SETS_Entry_ReminderUnconfigured" text="{TITLE}尚未配置，本次进入{SETTLEMENT}不会带随行。可按 U 为城镇、城堡或村庄配置随行人员。" />
+    <string id="AF_SETS_Entry_ReminderConfigured" text="本次进入{SETTLEMENT}随行 {SELECTED}/{LIMIT}，仍可带入 {FREE} 人。" />
+    <string id="AF_SETS_Entry_ReminderUnavailable" text=" 有 {COUNT} 个配置名额因受伤或离队空缺。" />
+    <string id="AF_SETS_Entry_ReminderReconfigure" text=" 可按 U 重新配置城镇、城堡或村庄随行。" />
+    <string id="AF_SETS_Entry_Spawned" text="【SETS】随行人员已进入场景，可按原版指挥调整。" />
+    <string id="AF_SETS_Entry_SpawnedConflict" text="冲突爆发时他们会协助你。" />
+    <string id="AF_SETS_Coup_HallGuardDeploy" text="【宣权篡位】大厅护卫部署：本批 {SPAWNED} 人，待部署 {REMAINING} 人。" />
+    <string id="AF_SETS_Coup_DefenderReinforce" text="【宣权篡位】守军增援第 {WAVE} 批，待入场 {REMAINING} 人（场上最多 {MAX_WAVES} 批；突破大厅入口后停止增援）。" />
+    <string id="AF_SETS_Coup_HallSpawnInvalid" text="大厅人物未能落在有效出生点，已中止本次部署，未判定胜利。" />
+    <string id="AF_SETS_Coup_HallGuard" text="护卫" />
+    <string id="AF_SETS_Coup_HallAssault" text="突击队" />
+    <string id="AF_SETS_Coup_HallPointUnreachable" text="领主大厅连续15秒找不到{SIDE}可达落点，已停止本次部署；未授予胜利，已有伤亡保留。" />
+  </strings>
+</base>

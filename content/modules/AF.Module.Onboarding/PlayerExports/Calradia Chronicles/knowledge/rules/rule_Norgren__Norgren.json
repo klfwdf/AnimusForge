@@ -1,0 +1,93 @@
+{
+  "Id": "rule_Norgren",
+  "Keywords": [
+    "Norgren"
+  ],
+  "RagShortTexts": [
+    "Norgren wool is the best in Galen, and the mutton has the fragrance of sea breeze."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Norgren is a village near Gallen, located on a slope in the Biscayne Hills. Villagers here graze sheep on pastures between coastal woods and mountain cliffs, with wool and mutton being their main livelihood."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Norgren's wool is the best in Gallen. The sheep there graze between the pastures on the hillside and the woods by the sea, and their wool is thick and soft. When the sea breeze blows in winter, wearing a cloak made of Norgren wool will keep you warmer than any other armor."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "townsfolk"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Norgren’s mutton is also good. The grass on the mountain smells like the sea breeze, and the mutton tastes refreshing. Every year during the sheep shearing season, merchants from Gallen would go to Norgren to harvest the wool. If they arrived late, it would be gone."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "I spent the night at Norgren's ranch. The place was on the slopes of the Biscayne Hills, with the sea on one side and mountains on the other, and the wind carried a salty smell. The shepherd gave me a big bowl of mutton soup, and after drinking it I fell asleep like the dead. There was nothing valuable in that place, but life was peaceful."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Norgren",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "Galen",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

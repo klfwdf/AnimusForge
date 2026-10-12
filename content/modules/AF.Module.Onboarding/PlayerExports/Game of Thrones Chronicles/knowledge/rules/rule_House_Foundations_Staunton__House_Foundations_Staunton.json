@@ -1,0 +1,132 @@
+{
+  "Id": "rule_House_Foundations_Staunton",
+  "Keywords": [
+    "Staunton",
+    "House Staunton"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Staunton family is based on Crow's Roost and is an ancient vassal on the northern shore of the king's territory facing Blackwater Bay. The coastal location of Crow's Roost allows Staunton to face farmland, fishing grounds, coastal waterways and the King's Landing at the same time; the prosperity of the royal realm can bring markets to the town, and royal wars can also allow fleets and levies to arrive first. The Staunton family name was linked to the view of Blackwater Bay from Crow's Roost, and the lord had to constantly carry messages between court, the coast and local villages. For sailors, the castle is a beacon; for farmers, it is a tax collector and protector; for the royal family, it is a window on the periphery of the capital."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "crownlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The royal nobles regarded Staunton as a coastal vassal who could not be ignored outside the Red Castle. Crow's Roost Castle is close enough to King's Landing to hear orders quickly, and close enough to the sea to see danger quickly. This position brings honor, but also a responsibility that cannot be shied away from."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "crownlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "sailor",
+          "merchant",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "People near Crow's Roost watch the tide, boats, and tax trucks. Merchants benefited when ports were opened, fishing nets were folded when fleets appeared, and farmers handed over grain when royal levies were issued. Word of Staunton's good and bad always spread quickly to both sides of the bay."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Staunton Entry Staunton The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Staunton Entry Staunton Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Staunton Entry Staunton The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Staunton Entry Staunton They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Staunton: Entry Staunton"
+  ]
+}

@@ -1,0 +1,150 @@
+{
+  "Id": "rule_Folk_Customs_Merchant_Credit_and_Debts",
+  "Keywords": [
+    "Merchant Credit",
+    "Arrears",
+    "Promissory Notes",
+    "Guarantees"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Trade cannot be settled with full amount of money on the spot every time. Merchants used verbal promises, IOUs, seals, witnesses, collateral, and kinship guarantees to have goods, shipping fees, and wages delivered on different dates. People with good credit can organize larger businesses with less cash, while those with bad credit will have their interest rates increased, their supply refused, or they will be excluded from the market. Wars, shipwrecks, and seigneurial confiscations render honest men insolvent, and creditors must therefore distinguish between deception and disaster. Debt is not only a number, but also involves marriages, apprentices, crew members and hired workers; if a big businessman falls, many small households may lose their turnover together."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "notable",
+          "artisan"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "A businessman treats his name as a second money bag. One time repayment does not make a person great, but years of continuing to pay in bad times does."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Lords tended to regard merchant debts as trivial matters that could be wiped away by power, and wise men knew that this would drive away ships and capital. The clergy would ask whether interest has turned hardship into a permanent yoke."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "sailor",
+          "slave"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Small households and crew rely on credit to survive the off-season, and are most afraid of compound interest and unpaid wages. A bad debt for a rich person may mean missing a month of food in their family."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Merchant Credit Merchant Credit and Debts: Contracts, witnesses, seals, and long-term reputations allow goods to go first and money to be paid later, and defaults will spread along the entire relationship network. Whether it is valid depends on who can grant the rights, collect the consideration, and actually make the judgment come to fruition in the event of default."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Merchant Credit Merchant Credit and Debts: Contracts, witnesses, seals, and long-term reputations allow goods to go first and money to be paid later, and defaults will spread along the entire relationship network. The distant system is not empty talk only if it can be implemented in campfires, city gates and inns."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Merchant Credit Merchant Credit and Debts: Contracts, witnesses, seals, and long-term reputations allow goods to go first and money to be paid later, and defaults will spread along the entire relationship network. If a rule is practiced over and over again, it will find its way into rituals, crafts, and prayers; if it is sustained only by fear, cracks will show at the onset of a crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Merchant Credit Merchant Credit and Debts: Contracts, witnesses, seals, and long-term reputations allow goods to go first and money to be paid later, and defaults will spread along the entire relationship network. They remember taxes, grain, labor, relief and who can speak for them; these grand names will eventually fall on the family's rice pot."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Merchant Credit and Debts: Contracts, witnesses, seals, and long-term reputations allow goods to go first and money to be paid later, and defaults will spread along the entire relationship network."
+  ]
+}

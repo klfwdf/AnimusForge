@@ -9,6 +9,7 @@ using SandBox.View.Map;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.Core;
 using TaleWorlds.Library;
+using TaleWorlds.Localization;
 using TaleWorlds.ScreenSystem;
 
 namespace AnimusForge;
@@ -20,17 +21,17 @@ internal static class WorldDiplomacyPresentation
         WorldDiplomacyPlayerContext player = WorldDiplomacyPresentationHost.Player();
         if (player == null)
         {
-            InformationManager.DisplayMessage(new InformationMessage("AI 外交功能尚未初始化。"));
+			InformationManager.DisplayMessage(new InformationMessage(DiplomacyUiLocalization.Text("AF_DIP_UI_Presentation_NotInitialized", "AI diplomacy is not initialized yet.")));
             return false;
         }
         if (!player.IsRuler)
         {
             InformationManager.ShowInquiry(new InquiryData(
-                "无法发布外交宣言",
-                "只有王国统治者才能发布外交宣言。",
+				DiplomacyUiLocalization.Text("AF_DIP_UI_Presentation_RulerOnlyTitle", "Cannot publish diplomatic declaration"),
+				DiplomacyUiLocalization.Text("AF_DIP_UI_Presentation_RulerOnlyBody", "Only a kingdom ruler can publish a diplomatic declaration."),
                 true,
                 false,
-                "知道了",
+				DiplomacyUiLocalization.Text("AF_DIP_UI_Common_Acknowledge", "Got it"),
                 "",
                 onClose,
                 null),
@@ -38,7 +39,7 @@ internal static class WorldDiplomacyPresentation
             return false;
         }
         return WorldDiplomacyComposePopup.Show(
-            "撰写外交宣言",
+			DiplomacyUiLocalization.Text("AF_DIP_UI_Compose_Title", "Write diplomatic declaration"),
             "",
             "",
             body => DisplayResult(WorldDiplomacyPresentationHost.Submit(new WorldDiplomacyPlayerDocumentCommand(body, player.Generation))),
@@ -59,13 +60,15 @@ internal static class WorldDiplomacyPresentation
             ? (Action)(() => DisplayResult(WorldDiplomacyPresentationHost.RetryAnalysis(detail.DocumentId, detail.Generation)))
             : detail.CanReply ? (Action)(() => OpenPlayerReplyCompose(detail)) : null;
         return CourierLetterReplyPopup.ShowWithReply(detail.Title, detail.Subtitle, detail.Body,
-            reply, detail.CanRetryAnalysis ? "重新解析" : "回应", null, "关闭", detail.Impact);
+            reply,
+            detail.CanRetryAnalysis ? DiplomacyUiLocalization.Text("AF_DIP_UI_Archive_Reanalyze", "Re-analyze") : DiplomacyUiLocalization.Text("AF_DIP_UI_Archive_Reply", "Reply"),
+            null, DiplomacyUiLocalization.Text("AF_DIP_UI_Common_Close", "Close"), detail.Impact);
     }
 
     private static void OpenPlayerReplyCompose(WorldDiplomacyDocumentDetail detail)
     {
         if (!WorldDiplomacyPresentationHost.CanOpenReply(detail.DocumentId, detail.RoundId, detail.Generation)) return;
-        WorldDiplomacyComposePopup.Show("回应外交宣言", "", "", body => DisplayResult(
+		WorldDiplomacyComposePopup.Show(DiplomacyUiLocalization.Text("AF_DIP_UI_Compose_ReplyTitle", "Reply to diplomatic declaration"), "", "", body => DisplayResult(
             WorldDiplomacyPresentationHost.Submit(new WorldDiplomacyPlayerDocumentCommand(
                 body, detail.Generation, detail.DocumentId, detail.RoundId))), null);
     }
@@ -111,14 +114,14 @@ internal static class WorldDiplomacyPresentation
                 EventId = "policy_history:" + policy.HistoryKey,
                 HistoryKey = policy.HistoryKey,
                 CanDelete = policy.CanDelete,
-                KindLabel = "自定义政策",
+                KindLabel = DiplomacyUiLocalization.Text("AF_DIP_UI_Archive_CustomPolicy", "Custom policy"),
                 HeaderRightText = policy.StatusText,
                 DateText = policy.DateText,
                 TitleText = policy.TitleText,
                 MetaText = policy.DateText + "  ·  " + policy.StatusText + "  ·  " + policy.KingdomName,
-                BodySectionTitleText = "政策记录",
+                BodySectionTitleText = DiplomacyUiLocalization.Text("AF_DIP_UI_Archive_PolicyRecord", "Policy record"),
                 BodyText = policy.BodyText,
-                ImpactSectionTitleText = "政策影响效果",
+                ImpactSectionTitleText = DiplomacyUiLocalization.Text("AF_DIP_UI_Archive_PolicyImpact", "Policy effects"),
                 ImpactText = policy.ImpactText,
                 HasImpact = !string.IsNullOrWhiteSpace(policy.ImpactText),
                 IndexMetaText = policy.DateText + "  ·  " + policy.StatusText,
@@ -137,8 +140,8 @@ internal static class WorldDiplomacyPresentation
             if (!string.IsNullOrWhiteSpace(historyKey) && (representedPolicies.Contains(historyKey)
                 || CustomPolicyBehavior.Instance != null && CustomPolicyBehavior.IsPolicyAnnouncementDeleted(entry))) continue;
             string kingdomId = WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(entry.KingdomId, "policy_unknown");
-            WorldEventCountryData group = GetOrCreateArchiveGroup(groups, kingdomId, WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(entry.KingdomName, "未知国家"));
-            string date = WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(entry.GameDate, entry.Day > 0 ? "第" + entry.Day.ToString(CultureInfo.InvariantCulture) + "天" : "未知日期");
+            WorldEventCountryData group = GetOrCreateArchiveGroup(groups, kingdomId, WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(entry.KingdomName, DiplomacyUiLocalization.Text("AF_DIP_UI_Archive_UnknownCountry", "Unknown kingdom")));
+            string date = WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(entry.GameDate, entry.Day > 0 ? FormatArchiveDay(entry.Day) : DiplomacyUiLocalization.Text("AF_DIP_UI_Common_UnknownDate", "Unknown date"));
             bool showReReview = TryResolveWorldEventPolicyReReview(
                 entry,
                 out string policyRecordId,
@@ -147,20 +150,20 @@ internal static class WorldDiplomacyPresentation
             group.Records.Add(new WorldEventRecordData
             {
                 EventId = entry.EventId ?? "",
-                KindLabel = WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(entry.KindLabel, "自定义政策"),
+                KindLabel = WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(entry.KindLabel, DiplomacyUiLocalization.Text("AF_DIP_UI_Archive_CustomPolicy", "Custom policy")),
                 HeaderRightText = entry.HeaderRightText ?? "",
                 DateText = date,
-                TitleText = WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(entry.Title, entry.KindLabel, "自定义政策"),
-                MetaText = date + "  ·  " + WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(entry.KindLabel, "自定义政策") + "  ·  " + WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(entry.KingdomName, entry.KingdomId),
+                TitleText = WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(entry.Title, entry.KindLabel, DiplomacyUiLocalization.Text("AF_DIP_UI_Archive_CustomPolicy", "Custom policy")),
+                MetaText = date + "  ·  " + WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(entry.KindLabel, DiplomacyUiLocalization.Text("AF_DIP_UI_Archive_CustomPolicy", "Custom policy")) + "  ·  " + WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(entry.KingdomName, entry.KingdomId),
                 PolicyNameText = "",
-                BodyText = WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(entry.DetailText, entry.Summary, "（无详情）"),
-                BodySectionTitleText = WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(entry.BodySectionTitleText, "公告详情"),
+                BodyText = WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(entry.DetailText, entry.Summary, DiplomacyUiLocalization.Text("AF_DIP_UI_Archive_NoDetails", "(No details.)")),
+                BodySectionTitleText = WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(entry.BodySectionTitleText, DiplomacyUiLocalization.Text("AF_DIP_UI_Archive_AnnouncementDetails", "Announcement details")),
                 ImpactSectionTitleText = entry.ImpactSectionTitleText ?? "",
                 ImpactText = entry.ImpactText ?? "",
-                IndexMetaText = date + "  ·  " + WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(entry.KindLabel, "自定义政策"),
-                UnreadMarkerText = entry.IsRead ? "" : "新",
+                IndexMetaText = date + "  ·  " + WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(entry.KindLabel, DiplomacyUiLocalization.Text("AF_DIP_UI_Archive_CustomPolicy", "Custom policy")),
+                UnreadMarkerText = entry.IsRead ? "" : DiplomacyUiLocalization.Text("AF_DIP_UI_Archive_NewMarker", "New"),
                 PolicyRecordId = policyRecordId,
-                ReReviewText = "重新评议政策",
+                ReReviewText = DiplomacyUiLocalization.Text("AF_DIP_UI_Archive_ReviewPolicy", "Review policy again"),
                 ReReviewDisabledReasonText = reReviewDisabledReason,
                 IsUnread = !entry.IsRead,
                 HasPolicyName = false,
@@ -192,17 +195,17 @@ internal static class WorldDiplomacyPresentation
                 HasPolicyName = record.HasPolicyName,
                 HasImpact = record.HasImpact,
                 PolicyRecordId = "diplomacy_analysis:" + record.EventId,
-                ReReviewText = "重新解析",
+                ReReviewText = DiplomacyUiLocalization.Text("AF_DIP_UI_Archive_Reanalyze", "Re-analyze"),
                 ShowReReview = record.CanRetryAnalysis,
                 CanReReview = record.CanRetryAnalysis
             });
         }
         WorldEventInboxPopupData data = new WorldEventInboxPopupData
         {
-            TitleText = "王国公告",
+            TitleText = DiplomacyUiLocalization.Text("AF_DIP_UI_Archive_Title", "Kingdom announcements"),
             SubtitleText = WorldDiplomacyPresentationHost.ArchiveSubtitle(),
-            EmptyStateText = "目前还没有王国公告。",
-            CloseText = "关闭",
+            EmptyStateText = DiplomacyUiLocalization.Text("AF_DIP_UI_Archive_Empty", "There are no kingdom announcements yet."),
+            CloseText = DiplomacyUiLocalization.Text("AF_DIP_UI_Common_Close", "Close"),
             Countries = groups.Values
                 .OrderBy(x => string.Equals(x.KingdomId, "diplomacy_archive", StringComparison.OrdinalIgnoreCase) ? 1 : 0)
                 .ThenBy(x => x.KingdomName, StringComparer.CurrentCulture)
@@ -218,6 +221,13 @@ internal static class WorldDiplomacyPresentation
         }
         data.SelectedCountryIndex = Math.Max(0, data.Countries.FindIndex(x => x.Records.Count > 0));
         return data;
+    }
+
+    private static string FormatArchiveDay(int day)
+    {
+        TextObject text = new TextObject("{=AF_DIP_UI_Archive_Day}Day {DAY}");
+        text.SetTextVariable("DAY", day.ToString(CultureInfo.InvariantCulture));
+        return text.ToString();
     }
     private static bool TryResolveWorldEventPolicyReReview(
         AnimusForgeWorldEventInboxEntry entry,
@@ -274,7 +284,7 @@ internal static class WorldDiplomacyPresentation
             group = new WorldEventCountryData
             {
                 KingdomId = key,
-                KingdomName = WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(name, key, "未知国家")
+                KingdomName = WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(name, key, DiplomacyUiLocalization.Text("AF_DIP_UI_Archive_UnknownCountry", "Unknown kingdom"))
             };
             groups[key] = group;
         }

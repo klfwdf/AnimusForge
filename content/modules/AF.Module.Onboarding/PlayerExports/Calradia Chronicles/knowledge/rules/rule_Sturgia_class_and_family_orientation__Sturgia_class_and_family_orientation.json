@@ -1,0 +1,67 @@
+{
+  "Id": "rule_Sturgia_class_and_family_orientation",
+  "Keywords": [
+    "family",
+    "Icefield",
+    "Search",
+    "Heating",
+    "clansman",
+    "tribe"
+  ],
+  "RagShortTexts": [
+    "The Grand Duke deserves respect, but family is most important. The clan leaders often go hunting for beauties despite being told to do so. Sex was used as a practical means of warmth and breeding. Women are an important strategic resource."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "In Sturgia, your family is your class and your last name is your passport. The son of the Kulov family was born to be Boyer's heir, and a fisherman's son, no matter how brave he was, could not be the leader of the clan. But there is one special thing about Sturgia's class: women's status in the family is sometimes more important than men's. When a daughter of one family marries a son of another, the alliance created by the marriage may determine whether two tribes survive the winter. So Sturgia women don't have many choices when it comes to sex - their bodies are the family's resources, used for marriage, breeding, and in exchange for shelter during the coldest days of winter. Not cruelty, but survival. A"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "I am a hunter from Sturgia and do not belong to any great clan. With us, you are either a member of the Kulov family or an outsider. I'm an outsider, but that doesn't mean I can't kill a bear alone. But when we got to the meeting tent, I wasn’t even qualified to sit because I didn’t have a last name. As for women - the daughter of the patriarch can marry another Boye's son, but the daughters of us outsiders can only find men by ourselves. If we are lucky, we will marry a hunter, if we are unlucky, we will be kidnapped by passing pirates. The winter in Sturgia is so cold that class becomes a life-saving piece of clothing - the Kurovs have thick leather coats, but we only have rags. A"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The family-based system of the Sturgians is unique among the Calradia nations. Their society is based on the family as the core unit, and an individual's identity is completely defined by the family to which he or she belongs. Under this system, sexual relations were first and foremost a tool for family alliances—two families established or consolidated political and military alliances through marriage. The noble women of Sturgia have been taught since childhood that your body belongs to the family, and their right to the first night, marriage partners, and even the spacing of children are strictly controlled by the family elders. But what's interesting is that this strict system gave birth to a special underground culture - the winter in Sturgia is long and cold, and young men and women always find ways to bypass the rules during the long winter nights. A"
+    }
+  ],
+  "TextMappings": []
+}

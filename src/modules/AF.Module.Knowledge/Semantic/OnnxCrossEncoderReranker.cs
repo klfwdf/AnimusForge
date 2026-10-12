@@ -568,7 +568,7 @@ public sealed class OnnxCrossEncoderReranker
 				if (_tokenizer == null)
 				{
 					_available = false;
-					_lastError = "reranker tokenizer 解析失败。";
+					_lastError = "Failed to parse the reranker tokenizer.";
 					return;
 				}
                 _modelPath = text;
@@ -578,7 +578,7 @@ public sealed class OnnxCrossEncoderReranker
 				_lastError = "";
 				try
 				{
-					Logger.Log("OnnxReranker", string.Format("初始化成功 model={0} tokenizer={1} inputType={2} maxLen={3}", System.IO.Path.GetFileName(text), System.IO.Path.GetFileName(text2), _useInt64Input ? "int64" : "int32", _maxLength));
+					Logger.Log("OnnxReranker", string.Format("Initialized model={0} tokenizer={1} inputType={2} maxLen={3}", System.IO.Path.GetFileName(text), System.IO.Path.GetFileName(text2), _useInt64Input ? "int64" : "int32", _maxLength));
 				}
 				catch
 				{
@@ -587,10 +587,10 @@ public sealed class OnnxCrossEncoderReranker
 			catch (Exception ex)
 			{
 				_available = false;
-				_lastError = ex.Message ?? "初始化异常";
+				_lastError = ex.Message ?? "Initialization exception";
 				try
 				{
-					Logger.Log("OnnxReranker", "初始化失败: " + _lastError);
+					Logger.Log("OnnxReranker", "Initialization failed: " + _lastError);
 				}
 				catch
 				{
@@ -943,7 +943,7 @@ public sealed class OnnxCrossEncoderReranker
 			stopwatch.Stop();
 			try
 			{
-				Logger.Log("OnnxReranker", "批量推理失败: " + ex.Message);
+				Logger.Log("OnnxReranker", "Batch inference failed: " + ex.Message);
 			}
 			catch
 			{
@@ -1165,7 +1165,7 @@ public sealed class OnnxCrossEncoderReranker
 			stopwatch.Stop();
 			try
 			{
-				Logger.Log("OnnxReranker", "推理失败: " + ex.Message);
+				Logger.Log("OnnxReranker", "Inference failed: " + ex.Message);
 			}
 			catch
 			{

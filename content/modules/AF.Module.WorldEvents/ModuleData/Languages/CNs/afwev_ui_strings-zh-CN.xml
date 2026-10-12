@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base type="string">
+  <tags><tag language="简体中文" /></tags>
+  <strings>
+    <string id="AF_WEV_UI_Title" text="世界事件" />
+    <string id="AF_WEV_UI_Subtitle" text="只读查看 NPC 统治者政策、民众反馈和世界事件。" />
+    <string id="AF_WEV_UI_Empty" text="暂无世界事件。" />
+    <string id="AF_WEV_UI_Close" text="关闭" />
+    <string id="AF_WEV_UI_CountryColumn" text="国家" />
+    <string id="AF_WEV_UI_CountryEmpty" text="该国暂无事件" />
+    <string id="AF_WEV_UI_Delete" text="删除记录" />
+    <string id="AF_WEV_UI_UnknownKingdom" text="未知国家" />
+    <string id="AF_WEV_UI_WorldEvent" text="世界事件" />
+    <string id="AF_WEV_UI_DefaultEventTitle" text="AnimusForge 事件" />
+    <string id="AF_WEV_UI_EventDetails" text="事件详情" />
+    <string id="AF_WEV_UI_PolicyImpact" text="政策影响效果" />
+    <string id="AF_WEV_UI_ReReview" text="重新评议政策" />
+    <string id="AF_WEV_UI_New" text="新" />
+  </strings>
+</base>

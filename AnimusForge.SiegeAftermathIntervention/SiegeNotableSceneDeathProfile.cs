@@ -11,9 +11,14 @@ public static class SiegeNotableSceneDeathProfile
 
     public const string SettlementResolutionKillReason = "gccz_scene_notable_settlement_resolution";
 
-    public const string QueuedMemoryTitle = "头人击倒";
+    public const string QueuedMemoryTitle = "Notable knocked down";
+    public const string QueuedMemoryTitleEn = "Notable knocked down";
+    
+    public const string QueuedMemoryText = "The player knocked down an in-scene notable/headman; inside the scene this counts only as unconsciousness, and execution is committed at final departure.";
+    public const string QueuedMemoryTextEn = "The player knocked down an on-site notable/headman in the aftermath scene; inside the scene this counts only as unconsciousness, and death is settled at final resolution.";
 
-    public const string QueuedMemoryText = "玩家在攻城处置场景内击倒了在场要人/头人；场景内只判定昏迷，最终结算时再处死。";
+    public static string GetQueuedMemoryTitle(bool isEnglish) => isEnglish ? QueuedMemoryTitleEn : QueuedMemoryTitle;
+    public static string GetQueuedMemoryText(bool isEnglish) => isEnglish ? QueuedMemoryTextEn : QueuedMemoryText;
 
     public static bool ShouldForceUnconscious(bool activeGcczStage, bool isNotableOrHeadman)
     {

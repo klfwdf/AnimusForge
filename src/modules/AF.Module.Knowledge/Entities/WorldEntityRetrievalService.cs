@@ -1215,7 +1215,7 @@ public static class WorldEntityRetrievalService
 				foreach (string qualifier in qualifiers)
 				{
 					AddAlias(aliases, qualifier + title);
-					AddAlias(aliases, qualifier + "的" + title);
+					AddAlias(aliases, qualifier + KnowledgeSourceTexts.Get("KN_Raw_000") + title);
 					AddAlias(aliases, qualifier + " " + title);
 					AddAlias(aliases, qualifier + "'s " + title);
 					AddAlias(aliases, title + qualifier);
@@ -1389,6 +1389,7 @@ public static class WorldEntityRetrievalService
 			}
 			int priority = EntityMentionList.GetPriority(mentionPriority, mention);
 			FuzzyTextProfile mentionProfile = EntityNameMatcher.BuildProfile(mention);
+			bool requireExactDisplayName = EntityNameMatcher.RequiresExactDisplayName(mention);
 			List<EntityMatch<T>> scored = new List<EntityMatch<T>>();
 			int scanned = 0;
 			bool budgetStopped = false;
@@ -1396,7 +1397,8 @@ public static class WorldEntityRetrievalService
 			foreach (EntityCandidateSnapshot<T> candidate in snapshots)
 			{
 				scanned++;
-				float score = EntityNameMatcher.BestScore(mentionProfile, candidate.Aliases);
+				float score = requireExactDisplayName && !string.Equals(mention, candidate.Name, StringComparison.OrdinalIgnoreCase)
+					? 0f : EntityNameMatcher.BestScore(mentionProfile, candidate.Aliases);
 				if (score >= MatchThreshold)
 				{
 					scored.Add(new EntityMatch<T>
@@ -1682,7 +1684,7 @@ public static class WorldEntityRetrievalService
 	{
 		string player = ResolvePlayerDisplayNameForPrompt(playerDisplayName);
 		StringBuilder sb = new StringBuilder();
-		sb.AppendLine("你和" + player + "交流可用的实体信息：");
+		sb.AppendLine(WorldEntityPromptTexts.Get("EntityHeaderPrefix", "Entity information available for communication between you and ") + player + WorldEntityPromptTexts.Get("EntityHeaderSuffix", ":"));
 		AppendHeroMainFacts(sb, heroes, player, contextHero);
 		AppendSettlementMainFacts(sb, settlements);
 		AppendClanMainFacts(sb, clans);
@@ -1702,20 +1704,20 @@ public static class WorldEntityRetrievalService
 		{
 			Hero player = Hero.MainHero;
 			Clan playerClan = Clan.PlayerClan ?? player?.Clan;
-			AddResidentClanMatch(clans, playerClan, "常驻：玩家当前家族", priority++);
+			AddResidentClanMatch(clans, playerClan, WorldEntityPromptTexts.Get("ResidentPlayerClan", "Resident: player's current clan"), priority++);
 			if (includeResidentKingdoms)
 			{
-				AddResidentKingdomMatch(kingdoms, ResolveHeroKingdomForResidentEntity(player, playerClan), "常驻：玩家当前王国", priority++);
+				AddResidentKingdomMatch(kingdoms, ResolveHeroKingdomForResidentEntity(player, playerClan), WorldEntityPromptTexts.Get("ResidentPlayerKingdom", "Resident: player's current kingdom"), priority++);
 			}
 		}
 		if (contextHero != null)
 		{
-			string contextName = SafeName(contextHero.Name, "当前对话人物");
-			AddResidentHeroMatch(heroes, contextHero, "常驻：" + contextName + "本人", priority++);
-			AddResidentClanMatch(clans, contextHero.Clan, "常驻：" + contextName + "家族", priority++);
+			string contextName = SafeName(contextHero.Name, WorldEntityPromptTexts.Get("ConversationHero", "current conversation character"));
+			AddResidentHeroMatch(heroes, contextHero, WorldEntityPromptTexts.Get("ResidentPrefix", "Resident: ") + contextName + WorldEntityPromptTexts.Get("SelfSuffix", " (self)"), priority++);
+			AddResidentClanMatch(clans, contextHero.Clan, WorldEntityPromptTexts.Get("ResidentPrefix", "Resident: ") + contextName + WorldEntityPromptTexts.Get("ResidentClanSuffix", "'s clan"), priority++);
 			if (includeResidentKingdoms)
 			{
-				AddResidentKingdomMatch(kingdoms, ResolveHeroKingdomForResidentEntity(contextHero, contextHero.Clan), "常驻：" + contextName + "当前王国", priority++);
+				AddResidentKingdomMatch(kingdoms, ResolveHeroKingdomForResidentEntity(contextHero, contextHero.Clan), WorldEntityPromptTexts.Get("ResidentPrefix", "Resident: ") + contextName + WorldEntityPromptTexts.Get("CurrentKingdomSuffix", "'s current kingdom"), priority++);
 			}
 		}
 		SortEntityMatches(heroes);
@@ -1735,15 +1737,15 @@ public static class WorldEntityRetrievalService
 		{
 			Hero player = Hero.MainHero;
 			Clan playerClan = Clan.PlayerClan ?? player?.Clan;
-			AddResidentClanMatch(clans, playerClan, "常驻：玩家当前家族", priority++);
-			AddResidentKingdomMatch(kingdoms, ResolveHeroKingdomForResidentEntity(player, playerClan), "常驻：玩家当前王国", priority++);
+			AddResidentClanMatch(clans, playerClan, WorldEntityPromptTexts.Get("ResidentPlayerClan", "Resident: player's current clan"), priority++);
+			AddResidentKingdomMatch(kingdoms, ResolveHeroKingdomForResidentEntity(player, playerClan), WorldEntityPromptTexts.Get("ResidentPlayerKingdom", "Resident: player's current kingdom"), priority++);
 		}
 		if (contextHero != null)
 		{
-			string contextName = SafeName(contextHero.Name, "当前对话人物");
-			AddResidentHeroMatch(heroes, contextHero, "常驻：" + contextName + "本人", priority++);
-			AddResidentClanMatch(clans, contextHero.Clan, "常驻：" + contextName + "的家族", priority++);
-			AddResidentKingdomMatch(kingdoms, ResolveHeroKingdomForResidentEntity(contextHero, contextHero.Clan), "常驻：" + contextName + "的王国", priority++);
+			string contextName = SafeName(contextHero.Name, WorldEntityPromptTexts.Get("ConversationHero", "current conversation character"));
+			AddResidentHeroMatch(heroes, contextHero, WorldEntityPromptTexts.Get("ResidentPrefix", "Resident: ") + contextName + WorldEntityPromptTexts.Get("SelfSuffix", " (self)"), priority++);
+			AddResidentClanMatch(clans, contextHero.Clan, WorldEntityPromptTexts.Get("ResidentPrefix", "Resident: ") + contextName + WorldEntityPromptTexts.Get("ClanSuffix", "'s clan"), priority++);
+			AddResidentKingdomMatch(kingdoms, ResolveHeroKingdomForResidentEntity(contextHero, contextHero.Clan), WorldEntityPromptTexts.Get("ResidentPrefix", "Resident: ") + contextName + WorldEntityPromptTexts.Get("KingdomSuffix", "'s kingdom"), priority++);
 		}
 		SortEntityMatches(heroes);
 		SortEntityMatches(settlements);
@@ -1865,22 +1867,22 @@ public static class WorldEntityRetrievalService
 
 	private static void AddResidentHeroMatch(List<EntityMatch<Hero>> matches, Hero hero, string mention, int priority)
 	{
-		AddResidentMatch(matches, hero, "hero:" + SafeStringId(hero?.StringId), SafeName(hero?.Name, hero?.StringId ?? "人物"), mention, priority);
+		AddResidentMatch(matches, hero, "hero:" + SafeStringId(hero?.StringId), SafeName(hero?.Name, hero?.StringId ?? WorldEntityPromptTexts.Get("Hero", "character")), mention, priority);
 	}
 
 	private static void AddResidentSettlementMatch(List<EntityMatch<Settlement>> matches, Settlement settlement, string mention, int priority)
 	{
-		AddResidentMatch(matches, settlement, "settlement:" + SafeStringId(settlement?.StringId), SafeName(settlement?.Name, settlement?.StringId ?? "地点"), mention, priority);
+		AddResidentMatch(matches, settlement, "settlement:" + SafeStringId(settlement?.StringId), SafeName(settlement?.Name, settlement?.StringId ?? WorldEntityPromptTexts.Get("Settlement", "location")), mention, priority);
 	}
 
 	private static void AddResidentClanMatch(List<EntityMatch<Clan>> matches, Clan clan, string mention, int priority)
 	{
-		AddResidentMatch(matches, clan, "clan:" + SafeStringId(clan?.StringId), SafeName(clan?.Name, clan?.StringId ?? "家族"), mention, priority);
+		AddResidentMatch(matches, clan, "clan:" + SafeStringId(clan?.StringId), SafeName(clan?.Name, clan?.StringId ?? WorldEntityPromptTexts.Get("Clan", "clan")), mention, priority);
 	}
 
 	private static void AddResidentKingdomMatch(List<EntityMatch<Kingdom>> matches, Kingdom kingdom, string mention, int priority)
 	{
-		AddResidentMatch(matches, kingdom, "kingdom:" + SafeStringId(kingdom?.StringId), SafeName(kingdom?.Name, kingdom?.StringId ?? "王国"), mention, priority);
+		AddResidentMatch(matches, kingdom, "kingdom:" + SafeStringId(kingdom?.StringId), SafeName(kingdom?.Name, kingdom?.StringId ?? WorldEntityPromptTexts.Get("Kingdom", "kingdom")), mention, priority);
 	}
 
 	private static void AddResidentMatch<T>(List<EntityMatch<T>> matches, T value, string id, string name, string mention, int priority) where T : class
@@ -1985,7 +1987,7 @@ public static class WorldEntityRetrievalService
 		catch
 		{
 		}
-		return "玩家";
+		return WorldEntityPromptTexts.Get("Player", "player");
 	}
 
 	private static string StripEntityIdsFromMainPromptBlock(string text)
@@ -1995,66 +1997,66 @@ public static class WorldEntityRetrievalService
 			return "";
 		}
 		string result = text;
-		result = Regex.Replace(result, "（\\s*编号[:：][^；）]*(?:；\\s*)?", "（", RegexOptions.IgnoreCase);
-		result = Regex.Replace(result, "；\\s*编号[:：][^；）\\r\\n]*", "", RegexOptions.IgnoreCase);
-		result = Regex.Replace(result, "编号[:：][^；）\\r\\n]*(?:；\\s*)?", "", RegexOptions.IgnoreCase);
-		result = Regex.Replace(result, "；\\s*部队ID[:：][^；）\\r\\n]*", "", RegexOptions.IgnoreCase);
-		result = Regex.Replace(result, "部队ID[:：][^；）\\r\\n]*(?:；\\s*)?", "", RegexOptions.IgnoreCase);
-		result = Regex.Replace(result, "（\\s*；", "（");
-		result = Regex.Replace(result, "；\\s*）", "）");
-		result = Regex.Replace(result, "（\\s*）", "");
-		result = Regex.Replace(result, @"\b(?:hero|settlement|clan|kingdom|troop|party|mobile_party):[A-Za-z0-9_.\-]+\b", "未知", RegexOptions.IgnoreCase);
-		result = Regex.Replace(result, @"(?<![\p{L}\p{N}_])(?:lord|lady|wanderer|companion|town|castle|village|settlement|clan|kingdom|troop|looters|bandits|mountain_bandits|forest_bandits|desert_bandits|sea_raiders|steppe_bandits|villagers|caravan|party|mobile_party)[A-Za-z0-9_\-]*\d[A-Za-z0-9_\-]*(?![\p{L}\p{N}_])", "未知", RegexOptions.IgnoreCase);
+		result = Regex.Replace(result, KnowledgeSourceTexts.Get("KN_Raw_001"), "$1", RegexOptions.IgnoreCase);
+		result = Regex.Replace(result, KnowledgeSourceTexts.Get("KN_Raw_002"), "", RegexOptions.IgnoreCase);
+		result = Regex.Replace(result, KnowledgeSourceTexts.Get("KN_Raw_003"), "", RegexOptions.IgnoreCase);
+		result = Regex.Replace(result, KnowledgeSourceTexts.Get("KN_Raw_004"), "", RegexOptions.IgnoreCase);
+		result = Regex.Replace(result, KnowledgeSourceTexts.Get("KN_Raw_005"), "", RegexOptions.IgnoreCase);
+		result = Regex.Replace(result, "([（(])\\s*[；;]", "$1");
+		result = Regex.Replace(result, "[；;]\\s*([）)])", "$1");
+		result = Regex.Replace(result, "[（(]\\s*[）)]", "");
+		result = Regex.Replace(result, @"\b(?:hero|settlement|clan|kingdom|troop|party|mobile_party):[A-Za-z0-9_.\-]+\b", WorldEntityPromptTexts.Get("Unknown", "unknown"), RegexOptions.IgnoreCase);
+		result = Regex.Replace(result, @"(?<![\p{L}\p{N}_])(?:lord|lady|wanderer|companion|town|castle|village|settlement|clan|kingdom|troop|looters|bandits|mountain_bandits|forest_bandits|desert_bandits|sea_raiders|steppe_bandits|villagers|caravan|party|mobile_party)[A-Za-z0-9_\-]*\d[A-Za-z0-9_\-]*(?![\p{L}\p{N}_])", WorldEntityPromptTexts.Get("Unknown", "unknown"), RegexOptions.IgnoreCase);
 		return result.Trim();
 	}
 
 	private static string BuildPostprocessPromptBlock(List<EntityMatch<Hero>> heroes, List<EntityMatch<Settlement>> settlements, List<EntityMatch<Clan>> clans, List<EntityMatch<Kingdom>> kingdoms, List<VisiblePartyCandidate> visibleParties)
 	{
 		StringBuilder sb = new StringBuilder();
-		sb.AppendLine("可能有效的信息：");
+		sb.AppendLine(WorldEntityPromptTexts.Get("PostprocessHeader", "Possibly relevant information:"));
 		AppendPlayerPostprocessFacts(sb);
 		List<EntityMatch<Hero>> postprocessHeroes = (heroes ?? new List<EntityMatch<Hero>>()).Where(IsPostprocessHeroMatchEligible).ToList();
 		List<EntityMatch<Clan>> postprocessClans = (clans ?? new List<EntityMatch<Clan>>()).Where(IsPostprocessClanMatchEligible).ToList();
 		List<EntityMatch<Kingdom>> postprocessKingdoms = (kingdoms ?? new List<EntityMatch<Kingdom>>()).Where(IsPostprocessKingdomMatchEligible).ToList();
 		if (postprocessHeroes.Count > 0)
 		{
-			sb.AppendLine("【人物】");
+			sb.AppendLine(WorldEntityPromptTexts.Get("HeroesHeader", "[Heroes]"));
 			for (int i = 0; i < postprocessHeroes.Count; i++)
 			{
 				Hero hero = postprocessHeroes[i].Value;
-				sb.AppendLine((i + 1) + ". 名称：" + SafeName(hero?.Name, postprocessHeroes[i].Name) + "；位置：" + FormatHeroLocation(hero) + "；ID：" + FormatPostprocessEntityId(postprocessHeroes[i].Id) + FormatPostprocessMentionHint(postprocessHeroes[i]));
+				sb.AppendLine((i + 1) + WorldEntityPromptTexts.Get("EntryName", ". Name: ") + SafePromptName(hero?.Name, postprocessHeroes[i].Name) + WorldEntityPromptTexts.Get("EntryLocation", "; Location: ") + FormatHeroLocation(hero) + WorldEntityPromptTexts.Get("EntityId", "; ID: ") + FormatPostprocessEntityId(postprocessHeroes[i].Id) + FormatPostprocessMentionHint(postprocessHeroes[i]));
 			}
 		}
 		if (settlements != null && settlements.Count > 0)
 		{
-			sb.AppendLine("【地点】");
+			sb.AppendLine(WorldEntityPromptTexts.Get("SettlementsHeader", "[Settlements]"));
 			for (int i = 0; i < settlements.Count; i++)
 			{
 				Settlement settlement = settlements[i].Value;
-				sb.AppendLine((i + 1) + ". 名称：" + SafeName(settlement?.Name, settlements[i].Name) + "；ID：" + FormatPostprocessEntityId(settlements[i].Id) + FormatPostprocessMentionHint(settlements[i]));
+				sb.AppendLine((i + 1) + WorldEntityPromptTexts.Get("EntryName", ". Name: ") + SafePromptName(settlement?.Name, settlements[i].Name) + WorldEntityPromptTexts.Get("EntityId", "; ID: ") + FormatPostprocessEntityId(settlements[i].Id) + FormatPostprocessMentionHint(settlements[i]));
 			}
 		}
 		if (postprocessClans.Count > 0)
 		{
-			sb.AppendLine("【家族】");
+			sb.AppendLine(WorldEntityPromptTexts.Get("ClansHeader", "[Clans]"));
 			for (int i = 0; i < postprocessClans.Count; i++)
 			{
 				Clan clan = postprocessClans[i].Value;
-				sb.AppendLine((i + 1) + ". 名称：" + SafeName(clan?.Name, postprocessClans[i].Name) + "；ID：" + FormatPostprocessEntityId(postprocessClans[i].Id) + FormatPostprocessMentionHint(postprocessClans[i]));
+				sb.AppendLine((i + 1) + WorldEntityPromptTexts.Get("EntryName", ". Name: ") + SafePromptName(clan?.Name, postprocessClans[i].Name) + WorldEntityPromptTexts.Get("EntityId", "; ID: ") + FormatPostprocessEntityId(postprocessClans[i].Id) + FormatPostprocessMentionHint(postprocessClans[i]));
 			}
 		}
 		if (postprocessKingdoms.Count > 0)
 		{
-			sb.AppendLine("【王国】");
+			sb.AppendLine(WorldEntityPromptTexts.Get("KingdomsHeader", "[Kingdoms]"));
 			for (int i = 0; i < postprocessKingdoms.Count; i++)
 			{
 				Kingdom kingdom = postprocessKingdoms[i].Value;
-				sb.AppendLine((i + 1) + ". 名称：" + SafeName(kingdom?.Name, postprocessKingdoms[i].Name) + "；ID：" + FormatPostprocessEntityId(postprocessKingdoms[i].Id) + FormatPostprocessMentionHint(postprocessKingdoms[i]));
+				sb.AppendLine((i + 1) + WorldEntityPromptTexts.Get("EntryName", ". Name: ") + SafePromptName(kingdom?.Name, postprocessKingdoms[i].Name) + WorldEntityPromptTexts.Get("EntityId", "; ID: ") + FormatPostprocessEntityId(postprocessKingdoms[i].Id) + FormatPostprocessMentionHint(postprocessKingdoms[i]));
 			}
 		}
 		if (visibleParties != null && visibleParties.Count > 0)
 		{
-			sb.AppendLine("【附近可见部队】");
+			sb.AppendLine(WorldEntityPromptTexts.Get("VisiblePartiesHeader", "[Nearby visible parties]"));
 			for (int i = 0; i < visibleParties.Count; i++)
 			{
 				sb.AppendLine(BuildVisiblePartyPromptLine(i + 1, visibleParties[i]));
@@ -2089,7 +2091,7 @@ public static class WorldEntityRetrievalService
 	private static string FormatPostprocessMentionHint<T>(EntityMatch<T> match) where T : class
 	{
 		string mention = (match?.Mention ?? "").Trim();
-		return string.IsNullOrWhiteSpace(mention) ? "" : ("；提示：" + mention);
+		return string.IsNullOrWhiteSpace(mention) ? "" : (WorldEntityPromptTexts.Get("MentionHint", "; Note: ") + mention);
 	}
 
 	private static bool IsPostprocessHeroMatchEligible(EntityMatch<Hero> match)
@@ -2145,8 +2147,8 @@ public static class WorldEntityRetrievalService
 			{
 				return;
 			}
-			sb.AppendLine("【玩家本人】");
-			sb.AppendLine("1. 名称：" + SafeName(player.Name, "玩家") + "；固定ID：" + id + "；用于FOLLOW玩家时目标类型写hero，id填写" + id + "。");
+			sb.AppendLine(WorldEntityPromptTexts.Get("PlayerSelfHeader", "[Player self]"));
+			sb.AppendLine(WorldEntityPromptTexts.Get("PlayerName", "1. Name: ") + SafePromptName(player.Name, WorldEntityPromptTexts.Get("Player", "player")) + WorldEntityPromptTexts.Get("FixedId", "; Fixed ID: ") + id + WorldEntityPromptTexts.Get("FollowPlayerInstruction", "; For FOLLOW targeting the player, set the target type to hero and id to ") + id + WorldEntityPromptTexts.Get("FullStop", "."));
 		}
 		catch
 		{
@@ -2160,7 +2162,7 @@ public static class WorldEntityRetrievalService
 			return;
 		}
 		sb.AppendLine();
-		sb.AppendLine("【附近可见部队】");
+		sb.AppendLine(WorldEntityPromptTexts.Get("VisiblePartiesHeader", "[Nearby visible parties]"));
 		for (int i = 0; i < parties.Count; i++)
 		{
 			sb.AppendLine(BuildVisiblePartyPromptLine(i + 1, parties[i]));
@@ -2171,11 +2173,11 @@ public static class WorldEntityRetrievalService
 	{
 		if (party == null)
 		{
-			return index + ". 名称：未知；数量：0";
+			return index + WorldEntityPromptTexts.Get("UnknownParty", ". Name: unknown; Count: 0");
 		}
-		string shipSegment = string.IsNullOrWhiteSpace(party.ShipInfo) ? "" : ("；舰船：" + party.ShipInfo.Trim());
+		string shipSegment = string.IsNullOrWhiteSpace(party.ShipInfo) ? "" : (WorldEntityPromptTexts.Get("Ship", "; Ships: ") + party.ShipInfo.Trim());
 		string relationSegment = BuildVisiblePartyRelationPromptSegment(party);
-		return index + ". 名称：" + party.Name + "；数量：" + party.Count + shipSegment + "；部队ID：" + party.Id + "；从属：" + party.Affiliation + relationSegment + "；方位：" + party.Direction + "；距离：" + FormatDistance(party.Distance);
+		return index + WorldEntityPromptTexts.Get("EntryName", ". Name: ") + party.Name + WorldEntityPromptTexts.Get("Count", "; Count: ") + party.Count + shipSegment + WorldEntityPromptTexts.Get("PartyId", "; Party ID: ") + party.Id + WorldEntityPromptTexts.Get("Affiliation", "; Affiliation: ") + party.Affiliation + relationSegment + WorldEntityPromptTexts.Get("Direction", "; Direction: ") + party.Direction + WorldEntityPromptTexts.Get("Distance", "; Distance: ") + FormatDistance(party.Distance);
 	}
 
 	private static string BuildVisiblePartyRelationPromptSegment(VisiblePartyCandidate party)
@@ -2187,13 +2189,13 @@ public static class WorldEntityRetrievalService
 		List<string> parts = new List<string>();
 		if (!string.IsNullOrWhiteSpace(party.RelationToContextHero))
 		{
-			parts.Add("与NPC关系：" + party.RelationToContextHero.Trim());
+			parts.Add(WorldEntityPromptTexts.Get("NpcRelation", "Relation to NPC: ") + party.RelationToContextHero.Trim());
 		}
 		if (!string.IsNullOrWhiteSpace(party.RelationToPlayer))
 		{
-			parts.Add("与玩家关系：" + party.RelationToPlayer.Trim());
+			parts.Add(WorldEntityPromptTexts.Get("PlayerRelation", "Relation to player: ") + party.RelationToPlayer.Trim());
 		}
-		return parts.Count == 0 ? "" : ("；" + string.Join("；", parts));
+		return parts.Count == 0 ? "" : (WorldEntityPromptTexts.Get("FieldSeparator", "; ") + string.Join(WorldEntityPromptTexts.Get("FieldSeparator", "; "), parts));
 	}
 
 	private static void AppendHeroMainFacts(StringBuilder sb, List<EntityMatch<Hero>> matches, string playerDisplayName, Hero contextHero)
@@ -2203,20 +2205,20 @@ public static class WorldEntityRetrievalService
 			return;
 		}
 		sb.AppendLine();
-		sb.AppendLine("【人物】");
+		sb.AppendLine(WorldEntityPromptTexts.Get("HeroesHeader", "[Heroes]"));
 		for (int i = 0; i < matches.Count; i++)
 		{
 			Hero hero = matches[i].Value;
-			sb.AppendLine((i + 1) + ". " + SafeName(hero?.Name, matches[i].Name) + "（编号：" + matches[i].Id + "；匹配分：" + FormatScore(matches[i].Score) + "；提及：" + matches[i].Mention + "）");
-			sb.AppendLine("所属家族：" + SafeName(hero?.Clan?.Name, "未知") + "；王国：" + FormatHeroKingdom(hero));
+			sb.AppendLine((i + 1) + ". " + SafePromptName(hero?.Name, matches[i].Name) + WorldEntityPromptTexts.Get("InternalId", " (ID: ") + matches[i].Id + WorldEntityPromptTexts.Get("MatchScore", "; Match score: ") + FormatScore(matches[i].Score) + WorldEntityPromptTexts.Get("Mention", "; Mention: ") + matches[i].Mention + WorldEntityPromptTexts.Get("CloseParenthesis", ")"));
+			sb.AppendLine(WorldEntityPromptTexts.Get("ClanLabel", "Clan: ") + SafePromptName(hero?.Clan?.Name, WorldEntityPromptTexts.Get("Unknown", "unknown")) + WorldEntityPromptTexts.Get("KingdomField", "; Kingdom: ") + FormatHeroKingdom(hero));
 			string relationship = FormatHeroRelationshipForMainPrompt(playerDisplayName, contextHero, hero);
 			if (!string.IsNullOrWhiteSpace(relationship))
 			{
 				sb.AppendLine(relationship);
 			}
-			sb.AppendLine("特质：" + FormatHeroTraits(hero) + "；亲属：" + FormatHeroRelatives(hero));
-			sb.AppendLine("位置：" + FormatHeroLocation(hero) + "；状态：" + FormatHeroStatus(hero));
-			sb.AppendLine("年龄：" + FormatAge(hero) + "；生死：" + FormatBool(hero != null && hero.IsAlive) + "；性别：" + FormatGender(hero) + "；职业/头衔：" + FormatHeroOccupation(hero));
+			sb.AppendLine(WorldEntityPromptTexts.Get("Traits", "Traits: ") + FormatHeroTraits(hero) + WorldEntityPromptTexts.Get("Relatives", "; Relatives: ") + FormatHeroRelatives(hero));
+			sb.AppendLine(WorldEntityPromptTexts.Get("Location", "Location: ") + FormatHeroLocation(hero) + WorldEntityPromptTexts.Get("Status", "; Status: ") + FormatHeroStatus(hero));
+			sb.AppendLine(WorldEntityPromptTexts.Get("Age", "Age: ") + FormatAge(hero) + WorldEntityPromptTexts.Get("Alive", "; Alive: ") + FormatBool(hero != null && hero.IsAlive) + WorldEntityPromptTexts.Get("Gender", "; Gender: ") + FormatGender(hero) + WorldEntityPromptTexts.Get("Occupation", "; Occupation/title: ") + FormatHeroOccupation(hero));
 		}
 	}
 
@@ -2227,15 +2229,15 @@ public static class WorldEntityRetrievalService
 			return;
 		}
 		sb.AppendLine();
-		sb.AppendLine("【地点】");
+		sb.AppendLine(WorldEntityPromptTexts.Get("SettlementsHeader", "[Settlements]"));
 		for (int i = 0; i < matches.Count; i++)
 		{
 			Settlement settlement = matches[i].Value;
-			string settlementDisplayName = settlement == null ? SafeName(settlement?.Name, matches[i].Name) : FormatSettlementNameWithType(settlement);
-			sb.AppendLine((i + 1) + ". " + settlementDisplayName + "（编号：" + matches[i].Id + "；匹配分：" + FormatScore(matches[i].Score) + "；提及：" + matches[i].Mention + "）");
-			sb.AppendLine("所属家族：" + SafeName(settlement?.OwnerClan?.Name, "未知") + "；王国：" + FormatSettlementKingdom(settlement) + "；文化：" + SafeName(settlement?.Culture?.Name, settlement?.Culture?.StringId ?? "未知"));
-			sb.AppendLine("兵力：" + FormatSettlementStrength(settlement) + "；繁荣度：" + FormatSettlementProsperity(settlement) + "；人口：" + FormatSettlementPopulation(settlement) + "；忠诚度：" + FormatSettlementLoyalty(settlement));
-			sb.AppendLine("下属村庄：" + FormatBoundVillages(settlement) + "；当前状态：" + FormatSettlementStatus(settlement));
+			string settlementDisplayName = settlement == null ? SafePromptName(settlement?.Name, matches[i].Name) : FormatSettlementNameWithType(settlement);
+			sb.AppendLine((i + 1) + ". " + settlementDisplayName + WorldEntityPromptTexts.Get("InternalId", " (ID: ") + matches[i].Id + WorldEntityPromptTexts.Get("MatchScore", "; Match score: ") + FormatScore(matches[i].Score) + WorldEntityPromptTexts.Get("Mention", "; Mention: ") + matches[i].Mention + WorldEntityPromptTexts.Get("CloseParenthesis", ")"));
+			sb.AppendLine(WorldEntityPromptTexts.Get("ClanLabel", "Clan: ") + SafePromptName(settlement?.OwnerClan?.Name, WorldEntityPromptTexts.Get("Unknown", "unknown")) + WorldEntityPromptTexts.Get("KingdomField", "; Kingdom: ") + FormatSettlementKingdom(settlement) + WorldEntityPromptTexts.Get("Culture", "; Culture: ") + SafePromptName(settlement?.Culture?.Name, settlement?.Culture?.StringId ?? WorldEntityPromptTexts.Get("Unknown", "unknown")));
+			sb.AppendLine(WorldEntityPromptTexts.Get("Strength", "Military strength: ") + FormatSettlementStrength(settlement) + WorldEntityPromptTexts.Get("Prosperity", "; Prosperity: ") + FormatSettlementProsperity(settlement) + WorldEntityPromptTexts.Get("Population", "; Population: ") + FormatSettlementPopulation(settlement) + WorldEntityPromptTexts.Get("Loyalty", "; Loyalty: ") + FormatSettlementLoyalty(settlement));
+			sb.AppendLine(WorldEntityPromptTexts.Get("BoundVillages", "Bound villages: ") + FormatBoundVillages(settlement) + WorldEntityPromptTexts.Get("CurrentStatus", "; Current status: ") + FormatSettlementStatus(settlement));
 		}
 	}
 
@@ -2246,14 +2248,14 @@ public static class WorldEntityRetrievalService
 			return;
 		}
 		sb.AppendLine();
-		sb.AppendLine("【家族】");
+		sb.AppendLine(WorldEntityPromptTexts.Get("ClansHeader", "[Clans]"));
 		for (int i = 0; i < matches.Count; i++)
 		{
 			Clan clan = matches[i].Value;
-			sb.AppendLine((i + 1) + ". " + SafeName(clan?.Name, matches[i].Name) + "（编号：" + matches[i].Id + "；匹配分：" + FormatScore(matches[i].Score) + "；提及：" + matches[i].Mention + "）");
-			sb.AppendLine("族长：" + SafeName(clan?.Leader?.Name, "未知") + "；主要成员：" + FormatHeroList(clan?.Heroes, MainPromptClanMemberCap));
-			sb.AppendLine("所属王国：" + SafeName(clan?.Kingdom?.Name, "无") + "；影响力：" + FormatFloat(clan?.Influence) + "；文化：" + SafeName(clan?.Culture?.Name, clan?.Culture?.StringId ?? "未知"));
-			sb.AppendLine("财富：" + FormatInt(clan?.Gold) + "；等级：" + FormatInt(clan?.Tier) + "；是否灭亡：" + FormatEliminatedStatus(clan?.IsEliminated) + "；主要定居点：" + FormatClanFiefs(clan, MainPromptClanFiefCap));
+			sb.AppendLine((i + 1) + ". " + SafePromptName(clan?.Name, matches[i].Name) + WorldEntityPromptTexts.Get("InternalId", " (ID: ") + matches[i].Id + WorldEntityPromptTexts.Get("MatchScore", "; Match score: ") + FormatScore(matches[i].Score) + WorldEntityPromptTexts.Get("Mention", "; Mention: ") + matches[i].Mention + WorldEntityPromptTexts.Get("CloseParenthesis", ")"));
+			sb.AppendLine(WorldEntityPromptTexts.Get("ClanLeader", "Clan leader: ") + SafePromptName(clan?.Leader?.Name, WorldEntityPromptTexts.Get("Unknown", "unknown")) + WorldEntityPromptTexts.Get("MainMembers", "; Main members: ") + FormatHeroList(clan?.Heroes, MainPromptClanMemberCap));
+			sb.AppendLine(WorldEntityPromptTexts.Get("KingdomLabel", "Kingdom: ") + SafePromptName(clan?.Kingdom?.Name, WorldEntityPromptTexts.Get("None", "none")) + WorldEntityPromptTexts.Get("Influence", "; Influence: ") + FormatFloat(clan?.Influence) + WorldEntityPromptTexts.Get("Culture", "; Culture: ") + SafePromptName(clan?.Culture?.Name, clan?.Culture?.StringId ?? WorldEntityPromptTexts.Get("Unknown", "unknown")));
+			sb.AppendLine(WorldEntityPromptTexts.Get("Wealth", "Wealth: ") + FormatInt(clan?.Gold) + WorldEntityPromptTexts.Get("Tier", "; Tier: ") + FormatInt(clan?.Tier) + WorldEntityPromptTexts.Get("Eliminated", "; Eliminated: ") + FormatEliminatedStatus(clan?.IsEliminated) + WorldEntityPromptTexts.Get("MainSettlements", "; Main settlements: ") + FormatClanFiefs(clan, MainPromptClanFiefCap));
 		}
 	}
 
@@ -2264,20 +2266,20 @@ public static class WorldEntityRetrievalService
 			return;
 		}
 		sb.AppendLine();
-		sb.AppendLine("【王国】");
+		sb.AppendLine(WorldEntityPromptTexts.Get("KingdomsHeader", "[Kingdoms]"));
 		for (int i = 0; i < matches.Count; i++)
 		{
 			Kingdom kingdom = matches[i].Value;
-			sb.AppendLine((i + 1) + ". " + SafeName(kingdom?.Name, matches[i].Name) + "（编号：" + matches[i].Id + "；匹配分：" + FormatScore(matches[i].Score) + "；提及：" + matches[i].Mention + "）");
-			sb.AppendLine("国王：" + SafeName(kingdom?.Leader?.Name, "未知") + "；总兵力：" + FormatFloat(kingdom?.CurrentTotalStrength) + "；文化：" + SafeName(kingdom?.Culture?.Name, kingdom?.Culture?.StringId ?? "未知"));
+			sb.AppendLine((i + 1) + ". " + SafePromptName(kingdom?.Name, matches[i].Name) + WorldEntityPromptTexts.Get("InternalId", " (ID: ") + matches[i].Id + WorldEntityPromptTexts.Get("MatchScore", "; Match score: ") + FormatScore(matches[i].Score) + WorldEntityPromptTexts.Get("Mention", "; Mention: ") + matches[i].Mention + WorldEntityPromptTexts.Get("CloseParenthesis", ")"));
+			sb.AppendLine(WorldEntityPromptTexts.Get("King", "King: ") + SafePromptName(kingdom?.Leader?.Name, WorldEntityPromptTexts.Get("Unknown", "unknown")) + WorldEntityPromptTexts.Get("TotalStrength", "; Total military strength: ") + FormatFloat(kingdom?.CurrentTotalStrength) + WorldEntityPromptTexts.Get("Culture", "; Culture: ") + SafePromptName(kingdom?.Culture?.Name, kingdom?.Culture?.StringId ?? WorldEntityPromptTexts.Get("Unknown", "unknown")));
 			string encyclopediaBackground = FormatKingdomEncyclopediaBackground(kingdom);
 			if (!string.IsNullOrWhiteSpace(encyclopediaBackground))
 			{
-				sb.AppendLine("百科背景：" + encyclopediaBackground);
+				sb.AppendLine(WorldEntityPromptTexts.Get("EncyclopediaBackground", "Encyclopedia background: ") + encyclopediaBackground);
 			}
-			sb.AppendLine("王国定居点概览：" + FormatKingdomSettlementSummary(kingdom));
-			sb.AppendLine("主要家族：" + FormatKingdomClans(kingdom, MainPromptKingdomClanCap));
-			sb.AppendLine("王国当前状态：" + FormatKingdomStatus(kingdom));
+			sb.AppendLine(WorldEntityPromptTexts.Get("KingdomSettlementOverview", "Kingdom settlements overview: ") + FormatKingdomSettlementSummary(kingdom));
+			sb.AppendLine(WorldEntityPromptTexts.Get("MainClans", "Main clans: ") + FormatKingdomClans(kingdom, MainPromptKingdomClanCap));
+			sb.AppendLine(WorldEntityPromptTexts.Get("KingdomStatus", "Kingdom current status: ") + FormatKingdomStatus(kingdom));
 		}
 	}
 
@@ -2298,14 +2300,14 @@ public static class WorldEntityRetrievalService
 			}
 			if (contextHero != null && !IsSameHero(contextHero, Hero.MainHero))
 			{
-				string contextName = SafeName(contextHero.Name, "当前交谈对象");
+				string contextName = SafePromptName(contextHero.Name, WorldEntityPromptTexts.Get("ConversationPartner", "current conversation partner"));
 				string contextRelationship = FormatHeroRelationshipToReference(contextName, contextHero, targetHero);
 				if (!string.IsNullOrWhiteSpace(contextRelationship))
 				{
 					relationships.Add(contextRelationship);
 				}
 			}
-			return relationships.Count == 0 ? "" : (string.Join("；", relationships) + "。");
+			return relationships.Count == 0 ? "" : (string.Join(WorldEntityPromptTexts.Get("FieldSeparator", "; "), relationships) + WorldEntityPromptTexts.Get("FullStop", "."));
 		}
 		catch
 		{
@@ -2319,21 +2321,21 @@ public static class WorldEntityRetrievalService
 		{
 			return "";
 		}
-		string name = string.IsNullOrWhiteSpace(referenceName) ? "该人物" : referenceName.Trim();
+		string name = string.IsNullOrWhiteSpace(referenceName) ? WorldEntityPromptTexts.Get("ThisHero", "this character") : referenceName.Trim();
 		if (IsSameHero(referenceHero, targetHero))
 		{
-			return "与" + name + "的关系：本人";
+			return WorldEntityPromptTexts.Get("RelationPrefix", "Relation to ") + name + WorldEntityPromptTexts.Get("SelfRelation", ": self");
 		}
 		List<string> parts = new List<string>();
 		try
 		{
 			if (TryGetRelationValueForPrompt(referenceHero, targetHero, out int relation))
 			{
-				parts.Add("原版个人关系值：" + relation.ToString(CultureInfo.InvariantCulture) + "（" + FormatRelationBand(relation) + "）");
+				parts.Add(WorldEntityPromptTexts.Get("PersonalRelationValue", "Base-game personal relation value: ") + relation.ToString(CultureInfo.InvariantCulture) + WorldEntityPromptTexts.Get("OpenParenthesis", " (") + FormatRelationBand(relation) + WorldEntityPromptTexts.Get("CloseParenthesis", ")"));
 			}
 			AddKinshipRelationship(parts, referenceHero, targetHero);
 			AddPoliticalRelationship(parts, referenceHero, name, targetHero);
-			return parts.Count == 0 ? "" : ("与" + name + "的关系：" + string.Join("；", parts));
+			return parts.Count == 0 ? "" : (WorldEntityPromptTexts.Get("RelationPrefix", "Relation to ") + name + WorldEntityPromptTexts.Get("RelationSuffix", ": ") + string.Join(WorldEntityPromptTexts.Get("FieldSeparator", "; "), parts));
 		}
 		catch
 		{
@@ -2389,23 +2391,23 @@ public static class WorldEntityRetrievalService
 		{
 			if (contextHero.Spouse == targetHero)
 			{
-				parts.Add("配偶");
+				parts.Add(WorldEntityPromptTexts.Get("Spouse", "spouse"));
 			}
 			if (contextHero.Father == targetHero)
 			{
-				parts.Add("父亲");
+				parts.Add(WorldEntityPromptTexts.Get("Father", "father"));
 			}
 			if (contextHero.Mother == targetHero)
 			{
-				parts.Add("母亲");
+				parts.Add(WorldEntityPromptTexts.Get("Mother", "mother"));
 			}
 			if (targetHero.Father == contextHero || targetHero.Mother == contextHero)
 			{
-				parts.Add(targetHero.IsFemale ? "女儿" : "儿子");
+				parts.Add(targetHero.IsFemale ? WorldEntityPromptTexts.Get("Daughter", "daughter") : WorldEntityPromptTexts.Get("Son", "son"));
 			}
 			if (contextHero.Siblings != null && contextHero.Siblings.Contains(targetHero))
 			{
-				parts.Add(targetHero.IsFemale ? "姐妹" : "兄弟");
+				parts.Add(targetHero.IsFemale ? WorldEntityPromptTexts.Get("Sister", "sister") : WorldEntityPromptTexts.Get("Brother", "brother"));
 			}
 		}
 		catch
@@ -2419,14 +2421,14 @@ public static class WorldEntityRetrievalService
 		{
 			if (contextHero.Clan != null && contextHero.Clan == targetHero.Clan)
 			{
-				parts.Add("同一家族：" + SafeName(contextHero.Clan.Name, "未知"));
+				parts.Add(WorldEntityPromptTexts.Get("SameClan", "Same clan: ") + SafePromptName(contextHero.Clan.Name, WorldEntityPromptTexts.Get("Unknown", "unknown")));
 				if (contextHero.Clan.Leader == targetHero)
 				{
-					parts.Add("该人物是" + contextName + "的家族族长");
+					parts.Add(WorldEntityPromptTexts.Get("HeroIs", "This character is ") + contextName + WorldEntityPromptTexts.Get("LeaderOfClanSuffix", "'s clan leader"));
 				}
 				else if (contextHero.Clan.Leader == contextHero)
 				{
-					parts.Add(contextName + "是该人物的家族族长");
+					parts.Add(contextName + WorldEntityPromptTexts.Get("IsHeroClanLeader", " is this character's clan leader"));
 				}
 			}
 			IFaction contextFaction = contextHero.MapFaction;
@@ -2435,15 +2437,15 @@ public static class WorldEntityRetrievalService
 			{
 				if (contextFaction == targetFaction)
 				{
-					parts.Add("同一阵营：" + SafeName(contextFaction.Name, "未知"));
+					parts.Add(WorldEntityPromptTexts.Get("SameFaction", "Same faction: ") + SafePromptName(contextFaction.Name, WorldEntityPromptTexts.Get("Unknown", "unknown")));
 				}
 				else if (contextFaction.IsAtWarWith(targetFaction))
 				{
-					parts.Add("敌对阵营：" + SafeName(contextFaction.Name, "未知") + " vs " + SafeName(targetFaction.Name, "未知"));
+					parts.Add(WorldEntityPromptTexts.Get("HostileFaction", "Hostile factions: ") + SafePromptName(contextFaction.Name, WorldEntityPromptTexts.Get("Unknown", "unknown")) + " vs " + SafePromptName(targetFaction.Name, WorldEntityPromptTexts.Get("Unknown", "unknown")));
 				}
 				else
 				{
-					parts.Add("不同阵营：" + SafeName(contextFaction.Name, "未知") + " vs " + SafeName(targetFaction.Name, "未知"));
+					parts.Add(WorldEntityPromptTexts.Get("DifferentFaction", "Different factions: ") + SafePromptName(contextFaction.Name, WorldEntityPromptTexts.Get("Unknown", "unknown")) + " vs " + SafePromptName(targetFaction.Name, WorldEntityPromptTexts.Get("Unknown", "unknown")));
 				}
 			}
 		}
@@ -2456,44 +2458,44 @@ public static class WorldEntityRetrievalService
 	{
 		if (relation <= -80)
 		{
-			return "死敌";
+			return WorldEntityPromptTexts.Get("DeadlyEnemies", "deadly enemies");
 		}
 		if (relation <= -40)
 		{
-			return "敌对";
+			return WorldEntityPromptTexts.Get("Hostile", "hostile");
 		}
 		if (relation <= -10)
 		{
-			return "反感";
+			return WorldEntityPromptTexts.Get("Unfriendly", "unfriendly");
 		}
 		if (relation < 10)
 		{
-			return "中立";
+			return WorldEntityPromptTexts.Get("Neutral", "neutral");
 		}
 		if (relation < 40)
 		{
-			return "友好";
+			return WorldEntityPromptTexts.Get("Friendly", "friendly");
 		}
 		if (relation < 80)
 		{
-			return "亲近";
+			return WorldEntityPromptTexts.Get("Close", "close");
 		}
-		return "至交";
+		return WorldEntityPromptTexts.Get("Intimate", "close friends");
 	}
 
 	private static string FormatHeroKingdom(Hero hero)
 	{
 		if (hero == null)
 		{
-			return "未知";
+			return WorldEntityPromptTexts.Get("Unknown", "unknown");
 		}
 		try
 		{
-			return SafeName(hero.Clan?.Kingdom?.Name, SafeName(hero.MapFaction?.Name, "无"));
+			return SafePromptName(hero.Clan?.Kingdom?.Name, SafePromptName(hero.MapFaction?.Name, WorldEntityPromptTexts.Get("None", "none")));
 		}
 		catch
 		{
-			return "未知";
+			return WorldEntityPromptTexts.Get("Unknown", "unknown");
 		}
 	}
 
@@ -2501,7 +2503,7 @@ public static class WorldEntityRetrievalService
 	{
 		if (hero == null)
 		{
-			return "未知";
+			return WorldEntityPromptTexts.Get("Unknown", "unknown");
 		}
 		List<string> parts = new List<string>();
 		AddTrait(parts, hero, DefaultTraits.Mercy, "Mercy");
@@ -2509,7 +2511,7 @@ public static class WorldEntityRetrievalService
 		AddTrait(parts, hero, DefaultTraits.Honor, "Honor");
 		AddTrait(parts, hero, DefaultTraits.Generosity, "Generosity");
 		AddTrait(parts, hero, DefaultTraits.Calculating, "Calculating");
-		return parts.Count == 0 ? "无显著特质" : string.Join("，", parts);
+		return parts.Count == 0 ? WorldEntityPromptTexts.Get("NoTraits", "no notable traits") : string.Join(WorldEntityPromptTexts.Get("CommaSeparator", ", "), parts);
 	}
 
 	private static void AddTrait(List<string> parts, Hero hero, TraitObject trait, string label)
@@ -2532,24 +2534,24 @@ public static class WorldEntityRetrievalService
 	{
 		if (hero == null) return string.Empty;
 		List<string> parts = new List<string> { FormatHeroRelatives(hero, int.MaxValue) };
-		AddHeroCollection(parts, "本家族成员", hero.Clan?.Heroes.Where(x => x != hero), int.MaxValue);
-		return "【NPC当前亲属与家族状态】\n人物：" + SafeName(hero.Name, hero.StringId)
-			+ "\n" + string.Join("；", parts)
-			+ "\n以上为本轮游戏状态；若旧个性、背景或历史对话与此处生死状态冲突，以此处为准。已故者只能作为往事提及，不能描述为仍在活动或安排与其见面；未列出不代表已故，不得编造死因、时间或凶手。";
+		AddHeroCollection(parts, WorldEntityPromptTexts.Get("ClanMembers", "clan members"), hero.Clan?.Heroes.Where(x => x != hero), int.MaxValue);
+		return WorldEntityPromptTexts.Get("FamilyStatusHeader", "[NPC current family and clan status]\nCharacter: ") + SafePromptName(hero.Name, hero.StringId)
+			+ "\n" + string.Join(WorldEntityPromptTexts.Get("FieldSeparator", "; "), parts)
+			+ WorldEntityPromptTexts.Get("FamilyStatusAuthority", "\nThe above reflects current game state. If earlier personality, background, or dialogue conflicts with the life or death status here, this information takes precedence. Deceased people may only be mentioned as part of the past; do not describe them as still active or arrange meetings with them. Absence from this list does not mean deceased. Do not invent a cause or time of death or a killer.");
 	}
 
 	internal static string FormatHeroRelatives(Hero hero, int cap = 8)
 	{
 		if (hero == null)
 		{
-			return "未知";
+			return WorldEntityPromptTexts.Get("Unknown", "unknown");
 		}
 		List<string> parts = new List<string>();
-		AddRelative(parts, "父亲", hero.Father);
-		AddRelative(parts, "母亲", hero.Mother);
-		AddRelative(parts, "配偶", hero.Spouse);
-		AddHeroCollection(parts, "已故前配偶", hero.ExSpouses.Where(x => x != null && !x.IsAlive && x != hero.Spouse), cap);
-		AddHeroCollection(parts, "子女", hero.Children, cap);
+		AddRelative(parts, WorldEntityPromptTexts.Get("Father", "father"), hero.Father);
+		AddRelative(parts, WorldEntityPromptTexts.Get("Mother", "mother"), hero.Mother);
+		AddRelative(parts, WorldEntityPromptTexts.Get("Spouse", "spouse"), hero.Spouse);
+		AddHeroCollection(parts, WorldEntityPromptTexts.Get("DeceasedExSpouses", "deceased former spouses"), hero.ExSpouses.Where(x => x != null && !x.IsAlive && x != hero.Spouse), cap);
+		AddHeroCollection(parts, WorldEntityPromptTexts.Get("Children", "children"), hero.Children, cap);
 		List<Hero> siblings = new List<Hero>();
 		try
 		{
@@ -2566,15 +2568,15 @@ public static class WorldEntityRetrievalService
 		catch
 		{
 		}
-		AddHeroCollection(parts, "兄弟姐妹", siblings, cap);
-		return parts.Count == 0 ? "未记录" : string.Join("；", parts);
+		AddHeroCollection(parts, WorldEntityPromptTexts.Get("Siblings", "siblings"), siblings, cap);
+		return parts.Count == 0 ? WorldEntityPromptTexts.Get("NotRecorded", "not recorded") : string.Join(WorldEntityPromptTexts.Get("FieldSeparator", "; "), parts);
 	}
 
 	private static void AddRelative(List<string> parts, string label, Hero hero)
 	{
 		if (hero != null)
 		{
-			parts.Add(label + "：" + FormatHeroNameWithLifeState(hero));
+			parts.Add(label + WorldEntityPromptTexts.Get("Colon", ": ") + FormatHeroNameWithLifeState(hero));
 		}
 	}
 
@@ -2583,20 +2585,20 @@ public static class WorldEntityRetrievalService
 		List<string> names = (heroes ?? Enumerable.Empty<Hero>()).Where((Hero x) => x != null).Distinct().Take(cap).Select(FormatHeroNameWithLifeState).ToList();
 		if (names.Count > 0)
 		{
-			parts.Add(label + "：" + string.Join("、", names));
+			parts.Add(label + WorldEntityPromptTexts.Get("Colon", ": ") + string.Join(WorldEntityPromptTexts.Get("ListSeparator", ", "), names));
 		}
 	}
 
 	private static string FormatHeroNameWithLifeState(Hero hero)
 	{
-		return SafeName(hero.Name, hero.StringId) + (hero.IsAlive ? "（在世）" : "（已故）");
+		return SafePromptName(hero.Name, hero.StringId) + (hero.IsAlive ? WorldEntityPromptTexts.Get("LivingSuffix", " (alive)") : WorldEntityPromptTexts.Get("DeceasedSuffix", " (deceased)"));
 	}
 
 	private static string FormatHeroLocation(Hero hero)
 	{
 		if (hero == null)
 		{
-			return "未知";
+			return WorldEntityPromptTexts.Get("Unknown", "unknown");
 		}
 		try
 		{
@@ -2609,7 +2611,7 @@ public static class WorldEntityRetrievalService
 				MobileParty party = hero.PartyBelongedTo;
 				if (party.CurrentSettlement != null)
 				{
-					return FormatSettlementNameWithType(party.CurrentSettlement) + "（定居点内）";
+					return FormatSettlementNameWithType(party.CurrentSettlement) + WorldEntityPromptTexts.Get("InsideSettlement", " (inside settlement)");
 				}
 				return FormatMobilePartyMapLocation(party);
 			}
@@ -2618,11 +2620,11 @@ public static class WorldEntityRetrievalService
 				PartyBase holder = hero.PartyBelongedToAsPrisoner;
 				if (holder.IsSettlement && holder.Settlement != null)
 				{
-					return FormatSettlementNameWithType(holder.Settlement) + "（囚禁中）";
+					return FormatSettlementNameWithType(holder.Settlement) + WorldEntityPromptTexts.Get("PrisonerSuffix", " (imprisoned)");
 				}
 				if (holder.IsMobile && holder.MobileParty != null)
 				{
-					return FormatMobilePartyMapLocation(holder.MobileParty) + "（囚禁于该队伍）";
+					return FormatMobilePartyMapLocation(holder.MobileParty) + WorldEntityPromptTexts.Get("PrisonerPartySuffix", " (held prisoner by this party)");
 				}
 			}
 			if (hero.HomeSettlement != null)
@@ -2633,63 +2635,63 @@ public static class WorldEntityRetrievalService
 		catch
 		{
 		}
-		return "未知";
+		return WorldEntityPromptTexts.Get("Unknown", "unknown");
 	}
 
 	private static string FormatHeroStatus(Hero hero)
 	{
 		if (hero == null)
 		{
-			return "未知";
+			return WorldEntityPromptTexts.Get("Unknown", "unknown");
 		}
 		List<string> parts = new List<string>();
 		try
 		{
 			if (!hero.IsAlive)
 			{
-				parts.Add("已死亡");
+				parts.Add(WorldEntityPromptTexts.Get("Dead", "deceased"));
 			}
 			if (hero.IsPrisoner)
 			{
-				parts.Add("被俘虏" + FormatPrisonerHolder(hero));
+				parts.Add(WorldEntityPromptTexts.Get("Captive", "captured") + FormatPrisonerHolder(hero));
 			}
 			if (hero.PartyBelongedTo != null)
 			{
 				MobileParty party = hero.PartyBelongedTo;
 				if (party.CurrentSettlement != null)
 				{
-					parts.Add("在 " + FormatSettlementNameWithType(party.CurrentSettlement));
+					parts.Add(WorldEntityPromptTexts.Get("At", "At ") + FormatSettlementNameWithType(party.CurrentSettlement));
 				}
 				else if (party.TargetSettlement != null)
 				{
-					parts.Add("正在前往 " + FormatSettlementNameWithType(party.TargetSettlement));
+					parts.Add(WorldEntityPromptTexts.Get("HeadingToward", "Heading toward ") + FormatSettlementNameWithType(party.TargetSettlement));
 				}
 				else
 				{
 					string nearest = FormatNearestSettlementForParty(party);
 					if (!string.IsNullOrWhiteSpace(nearest))
 					{
-						parts.Add("在 " + nearest + " 附近" + FormatMobilePartyMapTerrainSuffix(party) + "活动");
+						parts.Add(WorldEntityPromptTexts.Get("At", "At ") + nearest + WorldEntityPromptTexts.Get("NearbySpace", " nearby") + FormatMobilePartyMapTerrainSuffix(party) + WorldEntityPromptTexts.Get("Active", "; active"));
 					}
 				}
 				if (party.Army != null)
 				{
-					parts.Add("隶属军团：" + SafeName(party.Army.Name, "军团"));
+					parts.Add(WorldEntityPromptTexts.Get("ArmyMembership", "Army: ") + SafePromptName(party.Army.Name, WorldEntityPromptTexts.Get("Army", "army")));
 				}
-				parts.Add("队伍行为：" + party.DefaultBehavior);
+				parts.Add(WorldEntityPromptTexts.Get("PartyBehavior", "Party behavior: ") + party.DefaultBehavior);
 			}
 		}
 		catch
 		{
 		}
-		return parts.Count == 0 ? "无特殊状态" : string.Join("；", parts);
+		return parts.Count == 0 ? WorldEntityPromptTexts.Get("NoSpecialStatus", "no special status") : string.Join(WorldEntityPromptTexts.Get("FieldSeparator", "; "), parts);
 	}
 
 	private static string FormatHeroPrisonerFlag(Hero hero)
 	{
 		if (hero == null)
 		{
-			return "未知";
+			return WorldEntityPromptTexts.Get("Unknown", "unknown");
 		}
 		try
 		{
@@ -2702,7 +2704,7 @@ public static class WorldEntityRetrievalService
 		}
 		catch
 		{
-			return "未知";
+			return WorldEntityPromptTexts.Get("Unknown", "unknown");
 		}
 	}
 
@@ -2710,51 +2712,51 @@ public static class WorldEntityRetrievalService
 	{
 		if (party == null)
 		{
-			return "未知";
+			return WorldEntityPromptTexts.Get("Unknown", "unknown");
 		}
 		try
 		{
 			if (party.CurrentSettlement != null)
 			{
-				return FormatSettlementNameWithType(party.CurrentSettlement) + "（定居点内）";
+				return FormatSettlementNameWithType(party.CurrentSettlement) + WorldEntityPromptTexts.Get("InsideSettlement", " (inside settlement)");
 			}
 			if (party.BesiegedSettlement != null)
 			{
-				return FormatSettlementNameWithType(party.BesiegedSettlement) + "外围（围攻相关）";
+				return FormatSettlementNameWithType(party.BesiegedSettlement) + WorldEntityPromptTexts.Get("SiegeOutskirts", " outskirts (siege-related)");
 			}
 			string nearest = FormatNearestSettlementForParty(party);
 			string target = party.TargetSettlement == null ? "" : FormatSettlementNameWithType(party.TargetSettlement);
 			string terrainSuffix = FormatMobilePartyMapTerrainSuffix(party);
 			if (!string.IsNullOrWhiteSpace(nearest) && !string.IsNullOrWhiteSpace(target))
 			{
-				return "大地图，当前位置：" + nearest + "附近" + terrainSuffix + "；正在前往 " + target;
+				return WorldEntityPromptTexts.Get("MapLocation", "World map; current location: ") + nearest + WorldEntityPromptTexts.Get("Nearby", " nearby") + terrainSuffix + WorldEntityPromptTexts.Get("TargetSuffix", "; heading toward ") + target;
 			}
 			if (!string.IsNullOrWhiteSpace(nearest))
 			{
-				return "大地图，当前位置：" + nearest + "附近" + terrainSuffix;
+				return WorldEntityPromptTexts.Get("MapLocation", "World map; current location: ") + nearest + WorldEntityPromptTexts.Get("Nearby", " nearby") + terrainSuffix;
 			}
 			if (!string.IsNullOrWhiteSpace(target))
 			{
 				string terrainLabel = FormatMobilePartyMapTerrainLabel(party);
-				return string.IsNullOrWhiteSpace(terrainLabel) ? ("大地图，正在前往 " + target) : ("大地图，当前位置：" + terrainLabel + "；正在前往 " + target);
+				return string.IsNullOrWhiteSpace(terrainLabel) ? (WorldEntityPromptTexts.Get("MapTarget", "World map; heading toward ") + target) : (WorldEntityPromptTexts.Get("MapLocation", "World map; current location: ") + terrainLabel + WorldEntityPromptTexts.Get("TargetSuffix", "; heading toward ") + target);
 			}
 			if (party.LastVisitedSettlement != null)
 			{
 				string terrainLabel = FormatMobilePartyMapTerrainLabel(party);
-				return string.IsNullOrWhiteSpace(terrainLabel) ? ("大地图，最近离开 " + FormatSettlementNameWithType(party.LastVisitedSettlement)) : ("大地图，最近离开 " + FormatSettlementNameWithType(party.LastVisitedSettlement) + "；当前位置：" + terrainLabel);
+				return string.IsNullOrWhiteSpace(terrainLabel) ? (WorldEntityPromptTexts.Get("MapLastVisited", "World map; recently left ") + FormatSettlementNameWithType(party.LastVisitedSettlement)) : (WorldEntityPromptTexts.Get("MapLastVisited", "World map; recently left ") + FormatSettlementNameWithType(party.LastVisitedSettlement) + WorldEntityPromptTexts.Get("LocationSuffix", "; current location: ") + terrainLabel);
 			}
-			return "大地图，队伍：" + SafeName(party.Name, party.StringId);
+			return WorldEntityPromptTexts.Get("MapParty", "World map; party: ") + SafePromptName(party.Name, party.StringId);
 		}
 		catch
 		{
-			return "大地图，队伍：" + SafeName(party.Name, party.StringId);
+			return WorldEntityPromptTexts.Get("MapParty", "World map; party: ") + SafePromptName(party.Name, party.StringId);
 		}
 	}
 
 	private static string FormatMobilePartyMapTerrainSuffix(MobileParty party)
 	{
 		string terrainLabel = FormatMobilePartyMapTerrainLabel(party);
-		return string.IsNullOrWhiteSpace(terrainLabel) ? "" : ("的" + terrainLabel);
+		return string.IsNullOrWhiteSpace(terrainLabel) ? "" : (WorldEntityPromptTexts.Get("TerrainConnector", ", ") + terrainLabel);
 	}
 
 	private static string FormatMobilePartyMapTerrainLabel(MobileParty party)
@@ -2763,7 +2765,7 @@ public static class WorldEntityRetrievalService
 		{
 			if (MapSeaContextGuard.IsMobilePartyAtSeaOrOnWater(party))
 			{
-				return "海上";
+				return WorldEntityPromptTexts.Get("AtSea", "at sea");
 			}
 			return MapSeaContextGuard.BuildMobilePartyLandTerrainPromptLabel(party);
 		}
@@ -2802,9 +2804,9 @@ public static class WorldEntityRetrievalService
 	{
 		if (settlement == null)
 		{
-			return "未知";
+			return WorldEntityPromptTexts.Get("Unknown", "unknown");
 		}
-		string name = SafeName(settlement.Name, settlement.StringId);
+		string name = SafePromptName(settlement.Name, settlement.StringId);
 		List<string> suffixParts = new List<string>();
 		string type = FormatSettlementType(settlement);
 		if (!string.IsNullOrWhiteSpace(type))
@@ -2813,9 +2815,9 @@ public static class WorldEntityRetrievalService
 		}
 		if (distance > 0.001f && distance < float.MaxValue)
 		{
-			suffixParts.Add("约 " + distance.ToString("0.0", CultureInfo.InvariantCulture) + " 公里");
+			suffixParts.Add(WorldEntityPromptTexts.Get("Approximately", "approximately ") + distance.ToString("0.0", CultureInfo.InvariantCulture) + WorldEntityPromptTexts.Get("Kilometers", " km"));
 		}
-		return suffixParts.Count == 0 ? name : (name + "（" + string.Join("，", suffixParts) + "）");
+		return suffixParts.Count == 0 ? name : (name + WorldEntityPromptTexts.Get("OpenParenthesis", " (") + string.Join(WorldEntityPromptTexts.Get("CommaSeparator", ", "), suffixParts) + WorldEntityPromptTexts.Get("CloseParenthesis", ")"));
 	}
 
 	private static string FormatSettlementType(Settlement settlement)
@@ -2828,29 +2830,29 @@ public static class WorldEntityRetrievalService
 			}
 			if (settlement.IsVillage)
 			{
-				return "村庄";
+				return WorldEntityPromptTexts.Get("Village", "village");
 			}
 			if (settlement.IsTown)
 			{
-				return "城镇";
+				return WorldEntityPromptTexts.Get("Town", "town");
 			}
 			if (settlement.IsCastle)
 			{
-				return "城堡";
+				return WorldEntityPromptTexts.Get("Castle", "castle");
 			}
 			if (settlement.IsHideout)
 			{
-				return "藏身处";
+				return WorldEntityPromptTexts.Get("Hideout", "hideout");
 			}
 			if (settlement.IsFortification)
 			{
-				return "要塞";
+				return WorldEntityPromptTexts.Get("Fort", "fort");
 			}
 		}
 		catch
 		{
 		}
-		return "定居点";
+		return WorldEntityPromptTexts.Get("GenericSettlement", "settlement");
 	}
 
 	private static Settlement FindNearestSettlement(CampaignVec2 position, out float distance)
@@ -2909,11 +2911,11 @@ public static class WorldEntityRetrievalService
 			}
 			if (holder.IsSettlement && holder.Settlement != null)
 			{
-				return "，关押于 " + FormatSettlementNameWithType(holder.Settlement);
+				return WorldEntityPromptTexts.Get("PrisonerHeldAt", ", held at ") + FormatSettlementNameWithType(holder.Settlement);
 			}
 			if (holder.IsMobile && holder.MobileParty != null)
 			{
-				return "，由 " + SafeName(holder.MobileParty.Name, holder.MobileParty.StringId) + " 控制";
+				return WorldEntityPromptTexts.Get("PrisonerHeldBy", ", held by ") + SafePromptName(holder.MobileParty.Name, holder.MobileParty.StringId) + WorldEntityPromptTexts.Get("ControlledSuffix", "");
 			}
 		}
 		catch
@@ -2953,7 +2955,7 @@ public static class WorldEntityRetrievalService
 	{
 		if (hero == null)
 		{
-			return "未知";
+			return WorldEntityPromptTexts.Get("Unknown", "unknown");
 		}
 		List<string> parts = new List<string>();
 		try
@@ -2965,47 +2967,47 @@ public static class WorldEntityRetrievalService
 				string rulerKingdomName = SafeTextOrEmpty(rulerKingdom.Name);
 				if (!string.IsNullOrWhiteSpace(rulerTitle))
 				{
-					parts.Add(string.IsNullOrWhiteSpace(rulerKingdomName) ? rulerTitle : (rulerTitle + "（" + rulerKingdomName + "）"));
+					parts.Add(string.IsNullOrWhiteSpace(rulerKingdomName) ? rulerTitle : (rulerTitle + WorldEntityPromptTexts.Get("OpenParenthesis", " (") + rulerKingdomName + WorldEntityPromptTexts.Get("CloseParenthesis", ")")));
 				}
-				parts.Add("王国领袖");
+				parts.Add(WorldEntityPromptTexts.Get("KingdomLeader", "kingdom ruler"));
 			}
 			else if (hero.IsKingdomLeader)
 			{
-				parts.Add("国王/王国领袖");
+				parts.Add(WorldEntityPromptTexts.Get("KingOrLeader", "king/kingdom ruler"));
 			}
 			if (hero.Clan != null && hero.Clan.Leader == hero)
 			{
-				parts.Add("家族族长");
+				parts.Add(WorldEntityPromptTexts.Get("ClanLeaderOccupation", "clan leader"));
 			}
 			if (hero.IsLord)
 			{
-				parts.Add("领主");
+				parts.Add(WorldEntityPromptTexts.Get("Lord", "lord"));
 			}
 			if (hero.IsWanderer)
 			{
-				parts.Add("流浪者");
+				parts.Add(WorldEntityPromptTexts.Get("Wanderer", "wanderer"));
 			}
 			if (hero.IsNotable)
 			{
-				parts.Add("名人/地方要人");
+				parts.Add(WorldEntityPromptTexts.Get("Notable", "notable/local dignitary"));
 			}
-			parts.Add(hero.Occupation.ToString());
+			parts.Add(WorldEntityPromptTexts.Get("Occupation_" + hero.Occupation, hero.Occupation.ToString()));
 		}
 		catch
 		{
 		}
-		return parts.Count == 0 ? "未知" : string.Join("，", parts.Distinct(StringComparer.OrdinalIgnoreCase));
+		return parts.Count == 0 ? WorldEntityPromptTexts.Get("Unknown", "unknown") : string.Join(WorldEntityPromptTexts.Get("CommaSeparator", ", "), parts.Distinct(StringComparer.OrdinalIgnoreCase));
 	}
 
 	private static string FormatSettlementKingdom(Settlement settlement)
 	{
 		try
 		{
-			return SafeName(settlement?.OwnerClan?.Kingdom?.Name, SafeName(settlement?.MapFaction?.Name, "无"));
+			return SafePromptName(settlement?.OwnerClan?.Kingdom?.Name, SafePromptName(settlement?.MapFaction?.Name, WorldEntityPromptTexts.Get("None", "none")));
 		}
 		catch
 		{
-			return "未知";
+			return WorldEntityPromptTexts.Get("Unknown", "unknown");
 		}
 	}
 
@@ -3013,25 +3015,25 @@ public static class WorldEntityRetrievalService
 	{
 		if (settlement == null)
 		{
-			return "未知";
+			return WorldEntityPromptTexts.Get("Unknown", "unknown");
 		}
 		List<string> parts = new List<string>();
 		try
 		{
-			parts.Add("民兵 " + FormatFloat(settlement.Militia));
+			parts.Add(WorldEntityPromptTexts.Get("Militia", "Militia ") + FormatFloat(settlement.Militia));
 			if (settlement.Party != null)
 			{
-				parts.Add("驻守/成员 " + settlement.Party.NumberOfAllMembers);
+				parts.Add(WorldEntityPromptTexts.Get("PartyMembers", "Stationed troops/members ") + settlement.Party.NumberOfAllMembers);
 			}
 			if (settlement.Town?.GarrisonParty != null)
 			{
-				parts.Add("驻军 " + settlement.Town.GarrisonParty.Party.NumberOfAllMembers);
+				parts.Add(WorldEntityPromptTexts.Get("Garrison", "Garrison ") + settlement.Town.GarrisonParty.Party.NumberOfAllMembers);
 			}
 		}
 		catch
 		{
 		}
-		return parts.Count == 0 ? "未知" : string.Join("，", parts);
+		return parts.Count == 0 ? WorldEntityPromptTexts.Get("Unknown", "unknown") : string.Join(WorldEntityPromptTexts.Get("CommaSeparator", ", "), parts);
 	}
 
 	private static string FormatSettlementProsperity(Settlement settlement)
@@ -3044,13 +3046,13 @@ public static class WorldEntityRetrievalService
 			}
 			if (settlement?.Village != null)
 			{
-				return "村庄炉户/繁荣参考 " + FormatFloat(settlement.Village.Hearth);
+				return WorldEntityPromptTexts.Get("HearthProsperity", "Village hearths/prosperity reference ") + FormatFloat(settlement.Village.Hearth);
 			}
 		}
 		catch
 		{
 		}
-		return "未知";
+		return WorldEntityPromptTexts.Get("Unknown", "unknown");
 	}
 
 	private static string FormatSettlementPopulation(Settlement settlement)
@@ -3059,13 +3061,13 @@ public static class WorldEntityRetrievalService
 		{
 			if (settlement?.Village != null)
 			{
-				return "炉户 " + FormatFloat(settlement.Village.Hearth);
+				return WorldEntityPromptTexts.Get("Hearths", "Hearths ") + FormatFloat(settlement.Village.Hearth);
 			}
 		}
 		catch
 		{
 		}
-		return "无直接人口字段";
+		return WorldEntityPromptTexts.Get("NoPopulationField", "no direct population field");
 	}
 
 	private static string FormatSettlementLoyalty(Settlement settlement)
@@ -3080,7 +3082,7 @@ public static class WorldEntityRetrievalService
 		catch
 		{
 		}
-		return "未知";
+		return WorldEntityPromptTexts.Get("Unknown", "unknown");
 	}
 
 	private static string FormatBoundVillages(Settlement settlement)
@@ -3088,11 +3090,11 @@ public static class WorldEntityRetrievalService
 		try
 		{
 			List<string> names = (((IEnumerable<Village>)settlement?.BoundVillages) ?? Enumerable.Empty<Village>()).Where((Village x) => x?.Settlement != null).Select((Village x) => FormatSettlementNameWithType(x.Settlement)).Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).Take(12).ToList();
-			return names.Count == 0 ? "无" : string.Join("、", names);
+			return names.Count == 0 ? WorldEntityPromptTexts.Get("None", "none") : string.Join(WorldEntityPromptTexts.Get("ListSeparator", ", "), names);
 		}
 		catch
 		{
-			return "未知";
+			return WorldEntityPromptTexts.Get("Unknown", "unknown");
 		}
 	}
 
@@ -3100,28 +3102,28 @@ public static class WorldEntityRetrievalService
 	{
 		if (settlement == null)
 		{
-			return "未知";
+			return WorldEntityPromptTexts.Get("Unknown", "unknown");
 		}
 		List<string> parts = new List<string>();
 		try
 		{
 			if (settlement.IsUnderSiege)
 			{
-				parts.Add("被围攻");
+				parts.Add(WorldEntityPromptTexts.Get("Besieged", "under siege"));
 			}
 			if (settlement.Village != null && settlement.Village.VillageState != Village.VillageStates.Normal)
 			{
-				parts.Add("村庄状态：" + settlement.Village.VillageState);
+				parts.Add(WorldEntityPromptTexts.Get("VillageState", "Village state: ") + WorldEntityPromptTexts.Get("VillageState_" + settlement.Village.VillageState, settlement.Village.VillageState.ToString()));
 			}
 			if (settlement.Town != null)
 			{
-				parts.Add("治安：" + FormatFloat(settlement.Town.Security));
+				parts.Add(WorldEntityPromptTexts.Get("Security", "Security: ") + FormatFloat(settlement.Town.Security));
 			}
 		}
 		catch
 		{
 		}
-		return parts.Count == 0 ? "无特殊状态" : string.Join("；", parts);
+		return parts.Count == 0 ? WorldEntityPromptTexts.Get("NoSpecialStatus", "no special status") : string.Join(WorldEntityPromptTexts.Get("FieldSeparator", "; "), parts);
 	}
 
 	private static string FormatClanFiefs(Clan clan, int cap = MainPromptClanFiefCap)
@@ -3140,13 +3142,13 @@ public static class WorldEntityRetrievalService
 			}
 			if (names.Count == 0)
 			{
-				return "无";
+				return WorldEntityPromptTexts.Get("None", "none");
 			}
-			return total > names.Count ? (string.Join("、", names) + "等，共" + total.ToString(CultureInfo.InvariantCulture) + "处") : string.Join("、", names);
+			return total > names.Count ? (string.Join(WorldEntityPromptTexts.Get("ListSeparator", ", "), names) + WorldEntityPromptTexts.Get("TotalSuffix", ", etc.; total: ") + total.ToString(CultureInfo.InvariantCulture) + WorldEntityPromptTexts.Get("SettlementCountSuffix", " settlements")) : string.Join(WorldEntityPromptTexts.Get("ListSeparator", ", "), names);
 		}
 		catch
 		{
-			return "未知";
+			return WorldEntityPromptTexts.Get("Unknown", "unknown");
 		}
 	}
 
@@ -3155,16 +3157,16 @@ public static class WorldEntityRetrievalService
 		try
 		{
 			List<Clan> clans = (((IEnumerable<Clan>)kingdom?.Clans) ?? Enumerable.Empty<Clan>()).Where((Clan x) => x != null && !x.IsEliminated).ToList();
-			List<string> names = clans.Select((Clan x) => SafeName(x.Name, x.StringId)).Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).Take(Math.Max(1, cap)).ToList();
+			List<string> names = clans.Select((Clan x) => SafePromptName(x.Name, x.StringId)).Where((string x) => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).Take(Math.Max(1, cap)).ToList();
 			if (names.Count == 0)
 			{
-				return "无";
+				return WorldEntityPromptTexts.Get("None", "none");
 			}
-			return clans.Count > names.Count ? (string.Join("、", names) + "等，共" + clans.Count.ToString(CultureInfo.InvariantCulture) + "个家族") : string.Join("、", names);
+			return clans.Count > names.Count ? (string.Join(WorldEntityPromptTexts.Get("ListSeparator", ", "), names) + WorldEntityPromptTexts.Get("TotalSuffix", ", etc.; total: ") + clans.Count.ToString(CultureInfo.InvariantCulture) + WorldEntityPromptTexts.Get("ClanCountSuffix", " clans")) : string.Join(WorldEntityPromptTexts.Get("ListSeparator", ", "), names);
 		}
 		catch
 		{
-			return "未知";
+			return WorldEntityPromptTexts.Get("Unknown", "unknown");
 		}
 	}
 
@@ -3198,7 +3200,7 @@ public static class WorldEntityRetrievalService
 	{
 		if (kingdom == null)
 		{
-			return "未知";
+			return WorldEntityPromptTexts.Get("Unknown", "unknown");
 		}
 		try
 		{
@@ -3209,22 +3211,22 @@ public static class WorldEntityRetrievalService
 				.ToList();
 			if (settlements.Count == 0)
 			{
-				return "未发现归属该王国的城镇、城堡或村庄。";
+				return WorldEntityPromptTexts.Get("NoKingdomSettlements", "No towns, castles, or villages belonging to this kingdom were found.");
 			}
-			List<string> sampleNames = settlements.Take(5).Select((Settlement x) => SafeName(x.Name, "未知")).Where((string x) => !string.IsNullOrWhiteSpace(x) && x != "未知").Distinct(StringComparer.OrdinalIgnoreCase).ToList();
+			List<string> sampleNames = settlements.Take(5).Select((Settlement x) => SafeName(x.Name, KnowledgeSourceTexts.Get("KN_Raw_006"))).Where((string x) => !string.IsNullOrWhiteSpace(x) && x != KnowledgeSourceTexts.Get("KN_Raw_006")).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
 			int townCount = settlements.Count((Settlement x) => x.IsTown);
 			int castleCount = settlements.Count((Settlement x) => x.IsCastle);
 			int villageCount = settlements.Count((Settlement x) => x.IsVillage);
-			string sampleText = sampleNames.Count == 0 ? "若干定居点" : string.Join("、", sampleNames);
+			string sampleText = sampleNames.Count == 0 ? WorldEntityPromptTexts.Get("SeveralSettlements", "several settlements") : string.Join(WorldEntityPromptTexts.Get("ListSeparator", ", "), sampleNames);
 			if (settlements.Count > sampleNames.Count)
 			{
-				sampleText += "等";
+				sampleText += WorldEntityPromptTexts.Get("Etc", ", etc.");
 			}
-			return "此王国的定居点拥有" + sampleText + "；" + townCount.ToString(CultureInfo.InvariantCulture) + "个城镇，" + castleCount.ToString(CultureInfo.InvariantCulture) + "个城堡，" + villageCount.ToString(CultureInfo.InvariantCulture) + "个村庄。";
+			return WorldEntityPromptTexts.Get("KingdomSettlements", "This kingdom's settlements include ") + sampleText + WorldEntityPromptTexts.Get("FieldSeparator", "; ") + townCount.ToString(CultureInfo.InvariantCulture) + WorldEntityPromptTexts.Get("TownCountSuffix", " towns, ") + castleCount.ToString(CultureInfo.InvariantCulture) + WorldEntityPromptTexts.Get("CastleCountSuffix", " castles, ") + villageCount.ToString(CultureInfo.InvariantCulture) + WorldEntityPromptTexts.Get("VillageCountSuffix", " villages.");
 		}
 		catch
 		{
-			return "未知";
+			return WorldEntityPromptTexts.Get("Unknown", "unknown");
 		}
 	}
 
@@ -3232,36 +3234,36 @@ public static class WorldEntityRetrievalService
 	{
 		if (kingdom == null)
 		{
-			return "未知";
+			return WorldEntityPromptTexts.Get("Unknown", "unknown");
 		}
 		List<string> parts = new List<string>();
 		try
 		{
-			parts.Add("是否灭亡(IsEliminated)：" + FormatEliminatedStatus(kingdom.IsEliminated));
-			List<string> wars = Kingdom.All.Where((Kingdom x) => x != null && x != kingdom && !x.IsEliminated && kingdom.IsAtWarWith(x)).Select((Kingdom x) => SafeName(x.Name, x.StringId)).ToList();
+			parts.Add(WorldEntityPromptTexts.Get("EliminatedFlag", "Eliminated (IsEliminated): ") + FormatEliminatedStatus(kingdom.IsEliminated));
+			List<string> wars = Kingdom.All.Where((Kingdom x) => x != null && x != kingdom && !x.IsEliminated && kingdom.IsAtWarWith(x)).Select((Kingdom x) => SafePromptName(x.Name, x.StringId)).ToList();
 			if (wars.Count > 0)
 			{
-				parts.Add("战争对象：" + string.Join("、", wars));
+				parts.Add(WorldEntityPromptTexts.Get("Wars", "At war with: ") + string.Join(WorldEntityPromptTexts.Get("ListSeparator", ", "), wars));
 			}
-			List<string> allies = Kingdom.All.Where((Kingdom x) => x != null && x != kingdom && !x.IsEliminated && IsAlly(kingdom, x)).Select((Kingdom x) => SafeName(x.Name, x.StringId)).ToList();
+			List<string> allies = Kingdom.All.Where((Kingdom x) => x != null && x != kingdom && !x.IsEliminated && IsAlly(kingdom, x)).Select((Kingdom x) => SafePromptName(x.Name, x.StringId)).ToList();
 			if (allies.Count > 0)
 			{
-				parts.Add("联盟对象：" + string.Join("、", allies));
+				parts.Add(WorldEntityPromptTexts.Get("Alliances", "Allied with: ") + string.Join(WorldEntityPromptTexts.Get("ListSeparator", ", "), allies));
 			}
-			List<string> trades = Kingdom.All.Where((Kingdom x) => x != null && x != kingdom && !x.IsEliminated && HasTradeAgreement(kingdom, x)).Select((Kingdom x) => SafeName(x.Name, x.StringId)).ToList();
+			List<string> trades = Kingdom.All.Where((Kingdom x) => x != null && x != kingdom && !x.IsEliminated && HasTradeAgreement(kingdom, x)).Select((Kingdom x) => SafePromptName(x.Name, x.StringId)).ToList();
 			if (trades.Count > 0)
 			{
-				parts.Add("贸易协定：" + string.Join("、", trades));
+				parts.Add(WorldEntityPromptTexts.Get("TradeAgreements", "Trade agreements: ") + string.Join(WorldEntityPromptTexts.Get("ListSeparator", ", "), trades));
 			}
 			if (kingdom.IsEliminated)
 			{
-				parts.Add("已灭亡/无效王国");
+				parts.Add(WorldEntityPromptTexts.Get("InvalidKingdom", "eliminated/invalid kingdom"));
 			}
 		}
 		catch
 		{
 		}
-		return parts.Count == 0 ? "无已知战争、联盟或贸易协定" : string.Join("；", parts);
+		return parts.Count == 0 ? WorldEntityPromptTexts.Get("NoDiplomaticStatus", "no known wars, alliances, or trade agreements") : string.Join(WorldEntityPromptTexts.Get("FieldSeparator", "; "), parts);
 	}
 
 	private static bool IsAlly(Kingdom kingdom, Kingdom other)
@@ -3298,11 +3300,11 @@ public static class WorldEntityRetrievalService
 		try
 		{
 			List<string> names = (heroes ?? Enumerable.Empty<Hero>()).Where((Hero x) => x != null).Distinct().Take(cap).Select(FormatHeroNameWithLifeState).ToList();
-			return names.Count == 0 ? "无" : string.Join("、", names);
+			return names.Count == 0 ? WorldEntityPromptTexts.Get("None", "none") : string.Join(WorldEntityPromptTexts.Get("ListSeparator", ", "), names);
 		}
 		catch
 		{
-			return "未知";
+			return WorldEntityPromptTexts.Get("Unknown", "unknown");
 		}
 	}
 
@@ -3341,7 +3343,7 @@ public static class WorldEntityRetrievalService
 					VisiblePartyCandidate candidate = new VisiblePartyCandidate
 					{
 						Id = id,
-						Name = SafeName(party.Name, id),
+						Name = SafePromptName(party.Name, id),
 						Count = GetPartyMemberCount(party),
 						Affiliation = FormatPartyAffiliation(party),
 						RelationToContextHero = FormatVisiblePartyRelationToHero(party, contextHero),
@@ -3441,15 +3443,15 @@ public static class WorldEntityRetrievalService
 			Hero partyHero = GetVisiblePartyHero(party);
 			if (IsHeroParty(referenceHero, party) || IsSameHero(referenceHero, partyHero))
 			{
-				return "本人部队";
+				return WorldEntityPromptTexts.Get("OwnParty", "own party");
 			}
 			string stance = FormatFactionRelationBand(ResolveHeroPromptFaction(referenceHero), ResolvePartyPromptFaction(party));
 			string personal = FormatPartyHeroPersonalRelationBand(referenceHero, partyHero);
 			if (!string.IsNullOrWhiteSpace(personal))
 			{
-				return string.IsNullOrWhiteSpace(stance) ? ("个人" + personal) : (stance + "，个人" + personal);
+				return string.IsNullOrWhiteSpace(stance) ? (WorldEntityPromptTexts.Get("Personal", "personal relation: ") + personal) : (stance + WorldEntityPromptTexts.Get("PersonalSuffix", "; personal relation: ") + personal);
 			}
-			return string.IsNullOrWhiteSpace(stance) ? "未知" : stance;
+			return string.IsNullOrWhiteSpace(stance) ? WorldEntityPromptTexts.Get("Unknown", "unknown") : stance;
 		}
 		catch
 		{
@@ -3551,17 +3553,17 @@ public static class WorldEntityRetrievalService
 			}
 			if (IsSameFaction(referenceFaction, partyFaction))
 			{
-				return "友好";
+				return WorldEntityPromptTexts.Get("Friendly", "friendly");
 			}
 			if (AreFactionsAtWar(referenceFaction, partyFaction))
 			{
-				return "敌对";
+				return WorldEntityPromptTexts.Get("Hostile", "hostile");
 			}
 			if (AreFactionKingdomsAllied(referenceFaction, partyFaction))
 			{
-				return "友好";
+				return WorldEntityPromptTexts.Get("Friendly", "friendly");
 			}
-			return "中立";
+			return WorldEntityPromptTexts.Get("Neutral", "neutral");
 		}
 		catch
 		{
@@ -3690,22 +3692,22 @@ public static class WorldEntityRetrievalService
 			List<string> parts = new List<string>();
 			if (party?.HomeSettlement != null)
 			{
-				parts.Add("村庄/据点：" + FormatSettlementNameWithType(party.HomeSettlement));
+				parts.Add(WorldEntityPromptTexts.Get("PartyHome", "Village/base: ") + FormatSettlementNameWithType(party.HomeSettlement));
 			}
 			if (party?.MapFaction != null)
 			{
-				parts.Add("王国/阵营：" + SafeName(party.MapFaction.Name, party.MapFaction.StringId));
+				parts.Add(WorldEntityPromptTexts.Get("PartyFaction", "Kingdom/faction: ") + SafePromptName(party.MapFaction.Name, party.MapFaction.StringId));
 			}
 			Hero owner = party?.LeaderHero ?? party?.Owner;
 			if (owner != null)
 			{
-				parts.Add("要人：" + SafeName(owner.Name, owner.StringId));
+				parts.Add(WorldEntityPromptTexts.Get("PartyOwner", "Notable: ") + SafePromptName(owner.Name, owner.StringId));
 			}
-			return parts.Count == 0 ? "未知" : string.Join("；", parts);
+			return parts.Count == 0 ? WorldEntityPromptTexts.Get("Unknown", "unknown") : string.Join(WorldEntityPromptTexts.Get("FieldSeparator", "; "), parts);
 		}
 		catch
 		{
-			return "未知";
+			return WorldEntityPromptTexts.Get("Unknown", "unknown");
 		}
 	}
 
@@ -3717,20 +3719,20 @@ public static class WorldEntityRetrievalService
 			float dy = to.Y - from.Y;
 			if (Math.Abs(dx) < 0.001f && Math.Abs(dy) < 0.001f)
 			{
-				return "当前位置";
+				return WorldEntityPromptTexts.Get("Here", "current location");
 			}
 			double degrees = Math.Atan2(dy, dx) * 180.0 / Math.PI;
 			if (degrees < 0.0)
 			{
 				degrees += 360.0;
 			}
-			string[] directions = { "东", "东北", "北", "西北", "西", "西南", "南", "东南" };
+			string[] directions = { WorldEntityPromptTexts.Get("East", "east"), WorldEntityPromptTexts.Get("Northeast", "northeast"), WorldEntityPromptTexts.Get("North", "north"), WorldEntityPromptTexts.Get("Northwest", "northwest"), WorldEntityPromptTexts.Get("West", "west"), WorldEntityPromptTexts.Get("Southwest", "southwest"), WorldEntityPromptTexts.Get("South", "south"), WorldEntityPromptTexts.Get("Southeast", "southeast") };
 			int index = ((int)Math.Round(degrees / 45.0)) % directions.Length;
 			return directions[index];
 		}
 		catch
 		{
-			return "未知";
+			return WorldEntityPromptTexts.Get("Unknown", "unknown");
 		}
 	}
 
@@ -3738,7 +3740,7 @@ public static class WorldEntityRetrievalService
 	{
 		if (float.IsNaN(distance) || float.IsInfinity(distance) || distance >= float.MaxValue * 0.5f)
 		{
-			return "未知";
+			return WorldEntityPromptTexts.Get("Unknown", "unknown");
 		}
 		return distance.ToString("0.0", CultureInfo.InvariantCulture);
 	}
@@ -3756,7 +3758,12 @@ public static class WorldEntityRetrievalService
 		catch
 		{
 		}
-		return string.IsNullOrWhiteSpace(fallback) ? "未知" : fallback.Trim();
+		return string.IsNullOrWhiteSpace(fallback) ? KnowledgeSourceTexts.Get("KN_Raw_006") : fallback.Trim();
+	}
+
+	private static string SafePromptName(TextObject textObject, string fallback)
+	{
+		return SafeName(textObject, string.IsNullOrWhiteSpace(fallback) ? WorldEntityPromptTexts.Get("Unknown", "unknown") : fallback);
 	}
 
 	private static string SafeTextOrEmpty(TextObject textObject)
@@ -3782,11 +3789,11 @@ public static class WorldEntityRetrievalService
 	{
 		try
 		{
-			return hero == null ? "未知" : Math.Floor(hero.Age).ToString(CultureInfo.InvariantCulture);
+			return hero == null ? WorldEntityPromptTexts.Get("Unknown", "unknown") : Math.Floor(hero.Age).ToString(CultureInfo.InvariantCulture);
 		}
 		catch
 		{
-			return "未知";
+			return WorldEntityPromptTexts.Get("Unknown", "unknown");
 		}
 	}
 
@@ -3794,9 +3801,9 @@ public static class WorldEntityRetrievalService
 	{
 		if (hero == null)
 		{
-			return "未知";
+			return WorldEntityPromptTexts.Get("Unknown", "unknown");
 		}
-		return hero.IsFemale ? "女" : "男";
+		return hero.IsFemale ? WorldEntityPromptTexts.Get("Female", "female") : WorldEntityPromptTexts.Get("Male", "male");
 	}
 
 	private static string FormatBool(bool value)
@@ -3808,16 +3815,16 @@ public static class WorldEntityRetrievalService
 	{
 		if (!value.HasValue)
 		{
-			return "未知";
+			return WorldEntityPromptTexts.Get("Unknown", "unknown");
 		}
-		return value.Value ? "true（已灭亡）" : "false（未灭亡）";
+		return value.Value ? WorldEntityPromptTexts.Get("TrueEliminated", "true (eliminated)") : WorldEntityPromptTexts.Get("FalseEliminated", "false (not eliminated)");
 	}
 
 	private static string FormatFloat(float? value)
 	{
 		if (!value.HasValue)
 		{
-			return "未知";
+			return WorldEntityPromptTexts.Get("Unknown", "unknown");
 		}
 		return value.Value.ToString("0.#", CultureInfo.InvariantCulture);
 	}
@@ -3826,7 +3833,7 @@ public static class WorldEntityRetrievalService
 	{
 		if (!value.HasValue)
 		{
-			return "未知";
+			return WorldEntityPromptTexts.Get("Unknown", "unknown");
 		}
 		return value.Value.ToString(CultureInfo.InvariantCulture);
 	}

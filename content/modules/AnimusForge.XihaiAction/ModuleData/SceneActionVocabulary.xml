@@ -1,0 +1,2437 @@
+<?xml version='1.0' encoding='utf-8'?>
+<vocabulary version="1">
+  <list id="SpeechCompat.FailureZh">
+    <token>（错误</token>
+    <token>（没说话</token>
+    <token>（API请求失败</token>
+  </list>
+  <list id="SpeechCompat.FailureEn">
+    <token>(error:</token>
+    <token>(no speech</token>
+    <token>(api request failed</token>
+  </list>
+  <list id="SpeechCompat.OrdinaryStartZh">
+    <token>你是【站在你旁边的人】中的NPC角色,可能是多个人。你们的唯一任务是：根据下方提供的角色信息、场景信息和对话历史，以NPC身份直接回复</token>
+  </list>
+  <list id="SpeechCompat.OrdinaryEndZh">
+    <token>&#10;禁止生成任何【】章节标题或格式说明。</token>
+  </list>
+  <list id="SpeechCompat.OrdinaryStartEn">
+    <token>You are the NPC character or characters among the people standing beside you. Your sole task is to respond directly in character, using the supplied character information, scene information and dialogue history, to </token>
+  </list>
+  <list id="SpeechCompat.OrdinaryEndEn">
+    <token>Do not generate section headings or formatting instructions.</token>
+  </list>
+  <list id="CommandParser.NonSelfPlayerPrefixes">
+    <token>我们</token>
+    <token>我方</token>
+    <token>我的</token>
+    <token>我等</token>
+    <token>我辈</token>
+    <token>我军</token>
+    <token>我队</token>
+    <token>我部</token>
+    <token>我手下</token>
+    <token>我麾下</token>
+    <token>我让</token>
+    <token>我叫</token>
+    <token>我令</token>
+    <token>我命令</token>
+    <token>我要求</token>
+    <token>我请他们</token>
+    <token>我请大家</token>
+  </list>
+  <list id="CommandParser.NpcThirdPartyDirectiveVerbs">
+    <token>命令</token>
+    <token>要求</token>
+    <token>吩咐</token>
+    <token>迫使</token>
+    <token>逼迫</token>
+    <token>强迫</token>
+    <token>让</token>
+    <token>叫</token>
+    <token>请</token>
+    <token>要</token>
+    <token>逼</token>
+  </list>
+  <list id="CommandParser.NpcThirdPartyRecipients">
+    <token>他们</token>
+    <token>她们</token>
+    <token>所有人</token>
+    <token>众人</token>
+    <token>大家</token>
+    <token>部下</token>
+    <token>士兵</token>
+    <token>我们</token>
+    <token>你们</token>
+    <token>我</token>
+    <token>你</token>
+    <token>他</token>
+    <token>她</token>
+  </list>
+  <list id="CommandParser.ClearlyNonPerformedNpcMarkers">
+    <token>拒绝</token>
+    <token>不愿</token>
+    <token>不肯</token>
+    <token>并未</token>
+    <token>未曾</token>
+    <token>从未</token>
+    <token>绝不</token>
+    <token>不再</token>
+    <token>毫无</token>
+    <token>只是想</token>
+    <token>仅想</token>
+    <token>只想</token>
+    <token>想要</token>
+    <token>试图</token>
+    <token>准备</token>
+    <token>打算</token>
+    <token>正要</token>
+    <token>刚要</token>
+    <token>差点</token>
+    <token>险些</token>
+    <token>几乎</token>
+    <token>如果</token>
+    <token>假如</token>
+    <token>倘若</token>
+    <token>若是</token>
+    <token>要是</token>
+    <token>万一</token>
+    <token>是否</token>
+    <token>请解释</token>
+    <token>只是说</token>
+    <token>说出</token>
+    <token>提到</token>
+    <token>谈到</token>
+    <token>讨论</token>
+    <token>引用</token>
+    <token>回忆</token>
+    <token>先前</token>
+    <token>此前</token>
+    <token>曾经</token>
+    <token>昨天</token>
+    <token>口头表示</token>
+    <token>声称</token>
+    <token>考虑</token>
+    <token>没有付诸行动</token>
+    <token>没有做出任何动作</token>
+    <token>没有任何动作</token>
+    <token>最终忍住</token>
+    <token>眼下站着没动</token>
+    <token>站着没动</token>
+    <token>一动不动</token>
+    <token>纹丝不动</token>
+    <token>不是否认</token>
+    <token>并非否认</token>
+    <token>不是拒绝</token>
+    <token>并非拒绝</token>
+    <token>refused</token>
+    <token>refuses</token>
+    <token>refuse</token>
+    <token>unwilling</token>
+    <token>never</token>
+    <token>did not</token>
+    <token>does not</token>
+    <token>will not</token>
+    <token>would not</token>
+    <token>no longer</token>
+    <token>not </token>
+    <token>only wanted</token>
+    <token>wanted to</token>
+    <token>wants to</token>
+    <token>wished to</token>
+    <token>attempted to</token>
+    <token>attempts to</token>
+    <token>tried to</token>
+    <token>tries to</token>
+    <token>prepared to</token>
+    <token>prepares to</token>
+    <token>planned to</token>
+    <token>plans to</token>
+    <token>about to</token>
+    <token>almost</token>
+    <token>nearly</token>
+    <token>if </token>
+    <token>suppose</token>
+    <token>whether</token>
+    <token>in case</token>
+    <token>please explain</token>
+    <token>only said</token>
+    <token>said</token>
+    <token>mentioned</token>
+    <token>talked about</token>
+    <token>discussed</token>
+    <token>quoted</token>
+    <token>recalled</token>
+    <token>previously</token>
+    <token>yesterday</token>
+    <token>claimed</token>
+    <token>considered</token>
+    <token>without action</token>
+    <token>made no gesture</token>
+    <token>stood still</token>
+    <token>motionless</token>
+    <token>cannot</token>
+    <token>can't</token>
+    <token>can’t</token>
+    <token>don't</token>
+    <token>don’t</token>
+    <token>doesn't</token>
+    <token>doesn’t</token>
+    <token>didn't</token>
+    <token>didn’t</token>
+    <token>won't</token>
+    <token>won’t</token>
+    <token>wouldn't</token>
+    <token>wouldn’t</token>
+    <token>hasn't</token>
+    <token>hasn’t</token>
+    <token>haven't</token>
+    <token>haven’t</token>
+    <token>hadn't</token>
+    <token>hadn’t</token>
+  </list>
+  <list id="CommandParser.StopOwnedActionCues">
+    <token>停止欢呼</token>
+    <token>别再欢呼</token>
+    <token>不再欢呼</token>
+    <token>停止跳舞</token>
+    <token>别跳了</token>
+    <token>停止当前动作</token>
+    <token>停止动作</token>
+    <token>停下当前动作</token>
+    <token>结束当前动作</token>
+    <token>结束此项</token>
+    <token>结束这个动作</token>
+    <token>收起动作</token>
+    <token>恢复正常</token>
+    <token>恢复站姿</token>
+    <token>恢复端正站姿</token>
+    <token>回到正常站姿</token>
+    <token>站好</token>
+    <token>放下手臂</token>
+    <token>把手放下</token>
+    <token>将手放下</token>
+    <token>收回手臂</token>
+    <token>垂下手臂</token>
+    <token>结束行礼</token>
+    <token>停止行礼</token>
+    <token>stop cheering</token>
+    <token>stop dancing</token>
+    <token>stop action</token>
+    <token>return to idle</token>
+  </list>
+  <list id="CommandParser.DrawWeaponCues">
+    <token>拔剑</token>
+    <token>抽剑</token>
+    <token>拔出剑</token>
+    <token>抽出剑</token>
+    <token>拔出佩剑</token>
+    <token>抽出佩剑</token>
+    <token>拔出武器</token>
+    <token>抽出武器</token>
+    <token>剑已出鞘</token>
+    <token>拔剑出鞘</token>
+    <token>抽剑出鞘</token>
+    <token>剑身出鞘</token>
+    <token>draw weapon</token>
+    <token>draw sword</token>
+    <token>drew his sword</token>
+    <token>drew her sword</token>
+    <token>unsheathed his sword</token>
+    <token>unsheathed her sword</token>
+  </list>
+  <list id="CommandParser.SheatheWeaponCues">
+    <token>收剑</token>
+    <token>还剑入鞘</token>
+    <token>收剑入鞘</token>
+    <token>将剑插回鞘中</token>
+    <token>把剑收回鞘中</token>
+    <token>收起武器</token>
+    <token>武器入鞘</token>
+    <token>剑已入鞘</token>
+    <token>sheathe weapon</token>
+    <token>sheathed his sword</token>
+    <token>sheathed her sword</token>
+    <token>put his sword away</token>
+    <token>put her sword away</token>
+  </list>
+  <list id="CommandParser.RuntimeControlNonPerformedMarkers">
+    <token>拒绝</token>
+    <token>不愿</token>
+    <token>不肯</token>
+    <token>并未</token>
+    <token>未曾</token>
+    <token>从未</token>
+    <token>绝不</token>
+    <token>没有</token>
+    <token>只是想</token>
+    <token>仅想</token>
+    <token>只想</token>
+    <token>想要</token>
+    <token>试图</token>
+    <token>准备</token>
+    <token>打算</token>
+    <token>正要</token>
+    <token>刚要</token>
+    <token>差点</token>
+    <token>险些</token>
+    <token>几乎</token>
+    <token>如果</token>
+    <token>假如</token>
+    <token>倘若</token>
+    <token>若是</token>
+    <token>要是</token>
+    <token>万一</token>
+    <token>是否</token>
+    <token>请解释</token>
+    <token>只是说</token>
+    <token>说出</token>
+    <token>提到</token>
+    <token>谈到</token>
+    <token>讨论</token>
+    <token>引用</token>
+    <token>回忆</token>
+    <token>先前</token>
+    <token>此前</token>
+    <token>曾经</token>
+    <token>昨天</token>
+    <token>口头表示</token>
+    <token>声称</token>
+    <token>考虑</token>
+    <token>没有付诸行动</token>
+    <token>没有做出任何动作</token>
+    <token>没有任何动作</token>
+    <token>最终忍住</token>
+    <token>眼下站着没动</token>
+    <token>站着没动</token>
+    <token>一动不动</token>
+    <token>纹丝不动</token>
+    <token>refused</token>
+    <token>refuses</token>
+    <token>refuse</token>
+    <token>unwilling</token>
+    <token>never</token>
+    <token>did not</token>
+    <token>does not</token>
+    <token>will not</token>
+    <token>would not</token>
+    <token>no longer</token>
+    <token>not </token>
+    <token>only wanted</token>
+    <token>wanted to</token>
+    <token>wants to</token>
+    <token>wished to</token>
+    <token>attempted to</token>
+    <token>attempts to</token>
+    <token>tried to</token>
+    <token>tries to</token>
+    <token>prepared to</token>
+    <token>prepares to</token>
+    <token>planned to</token>
+    <token>plans to</token>
+    <token>about to</token>
+    <token>almost</token>
+    <token>nearly</token>
+    <token>if </token>
+    <token>suppose</token>
+    <token>whether</token>
+    <token>in case</token>
+    <token>please explain</token>
+    <token>only said</token>
+    <token>said</token>
+    <token>mentioned</token>
+    <token>talked about</token>
+    <token>discussed</token>
+    <token>quoted</token>
+    <token>recalled</token>
+    <token>previously</token>
+    <token>yesterday</token>
+    <token>claimed</token>
+    <token>considered</token>
+    <token>without action</token>
+    <token>made no gesture</token>
+    <token>stood still</token>
+    <token>motionless</token>
+    <token>cannot</token>
+    <token>can't</token>
+    <token>can’t</token>
+    <token>don't</token>
+    <token>don’t</token>
+    <token>doesn't</token>
+    <token>doesn’t</token>
+    <token>didn't</token>
+    <token>didn’t</token>
+    <token>won't</token>
+    <token>won’t</token>
+    <token>wouldn't</token>
+    <token>wouldn’t</token>
+    <token>hasn't</token>
+    <token>hasn’t</token>
+    <token>haven't</token>
+    <token>haven’t</token>
+    <token>hadn't</token>
+    <token>hadn’t</token>
+  </list>
+  <list id="SceneActionFrameworkV3.UnsupportedActionCues">
+    <token>哭泣</token>
+    <token>大哭</token>
+    <token>哭了起来</token>
+    <token>坐下</token>
+    <token>躺下</token>
+    <token>趴下</token>
+    <token>转身</token>
+    <token>走路</token>
+    <token>走了两步</token>
+    <token>走了过去</token>
+    <token>走过去</token>
+    <token>走去</token>
+    <token>走向</token>
+    <token>走到</token>
+    <token>迈步</token>
+    <token>迈步走向</token>
+    <token>跑步</token>
+    <token>奔跑</token>
+    <token>拥抱</token>
+    <token>亲吻</token>
+    <token>喝酒</token>
+    <token>吃东西</token>
+    <token>踢腿</token>
+    <token>踢人</token>
+    <token>攻击</token>
+    <token>walked over</token>
+    <token>walked toward</token>
+    <token>walked to</token>
+    <token>moved toward</token>
+    <token>approached</token>
+    <token>sat down</token>
+    <token>lay down</token>
+    <token>hugged</token>
+    <token>kissed</token>
+    <token>drank</token>
+    <token>ate</token>
+    <token>kicked</token>
+    <token>attacked</token>
+  </list>
+  <list id="SceneActionFrameworkV1.StrongCueSuppressors">
+    <token>拒绝</token>
+    <token>不愿</token>
+    <token>不肯</token>
+    <token>不想</token>
+    <token>不打算</token>
+    <token>无意</token>
+    <token>只是想</token>
+    <token>仅想</token>
+    <token>只想</token>
+    <token>想</token>
+    <token>想要</token>
+    <token>试图</token>
+    <token>准备</token>
+    <token>打算</token>
+    <token>正要</token>
+    <token>刚要</token>
+    <token>欲要</token>
+    <token>本来要</token>
+    <token>本来想</token>
+    <token>本来打算</token>
+    <token>差点</token>
+    <token>险些</token>
+    <token>几乎</token>
+    <token>停止</token>
+    <token>没能</token>
+    <token>未能</token>
+    <token>避免</token>
+    <token>尝试</token>
+    <token>计划</token>
+    <token>企图</token>
+    <token>考虑</token>
+    <token>希望</token>
+    <token>设想</token>
+    <token>想象</token>
+    <token>假设</token>
+    <token>如果</token>
+    <token>假如</token>
+    <token>倘若</token>
+    <token>若是</token>
+    <token>要是</token>
+    <token>万一</token>
+    <token>口头表示</token>
+    <token>口头说</token>
+    <token>口头声称</token>
+    <token>只是说道</token>
+    <token>声称</token>
+    <token>回忆</token>
+    <token>先前</token>
+    <token>此前</token>
+    <token>曾经</token>
+    <token>刚才</token>
+    <token>之前</token>
+    <token>原本</token>
+    <token>嘴上</token>
+    <token>是否</token>
+    <token>会不会</token>
+    <token>能不能</token>
+    <token>要不要</token>
+    <token>请解释</token>
+    <token>解释</token>
+    <token>说出</token>
+    <token>只是说</token>
+    <token>提到</token>
+    <token>谈到</token>
+    <token>讨论</token>
+    <token>引用</token>
+    <token>念出</token>
+    <token>读出</token>
+    <token>写下</token>
+  </list>
+  <list id="SceneActionFrameworkV1.DirectCueSuppressors">
+    <token>没有</token>
+    <token>毫无</token>
+    <token>并无</token>
+    <token>并未</token>
+    <token>未曾</token>
+    <token>从未</token>
+    <token>绝不</token>
+    <token>不再</token>
+    <token>并不</token>
+    <token>没</token>
+    <token>未</token>
+    <token>不</token>
+  </list>
+  <list id="SceneActionFrameworkV1.NonPerformativeContextSuppressors">
+    <token>只是想</token>
+    <token>仅想</token>
+    <token>只想</token>
+    <token>想要</token>
+    <token>试图</token>
+    <token>准备</token>
+    <token>打算</token>
+    <token>正要</token>
+    <token>刚要</token>
+    <token>欲要</token>
+    <token>本来要</token>
+    <token>本来想</token>
+    <token>本来打算</token>
+    <token>差点</token>
+    <token>险些</token>
+    <token>几乎</token>
+    <token>尝试</token>
+    <token>计划</token>
+    <token>企图</token>
+    <token>考虑</token>
+    <token>希望</token>
+    <token>设想</token>
+    <token>想象</token>
+    <token>假设</token>
+    <token>如果</token>
+    <token>假如</token>
+    <token>倘若</token>
+    <token>若是</token>
+    <token>要是</token>
+    <token>万一</token>
+    <token>口头表示</token>
+    <token>口头说</token>
+    <token>口头声称</token>
+    <token>只是说道</token>
+    <token>声称</token>
+    <token>回忆</token>
+    <token>先前</token>
+    <token>此前</token>
+    <token>曾经</token>
+    <token>刚才</token>
+    <token>之前</token>
+    <token>原本</token>
+    <token>嘴上</token>
+    <token>是否</token>
+    <token>会不会</token>
+    <token>能不能</token>
+    <token>要不要</token>
+    <token>请解释</token>
+    <token>解释</token>
+    <token>说出</token>
+    <token>只是说</token>
+    <token>提到</token>
+    <token>谈到</token>
+    <token>讨论</token>
+    <token>引用</token>
+    <token>念出</token>
+    <token>读出</token>
+    <token>写下</token>
+  </list>
+  <list id="SceneActionFrameworkV1.PerformedDespiteNegationPrefixes">
+    <token>忍不住</token>
+    <token>不由得</token>
+    <token>不得不</token>
+    <token>没有犹豫</token>
+    <token>没有迟疑</token>
+    <token>毫不犹豫</token>
+    <token>毫不迟疑</token>
+    <token>不假思索</token>
+  </list>
+  <list id="SceneActionFrameworkV1.PerformanceRecoveryMarkers">
+    <token>但仍</token>
+    <token>却仍</token>
+    <token>仍然</token>
+    <token>依然</token>
+    <token>还是</token>
+    <token>转而</token>
+    <token>而是</token>
+    <token>随后</token>
+    <token>随即</token>
+    <token>然后</token>
+    <token>接着</token>
+    <token>继而</token>
+    <token>后来</token>
+    <token>反而</token>
+    <token>但是</token>
+    <token>不过</token>
+    <token>完成了</token>
+    <token>完成</token>
+    <token>作出</token>
+    <token>做出</token>
+    <token>只是</token>
+    <token>却</token>
+    <token>又</token>
+    <token>并且</token>
+    <token>同时</token>
+  </list>
+  <list id="SceneActionFrameworkV1.HypotheticalCueSuppressors">
+    <token>如果</token>
+    <token>假如</token>
+    <token>倘若</token>
+    <token>若是</token>
+    <token>要是</token>
+    <token>万一</token>
+    <token>假设</token>
+  </list>
+  <list id="SceneActionFrameworkV1.HypotheticalRecoveryMarkers">
+    <token>但</token>
+    <token>却</token>
+    <token>然而</token>
+    <token>不过</token>
+    <token>反而</token>
+    <token>而是</token>
+    <token>还是</token>
+  </list>
+  <list id="SceneActionFrameworkV1.AfterCueSuppressors">
+    <token>的念头</token>
+    <token>的打算</token>
+    <token>的想法</token>
+    <token>吗</token>
+    <token>么</token>
+    <token>呢</token>
+    <token>会怎样</token>
+    <token>会怎么样</token>
+    <token>是什么意思</token>
+    <token>意味着什么</token>
+    <token>是否可行</token>
+    <token>还是不</token>
+    <token>butnot</token>
+    <token>notto</token>
+    <token>notfor</token>
+    <token>ratherthan</token>
+    <token>insteadof</token>
+    <token>二字</token>
+    <token>这个词</token>
+    <token>一词</token>
+    <token>过</token>
+  </list>
+  <list id="SceneActionFrameworkV1.RagePhysicalCues">
+    <token>怒吼</token>
+    <token>怒喊</token>
+    <token>咆哮</token>
+    <token>挥舞</token>
+    <token>挥动</token>
+    <token>挥臂</token>
+    <token>挥拳</token>
+    <token>跺脚</token>
+    <token>暴跳</token>
+    <token>拍桌</token>
+  </list>
+  <list id="SceneActionFrameworkV1.FearPhysicalCues">
+    <token>发抖</token>
+    <token>颤抖</token>
+    <token>连退</token>
+    <token>后退</token>
+    <token>退了两步</token>
+    <token>护住</token>
+    <token>抱住脑袋</token>
+    <token>摆手</token>
+    <token>慌张摆手</token>
+    <token>惊慌失措</token>
+  </list>
+  <list id="SceneActionFrameworkV1.DisappointedPhysicalCues">
+    <token>叹气</token>
+    <token>叹息</token>
+    <token>长叹</token>
+    <token>垂头</token>
+    <token>低头</token>
+    <token>摇头</token>
+    <token>丧气</token>
+    <token>失落地</token>
+    <token>sighed</token>
+    <token>sigh</token>
+    <token>lowered his head</token>
+    <token>lowered her head</token>
+  </list>
+  <list id="SceneActionFrameworkV1.CheerPhysicalCues">
+    <token>振臂</token>
+    <token>高举拳头</token>
+    <token>呐喊</token>
+    <token>叫好</token>
+    <token>喝彩</token>
+    <token>欢呼起来</token>
+    <token>欢呼着</token>
+    <token>挥舞双臂</token>
+  </list>
+  <list id="SceneActionFrameworkV1.ApplaudPhysicalCues">
+    <token>拍手</token>
+    <token>拍掌</token>
+    <token>拍击</token>
+    <token>鼓起掌</token>
+    <token>双掌</token>
+    <token>掌声</token>
+  </list>
+  <list id="SceneActionFrameworkV1.ThreatPhysicalCues">
+    <token>挥拳</token>
+    <token>握紧拳</token>
+    <token>攥紧拳</token>
+    <token>攥拳</token>
+    <token>拳头</token>
+    <token>示威</token>
+    <token>作势</token>
+    <token>逼近</token>
+    <token>晃了晃</token>
+  </list>
+  <list id="SceneActionFrameworkV1.SurrenderPhysicalCues">
+    <token>放下武器</token>
+    <token>放下兵器</token>
+    <token>扔下</token>
+    <token>丢下</token>
+    <token>扔掉</token>
+    <token>扔到脚边</token>
+    <token>高举过头</token>
+    <token>高举双手</token>
+    <token>举起双手</token>
+    <token>双手高举</token>
+    <token>缴械</token>
+    <token>弃械</token>
+    <token>束手就擒</token>
+  </list>
+  <list id="SceneActionFrameworkV1.LaughPhysicalCues">
+    <token>大笑</token>
+    <token>笑出声</token>
+    <token>笑了起来</token>
+    <token>仰头</token>
+    <token>前仰后合</token>
+    <token>捧腹</token>
+    <token>发出一阵笑声</token>
+    <token>爆发出一阵笑声</token>
+    <token>爆发出笑声</token>
+    <token>骤然笑了出来</token>
+    <token>朗声笑了起来</token>
+    <token>放声笑了起来</token>
+  </list>
+  <list id="SceneActionFrameworkV1.PointPhysicalCues">
+    <token>指向</token>
+    <token>指了指</token>
+    <token>伸手指</token>
+    <token>抬手指</token>
+    <token>食指</token>
+    <token>一指</token>
+    <token>点去</token>
+    <token>点向</token>
+  </list>
+  <list id="SceneActionFrameworkV1.ChallengePhysicalCues">
+    <token>勾手</token>
+    <token>叫阵</token>
+    <token>拍胸</token>
+    <token>挑衅地招手</token>
+    <token>挑战姿态</token>
+  </list>
+  <list id="SceneActionFrameworkV1.SearchPhysicalCues">
+    <token>环顾</token>
+    <token>张望</token>
+    <token>扫视</token>
+    <token>搜寻</token>
+    <token>寻找</token>
+    <token>环视</token>
+    <token>伸长脖子</token>
+    <token>四处看</token>
+  </list>
+  <list id="SceneActionFrameworkV1.DancePhysicalCues">
+    <token>跳舞</token>
+    <token>起舞</token>
+    <token>舞动</token>
+    <token>扭动</token>
+    <token>随着节拍</token>
+    <token>转身跳</token>
+  </list>
+  <list id="SceneActionFrameworkV1.AgreePhysicalCues">
+    <token>点头</token>
+    <token>点了点头</token>
+    <token>点点头</token>
+    <token>颔首</token>
+  </list>
+  <list id="SceneActionFrameworkV1.DisagreePhysicalCues">
+    <token>摇头</token>
+    <token>摇了摇头</token>
+    <token>摇了几下头</token>
+    <token>摆手明确表示反对</token>
+    <token>摇头表示反对</token>
+  </list>
+  <list id="SceneActionFrameworkV1.UnsurePhysicalCues">
+    <token>摊手</token>
+    <token>摊开双手</token>
+    <token>耸肩</token>
+    <token>耸了耸肩</token>
+    <token>拿不准</token>
+    <token>不确定手势</token>
+  </list>
+  <list id="SceneActionFrameworkV1.ExplainPhysicalCues">
+    <token>比划</token>
+    <token>摊开手</token>
+    <token>手势解释</token>
+    <token>挥动双手</token>
+    <token>作出说明</token>
+    <token>来回比划</token>
+  </list>
+  <list id="SceneActionFrameworkV1.PromisePhysicalCues">
+    <token>举手起誓</token>
+    <token>抬手立誓</token>
+    <token>举起右手</token>
+    <token>郑重起誓</token>
+    <token>拍胸</token>
+    <token>作保证</token>
+    <token>承诺手势</token>
+  </list>
+  <list id="SceneActionFrameworkV1.CrossArmsPhysicalCues">
+    <token>抱臂</token>
+    <token>抱起双臂</token>
+    <token>交叉双臂</token>
+    <token>双臂交叉</token>
+    <token>交叉抱在胸前</token>
+    <token>收回双手</token>
+  </list>
+  <list id="SceneActionFrameworkV1.DeepBowPhysicalCues">
+    <token>深鞠</token>
+    <token>深深鞠</token>
+    <token>弯腰</token>
+    <token>躬身到底</token>
+    <token>九十度鞠躬</token>
+    <token>深深弯腰</token>
+  </list>
+  <list id="SceneActionFrameworkV1.GreetPhysicalCues">
+    <token>挥手</token>
+    <token>挥了挥</token>
+    <token>挥挥手</token>
+    <token>招手</token>
+    <token>抬手打招呼</token>
+    <token>打招呼</token>
+    <token>打了个招呼</token>
+    <token>挥手打招呼</token>
+    <token>挥手问候</token>
+  </list>
+  <list id="SceneActionFrameworkV1.CommandPhysicalCues">
+    <token>挥臂</token>
+    <token>抬臂</token>
+    <token>大手一挥</token>
+    <token>下令手势</token>
+    <token>命令手势</token>
+    <token>向众人下令</token>
+    <token>发号施令</token>
+  </list>
+  <list id="SceneActionFrameworkV1.FollowMePhysicalCues">
+    <token>招手</token>
+    <token>挥手示意</token>
+    <token>跟上手势</token>
+    <token>示意队伍跟上</token>
+    <token>示意同伴跟上</token>
+    <token>招手跟上</token>
+  </list>
+  <list id="SceneActionFrameworkV1.CutThroatPhysicalCues">
+    <token>喉前</token>
+    <token>划过喉</token>
+    <token>横划</token>
+    <token>抹脖子</token>
+    <token>割喉手势</token>
+  </list>
+  <list id="SceneActionFrameworkV1.GenericRespectCues">
+    <token>行礼</token>
+    <token>回礼</token>
+    <token>施礼</token>
+    <token>见礼</token>
+    <token>还礼</token>
+    <token>答礼</token>
+    <token>致礼</token>
+    <token>抬手致意</token>
+    <token>举手致意</token>
+  </list>
+  <list id="SceneActionFrameworkV1.RespectRecoveryMarkers">
+    <token>但仍</token>
+    <token>却仍</token>
+    <token>仍然</token>
+    <token>依然</token>
+    <token>还是</token>
+    <token>转而</token>
+    <token>而是</token>
+  </list>
+  <list id="SceneActionFrameworkV1.XihaiSpecificLimbs">
+    <token>右臂</token>
+    <token>右手</token>
+    <token>手臂</token>
+  </list>
+  <list id="SceneActionFrameworkV1.XihaiMotions">
+    <token>抬起</token>
+    <token>高抬</token>
+    <token>抬高</token>
+    <token>抬到</token>
+    <token>抬至</token>
+    <token>举起</token>
+    <token>举高</token>
+    <token>举到</token>
+    <token>举至</token>
+    <token>斜举</token>
+    <token>伸出</token>
+    <token>伸直</token>
+    <token>前伸</token>
+  </list>
+  <list id="SceneActionFrameworkV1.XihaiUpwardDirections">
+    <token>斜向上</token>
+    <token>向前斜上</token>
+    <token>朝前斜上</token>
+    <token>前斜上方</token>
+    <token>向斜上方</token>
+    <token>朝斜上方</token>
+    <token>斜上方</token>
+    <token>向前上方</token>
+    <token>前上方</token>
+  </list>
+  <list id="SceneActionFrameworkV1.XihaiFingerDetails">
+    <token>手指并拢</token>
+    <token>五指并拢</token>
+    <token>指尖并拢</token>
+    <token>手指伸直并拢</token>
+    <token>五指伸直并拢</token>
+  </list>
+  <list id="SceneActionFrameworkV1.XihaiPalmDetails">
+    <token>掌心向下</token>
+    <token>掌心朝下</token>
+    <token>手掌向下</token>
+    <token>手掌朝下</token>
+  </list>
+  <list id="SceneActionFrameworkV1.XihaiGeometryBlockers">
+    <token>左臂</token>
+    <token>左手</token>
+    <token>双臂</token>
+    <token>双手</token>
+    <token>挥手</token>
+    <token>摆手</token>
+    <token>招手</token>
+    <token>握手</token>
+    <token>举手发言</token>
+    <token>指向</token>
+    <token>拿起</token>
+    <token>拿着</token>
+    <token>握着</token>
+    <token>端起</token>
+    <token>托起</token>
+    <token>手持</token>
+    <token>举起酒杯</token>
+    <token>举着酒杯</token>
+    <token>举起杯子</token>
+    <token>举着杯子</token>
+    <token>举起武器</token>
+    <token>举着武器</token>
+    <token>举起兵器</token>
+    <token>举起盾牌</token>
+    <token>举起火把</token>
+    <token>举起旗帜</token>
+    <token>举起旗子</token>
+    <token>递出</token>
+    <token>递给</token>
+    <token>接过</token>
+  </list>
+  <list id="SceneActionFrameworkV1.XihaiEquipmentContinuations">
+    <token>军装</token>
+    <token>军服</token>
+    <token>战衣</token>
+    <token>制服</token>
+    <token>服饰</token>
+    <token>衣服</token>
+    <token>衣物</token>
+    <token>衣甲</token>
+    <token>套装</token>
+    <token>装备</token>
+    <token>盔甲</token>
+    <token>军帽</token>
+    <token>帽子</token>
+    <token>军靴</token>
+    <token>靴子</token>
+    <token>鞋子</token>
+    <token>鞋</token>
+  </list>
+  <list id="SceneActionFrameworkV1.Raw0001"><token>跪下</token></list>
+  <list id="SceneActionFrameworkV1.Raw0002"><token>跪倒</token></list>
+  <list id="SceneActionFrameworkV1.Raw0003"><token>跪地</token></list>
+  <list id="SceneActionFrameworkV1.Raw0004"><token>下跪</token></list>
+  <list id="SceneActionFrameworkV1.Raw0005"><token>单膝跪</token></list>
+  <list id="SceneActionFrameworkV1.Raw0006"><token>双膝跪</token></list>
+  <list id="SceneActionFrameworkV1.Raw0007"><token>屈膝跪</token></list>
+  <list id="SceneActionFrameworkV1.Raw0008"><token>跪拜</token></list>
+  <list id="SceneActionFrameworkV1.Raw0009"><token>跪伏</token></list>
+  <list id="SceneActionFrameworkV1.Raw0010"><token>单膝着地</token></list>
+  <list id="SceneActionFrameworkV1.Raw0011"><token>双膝着地</token></list>
+  <list id="SceneActionFrameworkV1.Raw0012"><token>站起来</token></list>
+  <list id="SceneActionFrameworkV1.Raw0013"><token>站起身</token></list>
+  <list id="SceneActionFrameworkV1.Raw0014"><token>站了起来</token></list>
+  <list id="SceneActionFrameworkV1.Raw0015"><token>站起</token></list>
+  <list id="SceneActionFrameworkV1.Raw0016"><token>起身</token></list>
+  <list id="SceneActionFrameworkV1.Raw0017"><token>直起身</token></list>
+  <list id="SceneActionFrameworkV1.Raw0018"><token>撑地而起</token></list>
+  <list id="SceneActionFrameworkV1.Raw0019"><token>爬起身</token></list>
+  <list id="SceneActionFrameworkV1.Raw0020"><token>撑住膝盖直起身</token></list>
+  <list id="SceneActionFrameworkV1.Raw0021"><token>从跪姿中直起身</token></list>
+  <list id="SceneActionFrameworkV1.Raw0022"><token>双手撑住膝盖直起身</token></list>
+  <list id="SceneActionFrameworkV1.Raw0023"><token>撑地站起身</token></list>
+  <list id="SceneActionFrameworkV1.Raw0024"><token>西海</token></list>
+  <list id="SceneActionFrameworkV1.Raw0025"><token>纳粹礼</token></list>
+  <list id="SceneActionFrameworkV1.Raw0026"><token>纳粹式敬礼</token></list>
+  <list id="SceneActionFrameworkV1.Raw0027"><token>纳粹举手礼</token></list>
+  <list id="SceneActionFrameworkV1.Raw0028"><token>纳粹式举手礼</token></list>
+  <list id="SceneActionFrameworkV1.Raw0029"><token>纳粹抬手礼</token></list>
+  <list id="SceneActionFrameworkV1.Raw0030"><token>希特勒礼</token></list>
+  <list id="SceneActionFrameworkV1.Raw0031"><token>希特勒式敬礼</token></list>
+  <list id="SceneActionFrameworkV1.Raw0032"><token>希特勒举手礼</token></list>
+  <list id="SceneActionFrameworkV1.Raw0033"><token>希特勒式举手礼</token></list>
+  <list id="SceneActionFrameworkV1.Raw0034"><token>德意志礼</token></list>
+  <list id="SceneActionFrameworkV1.Raw0035"><token>德意志式敬礼</token></list>
+  <list id="SceneActionFrameworkV1.Raw0036"><token>抬手45度行礼</token></list>
+  <list id="SceneActionFrameworkV1.Raw0037"><token>抬手45°行礼</token></list>
+  <list id="SceneActionFrameworkV1.Raw0038"><token>抬手四十五度行礼</token></list>
+  <list id="SceneActionFrameworkV1.Raw0039"><token>抬起手45度并行礼</token></list>
+  <list id="SceneActionFrameworkV1.Raw0040"><token>抬起手45°并行礼</token></list>
+  <list id="SceneActionFrameworkV1.Raw0041"><token>抬起手四十五度并行礼</token></list>
+  <list id="SceneActionFrameworkV1.Raw0042"><token>举手45度行礼</token></list>
+  <list id="SceneActionFrameworkV1.Raw0043"><token>举起手45度行礼</token></list>
+  <list id="SceneActionFrameworkV1.Raw0044"><token>高抬右臂45度</token></list>
+  <list id="SceneActionFrameworkV1.Raw0045"><token>右臂斜向上45度伸直</token></list>
+  <list id="SceneActionFrameworkV1.Raw0046"><token>右臂斜向上伸直</token></list>
+  <list id="SceneActionFrameworkV1.Raw0047"><token>右臂向斜上方伸直</token></list>
+  <list id="SceneActionFrameworkV1.Raw0048"><token>右臂向前上方伸直</token></list>
+  <list id="SceneActionFrameworkV1.Raw0049"><token>欢呼</token></list>
+  <list id="SceneActionFrameworkV1.Raw0050"><token>喝彩</token></list>
+  <list id="SceneActionFrameworkV1.Raw0051"><token>振臂高呼</token></list>
+  <list id="SceneActionFrameworkV1.Raw0052"><token>高声叫好</token></list>
+  <list id="SceneActionFrameworkV1.Raw0053"><token>大声叫好</token></list>
+  <list id="SceneActionFrameworkV1.Raw0054"><token>振臂呐喊</token></list>
+  <list id="SceneActionFrameworkV1.Raw0055"><token>高举拳头振臂呐喊</token></list>
+  <list id="SceneActionFrameworkV1.Raw0056"><token>为胜利大声喝彩</token></list>
+  <list id="SceneActionFrameworkV1.Raw0057"><token>高声欢呼起来</token></list>
+  <list id="SceneActionFrameworkV1.Raw0058"><token>挥舞双臂呐喊</token></list>
+  <list id="SceneActionFrameworkV1.Raw0059"><token>鼓掌</token></list>
+  <list id="SceneActionFrameworkV1.Raw0060"><token>拍手</token></list>
+  <list id="SceneActionFrameworkV1.Raw0061"><token>拍起手</token></list>
+  <list id="SceneActionFrameworkV1.Raw0062"><token>拍了拍手</token></list>
+  <list id="SceneActionFrameworkV1.Raw0063"><token>拍掌</token></list>
+  <list id="SceneActionFrameworkV1.Raw0064"><token>鼓起掌</token></list>
+  <list id="SceneActionFrameworkV1.Raw0065"><token>鼓起掌来</token></list>
+  <list id="SceneActionFrameworkV1.Raw0066"><token>双掌连续拍击</token></list>
+  <list id="SceneActionFrameworkV1.Raw0067"><token>连续拍击</token></list>
+  <list id="SceneActionFrameworkV1.Raw0068"><token>清脆地鼓起掌来</token></list>
+  <list id="SceneActionFrameworkV1.Raw0069"><token>行礼</token></list>
+  <list id="SceneActionFrameworkV1.Raw0070"><token>回礼</token></list>
+  <list id="SceneActionFrameworkV1.Raw0071"><token>欠身</token></list>
+  <list id="SceneActionFrameworkV1.Raw0072"><token>鞠躬</token></list>
+  <list id="SceneActionFrameworkV1.Raw0073"><token>躬身</token></list>
+  <list id="SceneActionFrameworkV1.Raw0074"><token>抱拳</token></list>
+  <list id="SceneActionFrameworkV1.Raw0075"><token>施礼</token></list>
+  <list id="SceneActionFrameworkV1.Raw0076"><token>见礼</token></list>
+  <list id="SceneActionFrameworkV1.Raw0077"><token>还礼</token></list>
+  <list id="SceneActionFrameworkV1.Raw0078"><token>答礼</token></list>
+  <list id="SceneActionFrameworkV1.Raw0079"><token>致礼</token></list>
+  <list id="SceneActionFrameworkV1.Raw0080"><token>行过礼</token></list>
+  <list id="SceneActionFrameworkV1.Raw0081"><token>作揖</token></list>
+  <list id="SceneActionFrameworkV1.Raw0082"><token>拱手作揖</token></list>
+  <list id="SceneActionFrameworkV1.Raw0083"><token>拱手见礼</token></list>
+  <list id="SceneActionFrameworkV1.Raw0084"><token>拱手致意</token></list>
+  <list id="SceneActionFrameworkV1.Raw0085"><token>抬手致意</token></list>
+  <list id="SceneActionFrameworkV1.Raw0086"><token>举手致意</token></list>
+  <list id="SceneActionFrameworkV1.Raw0087"><token>抚胸</token></list>
+  <list id="SceneActionFrameworkV1.Raw0088"><token>抚胸致意</token></list>
+  <list id="SceneActionFrameworkV1.Raw0089"><token>颔首</token></list>
+  <list id="SceneActionFrameworkV1.Raw0090"><token>颔首致意</token></list>
+  <list id="SceneActionFrameworkV1.Raw0091"><token>点头致意</token></list>
+  <list id="SceneActionFrameworkV1.Raw0092"><token>弯腰致意</token></list>
+  <list id="SceneActionFrameworkV1.Raw0093"><token>低头致意</token></list>
+  <list id="SceneActionFrameworkV1.Raw0094"><token>俯身致意</token></list>
+  <list id="SceneActionFrameworkV1.Raw0095"><token>俯首致意</token></list>
+  <list id="SceneActionFrameworkV1.Raw0096"><token>脱帽致意</token></list>
+  <list id="SceneActionFrameworkV1.Raw0097"><token>微微躬身抱拳</token></list>
+  <list id="SceneActionFrameworkV1.Raw0098"><token>躬身向你致意</token></list>
+  <list id="SceneActionFrameworkV1.Raw0099"><token>郑重向对方致礼</token></list>
+  <list id="SceneActionFrameworkV1.Raw0100"><token>威胁</token></list>
+  <list id="SceneActionFrameworkV1.Raw0101"><token>恐吓</token></list>
+  <list id="SceneActionFrameworkV1.Raw0102"><token>威吓</token></list>
+  <list id="SceneActionFrameworkV1.Raw0103"><token>挥拳示威</token></list>
+  <list id="SceneActionFrameworkV1.Raw0104"><token>出言恫吓</token></list>
+  <list id="SceneActionFrameworkV1.Raw0105"><token>挥舞拳头示威</token></list>
+  <list id="SceneActionFrameworkV1.Raw0106"><token>握紧拳头示威</token></list>
+  <list id="SceneActionFrameworkV1.Raw0107"><token>攥拳向你示威</token></list>
+  <list id="SceneActionFrameworkV1.Raw0108"><token>攥紧拳头在对方面前晃了晃作势恐吓</token></list>
+  <list id="SceneActionFrameworkV1.Raw0109"><token>逼近半步攥紧拳头恐吓</token></list>
+  <list id="SceneActionFrameworkV1.Raw0110"><token>投降</token></list>
+  <list id="SceneActionFrameworkV1.Raw0111"><token>认输</token></list>
+  <list id="SceneActionFrameworkV1.Raw0112"><token>缴械</token></list>
+  <list id="SceneActionFrameworkV1.Raw0113"><token>放下武器</token></list>
+  <list id="SceneActionFrameworkV1.Raw0114"><token>放下兵器</token></list>
+  <list id="SceneActionFrameworkV1.Raw0115"><token>丢下武器</token></list>
+  <list id="SceneActionFrameworkV1.Raw0116"><token>丢下兵器</token></list>
+  <list id="SceneActionFrameworkV1.Raw0117"><token>扔下武器</token></list>
+  <list id="SceneActionFrameworkV1.Raw0118"><token>扔掉武器</token></list>
+  <list id="SceneActionFrameworkV1.Raw0119"><token>弃械</token></list>
+  <list id="SceneActionFrameworkV1.Raw0120"><token>放弃抵抗</token></list>
+  <list id="SceneActionFrameworkV1.Raw0121"><token>束手就擒</token></list>
+  <list id="SceneActionFrameworkV1.Raw0122"><token>举手投降</token></list>
+  <list id="SceneActionFrameworkV1.Raw0123"><token>举起双手</token></list>
+  <list id="SceneActionFrameworkV1.Raw0124"><token>高举双手</token></list>
+  <list id="SceneActionFrameworkV1.Raw0125"><token>双手高举</token></list>
+  <list id="SceneActionFrameworkV1.Raw0126"><token>把兵器扔到脚边</token></list>
+  <list id="SceneActionFrameworkV1.Raw0127"><token>双手高举过头表示投降</token></list>
+  <list id="SceneActionFrameworkV1.Raw0128"><token>丢下兵器高举双手</token></list>
+  <list id="SceneActionFrameworkV1.Raw0129"><token>(?:缓缓|慢慢|逐渐|徐徐|轻轻|猛地|迅速|突然)?</token></list>
+  <list id="SceneActionFrameworkV1.Raw0130"><token>(?:(?:把|将)?</token></list>
+  <list id="SceneActionFrameworkV1.Raw0131"><token>(?:抬起|举起|伸出|高抬|抬高|举高)(?:了)?</token></list>
+  <list id="SceneActionFrameworkV1.Raw0132"><token>(?:手臂|胳膊|左臂|右臂|双臂|左手|右手|双手|手|臂)|</token></list>
+  <list id="SceneActionFrameworkV1.Raw0133"><token>(?:把|将)?(?:手臂|胳膊|左臂|右臂|双臂|左手|右手|双手|手|臂)</token></list>
+  <list id="SceneActionFrameworkV1.Raw0134"><token>(?:抬起|举起|伸出|高抬|抬高|举高)(?:了)?|</token></list>
+  <list id="SceneActionFrameworkV1.Raw0135"><token>(?:把|将)?</token></list>
+  <list id="SceneActionFrameworkV1.Raw0136"><token>(?:抬手|举手|伸手|抬臂|举臂|伸臂))</token></list>
+  <list id="SceneActionFrameworkV1.Raw0137"><token>(?:(?:(?&lt;!举)行|施|回|还|答|见|致)</token></list>
+  <list id="SceneActionFrameworkV1.Raw0138"><token>(?:了|着|上|出|起|以)?(?:一个|一下|一|个)?礼|</token></list>
+  <list id="SceneActionFrameworkV1.Raw0139"><token>举(?:了)?(?:一个|一|个)?礼|</token></list>
+  <list id="SceneActionFrameworkV1.Raw0140"><token>(?:作|做|打)(?:了)?(?:一个|一|个)(?:揖|礼))</token></list>
+  <list id="SceneActionFrameworkV1.Raw0141"><token>(?!物|品|貌|节|服|仪|制|法|拜|堂|盒|金|炮|券|帽|花|包)</token></list>
+  <list id="SceneActionFrameworkV1.Raw0142"><token>(?:(?:抬起|举起|伸出|伸直)(?:了)?(?:手臂|右臂|右手|手)|</token></list>
+  <list id="SceneActionFrameworkV1.Raw0143"><token>(?:高抬|抬高|举高|斜举)(?:了)?(?:右臂|右手)|</token></list>
+  <list id="SceneActionFrameworkV1.Raw0144"><token>(?:右臂|右手|手臂|手)</token></list>
+  <list id="SceneActionFrameworkV1.Raw0145"><token>(?:抬起|举起|抬到|举到|抬至|举至|抬高|举高|伸出|伸直|前伸)</token></list>
+  <list id="SceneActionFrameworkV1.Raw0146"><token>(?:了)?|抬手|举手|抬臂|举臂)</token></list>
+  <list id="SceneActionFrameworkV1.Raw0147"><token>(?:到|至|成|呈|约|大约|大概|将近|接近|了|斜向上|向斜上方|</token></list>
+  <list id="SceneActionFrameworkV1.Raw0148"><token>向前上方|的|一个|\s)*(?:45\s*(?:度|°)|四十五\s*(?:度|°))</token></list>
+  <list id="SceneActionFrameworkV1.Raw0149"><token>(?:角|并|来|作势|进行|\s)*(?:行礼|敬礼|致意|</token></list>
+  <list id="SceneActionFrameworkV1.Raw0150"><token>伸直</token></list>
+  <list id="SceneActionFrameworkV2.Raw0001"><token>大笑</token></list>
+  <list id="SceneActionFrameworkV2.Raw0002"><token>哈哈大笑</token></list>
+  <list id="SceneActionFrameworkV2.Raw0003"><token>放声大笑</token></list>
+  <list id="SceneActionFrameworkV2.Raw0004"><token>开怀大笑</token></list>
+  <list id="SceneActionFrameworkV2.Raw0005"><token>仰头大笑</token></list>
+  <list id="SceneActionFrameworkV2.Raw0006"><token>笑出声</token></list>
+  <list id="SceneActionFrameworkV2.Raw0007"><token>笑了起来</token></list>
+  <list id="SceneActionFrameworkV2.Raw0008"><token>咧嘴大笑</token></list>
+  <list id="SceneActionFrameworkV2.Raw0009"><token>发出一阵笑声</token></list>
+  <list id="SceneActionFrameworkV2.Raw0010"><token>爆发出一阵笑声</token></list>
+  <list id="SceneActionFrameworkV2.Raw0011"><token>爆发出笑声</token></list>
+  <list id="SceneActionFrameworkV2.Raw0012"><token>骤然笑了出来</token></list>
+  <list id="SceneActionFrameworkV2.Raw0013"><token>朗声笑了起来</token></list>
+  <list id="SceneActionFrameworkV2.Raw0014"><token>放声笑了起来</token></list>
+  <list id="SceneActionFrameworkV2.Raw0015"><token>笑得前仰后合</token></list>
+  <list id="SceneActionFrameworkV2.Raw0016"><token>前仰后合</token></list>
+  <list id="SceneActionFrameworkV2.Raw0017"><token>捧腹大笑起来</token></list>
+  <list id="SceneActionFrameworkV2.Raw0018"><token>指向</token></list>
+  <list id="SceneActionFrameworkV2.Raw0019"><token>指了指</token></list>
+  <list id="SceneActionFrameworkV2.Raw0020"><token>伸手指向</token></list>
+  <list id="SceneActionFrameworkV2.Raw0021"><token>抬手指向</token></list>
+  <list id="SceneActionFrameworkV2.Raw0022"><token>用手指向</token></list>
+  <list id="SceneActionFrameworkV2.Raw0023"><token>朝旁边一指</token></list>
+  <list id="SceneActionFrameworkV2.Raw0024"><token>指向旁边</token></list>
+  <list id="SceneActionFrameworkV2.Raw0025"><token>指给</token></list>
+  <list id="SceneActionFrameworkV2.Raw0026"><token>抬起食指越过众人肩头</token></list>
+  <list id="SceneActionFrameworkV2.Raw0027"><token>明确朝门外点去</token></list>
+  <list id="SceneActionFrameworkV2.Raw0028"><token>食指点去</token></list>
+  <list id="SceneActionFrameworkV2.Raw0029"><token>朝门外点去</token></list>
+  <list id="SceneActionFrameworkV2.Raw0030"><token>愤怒</token></list>
+  <list id="SceneActionFrameworkV2.Raw0031"><token>发怒</token></list>
+  <list id="SceneActionFrameworkV2.Raw0032"><token>暴怒</token></list>
+  <list id="SceneActionFrameworkV2.Raw0033"><token>勃然大怒</token></list>
+  <list id="SceneActionFrameworkV2.Raw0034"><token>怒吼</token></list>
+  <list id="SceneActionFrameworkV2.Raw0035"><token>怒气冲冲</token></list>
+  <list id="SceneActionFrameworkV2.Raw0036"><token>愤怒挥手</token></list>
+  <list id="SceneActionFrameworkV2.Raw0037"><token>挥舞双臂</token></list>
+  <list id="SceneActionFrameworkV2.Raw0038"><token>跺脚怒吼</token></list>
+  <list id="SceneActionFrameworkV2.Raw0039"><token>猛然挥舞双臂并跺脚怒吼</token></list>
+  <list id="SceneActionFrameworkV2.Raw0040"><token>害怕</token></list>
+  <list id="SceneActionFrameworkV2.Raw0041"><token>恐惧</token></list>
+  <list id="SceneActionFrameworkV2.Raw0042"><token>惊恐</token></list>
+  <list id="SceneActionFrameworkV2.Raw0043"><token>惊慌</token></list>
+  <list id="SceneActionFrameworkV2.Raw0044"><token>慌里慌张</token></list>
+  <list id="SceneActionFrameworkV2.Raw0045"><token>畏惧</token></list>
+  <list id="SceneActionFrameworkV2.Raw0046"><token>吓得摆手</token></list>
+  <list id="SceneActionFrameworkV2.Raw0047"><token>惊慌摆手</token></list>
+  <list id="SceneActionFrameworkV2.Raw0048"><token>瑟瑟发抖</token></list>
+  <list id="SceneActionFrameworkV2.Raw0049"><token>吓得连退</token></list>
+  <list id="SceneActionFrameworkV2.Raw0050"><token>连连摆手</token></list>
+  <list id="SceneActionFrameworkV2.Raw0051"><token>连退两步</token></list>
+  <list id="SceneActionFrameworkV2.Raw0052"><token>双手护住脑袋</token></list>
+  <list id="SceneActionFrameworkV2.Raw0053"><token>不停发抖</token></list>
+  <list id="SceneActionFrameworkV2.Raw0054"><token>失望</token></list>
+  <list id="SceneActionFrameworkV2.Raw0055"><token>沮丧</token></list>
+  <list id="SceneActionFrameworkV2.Raw0056"><token>失落</token></list>
+  <list id="SceneActionFrameworkV2.Raw0057"><token>垂头丧气</token></list>
+  <list id="SceneActionFrameworkV2.Raw0058"><token>无奈叹气</token></list>
+  <list id="SceneActionFrameworkV2.Raw0059"><token>摇头叹息</token></list>
+  <list id="SceneActionFrameworkV2.Raw0060"><token>长长叹了一口气</token></list>
+  <list id="SceneActionFrameworkV2.Raw0061"><token>垂下头</token></list>
+  <list id="SceneActionFrameworkV2.Raw0062"><token>无奈地摇了摇</token></list>
+  <list id="SceneActionFrameworkV2.Raw0063"><token>长叹一声</token></list>
+  <list id="SceneActionFrameworkV2.Raw0064"><token>挑衅</token></list>
+  <list id="SceneActionFrameworkV2.Raw0065"><token>挑战</token></list>
+  <list id="SceneActionFrameworkV2.Raw0066"><token>叫阵</token></list>
+  <list id="SceneActionFrameworkV2.Raw0067"><token>勾手挑衅</token></list>
+  <list id="SceneActionFrameworkV2.Raw0068"><token>招手挑衅</token></list>
+  <list id="SceneActionFrameworkV2.Raw0069"><token>挑衅地招手</token></list>
+  <list id="SceneActionFrameworkV2.Raw0070"><token>朝自己勾了勾手指</token></list>
+  <list id="SceneActionFrameworkV2.Raw0071"><token>拍胸叫阵</token></list>
+  <list id="SceneActionFrameworkV2.Raw0072"><token>勾了勾手指叫阵</token></list>
+  <list id="SceneActionFrameworkV2.Raw0073"><token>环顾</token></list>
+  <list id="SceneActionFrameworkV2.Raw0074"><token>环顾四周</token></list>
+  <list id="SceneActionFrameworkV2.Raw0075"><token>四下张望</token></list>
+  <list id="SceneActionFrameworkV2.Raw0076"><token>左右张望</token></list>
+  <list id="SceneActionFrameworkV2.Raw0077"><token>扫视四周</token></list>
+  <list id="SceneActionFrameworkV2.Raw0078"><token>警惕观察</token></list>
+  <list id="SceneActionFrameworkV2.Raw0079"><token>搜寻</token></list>
+  <list id="SceneActionFrameworkV2.Raw0080"><token>寻找</token></list>
+  <list id="SceneActionFrameworkV2.Raw0081"><token>伸长脖子</token></list>
+  <list id="SceneActionFrameworkV2.Raw0082"><token>缓慢环视大厅每个角落</token></list>
+  <list id="SceneActionFrameworkV2.Raw0083"><token>环视大厅每个角落</token></list>
+  <list id="SceneActionFrameworkV2.Raw0084"><token>四处看</token></list>
+  <list id="SceneActionFrameworkV2.Raw0085"><token>跳舞</token></list>
+  <list id="SceneActionFrameworkV2.Raw0086"><token>舞蹈</token></list>
+  <list id="SceneActionFrameworkV2.Raw0087"><token>舞动</token></list>
+  <list id="SceneActionFrameworkV2.Raw0088"><token>翩翩起舞</token></list>
+  <list id="SceneActionFrameworkV2.Raw0089"><token>随着节奏起舞</token></list>
+  <list id="SceneActionFrameworkV2.Raw0090"><token>扭动身体跳起舞来</token></list>
+  <list id="SceneActionFrameworkV2.Raw0091"><token>跳起舞来</token></list>
+  <list id="SceneActionFrameworkV2.Raw0092"><token>挥手</token></list>
+  <list id="SceneActionFrameworkV2.Raw0093"><token>摆手</token></list>
+  <list id="SceneActionFrameworkV2.Raw0094"><token>招手</token></list>
+  <list id="SceneActionFrameworkV2.Raw0095"><token>哭泣</token></list>
+  <list id="SceneActionFrameworkV2.Raw0096"><token>大哭</token></list>
+  <list id="SceneActionFrameworkV2.Raw0097"><token>哭了起来</token></list>
+  <list id="SceneActionFrameworkV2.Raw0098"><token>坐下</token></list>
+  <list id="SceneActionFrameworkV2.Raw0099"><token>躺下</token></list>
+  <list id="SceneActionFrameworkV2.Raw0100"><token>趴下</token></list>
+  <list id="SceneActionFrameworkV2.Raw0101"><token>转身</token></list>
+  <list id="SceneActionFrameworkV2.Raw0102"><token>走路</token></list>
+  <list id="SceneActionFrameworkV2.Raw0103"><token>走了两步</token></list>
+  <list id="SceneActionFrameworkV2.Raw0104"><token>走了过去</token></list>
+  <list id="SceneActionFrameworkV2.Raw0105"><token>走过去</token></list>
+  <list id="SceneActionFrameworkV2.Raw0106"><token>走向</token></list>
+  <list id="SceneActionFrameworkV2.Raw0107"><token>走到</token></list>
+  <list id="SceneActionFrameworkV2.Raw0108"><token>走去</token></list>
+  <list id="SceneActionFrameworkV2.Raw0109"><token>迈步走向</token></list>
+  <list id="SceneActionFrameworkV2.Raw0110"><token>跑步</token></list>
+  <list id="SceneActionFrameworkV2.Raw0111"><token>奔跑</token></list>
+  <list id="SceneActionFrameworkV2.Raw0112"><token>拥抱</token></list>
+  <list id="SceneActionFrameworkV2.Raw0113"><token>亲吻</token></list>
+  <list id="SceneActionFrameworkV2.Raw0114"><token>喝酒</token></list>
+  <list id="SceneActionFrameworkV2.Raw0115"><token>吃东西</token></list>
+  <list id="SceneActionFrameworkV2.Raw0116"><token>踢腿</token></list>
+  <list id="SceneActionFrameworkV2.Raw0117"><token>踢人</token></list>
+  <list id="SceneActionFrameworkV2.Raw0118"><token>攻击</token></list>
+  <list id="SceneActionFrameworkV2.Raw0119"><token>而是</token></list>
+  <list id="SceneActionFrameworkV2.Raw0120"><token>转而</token></list>
+  <list id="SceneActionFrameworkV3.Raw0001"><token>跪下</token></list>
+  <list id="SceneActionFrameworkV3.Raw0002"><token>下跪</token></list>
+  <list id="SceneActionFrameworkV3.Raw0003"><token>跪地</token></list>
+  <list id="SceneActionFrameworkV3.Raw0004"><token>跪在</token></list>
+  <list id="SceneActionFrameworkV3.Raw0005"><token>跪在地上</token></list>
+  <list id="SceneActionFrameworkV3.Raw0006"><token>屈下一膝向其行礼</token></list>
+  <list id="SceneActionFrameworkV3.Raw0007"><token>屈下一膝</token></list>
+  <list id="SceneActionFrameworkV3.Raw0008"><token>屈膝跪下</token></list>
+  <list id="SceneActionFrameworkV3.Raw0009"><token>屈膝跪地</token></list>
+  <list id="SceneActionFrameworkV3.Raw0010"><token>单膝跪下</token></list>
+  <list id="SceneActionFrameworkV3.Raw0011"><token>双膝跪下</token></list>
+  <list id="SceneActionFrameworkV3.Raw0012"><token>单膝着地</token></list>
+  <list id="SceneActionFrameworkV3.Raw0013"><token>双膝着地</token></list>
+  <list id="SceneActionFrameworkV3.Raw0014"><token>站起来</token></list>
+  <list id="SceneActionFrameworkV3.Raw0015"><token>站起</token></list>
+  <list id="SceneActionFrameworkV3.Raw0016"><token>起身</token></list>
+  <list id="SceneActionFrameworkV3.Raw0017"><token>站直</token></list>
+  <list id="SceneActionFrameworkV3.Raw0018"><token>站直起来</token></list>
+  <list id="SceneActionFrameworkV3.Raw0019"><token>从跪姿慢慢站直起来</token></list>
+  <list id="SceneActionFrameworkV3.Raw0020"><token>借力从跪姿站直起来</token></list>
+  <list id="SceneActionFrameworkV3.Raw0021"><token>从跪着的姿势站起来</token></list>
+  <list id="SceneActionFrameworkV3.Raw0022"><token>由跪姿重新起立</token></list>
+  <list id="SceneActionFrameworkV3.Raw0023"><token>从跪姿重新起立</token></list>
+  <list id="SceneActionFrameworkV3.Raw0024"><token>重新起立</token></list>
+  <list id="SceneActionFrameworkV3.Raw0025"><token>起立</token></list>
+  <list id="SceneActionFrameworkV3.Raw0026"><token>站直腰背</token></list>
+  <list id="SceneActionFrameworkV3.Raw0027"><token>西海</token></list>
+  <list id="SceneActionFrameworkV3.Raw0028"><token>纳粹礼</token></list>
+  <list id="SceneActionFrameworkV3.Raw0029"><token>希特勒礼</token></list>
+  <list id="SceneActionFrameworkV3.Raw0030"><token>右臂斜向上45度</token></list>
+  <list id="SceneActionFrameworkV3.Raw0031"><token>右臂斜向上四十五度行礼</token></list>
+  <list id="SceneActionFrameworkV3.Raw0032"><token>右臂斜向上四十五度</token></list>
+  <list id="SceneActionFrameworkV3.Raw0033"><token>右臂抬到斜上方约四十五度，手指并拢，掌心向下行礼</token></list>
+  <list id="SceneActionFrameworkV3.Raw0034"><token>欢呼</token></list>
+  <list id="SceneActionFrameworkV3.Raw0035"><token>喝彩</token></list>
+  <list id="SceneActionFrameworkV3.Raw0036"><token>高声叫好</token></list>
+  <list id="SceneActionFrameworkV3.Raw0037"><token>挥舞双臂叫好</token></list>
+  <list id="SceneActionFrameworkV3.Raw0038"><token>挥舞双臂喝彩</token></list>
+  <list id="SceneActionFrameworkV3.Raw0039"><token>兴奋地振臂呐喊</token></list>
+  <list id="SceneActionFrameworkV3.Raw0040"><token>全场欢声雷动，他挥舞双臂叫好</token></list>
+  <list id="SceneActionFrameworkV3.Raw0041"><token>鼓掌</token></list>
+  <list id="SceneActionFrameworkV3.Raw0042"><token>拍手</token></list>
+  <list id="SceneActionFrameworkV3.Raw0043"><token>拍掌</token></list>
+  <list id="SceneActionFrameworkV3.Raw0044"><token>啪啪拍了几下手</token></list>
+  <list id="SceneActionFrameworkV3.Raw0045"><token>拍了几下手</token></list>
+  <list id="SceneActionFrameworkV3.Raw0046"><token>啪啪啪拍手</token></list>
+  <list id="SceneActionFrameworkV3.Raw0047"><token>双手连续拍击，掌声不断</token></list>
+  <list id="SceneActionFrameworkV3.Raw0048"><token>行礼</token></list>
+  <list id="SceneActionFrameworkV3.Raw0049"><token>鞠躬</token></list>
+  <list id="SceneActionFrameworkV3.Raw0050"><token>鞠了一躬</token></list>
+  <list id="SceneActionFrameworkV3.Raw0051"><token>鞠一躬</token></list>
+  <list id="SceneActionFrameworkV3.Raw0052"><token>致意</token></list>
+  <list id="SceneActionFrameworkV3.Raw0053"><token>威胁</token></list>
+  <list id="SceneActionFrameworkV3.Raw0054"><token>恐吓</token></list>
+  <list id="SceneActionFrameworkV3.Raw0055"><token>挥拳示威</token></list>
+  <list id="SceneActionFrameworkV3.Raw0056"><token>握紧拳头在我面前晃动示威</token></list>
+  <list id="SceneActionFrameworkV3.Raw0057"><token>握紧拳头晃动示威</token></list>
+  <list id="SceneActionFrameworkV3.Raw0058"><token>握拳示威</token></list>
+  <list id="SceneActionFrameworkV3.Raw0059"><token>攥紧拳头作势恐吓</token></list>
+  <list id="SceneActionFrameworkV3.Raw0060"><token>攥紧双拳在我面前挥拳示威</token></list>
+  <list id="SceneActionFrameworkV3.Raw0061"><token>咬牙切齿地扬拳恐吓</token></list>
+  <list id="SceneActionFrameworkV3.Raw0062"><token>投降</token></list>
+  <list id="SceneActionFrameworkV3.Raw0063"><token>认输</token></list>
+  <list id="SceneActionFrameworkV3.Raw0064"><token>放弃抵抗</token></list>
+  <list id="SceneActionFrameworkV3.Raw0065"><token>丢盔弃甲，双手抱头投降</token></list>
+  <list id="SceneActionFrameworkV3.Raw0066"><token>把兵器掷在地上举手认输</token></list>
+  <list id="SceneActionFrameworkV3.Raw0067"><token>大笑</token></list>
+  <list id="SceneActionFrameworkV3.Raw0068"><token>哈哈大笑</token></list>
+  <list id="SceneActionFrameworkV3.Raw0069"><token>笑出声</token></list>
+  <list id="SceneActionFrameworkV3.Raw0070"><token>笑得直不起腰</token></list>
+  <list id="SceneActionFrameworkV3.Raw0071"><token>笑弯了腰</token></list>
+  <list id="SceneActionFrameworkV3.Raw0072"><token>笑到弯腰</token></list>
+  <list id="SceneActionFrameworkV3.Raw0073"><token>发出一阵笑声</token></list>
+  <list id="SceneActionFrameworkV3.Raw0074"><token>爆发出一阵笑声</token></list>
+  <list id="SceneActionFrameworkV3.Raw0075"><token>爆发出笑声</token></list>
+  <list id="SceneActionFrameworkV3.Raw0076"><token>骤然笑了出来</token></list>
+  <list id="SceneActionFrameworkV3.Raw0077"><token>朗声笑了起来</token></list>
+  <list id="SceneActionFrameworkV3.Raw0078"><token>放声笑了起来</token></list>
+  <list id="SceneActionFrameworkV3.Raw0079"><token>放声大笑前仰后合</token></list>
+  <list id="SceneActionFrameworkV3.Raw0080"><token>指向</token></list>
+  <list id="SceneActionFrameworkV3.Raw0081"><token>伸手指向</token></list>
+  <list id="SceneActionFrameworkV3.Raw0082"><token>用手指向</token></list>
+  <list id="SceneActionFrameworkV3.Raw0083"><token>抬起食指越过人群</token></list>
+  <list id="SceneActionFrameworkV3.Raw0084"><token>明确朝左侧门口点去</token></list>
+  <list id="SceneActionFrameworkV3.Raw0085"><token>朝左侧门口点去</token></list>
+  <list id="SceneActionFrameworkV3.Raw0086"><token>越过人群点去</token></list>
+  <list id="SceneActionFrameworkV3.Raw0087"><token>抬手朝北门一指</token></list>
+  <list id="SceneActionFrameworkV3.Raw0088"><token>朝北门一指</token></list>
+  <list id="SceneActionFrameworkV3.Raw0089"><token>抬手一指</token></list>
+  <list id="SceneActionFrameworkV3.Raw0090"><token>愤怒</token></list>
+  <list id="SceneActionFrameworkV3.Raw0091"><token>发怒</token></list>
+  <list id="SceneActionFrameworkV3.Raw0092"><token>勃然大怒</token></list>
+  <list id="SceneActionFrameworkV3.Raw0093"><token>怒不可遏，猛地一跺脚</token></list>
+  <list id="SceneActionFrameworkV3.Raw0094"><token>怒不可遏地跺脚</token></list>
+  <list id="SceneActionFrameworkV3.Raw0095"><token>气得挥拳怒吼</token></list>
+  <list id="SceneActionFrameworkV3.Raw0096"><token>害怕</token></list>
+  <list id="SceneActionFrameworkV3.Raw0097"><token>惊恐</token></list>
+  <list id="SceneActionFrameworkV3.Raw0098"><token>慌张</token></list>
+  <list id="SceneActionFrameworkV3.Raw0099"><token>吓得脸色发白，浑身颤抖</token></list>
+  <list id="SceneActionFrameworkV3.Raw0100"><token>慌忙后退，双手护住头</token></list>
+  <list id="SceneActionFrameworkV3.Raw0101"><token>有些惶恐地</token></list>
+  <list id="SceneActionFrameworkV3.Raw0102"><token>惶恐地低下头</token></list>
+  <list id="SceneActionFrameworkV3.Raw0103"><token>诚惶诚恐地</token></list>
+  <list id="SceneActionFrameworkV3.Raw0104"><token>局促不安地</token></list>
+  <list id="SceneActionFrameworkV3.Raw0105"><token>畏缩着</token></list>
+  <list id="SceneActionFrameworkV3.Raw0106"><token>战战兢兢地</token></list>
+  <list id="SceneActionFrameworkV3.Raw0107"><token>胆怯地向后缩</token></list>
+  <list id="SceneActionFrameworkV3.Raw0108"><token>惶惶不安地</token></list>
+  <list id="SceneActionFrameworkV3.Raw0109"><token>失望</token></list>
+  <list id="SceneActionFrameworkV3.Raw0110"><token>沮丧</token></list>
+  <list id="SceneActionFrameworkV3.Raw0111"><token>摇头叹息</token></list>
+  <list id="SceneActionFrameworkV3.Raw0112"><token>摇了摇头叹息</token></list>
+  <list id="SceneActionFrameworkV3.Raw0113"><token>满脸失落，默默垂下头</token></list>
+  <list id="SceneActionFrameworkV3.Raw0114"><token>垂头丧气地叹了口气</token></list>
+  <list id="SceneActionFrameworkV3.Raw0115"><token>挑衅</token></list>
+  <list id="SceneActionFrameworkV3.Raw0116"><token>叫阵</token></list>
+  <list id="SceneActionFrameworkV3.Raw0117"><token>勾手挑战</token></list>
+  <list id="SceneActionFrameworkV3.Raw0118"><token>环顾</token></list>
+  <list id="SceneActionFrameworkV3.Raw0119"><token>张望</token></list>
+  <list id="SceneActionFrameworkV3.Raw0120"><token>扫视四周</token></list>
+  <list id="SceneActionFrameworkV3.Raw0121"><token>警惕地左顾右盼</token></list>
+  <list id="SceneActionFrameworkV3.Raw0122"><token>左顾右盼</token></list>
+  <list id="SceneActionFrameworkV3.Raw0123"><token>环视四周寻找踪迹</token></list>
+  <list id="SceneActionFrameworkV3.Raw0124"><token>跳舞</token></list>
+  <list id="SceneActionFrameworkV3.Raw0125"><token>起舞</token></list>
+  <list id="SceneActionFrameworkV3.Raw0126"><token>随节奏舞动</token></list>
+  <list id="SceneActionFrameworkV3.Raw0127"><token>随着鼓点扭动起来</token></list>
+  <list id="SceneActionFrameworkV3.Raw0128"><token>随着鼓点扭动身体</token></list>
+  <list id="SceneActionFrameworkV3.Raw0129"><token>转身跳起舞来</token></list>
+  <list id="SceneActionFrameworkV3.Raw0130"><token>问候</token></list>
+  <list id="SceneActionFrameworkV3.Raw0131"><token>打招呼</token></list>
+  <list id="SceneActionFrameworkV3.Raw0132"><token>挥了挥手</token></list>
+  <list id="SceneActionFrameworkV3.Raw0133"><token>挥挥手</token></list>
+  <list id="SceneActionFrameworkV3.Raw0134"><token>招了招手</token></list>
+  <list id="SceneActionFrameworkV3.Raw0135"><token>挥手问候</token></list>
+  <list id="SceneActionFrameworkV3.Raw0136"><token>挥了挥手打招呼</token></list>
+  <list id="SceneActionFrameworkV3.Raw0137"><token>抬手打招呼</token></list>
+  <list id="SceneActionFrameworkV3.Raw0138"><token>抬手向来人问候</token></list>
+  <list id="SceneActionFrameworkV3.Raw0139"><token>抬手向来人打招呼</token></list>
+  <list id="SceneActionFrameworkV3.Raw0140"><token>招手问候</token></list>
+  <list id="SceneActionFrameworkV3.Raw0141"><token>招了招手致意</token></list>
+  <list id="SceneActionFrameworkV3.Raw0142"><token>向他挥手致意</token></list>
+  <list id="SceneActionFrameworkV3.Raw0143"><token>挥手致意</token></list>
+  <list id="SceneActionFrameworkV3.Raw0144"><token>微笑着挥手致意</token></list>
+  <list id="SceneActionFrameworkV3.Raw0145"><token>抬手挥了挥向我问好</token></list>
+  <list id="SceneActionFrameworkV3.Raw0146"><token>挥手打招呼</token></list>
+  <list id="SceneActionFrameworkV3.Raw0147"><token>左右挥了挥</token></list>
+  <list id="SceneActionFrameworkV3.Raw0148"><token>抬起手左右挥了挥</token></list>
+  <list id="SceneActionFrameworkV3.Raw0149"><token>主动打了个招呼</token></list>
+  <list id="SceneActionFrameworkV3.Raw0150"><token>挥手</token></list>
+  <list id="SceneActionFrameworkV3.Raw0151"><token>招手</token></list>
+  <list id="SceneActionFrameworkV3.Raw0152"><token>你好</token></list>
+  <list id="SceneActionFrameworkV3.Raw0153"><token>点头同意</token></list>
+  <list id="SceneActionFrameworkV3.Raw0154"><token>点头赞成</token></list>
+  <list id="SceneActionFrameworkV3.Raw0155"><token>点了点头</token></list>
+  <list id="SceneActionFrameworkV3.Raw0156"><token>点点头</token></list>
+  <list id="SceneActionFrameworkV3.Raw0157"><token>点头表示同意</token></list>
+  <list id="SceneActionFrameworkV3.Raw0158"><token>点头表示赞成</token></list>
+  <list id="SceneActionFrameworkV3.Raw0159"><token>点了点头表示赞成</token></list>
+  <list id="SceneActionFrameworkV3.Raw0160"><token>点头应允</token></list>
+  <list id="SceneActionFrameworkV3.Raw0161"><token>点头答应</token></list>
+  <list id="SceneActionFrameworkV3.Raw0162"><token>点头认可</token></list>
+  <list id="SceneActionFrameworkV3.Raw0163"><token>颔首赞同</token></list>
+  <list id="SceneActionFrameworkV3.Raw0164"><token>郑重地点头表示同意</token></list>
+  <list id="SceneActionFrameworkV3.Raw0165"><token>郑重地点了点头</token></list>
+  <list id="SceneActionFrameworkV3.Raw0166"><token>郑重地点了点头表示同意</token></list>
+  <list id="SceneActionFrameworkV3.Raw0167"><token>郑重地点了点头表示赞成</token></list>
+  <list id="SceneActionFrameworkV3.Raw0168"><token>同意</token></list>
+  <list id="SceneActionFrameworkV3.Raw0169"><token>答应</token></list>
+  <list id="SceneActionFrameworkV3.Raw0170"><token>赞成</token></list>
+  <list id="SceneActionFrameworkV3.Raw0171"><token>认可</token></list>
+  <list id="SceneActionFrameworkV3.Raw0172"><token>点头</token></list>
+  <list id="SceneActionFrameworkV3.Raw0173"><token>摇头否定</token></list>
+  <list id="SceneActionFrameworkV3.Raw0174"><token>摇头反对</token></list>
+  <list id="SceneActionFrameworkV3.Raw0175"><token>摇了摇头</token></list>
+  <list id="SceneActionFrameworkV3.Raw0176"><token>摇摇头</token></list>
+  <list id="SceneActionFrameworkV3.Raw0177"><token>摇头表示反对</token></list>
+  <list id="SceneActionFrameworkV3.Raw0178"><token>摇头表示不同意</token></list>
+  <list id="SceneActionFrameworkV3.Raw0179"><token>摇了摇头拒绝</token></list>
+  <list id="SceneActionFrameworkV3.Raw0180"><token>摇头不同意</token></list>
+  <list id="SceneActionFrameworkV3.Raw0181"><token>摇头表示不赞成</token></list>
+  <list id="SceneActionFrameworkV3.Raw0182"><token>摇头回绝</token></list>
+  <list id="SceneActionFrameworkV3.Raw0183"><token>用力摇头表示否定</token></list>
+  <list id="SceneActionFrameworkV3.Raw0184"><token>摇头拒绝</token></list>
+  <list id="SceneActionFrameworkV3.Raw0185"><token>摇了几下头</token></list>
+  <list id="SceneActionFrameworkV3.Raw0186"><token>摆手明确表示反对</token></list>
+  <list id="SceneActionFrameworkV3.Raw0187"><token>连续摇头表示反对</token></list>
+  <list id="SceneActionFrameworkV3.Raw0188"><token>不同意</token></list>
+  <list id="SceneActionFrameworkV3.Raw0189"><token>反对</token></list>
+  <list id="SceneActionFrameworkV3.Raw0190"><token>拒绝</token></list>
+  <list id="SceneActionFrameworkV3.Raw0191"><token>否定</token></list>
+  <list id="SceneActionFrameworkV3.Raw0192"><token>摇头</token></list>
+  <list id="SceneActionFrameworkV3.Raw0193"><token>摊手</token></list>
+  <list id="SceneActionFrameworkV3.Raw0194"><token>摊手表示不知道</token></list>
+  <list id="SceneActionFrameworkV3.Raw0195"><token>摊了摊手</token></list>
+  <list id="SceneActionFrameworkV3.Raw0196"><token>耸耸肩</token></list>
+  <list id="SceneActionFrameworkV3.Raw0197"><token>摊开双手表示不确定</token></list>
+  <list id="SceneActionFrameworkV3.Raw0198"><token>耸了耸肩</token></list>
+  <list id="SceneActionFrameworkV3.Raw0199"><token>迟疑地摊手</token></list>
+  <list id="SceneActionFrameworkV3.Raw0200"><token>困惑地摊开手</token></list>
+  <list id="SceneActionFrameworkV3.Raw0201"><token>困惑地摊开双手</token></list>
+  <list id="SceneActionFrameworkV3.Raw0202"><token>无奈地耸肩</token></list>
+  <list id="SceneActionFrameworkV3.Raw0203"><token>耸肩摊手，一脸茫然</token></list>
+  <list id="SceneActionFrameworkV3.Raw0204"><token>犹豫地摊开双手</token></list>
+  <list id="SceneActionFrameworkV3.Raw0205"><token>摊开双手耸了耸肩</token></list>
+  <list id="SceneActionFrameworkV3.Raw0206"><token>显得完全拿不准</token></list>
+  <list id="SceneActionFrameworkV3.Raw0207"><token>拿不准</token></list>
+  <list id="SceneActionFrameworkV3.Raw0208"><token>耸肩</token></list>
+  <list id="SceneActionFrameworkV3.Raw0209"><token>不确定手势</token></list>
+  <list id="SceneActionFrameworkV3.Raw0210"><token>犹豫动作</token></list>
+  <list id="SceneActionFrameworkV3.Raw0211"><token>比划解释</token></list>
+  <list id="SceneActionFrameworkV3.Raw0212"><token>手势解释</token></list>
+  <list id="SceneActionFrameworkV3.Raw0213"><token>比划着解释</token></list>
+  <list id="SceneActionFrameworkV3.Raw0214"><token>用手势解释</token></list>
+  <list id="SceneActionFrameworkV3.Raw0215"><token>摊手说明</token></list>
+  <list id="SceneActionFrameworkV3.Raw0216"><token>摊开双手作出说明</token></list>
+  <list id="SceneActionFrameworkV3.Raw0217"><token>一边比划一边解释</token></list>
+  <list id="SceneActionFrameworkV3.Raw0218"><token>一边比划一边说明</token></list>
+  <list id="SceneActionFrameworkV3.Raw0219"><token>挥动双手作出解释</token></list>
+  <list id="SceneActionFrameworkV3.Raw0220"><token>用手比划着讲解</token></list>
+  <list id="SceneActionFrameworkV3.Raw0221"><token>边说边用双手比划解释</token></list>
+  <list id="SceneActionFrameworkV3.Raw0222"><token>摊开掌心详细说明</token></list>
+  <list id="SceneActionFrameworkV3.Raw0223"><token>摊开手掌</token></list>
+  <list id="SceneActionFrameworkV3.Raw0224"><token>来回比划着说明</token></list>
+  <list id="SceneActionFrameworkV3.Raw0225"><token>比划着说明</token></list>
+  <list id="SceneActionFrameworkV3.Raw0226"><token>一边摊开手掌一边来回比划着说明</token></list>
+  <list id="SceneActionFrameworkV3.Raw0227"><token>解释</token></list>
+  <list id="SceneActionFrameworkV3.Raw0228"><token>说明</token></list>
+  <list id="SceneActionFrameworkV3.Raw0229"><token>讲解</token></list>
+  <list id="SceneActionFrameworkV3.Raw0230"><token>比划</token></list>
+  <list id="SceneActionFrameworkV3.Raw0231"><token>手势</token></list>
+  <list id="SceneActionFrameworkV3.Raw0232"><token>举手起誓</token></list>
+  <list id="SceneActionFrameworkV3.Raw0233"><token>郑重起誓</token></list>
+  <list id="SceneActionFrameworkV3.Raw0234"><token>抬手立誓</token></list>
+  <list id="SceneActionFrameworkV3.Raw0235"><token>抬起右手作出承诺</token></list>
+  <list id="SceneActionFrameworkV3.Raw0236"><token>郑重地作出承诺手势</token></list>
+  <list id="SceneActionFrameworkV3.Raw0237"><token>举起右手发誓</token></list>
+  <list id="SceneActionFrameworkV3.Raw0238"><token>做出起誓动作</token></list>
+  <list id="SceneActionFrameworkV3.Raw0239"><token>庄重地立下誓言</token></list>
+  <list id="SceneActionFrameworkV3.Raw0240"><token>抬起右手发誓保证</token></list>
+  <list id="SceneActionFrameworkV3.Raw0241"><token>举手立下誓言</token></list>
+  <list id="SceneActionFrameworkV3.Raw0242"><token>举起右手郑重起誓</token></list>
+  <list id="SceneActionFrameworkV3.Raw0243"><token>拍了拍胸口作保证</token></list>
+  <list id="SceneActionFrameworkV3.Raw0244"><token>作保证</token></list>
+  <list id="SceneActionFrameworkV3.Raw0245"><token>承诺</token></list>
+  <list id="SceneActionFrameworkV3.Raw0246"><token>保证</token></list>
+  <list id="SceneActionFrameworkV3.Raw0247"><token>发誓</token></list>
+  <list id="SceneActionFrameworkV3.Raw0248"><token>起誓</token></list>
+  <list id="SceneActionFrameworkV3.Raw0249"><token>立誓</token></list>
+  <list id="SceneActionFrameworkV3.Raw0250"><token>抱臂</token></list>
+  <list id="SceneActionFrameworkV3.Raw0251"><token>双臂交叉</token></list>
+  <list id="SceneActionFrameworkV3.Raw0252"><token>抱起双臂</token></list>
+  <list id="SceneActionFrameworkV3.Raw0253"><token>抱臂而立</token></list>
+  <list id="SceneActionFrameworkV3.Raw0254"><token>双臂抱胸而立</token></list>
+  <list id="SceneActionFrameworkV3.Raw0255"><token>双臂交叉在胸前</token></list>
+  <list id="SceneActionFrameworkV3.Raw0256"><token>把手臂交叉在胸前</token></list>
+  <list id="SceneActionFrameworkV3.Raw0257"><token>胳膊交叉在胸前</token></list>
+  <list id="SceneActionFrameworkV3.Raw0258"><token>环抱双臂</token></list>
+  <list id="SceneActionFrameworkV3.Raw0259"><token>交叉双臂站着</token></list>
+  <list id="SceneActionFrameworkV3.Raw0260"><token>收回双手</token></list>
+  <list id="SceneActionFrameworkV3.Raw0261"><token>交叉抱在胸前</token></list>
+  <list id="SceneActionFrameworkV3.Raw0262"><token>两条手臂交叉抱在胸前</token></list>
+  <list id="SceneActionFrameworkV3.Raw0263"><token>交叉手臂</token></list>
+  <list id="SceneActionFrameworkV3.Raw0264"><token>深鞠躬</token></list>
+  <list id="SceneActionFrameworkV3.Raw0265"><token>深深鞠躬</token></list>
+  <list id="SceneActionFrameworkV3.Raw0266"><token>深深鞠了一躬</token></list>
+  <list id="SceneActionFrameworkV3.Raw0267"><token>深深地鞠了一躬</token></list>
+  <list id="SceneActionFrameworkV3.Raw0268"><token>弯下腰深深鞠了一躬</token></list>
+  <list id="SceneActionFrameworkV3.Raw0269"><token>弯腰深鞠一躬</token></list>
+  <list id="SceneActionFrameworkV3.Raw0270"><token>躬身到底</token></list>
+  <list id="SceneActionFrameworkV3.Raw0271"><token>躬身到底郑重致礼</token></list>
+  <list id="SceneActionFrameworkV3.Raw0272"><token>九十度鞠躬</token></list>
+  <list id="SceneActionFrameworkV3.Raw0273"><token>深深弯腰致礼</token></list>
+  <list id="SceneActionFrameworkV3.Raw0274"><token>深深弯腰鞠躬到底</token></list>
+  <list id="SceneActionFrameworkV3.Raw0275"><token>深深弯下腰行大礼</token></list>
+  <list id="SceneActionFrameworkV3.Raw0276"><token>深深鞠躬到底</token></list>
+  <list id="SceneActionFrameworkV3.Raw0277"><token>弯腰近乎九十度</token></list>
+  <list id="SceneActionFrameworkV3.Raw0278"><token>弯腰深鞠到底</token></list>
+  <list id="SceneActionFrameworkV3.Raw0279"><token>转身</token></list>
+  <list id="SceneActionFrameworkV3.Raw0280"><token>而非</token></list>
+  <list id="SceneActionFrameworkV3.Raw0281"><token>而不是</token></list>
+  <list id="SceneActionFrameworkV3.Raw0282"><token>并非</token></list>
+  <list id="SceneActionFrameworkV3.Raw0283"><token>不是</token></list>
+  <list id="SceneActionFrameworkV3.Raw0284"><token>纳粹</token></list>
+  <list id="SceneActionFrameworkV3.Raw0285"><token>希特勒</token></list>
+  <list id="SceneActionFrameworkV3.Raw0286"><token>德意志</token></list>
+  <list id="SceneActionFrameworkV3.Raw0287"><token>右臂</token></list>
+  <list id="SceneActionFrameworkV3.Raw0288"><token>右手</token></list>
+  <list id="SceneActionFrameworkV3.Raw0289"><token>手臂</token></list>
+  <list id="SceneActionFrameworkV3.Raw0290"><token>斜上</token></list>
+  <list id="SceneActionFrameworkV3.Raw0291"><token>向前上方</token></list>
+  <list id="SceneActionFrameworkV3.Raw0292"><token>四十五</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0001"><token>面色微微一白</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0002"><token>脸色一白</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0003"><token>脸色瞬间发白</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0004"><token>脸色骤然发白</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0005"><token>血色褪去</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0006"><token>面上失了血色</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0007"><token>唇色发白</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0008"><token>身形僵住</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0009"><token>身体僵住</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0010"><token>动作僵住</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0011"><token>呼吸停了一瞬</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0012"><token>呼吸一滞</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0013"><token>喉结滚动</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0014"><token>喉头滚动</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0015"><token>脚步顿住</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0016"><token>手指微微发颤</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0017"><token>指尖发颤</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0018"><token>双手轻颤</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0019"><token>声音发紧</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0020"><token>尾音发颤</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0021"><token>嘴唇哆嗦</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0022"><token>肩膀轻颤</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0023"><token>很快稳住身形</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0024"><token>强迫自己站直</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0025"><token>努力维持平静</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0026"><token>强作镇定</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0027"><token>故作镇定</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0028"><token>勉强稳住呼吸</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0029"><token>把慌乱压了下去</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0030"><token>砍下你的头</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0031"><token>砍掉你的头</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0032"><token>砍下你的头颅</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0033"><token>取你性命</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0034"><token>要你的命</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0035"><token>处死你</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0036"><token>斩首</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0037"><token>吊死</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0038"><token>杀了你</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0039"><token>弄死你</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0040"><token>割断你的喉咙</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0041"><token>提刀把你的头颅砍下来</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0042"><token>无力反抗</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0043"><token>饶我一命</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0044"><token>留我一命</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0045"><token>死个明白</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0046"><token>是否还有活命</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0047"><token>不敢违抗</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0048"><token>任凭处置</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0049"><token>求您开恩</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0050"><token>别杀我</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0051"><token>毫无惧色</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0052"><token>面不改色</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0053"><token>神色自若</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0054"><token>根本不怕</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0055"><token>毫不害怕</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0056"><token>没有丝毫恐惧</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0057"><token>并不畏惧</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0058"><token>从容不迫</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0059"><token>镇定自若</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0060"><token>咬紧牙关</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0061"><token>牙关紧咬</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0062"><token>下颌绷紧</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0063"><token>腮帮绷紧</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0064"><token>手背青筋凸起</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0065"><token>额角青筋跳动</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0066"><token>拳头攥得发白</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0067"><token>五指收拢成拳</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0068"><token>指节捏得发白</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0069"><token>抓紧剑柄</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0070"><token>掌心被指甲掐出印</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0071"><token>把话咽了回去</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0072"><token>强忍着没有发作</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0073"><token>压住即将出口的话</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0074"><token>声音冷了下来</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0075"><token>语气骤然变硬</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0076"><token>眼神骤然冰冷</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0077"><token>废物</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0078"><token>懦夫</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0079"><token>叛徒</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0080"><token>羞辱</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0081"><token>侮辱</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0082"><token>污蔑</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0083"><token>背叛</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0084"><token>栽赃</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0085"><token>你没有资格</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0086"><token>这笔账</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0087"><token>不会忘记</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0088"><token>收回这句话</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0089"><token>别逼我</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0090"><token>记住你今天说的话</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0091"><token>没有动气</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0092"><token>并未动气</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0093"><token>神色平和</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0094"><token>毫无怒意</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0095"><token>只是平静地</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0096"><token>不以为意</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0097"><token>目光黯淡下来</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0098"><token>眼里的光暗了下去</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0099"><token>肩膀缓缓垮下</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0100"><token>原本挺直的背脊松了下来</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0101"><token>垂下眼帘</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0102"><token>沉默良久</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0103"><token>长长吐出一口气</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0104"><token>轻轻叹了口气</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0105"><token>苦涩地扯了扯嘴角</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0106"><token>将准备好的东西收了回去</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0107"><token>慢慢收回伸出的手</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0108"><token>食言</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0109"><token>承诺作废</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0110"><token>没有兑现</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0111"><token>拒绝了</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0112"><token>落空</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0113"><token>白等</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0114"><token>辜负</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0115"><token>原以为</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0116"><token>原来如此</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0117"><token>我明白了</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0118"><token>就当我没说</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0119"><token>罢了</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0120"><token>算了</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0121"><token>到此为止</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0122"><token>不必再提</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0123"><token>欣然接受</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0124"><token>喜出望外</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0125"><token>眼前一亮</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0126"><token>并不在意</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0127"><token>如释重负</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0128"><token>嘴角压不住地上扬</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0129"><token>唇角悄悄翘起</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0130"><token>嘴角抽动了一下</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0131"><token>把脸别到一旁</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0132"><token>肩膀轻轻抖了两下</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0133"><token>鼻间漏出短促气音</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0134"><token>喉间溢出一声气音</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0135"><token>抬手掩住嘴角</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0136"><token>差点呛到</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0137"><token>拍了拍自己的胸口</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0138"><token>荒唐</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0139"><token>滑稽</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0140"><token>可笑</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0141"><token>笑话</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0142"><token>离谱</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0143"><token>荒谬</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0144"><token>这倒有意思</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0145"><token>真有你的</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0146"><token>你认真的吗</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0147"><token>妙极了</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0148"><token>好一个</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0149"><token>竟能说出这种话</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0150"><token>没有任何笑意</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0151"><token>嘴角纹丝不动</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0152"><token>神情严肃</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0153"><token>并未觉得有趣</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0154"><token>冷冷看着</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0155"><token>几次张口又停住</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0156"><token>话到嘴边又咽下</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0157"><token>手指悬在半空</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0158"><token>抬起的手又放下</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0159"><token>脚步迈出半步又收回</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0160"><token>目光在两人之间来回游移</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0161"><token>视线反复扫过众人</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0162"><token>反复摩挲指节</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0163"><token>低头沉吟片刻</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0164"><token>迟迟没有回答</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0165"><token>两个选择</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0166"><token>只能选一个</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0167"><token>相互矛盾</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0168"><token>不同说法</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0169"><token>立刻决定</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0170"><token>究竟哪一个</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0171"><token>二选一</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0172"><token>容我想想</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0173"><token>让我理一理</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0174"><token>这件事没那么简单</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0175"><token>我需要一点时间</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0176"><token>两边都有道理</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0177"><token>一时难以决定</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0178"><token>立刻作出决定</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0179"><token>毫不迟疑</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0180"><token>当即回答</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0181"><token>没有任何停顿</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0182"><token>早已有了答案</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0183"><token>面</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0184"><token>失</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0185"><token>血色</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0186"><token>面色</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0187"><token>白</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0188"><token>脸色</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0189"><token>唇</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0190"><token>身形</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0191"><token>僵</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0192"><token>身体</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0193"><token>呼吸</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0194"><token>停</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0195"><token>滞</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0196"><token>喉结</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0197"><token>滚</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0198"><token>手指</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0199"><token>颤</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0200"><token>指尖</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0201"><token>声音</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0202"><token>紧</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0203"><token>尾音</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0204"><token>嘴唇</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0205"><token>哆嗦</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0206"><token>下颌</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0207"><token>绷紧</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0208"><token>腮帮</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0209"><token>五指</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0210"><token>成拳</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0211"><token>拳头</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0212"><token>发白</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0213"><token>指节</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0214"><token>青筋</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0215"><token>凸起</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0216"><token>跳动</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0217"><token>掌心</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0218"><token>指甲</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0219"><token>印</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0220"><token>逼</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0221"><token>我</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0222"><token>账</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0223"><token>忘</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0224"><token>话</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0225"><token>收回</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0226"><token>目光</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0227"><token>黯淡</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0228"><token>眼</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0229"><token>光</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0230"><token>暗</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0231"><token>肩膀</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0232"><token>垮</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0233"><token>背脊</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0234"><token>松</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0235"><token>眼帘</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0236"><token>垂</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0237"><token>手</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0238"><token>不会</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0239"><token>兑现</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0240"><token>承诺</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0241"><token>作废</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0242"><token>拒绝</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0243"><token>提议</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0244"><token>等</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0245"><token>想得</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0246"><token>太多</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0247"><token>没有</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0248"><token>意义</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0249"><token>放下</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0250"><token>嘴角</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0251"><token>上扬</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0252"><token>唇角</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0253"><token>翘</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0254"><token>抽动</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0255"><token>抖</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0256"><token>鼻间</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0257"><token>气音</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0258"><token>喉间</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0259"><token>掩</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0260"><token>差点</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0261"><token>呛到</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0262"><token>拍</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0263"><token>胸口</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0264"><token>压不住</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0265"><token>竟</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0266"><token>当成</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0267"><token>居然</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0268"><token>拿</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0269"><token>当</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0270"><token>你</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0271"><token>认真</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0272"><token>这</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0273"><token>有意思</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0274"><token>真有</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0275"><token>无聊</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0276"><token>场面</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0277"><token>难得</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0278"><token>信</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0279"><token>张口</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0280"><token>咽下</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0281"><token>半空</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0282"><token>脚步</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0283"><token>来回</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0284"><token>视线</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0285"><token>反复</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0286"><token>命令</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0287"><token>矛盾</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0288"><token>说法</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0289"><token>不同</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0290"><token>选择</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0291"><token>一个</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0292"><token>让我</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0293"><token>理一理</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0294"><token>需要</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0295"><token>时间</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0296"><token>难以</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0297"><token>决定</token></list>
+  <list id="ImplicitEmotionInferenceV1.Raw0298"><token>确认</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0001"><token>强制指令我来演讲</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0002"><token>强制指令我演讲</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0003"><token>强制指令演讲</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0004"><token>强制演讲</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0005"><token>强制我演讲</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0006"><token>强制我来演讲</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0007"><token>我强制演讲</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0008"><token>演讲</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0009"><token>我演讲</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0010"><token>我来演讲</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0011"><token>正文如下</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0012"><token>演讲正文</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0013"><token>可用于测试</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0014"><token>测试用</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0015"><token>示例一</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0016"><token>示例1</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0017"><token>第1段</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0018"><token>第1个</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0019"><token>第2段</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0020"><token>第2个</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0021"><token>第3段</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0022"><token>第3个</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0023"><token>第4段</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0024"><token>第4个</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0025"><token>第5段</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0026"><token>第5个</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0027"><token>第6段</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0028"><token>第6个</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0029"><token>第7段</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0030"><token>第7个</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0031"><token>第8段</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0032"><token>第8个</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0033"><token>第9段</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0034"><token>第9个</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0035"><token>第10段</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0036"><token>第10个</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0037"><token>万岁</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0038"><token>为了</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0039"><token>必胜</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0040"><token>必将</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0041"><token>永存</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0042"><token>的荣耀</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0043"><token>荣耀归于</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0044"><token>效忠</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0045"><token>忠于</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0046"><token>为</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0047"><token>而战</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0048"><token>保卫</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0049"><token>捍卫</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0050"><token>玩家</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0051"><token>您</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0052"><token>听凭您的调遣</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0053"><token>只要您</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0054"><token>请您下达指令</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0055"><token>向您请示</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0056"><token>等待您下令</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0057"><token>我只是个普通士兵</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0058"><token>我只是一个普通士兵</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0059"><token>我嘴拙</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0060"><token>讲不出什么大道理</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0061"><token>无权替您</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0062"><token>不敢替您</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0063"><token>大人</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0064"><token>阁下</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0065"><token>领主</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0066"><token>请</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0067"><token>求</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0068"><token>让</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0069"><token>叫</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0070"><token>听凭</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0071"><token>向</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0072"><token>对</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0073"><token>给</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0074"><token>不要</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0075"><token>别让</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0076"><token>不许</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0077"><token>不用</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0078"><token>取消</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0079"><token>停止</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0080"><token>没让</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0081"><token>并未</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0082"><token>如果</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0083"><token>假如</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0084"><token>要是</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0085"><token>比如</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0086"><token>所谓</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0087"><token>这句话</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0088"><token>这几个字</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0089"><token>假设</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0090"><token>大家</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0091"><token>众人</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0092"><token>士兵</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0093"><token>将士</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0094"><token>弟兄</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0095"><token>兄弟</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0096"><token>队伍</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0097"><token>全军</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0098"><token>部队</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0099"><token>军队</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0100"><token>战士</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0101"><token>训话</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0102"><token>动员</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0103"><token>鼓舞</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0104"><token>讲几句</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0105"><token>讲两句</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0106"><token>讲俩句</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0107"><token>说几句</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0108"><token>说两句</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0109"><token>说俩句</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0110"><token>喊几句</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0111"><token>来给</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0112"><token>去给</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0113"><token>上前</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0114"><token>请你</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0115"><token>让你</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0116"><token>你来</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0117"><token>你去</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0118"><token>劳烦</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0119"><token>麻烦</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0120"><token>替我</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0121"><token>给大家</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0122"><token>跟大家</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0123"><token>向大家</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0124"><token>对大家</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0125"><token>给士兵</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0126"><token>跟士兵</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0127"><token>向士兵</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0128"><token>能不能</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0129"><token>能否</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0130"><token>可否</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0131"><token>我来</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0132"><token>我要</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0133"><token>由我</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0134"><token>我给</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0135"><token>我向</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0136"><token>我跟</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0137"><token>让我来</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0138"><token>弟兄们</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0139"><token>兄弟们</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0140"><token>将士们</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0141"><token>战士们</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0142"><token>士兵们</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0143"><token>各位将士</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0144"><token>各位</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0145"><token>诸位</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0146"><token>同袍们</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0147"><token>同胞们</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0148"><token>所有人</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0149"><token>伙计们</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0150"><token>我们</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0151"><token>咱们</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0152"><token>吾等</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0153"><token>共同</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0154"><token>一起</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0155"><token>跟我</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0156"><token>听我</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0157"><token>告诉你们</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0158"><token>记住</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0159"><token>家园</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0160"><token>敌人</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0161"><token>该死</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0162"><token>前方</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0163"><token>冲锋</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0164"><token>战斗</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0165"><token>战场</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0166"><token>胜利</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0167"><token>后退</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0168"><token>不能退</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0169"><token>不后退</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0170"><token>阵线</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0171"><token>勇气</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0172"><token>荣耀</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0173"><token>守住</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0174"><token>杀敌</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0175"><token>迎敌</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0176"><token>随我</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0177"><token>绝不</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0178"><token>必须</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0179"><token>战争</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0180"><token>进攻</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0181"><token>前进</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0182"><token>自由</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0183"><token>复仇</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0184"><token>报仇</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0185"><token>听令</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0186"><token>号令</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0187"><token>掠夺</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0188"><token>袭击</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0189"><token>人民</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0190"><token>拼了</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0191"><token>上啊</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0192"><token>杀过去</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0193"><token>家人</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0194"><token>家乡</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0195"><token>他说</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0196"><token>她说</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0197"><token>他喊</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0198"><token>她喊</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0199"><token>他说道</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0200"><token>她说道</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0201"><token>不要让</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0202"><token>^(?:我来|我要|由我|我)(?:给|向|跟)?(?:大家|众人|士兵|将士|弟兄|兄弟|队伍|全军)?(?:作)?(?:阵前|战前)?(?:演讲|训话|动员|鼓舞|讲几句|讲两句|讲俩句|说几句|说两句|说俩句)[：:\s]*(.*)$</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0203"><token>讲</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0204"><token>说</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0205"><token>喊</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0206"><token>^(?:强制(?:指令)?\s*)?(?:(?:框选)?目标|你|他|她)(?:来)?(?:阵前)?(?:演讲|训话|动员|鼓舞)(?:\s*[:：].*)?$</token></list>
+  <list id="BattleSpeechFrameworkV2.Raw0207"><token>^(?:让|请)(?:当前目标|这位士兵|你|他|她)(?:在)?(?:阵前)?(?:演讲|训话|动员|鼓舞)</token></list>
+  <list id="Consent.Raw0001"><token>好我答应</token></list>
+  <list id="Consent.Raw0002"><token>好的我答应</token></list>
+  <list id="Consent.Raw0003"><token>我答应</token></list>
+  <list id="Consent.Raw0004"><token>我答应你</token></list>
+  <list id="Consent.Raw0005"><token>答应你</token></list>
+  <list id="Consent.Raw0006"><token>我同意</token></list>
+  <list id="Consent.Raw0007"><token>同意</token></list>
+  <list id="Consent.Raw0008"><token>我愿意</token></list>
+  <list id="Consent.Raw0009"><token>愿意</token></list>
+  <list id="Consent.Raw0010"><token>遵命</token></list>
+  <list id="Consent.Raw0011"><token>是遵命</token></list>
+  <list id="Consent.Raw0012"><token>如你所愿</token></list>
+  <list id="Consent.Raw0013"><token>我会照做</token></list>
+  <list id="Consent.Raw0014"><token>我照做</token></list>
+  <list id="Consent.Raw0015"><token>照办</token></list>
+  <list id="Consent.Raw0016"><token>没问题我照做</token></list>
+  <list id="Consent.Raw0017"><token>绝不</token></list>
+  <list id="Consent.Raw0018"><token>我拒绝</token></list>
+  <list id="Consent.Raw0019"><token>拒绝</token></list>
+  <list id="Consent.Raw0020"><token>我不答应</token></list>
+  <list id="Consent.Raw0021"><token>不答应</token></list>
+  <list id="Consent.Raw0022"><token>我不同意</token></list>
+  <list id="Consent.Raw0023"><token>不同意</token></list>
+  <list id="Consent.Raw0024"><token>我不愿意</token></list>
+  <list id="Consent.Raw0025"><token>不愿意</token></list>
+  <list id="Consent.Raw0026"><token>不可能</token></list>
+  <list id="Consent.Raw0027"><token>休想</token></list>
+  <list id="Consent.Raw0028"><token>做梦</token></list>
+  <list id="Consent.Raw0029"><token>没门</token></list>
+  <list id="Consent.Raw0030"><token>办不到</token></list>
+  <list id="Consent.Raw0031"><token>恕难从命</token></list>
+  <list id="Consent.Raw0032"><token>我不会照做</token></list>
+  <list id="Consent.Raw0033"><token>我不照做</token></list>
+  <list id="Consent.Raw0034"><token>让我考虑</token></list>
+  <list id="Consent.Raw0035"><token>让我考虑一下</token></list>
+  <list id="Consent.Raw0036"><token>容我考虑</token></list>
+  <list id="Consent.Raw0037"><token>容我想想</token></list>
+  <list id="Consent.Raw0038"><token>让我想想</token></list>
+  <list id="Consent.Raw0039"><token>我想一想</token></list>
+  <list id="Consent.Raw0040"><token>我再想想</token></list>
+  <list id="Consent.Raw0041"><token>稍后再说</token></list>
+  <list id="Consent.Raw0042"><token>以后再说</token></list>
+  <list id="Consent.Raw0043"><token>等一下</token></list>
+  <list id="Consent.Raw0044"><token>等一等</token></list>
+  <list id="Consent.Raw0045"><token>也许</token></list>
+  <list id="Consent.Raw0046"><token>或许</token></list>
+  <list id="Consent.Raw0047"><token>看情况</token></list>
+  <list id="Consent.Raw0048"><token>不一定</token></list>
+  <list id="CommandParser.Raw0001"><token>(?:跪在|跪坐在|单膝跪在|双膝跪在)[^，。；！？]{0,24}的(?&lt;actor&gt;[\p{L}·“”]{1,24})</token></list>
+  <list id="CommandParser.Raw0002"><token>[。！？；;!?]+|(?:然后|随后|随即|接着|继而|转而|而是|反而|但是|不过|却|但)</token></list>
+  <list id="CommandParser.Raw0003"><token>转身</token></list>
+  <list id="CommandParser.Raw0004"><token>走路</token></list>
+  <list id="CommandParser.Raw0005"><token>走了两步</token></list>
+  <list id="CommandParser.Raw0006"><token>走了过去</token></list>
+  <list id="CommandParser.Raw0007"><token>走过去</token></list>
+  <list id="CommandParser.Raw0008"><token>走向</token></list>
+  <list id="CommandParser.Raw0009"><token>走到</token></list>
+  <list id="CommandParser.Raw0010"><token>走去</token></list>
+  <list id="CommandParser.Raw0011"><token>迈步走向</token></list>
+  <list id="CommandParser.Raw0012"><token>跳舞</token></list>
+  <list id="CommandParser.Raw0013"><token>舞蹈</token></list>
+  <list id="CommandParser.Raw0014"><token>舞动</token></list>
+  <list id="CommandParser.Raw0015"><token>起舞</token></list>
+  <list id="CommandParser.Raw0016"><token>跳起舞</token></list>
+  <list id="CommandParser.Raw0017"><token>翩翩</token></list>
+  <list id="CommandParser.Raw0018"><token>转了半圈</token></list>
+  <list id="CommandParser.Raw0019"><token>转半圈</token></list>
+  <list id="CommandParser.Raw0020"><token>旋转半圈</token></list>
+  <list id="CommandParser.Raw0021"><token>鼓掌</token></list>
+  <list id="CommandParser.Raw0022"><token>拍手叫好</token></list>
+  <list id="CommandParser.Raw0023"><token>拍手喝彩</token></list>
+  <list id="CommandParser.Raw0024"><token>拍起手来</token></list>
+  <list id="CommandParser.Raw0025"><token>鼓起掌</token></list>
+  <list id="CommandParser.Raw0026"><token>抚掌</token></list>
+  <list id="CommandParser.Raw0027"><token>拍了拍手上的灰</token></list>
+  <list id="CommandParser.Raw0028"><token>拍掉手上的灰</token></list>
+  <list id="CommandParser.Raw0029"><token>拍去手上的灰</token></list>
+  <list id="CommandParser.Raw0030"><token>拍了拍衣服</token></list>
+  <list id="CommandParser.Raw0031"><token>拍了拍胸口</token></list>
+  <list id="CommandParser.Raw0032"><token>拍了拍肩膀</token></list>
+  <list id="CommandParser.Raw0033"><token>拍了拍马鞍</token></list>
+  <list id="CommandParser.Raw0034"><token>拍了拍桌子</token></list>
+  <list id="CommandParser.Raw0035"><token>拍了拍脸</token></list>
+  <list id="CommandParser.Raw0036"><token>不是否认</token></list>
+  <list id="CommandParser.Raw0037"><token>并非否认</token></list>
+  <list id="CommandParser.Raw0038"><token>不是拒绝</token></list>
+  <list id="CommandParser.Raw0039"><token>并非拒绝</token></list>
+  <list id="CommandParser.Raw0040"><token>不是不同意</token></list>
+  <list id="CommandParser.Raw0041"><token>并非不同意</token></list>
+  <list id="CommandParser.Raw0042"><token>站直身体</token></list>
+  <list id="CommandParser.Raw0043"><token>站直身子</token></list>
+  <list id="CommandParser.Raw0044"><token>挺直身躯</token></list>
+  <list id="CommandParser.Raw0045"><token>挺直腰背</token></list>
+  <list id="CommandParser.Raw0046"><token>站直腰背</token></list>
+  <list id="CommandParser.Raw0047"><token>站起来</token></list>
+  <list id="CommandParser.Raw0048"><token>站起身</token></list>
+  <list id="CommandParser.Raw0049"><token>站了起来</token></list>
+  <list id="CommandParser.Raw0050"><token>从跪姿</token></list>
+  <list id="CommandParser.Raw0051"><token>从地上</token></list>
+  <list id="CommandParser.Raw0052"><token>撑地</token></list>
+  <list id="CommandParser.Raw0053"><token>爬起</token></list>
+  <list id="CommandParser.Raw0054"><token>起身</token></list>
+  <list id="CommandParser.Raw0055"><token>重新起立</token></list>
+  <list id="CommandParser.Raw0056"><token>挑衅的姿态</token></list>
+  <list id="CommandParser.Raw0057"><token>充满挑衅</token></list>
+  <list id="CommandParser.Raw0058"><token>勾手</token></list>
+  <list id="CommandParser.Raw0059"><token>招手挑衅</token></list>
+  <list id="CommandParser.Raw0060"><token>拍胸叫阵</token></list>
+  <list id="CommandParser.Raw0061"><token>叫阵</token></list>
+  <list id="CommandParser.Raw0062"><token>勾了勾手指</token></list>
+  <list id="CommandParser.Raw0063"><token>摇头</token></list>
+  <list id="CommandParser.Raw0064"><token>摇了摇头</token></list>
+  <list id="CommandParser.Raw0065"><token>摇摇头</token></list>
+  <list id="CommandParser.Raw0066"><token>我</token></list>
+  <list id="CommandParser.Raw0067"><token>自己</token></list>
+  <list id="CommandParser.Raw0068"><token>他</token></list>
+  <list id="CommandParser.Raw0069"><token>她</token></list>
+  <list id="CommandParser.Raw0070"><token>停止</token></list>
+  <list id="CommandParser.Raw0071"><token>别再</token></list>
+  <list id="CommandParser.Raw0072"><token>不要再</token></list>
+  <list id="CommandParser.Raw0073"><token>不再</token></list>
+  <list id="CommandParser.Raw0074"><token>欢呼</token></list>
+  <list id="CommandParser.Raw0075"><token>动作</token></list>
+  <list id="CommandParser.Raw0076"><token>握住剑柄</token></list>
+  <list id="CommandParser.Raw0077"><token>抽出</token></list>
+  <list id="CommandParser.Raw0078"><token>拔出</token></list>
+  <list id="CommandParser.Raw0079"><token>出鞘</token></list>
+  <list id="SceneActionFrameworkV4.LegacySource0001"><token>发号施令</token></list>
+  <list id="SceneActionFrameworkV4.LegacySource0002"><token>下令手势</token></list>
+  <list id="SceneActionFrameworkV4.LegacySource0003"><token>挥臂下令</token></list>
+  <list id="SceneActionFrameworkV4.LegacySource0004"><token>挥臂向众人下令</token></list>
+  <list id="SceneActionFrameworkV4.LegacySource0005"><token>抬手向众人下令</token></list>
+  <list id="SceneActionFrameworkV4.LegacySource0006"><token>挥手向众人发号施令</token></list>
+  <list id="SceneActionFrameworkV4.LegacySource0007"><token>挥臂发号施令</token></list>
+  <list id="SceneActionFrameworkV4.LegacySource0008"><token>挥臂向整支队伍发号施令</token></list>
+  <list id="SceneActionFrameworkV4.LegacySource0009"><token>抬手发号施令</token></list>
+  <list id="SceneActionFrameworkV4.LegacySource0010"><token>作出下令手势</token></list>
+  <list id="SceneActionFrameworkV4.LegacySource0011"><token>做出下令手势</token></list>
+  <list id="SceneActionFrameworkV4.LegacySource0012"><token>向众人作出命令手势</token></list>
+  <list id="SceneActionFrameworkV4.LegacySource0013"><token>朝队伍挥臂下令</token></list>
+  <list id="SceneActionFrameworkV4.LegacySource0014"><token>抬手向众人作出明确的下令手势</token></list>
+  <list id="SceneActionFrameworkV4.LegacySource0015"><token>挥臂向整队下令</token></list>
+  <list id="SceneActionFrameworkV4.LegacySource0016"><token>面向整队士兵大手一挥</token></list>
+  <list id="SceneActionFrameworkV4.LegacySource0017"><token>抬臂作出明确的下令手势</token></list>
+  <list id="SceneActionFrameworkV4.LegacySource0018"><token>大手一挥下令</token></list>
+  <list id="SceneActionFrameworkV4.LegacySource0019"><token>面向士兵挥臂发令</token></list>
+  <list id="SceneActionFrameworkV4.LegacySource0020"><token>抬手示意众人听令</token></list>
+  <list id="SceneActionFrameworkV4.LegacySource0021"><token>命令手势</token></list>
+  <list id="SceneActionFrameworkV4.LegacySource0022"><token>招手示意跟上</token></list>
+  <list id="SceneActionFrameworkV4.LegacySource0023"><token>跟上手势</token></list>
+  <list id="SceneActionFrameworkV4.LegacySource0024"><token>招手示意同伴跟上</token></list>
+  <list id="SceneActionFrameworkV4.LegacySource0025"><token>朝同伴招手示意跟上</token></list>
+  <list id="SceneActionFrameworkV4.LegacySource0026"><token>向队伍招手让他们跟上</token></list>
+  <list id="SceneActionFrameworkV4.LegacySource0027"><token>回头招手示意队伍跟随</token></list>
+  <list id="SceneActionFrameworkV4.LegacySource0028"><token>挥手示意众人跟上</token></list>
+  <list id="SceneActionFrameworkV4.LegacySource0029"><token>作出跟上手势</token></list>
+  <list id="SceneActionFrameworkV4.LegacySource0030"><token>做出跟上手势</token></list>
+  <list id="SceneActionFrameworkV4.LegacySource0031"><token>招手示意众人跟上</token></list>
+  <list id="SceneActionFrameworkV4.LegacySource0032"><token>向队伍招手示意跟上</token></list>
+  <list id="SceneActionFrameworkV4.LegacySource0033"><token>朝同伴连续招手</token></list>
+  <list id="SceneActionFrameworkV4.LegacySource0034"><token>示意整支队伍跟上</token></list>
+  <list id="SceneActionFrameworkV4.LegacySource0035"><token>回过身朝同伴连续招手</token></list>
+  <list id="SceneActionFrameworkV4.LegacySource0036"><token>招手示意队伍跟上</token></list>
+  <list id="SceneActionFrameworkV4.LegacySource0037"><token>朝身后招手让大家跟来</token></list>
+  <list id="SceneActionFrameworkV4.LegacySource0038"><token>回头挥手示意队伍前进</token></list>
+  <list id="SceneActionFrameworkV4.LegacySource0039"><token>招手跟上</token></list>
+  <list id="SceneActionFrameworkV4.LegacySource0040"><token>跟我来</token></list>
+  <list id="SceneActionFrameworkV4.LegacySource0041"><token>跟上</token></list>
+  <list id="SceneActionFrameworkV4.LegacySource0042"><token>割喉手势</token></list>
+  <list id="SceneActionFrameworkV4.LegacySource0043"><token>抹脖子手势</token></list>
+  <list id="SceneActionFrameworkV4.LegacySource0044"><token>用手指划过喉前</token></list>
+  <list id="SceneActionFrameworkV4.LegacySource0045"><token>用手指在喉前划过</token></list>
+  <list id="SceneActionFrameworkV4.LegacySource0046"><token>用手指在喉前缓缓划过</token></list>
+  <list id="SceneActionFrameworkV4.LegacySource0047"><token>手指从喉前划过</token></list>
+  <list id="SceneActionFrameworkV4.LegacySource0048"><token>抬手在脖子前横划</token></list>
+  <list id="SceneActionFrameworkV4.LegacySource0049"><token>做出割喉手势</token></list>
+  <list id="SceneActionFrameworkV4.LegacySource0050"><token>作出割喉手势</token></list>
+  <list id="SceneActionFrameworkV4.LegacySource0051"><token>比出抹脖子动作</token></list>
+  <list id="SceneActionFrameworkV4.LegacySource0052"><token>用拇指划过喉前</token></list>
+  <list id="SceneActionFrameworkV4.LegacySource0053"><token>用食指在自己的喉前横划了一下</token></list>
+  <list id="SceneActionFrameworkV4.LegacySource0054"><token>用食指在自己的喉前横划一下作割喉手势</token></list>
+  <list id="SceneActionFrameworkV4.LegacySource0055"><token>手指在自己的喉前横划一下</token></list>
+  <list id="SceneActionFrameworkV4.LegacySource0056"><token>在自己的喉前横划一下</token></list>
+  <list id="SceneActionFrameworkV4.LegacySource0057"><token>从喉前横划</token></list>
+  <list id="SceneActionFrameworkV4.LegacySource0058"><token>手指在喉前横划</token></list>
+  <list id="SceneActionFrameworkV4.LegacySource0059"><token>用食指在喉咙前做了个划过的动作</token></list>
+  <list id="SceneActionFrameworkV4.LegacySource0060"><token>抬手横过脖子作割喉威胁</token></list>
+  <list id="SceneActionFrameworkV4.LegacySource0061"><token>划喉手势</token></list>
+  <list id="SceneActionFrameworkV4.LegacySource0062"><token>割断你的喉咙</token></list>
+  <list id="SceneActionFrameworkV4.LegacySource0063"><token>割喉</token></list>
+  <list id="SceneActionFrameworkV4.LegacySource0064"><token>抹脖子</token></list>
+  <list id="SceneActionFrameworkV4.LegacySource0065"><token>拔刀割喉</token></list>
+  <list id="SceneActionFrameworkV4.LegacySource0066"><token>持刀割喉</token></list>
+  <list id="SceneActionFrameworkV4.LegacySource0067"><token>用刀割喉</token></list>
+  <list id="SceneActionFrameworkV4.LegacySource0068"><token>刀刃划过喉咙</token></list>
+  <list id="SceneActionFrameworkV4.LegacySource0069"><token>割开喉咙</token></list>
+  <list id="SceneActionFrameworkV4.LegacySource0070"><token>割开对方的喉咙</token></list>
+  <list id="SceneActionFrameworkV4.LegacySource0071"><token>割断喉咙</token></list>
+  <list id="SceneActionFrameworkV4.LegacySource0072"><token>划开对方的喉咙</token></list>
+  <list id="SceneActionFrameworkV4.LegacySource0073"><token>拔刀划开喉咙</token></list>
+  <list id="SceneActionFrameworkV4.LegacySource0074"><token>拔刀划开对方的喉咙</token></list>
+  <list id="SceneActionFrameworkV4.LegacySource0075"><token>刀刃划开喉咙</token></list>
+  <list id="SceneActionFrameworkV4.LegacySource0076"><token>用刀划过喉咙</token></list>
+  <list id="SceneActionFrameworkV4.LegacySource0077"><token>砍向喉咙</token></list>
+  <list id="SceneActionFrameworkV4.LegacySource0078"><token>刺向喉咙</token></list>
+  <list id="SceneActionFrameworkV4.LegacySource0079"><token>攻击他的喉咙</token></list>
+  <list id="BattleSpeechPerformancePlannerV1.LegacySource0001"><token>我保证</token></list>
+  <list id="BattleSpeechPerformancePlannerV1.LegacySource0002"><token>我发誓</token></list>
+  <list id="BattleSpeechPerformancePlannerV1.LegacySource0003"><token>我承诺</token></list>
+  <list id="BattleSpeechPerformancePlannerV1.LegacySource0004"><token>向你们保证</token></list>
+  <list id="BattleSpeechPerformancePlannerV1.LegacySource0005"><token>以此起誓</token></list>
+  <list id="BattleSpeechPerformancePlannerV1.LegacySource0006"><token>以我的名义起誓</token></list>
+  <list id="BattleSpeechPerformancePlannerV1.LegacySource0007"><token>绝不辜负</token></list>
+  <list id="BattleSpeechPerformancePlannerV1.LegacySource0008"><token>同生共死</token></list>
+  <list id="BattleSpeechPerformancePlannerV1.LegacySource0009"><token>生死与共</token></list>
+  <list id="BattleSpeechPerformancePlannerV1.LegacySource0010"><token>复仇</token></list>
+  <list id="BattleSpeechPerformancePlannerV1.LegacySource0011"><token>血债</token></list>
+  <list id="BattleSpeechPerformancePlannerV1.LegacySource0012"><token>付出代价</token></list>
+  <list id="BattleSpeechPerformancePlannerV1.LegacySource0013"><token>碾碎</token></list>
+  <list id="BattleSpeechPerformancePlannerV1.LegacySource0014"><token>撕碎</token></list>
+  <list id="BattleSpeechPerformancePlannerV1.LegacySource0015"><token>斩尽</token></list>
+  <list id="BattleSpeechPerformancePlannerV1.LegacySource0016"><token>杀光</token></list>
+  <list id="BattleSpeechPerformancePlannerV1.LegacySource0017"><token>怒火</token></list>
+  <list id="BattleSpeechPerformancePlannerV1.LegacySource0018"><token>绝不屈服</token></list>
+  <list id="BattleSpeechPerformancePlannerV1.LegacySource0019"><token>宁死不降</token></list>
+  <list id="BattleSpeechPerformancePlannerV1.LegacySource0020"><token>踏平</token></list>
+  <list id="BattleSpeechPerformancePlannerV1.LegacySource0021"><token>听令</token></list>
+  <list id="BattleSpeechPerformancePlannerV1.LegacySource0022"><token>听我号令</token></list>
+  <list id="BattleSpeechPerformancePlannerV1.LegacySource0023"><token>守住</token></list>
+  <list id="BattleSpeechPerformancePlannerV1.LegacySource0024"><token>列阵</token></list>
+  <list id="BattleSpeechPerformancePlannerV1.LegacySource0025"><token>举起武器</token></list>
+  <list id="BattleSpeechPerformancePlannerV1.LegacySource0026"><token>握紧武器</token></list>
+  <list id="BattleSpeechPerformancePlannerV1.LegacySource0027"><token>保持阵型</token></list>
+  <list id="BattleSpeechPerformancePlannerV1.LegacySource0028"><token>稳住阵线</token></list>
+  <list id="BattleSpeechPerformancePlannerV1.LegacySource0029"><token>不许后退</token></list>
+  <list id="BattleSpeechPerformancePlannerV1.LegacySource0030"><token>跟我来</token></list>
+  <list id="BattleSpeechPerformancePlannerV1.LegacySource0031"><token>跟紧我</token></list>
+  <list id="BattleSpeechPerformancePlannerV1.LegacySource0032"><token>向前</token></list>
+  <list id="BattleSpeechPerformancePlannerV1.LegacySource0033"><token>冲锋</token></list>
+  <list id="BattleSpeechPerformancePlannerV1.LegacySource0034"><token>进攻</token></list>
+  <list id="BattleSpeechPerformancePlannerV1.LegacySource0035"><token>准备战斗</token></list>
+  <list id="BattleSpeechPerformancePlannerV1.LegacySource0036"><token>前方</token></list>
+  <list id="BattleSpeechPerformancePlannerV1.LegacySource0037"><token>那里</token></list>
+  <list id="BattleSpeechPerformancePlannerV1.LegacySource0038"><token>那边</token></list>
+  <list id="BattleSpeechPerformancePlannerV1.LegacySource0039"><token>身后</token></list>
+  <list id="BattleSpeechPerformancePlannerV1.LegacySource0040"><token>城墙</token></list>
+  <list id="BattleSpeechPerformancePlannerV1.LegacySource0041"><token>城门</token></list>
+  <list id="BattleSpeechPerformancePlannerV1.LegacySource0042"><token>山口</token></list>
+  <list id="BattleSpeechPerformancePlannerV1.LegacySource0043"><token>河岸</token></list>
+  <list id="BattleSpeechPerformancePlannerV1.LegacySource0044"><token>敌人就在</token></list>
+  <list id="BattleSpeechPerformancePlannerV1.LegacySource0045"><token>看那里</token></list>
+  <list id="BattleSpeechPerformancePlannerV1.LegacySource0046"><token>看前方</token></list>
+  <list id="BattleSpeechPerformancePlannerV1.LegacySource0047"><token>望向</token></list>
+  <list id="BattleSpeechPerformancePlannerV1.LegacySource0048"><token>因为</token></list>
+  <list id="BattleSpeechPerformancePlannerV1.LegacySource0049"><token>所以</token></list>
+  <list id="BattleSpeechPerformancePlannerV1.LegacySource0050"><token>因此</token></list>
+  <list id="BattleSpeechPerformancePlannerV1.LegacySource0051"><token>如今</token></list>
+  <list id="BattleSpeechPerformancePlannerV1.LegacySource0052"><token>听我说</token></list>
+  <list id="BattleSpeechPerformancePlannerV1.LegacySource0053"><token>记住</token></list>
+  <list id="BattleSpeechPerformancePlannerV1.LegacySource0054"><token>你们知道</token></list>
+  <list id="BattleSpeechPerformancePlannerV1.LegacySource0055"><token>我们为何</token></list>
+  <list id="BattleSpeechPerformancePlannerV1.LegacySource0056"><token>局势</token></list>
+  <list id="BattleSpeechPerformancePlannerV1.LegacySource0057"><token>我们的优势</token></list>
+  <list id="BattleSpeechPerformancePlannerV1.LegacySource0058"><token>他们以为</token></list>
+  <list id="BattleSpeechPerformancePlannerV1.LegacySource0059"><token>今日之战</token></list>
+  <list id="BuiltInContent.LegacySource0001"><token>跪下</token></list>
+  <list id="BuiltInContent.LegacySource0002"><token>站起来</token></list>
+  <list id="BuiltInContent.LegacySource0003"><token>起身</token></list>
+  <list id="BuiltInContent.LegacySource0004"><token>起来</token></list>
+  <list id="BuiltInContent.LegacySource0005"><token>我跪下</token></list>
+  <list id="BuiltInContent.LegacySource0006"><token>我自己跪下</token></list>
+  <list id="BuiltInContent.LegacySource0007"><token>你跪下</token></list>
+  <list id="BuiltInContent.LegacySource0008"><token>你们跪下</token></list>
+  <list id="BuiltInContent.LegacySource0009"><token>让他们跪下</token></list>
+  <list id="BuiltInContent.LegacySource0010"><token>我站起来</token></list>
+  <list id="BuiltInContent.LegacySource0011"><token>你站起来</token></list>
+  <list id="BuiltInContent.LegacySource0012"><token>你们站起来</token></list>
+  <list id="BuiltInContent.LegacySource0013"><token>西海</token></list>
+  <list id="BuiltInContent.LegacySource0014"><token>欢呼</token></list>
+  <list id="BuiltInContent.LegacySource0015"><token>你欢呼</token></list>
+  <list id="BuiltInContent.LegacySource0016"><token>你们欢呼</token></list>
+  <list id="BuiltInContent.LegacySource0017"><token>鼓掌</token></list>
+  <list id="BuiltInContent.LegacySource0018"><token>拍手</token></list>
+  <list id="BuiltInContent.LegacySource0019"><token>行礼</token></list>
+  <list id="BuiltInContent.LegacySource0020"><token>你给我行礼</token></list>
+  <list id="BuiltInContent.LegacySource0021"><token>威胁</token></list>
+  <list id="BuiltInContent.LegacySource0022"><token>投降</token></list>
+  <list id="BuiltInContent.LegacySource0023"><token>大笑</token></list>
+  <list id="BuiltInContent.LegacySource0024"><token>哈哈大笑</token></list>
+  <list id="BuiltInContent.LegacySource0025"><token>指向</token></list>
+  <list id="BuiltInContent.LegacySource0026"><token>指向旁边</token></list>
+  <list id="BuiltInContent.LegacySource0027"><token>愤怒</token></list>
+  <list id="BuiltInContent.LegacySource0028"><token>发怒</token></list>
+  <list id="BuiltInContent.LegacySource0029"><token>害怕</token></list>
+  <list id="BuiltInContent.LegacySource0030"><token>惊恐</token></list>
+  <list id="BuiltInContent.LegacySource0031"><token>失望</token></list>
+  <list id="BuiltInContent.LegacySource0032"><token>沮丧</token></list>
+  <list id="BuiltInContent.LegacySource0033"><token>挑衅</token></list>
+  <list id="BuiltInContent.LegacySource0034"><token>叫阵</token></list>
+  <list id="BuiltInContent.LegacySource0035"><token>环顾</token></list>
+  <list id="BuiltInContent.LegacySource0036"><token>四下张望</token></list>
+  <list id="BuiltInContent.LegacySource0037"><token>跳舞</token></list>
+  <list id="BuiltInContent.LegacySource0038"><token>停止当前动作</token></list>
+  <list id="BuiltInContent.LegacySource0039"><token>停止动作</token></list>
+  <list id="BuiltInContent.LegacySource0040"><token>停止欢呼</token></list>
+  <list id="BuiltInContent.LegacySource0041"><token>别再欢呼</token></list>
+  <list id="BuiltInContent.LegacySource0042"><token>停止跳舞</token></list>
+  <list id="BuiltInContent.LegacySource0043"><token>别跳了</token></list>
+  <list id="BuiltInContent.LegacySource0044"><token>结束此项</token></list>
+  <list id="BuiltInContent.LegacySource0045"><token>恢复正常</token></list>
+  <list id="BuiltInContent.LegacySource0046"><token>恢复站姿</token></list>
+  <list id="BuiltInContent.LegacySource0047"><token>站好</token></list>
+  <list id="BuiltInContent.LegacySource0048"><token>放下手臂</token></list>
+  <list id="BuiltInContent.LegacySource0049"><token>把手放下</token></list>
+  <list id="BuiltInContent.LegacySource0050"><token>收回手臂</token></list>
+  <list id="BuiltInContent.LegacySource0051"><token>结束行礼</token></list>
+  <list id="BuiltInContent.LegacySource0052"><token>停止行礼</token></list>
+  <list id="BuiltInContent.LegacySource0053"><token>拔剑</token></list>
+  <list id="BuiltInContent.LegacySource0054"><token>抽剑</token></list>
+  <list id="BuiltInContent.LegacySource0055"><token>拔出武器</token></list>
+  <list id="BuiltInContent.LegacySource0056"><token>收剑</token></list>
+  <list id="BuiltInContent.LegacySource0057"><token>收起武器</token></list>
+  <list id="BuiltInContent.LegacySource0058"><token>还剑入鞘</token></list>
+  <list id="BattleSpeechFrameworkV1.LegacySource0001"><token>取消阵前演讲</token></list>
+  <list id="BattleSpeechFrameworkV1.LegacySource0002"><token>结束阵前演讲</token></list>
+  <list id="BattleSpeechFrameworkV1.LegacySource0003"><token>停止阵前演讲</token></list>
+  <list id="BattleSpeechFrameworkV1.LegacySource0004"><token>取消战前演讲</token></list>
+  <list id="BattleSpeechFrameworkV1.LegacySource0005"><token>结束战前演讲</token></list>
+  <list id="BattleSpeechFrameworkV1.LegacySource0006"><token>开始阵前演讲</token></list>
+  <list id="BattleSpeechFrameworkV1.LegacySource0007"><token>我开始阵前演讲</token></list>
+  <list id="BattleSpeechFrameworkV1.LegacySource0008"><token>开始战前演讲</token></list>
+  <list id="BattleSpeechFrameworkV1.LegacySource0009"><token>我开始战前演讲</token></list>
+  <list id="BattleSpeechFrameworkV1.LegacySource0010"><token>我来向士兵们演讲</token></list>
+  <list id="BattleSpeechFrameworkV1.LegacySource0011"><token>我要向士兵们演讲</token></list>
+  <list id="BattleSpeechFrameworkV1.LegacySource0012"><token>让你阵前演讲</token></list>
+  <list id="BattleSpeechFrameworkV1.LegacySource0013"><token>请你阵前演讲</token></list>
+  <list id="BattleSpeechFrameworkV1.LegacySource0014"><token>你来阵前演讲</token></list>
+  <list id="BattleSpeechFrameworkV1.LegacySource0015"><token>让你在阵前演讲</token></list>
+  <list id="BattleSpeechFrameworkV1.LegacySource0016"><token>请你在阵前演讲</token></list>
+  <list id="BattleSpeechFrameworkV1.LegacySource0017"><token>你来向士兵们演讲</token></list>
+  <list id="BattleSpeechFrameworkV1.LegacySource0018"><token>让他阵前演讲</token></list>
+  <list id="BattleSpeechFrameworkV1.LegacySource0019"><token>请他阵前演讲</token></list>
+  <list id="BattleSpeechFrameworkV1.LegacySource0020"><token>让她阵前演讲</token></list>
+  <list id="BattleSpeechFrameworkV1.LegacySource0021"><token>请她阵前演讲</token></list>
+  <list id="BattleSpeechFrameworkV1.LegacySource0022"><token>让当前目标阵前演讲</token></list>
+  <list id="BattleSpeechFrameworkV1.LegacySource0023"><token>请当前目标阵前演讲</token></list>
+  <list id="BattleSpeechFrameworkV1.LegacySource0024"><token>让这位士兵阵前演讲</token></list>
+  <list id="BattleSpeechFrameworkV1.LegacySource0025"><token>请这位士兵阵前演讲</token></list>
+  <list id="BattleSpeechFrameworkV1.LegacySource0026"><token>让你战前动员</token></list>
+  <list id="BattleSpeechFrameworkV1.LegacySource0027"><token>请你战前动员</token></list>
+  <list id="BattleSpeechFrameworkV1.LegacySource0028"><token>让你阵前训话</token></list>
+  <list id="BattleSpeechFrameworkV1.LegacySource0029"><token>请你阵前训话</token></list>
+  <list id="BattleSpeechFrameworkV1.LegacySource0030"><token>我阵前演讲</token></list>
+  <list id="BattleSpeechFrameworkV1.LegacySource0031"><token>我在阵前演讲</token></list>
+  <list id="BattleSpeechFrameworkV1.LegacySource0032"><token>我来阵前演讲</token></list>
+  <list id="BattleSpeechFrameworkV1.LegacySource0033"><token>我向士兵们演讲</token></list>
+  <list id="BattleSpeechFrameworkV1.LegacySource0034"><token>我的阵前演讲</token></list>
+  <list id="BattleSpeechFrameworkV1.LegacySource0035"><token>阵前演讲</token></list>
+  <list id="BattleSpeechFrameworkV1.LegacySource0036"><token>我战前演讲</token></list>
+  <list id="CommandParser.ForceFramedPrefix">
+    <token>强制</token>
+  </list>
+  <list id="CommandParser.AspectParticle">
+    <token>着</token>
+  </list>
+  <list id="NpcReplyDirectiveTagV1.RuleTemplateTag">
+    <token>[ACTION:SCENE_ACT:动作程序]</token>
+  </list>
+  <list id="SceneActionFrameworkV1.ContinuationParticle">
+    <token>的</token>
+  </list>
+  <list id="SceneActionFrameworkV1.LiExcludedNouns">
+    <token>物</token>
+    <token>品</token>
+    <token>貌</token>
+    <token>节</token>
+    <token>服</token>
+    <token>仪</token>
+    <token>制</token>
+    <token>法</token>
+    <token>拜</token>
+    <token>堂</token>
+    <token>盒</token>
+    <token>金</token>
+    <token>炮</token>
+    <token>券</token>
+    <token>帽</token>
+    <token>花</token>
+    <token>包</token>
+  </list>
+  <list id="BattleSpeech.PlayerSpeechRoutingPrefix">
+    <token>我演讲：</token>
+  </list>
+  <list id="SceneActionFrameworkV1.LiChar">
+    <token>礼</token>
+  </list>
+</vocabulary>

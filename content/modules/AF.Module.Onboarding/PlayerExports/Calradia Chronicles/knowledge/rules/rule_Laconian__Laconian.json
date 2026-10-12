@@ -1,0 +1,30 @@
+{
+  "Id": "rule_Laconian",
+  "Keywords": [
+    "Laconia"
+  ],
+  "RagShortTexts": [
+    "The Laconians were originally a branch of the Pala people, who surrendered to the empire and assimilated"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "steward": 120
+        }
+      },
+      "Content": "The Laconians are a branch of the Pala people. They took Algoron to the empire to fight against the ferocious northern Pala people. They were finally assimilated by the empire and became the authentic Karad people."
+    }
+  ],
+  "TextMappings": []
+}

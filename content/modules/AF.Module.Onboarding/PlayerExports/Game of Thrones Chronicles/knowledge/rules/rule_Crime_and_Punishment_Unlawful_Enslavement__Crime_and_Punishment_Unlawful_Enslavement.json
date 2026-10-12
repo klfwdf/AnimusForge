@@ -1,0 +1,148 @@
+{
+  "Id": "rule_Crime_and_Punishment_Unlawful_Enslavement",
+  "Keywords": [
+    "Unlawful Enslavement"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Entry The forcible sale of free men into slavery or the denial of their freedom were in many places serious atrocities, even if the system itself permitted slavery. Victims lose not only their right to move, but also their names, families, and qualifications to be treated as human beings; if the law does not protect the weak,"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Unlawful Enslavement"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Unlawful Enslavement"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "wanderer",
+          "priest",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Unlawful Enslavement"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Unlawful Enslavement The forcible sale of free men into slavery or the denial of their freedom were in many places serious atrocities, even if the system itself permitted slavery. Victims lose not only their right to move, but also their names, families, and qualifications to be treated as human beings; if the law does not protect the weak, Whether it is valid depends on who can grant the rights, collect the consideration, and actually make the judgment come to fruition in the event of default."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Unlawful Enslavement The forcible sale of free men into slavery or the denial of their freedom were in many places serious atrocities, even if the system itself permitted slavery. Victims lose not only their right to move, but also their names, families, and qualifications to be treated as human beings; if the law does not protect the weak, The distant system is not empty talk only if it can be implemented in campfires, city gates and inns."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Unlawful Enslavement The forcible sale of free men into slavery or the denial of their freedom were in many places serious atrocities, even if the system itself permitted slavery. Victims lose not only their right to move, but also their names, families, and qualifications to be treated as human beings; if the law does not protect the weak, If a rule is practiced over and over again, it will find its way into rituals, crafts, and prayers; if it is sustained only by fear, cracks will show at the onset of a crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Unlawful Enslavement The forcible sale of free men into slavery or the denial of their freedom were in many places serious atrocities, even if the system itself permitted slavery. Victims lose not only their right to move, but also their names, families, and qualifications to be treated as human beings; if the law does not protect the weak, They remember taxes, grain, labor, relief and who can speak for them; these grand names will eventually fall on the family's rice pot."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Unlawful Enslavement: The forcible sale of free men into slavery or the denial of their freedom were in many places serious atrocities, even if the system itself permitted slavery. Victims lose not only their right to move, but also their names, families, and qualifications to be treated as human beings; if the law does not protect the weak,"
+  ]
+}

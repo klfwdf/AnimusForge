@@ -1,0 +1,23 @@
+{
+  "Id": "rule_The_Imperial_Diet_and_Princely_Electors",
+  "Keywords": [
+    "Imperial Diet",
+    "Reichstag",
+    "Prince-Electors",
+    "Kurfursten",
+    "Aachen Coronation",
+    "Holy Roman Empire Law"
+  ],
+  "RagShortTexts": [
+    "The Imperial Diet and college of prince-electors governed the constitutional architecture of the Holy Roman Empire through consensus."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The constitutional governance of the Holy Roman Empire was anchored in the Imperial Diet (Reichstag or Hoftag) and the emerging exclusive college of Prince-Electors (Kurfürsten). Unlike hereditary western monarchies, the King of the Romans was chosen through election by the paramount secular and ecclesiastical magnates of the realm.\n\nBy 1259, this electoral body crystallized into the seven great electors: the three Archbishops of Mainz, Cologne, and Trier, alongside the Count Palatine of the Rhine, the Duke of Saxony, the Margrave of Brandenburg, and the King of Bohemia. A valid election required the physical coronation of the monarch at Aachen upon Charlemagne's throne, followed by papal coronation in Rome to attain the full title of Holy Roman Emperor."
+    }
+  ],
+  "TextMappings": []
+}

@@ -119,7 +119,12 @@ namespace AnimusForge
 				if (!d.IsAllowed())
 				{
 					Logger.Log("ProposeAgenda", "Rejected: decision_not_allowed type=" + type + " target=" + tgt + " npc=" + (npc?.StringId ?? ""));
-					AnimusForgeQuickInfo.ShowForDuration("议程提交失败：当前王国规则不允许该议程", 6000, npc?.CharacterObject);
+					AnimusForgeQuickInfo.ShowForDuration(
+						DiplomacyUiLocalization.Text(
+							"AF_DIP_UI_Vote_ProposalRejectedNotAllowed",
+							"Agenda submission failed: the current kingdom rules do not allow this agenda."),
+						6000,
+						npc?.CharacterObject);
 					return "";
 				}
 				string newTitle = d.GetGeneralTitle()?.ToString();
@@ -145,11 +150,22 @@ namespace AnimusForge
 				{
 					behavior?.UnregisterDialogueProposedDecision(d);
 					Logger.Log("ProposeAgenda", "Rejected: AddDecision did not retain decision type=" + type + " target=" + tgt);
-					AnimusForgeQuickInfo.ShowForDuration("议程提交失败：王国未保留该议程", 6000, npc?.CharacterObject);
+					AnimusForgeQuickInfo.ShowForDuration(
+						DiplomacyUiLocalization.Text(
+							"AF_DIP_UI_Vote_ProposalRejectedNotRetained",
+							"Agenda submission failed: the kingdom did not retain this agenda."),
+						6000,
+						npc?.CharacterObject);
 					return "";
 				}
 				string cn = cl.Name?.ToString() ?? "?";
-				AnimusForgeQuickInfo.ShowForDuration(cn + "家族 提出新议程", 6000, npc.CharacterObject);
+				AnimusForgeQuickInfo.ShowForDuration(
+					DiplomacyUiLocalization.Format(
+						"AF_DIP_UI_Vote_ProposalSubmitted",
+						"{CLAN} proposed a new agenda.",
+						("CLAN", cn)),
+					6000,
+					npc.CharacterObject);
 				Logger.Log("ProposeAgenda", "OK: " + type + " " + tgt);
 				return "";
 			}

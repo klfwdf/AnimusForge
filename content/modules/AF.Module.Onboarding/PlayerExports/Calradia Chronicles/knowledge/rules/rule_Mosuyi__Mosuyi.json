@@ -1,0 +1,77 @@
+{
+  "Id": "rule_Mosuyi",
+  "Keywords": [
+    "Mo Suyi"
+  ],
+  "RagShortTexts": [
+    "Mo Suyi is the patriarch of the Kugit family. All the men including her husband died in the Battle of Pandrak. The family did not get the rewards they deserved, but because their men were withering away, they were coveted by the Archit and other families. She was dissatisfied with Monchug sitting back and doing nothing, but she knew that only by relying on the strong could the continuation of this family whose bloodline was neither noble nor wealthy."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": [
+          "town_k1"
+        ],
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Mo Suyi is the head of the Kugit family of the Kuset Kingdom. Her husband, her two brothers, and other men in the family all died in the Battle of Pandrak. However, the Kugit family did not get the rewards they deserved. Instead, they were coveted by other Kuset families, especially the Achit family, because of what happened to the male members of the family. Mo Suyi was dissatisfied with Monchug's inaction, but she understood that she could only rely on a powerful khan to continue her family, which was not noble and not wealthy. The settlement the family currently rules is a"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "khuzait"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Mosuyi is the matriarch of the Kugit family. The situation faced by Mosuyi is a typical microcosm of grassland tribal politics. After the Battle of Pandrak, the Kujit family lost all its men and its strength was greatly reduced. Mo Suyi could only assume the responsibility of the clan leader. He did not receive the reward he deserved from the Khan, but instead became the target of powerful clans such as Aqite. Although Mo Suyi was dissatisfied with Monchug's sit-down, he was well aware of the laws of the grasslands: tribes with weak bloodlines and weak family assets could only protect themselves by relying on powerful khans. Their choice has nothing to do with personal loyalty, but a practical consideration of the survival of the tribe. The settlement the family currently rules is a"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": [
+          "town_k1"
+        ],
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Mo Suyi, Nayan, the leader of the Kugit tribe, is bold and honest. He is very cruel to enemies, especially the imperial people, and often fights against unfair treatment of small tribes. Although her martial arts are mediocre, her wisdom and experience are outstanding. Mo Suyi has excellent commanding abilities. Thanks to this, he was able to quickly take over power after the death of his husband, Suilun Nachan, and preserve half of the Kugit kingdom despite attacks from other tribes. She also has a strong business talent. After moving the capital to Baltahan, she deepened trade with the northern wilderness. This gave Kugit, who had suffered heavy losses, the capital to survive in the bitter cold land in the northeastern part of Calradia. However, these were not what she was best at. Everyone who knows her will admire her skills in dealing with people. She is especially good at establishing good relations with other female nobles. By getting to know the wives and daughters of other lords, she can indirectly influence the decision-making of the target lord himself. She is also very good at organization and management, whether it is the construction of towns or the deployment of troops, everything is in order. Her daughter Yana inherited her talent in ruling the tribe and managing various things. Even the tribal elders agreed that her daughter would rule better than her in the future when she sat in the position of Dayan. Her daughter Yana also feels that she is very similar to her mother in every aspect, and even has scars similar to her mother's on her face. She should have worshiped her mother very much, if her 50-year-old mother had not found a new stepfather for her recently."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "a",
+      "Kind": "clan_all_settlements",
+      "TargetId": "clan_khuzait_2",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

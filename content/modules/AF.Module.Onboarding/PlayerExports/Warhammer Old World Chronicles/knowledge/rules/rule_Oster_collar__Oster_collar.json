@@ -1,0 +1,168 @@
+{
+  "Id": "rule_Oster_collar",
+  "Keywords": [
+    "Osterland",
+    "Oster Province_OL",
+    "Osterland Elector Count _OL",
+    "Valmir von Raukow_OL",
+    "Wolfenberg_OL",
+    "Shadow Forest_OL",
+    "Chaos Northern Front_OL"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Osterland is a frontier province in the northeastern part of the empire facing the Chaos Wastes. The Forest Shadow Forest covers most of its territory and serves as a corridor for Chaos hordes, beasts, and all horrors to travel south. The capital, Wolfenberg, is a tough fortress city surrounded by dense forests. Sentinels on the city walls are on duty for nine months of the year wearing thick fur cloaks, and torches never go out in the cold wind. Elector Count Valmir von Raukow was known for his fearlessness and almost stubborn sense of duty - he ruled over a province at the forefront of an empire, the first threshold between the civilized world and the hell of chaos."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The imperial residents of the Oster Territory live at the very edge of the human civilization world—not the edge in terms of geography, but the edge in spiritual concepts. The first thing the Osterlings do when they wake up every morning is not to eat breakfast, but to check last night's outpost patrol log to see if any Chaos beasts have crossed the cordon of the Shadow Forest at night. Their houses were built sturdier than those in other provinces—not because they had the money for stone, but because the plank walls couldn't withstand the first onslaught of the beastmen. Their children were taught not letters and numbers (that was Altdorf's luxury), but how to recognize the different types of Chaos symbols, how to tell by smell in the forest whether there was a lair of mutated beasts nearby, how to run by the shortest route to the nearest walled settlement when they heard the drums of Chaos. People in other provinces of the empire would unconsciously lower their voices when mentioning the Oster Territory—not out of sympathy, but because of some primitive fear: they knew that as long as the defense lines of the Oster Territory were breached, the next stop for chaos would be their own villages."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Osterland is not a territory that you can use normal military logic to measure - it is a living fortress, and the defenders in the fortress are always under siege. Valmir von Raukow did not have the diplomatic balancing power enjoyed by other Elector Counts in the Empire - he had no neighbors with whom to negotiate (Kislev was too busy to look after himself, Ostermark was too poor to provide substantial military support), and no political capital with which to bargain (Reikland Although the emperor attaches great importance to the defense line of the Oster Territory, the empire's military expenditures are always prioritized in the stable areas further south). There is no land that can be left fallow - the edge of the Shadow Forest is corroded by Chaos and shrinks inward every year. For every one league of shrinkage, a village is forced to abandon it. Laukov's only diplomatic strategy was to ensure that at least one-third of the Elector Counts in the Imperial Council could vote for emergency military aid when the Chaos invasion was at its worst—a credit reserve he had accumulated with battlefield sacrifices over the past twenty years, but the credit reserve was not gold coins and could not be redeemed every year."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "The governance of the Oster Territory is the administrative model closest to the \"war economy\" in the empire and even the entire old world. The province is under a state of semi-military control authorized by the Imperial Council all year round, which means that the Elector Count can bypass the Imperial Council and directly recruit all males of age in the province into the army, seize grain in private warehouses for military supplies, and detain anyone suspected of being a Chaos follower without trial. It is not difficult to understand the necessity of this kind of power in times of emergency, but its long-term side effects are more profound: the civil economy of Osterland has gradually shrunk to the point of almost disappearing in three generations. The province's food self-sufficiency rate is only 50%, and the rest relies on military supplies from Midden Territory and Talabek Territory. The Shadow Forest is the only untapped potential resource in the Oster Territory - the depths of this forest contain the richest native timber in the empire, and legend has it that there are ancient elven ruins uncontaminated by Chaos in the deepest part of the forest - but the prerequisite for mining these resources is that you must be able to establish a safe stronghold in the Shadow Forest, and currently the Oster Territory is struggling to maintain existing settlements. From an imperial perspective, what Osterland needs is not additional military spending—it is a long-term plan to fundamentally rethink the governance model of the northern frontier."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "If you are a noble woman, Auster Understanding is the place you least want to go to, and it is also the place you are most unable to leave after you go. Daily life here isn't social season and tea parties - it's firewood, bandages, herbs and constant night patrols. The female nobility of the Osterland shouldered the heaviest practical governance work among the imperial provinces: while the men served on the border outposts, the entire logistical operation of Wolfenberg and the subordinate villages—wounded care, food distribution, children's education, plague quarantine—was managed and executed almost entirely by women. There are no gilded ballrooms in Reikland, no parades in Ivyland - just storerooms filled with dried herbs and waste gauze, a group of women sitting around the only fire in the long dark nights of winter mending soldiers' uniforms, and an indestructible sisterhood forged by the flames of war. In the Osterland, becoming a noble woman is not a show of status - it is an inheritance of responsibility. Your name will appear on the supply list of the troops at the border outpost, and the soldiers will know your handwriting."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Running a family in Osterland is a long-lasting task that consumes all reserves—material reserves, spiritual reserves, and blood reserves. The Von Raukoffs served as Elector Counts of Osterland for five generations, but in those one hundred and fifty years the family consumed over twenty adult males - eight of whom died in battles directly related to Chaos, and three who suffered mental breakdowns caused by the corruption of Chaos that ended their eligibility to rule. The family rules of the Oster Territory are completely opposite to those of other provinces in the empire: you do not want to hoard land - land is not valuable on the edge of the Shadow Forest, because it may be corrupted by Chaos into uninhabitable scorched earth tomorrow; what you want to hoard is knowledge - about the seasonal changes of the Shadow Forest, about the marching pattern of the Chaos battle group, and about the operational experience of how to maintain the operation of supply lines in extreme environments. The \"border survival knowledge\" accumulated by a family that has survived in the Oster Territory for more than three generations is a unique strategic asset in the entire empire. When formulating the strategy for the northern defense line, Altdorf's commanders relied far more on the opinions of the von Laukow family than they relied on the votes of the Imperial Parliament."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Before coming to Osterland, I thought I had been around all the borders of the empire - until I saw the Shadow Forest, I didn't know that the so-called \"dangerous areas\" I had stayed in before were just picnic outings. This forest is alive - not that there are tree people and elves in it, but that the forest itself is slowly and consciously devouring all traces of civilization. The path you confirmed the last time you passed has disappeared next time you come back, the marks you carved in the trees yesterday have turned into unfamiliar symbols when you look at them today, and you wake up after camping for the night in the glade to find that the dirt outside your tent has footprints that do not belong to any known animal - more footprints than all the people in your camp combined. Osterland's pay is extremely high - the forest patrol commission paid by Wolfenberg's Garrison Command is three times the empire's average - but the contract period usually does not exceed six months, because a normal person cannot leave the Shadow Forest intact psychologically and physically after six months."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Business in the Oster Territory is not called commerce, it is called \"field material dispatch\" - this is the most accurate official term invented by the Imperial Logistics Department. There is almost no free market in the province: more than 90% of the materials circulated are purchased and distributed through the provincial military supplies office, and the price is determined by the government rather than supply and demand. For foreign merchants, the biggest business opportunity in Osterland is military orders - crude iron imported from Middenland (used to repair weapons and armor at border outposts), leather imported from Talabekland (used to make winter military boots), and holy water imported from Stirland (used to purify wounds slightly contaminated by Chaos). The payment of these orders is guaranteed by the Imperial Treasury, and there is no risk of commercial default - provided that your convoy can survive the last third of the journey from Midenland to Osterland. There are no armed guards on that stretch to ensure your safety. There is no distinction between rich and poor merchants doing business in Osterland - there are only two types: those who have lived long enough and those who have just arrived and are naive."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Osterland - the northeastern frontier province of the empire, the first line of defense facing the Chaos Wastes, the outpost of human civilization west of the Shadow Forest",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Osterland Empire Province Chaos Front Shadow Forest"
+  ]
+}

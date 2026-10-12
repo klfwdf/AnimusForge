@@ -1,0 +1,132 @@
+{
+  "Id": "rule_House_Foundations_House_Fossoway",
+  "Keywords": [
+    "House Fossoway",
+    "Apple"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Fossoway family is an ancient family in the Reach known for its apple orchards and apple crests. The most important two are distinguished by red apples and green apples. The story of the two divisions is related to a joust, a succession dispute and an unreclaimed pride; from then on, relatives with the same surname were polite to each other at banquets, but insisted on their own colors in heraldry and politics. Fossoway's fertile land, orchards, wine vinegar, wooden barrels and river trade routes gave the family stable wealth. Apples may seem gentle, but the red and green colors within the family remind people that in Hebend, the sweetest fruit may also hide the longest old grudges."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "reach"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The nobles of the Reach do not mix red and green apples into one flag. The two families have the same origin, but each has its own hall, marriage alliance, and dignity to uphold; they may toast together in front of Highgarden, and still argue about who is the more orthodox Fossoway when they return to their orchard."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "reach"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "merchant",
+          "artisan"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The orchardists, brewers and coopers had their own opinions on the branch dispute: the ripeness of the apples was not delayed by the color of the family coat of arms. If the red branch and the green branch can protect orchards, rivers and markets, the people will be willing to let the nobles continue to argue; if the dispute leads to expropriation, the sour smell will spread throughout the village faster than wine and vinegar."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Fossoway The Fossoway family has multiple branches and is famous for its apple heraldry and orchard tradition; the differences in heraldry between the branches also illustrate the fine division of the Reach family. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Fossoway The Fossoway family has multiple branches and is famous for its apple heraldry and orchard tradition; the differences in heraldry between the branches also illustrate the fine division of the Reach family. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Fossoway The Fossoway family has multiple branches and is famous for its apple heraldry and orchard tradition; the differences in heraldry between the branches also illustrate the fine division of the Reach family. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Fossoway The Fossoway family has multiple branches and is famous for its apple heraldry and orchard tradition; the differences in heraldry between the branches also illustrate the fine division of the Reach family. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "House Fossoway: The Fossoway family has multiple branches and is famous for its apple heraldry and orchard tradition; the differences in heraldry between the branches also illustrate the fine division of the Reach family."
+  ]
+}

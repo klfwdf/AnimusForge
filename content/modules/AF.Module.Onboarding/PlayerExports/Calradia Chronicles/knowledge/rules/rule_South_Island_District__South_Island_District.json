@@ -1,0 +1,45 @@
+{
+  "Id": "rule_South_Island_District",
+  "Keywords": [
+    "Southern Island District"
+  ],
+  "RagShortTexts": [
+    "The ancestors of the Kalad people (Imperial people) came from the southern island area a thousand years ago"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Southern Island District? Where is that? Not sure."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "scouting": 120
+        }
+      },
+      "Content": "The Southern Island Area refers to an archipelago in the southern part of the Western Ocean, where there are some indigenous people who often come to the mainland by boat to seek life. The ancestors of the Kalad people (Imperial people) were from there. A thousand years ago, they came to the mainland by ship and began their journey of conquest."
+    }
+  ],
+  "TextMappings": []
+}

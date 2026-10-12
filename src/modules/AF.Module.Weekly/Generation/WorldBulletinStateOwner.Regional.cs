@@ -30,7 +30,7 @@ internal sealed partial class WorldBulletinStateOwner
                     existingRecords.TryGetValue(id,out var existing);
                     entry = existing == null ? new EventRecordEntry {
                         EventId=id, EventKind="kingdom", ScopeKingdomId=nation, WeekIndex=week,
-                        Title=nation == WeeklyReportArchivePolicy.OtherKingdomId ? "其他近况" : _port.ResolveKingdom(nation) + "近况"
+                        Title=nation == WeeklyReportArchivePolicy.OtherKingdomId ? WorldBulletinPolicyTexts.Prompt("WBLT_Prompt_036") : _port.ResolveKingdom(nation) + WorldBulletinPolicyTexts.Prompt("WBLT_Prompt_037")
                     } : WeeklyReportArchivePolicy.CloneForArchive(existing);
                     products.Add(id, entry);
                     sourceKeys.Add(id,WeeklyReportArchivePolicy.RecentSourceKeys(entry));

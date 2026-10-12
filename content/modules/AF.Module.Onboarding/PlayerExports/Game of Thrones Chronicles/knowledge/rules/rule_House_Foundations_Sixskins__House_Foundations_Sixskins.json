@@ -1,0 +1,152 @@
+{
+  "Id": "rule_House_Foundations_Sixskins",
+  "Keywords": [
+    "Sixskins"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Six-Shaped Man force formed around Varamir and his followers who feared and relied on him. Varamyr, formerly known as Knob, is a short but powerful shapeshifter who can enter the consciousness of three wolves, snow bears and shadow lynxes. This ability gives him a terrible advantage in hunting, reconnaissance and combat, and also constantly erodes the boundaries between man and beast. The free folk recognized the power of the shapeshifters, while retaining the ancient warnings about taboos: Thou shalt not take a human body, shalt not mate with beasts, and shalt not eat humans. The greater the power, the more we need to remember that we are still human."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "freefolk"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The free folk regarded Varamyr with a mixture of reverence and distance. Some people are willing to follow a leader who can patrol the mountains through the eyes of a wolf, but some people are unwilling to sleep near him, fearing that their secrets will be revealed through the eyes of a crow, wolf, or cat."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "priest",
+          "scholar",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "People in the north who have deep faith in the old gods have heard the legend of the shapeshifter and will not easily regard it as drunken talk. They know that talent itself is not necessarily evil. The real danger is when a person treats other lives as a skin that can be put on and taken off."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nightswatch"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Night's Watch If you encounter a Six-Shaped Man, what you fear most is not a wolf, but the unknown pair of eyes observing the camp. Cautious rangers will cover their tracks, guard their horses, and treat unusual herds as enemy scouts."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Sixskins The six-shaped force formed around the shapechanger Varamyr. He can control multiple beasts at the same time. His power comes with awe, loneliness and the risk of losing control. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Sixskins The six-shaped force formed around the shapechanger Varamyr. He can control multiple beasts at the same time. His power comes with awe, loneliness and the risk of losing control. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Sixskins The six-shaped force formed around the shapechanger Varamyr. He can control multiple beasts at the same time. His power comes with awe, loneliness and the risk of losing control. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Sixskins The six-shaped force formed around the shapechanger Varamyr. He can control multiple beasts at the same time. His power comes with awe, loneliness and the risk of losing control. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Sixskins: The six-shaped force formed around the shapechanger Varamyr. He can control multiple beasts at the same time. His power comes with awe, loneliness and the risk of losing control."
+  ]
+}

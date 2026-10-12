@@ -1,0 +1,209 @@
+{
+  "Id": "rule_organ_gun",
+  "Keywords": [
+    "Organ Gun",
+    "Organ Gun Multi-Barreled Artillery",
+    "Organ Gun Dwarf Artillery",
+    "Close-Range Firepower",
+    "Armor-Piercing Shot",
+    "Field-Clearing Weapon",
+    "Dwarf Engineering",
+    "Volley Gunfire"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Organ Gun is a mad weapon that only a Dwarf Engineer could ever devise—assembling four cannon barrels side by side upon a rotating carriage so that once the fuse is lit, all four barrels spew lethal armor-piercing shot in rapid succession, tearing any approaching enemy formation into bloody shreds."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Organ Gun! Now that is engineering, not that sloppy 'load-light-and-pray-it-hits' nonsense of human artillerymen. Four barrels, a single fuse, and the instant the Master Gunner pulls the firing lever—BOOM! BOOM! BOOM! BOOM!—four blasts packed so tightly together you would almost swear they went off at the exact same instant. Our barrels are forged from refined steel rather than the inferior cast iron of humans, so the breeches never burst; our shot is carefully weighed, uniform-caliber lead-iron alloy balls, so the trajectory is dead true. Any veteran gunner who has crewed an Organ Gun on the rampart emplacements of Karak Hirn will tell you: set your depression angle right and lay your fire zone from the base of the wall out to fifty paces—any foe trying to raise ladders and scale the walls will be shredded into a sieve by that storm of lead and iron. Humans call it the 'Organ Gun' because the report sounds like a pipe organ, which is not a bad name, though I prefer the name we Dwarfs gave it: 'Grungni's Broom'—because it sweeps the ground in front of the ramparts spotless."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Organ Gun is the ultimate solution for close-range defensive firepower. At long range it is virtually useless—excessive dispersion renders long-range accuracy abysmal—yet compress the distance to within two hundred paces, and the Organ Gun becomes an insurmountable wall of destruction. Optimal deployment doctrine: integrate Organ Guns into rampart battery sequences to form layered fire with longer-ranged Great Cannons—Great Cannons engage at medium to long range, while Organ Guns sweep close range. In field battles, Organ Guns should be positioned directly behind infantry blocks, pre-aimed along the approaches where enemy forces are likely to mass and charge. Its weakness is equally fatal: reloading is agonizingly slow—after a single volley, it takes at least a quarter of an hourglass to reload all barrels, during which time the Organ Gun is completely helpless to defend itself and must be closely guarded by Hammerers or Ironbreakers."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "The design principles of the Organ Gun belong to the 'Volley Suppression' branch of Dwarf engineering, its prototype tracing back to the primitive multi-barreled black-powder projector developed by Morgrim Blackpowder, founder of the Dwarf Engineers Guild (circa -500 IC). The standard modern pattern is the 'Four-Barreled Rotating Volley Type' (model designation DWF-OC-4B, recorded by the Karak Hirn Royal Arsenal in 1550 IC)—consisting of four forged-steel barrels mounted in parallel upon a rotating cast-iron carriage, whose firing mechanism employs the 'Serial Flash-Channel Ignition Method': a single main fuse connects to four branch fuses, and when the first barrel ignites, the black-powder gas jet sequentially ignites the remaining three barrels through internal flash-channels at intervals of roughly one-sixth of a second. As for ammunition, standard shot consists of two-inch-diameter spherical lead-iron alloy balls, loaded one per barrel, with an effective flat-trajectory range of three hundred feet and a maximum dense kill zone between fifty and one hundred and fifty feet. The most famous combat application of the Organ Gun in history took place during the Siege of Barak Varr (2301 IC), when eight Organ Guns on the sea-gate ramparts of Barak Varr laid down continuous saturating fire against an entire Greenskin siege assault wave; according to incomplete post-battle tallies, those eight guns gunned down over two thousand Greenskins within two hours. The conclusion of the Imperial School of Engineers is that if the Empire could mass-produce Organ Guns at an acceptable cost, every city wall in the Old World would become an impregnable fortress—yet to this day that remains pure fantasy."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "I once tried to have my armorers copy the Organ Gun—and the contraption they built blew up during test-firing and killed one of the armorers. Dwarf artillery technology is not something humans can master through simple imitation. However, during a visit to Karak Kadrin, I carefully observed Dwarf gun crews in action: their movements were as precise as runic engravings, the rhythm of load-aim-fire timed to the beat of a heart. I think if the Empire truly wishes to field usable multi-barreled artillery, what we need to learn from the Dwarfs is not their blueprints—it is their discipline."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The construction cost of a single Organ Gun, reckoned in gold, equals roughly a full year's tax revenue from a small-to-medium human baronial castle. Yet I tell you, it is worth every coin. If you have the resolve to pay that sum, you can mount two of them above your castle's main gate—and from that day forth, no enemy will ever cross the open ground before your doors. The prerequisite, however, is that you must cultivate good relations with the Dwarf Engineers Guild so that they are willing to place the Organ Gun on their 'authorized external sale list.' Possessing an Organ Gun signifies that your house is regarded by the Dwarfs as an ally worthy of serious respect."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "At the siege of Black Crag Keep, I witnessed a test-firing of an Organ Gun on the battlefield—the Dwarf Engineers called it 'a demonstration for our human allies.' They set the target two hundred feet away at the wreck of an abandoned Orc rock lobber; after a single volley from one Organ Gun, nothing was left of that catapult on the spot save a single wheel. The expressions on the faces of the Imperial artillery captains present looked as though they had seen a ghost. Afterward, someone remarked that the Dwarfs must mix something else into their black powder formula—not just ordinary sulfur, saltpeter, and charcoal."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The bore caliber of Organ Gun barrels is strictly standardized—the rifling and bore of every batch of barrels must be accurate to within a micro-inch. This means the reject rate is astronomically high: according to estimates by Nuln arms dealers, the man-hours required for a Dwarf Engineer to manufacture a single qualified Organ Gun barrel roughly equal the man-hours required for the Empire to cast an entire field cannon. On the arms market of Altdorf, the price of a secondhand Dwarf Organ Gun rivals that of a noble townhouse, yet it is virtually impossible to buy at any price—the Dwarfs rarely sell them, and even when they do, they sell only to buyers bearing a permit signed personally by the Dwarf High King."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Volley Suppression: a Dwarf engineering term referring to the tactical doctrine of projecting saturating firepower over a specific area within a brief window using multi-barreled artillery.",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Organ Gun Organ Gun Multi-Barreled Artillery Organ Gun Dwarf Artillery"
+  ]
+}

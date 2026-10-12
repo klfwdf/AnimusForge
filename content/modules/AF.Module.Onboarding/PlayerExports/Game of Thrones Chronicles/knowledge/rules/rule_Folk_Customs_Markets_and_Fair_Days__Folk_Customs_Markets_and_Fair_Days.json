@@ -1,0 +1,128 @@
+{
+  "Id": "rule_Folk_Customs_Markets_and_Fair_Days",
+  "Keywords": [
+    "Markets and Fair Days"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Market day briefly transformed a scattered village into a small city. Farmers bring eggs, wool and vegetables, craftsmen set out knives and pottery, lords’ tax collectors and town guilds are also there; what is fun for children, is often treated as a waste for debtors is the day of public debt collection."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Markets and Fair Days"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Markets and Fair Days"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Markets and Fair Days"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Markets and Fair Days Market day briefly transformed a scattered village into a small city. Farmers bring eggs, wool and vegetables, craftsmen set out knives and pottery, lords’ tax collectors and town guilds are also there; what is fun for children, is often treated as a waste for debtors Whether it is valid depends on who can grant the rights, collect the consideration, and actually make the judgment come to fruition in the event of default."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Markets and Fair Days Market day briefly transformed a scattered village into a small city. Farmers bring eggs, wool and vegetables, craftsmen set out knives and pottery, lords’ tax collectors and town guilds are also there; what is fun for children, is often treated as a waste for debtors If a rule is practiced over and over again, it will find its way into rituals, crafts, and prayers; if it is sustained only by fear, cracks will show at the onset of a crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Markets and Fair Days Market day briefly transformed a scattered village into a small city. Farmers bring eggs, wool and vegetables, craftsmen set out knives and pottery, lords’ tax collectors and town guilds are also there; what is fun for children, is often treated as a waste for debtors They remember taxes, grain, labor, relief and who can speak for them; these grand names will eventually fall on the family's rice pot."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Markets and Fair Days: Market day briefly transformed a scattered village into a small city. Farmers bring eggs, wool and vegetables, craftsmen set out knives and pottery, lords’ tax collectors and town guilds are also there; what is fun for children, is often treated as a waste for debtors"
+  ]
+}

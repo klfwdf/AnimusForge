@@ -7,7 +7,7 @@ internal sealed class NpcPersonaReadinessSnapshot
         bool available, bool needsGeneration, bool active, bool coolingDown)
     {
         HeroId = heroId ?? "";
-        Name = string.IsNullOrWhiteSpace(name) ? "该NPC" : name.Trim();
+        Name = string.IsNullOrWhiteSpace(name) ? AnimusForge.PersonaUiTexts.Text("AF_PERSONA_UI_UnknownNpc", "Unknown NPC") : name.Trim();
         Personality = personality ?? "";
         Background = background ?? "";
         Available = available;

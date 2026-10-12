@@ -1,0 +1,29 @@
+{
+  "Id": "rule_praetor",
+  "Keywords": [
+    "Archon",
+    "Duke"
+  ],
+  "RagShortTexts": [
+    "Consuls became de facto local lords"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Consul is the official title of the place under the jurisdiction of the empire. After the Battle of Pandrak, the consuls gradually became feudal and became de facto local lords"
+    }
+  ],
+  "TextMappings": []
+}

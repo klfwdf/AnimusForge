@@ -1,0 +1,28 @@
+{
+  "Id": "rule_Karahan_horse",
+  "Keywords": [
+    "Karaham Horse"
+  ],
+  "RagShortTexts": [
+    "The Karakhan horse is the senior military horse of Khuzait"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Karakhan horse is a high-level military horse of the Khuzait. It can run fast but has a fierce temper. It has great strength but low endurance. The imperial people use them as race horses, while the Khuzait people use them to equip their own cavalry and mounted archers."
+    }
+  ],
+  "TextMappings": []
+}

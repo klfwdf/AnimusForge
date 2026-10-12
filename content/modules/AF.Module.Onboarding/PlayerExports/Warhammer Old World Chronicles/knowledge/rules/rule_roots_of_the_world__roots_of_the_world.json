@@ -1,0 +1,208 @@
+{
+  "Id": "rule_roots_of_the_world",
+  "Keywords": [
+    "world roots",
+    "Underground magic network",
+    "forest passage",
+    "teleportation",
+    "ancient roots",
+    "Wood Elf Maneuver",
+    "Athel Loren's artery"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The World Roots are a network of magical roots hidden deep in the earth, connecting all the ancient forests of the old world. The wood elves are able to instantly teleport armies between forest areas thousands of miles apart through these underground passages, so that enemies who think they have destroyed the elf outposts and feel safe often find that a whole army of elves has emerged from their own backyard woods a few months later."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The World Roots are the arteries and nerves of Athel Loren, proof that we are truly one with the planet. When the stupid foreigners thought that we wood elves were besieged in an isolated small forest and were waiting to die, our army had already shuttled through the roots of the world between the ancient woodlands of Loren, Akindor, and the Gray Mountains. This is not magic, this is something older than magic - a deep connection that has been woven into the world before humans, dwarves and even elves were born. Our singers can 'hear' the echoes from the distant forest in the roots of the world, and our army can find the root entrance under any ancient tree that is more than a thousand years old. The roots of the world are the true reason for Athel Loren's invincibility: you burn a thousand trees, but you cannot burn the roots deep within the earth."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The presence of the World Roots makes the Wood Elves an enemy that is almost impossible to block on a strategic level. Any siege against the forest is pointless - supplies, reinforcements, and retreat routes can all be taken through the roots at any point in time. From a military perspective, the only way to limit the use of roots is: first, to destroy the ancient anchor trees at the entrance to the roots - this requires identifying which specific trees are the entrance nodes, and are usually heavily guarded; second, to use runes or magical interference to block the transmission of spiritual currents in the roots. The dwarf rune blacksmith has successfully used forbidden runes to block the root passages in a small area, but this method requires the precise direction of the roots to be known in advance, which is not practical in large-scale battles."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "The existence of the World Root has been confirmed, but its operating mechanism remains a controversial subject in Imperial scholarship. The leading theory - proposed by Professor Georg von Krambach of the Department of Natural Philosophy at the University of Middenheim in 2103 Imperial Calendar - holds that the world roots are a geo-magical composite network implanted on the planet by the Old Ones in ancient times, originally used to stabilize the planet's terrain and regulate the global climate. With the disappearance of the Old Ones and the invasion of Chaos, much of this network has become dormant, but Athel Loren's portion remains active due to the elves' continued sylvan rituals. The flow rate of time in the root channel is extremely unstable. According to the reports of those who enter, sometimes it only takes a moment to travel thousands of miles, and sometimes it takes several days - this is closely related to the seasonal increase and decrease of necromantic energy and life magic in the roots. The most detailed book about the roots of the world is \"The Forest Abyss\", written by a defected wood elf singer, Vesselan Leafsong, in the year 2450 of the Imperial Calendar. However, only seven volumes of this book were printed before being banned by the Sigmar Church, and only three volumes are extant."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "As an elf guest, I requested to experience a world root travel. The feeling is indescribable - not like walking or flying, but more like you're being swallowed by the earth and spit out somewhere else. You can feel countless subtle vibrations in the passage, and the elf singer told me that they are the throbbing of everything happening in the distant forest: a tree falls, a deer dies, a forest fire is extinguished. When I stepped out of Loren's root entrance, the gray mountains were already behind me, only a few minutes later. I asked the elves if they could use this network to monitor the entire world? The singer smiled and said: 'The world is too small, and we don't want to monitor everything. '"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "There is a record in our family history from the time of our great-grandfather who discovered a root entrance in the Gray Mountains that was not marked as forbidden by the wood elves. He struggled for ten years over whether to use this discovery to negotiate with the wood elves - could he exchange \"protecting the entrance location\" for peace in the forest? In the end, he chose silence and locked the map deep in the family cellar. He said: 'The roots of the world are the wood elves' last privacy. If you take it away, they will no longer have any reason to show mercy to you. 'I have always kept these words in mind."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "In the eastern wilderness of the Border Prince Territory, there is a human village built next to an ancient oak forest. There is a legend in the village: On a full moon night, if you put your ear to the roots of the oldest oak tree, you can hear whispers from Athel Loren. I tried it once - in the deep silence, I did hear something, but it wasn't a whisper, it was footsteps. Thousands of footsteps, moving slowly, hugely, and unstoppably forward from the depths of the earth. I left the village the next day and never spent any extended time near the ancient woodland again."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "As a freight trader, the biggest thing I feel about the roots of the world is extreme business envy. Think about it - the wood elves can send a load of goods from Loren to the Gray Mountains in an instant, but we have to spend three months trekking the dangerous trade route and paying the cost of mercenaries and convoys. I tried to negotiate trade with the wood elves, offering human goods in exchange for root rights—and they nearly drove me out of the forest. The singer said: 'The roots of the world are not trade routes, but bloodlines. Don't inject your greed into our mother's blood. 'The negotiations failed, but I understand the feeling."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "An underground network of magical roots connecting all the ancient forests of the Old World",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "World Roots Underground Magic Network Forest Passage"
+  ]
+}

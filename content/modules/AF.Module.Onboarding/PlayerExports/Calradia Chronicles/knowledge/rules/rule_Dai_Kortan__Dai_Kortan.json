@@ -1,0 +1,155 @@
+{
+  "Id": "rule_Dai_Kortan",
+  "Keywords": [
+    "Day Kortan"
+  ],
+  "RagShortTexts": [
+    "The House of Dai Cortan lost the Knights of the Banner at the Battle of Pandrak, and afterwards blamed the king for his arrangements."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": [
+          "clan_vlandia_4"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "We are Day Kortan. It is not enough that the salads are ours. The family hall hangs portraits of the patriarchs of the past generations, from the ancestor who first stepped into the gates of Sharath during the Osric era to Ingatel, the current patriarch, who has pushed the family to unprecedented heights and pushed us into the most dangerous gamble. Yingateer scolded the king as a coward at the royal council, and he scolded him so loudly that we sat down and listened to relieve our anger. But after relieving his anger, the numbers in the ledger were not deceptive—Pendrac’s damaged flag knights and crossbowmen, pensions, and re-equipment costs were all borne by the customs duties at Sharas Port. Ingatel said that this was the price, and that he would make it all back after swallowing up the western part of the empire. But the western part of the empire is not a piece of fat waiting to be cut. Galios's legions are waiting there. We tried to persuade the patriarch to restrain himself, but he slapped the table and yelled at us: \"Dai Kortan does not raise cowards.\" We are not cowards, we are settling scores. But no one in the clan dared to confront him. He is so strong that the fate of the entire family is tied to his temper. If he wins the bet, we will be the first family of Vlandia; if he loses the bet, the pier of Port Sharas will still be the pier, but the flag may no longer be the flag of Dai Kortan."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": [
+          "clan_vlandia_1"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Dai Kortan family is the biggest thorn in the side of our Merok royal family. Aldric de Tiha is the calm opponent, Ingatell de Cortan is the roaring boar. Aldric at least maintained his dignity, and Ingatell didn't even give him this face. He slammed the table at the royal meeting and called us cowards. After scolding us, we were still unable to cut off his fiefdom - cutting off Sharas would directly reduce the royal family's revenue by a large amount, and the supply of the fleet, the defense of the port, and the trade on the west coast would all be affected. King Detel had endured him for most of his life, not because of weakness, but because he had to endure it. Because Gatell charged too hard in Pandrak and lost one of his men, and when he came back, he scolded the king for his poor management. If he had replaced other vassals, he would have been deposed long ago. But the Day Kortans were different. They were rich enough to buy off the swinging barons, and rich enough to raise their own team of flag knights. I don't like Ingatell, but I admit that his ambition is one of the driving forces behind Vlandia's expansion. It's just that the sword of ambition is too sharp, it can cut the enemy as well as oneself."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": [
+          "clan_vlandia_3"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The de Cortans were the colleagues we least wanted to deal with, yet we had to sit side by side with them at the Council. The leader of Ingatel is a reckless man, but he is not a fool - he can turn a debate into a personal attack in three sentences, and can overturn the table when you need to calm down the most. By the time you are scrambling to clean up the mess, he has already left with his faction. Caratilde often said that the trick to quarreling with Ingatell is not to pick on him. If he scolds you, let him scold you. After the scolding is over, talk about business. But when it comes to serious matters, he doesn't listen at all - he only cares about expansion, only about war, and only about whether Sharath's gold can buy more flag knights and a greater voice. We admit that his family is rich and that his knights can fight, but we do not recognize his strategy. Vlandia can't always live by fighting. Although King Detel's arbitration is slow, at least people don't have to die every day. Ingatell doesn't understand this, or he understands it but doesn't care."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": [
+          "clan_vlandia_2"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Kortans? Sharath's gang of nouveau riche. The Dai Tiha family is descended from the founding royal family, Palawind is the old capital of the empire, and our roots have been rooted in the land of Vlandia for hundreds of years. Dai Kortan's family only relies on a port in Sharas, which was snatched from the imperial people a hundred and fifty years ago. Now he dares to yell at us in the imperial council. When Yingateer yells, I usually don't answer his words, not because I'm afraid of him, but because I'm too lazy to compete with him. But the gold in his hands does work. In Pandrak, because Gatell charged too hard, he was counterattacked by Peng Tong's armored cavalry, killing many people. Afterwards, he passed the responsibility to Detel at the imperial meeting. I stood aside and did not speak for him - who did he blame for being so angry? But I don’t want him to fail either. When he fell, Salas changed owners, and the Dai Merlock family or some other family took over, which would cause trouble. A reckless but wealthy Ingatell is the wheel on Vlandia's chariot, noisy and bumpy, but rolling more or less forward."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Day Kortans are the ones we least want to mess with, and the ones we least want to follow. The reason I don’t want to mess with him is because Gatell has such a bad temper. He scolds the king like a grandson in the royal council. If anyone dares to argue with him, he will remember you for the rest of his life and squeeze your trade routes with Sharath’s gold later. I don't want to follow him because he is too radical - he wants to conquer the western part of the empire, expand, and use swords to redraw the borders. Our small family rushed after him. If we won the battle, we would only get a few pieces of land, but if we lost the battle, our ancestral graves would be dug up. But we do agree with him on some proposals at the Imperial Council - not because we agree, but because he shouts the loudest. Whoever shouts louder seems to be justified. This is the fault of the Vlandia Council."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Dai Kortan family is the most unstable sector in Vlandia's political landscape. They control the port of Sharath and have strong economic power. The current patriarch Ingatell is the core of Vlandia's expansionist faction. From an external perspective, the conflict between the Dai Kortan family and the royal family Dai Merok is one of the internal cracks in the feudal structure of Vlandia: a family with huge wealth but lack of corresponding political status will inevitably seek a path to advancement by challenging the royal power. Ingatell's performance at the Battle of Pandrak was a concentrated display of his personal style - brave but reckless, decisive but reckless. From a tactical perspective, he suffered heavy losses in the counterattack against Peng Tong's armored cavalry; from a strategic perspective, he successfully transferred the responsibility to Deter after the war and retained his political status. At present, the Dai Kortan family is still gathering strength and waiting for the next expansion window. If Vlandia becomes involved in a large-scale foreign war, Ingatell will be a key player that cannot be ignored."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The one from the Kortan family? The great lord of Salas. Our place is far away from Sharas and we haven't seen him much in person, but businessmen say he has a bad temper and dares to slam the table in front of the king. We Vlandia people are inherently aggressive, and such a domineering gentleman is to our liking - at least he is better than those soft Imperial guys in the south. He has many knights and crossbowmen under him, and they charge most fiercely during wars. We all know this. However, their tax collection is very harsh. They charge a share of all goods at Sharas Port. When our merchants sell goods to Sharas, most of their profits will be lost after a few tax checks. Heng returns to Heng, money returns to money. We Vlandians admire tough guys, but we also feel sorry for the pocketbook."
+    },
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Kortan? A great nobleman over there in Vlandia controls the great port of Shalas. I don't know exactly what he looks like, but a businessman mentioned him - he has a very bad temper. He dared to call him a coward in front of the king. After the scolding, he still had to live with his tail intact. It seems that their family is quite powerful. There is an Adli family there, which is also a big family. The relationship between several big families and the king is said to be very delicate. It is not uncommon for nobles to fight with each other, as long as the war does not reach the gate of our village. However, the goods in Port Salas are good, cheap and plentiful, and the old imperial items that flowed over there are very easy to sell here. I don’t care how the Kortan family governs the city, just don’t stop at the port."
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,152 @@
+{
+  "Id": "rule_House_Foundations_Caron",
+  "Keywords": [
+    "House Caron",
+    "Nightingales",
+    "No Song So Sweet"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Cullen family, based in Nightsong City, is one of the oldest and most important Stormland frontier nobles in Dorne March. The head of the family traditionally holds the title of \"Lord of the March\". The family emblem is a golden nightingale on a black background, with the motto \"The song is unparalleled\". There is no contradiction between the soft heraldry and the cruel frontier: Nightsong City has long guarded the direction of the Prince's Pass, and the family's reputation comes from the memories of knights, beacons, mountain roads and repeated wars with Dorne. Border lords will praise Cullen's martial name, while commoners will hope that ancient blood feuds don't burn pastures anew with each generation."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "stormlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Stormlands lords consider Cullen one of the oldest gatekeepers of the Dornish Marches. Nightsong City and the title \"Lord of the Frontier\" carry the memories of generations of wars, and the coat of arms of the Singing Nightingale reminds people that the frontier is not all about iron and blood, but also wedding banquets and songs interrupted by beacon fires. Karen’s glory always comes with the price of keeping watch."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "stormlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "People around Nightsong City learn to distinguish the echoes from horns, horse hooves and mountain passes from an early age. The title of the frontier is not a long title for them at the banquet, but it means who will build the tower, who will lead the patrol, and who will stop the enemy first when they cross the pass. A good lord makes the nightingale sing in the night, but a bad lord only makes the widow cry."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Dornish people remember Cullen because the histories on both sides of the Crimson Mountains have always had their own songs. The Stormlanders call them the Gatekeepers, and the Dornish Marchers might call them the Enemies blocking the old roads. Both sides know that Nightsong City is not just a name, but a frontier stronghold that must be carefully calculated before marching."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Caron The ancient tribe from the Storm Land frontier in Nightsong City has a family emblem of a golden nightingale on a black background and a motto of \"unparalleled singing\". The family head has the tradition of being the lord of the frontier land. Its fame comes from the Mountain Pass, Beacon Fire and Dornish March Wars. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Caron The ancient tribe from the Storm Land frontier in Nightsong City has a family emblem of a golden nightingale on a black background and a motto of \"unparalleled singing\". The family head has the tradition of being the lord of the frontier land. Its fame comes from the Mountain Pass, Beacon Fire and Dornish March Wars. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Caron The ancient tribe from the Storm Land frontier in Nightsong City has a family emblem of a golden nightingale on a black background and a motto of \"unparalleled singing\". The family head has the tradition of being the lord of the frontier land. Its fame comes from the Mountain Pass, Beacon Fire and Dornish March Wars. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Caron The ancient tribe from the Storm Land frontier in Nightsong City has a family emblem of a golden nightingale on a black background and a motto of \"unparalleled singing\". The family head has the tradition of being the lord of the frontier land. Its fame comes from the Mountain Pass, Beacon Fire and Dornish March Wars. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "House Caron: The ancient tribe from the Storm Land frontier in Nightsong City has a family emblem of a golden nightingale on a black background and a motto of \"unparalleled singing\". The family head has the tradition of being the lord of the frontier land. Its fame comes from the Mountain Pass, Beacon Fire and Dornish March Wars."
+  ]
+}

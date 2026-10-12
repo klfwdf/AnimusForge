@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base type="string">
+  <tags><tag language="简体中文" /></tags>
+  <strings>
+    <string id="AF_SOCIAL_UI_IntimacyCompleted" text="你与 {NAME} 发生了亲密行为。" />
+    <string id="AF_SOCIAL_UI_PrivateRelationshipDelta" text="【私人关系】{NAME} {DELTA}（当前 {CURRENT}）。" />
+    <string id="AF_SOCIAL_UI_TrustDelta" text="【信任变化】{NAME} 对你的个人信任 +{DELTA}（因私人关系提升，当前 {CURRENT}）。" />
+    <string id="AF_SOCIAL_UI_MarriageFallbackMission" text="【婚姻系统】检测到婚姻已生效；当前在会面/任务场景中，已补发婚姻记录与提示。" />
+    <string id="AF_SOCIAL_UI_MarriageFallbackNotice" text="【婚姻系统】检测到婚姻已生效，已补发婚礼通知。" />
+    <string id="AF_SOCIAL_UI_MarriageFallbackQueued" text="【婚姻系统】检测到婚姻已生效；婚礼通知已由本次婚姻事件排队。" />
+    <string id="AF_SOCIAL_UI_MarriageStatus" text="【婚姻系统】{STATUS}" />
+    <string id="AF_SOCIAL_UI_RoyalDomainLoyalty" text="{SETTLEMENT} 忠诚度 +{AMOUNT}" />
+    <string id="AF_SOCIAL_UI_RecruitmentFailed" text="【招募失败】{DETAIL}" />
+    <string id="AF_SOCIAL_UI_RecruitmentSkipped" text="【招募跳过】{DETAIL}" />
+    <string id="AF_SOCIAL_UI_RecruitmentIntercepted" text="【招募拦截】{DETAIL}" />
+    <string id="AF_SOCIAL_UI_RecruitmentSucceeded" text="【招募成功】{DETAIL}" />
+    <string id="AF_SOCIAL_UI_RecruitmentMissingClanHero" text="缺少要加入玩家家族的目标英雄。" />
+    <string id="AF_SOCIAL_UI_RecruitmentAlreadyPlayer" text="目标本来就是玩家本人。" />
+    <string id="AF_SOCIAL_UI_RecruitmentPlayerPartyUnavailable" text="玩家家族或玩家队伍不可用。" />
+    <string id="AF_SOCIAL_UI_RecruitmentMissingNonHero" text="缺少要加入队伍的非英雄 NPC。" />
+    <string id="AF_SOCIAL_UI_RecruitmentTargetIsHero" text="目标是英雄，应走英雄入队链路。" />
+    <string id="AF_SOCIAL_UI_RecruitmentMissingLiveAgent" text="找不到当前说话 NPC 的 live Agent，无法复制外观与装备，已取消升格。" />
+    <string id="AF_SOCIAL_UI_RecruitmentInvalidAgentTemplate" text="当前 Agent 不是可升格的非英雄兵种模板。" />
+    <string id="AF_SOCIAL_UI_RecruitmentMissingPromotedName" text="无法确定升格 Hero 的个人名，已取消升格。" />
+    <string id="AF_SOCIAL_UI_RecruitmentTavernAlreadyHandled" text="酒馆雇佣兵池已被原版选项或其他流程处理，未重复执行入队。" />
+    <string id="AF_SOCIAL_UI_RecruitmentCaptivityCleanupFailed" text="目标英雄的俘虏状态或俘虏名册残留未能清除。" />
+    <string id="AF_SOCIAL_UI_RecruitmentHeroActivationFailed" text="目标英雄未能恢复为可加入队伍的活动状态。" />
+    <string id="AF_SOCIAL_UI_RecruitmentLordJoinFailed" text="目标英雄未能完成玩家家族成员身份或玩家主队归属更新。" />
+    <string id="AF_SOCIAL_UI_RecruitmentCompanionJoinFailed" text="目标英雄未能完成同伴身份或玩家主队归属更新。" />
+    <string id="AF_SOCIAL_UI_RecruitmentAlreadyCompanion" text="{NAME} 已经是玩家同伴并在玩家队伍中。" />
+    <string id="AF_SOCIAL_UI_RecruitmentAlreadyClanMember" text="{NAME} 已经是玩家家族成员并在玩家队伍中。" />
+    <string id="AF_SOCIAL_UI_RecruitmentAlreadyPromoted" text="{NAME} 已经由当前场景 NPC 升格为玩家家族 Hero，不能重复招募生成新的 Hero。" />
+    <string id="AF_SOCIAL_UI_RecruitmentTavernSoldiers" text="酒馆中 {COUNT} 名{NAME} 已全部作为普通士兵加入玩家队伍。" />
+    <string id="AF_SOCIAL_UI_RecruitmentPromotedCompanion" text="{NAME} 已升格为玩家同伴“{HERO}”，并加入玩家队伍{FOLLOW}。" />
+    <string id="AF_SOCIAL_UI_RecruitmentPromotedLord" text="{NAME} 已升格为玩家家族 Hero“{HERO}”，并加入玩家队伍{FOLLOW}。" />
+    <string id="AF_SOCIAL_UI_MarriageFormalFailed" text="正规联姻失败：{REASON}" />
+    <string id="AF_SOCIAL_UI_MarriageElopeFailed" text="私奔失败：{REASON}" />
+    <string id="AF_SOCIAL_UI_MarriageDivorceFailed" text="离婚失败：{REASON}" />
+    <string id="AF_SOCIAL_UI_MarriageFormalSucceeded" text="正规联姻成功：{LEFT} 与 {RIGHT} 已成婚。等级差D={TIER}，家族关系={RELATION}，族长综合信任={TRUST}。{EXTRA}" />
+    <string id="AF_SOCIAL_UI_MarriageElopeSucceeded" text="私奔成功：你与 {TARGET} 已成婚。当前 L={LOVE}，对象私人信任={TRUST}，对象家族融洽度F={HARMONY}。" />
+    <string id="AF_SOCIAL_UI_MarriageDivorceSucceeded" text="离婚成功：{LEFT} 与 {RIGHT} 已解除婚姻关系。{EXTRA}" />
+    <string id="AF_SOCIAL_UI_MarriageReasonMissingPair" text="未找到婚配双方。" />
+    <string id="AF_SOCIAL_UI_MarriageReasonSelf" text="不能让同一人与自己结婚。" />
+    <string id="AF_SOCIAL_UI_MarriageReasonAlreadyMarried" text="双方已经存在有效婚姻记录。" />
+    <string id="AF_SOCIAL_UI_MarriageReasonSameClan" text="正规联姻要求双方来自不同家族。" />
+    <string id="AF_SOCIAL_UI_MarriageReasonMissingTarget" text="未找到对方婚配对象。" />
+    <string id="AF_SOCIAL_UI_MarriageReasonMissingPlayerCandidate" text="未找到玩家家族婚配人选。" />
+    <string id="AF_SOCIAL_UI_MarriageReasonTargetNoClan" text="目标没有家族，无法走家族联姻流程。" />
+    <string id="AF_SOCIAL_UI_MarriageReasonNoRecord" text="未找到有效婚姻记录。" />
+    <string id="AF_SOCIAL_UI_MarriageReasonNotSpouses" text="双方当前并非彼此配偶。" />
+    <string id="AF_SOCIAL_UI_MarriageReasonMissingPlayer" text="未找到玩家英雄。" />
+    <string id="AF_SOCIAL_UI_MarriageBridePriceConsumed" text=" 已核销你先前主动交付给族长的彩礼 {AMOUNT} 第纳尔。" />
+    <string id="AF_SOCIAL_UI_MarriageBridePricePaid" text=" 对方族长已向玩家支付彩礼 {AMOUNT} 第纳尔。" />
+    <string id="AF_SOCIAL_UI_MarriageBridePriceRefunded" text=" 已返还彩礼 {AMOUNT} 第纳尔。" />
+    <string id="AF_SOCIAL_UI_RecruitmentFollowSuffix" text="，当前场景中已开始跟随玩家" />
+    <string id="AF_SOCIAL_UI_RecruitmentMissingCompanionHero" text="缺少要成为玩家同伴的目标英雄。" />
+    <string id="AF_SOCIAL_UI_RecruitmentClanSuccessionIncomplete" text="{CLAN} 的族长继承未完成，已阻止将现任族长直接拉入队伍。" />
+    <string id="AF_SOCIAL_UI_RecruitmentCopyAppearanceFailed" text="复制当前 NPC 外观失败（{ERROR}），已取消升格。" />
+    <string id="AF_SOCIAL_UI_RecruitmentCopyEquipmentFailed" text="复制当前 NPC 装备失败（{ERROR}），已取消升格。" />
+    <string id="AF_SOCIAL_UI_RecruitmentBecameCompanion" text="{NAME} 已成为玩家同伴，并加入玩家队伍{SUMMARY}。" />
+    <string id="AF_SOCIAL_UI_RecruitmentBecameClanMember" text="{NAME} 已成为玩家家族成员，并加入玩家队伍{SUMMARY}。" />
+    <string id="AF_SOCIAL_UI_RecruitmentRetainedIdentity" text="{NAME} 已保留{ROLE}身份，并加入玩家队伍{SUMMARY}。" />
+    <string id="AF_SOCIAL_UI_RoleSpouse" text="配偶" />
+    <string id="AF_SOCIAL_UI_RoleClanMember" text="玩家家族成员" />
+    <string id="AF_SOCIAL_UI_SummarySeparator" text="；" />
+    <string id="AF_SOCIAL_UI_SummaryOpen" text="（" />
+    <string id="AF_SOCIAL_UI_SummaryClose" text="）" />
+    <string id="AF_SOCIAL_UI_NoteGovernorRemoved" text="已解除其在 {TOWN} 的总督职位" />
+    <string id="AF_SOCIAL_UI_NoteClanLeaderSuccession" text="{CLAN} 已由 {HERO} 接任族长" />
+    <string id="AF_SOCIAL_UI_NoteClanDestroyedNoHeir" text="{CLAN} 无可用继承人，已按原版族长死亡逻辑销毁原家族" />
+    <string id="AF_SOCIAL_UI_NotePartyMergedNoExtras" text="{PARTY}已随目标英雄归并至玩家主队，没有额外成员或俘虏" />
+    <string id="AF_SOCIAL_UI_NotePartyTransferred" text="{PARTY}中的 {COUNT}已一并转入玩家主队" />
+    <string id="AF_SOCIAL_UI_RecruitmentException" text="异常：{ERROR}" />
+    <string id="AF_SOCIAL_UI_RecruitmentJoinClanException" text="加入玩家家族异常：{ERROR}" />
+    <string id="AF_SOCIAL_UI_RecruitmentBecomeCompanionException" text="成为玩家同伴异常：{ERROR}" />
+    <string id="AF_SOCIAL_UI_MarriageReasonMissingDivorcePair" text="未找到离婚双方。" />
+    <string id="AF_SOCIAL_UI_MarriageReasonMissingTargetClanLeader" text="未找到对方家族族长。" />
+    <string id="AF_SOCIAL_UI_MarriageReasonPlayerCandidateNotClan" text="玩家方婚配人选必须来自玩家家族。" />
+    <string id="AF_SOCIAL_UI_MarriageReasonPlayerNotEligible" text="玩家方婚配人选不满足基础婚配条件。" />
+    <string id="AF_SOCIAL_UI_MarriageReasonTargetNotEligible" text="对方婚配人选不满足基础婚配条件。" />
+    <string id="AF_SOCIAL_UI_MarriageReasonAgeGapExceeded" text="双方年龄差超过当前设置允许范围。" />
+    <string id="AF_SOCIAL_UI_MarriageReasonAgeGapUnverified" text="无法确认双方年龄差是否满足婚配条件。" />
+    <string id="AF_SOCIAL_UI_MarriageReasonMissingElopeTarget" text="未找到目标对象。" />
+    <string id="AF_SOCIAL_UI_MarriageReasonMissingDivorcePlayerCandidate" text="未找到玩家家族离婚对象。" />
+    <string id="AF_SOCIAL_UI_MarriageReasonMissingDivorceTarget" text="未找到对方离婚对象。" />
+    <string id="AF_SOCIAL_UI_MarriageReasonMissingClans" text="未找到双方家族信息。" />
+    <string id="AF_SOCIAL_UI_MarriageReasonNoPlayerEligibleMembers" text="玩家家族当前没有符合基础条件的可婚配成员。" />
+    <string id="AF_SOCIAL_UI_MarriageReasonMultiFailed" text="多配偶执行失败，{DETAIL}" />
+    <string id="AF_SOCIAL_UI_MarriageReasonActionFailed" text="执行 MarriageAction 失败，{DETAIL}" />
+    <string id="AF_SOCIAL_UI_MarriageReasonDissolveException" text="解除配偶关系时异常，{DETAIL}" />
+    <string id="AF_SOCIAL_UI_Notoriety_Heading" text="【玩家知名度】" />
+    <string id="AF_SOCIAL_UI_Notoriety_WorldScore" text="世界知名度：{EFFECTIVE}/100（{LEVEL}；基础 {BASE} + 家族修正 {BONUS}）" />
+    <string id="AF_SOCIAL_UI_Notoriety_ClanBonus" text="家族等级修正：+{BONUS}" />
+    <string id="AF_SOCIAL_UI_Notoriety_CultureHeading" text="【文化知名度】" />
+    <string id="AF_SOCIAL_UI_Notoriety_NoCultures" text="（暂无文化知名度）" />
+    <string id="AF_SOCIAL_UI_Notoriety_CultureScore" text="- {CULTURE}：{BASE}/100；有效 {EFFECTIVE}/100（{LEVEL}）" />
+    <string id="AF_SOCIAL_UI_Notoriety_HistoryHeading" text="【玩家履历】" />
+    <string id="AF_SOCIAL_UI_Notoriety_PendingHeading" text="【未总结素材】" />
+    <string id="AF_SOCIAL_UI_Notoriety_NoPending" text="（无）" />
+    <string id="AF_SOCIAL_UI_Notoriety_Player" text="玩家" />
+    <string id="AF_SOCIAL_UI_Notoriety_Day" text="第{DAY}日" />
+    <string id="AF_SOCIAL_UI_Notoriety_ActionLine" text="- {DATE}：{TEXT}" />
+    <string id="AF_SOCIAL_UI_Notoriety_UnknownCulture" text="未知文化" />
+    <string id="AF_SOCIAL_UI_Notoriety_Level0" text="默默无闻" />
+    <string id="AF_SOCIAL_UI_Notoriety_Level1" text="鲜为人知" />
+    <string id="AF_SOCIAL_UI_Notoriety_Level2" text="略有耳闻" />
+    <string id="AF_SOCIAL_UI_Notoriety_Level3" text="渐为人知" />
+    <string id="AF_SOCIAL_UI_Notoriety_Level4" text="口耳相传" />
+    <string id="AF_SOCIAL_UI_Notoriety_Level5" text="广为人知" />
+    <string id="AF_SOCIAL_UI_Notoriety_Level6" text="远近皆知" />
+    <string id="AF_SOCIAL_UI_Notoriety_Level7" text="街知巷闻" />
+    <string id="AF_SOCIAL_UI_Notoriety_Level8" text="妇孺皆知" />
+    <string id="AF_SOCIAL_UI_Notoriety_Level9" text="家喻户晓" />
+    <string id="AF_SOCIAL_UI_Notoriety_Level10" text="人尽皆知" />
+    <string id="AF_SOCIAL_UI_ProactiveNeed_01" text="缺粮" />
+    <string id="AF_SOCIAL_UI_ProactiveNeed_02" text="缺钱" />
+    <string id="AF_SOCIAL_UI_ProactiveNeed_03" text="缺兵" />
+    <string id="AF_SOCIAL_UI_ProactiveNeed_04" text="俘虏过载或赎买" />
+    <string id="AF_SOCIAL_UI_ProactiveNeed_05" text="家族成员被俘" />
+    <string id="AF_SOCIAL_UI_ProactiveNeed_06" text="队伍士气低落" />
+    <string id="AF_SOCIAL_UI_ProactiveNeed_07" text="缺少坐骑" />
+    <string id="AF_SOCIAL_UI_ProactiveNeed_08" text="负重压力" />
+    <string id="AF_SOCIAL_UI_ProactiveNeed_09" text="家族财政紧张" />
+    <string id="AF_SOCIAL_UI_ProactiveNeed_10" text="家族请求效力" />
+    <string id="AF_SOCIAL_UI_ProactiveNeed_11" text="亲密互动" />
+    <string id="AF_SOCIAL_UI_ProactiveNeed_12" text="主动问候" />
+    <string id="AF_SOCIAL_UI_ProactiveNeed_13" text="讨论近来政策" />
+    <string id="AF_SOCIAL_UI_ProactiveNeed_14" text="主动交友" />
+    <string id="AF_SOCIAL_UI_ProactiveNeed_15" text="主动求爱" />
+    <string id="AF_SOCIAL_UI_ProactiveNeed_16" text="请求加入军团" />
+    <string id="AF_SOCIAL_UI_ProactiveNeed_17" text="请求剿匪" />
+    <string id="AF_SOCIAL_UI_ProactiveNeed_18" text="压制政敌" />
+    <string id="AF_SOCIAL_UI_ProactiveNeed_19" text="购买封地" />
+    <string id="AF_SOCIAL_UI_ProactiveNeed_20" text="出售边境封地" />
+    <string id="AF_SOCIAL_UI_ProactiveNeed_21" text="领地盘问" />
+    <string id="AF_SOCIAL_UI_ProactiveNeed_22" text="联姻压力" />
+    <string id="AF_SOCIAL_UI_ProactiveNeed_23" text="复仇或营救压力" />
+    <string id="AF_SOCIAL_UI_ProactiveNeed_24" text="封地治理压力" />
+    <string id="AF_SOCIAL_UI_ProactiveNeed_25" text="缺少盟友支持" />
+    <string id="AF_SOCIAL_UI_ProactiveNeed_26" text="王国缺少雇佣兵" />
+    <string id="AF_SOCIAL_UI_ProactiveNeed_27" text="王国缺少封臣" />
+    <string id="AF_SOCIAL_UI_ProactiveNeed_28" text="王国政治议程" />
+    <string id="AF_SOCIAL_UI_ProactiveNeed_29" text="支持政策" />
+    <string id="AF_SOCIAL_UI_ProactiveNeed_30" text="讨论外交局势" />
+    <string id="AF_SOCIAL_UI_ProactiveNeed_31" text="具体请求" />
+    <string id="AF_SOCIAL_UI_Century" text="{NUMBER}世纪" />
+  </strings>
+</base>

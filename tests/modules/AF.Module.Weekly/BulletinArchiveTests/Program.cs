@@ -26,6 +26,23 @@ stateOwner._port=new(){Records=()=>records,FindRecord=id=>records.FirstOrDefault
 stateOwner.UpsertWorldBulletinRecord(bulletinId,"world","","new bulletin","new summary","new bulletin body",15,ids);
 Check(records.Count==4&&notices==1&&metadataAtNotify,"one canonical issue with metadata before timeline notification");
 var display=new WeeklyEditorDisplayPort {ResolveKingdomDisplay=id=>id};
+foreach(bool chinese in new[]{false,true}) {
+ TaleWorlds.Localization.TextObject.UseLanguage(chinese);
+ var empty=WeeklyEditorProjection.BuildWeeklyReportBrowserEntries(display,new(){new(){EventId="weekly_report:world:empty",EventKind="world",WeekIndex=1,CreatedDay=-1}},"world","").Single();
+ Check(empty.Title==(chinese?"世界周报 · 未知日期":"World weekly report · Unknown date")&&empty.BodyText==(chinese?"当前这期周报还没有正文。":"This weekly-report issue has no body text yet."),"controlled EN/CN archive fallback title and empty body");
+ Check(empty.CreatedDate==(chinese?"未知日期":"Unknown date"),"controlled EN/CN unknown date");
+ var recentSource=new EventRecordEntry{EventId=WeeklyReportArchivePolicy.RecentId("A",1),EventKind="kingdom",ScopeKingdomId="A",CreatedDay=15,CreatedDate="1084年1月10日 — 1084年1月15日"};
+ int dateCaptures=0;
+ display.FormatNewsDate=day=>{dateCaptures++;return "formatted-day-"+day;};
+ Check(WeeklyEditorProjection.BuildRecentDateForDisplay(display,recentSource)==recentSource.CreatedDate&&dateCaptures==0,"unknown recent provenance keeps full stored range without invoking the date formatter");
+ var recent=WeeklyEditorProjection.BuildWeeklyReportBrowserEntries(display,new(){recentSource},"kingdom","A").Single();
+ Check(recent.Title.EndsWith(recentSource.CreatedDate)&&recent.CreatedDate==recentSource.CreatedDate&&dateCaptures==1&&recentSource.CreatedDate=="1084年1月10日 — 1084年1月15日","recent title/date preserve stored range; blank-title default construction keeps its existing single formatter call without source editing");
+ recentSource.Materials=new(){new(){ActionDay=10,Label="old day 10"},new(){ActionDay=15,Label="old day 15"}};
+ var datedRecent=WeeklyEditorProjection.BuildWeeklyReportBrowserEntries(display,new(){recentSource},"kingdom","A").Single();
+ Check(datedRecent.CreatedDate=="formatted-day-10 — formatted-day-15"&&datedRecent.Title.EndsWith(datedRecent.CreatedDate)&&dateCaptures==4&&recentSource.CreatedDate=="1084年1月10日 — 1084年1月15日","known material action dates use both boundary days plus the existing blank-title default construction without editing stored range");
+ display.FormatNewsDate=null;
+}
+TaleWorlds.Localization.TextObject.UseLanguage(true);
 List<WeeklyReportBrowserEntryData> Project(string kind,string id,IReadOnlyDictionary<string,List<string>> legacy=null)=>WeeklyEditorProjection.BuildWeeklyReportBrowserEntries(display,records,kind,id,legacy);
 var a=Project("kingdom","a");
 Check(a.Count==3&&a[0].EventId==bulletinId&&a[0].BodyText=="new bulletin body","kingdom shows latest related bulletin above retained weekly and brief");
@@ -163,13 +180,13 @@ Check(yearArchive.Count==572&&year.Count==572&&yearArchive.Count(e=>WeeklyReport
 var yearCountries=new List<WeeklyReportBrowserCountryData>{WeeklyEditorProjection.BuildWeeklyReportBrowserCountryData(display,"world","","all",true,yearArchive)};
 MyBehavior.Instance=new(){Countries=yearCountries};
 var paged=new TerminalWeeklyReportBrowserPopupVM(yearCountries,"world",()=>{});
-Check(paged.ReportItems.Count==12&&paged.PageText=="1 / 48","large archive binds exactly current 12-card page");
+Check(paged.ReportItems.Count==12&&paged.PageText=="第 1 / 48 页","large archive binds exactly current 12-card page");
 var retired=paged.ReportItems.First();paged.ExecuteNextPage();retired.ExecuteOpenReport();
-Check(paged.PageText=="2 / 48"&&!paged.IsReading,"retired page callbacks invalidated");
+Check(paged.PageText=="第 2 / 48 页"&&!paged.IsReading,"retired page callbacks invalidated");
 paged.ListScrollPosition=63;paged.ReportItems.First().ExecuteOpenReport();paged.ExecuteReturnToList();
-Check(paged.PageText=="2 / 48"&&paged.ListScrollPosition==63,"second-page back preserves position");
-paged.ExecuteFilterBulletin();Check(paged.ReportItems.All(e=>e.EntryKind=="bulletin")&&paged.PageText=="1 / 5","type filtering changes actual entries and page count");
-paged.ExecuteFilterRecent();Check(paged.ReportItems.All(e=>e.EntryKind=="recent")&&paged.PageText=="1 / 44","near filter includes independent country records");
+Check(paged.PageText=="第 2 / 48 页"&&paged.ListScrollPosition==63,"second-page back preserves position");
+paged.ExecuteFilterBulletin();Check(paged.ReportItems.All(e=>e.EntryKind=="bulletin")&&paged.PageText=="第 1 / 5 页","type filtering changes actual entries and page count");
+paged.ExecuteFilterRecent();Check(paged.ReportItems.All(e=>e.EntryKind=="recent")&&paged.PageText=="第 1 / 44 页","near filter includes independent country records");
 paged.ExecuteFilterWeekly();Check(paged.ReportItems.Count==0&&paged.ShowEmptyState,"no synthetic empty cards in missing type");paged.OnFinalize();
 foreach(int size in new[]{0,1,4,5,12,401}) {
  var data=new WorldBulletinPanelData{BodyText="full body",Minors=Enumerable.Range(0,size).Select(i=>new KeyValuePair<string,string>("news",i+":"+new string('x',700))).ToList()};
@@ -384,7 +401,7 @@ TaleWorlds.Library.InformationManager.Messages.Clear(); TaleWorlds.Core.MBInform
 knowledgeOwner.ReplayShowNotice(new AnimusForge.Refactor.Contracts.WorldDiplomacyNotice("own","本国标题","完整描述",true));
 Check(TaleWorlds.Core.MBInformationManager.Notices.Single().DocumentId=="own"&&TaleWorlds.Library.InformationManager.Messages.Count==0,"actual notification adapter sends domestic notice only to right-side native notice manager");
 knowledgeOwner.ReplayShowNotice(new AnimusForge.Refactor.Contracts.WorldDiplomacyNotice("foreign","外国标题","描述",false));
-Check(TaleWorlds.Core.MBInformationManager.Notices.Count==1&&TaleWorlds.Library.InformationManager.Messages.Single().Contains("【外交宣言送达】外国标题"),"actual notification adapter sends foreign notice only to lower-left information manager");
+Check(TaleWorlds.Core.MBInformationManager.Notices.Count==1&&TaleWorlds.Library.InformationManager.Messages.Single()=="【第三方外交消息】外国标题。消息已传至本国，可在王国公告中查看全文。","actual notification adapter sends foreign notice only to lower-left information manager");
 Console.WriteLine($"PASS: {count} final archive/save/UI/navigation/publication/diplomacy/prompt/knowledge assertions (game, regional aggregation, rendering and artwork lifecycle stubbed).");
 
 // Switching retires old responses even when a new window happens to have the same end hour.
@@ -410,6 +427,6 @@ Console.WriteLine($"PASS {count} total archive and mode-switch checks.");
 Check(WeeklyReportArchivePolicy.CalendarDate("1084年秋季21日")=="卡拉迪亚1084年秋季21日","game-formatted season date preserved");
 Check(WeeklyReportArchivePolicy.CalendarDate("1084年12月31日")=="卡拉迪亚1084年12月31日","365-day mod calendar formatting preserved without dividing by 84 or 21");
 Check(WeeklyReportArchivePolicy.CalendarDate("卡拉迪亚1085年1月1日")=="卡拉迪亚1085年1月1日","calendar prefix not duplicated");
-Check(WeeklyReportArchivePolicy.CalendarDate("")=="日期未知","calendar failure does not invent default calendar date");
+Check(WeeklyReportArchivePolicy.CalendarDate("")=="未知日期","calendar failure does not invent default calendar date");
 Check(!WeeklyReportArchivePolicy.PeriodLabel("weekly_report:world:3588",3588).Contains("3588"),"archive hides absolute week index");
 Console.WriteLine($"PASS {count} final archive, mode-switch and calendar display checks.");

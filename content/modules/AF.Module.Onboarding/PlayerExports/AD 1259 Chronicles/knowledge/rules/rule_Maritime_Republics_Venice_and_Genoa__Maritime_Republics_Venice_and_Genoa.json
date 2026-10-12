@@ -1,0 +1,23 @@
+{
+  "Id": "rule_Maritime_Republics_Venice_and_Genoa",
+  "Keywords": [
+    "Republic of Venice",
+    "Republic of Genoa",
+    "War of Saint Sabas (Maritime Republics Venice and Genoa)",
+    "Mediterranean Trade",
+    "Maritime Republics",
+    "Galata"
+  ],
+  "RagShortTexts": [
+    "Venice and Genoa contested naval and commercial supremacy across the Mediterranean, escalating into open warfare in the Levant and Aegean."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The maritime republics of Venice and Genoa were the commercial and financial dynamos of medieval Europe. Possessing large fleets of war galleys and merchant round ships, they controlled the flow of Levantine spices, silk, grain, and slaves. Venice enjoyed paramount dominance in the East following the Fourth Crusade of 1204, controlling Crete, the Aegean islands, and the golden quarter of Constantinople.\n\nGenoa, governed by competitive merchant oligarchs like the Spinola and Doria clans, fought ferociously to dismantle Venetian monopolies. From 1256 to 1270, the two republics waged the vicious War of Saint Sabas, battling in the harbor of Acre and the Aegean. To break Venetian control of the Bosphorus, Genoa forged an alliance with Michael VIII Palaiologos of Nicaea, receiving exclusive concessions at Galata that transformed Black Sea commerce."
+    }
+  ],
+  "TextMappings": []
+}

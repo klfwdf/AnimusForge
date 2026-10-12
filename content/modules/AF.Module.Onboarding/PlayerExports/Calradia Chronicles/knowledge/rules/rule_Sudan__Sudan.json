@@ -1,0 +1,288 @@
+{
+  "Id": "rule_Sudan",
+  "Keywords": [
+    "Sudan",
+    "Aserai Sudan",
+    "Lord of the Desert",
+    "King Aserai"
+  ],
+  "RagShortTexts": [
+    "Sudan is the co-owner of the desert, balancing tribal interests and protecting trade routes"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Sultan is the supreme ruler of the Aserai Sultanate and the co-lord of the desert peoples. He was elected by the emirs of the major tribes from the most powerful families. He was both a secular king and a guardian of the faith. The Sultan's power is not absolute. He needs to balance the interests of the major tribes, but once recognized, his orders are irresistible laws in the desert."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Sultan is our king and the only sun in the desert. He was not inherited by blood, but the wisest and bravest leader elected by the most powerful emirs in the Council of Elders. The current Sultan is such a figure. He leads us to resist foreign enemies, protect trade routes, and distribute water sources in the oasis. Without the Sultan, Aserai would be in disarray."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "As the Emir of the Aserai, I have respect for the Sultan, but that respect comes from his fair treatment of tribes and respect for tradition. The power of the Sudan comes from the support of our Emir. If he favored one tribe over another, or attempted to pass the throne to his own son privately, bypassing the council of elders, his reign would be almost over."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "townsfolk",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Sultan lived in an oasis in the far south, and his palace was said to be built of the finest white stone. We ordinary people may never see him in our lifetime, but his laws affect us-the level of business taxes, the distribution of water sources, and wars with foreigners. We just hope that the person sitting in that seat is an impartial person who allows us to do business with peace of mind."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "I once saw the Sultan from afar at a tribal gathering. He sat under a huge tent, surrounded by emirs from various tribes, looking majestic. He spoke quietly, but everyone listened quietly. But I also know that some tribes deep in the desert do not completely obey his rule. The Sultan's authority is more reflected in oases and trade routes."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The ‘Sultan’ of the Aserai was nothing more than a desert chief. Their method of electing leaders is simply primitive compared to our system of senate and emperor. Each provincial governor in the empire governed more people and land than their sultan. However, they do feel like they are at home in the desert, and our Imperial Legion will have a headache even if they enter."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Although the empire looked down upon the system of the desert peoples, it must be admitted that the Sultan of Aserai was very good at controlling trade routes. The ports on the south coast of the Perlas Sea and the trade routes to the east were all in his hands. A unified Aserai Sultanate is a great threat to us in the south."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Aserai's 'sultanate' is described in imperial historian Flavius ​​Magnus's Examination of the Southern Polities as 'limited kingship under the election of tribal nobles'. Unlike the absolute nature of the imperial power of the empire, the power of the sultan was constrained by the traditions of each tribe and the council of elders. However, this system showed extremely high adaptability in the desert environment. It not only maintained a unified external power, but also avoided internal divisions caused by the hereditary throne."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Sudan? King of the Aserai. Our King of Vlandia is hereditary, passed down through the bloodline from generation to generation. But their sultan has to be elected by a group of emirs, which is very unstable. No wonder the Aserai, despite their wealth, rarely expand outward on a large scale, as their sultan always has to spend his energy appeasing the tribes within."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "We often had conflicts with the Aserai in the south. Their sultan sometimes launches massive cavalry raids on our borders, but mostly he prefers negotiation and trade. Perhaps it was because the desert could not support a long-term expedition, or perhaps because the emirs under him had their own agendas."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Sultan of Aserai is somewhat similar to the Archduke of Sturgia, both being elected leaders. But the rules in the desert are different from those in the north. When our boyars elect the Grand Duke, they value their ability to fight; when their emirs elect the Sultan, they may also look at who is better at doing business and who is better at distributing water."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The High King of Battania and the Sultan of Aserai both sound like co-lords, but they are actually different. Our High King has great power in times of war, but has little power to interfere with the clans in peacetime. The Sultan's power seemed more durable and stable, perhaps because the desert environment required more centralized authority."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Sultan and the Khan were both leaders of tribal alliances. But Khan competed openly through the Naadam Conference, and the winner took all. And their sultan was born in a closed-door meeting of the emir, full of deals and compromises. Which one is better? Who knows. At least Khan's power is more direct and his orders are clearer."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer",
+          "mercenary"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Sultan’s purse is the deepest, this is something all mercenaries know. He controlled the spice and silk trade to the east and had countless dinars at his disposal. If you want a well-paying job, go south to work as a bodyguard for the Sultan or escort his caravans. But you have to be able to handle the desert heat."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "steward": 150
+        }
+      },
+      "Content": "Aserai's Sultanate was a unique art of political balancing. There are three bases of power for the Sultan: first, the military power of his own tribe, second, the strong financial resources brought by commercial taxes, and third, the religious and judicial authority conferred by the Council of Elders. Successive sultans have worked hard to strengthen central power, weaken the independence of the emirs, and establish hereditary dynasties imitating the empire. But the tradition of the desert is too strong, and any Sultan who attempts to undermine the election system will quickly be counterattacked by the tribal alliance."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Sudan",
+      "Kind": "bound_settlement_owner_leader_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

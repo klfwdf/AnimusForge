@@ -1,0 +1,450 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base type="string">
+  <tags><tag language="English" /></tags>
+  <strings>
+    <string id="AF_CONV_UI_Courier_Cancel" text="Cancel" />
+    <string id="AF_CONV_UI_Courier_Send" text="Send" />
+    <string id="AF_CONV_UI_Courier_WriteTitle" text="Letter to {TARGET}" />
+    <string id="AF_CONV_UI_Shout_Gallery" text="Gallery" />
+    <string id="AF_CONV_UI_Shout_Encyclopedia" text="Encyclopedia" />
+    <string id="AF_CONV_UI_Shout_Send" text="Send" />
+    <string id="AF_CONV_UI_Shout_Close" text="Close" />
+    <string id="AF_CONV_UI_Shout_InputHint" text="Tell them something:" />
+    <string id="AF_CONV_UI_Shout_TagInputHint" text="Enter the text and tags:" />
+    <string id="AF_CONV_UI_Shout_Execute" text="Run" />
+    <string id="AF_CONV_UI_TagTest_Title" text="Tag input - {NAME}" />
+    <string id="AF_CONV_UI_TagTest_Subtitle" text="Current target: {NAME}\nEnter NPC-visible text and post-processing tags. No API call is made; tags execute immediately for the current NPC." />
+    <string id="AF_CONV_UI_TagTest_NotExecuted" text="Tag test was not run." />
+    <string id="AF_CONV_UI_TagTest_DataDisabled" text="Data management is disabled, or there is no conversation target to test." />
+    <string id="AF_CONV_UI_TagTest_NoConversationTarget" text="There is no conversation target available." />
+    <string id="AF_CONV_UI_TagTest_EmptyInput" text="Input is empty." />
+    <string id="AF_CONV_UI_TagTest_Executed" text="Tag test executed. Target: {NAME}; tags: {COUNT}{SCENE}{VISIBLE}" />
+    <string id="AF_CONV_UI_TagTest_SceneMove" text="; SCENE_MOVE will run after the dialog closes" />
+    <string id="AF_CONV_UI_TagTest_NoVisible" text="; no visible text" />
+    <string id="AF_CONV_UI_TagTest_Visible" text="; visible text shown" />
+    <string id="AF_CONV_UI_TagTest_Failed" text="Tag test failed: {ERROR}" />
+    <string id="AF_CONV_UI_TagTest_Prefix" text="[Tag test] " />
+    <string id="AF_CONV_UI_TagTest_EnableData" text="[Tag test] Enable data management in MCM first." />
+    <string id="AF_CONV_UI_TagTest_NoSceneTarget" text="[Tag test] No current scene target was found." />
+    <string id="AF_CONV_UI_TagTest_NoNpc" text="[Tag test] No NPC with executable tags was found." />
+    <string id="AF_CONV_UI_TagTest_Submitted" text="[Tag test] Submitted to {NAME}; tags: {COUNT}" />
+    <string id="AF_CONV_UI_TagTest_ExecutionFailed" text="[Tag test] Execution failed: {ERROR}" />
+    <string id="AF_CONV_UI_Shout_BattleScene" text="Battle scene" />
+    <string id="AF_CONV_UI_Native_Illustration" text="Scene illustration" />
+    <string id="AF_CONV_UI_Courier_NotReady" text="The courier system is not initialized; replies are unavailable." />
+    <string id="AF_CONV_UI_Courier_Character" text="this character" />
+    <string id="AF_CONV_UI_Courier_NoRecipient" text="No available recipient could be found." />
+    <string id="AF_CONV_UI_Courier_InPlayerParty" text="This character is in your party and cannot receive a courier letter." />
+    <string id="AF_CONV_UI_Courier_RecipientDead" text="This character has died and cannot receive a courier letter." />
+    <string id="AF_CONV_UI_Courier_RecipientUnknown" text="You do not yet have information about this person and cannot send a letter." />
+    <string id="AF_CONV_UI_Courier_AlreadyActive" text="A courier party is already handling a letter to this person." />
+    <string id="AF_CONV_UI_Courier_NoPlayerParty" text="The player party could not be found." />
+    <string id="AF_CONV_UI_Courier_NoCrew" text="You currently have no members available to dispatch as couriers." />
+    <string id="AF_CONV_UI_Courier_MinCrew" text="The courier party must contain at least 1 member." />
+    <string id="AF_CONV_UI_Courier_Recipient" text="recipient" />
+    <string id="AF_CONV_UI_Courier_TroopRecipientIneligible" text="Only lords can discuss troop transfers." />
+    <string id="AF_CONV_UI_Courier_PrisonerRecipientIneligible" text="Only lords can discuss prisoner transfers." />
+    <string id="AF_CONV_UI_Courier_AssetRecipientIneligible" text="This recipient has no fixed assets available to receive or discuss." />
+    <string id="AF_CONV_UI_Courier_InvalidAmount" text="Enter a valid amount." />
+    <string id="AF_CONV_UI_Courier_DraftExpired" text="The courier draft has expired. Select the members and attachments again." />
+    <string id="AF_CONV_UI_Courier_OpenFailed" text="Could not open courier mail: {ERROR}" />
+    <string id="AF_CONV_UI_Courier_ReplyTargetMissing" text="Could not find {NAME}; replies are unavailable." />
+    <string id="AF_CONV_UI_Courier_OpenReplyFailed" text="Could not open the reply: {ERROR}" />
+    <string id="AF_CONV_UI_Courier_CrewSelectionFailed" text="Courier party selection failed: {ERROR}" />
+    <string id="AF_CONV_UI_Courier_ModeTitle" text="Courier mail - {TARGET}" />
+    <string id="AF_CONV_UI_Courier_ModeDescription" text="Current recipient: {TARGET}&#10;Choose a delivery method:" />
+    <string id="AF_CONV_UI_Courier_DispatchFailed" text="Courier dispatch failed: {ERROR}" />
+    <string id="AF_CONV_UI_Courier_Dispatched" text="The courier party has departed for {TARGET}." />
+    <string id="AF_CONV_UI_Courier_SelectableCrew" text="Available courier members" />
+    <string id="AF_CONV_UI_Courier_CrewParty" text="Courier party" />
+    <string id="AF_CONV_UI_Courier_PartyBaseName" text="AnimusForge Courier Party" />
+    <string id="AF_CONV_UI_Courier_NpcPartyBaseName" text="AnimusForge NPC Courier" />
+    <string id="AF_CONV_UI_Courier_ModeNormal" text="Write a letter" />
+    <string id="AF_CONV_UI_Courier_ModeGive" text="Send items and write a letter" />
+    <string id="AF_CONV_UI_Courier_ModeShow" text="Show items and write a letter" />
+    <string id="AF_CONV_UI_Courier_ModeTroops" text="Transfer troops and write a letter" />
+    <string id="AF_CONV_UI_Courier_ModePrisoners" text="Transfer prisoners and write a letter" />
+    <string id="AF_CONV_UI_Courier_ModeAssets" text="Transfer fixed assets and write a letter" />
+    <string id="AF_CONV_UI_Courier_Confirm" text="Confirm" />
+    <string id="AF_CONV_UI_Courier_Back" text="Back" />
+    <string id="AF_CONV_UI_Courier_ShowAmount" text="Amount to show" />
+    <string id="AF_CONV_UI_Courier_SendAmount" text="Amount to send" />
+    <string id="AF_CONV_UI_Courier_TransferAmount" text="Amount to transfer" />
+    <string id="AF_CONV_UI_Courier_PartyName" text="Courier party - {NAME}" />
+    <string id="AF_CONV_UI_Courier_AvailableAmount" text="Available: {AMOUNT}" />
+    <string id="AF_CONV_UI_Courier_TroopHint" text="Available: {AMOUNT} | Wage: {WAGE} denars/day | Hire price: {PRICE} denars/person" />
+    <string id="AF_CONV_UI_Courier_PrisonerHint" text="Available: {AMOUNT} | Purchase price: {PRICE} denars/person" />
+    <string id="AF_CONV_UI_Courier_SourceHint" text=" | Source: {SOURCE}" />
+    <string id="AF_CONV_UI_Courier_AssetHint" text="Type: {TYPE} | Daily income: {INCOME} denars | Suggested full payment: {PRICE} denars" />
+    <string id="AF_CONV_UI_Courier_FixedAssets" text="Fixed assets" />
+    <string id="AF_CONV_UI_Courier_SourceSuffix" text=" (Source: {SOURCE})" />
+    <string id="AF_CONV_UI_Courier_AmountDescription" text="[{INDEX}/{COUNT}] {ITEM}: maximum {MAX}.&#10;Enter an integer from 1 to {MAX}:" />
+    <string id="AF_CONV_UI_Courier_NoTransferTroops" text="You have no troops available to transfer to the recipient." />
+    <string id="AF_CONV_UI_Courier_NoTransferPrisoners" text="You have no prisoners available to transfer to the recipient." />
+    <string id="AF_CONV_UI_Courier_NoTransferAssets" text="You have no fixed assets available to transfer to the recipient." />
+    <string id="AF_CONV_UI_Courier_NoTransferItems" text="You have no available items or denars." />
+    <string id="AF_CONV_UI_Courier_SelectTroops" text="Current recipient: {TARGET}&#10;Select troops to transfer to the recipient with the letter (multiple selection):" />
+    <string id="AF_CONV_UI_Courier_SelectPrisoners" text="Current recipient: {TARGET}&#10;Select prisoners to transfer with the letter (multiple selection):" />
+    <string id="AF_CONV_UI_Courier_SelectAssets" text="Current recipient: {TARGET}&#10;Select fixed assets to transfer with the letter (multiple selection):" />
+    <string id="AF_CONV_UI_Courier_SelectShowItems" text="Current recipient: {TARGET}&#10;Select items or denars to show (multiple selection):" />
+    <string id="AF_CONV_UI_Courier_SelectSendItems" text="Current recipient: {TARGET}&#10;Select items or denars to send (multiple selection):" />
+    <string id="AF_CONV_UI_Companion_DefaultDescription" text="A hero in your party would like to talk to you." />
+    <string id="AF_CONV_UI_Companion_DefaultTitle" text="A party hero would like to talk to you" />
+    <string id="AF_CONV_UI_Companion_ChatDelayed" text="You cannot talk right now; the notification will remain available." />
+    <string id="AF_CONV_UI_Companion_OpenFailed" text="Could not open the conversation; the notification will remain available." />
+    <string id="AF_CONV_UI_Companion_Hero" text="this party member" />
+    <string id="AF_CONV_UI_Companion_Title" text="{HERO} would like to talk to you" />
+    <string id="AF_CONV_UI_Companion_Description" text="{HERO} is in your party and would like to talk when you have time." />
+    <string id="AF_CONV_UI_Courier_Npc" text="NPC" />
+    <string id="AF_CONV_UI_Courier_ReturnedUndelivered" text="The courier party returned; undelivered letters and cargo were returned." />
+    <string id="AF_CONV_UI_Courier_ReturnedDisbanded" text="The courier party returned and disbanded." />
+    <string id="AF_CONV_UI_Courier_ReplyTitle" text="The courier brought a reply" />
+    <string id="AF_CONV_UI_Courier_Wrote" text="{NAME} wrote:" />
+    <string id="AF_CONV_UI_Courier_ReplyButton" text="Reply" />
+    <string id="AF_CONV_UI_Courier_Close" text="Close" />
+    <string id="AF_CONV_UI_Courier_ReplyNotice" text="The courier brought a reply from {NAME}." />
+    <string id="AF_CONV_UI_Courier_EmptyReply" text="(No reply text)" />
+    <string id="AF_CONV_UI_Courier_EmptyInbound" text="(No letter text)" />
+    <string id="AF_CONV_UI_Courier_Destroyed" text="The courier party was destroyed.{RECIPIENT}{DETAIL}" />
+    <string id="AF_CONV_UI_Courier_RecipientSuffix" text=" Recipient: {NAME}." />
+    <string id="AF_CONV_UI_Courier_ReturnDetail" text=" {DETAIL}" />
+    <string id="AF_CONV_UI_Courier_DestroyerDetail" text=" Destroyer: {NAME}" />
+    <string id="AF_CONV_UI_Courier_LostDetail" text=" The courier party disappeared from the campaign map." />
+    <string id="AF_CONV_UI_Courier_UnknownFaction" text="unknown faction" />
+    <string id="AF_CONV_UI_Courier_RestoredLetters" text="Restored {COUNT} letter item(s) to the inventory." />
+    <string id="AF_CONV_UI_Courier_LetterInventoryMissing" text="The letter item was not added: player inventory not found." />
+    <string id="AF_CONV_UI_Courier_LetterCreateFailed" text="The letter item could not be created and was not added to the inventory." />
+    <string id="AF_CONV_UI_Courier_LetterWriteFailed" text="The letter item was created but could not be written to the player inventory." />
+    <string id="AF_CONV_UI_Courier_LetterAdded" text="The letter was added to the player inventory." />
+    <string id="AF_CONV_UI_Courier_LetterAddFailed" text="Failed to add the letter item to the inventory: {ERROR}" />
+    <string id="AF_CONV_UI_Courier_WaitInboundTitle" text="Waiting for the incoming letter" />
+    <string id="AF_CONV_UI_Courier_WaitInboundDescription" text="The courier has reached your party and is waiting for {NAME} to finish writing the letter.&#10;&#10;Game time is paused; the letter will be delivered automatically when generation finishes." />
+    <string id="AF_CONV_UI_Courier_WaitOutboundTitle" text="Waiting for a courier reply" />
+    <string id="AF_CONV_UI_Courier_WaitOutboundDescription" text="The courier has reached {NAME} and is waiting for them to read the letter and write a reply.&#10;&#10;Game time is paused; it will resume automatically after the reply is generated and post-processing tags are applied." />
+    <string id="AF_CONV_UI_Courier_WaitInboundNotice" text="The courier has arrived and is waiting for the incoming letter to be generated. Game time is paused." />
+    <string id="AF_CONV_UI_Courier_WaitOutboundNotice" text="The courier has arrived and is waiting for a reply to be generated. Game time is paused." />
+    <string id="AF_CONV_UI_Courier_TargetEscaping" text="The courier's target is fleeing; the courier is waiting at the nearest settlement." />
+    <string id="AF_CONV_UI_Courier_TargetCaptive" text="The courier's target is captive; the courier is waiting at the nearest settlement." />
+    <string id="AF_CONV_UI_Courier_TargetReturned" text="The courier's target has reappeared; the courier is on the way." />
+    <string id="AF_CONV_UI_Courier_InboundTitle" text="The courier delivered {KIND}" />
+    <string id="AF_CONV_UI_Courier_InboundLetter" text="letter" />
+    <string id="AF_CONV_UI_Courier_InboundWrote" text="{NAME} wrote:" />
+    <string id="AF_CONV_UI_Courier_Acknowledge" text="Got it" />
+    <string id="AF_CONV_UI_Shout_SelfTalk" text="You are talking to yourself..." />
+    <string id="AF_CONV_UI_Shout_PrimaryGone" text="[Scene shout] The primary highlighted target has left; select targets again." />
+    <string id="AF_CONV_UI_Shout_PrimaryMissing" text="[Scene shout] No primary highlighted target was found; select targets again." />
+    <string id="AF_CONV_UI_Shout_AudienceStale" text="[Scene shout] The scene participant snapshot is stale; select targets again." />
+    <string id="AF_CONV_UI_Shout_PrimaryThinking" text="{NAME} is thinking..." />
+    <string id="AF_CONV_UI_Shout_HighlightedTarget" text="highlighted target" />
+    <string id="AF_CONV_UI_Shout_PrimaryReadFailed" text="[Scene shout] Could not read the primary highlighted target; select targets again." />
+    <string id="AF_CONV_UI_Shout_IllustrationUnavailable" text="[AI illustration] Scene capture and image generation is not loaded." />
+    <string id="AF_CONV_UI_Shout_IllustrationPending" text="The shout reply is not finished; this panel currently only provides scene image generation." />
+    <string id="AF_CONV_UI_Shout_IllustrationNoTarget" text="There is no valid shout target; you can generate an image, but sending a shout still requires selecting a valid target." />
+    <string id="AF_CONV_UI_Shout_IllustrationBattleHint" text="You can manually generate an illustration of the current scene during combat." />
+    <string id="AF_CONV_UI_Shout_IllustrationDraftHint" text="Image generation does not use unsent input drafts." />
+    <string id="AF_CONV_UI_Shout_NoSendTarget" text="[Scene shout] There is no target available for sending a shout." />
+    <string id="AF_CONV_UI_Shout_TargetInvalid" text="[Scene shout] The target or communication eligibility is no longer valid; select targets again." />
+    <string id="AF_CONV_UI_Shout_InputOpenFailed" text="[Scene shout] Failed to open the input panel." />
+    <string id="AF_CONV_UI_Shout_PassiveFailed" text="[Passive response failed] {OUTPUT}" />
+    <string id="AF_CONV_UI_Shout_ErrorPrefix" text="[Scene shout] {OUTPUT}" />
+    <string id="AF_CONV_UI_Shout_PreprocessFailed" text="AnimusForge pre-processing failed" />
+    <string id="AF_CONV_UI_Shout_RelayTargetUnavailable" text="The primary highlighted target cannot respond right now." />
+    <string id="AF_CONV_UI_Shout_RelayEndedSpeakerUnavailable" text="This relay round ended: the current speaker left or cannot respond." />
+    <string id="AF_CONV_UI_Shout_RoundStoppedBeforeActions" text="This response round stopped before action processing began." />
+    <string id="AF_CONV_UI_Shout_RoundErrorStoppedActions" text="This response round encountered an error; subsequent action processing was stopped." />
+    <string id="AF_CONV_UI_Shout_RelaySpeakerUnavailable" text="This relay round ended: the current speaker can no longer respond." />
+    <string id="AF_CONV_UI_Shout_RelayInterrupted" text="This relay round was interrupted: behavior processing failed or timed out." />
+    <string id="AF_CONV_UI_Shout_RelayNoSpeaker" text="No valid next speaker was selected for this round." />
+    <string id="AF_CONV_UI_Shout_RelayEnded" text="This relay round ended." />
+    <string id="AF_CONV_UI_Shout_RelaySelectedUnavailable" text="This relay round ended: the selected next speaker left or cannot respond." />
+    <string id="AF_CONV_UI_Shout_BudgetLimit" text="This relay round ended: the scene response participant budget was reached." />
+    <string id="AF_CONV_UI_Shout_BudgetDenied" text="This relay round ended: the scene response budget did not allow another speaker." />
+    <string id="AF_CONV_UI_Shout_RelayEndedTurnLimit" text="This relay round ended: the speaking turn limit was reached." />
+    <string id="AF_CONV_UI_Shout_RelayNoNextSpeaker" text="This relay round ended: no one else can take the next turn." />
+    <string id="AF_CONV_UI_Shout_RelayThinking" text="{NAME} is thinking about what to say." />
+    <string id="AF_CONV_UI_Native_Exited" text="The current conversation was closed." />
+    <string id="AF_CONV_UI_Native_LongWaitEscape" text="The NPC reply is taking a while. Press ESC to end this conversation; normal mode cannot be restored until processing finishes." />
+    <string id="AF_CONV_UI_Native_Postprocess" text="Processing {NAME}'s actions" />
+    <string id="AF_CONV_UI_Native_InputReady" text="You can reply now!" />
+    <string id="AF_CONV_UI_Native_PreprocessTimeoutTitle" text="Native conversation pre-processing timed out" />
+    <string id="AF_CONV_UI_Native_PreprocessTimeoutDescription" text="ONNX/knowledge retrieval pre-processing exceeded its wait limit, or the previous round is still running in the background.&#10;&#10;Retry this line?" />
+    <string id="AF_CONV_UI_Native_NpcOpeningTimeoutTitle" text="NPC opening pre-processing timed out" />
+    <string id="AF_CONV_UI_Native_NpcOpeningTimeoutDescription" text="ONNX/knowledge retrieval pre-processing exceeded its wait limit, or the previous round is still running in the background.&#10;&#10;Let the NPC try opening again?" />
+    <string id="AF_CONV_UI_Native_Retry" text="Retry" />
+    <string id="AF_CONV_UI_Native_Cancel" text="Cancel" />
+    <string id="AF_CONV_UI_Native_MemoryUnconfirmed" text="AnimusForge memory record was not confirmed" />
+    <string id="AF_CONV_UI_Native_ActionIncomplete" text="AnimusForge action processing did not complete" />
+    <string id="AF_CONV_UI_Native_NpcOpeningFailed" text="AnimusForge NPC opening failed" />
+    <string id="AF_CONV_UI_Native_FreeConversationFailed" text="AnimusForge free conversation submission failed" />
+    <string id="AF_CONV_UI_Trade_TargetFallback" text="the other party" />
+    <string id="AF_CONV_UI_Trade_GiveItems" text="Give items" />
+    <string id="AF_CONV_UI_Trade_ShowItems" text="Show items" />
+    <string id="AF_CONV_UI_Trade_GiveTroops" text="Give troops" />
+    <string id="AF_CONV_UI_Trade_GivePrisoners" text="Give prisoners" />
+    <string id="AF_CONV_UI_Trade_GiveAssets" text="Transfer fixed assets" />
+    <string id="AF_CONV_UI_Trade_MenuTitle" text="Give/Show - {TARGET}" />
+    <string id="AF_CONV_UI_Trade_MenuDescription" text="Current target: {TARGET}&#10;This performs only a give or show action and does not request an AI reply. The action is written to AnimusForge conversation history for later AI conversations." />
+    <string id="AF_CONV_UI_Trade_AvailableAmount" text="Available: {AMOUNT}" />
+    <string id="AF_CONV_UI_Trade_TroopHint" text="Available: {AMOUNT} | Daily wage: {WAGE} denars/day | Hire price: {PRICE} denars/person" />
+    <string id="AF_CONV_UI_Trade_PrisonerHint" text="Available: {AMOUNT} | Purchase price: {PRICE} denars/person" />
+    <string id="AF_CONV_UI_Trade_SourceHint" text=" | Source: {SOURCE}" />
+    <string id="AF_CONV_UI_Trade_SourceSuffix" text=" (Source: {SOURCE})" />
+    <string id="AF_CONV_UI_Trade_AssetHint" text="Daily income: {INCOME} denars | One-time settlement guide price: {PRICE} denars | Type: {TYPE}" />
+    <string id="AF_CONV_UI_Trade_Town" text="Town" />
+    <string id="AF_CONV_UI_Trade_Castle" text="Castle" />
+    <string id="AF_CONV_UI_Trade_Denars" text="Denars" />
+    <string id="AF_CONV_UI_Trade_Currency" text="Currency" />
+    <string id="AF_CONV_UI_Trade_Item" text="Item" />
+    <string id="AF_CONV_UI_Trade_Troops" text="Troops" />
+    <string id="AF_CONV_UI_Trade_Prisoners" text="Prisoners" />
+    <string id="AF_CONV_UI_Trade_TargetTitle" text="{MODE}{SUFFIX} - {TARGET}" />
+    <string id="AF_CONV_UI_Trade_ActionOnlyNote" text="&#10;This action is recorded in conversation history only; it does not request an AI reply." />
+    <string id="AF_CONV_UI_Trade_CurrentTarget" text="Current target: {TARGET}" />
+    <string id="AF_CONV_UI_Trade_SelectTroops" text="Select troops to transfer to the other party (multiple selection):" />
+    <string id="AF_CONV_UI_Trade_SelectPrisoners" text="Select prisoners to give to the other party (multiple selection):" />
+    <string id="AF_CONV_UI_Trade_SelectAssets" text="Select fixed assets to transfer to the other party (multiple selection):" />
+    <string id="AF_CONV_UI_Trade_SelectItems" text="Select items or denars to use (multiple selection):" />
+    <string id="AF_CONV_UI_Trade_PrepareTroops" text="You are preparing to transfer these troops to the other party:&#10;{LIST}" />
+    <string id="AF_CONV_UI_Trade_PreparePrisoners" text="You are preparing to give these prisoners to the other party:&#10;{LIST}" />
+    <string id="AF_CONV_UI_Trade_PrepareAssets" text="You are preparing to transfer these fixed assets to the other party:&#10;{LIST}" />
+    <string id="AF_CONV_UI_Trade_PrepareGive" text="You are preparing to give the other party these items:&#10;{LIST}" />
+    <string id="AF_CONV_UI_Trade_PrepareShow" text="You are preparing to show the other party these items:&#10;{LIST}" />
+    <string id="AF_CONV_UI_Trade_TransferTroopLine" text="  · Transfer {AMOUNT} {ITEM}" />
+    <string id="AF_CONV_UI_Trade_DeliverPrisonerHeroLine" text="  · Deliver prisoner {ITEM}" />
+    <string id="AF_CONV_UI_Trade_DeliverPrisonerLine" text="  · Deliver {AMOUNT} {ITEM} prisoners" />
+    <string id="AF_CONV_UI_Trade_TransferAssetLine" text="  · Transfer {TYPE} {ITEM}" />
+    <string id="AF_CONV_UI_Trade_GiveGoldLine" text="  · Give {AMOUNT} denars" />
+    <string id="AF_CONV_UI_Trade_ShowGoldLine" text="  · Show {AMOUNT} denars" />
+    <string id="AF_CONV_UI_Trade_GiveItemLine" text="  · Give {AMOUNT} {ITEM}" />
+    <string id="AF_CONV_UI_Trade_ShowItemLine" text="  · Show {AMOUNT} {ITEM}" />
+    <string id="AF_CONV_UI_Trade_AmountTitleGive" text="Amount to give" />
+    <string id="AF_CONV_UI_Trade_AmountTitleShow" text="Amount to show" />
+    <string id="AF_CONV_UI_Trade_AmountTitleTransfer" text="Amount to transfer" />
+    <string id="AF_CONV_UI_Trade_AmountDescription" text="[{INDEX}/{COUNT}] {ITEM}: maximum {MAX}.&#10;Enter an integer from 1 to {MAX}:" />
+    <string id="AF_CONV_UI_Trade_InvalidAmount" text="Enter a valid amount." />
+    <string id="AF_CONV_UI_Trade_Interrupted" text="The give/show flow was interrupted; the resource and target outcome could not be confirmed. This confirmation was consumed and must not be repeated." />
+    <string id="AF_CONV_UI_Trade_Recorded" text="The give/show action was recorded. The NPC will know about it in later AI conversations." />
+    <string id="AF_CONV_UI_Trade_CommitInterrupted" text="The give/show action was interrupted and its outcome could not be confirmed. Do not repeat the delivery." />
+    <string id="AF_CONV_UI_Trade_TargetInvalid" text="The trade target left or became invalid; the give/show action was not performed." />
+    <string id="AF_CONV_UI_Trade_ListExpired" text="The give list is no longer valid. Open it again." />
+    <string id="AF_CONV_UI_Trade_SelectResource" text="Select at least one resource to give." />
+    <string id="AF_CONV_UI_Trade_AmountOutOfRange" text="The amount exceeds the available range: {RESOURCE}" />
+    <string id="AF_CONV_UI_Trade_NoDelivery" text="The target left or the give action expired; nothing was delivered and no line was sent." />
+    <string id="AF_CONV_UI_Trade_ResourcesChanged" text="The resource or amount changed; nothing was delivered." />
+    <string id="AF_CONV_UI_Trade_DisplayValue" text="[Show valuation] You showed {TARGET} goods worth {VALUE} denars in total." />
+    <string id="AF_CONV_UI_Trade_AssetDelivered" text="Transferred {ITEM} to {TARGET}." />
+    <string id="AF_CONV_UI_Trade_GoldDeliveredToParty" text="Gave {AMOUNT} denars to the party containing {TARGET}." />
+    <string id="AF_CONV_UI_Trade_TroopsDelivered" text="Transferred {AMOUNT} {ITEM} to {TARGET}'s party." />
+    <string id="AF_CONV_UI_Trade_HeroPrisonerDelivered" text="Gave prisoner {ITEM} to {TARGET}." />
+    <string id="AF_CONV_UI_Trade_PrisonersDelivered" text="Gave {AMOUNT} {ITEM} prisoners to {TARGET}." />
+    <string id="AF_CONV_UI_Trade_IneligibleSelf" text="You cannot give resources to yourself." />
+    <string id="AF_CONV_UI_Trade_IneligibleLord" text="Only a lord can discuss troop or prisoner transfers." />
+    <string id="AF_CONV_UI_Trade_NoCounterpartyParty" text="The target has no party that can receive troops or prisoners." />
+    <string id="AF_CONV_UI_Trade_NoTargetAssets" text="The target has no fixed assets available for transfer." />
+    <string id="AF_CONV_UI_Trade_NoTroops" text="You have no troops available to transfer to the other party." />
+    <string id="AF_CONV_UI_Trade_NoPrisoners" text="You have no prisoners available to transfer to the other party." />
+    <string id="AF_CONV_UI_Trade_NoAssets" text="You have no fixed assets available to transfer to the other party." />
+    <string id="AF_CONV_UI_Trade_NoItems" text="You have no available items or denars." />
+    <string id="AF_CONV_UI_Trade_SessionEnded" text="The scene conversation session has ended." />
+    <string id="AF_CONV_UI_Trade_OtherFlow" text="Another give flow is in progress. Finish it first." />
+    <string id="AF_CONV_UI_Trade_NoConversationTarget" text="There is no conversation target available for giving." />
+    <string id="AF_CONV_UI_Shout_TargetFallback" text="nearby person" />
+    <string id="AF_CONV_UI_Shout_ModeNormal" text="Talk" />
+    <string id="AF_CONV_UI_Shout_ModeGive" text="Give items and talk" />
+    <string id="AF_CONV_UI_Shout_ModeShow" text="Show items and talk" />
+    <string id="AF_CONV_UI_Shout_ModeTroops" text="Give troops and talk" />
+    <string id="AF_CONV_UI_Shout_ModePrisoners" text="Give prisoners and talk" />
+    <string id="AF_CONV_UI_Shout_ModeAssets" text="Transfer fixed assets and talk" />
+    <string id="AF_CONV_UI_Shout_TagTest" text="Tag test" />
+    <string id="AF_CONV_UI_Shout_TagTestDescription" text="Enter NPC-visible text and post-processing tags without calling the API; execute them immediately for the current target." />
+    <string id="AF_CONV_UI_Shout_BattleSpeechPlayer" text="Speech" />
+    <string id="AF_CONV_UI_Shout_BattleSpeechPlayerDescription" text="Give a speech to your allied soldiers." />
+    <string id="AF_CONV_UI_Shout_BattleSpeechNpc" text="NPC speech" />
+    <string id="AF_CONV_UI_Shout_BattleSpeechNpcDescription" text="Have the currently highlighted allied primary target give a speech." />
+    <string id="AF_CONV_UI_Shout_ModeDescription" text="Current target: {TARGET}&#10;This menu lets you talk while giving or showing items, or transfer troops, prisoners, or fixed assets.&#10;Choose an interaction mode:" />
+    <string id="AF_CONV_UI_Shout_SpeechInputFailed" text="The speech input could not be opened; returning to normal scene state." />
+    <string id="AF_CONV_UI_Shout_Processing" text="Processing..." />
+    <string id="AF_CONV_UI_Shout_TagTitle" text="Tag input - {TARGET}" />
+    <string id="AF_CONV_UI_Shout_TagSubtitle" text="Current target: {TARGET}&#10;Enter NPC-visible text and post-processing tags. No API call is made; tags execute immediately for the current target." />
+    <string id="AF_CONV_UI_Shout_OpenFailed" text="[Scene shout] Failed to open the shout interface; state was reset." />
+    <string id="AF_CONV_UI_Scene_RoleLord" text="Lord" />
+    <string id="AF_CONV_UI_Scene_RoleNotable" text="Notable" />
+    <string id="AF_CONV_UI_Scene_RoleWanderer" text="Wanderer" />
+    <string id="AF_CONV_UI_Scene_Attacked" text="[Scene session] You were attacked; the session panel was collapsed (press T to expand)." />
+    <string id="AF_CONV_UI_Scene_NoParticipants" text="[Scene session] There is no one nearby to talk to; the session ended." />
+    <string id="AF_CONV_UI_Scene_SessionEnded" text="The scene conversation session has ended." />
+    <string id="AF_CONV_UI_Scene_RoundActive" text="The previous response is still running; click &quot;Interrupt&quot; to speak over it." />
+    <string id="AF_CONV_UI_Scene_Processing" text="The previous line is still processing. Please wait." />
+    <string id="AF_CONV_UI_Scene_PlayerSpeaker" text="You" />
+    <string id="AF_CONV_UI_Scene_FactSpeaker" text="Record" />
+    <string id="AF_CONV_UI_Native_SceneMoveReady" text="SCENE_MOVE is ready. Exit the conversation panel manually; the NPC scene action will execute after you leave.{SUFFIX}" />
+    <string id="AF_CONV_UI_Native_PendingActionsSuffix" text=" {COUNT} actions are pending." />
+    <string id="AF_CONV_UI_Native_TauntFightTriggered" text="SCENE_TAUNT_FIGHT was triggered; the conversation will close automatically in 10 seconds and the conflict will begin." />
+    <string id="AF_CONV_UI_Native_ConflictStarted" text="The conflict has begun!" />
+    <string id="AF_CONV_UI_Native_ConflictUnavailable" text="The conflict could not begin: the current scene target is unavailable." />
+    <string id="AF_CONV_UI_Scene_SummonGroupArrived" text="{SPEAKER} arrived with {TARGET}." />
+    <string id="AF_CONV_UI_Scene_SummonTargetArrived" text="{TARGET} was summoned." />
+    <string id="AF_CONV_UI_Ambient_AiReplyFailedUsage" text="[Ambient AI] This request did not produce a reply, but used about {INPUT} input + {OUTPUT} output tokens." />
+    <string id="AF_CONV_UI_Ambient_AiUsage" text="[Ambient AI] {SOURCE}; about {TOTAL} tokens used this session across {REQUESTS} requests." />
+    <string id="AF_CONV_UI_Ambient_CacheSource" text="cache (0 tokens)" />
+    <string id="AF_CONV_UI_Ambient_TokenSource" text="{INPUT} input + {OUTPUT} output tokens" />
+    <string id="AF_CONV_UI_Native_TtsQueueFailed" text="[TTS] Free-conversation speech was not queued; check TTS settings or the queue." />
+    <string id="AF_CONV_UI_Native_TtsSynthesisFallback" text="Speech synthesis failed; switched to a text bubble." />
+    <string id="AF_CONV_UI_Native_TtsError" text="[TTS error] {ERROR}" />
+    <string id="AF_CONV_UI_Shout_KeyHint" text="Hold {KEY} to preview the shout range, then release to speak; hold {SPECIAL} to open advanced interaction." />
+    <string id="AF_CONV_UI_Scene_PostprocessStatus" text="Processing NPC actions..." />
+    <string id="AF_CONV_UI_Scene_PostprocessWaiting" text="Waiting for the previous NPC action processing to finish..." />
+    <string id="AF_CONV_UI_Scene_PostprocessTimeout" text="[Scene shout] Previous NPC action processing timed out and was reset." />
+    <string id="AF_CONV_UI_Issue_NoOfferable" text="No vanilla quest is currently available to accept." />
+    <string id="AF_CONV_UI_Issue_PreconditionsNotMet" text="You do not currently meet the requirements to accept this quest." />
+    <string id="AF_CONV_UI_Issue_CannotAcceptReason" text="Cannot accept this quest right now: {REASON}" />
+    <string id="AF_CONV_UI_Issue_ManagerUnavailable" text="IssueManager is unavailable; cannot start quest." />
+    <string id="AF_CONV_UI_Issue_StartFailed" text="Failed to start vanilla quest." />
+    <string id="AF_CONV_UI_Issue_FinalizeFailed" text="Quest was created, but failed to finalize vanilla acceptance." />
+    <string id="AF_CONV_UI_Issue_AcceptedSelf" text="Accepted quest: {TITLE}" />
+    <string id="AF_CONV_UI_Issue_AcceptException" text="An error occurred while accepting the quest." />
+    <string id="AF_CONV_UI_Issue_AltDispatchPending" text="A companion dispatch screen is already pending confirmation." />
+    <string id="AF_CONV_UI_Issue_NoAltSolution" text="This quest cannot be solved by a companion right now." />
+    <string id="AF_CONV_UI_Issue_CannotAltReason" text="Cannot assign to companion: {REASON}" />
+    <string id="AF_CONV_UI_Issue_CompanionNotAllowed" text="The chosen companion is not in the allowed list." />
+    <string id="AF_CONV_UI_Issue_CompanionUnavailable" text="This companion is currently unavailable." />
+    <string id="AF_CONV_UI_Issue_CompanionConfirmedSelectTroops" text="Confirmed that {HERO} will lead. Please select the accompanying troops." />
+    <string id="AF_CONV_UI_Issue_AltStartException" text="An error occurred while starting the companion solution." />
+    <string id="AF_CONV_UI_Issue_AltAccepted" text="{HERO} has taken over the quest: {TITLE}" />
+    <string id="AF_CONV_UI_Issue_AltConfirmException" text="An error occurred while confirming companion assignment." />
+    <string id="AF_CONV_UI_Issue_CompanionNotFound" text="Companion not found." />
+    <string id="AF_CONV_UI_Issue_CompanionNotInParty" text="This companion is not in your main party." />
+    <string id="AF_CONV_UI_Issue_CompanionWounded" text="This companion is currently wounded." />
+    <string id="AF_CONV_UI_Issue_CompanionPregnant" text="This companion is currently pregnant." />
+    <string id="AF_CONV_UI_Issue_PartyUnavailable" text="Player party is currently unavailable." />
+    <string id="AF_CONV_UI_Issue_NoEligibleCompanion" text="No eligible companion is available in your party." />
+    <string id="AF_CONV_UI_Issue_NoTurnInQuest" text="No quest available to turn in via conversation." />
+    <string id="AF_CONV_UI_Issue_TurnInFailed" text="Failed to turn in vanilla quest." />
+    <string id="AF_CONV_UI_Issue_TurnedIn" text="Turned in quest: {TITLE}" />
+    <string id="AF_CONV_UI_Issue_DispatchCancelled" text="Companion mission troop dispatch was cancelled." />
+    <string id="AF_CONV_UI_Issue_TroopsNotSatisfied" text="Selected troops do not meet the quest requirements." />
+    <string id="AF_CONV_UI_Issue_TroopsNotSatisfiedReason" text="Selected troops do not meet the quest requirements: {REASON}" />
+    <string id="AF_CONV_UI_Issue_NoQuestOrGiver" text="No quest or quest giver was found." />
+    <string id="AF_CONV_UI_Issue_QuestNotCreated" text="The quest object was not created." />
+    <string id="AF_CONV_UI_Issue_AcceptBranchEnded" text="The vanilla acceptance branch ended or removed the quest immediately, so it never reached the normal in-progress state." />
+    <string id="AF_CONV_UI_Issue_QuestNotOngoing" text="The quest did not enter the in-progress state." />
+    <string id="AF_CONV_UI_Issue_AcceptFinalizeException" text="An error occurred while finalizing the vanilla quest acceptance." />
+    <string id="AF_CONV_UI_Issue_NoOngoingVanillaQuest" text="There is no ongoing vanilla quest right now." />
+    <string id="AF_CONV_UI_Issue_NoDiscussFlow" text="The current quest has no usable vanilla discuss flow." />
+    <string id="AF_CONV_UI_Issue_DiscussAgentMissing" text="The Agent required for the vanilla discuss probe could not be found in the current scene." />
+    <string id="AF_CONV_UI_Issue_ConversationManagerUnavailable" text="The vanilla ConversationManager is not available for silent quest turn-in." />
+    <string id="AF_CONV_UI_Issue_NoClearTurnInOption" text="The vanilla discuss flow has no sufficiently clear successful turn-in option." />
+    <string id="AF_CONV_UI_Issue_TurnInProbeException" text="An error occurred while turning in the vanilla quest: {REASON}" />
+    <string id="AF_CONV_UI_Issue_TurnInMissingArgs" text="Missing the vanilla quest turn-in execution parameters." />
+    <string id="AF_CONV_UI_Issue_TurnInAmbiguousBranch" text="The vanilla turn-in chain branched into multiple paths and could not be auto-selected with high confidence." />
+    <string id="AF_CONV_UI_Issue_TurnInNotCompleted" text="The vanilla turn-in chain ran, but the quest is still not completed." />
+    <string id="AF_CONV_UI_Issue_UnknownCompanion" text="an unknown companion" />
+      <string id="AF_CONV_UI_Runtime_0062" text="this lord" />
+    <string id="AF_CONV_UI_Runtime_0063" text="An NPC approaches" />
+    <string id="AF_CONV_UI_Runtime_0064" text="'s party has caught up with you. They seem to have something to discuss." />
+    <string id="AF_CONV_UI_Runtime_0498" text=", it has been some time since I last sent my greetings. I hope all is well with you. When you can, please write and tell me how you have been." />
+    <string id="AF_CONV_UI_Runtime_0501" text=", I am writing simply to let you know I am safe and to ask where you are these days. Please reply when it is convenient." />
+    <string id="AF_CONV_UI_Runtime_0504" text=", thinking of our past dealings, I felt some things would be better put in writing. May you be safe, and may our trust not be misplaced." />
+    <string id="AF_CONV_UI_Runtime_0508" text=", something happened recently that I wanted you to know about: " />
+    <string id="AF_CONV_UI_Runtime_0509" text=', I am currently facing "' />
+    <string id="AF_CONV_UI_Runtime_0510" text="a particular difficulty" />
+    <string id="AF_CONV_UI_Runtime_0511" text='" and would like to discuss it with you. Please write back if you are willing.' />
+    <string id="AF_CONV_UI_Runtime_0512" text=", I would like to use this letter to discuss a real diplomatic matter currently at hand. If you are willing, please write back with your views." />
+    <string id="AF_CONV_UI_Runtime_0621" text="Failed" />
+      <string id="AF_CONV_UI_Runtime_0750" text="Unified LLM Gateway request failed: " />
+      <string id="AF_CONV_UI_Runtime_0751" text="The model returned an empty reply, so no persona could be generated." />
+      <string id="AF_CONV_UI_Runtime_0756" text="The model reply could not be parsed as persona JSON." />
+      <string id="AF_CONV_UI_Runtime_0419" text="None" />
+    <string id="AF_CONV_UI_Runtime_0420" text="Unknown" />
+    <string id="AF_CONV_UI_Runtime_0430" text="Player" />
+    <string id="AF_CONV_UI_Runtime_0431" text=" to " />
+    <string id="AF_CONV_UI_Runtime_0432" text=":&#10;&#10;I have a specific difficulty that I would like to discuss with you. Please write back if you are willing." />
+    <string id="AF_CONV_UI_Runtime_0434" text=":&#10;&#10;I hope you have been well. When you have time, please write and tell me how you are doing." />
+    <string id="AF_CONV_UI_Runtime_0436" text=":&#10;&#10;I would like to discuss current matters with you in a formal letter. If you are willing, please write back with your views." />
+    <string id="AF_CONV_UI_Runtime_0596" text="Courier party members:" />
+    <string id="AF_CONV_UI_Runtime_0597" text="Enclosed: letter only." />
+    <string id="AF_CONV_UI_Runtime_0598" text="Enclosed:" />
+    <string id="AF_CONV_UI_Runtime_0599" text="Send " />
+    <string id="AF_CONV_UI_Runtime_0600" text=" denars" />
+    <string id="AF_CONV_UI_Runtime_0601" text="Show " />
+    <string id="AF_CONV_UI_Runtime_0604" text=" × " />
+    <string id="AF_CONV_UI_Runtime_0607" text="Transfer " />
+    <string id="AF_CONV_UI_Runtime_0608" text=" × " />
+    <string id="AF_CONV_UI_Runtime_0609" text="Transfer prisoner " />
+    <string id="AF_CONV_UI_Runtime_0612" text=" prisoners" />
+    <string id="AF_CONV_UI_Runtime_0613" text="Transfer fixed asset " />
+    <string id="AF_CONV_UI_Runtime_0670" text="Enough talk. If you want a fight, come on." />
+    <string id="AF_CONV_UI_Runtime_0671" text="Watch your mouth. Do not force my hand." />
+    <string id="AF_CONV_UI_Direct_001" text="NPC gives me gold" />
+    <string id="AF_CONV_UI_Direct_002" text="NPC gives me items" />
+    <string id="AF_CONV_UI_Direct_003" text="NPC transfers fixed assets to me" />
+    <string id="AF_CONV_UI_Direct_004" text="NPC transfers troops to me" />
+    <string id="AF_CONV_UI_Direct_005" text="NPC transfers prisoners to me" />
+    <string id="AF_CONV_UI_Direct_006" text="Record the player's debt or promise" />
+    <string id="AF_CONV_UI_Direct_007" text="Clear a debt" />
+    <string id="AF_CONV_UI_Direct_008" text="Make the current hero a companion" />
+    <string id="AF_CONV_UI_Direct_009" text="Make the current hero a clan member" />
+    <string id="AF_CONV_UI_Direct_010" text="Follow me" />
+    <string id="AF_CONV_UI_Direct_011" text="Stop following" />
+    <string id="AF_CONV_UI_Direct_012" text="Enter the lord's hall" />
+    <string id="AF_CONV_UI_Direct_013" text="Accept quest" />
+    <string id="AF_CONV_UI_Direct_014" text="Turn in quest" />
+    <string id="AF_CONV_UI_Direct_015" text="Direct actions — " />
+    <string id="AF_CONV_UI_Direct_016" text="The target or conversation has expired. Reopen Direct actions." />
+    <string id="AF_CONV_UI_Direct_017" text="Execute existing tag rules without calling AI." />
+    <string id="AF_CONV_UI_Direct_018" text="Only the current target is affected. Eligibility, quantity, costs and side effects follow the existing mechanics." />
+    <string id="AF_CONV_UI_Direct_019" text="OK" />
+    <string id="AF_CONV_UI_Direct_020" text="Cancel" />
+    <string id="AF_CONV_UI_Direct_021" text="The target or conversation has expired. No action was executed." />
+    <string id="AF_CONV_UI_Direct_022" text="An error occurred while reading parameters or submitting the action. Direct actions was closed without automatic retry. Check the original mechanic's state." />
+    <string id="AF_CONV_UI_Direct_023" text="Confirm action" />
+    <string id="AF_CONV_UI_Direct_024" text="Enter the gold amount the NPC gives you (positive integer). Insufficient funds still follow the original tag's shortfall-completion rules." />
+    <string id="AF_CONV_UI_Direct_025" text="Enter the value of the player's debt or promise (positive integer):" />
+    <string id="AF_CONV_UI_Direct_026" text="Enter the deadline in days (0 retains the existing unlimited-deadline meaning):" />
+    <string id="AF_CONV_UI_Direct_027" text="The deadline must be a non-negative integer." />
+    <string id="AF_CONV_UI_Direct_028" text="Enter a note (no square brackets or line breaks):" />
+    <string id="AF_CONV_UI_Direct_029" text="Target: " />
+    <string id="AF_CONV_UI_Direct_030" text="&#10;The existing tag will move this hero into the player's clan as a " />
+    <string id="AF_CONV_UI_Direct_031" text="companion. " />
+    <string id="AF_CONV_UI_Direct_032" text="clan member/lord. " />
+    <string id="AF_CONV_UI_Direct_033" text="All existing identity, party and ownership side effects are retained." />
+    <string id="AF_CONV_UI_Direct_034" text="This target has no eligible items, assets, troops, prisoners or outstanding debts under the existing mechanics." />
+    <string id="AF_CONV_UI_Direct_035" text="Use the existing mechanics; recheck the selected candidate before execution." />
+    <string id="AF_CONV_UI_Direct_036" text="Select:" />
+    <string id="AF_CONV_UI_Direct_037" text="&#10;Transfer asset: " />
+    <string id="AF_CONV_UI_Direct_038" text="&#10;Ownership will pass to the player, subject to all existing tag checks and consequences." />
+    <string id="AF_CONV_UI_Direct_039" text="Enter quantity" />
+    <string id="AF_CONV_UI_Direct_040" text="Enter a positive integer; shortfall completion or actual transferred quantities follow the existing tag rules." />
+    <string id="AF_CONV_UI_Direct_041" text="All of this entry" />
+    <string id="AF_CONV_UI_Direct_042" text="Emit ALL only for the selected entry, retaining its existing meaning." />
+    <string id="AF_CONV_UI_Direct_043" text="Selected: " />
+    <string id="AF_CONV_UI_Direct_044" text="&#10;Enter a positive integer quantity:" />
+    <string id="AF_CONV_UI_Direct_045" text="Invalid parameters. No action was executed. Select again and enter a positive quantity/amount or an allowed ALL." />
+    <string id="AF_CONV_UI_Direct_046" text="The target, scene or candidate has changed. No action was executed. Reopen Direct actions." />
+    <string id="AF_CONV_UI_Direct_047" text="The conversation has expired. No action was executed." />
+    <string id="AF_CONV_UI_Direct_048" text="The existing mechanics only support heroes, settlement merchants or wilderness parties with a valid source." />
+    <string id="AF_CONV_UI_Direct_049" text="Fixed assets require an existing hero and assets transferable through the original mechanic." />
+    <string id="AF_CONV_UI_Direct_050" text="The existing mechanics only support lords, notables eligible to recruit volunteers or valid wilderness party sources." />
+    <string id="AF_CONV_UI_Direct_051" text="The current target has no personal or market debt ledger supported by the existing mechanics." />
+    <string id="AF_CONV_UI_Direct_052" text="An existing hero, player clan and player party are required. Promoting ordinary NPCs is outside this feature's scope." />
+    <string id="AF_CONV_UI_Direct_053" text="A valid NPC Agent in the current scene is required. The original movement tag restrictions still apply." />
+    <string id="AF_CONV_UI_Direct_054" text="The existing mechanics only support town-center scenes with a lord's hall entrance." />
+    <string id="AF_CONV_UI_Direct_055" text="Unsupported direct action." />
+    <string id="AF_CONV_UI_Direct_056" text="The target or candidate has expired. No action was executed." />
+    <string id="AF_CONV_UI_Direct_057" text="The current scene action could not be submitted." />
+    <string id="AF_CONV_UI_Direct_058" text="Direct action submitted. Its actual result is determined by the original mechanic's messages and state." />
+    <string id="AF_CONV_UI_Direct_059" text="An error occurred while submitting the action. Check the original mechanic's state; there will be no automatic retry." />
+    <string id="AF_CONV_UI_Direct_060" text=" (private equipment)" />
+    <string id="AF_CONV_UI_Direct_061" text="All ordinary items (existing per-item :ALL; excludes fixed assets and private equipment)" />
+    <string id="AF_CONV_UI_Direct_062" text="All prisoners (existing ATP:ALL:ALL)" />
+    <string id="AF_CONV_UI_Direct_063" text="All troops (existing ATT:ALL:ALL)" />
+    <string id="AF_CONV_UI_Direct_064" text=" (remaining " />
+    <string id="AF_CONV_UI_Direct_065" text=" denars" />
+    <string id="AF_CONV_UI_Direct_066" text=", no deadline)" />
+    <string id="AF_CONV_UI_Direct_Button" text="Direct actions" />
+    <string id="AF_CONV_UI_Direct_Description" text="Execute existing tags only for the selected primary target, without calling AI." />
+    <string id="AF_CONV_UI_Direct_IssueHero" text="Vanilla quests require an existing hero as the current target." />
+    <string id="AF_CONV_UI_Direct_IssueProgress" text="This hero has no ongoing vanilla quest. Turn-in conditions are still checked by the original execution entry." />
+    <string id="AF_CONV_UI_Direct_IssueOffer" text="This hero has no available vanilla quest." />
+  </strings>
+</base>

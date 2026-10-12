@@ -1,0 +1,155 @@
+{
+  "Id": "rule_House_Foundations_Fozho",
+  "Keywords": [
+    "Fozho",
+    "Fozho Khalasar",
+    "Riders of the Grass Sea"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Fozo is not a southern-style noble family that relies on a fixed territory to continue, but a khalasar composed of relatives, bandits, bloodriders and ordinary riders on the sea of ​​​​grass. Horses are not only wealth, food, and status, but also a measure of migration speed and military strength. Any leader who squanders his horses, misjudges water sources, or allows the spoils to flow only to a few close associates will damage his prestige. The tradition of Fodro I is preserved by campfire stories, mothers' teachings, and the experiences of riders, and does not need a stone tablet to exist. It can pass through different roads, accept different visitors, and even reunite after failure, but its obedience must always be determined by whether it can survive together."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The riders of Fozhuo look at a leader and first see how he treats his own horses, and then see how he distributes the enemy's horses. Those who mistreat their mounts will be looked down upon, while those who monopolize the spoils will find that the team behind them is getting shorter and shorter."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Those in the camp who sew saddles, boil milk, and take care of young children know that the khalasar is not just composed of charges. If Buddha allows these nameless labors to be fed and protected, the singing will continue after the warriors leave the camp."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sarnor",
+          "qohorik"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The merchants and guards at the edge of the Grass Sea will not regard Fo Zhuo as a permanently fixed flag. They observe whether the horses are tired and whether there are quarrels among the troops, because the inside story of a khalasar is often more reliable than the friendship told by Kaa."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Fozho Dothraki A khalasar name on the sea of ​​grass that maintains the community through riding skills, order in the camp, and the leader's ability to fulfill his promises. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Fozho Dothraki A khalasar name on the sea of ​​grass that maintains the community through riding skills, order in the camp, and the leader's ability to fulfill his promises. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Fozho Dothraki A khalasar name on the sea of ​​grass that maintains the community through riding skills, order in the camp, and the leader's ability to fulfill his promises. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Fozho Dothraki A khalasar name on the sea of ​​grass that maintains the community through riding skills, order in the camp, and the leader's ability to fulfill his promises. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Fozho: Dothraki A khalasar name on the sea of ​​grass that maintains the community through riding skills, order in the camp, and the leader's ability to fulfill his promises."
+  ]
+}

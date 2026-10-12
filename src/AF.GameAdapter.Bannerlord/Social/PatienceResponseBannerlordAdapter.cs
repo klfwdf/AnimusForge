@@ -30,8 +30,8 @@ internal PatienceSnapshot GetHeroSnapshot(Hero hero)
 			PrivateLove = 0,
 			Max = 30,
 			Current = 30f,
-			PatienceLevel = "一般",
-			RelationLevel = "中立",
+			PatienceLevel = PromptComposerTexts.Get("patience_default_level"),
+			RelationLevel = PromptComposerTexts.Get("relation_default_level"),
 			TrustLevel = RewardSystemBehavior.GetTrustLevelText(0),
 			PublicTrustLevel = RewardSystemBehavior.GetTrustLevelText(0),
 			PrivateLoveLevel = RomanceSystemBehavior.GetPrivateLoveLevelText(0)
@@ -219,7 +219,7 @@ internal void ApplyRoyalDomainConversationLoyaltyFromMood(PatienceMood mood, Her
 			town.Loyalty = MBMath.ClampFloat(town.Loyalty + (float)num, 0f, maximumLoyaltyInSettlement);
 			_syncTown(town);
 			string text = targetHero?.StringId ?? unnamedKey ?? npcName ?? "";
-			AnimusForgeQuickInfo.Show(currentRoyalDomainConversationSettlement.Name.ToString() + " 忠诚度 +" + num);
+			AnimusForgeQuickInfo.Show(SocialUiLocalization.Format("AF_SOCIAL_UI_RoyalDomainLoyalty", "{SETTLEMENT} loyalty +{AMOUNT}", ("SETTLEMENT", currentRoyalDomainConversationSettlement.Name), ("AMOUNT", num)));
 			Logger.Log("Patience", $"royal_domain_conversation_loyalty settlement={currentRoyalDomainConversationSettlement.StringId} npc={text} mood={mood} loyalty={loyalty:0.##}->{town.Loyalty:0.##} delta={num}");
 			Logger.Obs("Patience", "royal_domain_conversation_loyalty", new Dictionary<string, object>
 			{

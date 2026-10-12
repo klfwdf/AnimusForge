@@ -5,6 +5,7 @@ using TaleWorlds.Library;
 using TaleWorlds.ScreenSystem;
 using AnimusForge.Illustrator.Core;
 using AnimusForge.Illustrator.UI.Overlays;
+using AnimusForge.Illustrator.UI;
 
 namespace AnimusForge.Illustrator.UI.Gallery
 {
@@ -98,7 +99,7 @@ namespace AnimusForge.Illustrator.UI.Gallery
                     _redrawJob = job;
                     _redrawing = true;
                     _dataSource.SetRedrawing(true);
-                    _dataSource.StatusText = "正在基于所选画卷重绘，可关闭画廊等待。";
+                    _dataSource.StatusText = IllustratorRemainingUiText.GalleryRedrawLoading;
                     try
                     {
                         CurrentImageRedraw.Start(job, selected.CopyMetadata(), prompt, options, null, result => {
@@ -106,12 +107,12 @@ namespace AnimusForge.Illustrator.UI.Gallery
                             if (_closed) return;
                             _redrawJob = null; _redrawing = false; _dataSource.SetRedrawing(false);
                             if (result.Saved != null) _dataSource.SelectByKey(result.Saved.Key);
-                            _dataSource.StatusText = result.Saved != null ? "重绘完成，已保存新画卷。" : "重绘失败：" + result.Result?.ErrorMessage;
+                            _dataSource.StatusText = result.Saved != null ? IllustratorRemainingUiText.GalleryRedrawComplete : IllustratorUiText.WeeklyRedrawFailed(result.Result?.ErrorMessage);
                         }, error => {
                             job.Close();
                             if (_closed) return;
                             _redrawJob = null; _redrawing = false; _dataSource.SetRedrawing(false);
-                            _dataSource.StatusText = "重绘失败：" + error;
+                            _dataSource.StatusText = IllustratorUiText.WeeklyRedrawFailed(error);
                         });
                     }
                     catch { job.Close(); _redrawJob = null; _redrawing = false; _dataSource.SetRedrawing(false); throw; }

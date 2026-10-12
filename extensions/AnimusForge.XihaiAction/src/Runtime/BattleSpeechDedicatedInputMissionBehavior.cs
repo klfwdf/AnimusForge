@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using AnimusForge.SceneActions.Core;
 using TaleWorlds.Core;
 using TaleWorlds.Library;
+using TaleWorlds.Localization;
 using TaleWorlds.MountAndBlade;
 
 namespace AnimusForge.XihaiAction
@@ -142,7 +143,7 @@ namespace AnimusForge.XihaiAction
             }
             if (_active != null)
             {
-                NotifyDedicatedSpeechMessage("当前已有一场演讲正在进行。", Colors.Yellow);
+                NotifyDedicatedSpeechMessage(new TextObject("{=SAX_BattleSpeechInputActive}A battle speech is already in progress.").ToString(), Colors.Yellow);
                 return false;
             }
             if (!TryResolvePhase(out BattleSpeechPhaseV1 phase))
@@ -186,7 +187,7 @@ namespace AnimusForge.XihaiAction
                 if (!queued)
                 {
                     NotifyDedicatedSpeechMessage(
-                        "他人演讲请求未进入战场通道，请确认当前仍在战斗中。",
+                        new TextObject("{=SAX_BattleSpeechInputNpcNotQueued}The other-speaker speech request did not enter the battle channel. Check that the battle is still in progress.").ToString(),
                         Colors.Yellow);
                 }
                 return queued;
@@ -209,7 +210,7 @@ namespace AnimusForge.XihaiAction
                 }
                 // The Y menu owns the actor selection. The NPC branch above is
                 // submitted without text; this textbox is therefore player-only.
-                string routedText = "我演讲：" + content;
+                string routedText = SceneActionVocabulary.Text("BattleSpeech.PlayerSpeechRoutingPrefix") + content;
                 bool queued = false;
                 try
                 {
@@ -229,19 +230,23 @@ namespace AnimusForge.XihaiAction
                 if (!queued)
                 {
                     NotifyDedicatedSpeechMessage(
-                        "演讲请求未进入战场通道，请确认当前仍在战斗中。",
+                        new TextObject("{=SAX_BattleSpeechInputNotQueued}The speech request did not enter the battle channel. Check that the battle is still in progress.").ToString(),
                         Colors.Yellow);
                 }
             };
 
-            string title = npcSpeech ? "他人演讲" : "演讲";
+            string title = npcSpeech
+                ? new TextObject("{=SAX_BattleSpeechInputNpcTitle}Other-speaker speech").ToString()
+                : new TextObject("{=SAX_BattleSpeechInputTitle}Speech").ToString();
             string subtitle = npcSpeech
-                ? "当前目标将作为演讲者，AF 会根据你输入的主题重新生成一段对己方士兵的演讲正文。"
-                : "你将作为演讲者，直接输入要对己方士兵说的正文。";
+                ? new TextObject("{=SAX_BattleSpeechInputNpcSubtitle}The selected target will speak. AF will generate a fresh speech for allied soldiers from the topic you enter.").ToString()
+                : new TextObject("{=SAX_BattleSpeechInputSubtitle}You will speak. Enter the speech you want to give to allied soldiers.").ToString();
             bool opened = AfCompatV130.TryOpenDedicatedSpeechInput(
                 title,
                 subtitle,
-                npcSpeech ? "输入演讲主题：" : "输入对士兵说的演讲正文：",
+                npcSpeech
+                    ? new TextObject("{=SAX_BattleSpeechInputTopicHint}Enter a speech topic:").ToString()
+                    : new TextObject("{=SAX_BattleSpeechInputBodyHint}Enter your speech to the soldiers:").ToString(),
                 submit,
                 cancel);
             if (opened)
@@ -263,11 +268,11 @@ namespace AnimusForge.XihaiAction
                 InformationManager.ShowTextInquiry(
                     new TextInquiryData(
                         title,
-                        subtitle + "\n\n请输入内容：",
+                        subtitle + "\n\n" + new TextObject("{=SAX_BattleSpeechInputContentHint}Enter text:").ToString(),
                         true,
                         true,
-                        "发表",
-                        "取消",
+                        new TextObject("{=SAX_BattleSpeechInputSubmit}Deliver speech").ToString(),
+                        new TextObject("{=SAX_BattleSpeechInputCancel}Cancel").ToString(),
                         submit,
                         cancel),
                     pauseGameActiveState: true);

@@ -1,0 +1,76 @@
+{
+  "Id": "rule_Little_Olek",
+  "Keywords": [
+    "Little Olek",
+    "Olekpoye"
+  ],
+  "RagShortTexts": [
+    "The small Olek family does not accept the monarchy and firmly believes that Boyer is the owner of the land."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Young Olek is the son of \"older\" Olek. His family is one of the oldest in Sturgia, and they have never truly embraced the idea of ​​monarchy. Olek has always believed that the boyars should be the masters of their own land. His most famous deed is that he once said bluntly to the prince: \"When I fight under your command, every new wound I inflict is as gentle as the caress of my wife. But every penny of tax I pay you is like an arrow in the stomach, which is extremely painful.\" As he grows older, he has become less sincere now. But no one feels that his resentment of princely authority has diminished in the slightest. The currently ruled settlement is a"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Young Olek is the son of \"older\" Olek. His family is one of the oldest in Sturgia. The relationship with Grand Duke Langward was extremely bad and had reached the point of incompatibility."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Olek is the patriarch of the Kulov family. On bad terms with Langward."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "a",
+      "Kind": "clan_all_settlements",
+      "TargetId": "clan_sturgia_2",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

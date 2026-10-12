@@ -1,3 +1,4 @@
+using AnimusForge;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -36,7 +37,7 @@ internal static class WorldDiplomacyPolicyHistoryRules
 	}
 
 	private static readonly Regex Countdown = new Regex(
-		@"｜状态：剩余 (?<remaining>[0-9]+)/(?<total>[0-9]+) 天",
+DiplomacyCompatibilityTexts.Get("Regex_PolicyRemainingDaysPattern"),
 		RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
 	internal static bool IsCountdownOnlyAdvance(string previous, string current)
@@ -44,11 +45,11 @@ internal static class WorldDiplomacyPolicyHistoryRules
 		string before = (previous ?? "").TrimEnd();
 		string after = (current ?? "").TrimEnd();
 		// Touch only the adapter's generated impact section, never the player's policy prose.
-		int beforeStart = before.LastIndexOf("\n影响：", StringComparison.Ordinal);
-		int afterStart = after.LastIndexOf("\n影响：", StringComparison.Ordinal);
+		int beforeStart = before.LastIndexOf(DiplomacyCompatibilityTexts.Get("PolicyHistory_ImpactPrefix"), StringComparison.Ordinal);
+		int afterStart = after.LastIndexOf(DiplomacyCompatibilityTexts.Get("PolicyHistory_ImpactPrefix"), StringComparison.Ordinal);
 		if (beforeStart < 0 || afterStart < 0) return false;
-		int beforeEnd = before.IndexOf("\n机械效果：", beforeStart, StringComparison.Ordinal);
-		int afterEnd = after.IndexOf("\n机械效果：", afterStart, StringComparison.Ordinal);
+		int beforeEnd = before.IndexOf(DiplomacyCompatibilityTexts.Get("PolicyHistory_MechanicPrefix"), beforeStart, StringComparison.Ordinal);
+		int afterEnd = after.IndexOf(DiplomacyCompatibilityTexts.Get("PolicyHistory_MechanicPrefix"), afterStart, StringComparison.Ordinal);
 		if (beforeEnd < 0) beforeEnd = before.Length;
 		if (afterEnd < 0) afterEnd = after.Length;
 		string beforeImpact = before.Substring(beforeStart, beforeEnd - beforeStart);
@@ -63,9 +64,9 @@ internal static class WorldDiplomacyPolicyHistoryRules
 				|| newDays > oldDays) return false; // A renewed clock is a real change, even if its duration stayed the same.
 		}
 		string oldNormalized = before.Substring(0, beforeStart)
-			+ Countdown.Replace(beforeImpact, "｜状态：生效中/${total} 天") + before.Substring(beforeEnd);
+			+ Countdown.Replace(beforeImpact, DiplomacyCompatibilityTexts.Get("PolicyHistory_ActiveStatusFormat")) + before.Substring(beforeEnd);
 		string newNormalized = after.Substring(0, afterStart)
-			+ Countdown.Replace(afterImpact, "｜状态：生效中/${total} 天") + after.Substring(afterEnd);
+			+ Countdown.Replace(afterImpact, DiplomacyCompatibilityTexts.Get("PolicyHistory_ActiveStatusFormat")) + after.Substring(afterEnd);
 		return string.Equals(oldNormalized, newNormalized, StringComparison.Ordinal);
 	}
 

@@ -1,0 +1,134 @@
+{
+  "Id": "rule_House_Foundations_Bar_Emmon",
+  "Keywords": [
+    "Bar Emmon",
+    "House Bar Emmon"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "House Baal-Ammon is based in the Point near Dragonstone and is an ancient vassal between the Crown Coast and Dragonstone politics. The family's domain faces Blackwater Bay and the Narrow Sea, and its fisheries, ports, salt, and coastal roads constitute real wealth; its nobility comes from its long-term connection to the old dynasty of Targaryen and the Dragonstone tradition. The Horns do not have dragons, but it is important to understand how each change in Dragonstone, King's Landing, and Stormlands affects incoming ships, taxes, and levies. The name of the house of Baal Ammon thus reflects both the locality of the coast and the sensitivity brought about by its proximity to royal power."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "dragonstone",
+          "crownlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Dragonstone and the crown's nobles regard Baal Ammon as the local gateway that connects the politics of the two coasts. Its land is not large, but it is in a position where incoming ships must pass through and the king's orders are easily accessible; loyalty, port taxes and waterway security are often measured at the same time."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "dragonstone",
+          "crownlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "sailor",
+          "peasant",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The people of Sharphorn know Baal-Elmon from the tides, the fish market, and the passing sails. The nobles argue about who has the royal power, the merchants just want to know if the port is open, and the fishermen just want to get home before the storm. The glory of the Coast family ultimately rests on these concrete security."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Bar Emmon Entry Bar Emmon The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Bar Emmon Entry Bar Emmon Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Bar Emmon Entry Bar Emmon The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Bar Emmon Entry Bar Emmon They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Bar Emmon: Entry Bar Emmon"
+  ]
+}

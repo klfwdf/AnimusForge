@@ -1,0 +1,83 @@
+{
+  "Id": "rule_Vlandia_history",
+  "Keywords": [
+    "Vlandia History",
+    "Valanshi",
+    "Passing through the Western Territory"
+  ],
+  "RagShortTexts": [
+    "How did the Vlandians, mercenaries from the Western Isles, come to the Calradia mainland?"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Vlandia is a group of warmongers who started out as mercenary warlords. They robbed the western territories of the empire."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Our glorious Vlandia was founded by Osric the Iron Arm. He led us to annex the territory on the west coast and allowed us to live and work here. We love him and support their family."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "We are not the natives of the Calradia continent, but outsiders introduced by the empire. Our ancestors won the land with bravery. The empire is unable to defend the border and can only rely on the spear of Vlandia. Since the land of the West was obtained by our blood, it should be ruled by us. Osric \"Iron Arm\" is our true founder. He stopped us from serving the Empire, and decided our ownership by steel instead of paperwork. In our memory, independence is not a rebellion but justice belatedly delivered."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "steward": 120
+        }
+      },
+      "Content": "The Vlandia people were originally residents of the Western Islands. They crossed the ocean and came to the Calradia continent three centuries ago to seek survival. They landed in the Port of Osti and migrated south. At first, they only established some small villages on the southwest coast, such as Merok Village, Aromank Village, etc., and they lived as mercenaries for the empire. The empire initially settled their mercenary fees in dinars. After entering the 9th century, due to the financial constraints of the empire, starting from Emperor Votios, the empire no longer settled commissions in dinars, but instead used noble titles and ownership of land on the west coast of the empire to pay commissions. As the population of Vlandia increased and the center of the empire moved eastward, the number of Vlandia people and the land they controlled gradually exceeded that of the imperial people, becoming the main force on the west coast. They gradually eroded several imperial cities and initially settled down. About a century and a half ago (during the crisis of the tenth century), Osric the \"Iron Arm\" of the Dai Merok family took the opportunity to lead Vlandia away from the rule of the empire. After the Senate re-elected the emperor, seeing that Vlandia's independence had become a fact, it recognized the Kingdom of Vlandia's right to rule the west coast of Calradia, and gave Osric a gold crown symbolizing royal power. Osric distributed land to his lieutenants and relatives, forming a family group with the prefix \"Dai\", and encouraged vassals to actively expand by writing blank checks. The initial kingdom of Vlandia was very small, limited to the western coastline from Salas to the Port of Osti, and later passed through Vlandia. 11111111111111111111111111111111111111111111111111111111 11111111111111111111111111111111111111111111111111111111111111 11111111111111111111111111111111111111111111111111111111111111 11111111111111111111111111111111111111111111111111111111111111 11111111111111111111111111111111111111111111111111111111111111 11111111111111111111111111111111111111111111111111111111111111 11111111111111111111111111111111111111111111111111111111111111 11111111111111111111111111111111111111111111111111111111111111"
+    }
+  ],
+  "TextMappings": []
+}

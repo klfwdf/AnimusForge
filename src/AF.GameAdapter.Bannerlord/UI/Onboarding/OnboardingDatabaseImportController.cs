@@ -63,21 +63,21 @@ internal sealed class OnboardingDatabaseImportController
 			string text = PlayerExportsStore.ResolveImportFolderPath(folderName);
 			if (string.IsNullOrWhiteSpace(text) || !Directory.Exists(text))
 			{
-				InformationManager.DisplayMessage(new InformationMessage("导入失败：找不到导出目录。"));
+				InformationManager.DisplayMessage(new InformationMessage(DeveloperUiText.T("AF_UI_Onboarding_Import_Import_failed_export_directory_not_found","Import failed: export directory not found.")));
 				onReturn();
 				return;
 			}
 			string path = Path.Combine(text, "personality_background");
 			if (!Directory.Exists(path) || Directory.GetFiles(path, "*.json").Length == 0)
 			{
-				InformationManager.DisplayMessage(new InformationMessage("导入失败：缺少 personality_background\\*.json"));
+				InformationManager.DisplayMessage(new InformationMessage(DeveloperUiText.T("AF_UI_Onboarding_Import_Missing_personality_background","Import failed: personality_background\\*.json is missing.")));
 				onReturn();
 				return;
 			}
 			string path2 = Path.Combine(text, "unnamed_persona");
 			if (!Directory.Exists(path2) || Directory.GetFiles(path2, "*.json").Length == 0)
 			{
-				InformationManager.DisplayMessage(new InformationMessage("导入失败：缺少 unnamed_persona\\*.json"));
+				InformationManager.DisplayMessage(new InformationMessage(DeveloperUiText.T("AF_UI_Onboarding_Import_Missing_unnamed_persona","Import failed: unnamed_persona\\*.json is missing.")));
 				onReturn();
 				return;
 			}
@@ -104,7 +104,7 @@ internal sealed class OnboardingDatabaseImportController
 			}
 			if (!flag)
 			{
-				InformationManager.DisplayMessage(new InformationMessage("导入失败：缺少 knowledge\\rules\\*.json（或 knowledge\\KnowledgeRules.json）"));
+				InformationManager.DisplayMessage(new InformationMessage(DeveloperUiText.T("AF_UI_Onboarding_Import_Missing_knowledge","Import failed: knowledge\\rules\\*.json (or knowledge\\KnowledgeRules.json) is missing.")));
 				onReturn();
 				return;
 			}
@@ -112,7 +112,7 @@ internal sealed class OnboardingDatabaseImportController
 			string path6 = Path.Combine(text, "VoiceMapping.json");
 			if (!File.Exists(path5) && !File.Exists(path6))
 			{
-				InformationManager.DisplayMessage(new InformationMessage("导入失败：缺少 voice_mapping\\VoiceMapping.json。"));
+				InformationManager.DisplayMessage(new InformationMessage(DeveloperUiText.T("AF_UI_Onboarding_Import_Missing_voice_mapping","Import failed: voice_mapping\\VoiceMapping.json is missing.")));
 				onReturn();
 				return;
 			}
@@ -120,14 +120,14 @@ internal sealed class OnboardingDatabaseImportController
 			string path8 = Path.Combine(text, "event_data", "KingdomOpeningSummaries.json");
 			if (!File.Exists(path7) || !File.Exists(path8))
 			{
-				InformationManager.DisplayMessage(new InformationMessage("导入失败：缺少 event_data\\WorldOpeningSummary.json 或 event_data\\KingdomOpeningSummaries.json。"));
+				InformationManager.DisplayMessage(new InformationMessage(DeveloperUiText.T("AF_UI_Onboarding_Import_Missing_event_data","Import failed: event_data\\WorldOpeningSummary.json or event_data\\KingdomOpeningSummaries.json is missing.")));
 				onReturn();
 				return;
 			}
 			string kingdomProfilesPath = Path.Combine(text, "kingdom_profiles", "KingdomProfiles.json");
 			if (!File.Exists(kingdomProfilesPath))
 			{
-				InformationManager.DisplayMessage(new InformationMessage("导入失败：缺少 kingdom_profiles\\KingdomProfiles.json。"));
+				InformationManager.DisplayMessage(new InformationMessage(DeveloperUiText.T("AF_UI_Onboarding_Import_Missing_kingdom_profiles","Import failed: kingdom_profiles\\KingdomProfiles.json is missing.")));
 				onReturn();
 				return;
 			}
@@ -135,39 +135,39 @@ internal sealed class OnboardingDatabaseImportController
             KingdomInspection kingdom = inspectKingdom(text);
             if (kingdom == null || !kingdom.Available)
             {
-                InformationManager.DisplayMessage(new InformationMessage("导入失败：国家战略与性格数据行为未初始化。"));
+                InformationManager.DisplayMessage(new InformationMessage(DeveloperUiText.T("AF_UI_Onboarding_Import_Import_failed_kingdom_strategy_personality_data_behavior_is_","Import failed: kingdom strategy/personality data behavior is not initialized.")));
                 onReturn(); return;
             }
             if (!kingdom.Valid || kingdom.Total <= 0)
             {
                 string reason = string.IsNullOrWhiteSpace(kingdom.Error)
-					? "资料包中没有与当前世界安全匹配的国家卡。"
+					? DeveloperUiText.T("AF_UI_Onboarding_Import_The_package_contains_no_kingdom_card_that_safely_matches_the","The package contains no kingdom card that safely matches the current world.")
 					: kingdom.Error;
-				InformationManager.DisplayMessage(new InformationMessage("导入失败：国家战略与性格资料无效。原因：" + reason));
+				InformationManager.DisplayMessage(new InformationMessage(DeveloperUiText.T("AF_UI_Onboarding_Import_Import_failed_kingdom_strategy_personality_data_is_invalid_R","Import failed: kingdom strategy/personality data is invalid. Reason: ") + reason));
                 onReturn(); return;
             }
             Action<OnboardingImportStep>[] imports = captureImports(text);
             if (imports == null)
             {
-                InformationManager.DisplayMessage(new InformationMessage("导入失败：MyBehavior 未初始化。"));
+                InformationManager.DisplayMessage(new InformationMessage(DeveloperUiText.T("AF_UI_Onboarding_Import_Import_failed_MyBehavior_is_not_initialized","Import failed: MyBehavior is not initialized.")));
                 onReturn();
                 return;
             }
             Run(isCurrent, imports, () => kingdom.Import() && hasLoadedVoice(), () =>
             {
-                InformationManager.DisplayMessage(new InformationMessage("国家战略与性格已从资料包导入：匹配 " + kingdom.Total + " 条；无法匹配 " + kingdom.Skipped + " 条。"));
+                InformationManager.DisplayMessage(new InformationMessage(DeveloperUiText.F("AF_UI_Onboarding_Import_Kingdom_profiles_imported","Kingdom strategy/personality imported from the package: matched {PROFILE_TOTAL} entries; unmatched {PROFILE_SKIPPED}.", "PROFILE_TOTAL", kingdom.Total.ToString(), "PROFILE_SKIPPED", kingdom.Skipped.ToString())));
                 completed();
             }, result =>
             {
                 if (result == OnboardingImportResult.Retired || !isCurrent()) return;
-                InformationManager.DisplayMessage(new InformationMessage(result == OnboardingImportResult.Cancelled ? "已取消导入。" : "导入失败：所需资料未完成导入。"));
+                InformationManager.DisplayMessage(new InformationMessage(result == OnboardingImportResult.Cancelled ? DeveloperUiText.T("AF_UI_Onboarding_Import_Import_cancelled","Import cancelled.") : DeveloperUiText.T("AF_UI_Onboarding_Import_Import_failed_required_data_was_not_fully_imported","Import failed: required data was not fully imported.")));
                 onReturn();
             });
         }
         catch (Exception ex)
         {
             if (!isCurrent()) return;
-            InformationManager.DisplayMessage(new InformationMessage("导入失败：" + ex.Message));
+            InformationManager.DisplayMessage(new InformationMessage(DeveloperUiText.T("AF_UI_Onboarding_Import_Import_failed","Import failed: ") + ex.Message));
             onReturn();
         }
     }

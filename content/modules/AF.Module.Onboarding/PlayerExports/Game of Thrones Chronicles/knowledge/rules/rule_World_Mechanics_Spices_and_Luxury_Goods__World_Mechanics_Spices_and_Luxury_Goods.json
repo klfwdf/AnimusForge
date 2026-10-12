@@ -1,0 +1,151 @@
+{
+  "Id": "rule_World_Mechanics_Spices_and_Luxury_Goods",
+  "Keywords": [
+    "Spices",
+    "Silk",
+    "Dyes",
+    "Lenses",
+    "Far Eastern Treasures"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Spices, silks, fine dyes, Myr lenses, jewelry, ivory, and Far Eastern artifacts were small in size but highly valuable, suitable for crossing long sea and land trade routes. Every time it changes hands, tariffs, security fees, interest, losses and scarcity stories are added, and the final price often far exceeds the place of origin. Nobles used these goods to display their wealth and knowledge, and healers, craftsmen, and navigators also found practical use for some imported materials. Luxury trade can make ports and merchants suddenly rich, but it is most susceptible to blockades, pirates and changes in court fashion. Ordinary people may not be able to afford a pinch of spice in their lifetime, but they will be indirectly affected by it when transport ships are refitted or grain ships give way."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "sailor",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Long-distance merchants like light and expensive goods, and they also know that losing one box can be enough to go bankrupt. The fragrance of spices always mixes with the smell of interest, insurance and pirates in the accounting room."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Nobles turn exotic treasures into status language, and clergy may call them vanity. A truly discerning person will distinguish between precious craftsmanship and a high price paid for mere unfamiliarity."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "slave"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Ordinary laborers were often exposed to luxury goods only when moving boxes, dyeing cloth, and serving banquets. The more lightweight goods are called, the more long and heavy labor may be behind them."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Spices Spices and Luxury Goods: Silk, pepper, cinnamon, dyes, lenses, and treasures flowed along long-distance trade routes, trading high profits for the risks of shipwrecks, tariffs, and war. Whether it is valid depends on who can grant the rights, collect the consideration, and actually make the judgment come to fruition in the event of default."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Spices Spices and Luxury Goods: Silk, pepper, cinnamon, dyes, lenses, and treasures flowed along long-distance trade routes, trading high profits for the risks of shipwrecks, tariffs, and war. The distant system is not empty talk only if it can be implemented in campfires, city gates and inns."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Spices Spices and Luxury Goods: Silk, pepper, cinnamon, dyes, lenses, and treasures flowed along long-distance trade routes, trading high profits for the risks of shipwrecks, tariffs, and war. If a rule is practiced over and over again, it will find its way into rituals, crafts, and prayers; if it is sustained only by fear, cracks will show at the onset of a crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Spices Spices and Luxury Goods: Silk, pepper, cinnamon, dyes, lenses, and treasures flowed along long-distance trade routes, trading high profits for the risks of shipwrecks, tariffs, and war. They remember taxes, grain, labor, relief and who can speak for them; these grand names will eventually fall on the family's rice pot."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Spices and Luxury Goods: Silk, pepper, cinnamon, dyes, lenses, and treasures flowed along long-distance trade routes, trading high profits for the risks of shipwrecks, tariffs, and war."
+  ]
+}

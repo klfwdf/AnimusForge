@@ -1,3 +1,4 @@
+using AnimusForge;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -207,6 +208,6 @@ namespace AnimusForge
 		}
 
 		private static string GetKingdomDisplayName(Kingdom k)
-		{ return k?.Name?.ToString() ?? k?.StringId ?? "未知王国"; }
+		{ return k?.Name?.ToString() ?? k?.StringId ?? DiplomacyMiscPromptTexts.Get("Prompt_UnknownKingdomFallback", "Unknown Kingdom"); }
 	}
 }

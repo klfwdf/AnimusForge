@@ -1,0 +1,45 @@
+{
+  "Id": "rule_Mirong_River",
+  "Keywords": [
+    "Miron River"
+  ],
+  "RagShortTexts": [
+    "The Miron River is the boundary river between Battania, the Northern Empire, and Sturgia"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Miron River is the boundary river between Battania, the Northern Empire, and Sturgia. It has a small flow, but it cannot be crossed during the flood season. It freezes for two and a half months. It is an important natural moat for the northwestern defense line of the Northern Empire."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Miron River is a river in Epiclothea"
+    }
+  ],
+  "TextMappings": []
+}

@@ -1,0 +1,94 @@
+{
+  "Id": "rule_mott",
+  "Keywords": [
+    "Mott",
+    "Poppy"
+  ],
+  "RagShortTexts": [
+    "The poet Jiequlang often went to Motte to enjoy the scenery of poppies and sea of flowers."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Mote is a village near Jechlon, located in the Naal Valley that passes through the Biscayne and Epyr Mountains. It is famous for the gorgeous poppies that bloom on the hillsides in spring, and the warm southern soil is also ideal for growing olives."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Mott’s spring can dazzle you. The poppies all over the hillside were as red as if they were on fire. When the flowers fade, it’s time to harvest the olives. The poets of Jietriang love to go to Mote, saying that the scenery there can add color to their poems."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "townsfolk"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The olive yield of Mote is not as good as that of Aromanque, but the quality of the oil is not bad at all. Moreover, the sea of ​​flowers in spring attracted many nobles to make a special trip to see it. After seeing it, they bought a few cans of oil and went home. Poppies have a short flowering period, but many people see them."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "When I passed by Mote in the spring, I thought I was on the wrong path - the hillside was covered with bright red poppies, and even the air was filled with a sweet smell. The locals plant olives on the hillside next to the flower fields. After the flowers fade, they harvest the fruits. Their life is quite poetic."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Mott",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "Jie Qu Lang",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

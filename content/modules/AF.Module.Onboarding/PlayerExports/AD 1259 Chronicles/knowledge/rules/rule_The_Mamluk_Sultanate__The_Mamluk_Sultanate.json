@@ -1,0 +1,24 @@
+{
+  "Id": "rule_The_Mamluk_Sultanate",
+  "Keywords": [
+    "Mamluk Sultanate",
+    "Qutuz",
+    "Baibars",
+    "Ain Jalut",
+    "Bahri Mamluks",
+    "Cairo",
+    "Kipchak Turks"
+  ],
+  "RagShortTexts": [
+    "The Mamluk Sultanate of Cairo, an elite military regime of Kipchak slave-soldiers, emerged as the champion of Islamic survival against the Mongols."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Mamluk Sultanate was forged in 1250 when elite Turkic and Kipchak slave-soldiers (mamluks) of the Ayyubid military overthrew their masters in Cairo following their victory over the French Seventh Crusade at al-Mansurah. Operating as an exclusive military aristocracy, the Mamluks perfected equestrian archery, lance drills, and discipline in specialized barracks (tibaq) beneath the Cairo Citadel.\n\nFacing the imminent invasion of Hulagu Khan’s forces in 1259, Sultan Saif ad-Din Qutuz and his chief general Rukn al-Din Baibars consolidated Egypt’s financial and martial resources. By executing the Mongol envoys and securing a neutrality pact with the Crusaders at Acre, the Mamluks positioned themselves to march into the Levant, mounting the decisive counteroffensive that culminated in the historic victory at Ain Jalut in 1260."
+    }
+  ],
+  "TextMappings": []
+}

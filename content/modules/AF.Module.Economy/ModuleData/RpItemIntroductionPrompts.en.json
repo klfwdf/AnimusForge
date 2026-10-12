@@ -1,0 +1,5 @@
+{
+  "Version": 1,
+  "SystemPrompt": "Write a concise, lore-friendly in-world description for this item. Rely strictly on details explicitly supported in the dialogue; do not invent details. Exclude conversation unrelated to the item. Output only the description text, without titles, tags, or markdown; keep it under 600 characters. For letters or notes, write the letter content itself.",
+  "UserPromptTemplate": "Item: {item_name}\nGiver: {giver_name}\nRecent Dialogue:\n{dialogue}"
+}

@@ -1,0 +1,213 @@
+{
+  "Id": "rule_Wild_Forest_Ranger",
+  "Keywords": [
+    "wild forest ranger",
+    "Greatsword",
+    "Wild Forest Ranger Mutant Hunting",
+    "Danger area",
+    "forest guardian",
+    "Ranger Warrior",
+    "Greatsword Hunter",
+    "mutant killer",
+    "dark forest patrol",
+    "Dryad Hunter",
+    "wilderness cruise",
+    "brave man"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Wildwood Rangers are the bravest warriors among the Wood Elves. They patrol the most dangerous areas of Athel Loren alone, armed with long-handled swords to hunt mutant creatures corrupted by Chaos in the forest, and maintain the purity of the forest with an iron fist."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Wildwood rangers are not outcasts—they are warriors who choose to walk into the darkness. We understand their mission: not everyone can fight under the sun, some enemies hide in the deepest shadows. The rangers patrol the Shadowglade, where trees are tainted with chaotic energy and grow twisted branches. Their greatswords are engraved with ancient runes, and with each strike of the sword, the runes will emit a dazzling light, turning chaos and corruption into ashes. To be honest, even we ourselves stay away from the Rangers, because fighting the darkness for a long time... changes a person."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Wild Forest Rangers are your army's elite hunting squad. They are not suitable for frontal battles, but should be deployed on the flanks or in dense forests, specifically looking for high-value targets - chaos beasts, enemy mages, and heavy units. The rangers' greatswords have extra damage against large targets. Be sure to protect them from cavalry charges."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "According to the history recorded in the \"Ranger Code\", the first Wildwood Ranger was the ancient hero \"Shadowwalker\" Ferien. After the second Chaos Invasion, he discovered that Chaos energy had penetrated into certain areas of Athel Loren and could not be eradicated by conventional means. As a result, he forged the first rune sword, the Twilight Judgment, and established the tradition of the rangers. The rituals of the Ranger Order stipulate that each new member must survive alone in the Shadowglade for seven days and nights, hunting at least one completely corrupted creature. According to statistics, about 30% of recruits fail to pass this test. The headquarters of the Ranger Group is located in the \"Ring of Thorns\" - inside a dead oak tree that was struck by lightning."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Few women choose the path of the Ranger, but those who do are remembered as legends. They are more independent and resilient, and use their actions to prove that courage has no gender distinction."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "If any young men in your clan volunteer to join the rangers, respect their choice—even if it means they may never return. Each clan is required to make an annual offering of weapons and supplies to the rangers as a price for maintaining the peace of the forest."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "You meet a wild forest ranger in the deep forest. There was some inhuman light shining in his eyes, and the blade of the sword was stained with black blood. He didn't speak, just nodded, and then disappeared among the shadows of the trees."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Wildwood rangers hold a position in wood elf society that is both revered and alienated. They undertake the dirtiest work and protect the safety of the forest, but for this reason they are regarded as an ominous omen by ordinary people. Their sacrifice is never publicly celebrated, but every wood elf knows it: without the rangers, Athel Loren would not be safe."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Wildwood Ranger - A lone greatsword hunter among the Wood Elves who patrols dangerous areas.",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Wild Forest Ranger long-handled sword Wild Forest Ranger mutation hunting"
+  ]
+}

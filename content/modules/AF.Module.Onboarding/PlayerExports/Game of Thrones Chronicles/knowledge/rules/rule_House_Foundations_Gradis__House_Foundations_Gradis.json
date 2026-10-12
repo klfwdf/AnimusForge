@@ -1,0 +1,133 @@
+{
+  "Id": "rule_House_Foundations_Gradis",
+  "Keywords": [
+    "Gradis",
+    "House Gradis"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Gladys family is part of the craft and trade network of Norvos. Carpets, armor, and inland goods circulated through the markets, and riverboats and mule trains connected the wealth of the upper city to the distant lands. If Gladys operated these industries, she would have to deal with the different demands of craftsmen, guardians, monks, and merchants; a single violation of divine law could deprive business credit of years of protection. Norvos is divided into the upper city on the cliff and the lower city by the river. Giant bells, stone steps and axe-bearing monks jointly maintain the theocratic order dominated by bearded monks. Caravans, carpets, armor, and inland roads brought wealth, but noble families still had to respect religious judgment."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "norvos"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Gradis Wealth can buy guards and mansions, but it is difficult to openly disobey those who have masters of divine law and armed monks."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "norvos"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "peasant",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Gradis The upper-city banquets were far away from them, but every religious decision fell down the stone steps to the market-place."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Gradis Gladys is a powerful family in Norvos, and its family business is connected with carpets, armor, river transportation, caravans and theocracy. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Gradis Gladys is a powerful family in Norvos, and its family business is connected with carpets, armor, river transportation, caravans and theocracy. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Gradis Gladys is a powerful family in Norvos, and its family business is connected with carpets, armor, river transportation, caravans and theocracy. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Gradis Gladys is a powerful family in Norvos, and its family business is connected with carpets, armor, river transportation, caravans and theocracy. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Gradis: Gladys is a powerful family in Norvos, and its family business is connected with carpets, armor, river transportation, caravans and theocracy."
+  ]
+}

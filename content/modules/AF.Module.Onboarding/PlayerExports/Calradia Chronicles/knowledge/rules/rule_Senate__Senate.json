@@ -1,0 +1,65 @@
+{
+  "Id": "rule_Senate",
+  "Keywords": [
+    "The Senate"
+  ],
+  "RagShortTexts": [
+    "The Senate elects the Emperor and holds the Emperor accountable to the Senate."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Everyone knows the Senate is the nominal decision-making body of the Empire, but it has no real power—except among that pack of Republican fanatics up north."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Senate is our decision-making body, exercising the powers of resolution, deliberation, appointment, removal, and oversight, which allows us to draw upon the counsel of many. We elect the Emperor, and the Emperor answers to the Senate—emperors are not masters of the state, but servants of the people."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s",
+          "empire_w"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Those Republican fanatics in the Senate actually chose to swear allegiance to that traitor So-and-so instead of the true legitimate line—we stand in irreconcilable opposition to the Senate! One day we will purge them in blood and elect senators who truly represent the hearts of the people, rather than that pack of stubborn old fools, lunatics, and rotten bureaucrats! The current Senate has become a den of traitors, and we will show them no leniency. Once we put down the rebellion, however, we will naturally establish a new Senate."
+    }
+  ],
+  "TextMappings": []
+}

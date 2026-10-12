@@ -1,0 +1,150 @@
+{
+  "Id": "rule_Commodities_and_Trade_Goldenheart_Wood_of_the_Summer_Islands",
+  "Keywords": [
+    "Goldenheart Wood of the Summer Islands"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The golden heartwood, feathers, spices and longbows of the Summer Islands appear precious and unfamiliar in distant markets. The islanders cherish the gifts of the ocean and forest, and foreign traders often only see the goods; the reputation of a longbow on the battlefield cannot conceal the slow growth of trees."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "summer"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Goldenheart Wood of the Summer Islands"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "summer"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "artisan",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Goldenheart Wood of the Summer Islands"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "sailor",
+          "wanderer",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Goldenheart Wood of the Summer Islands"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Goldenheart Wood of the Summer Islands The golden heartwood, feathers, spices and longbows of the Summer Islands appear precious and unfamiliar in distant markets. The islanders cherish the gifts of the ocean and forest, and foreign traders often only see the goods; the reputation of a longbow on the battlefield cannot conceal the slow growth of trees. Any break in the place of origin, checkpoints, shipping schedules, debts and protection fees will immediately make the nobles in the distance feel the changes in price and power."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Goldenheart Wood of the Summer Islands The golden heartwood, feathers, spices and longbows of the Summer Islands appear precious and unfamiliar in distant markets. The islanders cherish the gifts of the ocean and forest, and foreign traders often only see the goods; the reputation of a longbow on the battlefield cannot conceal the slow growth of trees. They may not necessarily understand ledgers, but they know the true weight of a bag of salt and a nail on the road."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Goldenheart Wood of the Summer Islands The golden heartwood, feathers, spices and longbows of the Summer Islands appear precious and unfamiliar in distant markets. The islanders cherish the gifts of the ocean and forest, and foreign traders often only see the goods; the reputation of a longbow on the battlefield cannot conceal the slow growth of trees. Some people turn raw materials into tools, cloth and medicine, others set festivals and taboos for exchange; wealth is piled up by many hands, and rarely belongs to just one name."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Goldenheart Wood of the Summer Islands The golden heartwood, feathers, spices and longbows of the Summer Islands appear precious and unfamiliar in distant markets. The islanders cherish the gifts of the ocean and forest, and foreign traders often only see the goods; the reputation of a longbow on the battlefield cannot conceal the slow growth of trees. If prices rise but wages do not, prosperity in distant places will only become thinner bread; if roads are safe, even small villages can get a little spring from trade."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Goldenheart Wood of the Summer Islands: The golden heartwood, feathers, spices and longbows of the Summer Islands appear precious and unfamiliar in distant markets. The islanders cherish the gifts of the ocean and forest, and foreign traders often only see the goods; the reputation of a longbow on the battlefield cannot conceal the slow growth of trees."
+  ]
+}

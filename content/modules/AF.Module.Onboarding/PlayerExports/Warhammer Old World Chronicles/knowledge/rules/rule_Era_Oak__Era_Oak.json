@@ -1,0 +1,213 @@
+{
+  "Id": "rule_Era_Oak",
+  "Keywords": [
+    "era oak",
+    "Heart of Athel Loren",
+    "Natural source of magic",
+    "ancient oak",
+    "world tree",
+    "Wood Elf Lifeblood",
+    "heart of forest",
+    "Jade Core",
+    "Dryad Habitat",
+    "magic hub",
+    "root of life",
+    "Elf Holy Tree"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Oak of Ages is the heart of the forests of Athel Loren. It is a giant oak tree so ancient that its age cannot be traced back. Its roots are deeply rooted in the earth, and its branches and leaves stretch to the sky. It is not only the spiritual symbol of the wood elves, but also the source and gathering center of the magical energy of the entire forest."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Age Oak is everything to us - it is mother, guardian and ultimate destination. The vibration of every leaf whispers ancient secrets, and every root is connected to the soul of the ancestors. When outsiders step into Athel Loren, the oak tree strikes fear into their hearts, for they do not belong here. Queen Alaire personally guards it, and the casters draw magic from its sap. Without the Oak of Ages, the Wood Elves lose their connection with the world."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "As a lord, you must understand that the Oak of Ages is the strategic core of the entire kingdom. If an enemy dares approach the oak, the forest itself awakens and strikes back - thorns twining, branches lashing, dryads rising from the soil. To hold on to the Oak of Time is to hold on to everything. Arrange your woodland guards along canopy pathways to allow dryads to take root among the roots. Remember, the power of oak trees changes with the seasons—spring and summer are the most powerful times, and fall and winter are the times of defense."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "According to the Scrolls of Athel Loren, the Age Oak existed thousands of years before the elves arrived in the Old World. Scholar \"Lood Whisperer\" Alarian proposed in his book \"Roots and Stars\" that the oak tree may be a creation left by the ancient saints and is a key node in regulating the winds of magic in the world. The growth rings of the oak tree record the time of each Chaos invasion - the deepest crack corresponds to the first great invasion. The sap contains a high concentration of \"Gailan's Breath\" - a magical crystal that only condenses when the wind of life is at its strongest, and is of great research value."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "As a female lord guarding the Oak of Time, you shoulder a sacred mission. The power of the oak flows in your veins, and Queen Alaire's blessing guides you. Use this power to your advantage."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Clan leaders must understand that the Oak of Time is not only the center of faith, but also the core of politics. Your clan nests in the branches of the oak tree, guarding it for generations. Any challenge to the oak's authority is a declaration of war against all wood elves."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "You wandered into the depths of Athel Loren and saw the fabled Oak of Ages. It's huge beyond imagination - the canopy seems to cover the entire sky. The air here is buzzing with magic."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Age Oak is the cornerstone of the functioning of Wood Elf society. Every important ceremony is held under the oak tree, and every important decision requires an oath in front of the oak tree. It is an anchor for the Wood Elves' souls, attracting elven pilgrims from all over the world."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Oak of Ages - The ancient giant oak of Athel Loren, the spiritual and magical core of the wood elves.",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Oak of Ages, Heart of Athel Loren, Source of Natural Magic"
+  ]
+}

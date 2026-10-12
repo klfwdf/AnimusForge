@@ -1,0 +1,211 @@
+{
+  "Id": "rule_Qianmen_Jinfeng",
+  "Keywords": [
+    "Qianmen Jinfeng",
+    "metal wind",
+    "golden academy",
+    "alchemical magic",
+    "LoreOfMetal",
+    "metal deformation",
+    "Gold conduction",
+    "batasarget",
+    "Midas touch",
+    "Metallurgy"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Qianmen—Golden Wind—is the heaviest, densest, and most rooted in the material world among the eight winds. It is found in ores, in cooling ingots, and in all metals which are being transformed from their chaotic natural forms into something useful to man. The flow speed of Qianmen is the slowest of all winds - it will not burn instantly like the red wind, nor will it suddenly come down at a certain moment like the purple wind - the movement of the golden wind is deposited layer by layer, and its magic is the magic of alchemy, the magic of metal transformation, and the ultimate science of silently and irreversibly changing one substance into another. Gold can conduct the energy of Qianmen, while lead can isolate it. The Alchemists of the Golden Academy are a group of scholarly craftsmen who spend their entire lives among beakers, crucibles, and anvils."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Golden Wind of Qianmen is the magical foundation of the Empire's military industry and metallurgical industry - you may have never met a Golden Mage in person, but you have almost certainly worn a breastplate modified by Qianmen's alchemy or wielded a sword tempered in one of Qianmen's blessed forges. The mages of the Golden Academy do not seek the battlefield glory of the Fire Mages—many of them have never been on the battlefield once in their lives—but their indirect contribution to the Imperial forces may be greater than that of any other academy. The empire's standard plate armor could not achieve a level of protection equivalent to that of dwarf equipment under standard steel production - until the metallurgists of the Golden Academy inserted Qianmen-charged gold plaques into the steel foundry as an energy transduction medium, which improved the toughness and impact resistance of ordinary steel to a degree that could not be explained by metallurgy. The most direct and deadly skill of the Qianmen mage on the battlefield is the 'heating aura' - heating the armor of the enemy knight until it turns red without fire or smoke, causing the wearer to be cooked alive in his own carapace. The wind of metal cannot be resisted by ordinary armor - because the essence of Qianmen does not belong to elemental attacks, it is a magic that conducts energy through metal as a medium. Anyone who wears metal armor has essentially put himself into the transmission circuit of Qianmen magic."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The strategic value of the Golden Academy does not lie in how many battle mages it has - but in the core technology of Imperial metallurgy it masters. The Royal Mint of the Empire holds approximately one-third of the Empire's gold reserves in the vaults of Altdorf, and this gold must go through the Golden Gate Charging Ceremony of the Gold Academy before each royal coinage to ensure that the gold coins do not contain any potential Chaos impurities or trace residues of undead taint - without this purification, the Empire's currency will be rejected by Dwarves and Elves. The Golden Academy has a technical veto power without judicial review over all processing of gold above a certain purity in the Empire - making any attempt to circumvent the Academy for large-scale gold purification or alchemy operations technically defined as a magical crime rather than an economic crime. More crucially, the Golden Academy—especially Dean Balthasar Gate himself—possess an ultimate deterrent that can hardly be discussed publicly but that all Elector Counts are well aware of: Qianmen mages can theoretically convert any gold reserves into other cheaper metals, temporarily or permanently, at almost no cost. This ability makes all imperial bonds issued with gold as collateral essentially require the goodwill endorsement of the Golden Academy."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "The psychic mechanism of Qianmen Golden Wind has the most physical accuracy among the eight winds - it is therefore the magic that is easiest to describe in the language of secular science rather than the language of occultism. The operation of Qianmen relies on the free electrons in the material lattice structure - the reason why gold is the best magic conductive metal is because its electron layer structure allows Qianmen's energy to flow with minimal resistance (in the sense of magic energy equivalent), and the reason why lead can isolate Qianmen is because the mass of lead atoms is too large for Qianmen's low-frequency energy to stimulate an effective conduction mode in the lead's electron layer. The essence of alchemy can be accurately described in the gold wind system as: changing the arrangement of the internal electron layer structure of a metal through Qianmen energy input, thereby changing the macroscopic properties of the metal - color, hardness, melting point and density. The essential difference between this theory and the dwarven rune forging is that the dwarf's rune inscription captures the inherent stability energy within the earth through physical carving, while the human Qianmen alchemy uses gold as an antenna to extract the small portion of energy other than Aksha that is adhered to the metal from the flowing wind of chaos. Balthasar Get is the only known scholar who can think twice about dwarf rune technology and human gold wind theory at the same time - the 'Get Alloy' he invented is said to be made by co-smelting Qianmen's charged gold and the remaining minerals of the dwarves' ancient rune stones. Its specific formula is locked in the underground vault of the main tower of the Gold Academy, and is stored in the same space as one-third of the empire's gold reserves."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Golden Academy has the lowest female enrollment rate among the eight magic academies (approximately four percent), and the academy's official explanation is that 'women's psychic affinity for metal density is inherently lower than men'. I don't accept this explanation - but I don't need to attack it, because female nobles never need to enter the Gold Academy as regular students to reap the actual benefits of Goldwind. In the circle of aristocratic women, there exists an older and quieter tradition of piety - called 'Heirloom Goldsmithing' - which is not a formal magic, but a set of family secrets passed down through marriage and inheritance by female members of the family on how to reserve trace amounts of piety energy in personal jewelry and family heirloom gold ornaments. These gold ornaments - a ring passed down from grandmother to mother, a gold chain passed down from great-grandmother's time - when properly charged can emit extremely weak but perceptible changes in temperature (usually cooling rather than heating) when the wearer is threatened by poison or some low-level Chaos contamination. It's not a battle magic - it can't be used to kill anything - but it has saved the life of a female ancestor of my family on at least three occasions throughout history. The men of the Golden Academy manage all the large chunks of gold in the world - while the noble women manage the tiny amount of gold scattered among hundreds of family heirlooms, never sharing this knowledge with any outsiders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Balthasar Gate, the director of the Golden Academy, spent an autumn unknown to outsiders in my family's alchemy laboratory. He is not here for inspection - he is here to borrow fragments of ancient rune slates that my family has gradually collected from the dwarves over the past three centuries. One of the slate fragments is engraved with a line of ancient dwarf text, to the effect that 'gold is the quietest fire among stones. Its sound cannot be heard by humans but beasts can.' After sitting quietly in front of the fragments of the stone slab for four weeks that autumn, Gate said something to me that I will never forget: 'The deepest part of the golden wind of the Piety Gate is not metal, but an ancient energy that is earlier than chaos and is imprisoned in metal as a prison. The fragments of your family's tablets speak not of dwarven beliefs—but of the dwarves' vague memories of a source of power that the world has forgotten. 'When he left, he used a tiny Qianmen spell to turn a thumb-sized piece of lead into a thumb-sized piece of gold - he said it was a reward for the fragments of our family's slate. I still dare not take this gold nugget out of its lead case because I don't know what will happen after taking it out."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Golden Wind is barely visible in the daily lives of ordinary Imperials - it's the wind that belongs to the craftsmen, alchemists, and Imperial Metallurgical Guilds - but during my travels as a Wanderer I noticed a strange imprint of the Golden Wind: in any small town near a human mining area, if you Look closely at the teeth and fingernails of locals, and you'll notice an extremely pale metallic color—not actual gold or silver dust, but a trace color deposited in human keratin in some way I can't explain by trace amounts of Qianmen energy released over time in underground ores. What's even stranger is that the people born in these mining towns seem to have a different stability in dealing with difficulties than the plains dwellers - they do not react violently and dramatically in the face of crisis like the Reikland people, but silently bear the pressure in an almost physical way and then slowly discharge the pressure outward. I suspect that this has something to do with the trace amounts of Qianmen remnants in the body - the essence of gold wind is dense and carrying, and this quality may have been absorbed at a deeper biological level. I know a wanderer from the Gray Mountain mining area. He was slashed three times when an greenskin attacked him - he should have died based on the amount of blood lost - but he just lay on the ground for half a stick of incense and then stood up and started on the road again, as if there was something in his blood preventing him from losing it too quickly."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Golden Wind of the Qianmen has the most profound impact of all magical winds on the empire's monetary system - the Gold Academy managed by Balthasar Gate essentially plays half the role of the empire's central bank. Before the establishment of the Imperial Royal Mint, there were huge inconsistencies in the fineness and weight of gold coins issued by various provinces - this situation was not resolved until Gate developed a rapid gold purity testing solution based on Qianmen alchemy. The core of the testing plan is a set of Qianmen-charged balances called 'Gate's Scales' - a gold coin is placed on one side of the scale, and a reference gold piece charged by the Gold Academy standards is placed on the other side. The balance of the balance is tested through Qianmen energy rather than mechanical balance. Any gold coin with a purity lower than 98% will cause the balance to produce a weak shaking visible to the naked eye. This detection system allowed the Empire to eliminate all inferior gold coins within two years, laying the foundation for the Empire's gold currency to gain the same credibility as dwarf gold coins in the old world trade system. Gate himself was thus offered the honor of a hereditary peerage of the Empire - which he declined, stating that no member of the Golden Academy should swear allegiance on anything other than silver or gold."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Qianmen Golden Wind - one of the eight winds of metal, transformation and alchemy, the heaviest and densest",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "The magical properties and energy sources of Qianmen Golden Wind"
+  ]
+}

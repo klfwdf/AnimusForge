@@ -1,0 +1,144 @@
+{
+  "Id": "rule_asgotha",
+  "Keywords": [
+    "Asgatha"
+  ],
+  "RagShortTexts": [
+    "Asgotha is the Jarl of Beinland and a shieldmaiden of the Oter clan."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nord"
+        ],
+        "KingdomIds": [
+          "clan_nord_1"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Asgotha is a daughter-in-law of our house, and also the most reliable hand our family has in Beinland. Marrying her to Sunil was Volbjorn's idea—the Oter clan had been defeated in war, and a marriage alliance was cheaper than slaughtering a town. Nobody expected that Sunil and she would get along so well, and still less that the daughter of a defeated house would fight even more fiercely than the shieldmaidens we raised ourselves. After Sunil died, Haldar placed her in Beinland as Jarl—first for her ability, and second for her loyalty; we know full well she harbors no duplicity toward our house. Still, her surname is Oter after all. That Haldar trusts her does not mean the whole Trosnir clan trusts her. As for Beinland, the Hulf clan has always wanted to reach its hands in there, and having Asgotha holding the line saves us a great deal of worry. So long as she sits in the Jarl's seat, the Hulf cannot swallow Beinland whole. Thus we must protect her—not because she bears the name Trosnir, but because she is useful."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nord"
+        ],
+        "KingdomIds": [
+          "clan_nord_4"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Asgotha. A woman of the Oter clan, Sunil's widow, and one of Haldar's watchdogs. Her serving as Jarl in Beinland is, to put it bluntly, a nail that the Trosnir clan drove right under our noses. The ports and whale oil of Beinland ought to be ours to command, yet an outsider woman—and a woman from a defeated house at that—was wedged in there and refuses to budge. It is not as if we have never tried to trip her up. But she can fight, and that is the honest truth. A shieldmaiden by training, unflinching in battle, and all the old Oter retainers on the island obey her word. With Haldar backing her at court, we cannot move against her openly. Yet every day she remains in Beinland is another day of displeasure for us Hulf. She had better stay that strong forever. The day she can no longer swing a sword, the docks of Valvik will be due for a new master."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nord"
+        ],
+        "KingdomIds": [
+          "clan_nord_3"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Asgotha is the Jarl of our house, and our savior as well. When we were defeated back then, the old clan chief tied the fate of our entire family to her marriage alone, giving her to Sunil. It was a humiliation. Yet she turned a humiliating marriage alliance into a shield sheltering everyone in our house. Sunil was a good man, unlike his elder brother. Those years when the two of them fought side by side as husband and wife were the proudest days the Oter clan ever knew in Nordvyg. After Sunil fell, Haldar made her Jarl of Beinland, which none of us had expected. Truth be told, Haldar has treated her fairly well. Yet she carries a heavy load. Those bastards of the Hulf clan are constantly squeezing us, and while the royal house says with its lips that it trusts her, in its heart it may not trust her completely. All by herself she carries Beinland, carries the honor of the Oter clan, and carries us good-for-nothing kinsmen of hers. We cannot help her with great matters; all we can do on the island is train our troops well, hold the ports fast, and not bring shame upon her name."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nord"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Asgotha is an interesting case. The Oter clan rebelled against Volbjorn back in the day, and after being defeated they married their daughter to Sunil to buy peace. Such marriage alliances are nothing rare in Nordvyg; what is rare is for the bride of such a match to end up grasping real power in the end. Rising from a shieldmaiden, she now sits as Jarl of Beinland with troops under her command, the islanders loyal to her, and Haldar backing her at court. Yet her predicament is plain for all to see: she is not of the Trosnir bloodline, yet she guards a vital territory on the Trosnir clan's behalf; her name is Oter, yet the Oter clan is a fallen house built on defeat; and the Hulf clan watches her like hawks, wishing she would put out to sea one day and never return. Our attitude toward her is simple—do not offend her. She is neither an enemy nor quite an ally. That she has kept her footing in Nordvyg is down to her own great capability. We shall wait and see how long she can remain standing."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nord"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Jarl Asgotha? We know her. That female Jarl over on Beinland Island—she used to be a shieldmaiden who fought alongside her husband. Her husband was the old king's younger son Sunil, who was later killed by the Sturgians. Now she governs Beinland all by herself, with soldiers and ships under her command. People say her father fought a war against the old king back in the day, lost, and married her off as a token of submission. In times like these, the daughter of a family that surrendered has become a Jarl and carries herself with more authority than some houses that never lost a war. She rarely comes over to the main island, so we do not see her often here, but the fishermen from Beinland say she treats folk fairly and does not bully her own people. We know the Hulf clan cannot stand the sight of her. For us, only one thing matters: the taxes in Beinland under her rule are a bit lighter than in the places run by the Hulf clan, and for that alone we hope she stays a good long while."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Asgotha—Jarl of Beinland Island in Nordvyg, born of the Oter clan, widow of Prince Sunil. Her career is an anomaly in the politics of Nordvyg: the daughter of a vanquished house enters the royal family through a marriage alliance, wins military renown as a shieldmaiden, and after her husband falls in battle is appointed by the new king as a landed Jarl. In the northern tradition, which prizes clan martial glory and male succession, this is a rare exception indeed. From Haldar's perspective, it was a shrewd move on the board: placing a female Jarl of distinguished war record, unencumbered by children, and naturally at odds with the Hulf clan to hold Beinland both curbs the Hulf clan's room for expansion and avoids cultivating a new male military strongman. Yet Asgotha's own position is fragile for that very reason: her power rests entirely upon Haldar's personal trust and the remnant strength of the Oter clan in Beinland; should the balance at court shift, she will be among the very first vassals to bear the brunt. Her influence over Nordvyg's foreign policy is limited, but because Beinland serves as a node on Nordvyg's southern trade routes, the one who controls it merits close attention. At present, Asgotha is a key and stable piece balancing the internal power structure of Nordvyg."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Asgotha? That female lord up north, among the Nords. I hear she used to be a shieldmaiden—the sort of woman who charges into the fray first with shield and sword in hand. She married the younger brother of the Nord king, and after her husband died in battle, she took charge of an island all by herself. Folk say she is a fierce fighter, able to battle aboard ship and govern ashore. For a woman to serve as a Jarl—that is what they call a lord over there—and hold her ground in a place where men call the shots, she must be quite something. Still, her birth family fought against the Nord king back in the day and only married her off after losing. Looked at that way, her own family backing is not strong, her husband is gone, and all she has in hand is a single island. Her days are probably not easy. Still, common folk like us have no say in such things; we just listen to the stories and move on."
+    }
+  ],
+  "TextMappings": []
+}

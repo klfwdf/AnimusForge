@@ -1,0 +1,152 @@
+{
+  "Id": "rule_Dragonstone_Coast_Claw_Isle",
+  "Keywords": [
+    "Claw Isle",
+    "Crackclaw Point"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Celtigar Castle is a coastal stronghold along the Crab Claw Peninsula and is connected to the ancient Valyrian bloodline legend of the Celtigar family. This type of peninsula castle is not based on its broad hinterland, but on its bays, fishing grounds, shallow water routes and observation of ships coming along the coast. The Crab Claw Peninsula juts out into the Narrow Sea, and land routes are not as smooth as rivers and roads, so sea routes are more important; locals not only interact with the King's Landing market, but also have to adapt to the risks of storms, smuggling, and piracy. Cetiga Fort reminds another side of the royal aristocracy: they are not all courtiers in the Red Castle, but also people who rely on salt, fish, boats and sea fog to maintain their territory."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "crownlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Claw Isle Local families also rely on fishing, salt production, docks, volcanic rock fields and narrow sea navigation; if any road, well or dock fails, the price falls first on them."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "crownlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Claw Isle Entry Claw Isle"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Claw Isle They'll also recognize the accents, laws, and credentials of Dragonstone's waters; reputations can travel great distances from taverns, but true distances must still be measured by wheel, oar, or horse's hooves."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Claw Isle Entry Claw Isle"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Claw Isle If you can supply supplies, avoid danger, and find a guide, it is worth marking in your itinerary; if you don't have these three things, no matter how loud your family name is, it won't be able to save the lost."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Claw Isle A stronghold was therefore not just a lord's hall, but also a place where weddings and funerals, vows, labor and local memories recurred."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Claw Isle They care about fishing, salt industry, wharves, volcanic rock fields and narrow sea shipping. They also care about whether seeds are left after harvesting grain and whether the city gates are open in times of disaster. When people from afar see coats of arms, what they see is whether there will be food to eat tomorrow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Claw Isle: Celtigar Castle is a coastal stronghold along the Crab Claw Peninsula and is connected to the ancient Valyrian bloodline legend of the Celtigar family. This type of peninsula castle is not based on its broad hinterland, but on its bays, fishing grounds, shallow water routes and observation of ships coming along the coast. The Crab Claw Peninsula juts out into the Narrow Sea, and land routes are not as smooth as rivers and roads, so sea routes are more important; locals not only interact with the King's Landing market, but also have to adapt to the risks of storms, smuggling, and piracy. Cetiga Fort reminds another side of the royal aristocracy: they are not all courtiers in the Red Castle, but also people who rely on salt, fish, boats and sea fog to maintain their territory."
+  ]
+}

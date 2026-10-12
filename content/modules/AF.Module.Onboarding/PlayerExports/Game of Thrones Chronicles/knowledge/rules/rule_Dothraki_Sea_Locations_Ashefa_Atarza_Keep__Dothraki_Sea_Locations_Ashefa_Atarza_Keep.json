@@ -1,0 +1,154 @@
+{
+  "Id": "rule_Dothraki_Sea_Locations_Ashefa_Atarza_Keep",
+  "Keywords": [
+    "Ashefa Atarza Stronghold",
+    "Dothraki Sea",
+    "Grasslands",
+    "Ashefa Atarza Keep"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Ashefa Athaozar is located on the Dothraki Sea inland of Essos, politically within the steppe world of Dothraki khalasars. It is a castle mainly responsible for local garrison, tax collection and sheltering the nearby population. Walls and roads tied the surrounding population, storage, and garrison here; even if the flags were changed, this stronghold would still affect how nearby people paid taxes, traded, and sought refuge."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Ashefa Atarza Keep Local families also relied on pastures, horses, river branches, migration routes, and tribute from distant towns; if any road, well, spring, or wharf failed, the price would fall first on them."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Ashefa Atarza Keep The Fortress of Ashefa Atauzha is located in the power and trade network of the Dothraki Sea. The rules inside and outside the city gate are determined by the local order; whether the defenders are well fed and whether reinforcements can arrive on time determines the reliability of this stronghold more than the rhetoric in the council chamber."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Ashefa Atarza Keep Entry Dothraki Sea"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Ashefa Atarza Keep Asshefa Atauzha Fort is located in the power and trade network of the Dothraki Sea. The rules inside and outside the city gate are determined by the local order; after the flag is changed, the roads, granaries, old debts and local trusts still have to be taken over by the new owner one by one."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Ashefa Atarza Keep If you can supply supplies, avoid danger, and find a guide, it is worth marking in your itinerary; if you don't have these three things, no matter how loud your family name is, it won't be able to save the lost."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Asshefa Atauzha Fort is not just the main hall; the stone walls, wooden beams, iron doors, tombs and seams left by generations of repairs have also shaped this place as well as the fears and legends left by the horse god, the starry sky and the khalasas. A stronghold was therefore not just a lord's hall, but also a place where weddings and funerals, vows, labor and local memories recurred."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Ashefa Atarza Keep They care about pastures, herds of horses, river branches, migration routes, and tributes from distant towns. They also look at whether seeds are left after harvesting grain, and whether city gates are open in times of disaster. When people from afar see coats of arms, what they see is whether there will be food to eat tomorrow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Ashefa Atarza Keep: Ashefa Athaozar is located on the Dothraki Sea inland of Essos, politically within the steppe world of Dothraki khalasars. It is a castle mainly responsible for local garrison, tax collection and sheltering the nearby population. Walls and roads tied the surrounding population, storage, and garrison here; even if the flags were changed, this stronghold would still affect how nearby people paid taxes, traded, and sought refuge."
+  ]
+}

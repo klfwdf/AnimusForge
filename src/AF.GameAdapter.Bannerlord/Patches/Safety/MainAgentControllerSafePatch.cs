@@ -28,13 +28,13 @@ public static class MainAgentControllerSafePatch
 					HarmonyMethod finalizer = new HarmonyMethod(typeof(MainAgentControllerSafePatch).GetMethod("Finalizer", BindingFlags.Static | BindingFlags.Public));
 					harmony.Patch(methodInfo, prefix, null, null, finalizer);
 					_patched = true;
-					Logger.LogTrace("System", "✅ MainAgentControllerSafePatch 已对 MissionMainAgentController.OnPreMissionTick 打补丁（含 Finalizer）。");
+					Logger.LogTrace("System", "✅ MainAgentControllerSafePatch Patched MissionMainAgentController.OnPreMissionTick (including Finalizer).");
 				}
 			}
 		}
 		catch (Exception ex)
 		{
-			Logger.LogTrace("System", "❌ MainAgentControllerSafePatch 打补丁失败: " + ex.Message);
+			Logger.LogTrace("System", "❌ MainAgentControllerSafePatch patch failed: " + ex.Message);
 		}
 	}
 

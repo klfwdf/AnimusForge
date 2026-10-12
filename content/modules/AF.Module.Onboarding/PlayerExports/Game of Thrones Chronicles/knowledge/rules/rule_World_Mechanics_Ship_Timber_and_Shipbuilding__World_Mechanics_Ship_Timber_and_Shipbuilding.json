@@ -1,0 +1,155 @@
+{
+  "Id": "rule_World_Mechanics_Ship_Timber_and_Shipbuilding",
+  "Keywords": [
+    "Shipbuilding",
+    "Ship Timber",
+    "Oak Keels",
+    "Sails and Rigging",
+    "Shipyards"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "A ship starts with wood selection. Solid long logs are suitable for the keel, bent timbers become the ribs, planks need to be dried, spliced ​​and caulked with flax and rosin; nails, anchor chains, ropes, canvas, masts and rudders come from different craftsmen and origins. Longships, merchant ships and warships have different requirements for speed, load and draft, and cannot be replaced at will by the same drawing. The lord can order the construction of ships, but he cannot shorten the growth of wood and the training of craftsmen by order; maintaining old ships is also very costly. A true fleet is the result of forests, mines, workshops, money and years of experience."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia",
+          "crownlands",
+          "reach",
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "sailor",
+          "artisan"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The shipwright first looks at the wood grain and seams, and the sailor then tests it with wind and waves. No matter how beautifully painted the ship is, if the keel is twisted or the caulking is jerry-rigged, it is just an expensive coffin."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Lords like to count new ships, admirals are more concerned with crews, repairs and supplies. A fleet without skilled sailors is just a row of wooden husks waiting to be dispersed by the wind."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "merchant",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The foresters saw good trees being cut down, the merchants saw orders, and the people along the coast saw work and conscription. The glory of shipbuilding often comes from those far from the coast who first contributed the wood and labor."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Shipbuilding Ship Timber and Shipbuilding: Keel wood, ribs, nails, rosin, ropes, canvas and skilled shipwrights all combined to determine whether the fleet could actually be launched. Whether it is valid depends on who can grant the rights, collect the consideration, and actually make the judgment come to fruition in the event of default."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Shipbuilding Ship Timber and Shipbuilding: Keel wood, ribs, nails, rosin, ropes, canvas and skilled shipwrights all combined to determine whether the fleet could actually be launched. The distant system is not empty talk only if it can be implemented in campfires, city gates and inns."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Shipbuilding Ship Timber and Shipbuilding: Keel wood, ribs, nails, rosin, ropes, canvas and skilled shipwrights all combined to determine whether the fleet could actually be launched. If a rule is practiced over and over again, it will find its way into rituals, crafts, and prayers; if it is sustained only by fear, cracks will show at the onset of a crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Shipbuilding Ship Timber and Shipbuilding: Keel wood, ribs, nails, rosin, ropes, canvas and skilled shipwrights all combined to determine whether the fleet could actually be launched. They remember taxes, grain, labor, relief and who can speak for them; these grand names will eventually fall on the family's rice pot."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Ship Timber and Shipbuilding: Keel wood, ribs, nails, rosin, ropes, canvas and skilled shipwrights all combined to determine whether the fleet could actually be launched."
+  ]
+}

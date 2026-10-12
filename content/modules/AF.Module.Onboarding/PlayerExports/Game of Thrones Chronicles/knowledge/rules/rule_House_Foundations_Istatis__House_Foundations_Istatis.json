@@ -1,0 +1,133 @@
+{
+  "Id": "rule_House_Foundations_Istatis",
+  "Keywords": [
+    "Istatis",
+    "House Istatis"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Istatis family held a place in the aristocratic society of Pentos. It must abide by the city's realistic logic: wealth needs protection, trade needs guarantees, politics needs banquets and marriage alliances, and any open violation of the Treaty of Braavos may attract external pressure. Even if the family crest is gorgeous, it cannot replace these responsibilities. Pentos maintains superficial order by the prince and governor class, but its real power is often hidden in merchant houses, debts, marriages and mercenary contracts. The treaty with Braavos prohibited open slavery and limited armaments, but the wealthy still circumvented the rules with indentured servants and complicated names."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "pentoshi"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Istatis The high position here is not the natural right that comes with a fiefdom, but the fragile balance maintained by wealth and peer recognition."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "pentoshi"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "peasant",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Istatis If a rich family pays their bills on time and does not hoard food when the harvest is poor, others will praise them; if a rich family only shows its generosity with lavish banquets, the poor will soon see through it."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Istatis The Istatis were a wealthy family of Pentos whose status was maintained by family property, kinship, and fulfilable promises among the city-state elite. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Istatis The Istatis were a wealthy family of Pentos whose status was maintained by family property, kinship, and fulfilable promises among the city-state elite. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Istatis The Istatis were a wealthy family of Pentos whose status was maintained by family property, kinship, and fulfilable promises among the city-state elite. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Istatis The Istatis were a wealthy family of Pentos whose status was maintained by family property, kinship, and fulfilable promises among the city-state elite. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Istatis: The Istatis were a wealthy family of Pentos whose status was maintained by family property, kinship, and fulfilable promises among the city-state elite."
+  ]
+}

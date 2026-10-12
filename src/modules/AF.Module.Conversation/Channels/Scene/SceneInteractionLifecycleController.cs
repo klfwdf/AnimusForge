@@ -772,7 +772,7 @@ internal sealed class SceneInteractionLifecycleController
 		{
 			_ports.PrepareAutonomyRestore(npcDataPacket.AgentIndex);
 		}
-		string factText = "[AFEF NPC行为补充] 玩家长时间未继续发言，会话准备自然结束。";
+		string factText = ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0649");
 		TriggerImmediateSceneBehaviorReaction(factText, npcDataPacket.AgentIndex, persistHeroPrivateHistory: true, suppressStare: false, postSpeechLeaveSeconds: 3f, skipSceneFactRecord: false, returnSceneSummonOnTimeout: false, onNoSpeech);
 		return true;
 	}
@@ -868,10 +868,10 @@ internal sealed class SceneInteractionLifecycleController
 		string text2 = GetPlayerDisplayNameForShout();
 		if (string.IsNullOrWhiteSpace(text2))
 		{
-			text2 = "玩家";
+			text2 = ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0650");
 		}
-		string factText =  text2 +"长时间没有发言，"+text+"决定去干自己的事了。";
-		string prefixedFactText = "[AFEF NPC行为补充] " + factText;
+		string factText =  text2 +ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0651")+text+ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0652");
+		string prefixedFactText = ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0653") + factText;
 		if (session.TimeoutSeconds > 3.5f)
 		{
 			Action onNoSpeech = delegate

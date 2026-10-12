@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -37,6 +37,16 @@ public sealed class NoblePrisonerEscortBehavior : CampaignBehaviorBase
 	private const uint InfoColor = 0xFFDFC16Bu;
 	private const uint WarningColor = 0xFFFF6B6Bu;
 	private const uint SuccessColor = 0xFF8DDC7Eu;
+
+	private static TextObject UiText(string id, string fallback)
+	{
+		return new TextObject("{=" + id + "}" + fallback);
+	}
+
+	private static string UiString(string id, string fallback)
+	{
+		return UiText(id, fallback).ToString();
+	}
 	private static readonly Regex ExecuteActionTagRegex = new Regex(
 		@"\[ACTION:NOBLE_PRISONER_EXECUTE\]",
 		RegexOptions.IgnoreCase | RegexOptions.Compiled);
@@ -72,7 +82,7 @@ public sealed class NoblePrisonerEscortBehavior : CampaignBehaviorBase
 		EnsureProfiles();
 		if (Campaign.Current == null || Mission.Current != null || PartyBase.MainParty?.PrisonRoster == null)
 		{
-			ShowMessage("【贵族俘虏随行】只能在战役地图上配置。", WarningColor);
+			ShowMessage(UiString("AF_ENC_UI_Escort_MapOnly", "Noble prisoner escort can only be configured on the campaign map."), WarningColor);
 			return;
 		}
 
@@ -84,14 +94,14 @@ public sealed class NoblePrisonerEscortBehavior : CampaignBehaviorBase
 			BuildModeChoice(NoblePrisonerEscortMode.WorldMapEncounterMeeting)
 		};
 		MultiSelectionInquiryData data = new MultiSelectionInquiryData(
-			"【贵族俘虏随行】场景配置",
-			"只可选择玩家主队中的英雄单位俘虏：",
+			UiString("AF_ENC_UI_Escort_ConfigTitle", "Noble prisoner escort configuration"),
+			UiString("AF_ENC_UI_Escort_ConfigHint", "Only hero prisoners in the player's main party can be selected:"),
 			choices,
 			isExitShown: true,
 			1,
 			1,
-			"配置",
-			"关闭",
+			UiString("AF_ENC_UI_Configure", "Configure"),
+			UiString("AF_ENC_UI_Close", "Close"),
 			delegate(List<InquiryElement> selected)
 			{
 				if (selected?.Count > 0 && selected[0].Identifier is NoblePrisonerEscortMode mode)
@@ -382,9 +392,7 @@ public sealed class NoblePrisonerEscortBehavior : CampaignBehaviorBase
 		{
 			return string.Empty;
 		}
-		return "【贵族俘虏场景处决】当前回应者“" + (hero.Name?.ToString() ?? "俘虏")
-			+ "”是玩家带入场景且仍由玩家主队拘押的英雄俘虏。无论当前使用公开范围对话还是 AF 单独对话，只有当前回复直接回应玩家本轮明确要求杀死当前俘虏的命令时，才由 AI 按完整语义在回复末尾输出 "
-			+ ExecuteActionTag + "。普通谈话、一般威胁、玩笑、转述、NPC 自主提议、历史内容或含糊表达绝不能输出该标签；该标签只请求原版处刑确认，不代表玩家已经确认。";
+		return EncounterPromptTexts.BuildPromptInstruction(hero.Name?.ToString(), ExecuteActionTag);
 	}
 
 	internal static string BuildSceneExecutionPostprocessRule(int agentIndex)
@@ -395,9 +403,7 @@ public sealed class NoblePrisonerEscortBehavior : CampaignBehaviorBase
 		{
 			return string.Empty;
 		}
-		return "仅针对当前直接回应的随行贵族俘虏“"
-			+ (hero.Name?.ToString() ?? "俘虏")
-			+ "”。由 AI 按玩家本轮发言与该俘虏本轮回复的完整语义判断：只有玩家明确要求杀死当前俘虏，且回复直接承接这项命令时输出。提问、假设、一般威胁、反悔、否定、谈论他人、NPC 自主提议、接力闲聊或历史内容均不得输出。标签只打开原版处刑确认，不能代替玩家最终确认。";
+		return EncounterPromptTexts.BuildPostprocessRule(hero.Name?.ToString());
 	}
 
 	internal static bool TryProcessSceneExecutionTag(int agentIndex, bool replyIsDirectPlayerResponse, ref string content)
@@ -419,7 +425,7 @@ public sealed class NoblePrisonerEscortBehavior : CampaignBehaviorBase
 		}
 		if (!NoblePrisonerExecutionRuntime.TryQueue(hero, agent, out string reason))
 		{
-			ShowMessage("【贵族俘虏随行】无法处决当前目标。", WarningColor);
+			ShowMessage(UiString("AF_ENC_UI_Escort_ExecutionUnavailable", "The current target cannot be executed."), WarningColor);
 			NoblePrisonerEscortLog.Log("Queue execution failed. hero=" + SafeHeroId(hero) + ", reason=" + reason);
 			return false;
 		}
@@ -604,7 +610,7 @@ public sealed class NoblePrisonerEscortBehavior : CampaignBehaviorBase
 			TroopRoster livePrisoners = PartyBase.MainParty?.PrisonRoster;
 			if (livePrisoners == null)
 			{
-				ShowMessage("【贵族俘虏随行】玩家俘虏栏不可用。", WarningColor);
+				ShowMessage(UiString("AF_ENC_UI_Escort_PrisonerRosterUnavailable", "The player's prisoner roster is unavailable."), WarningColor);
 				return;
 			}
 			int limit = GetLimit(mode);
@@ -627,8 +633,8 @@ public sealed class NoblePrisonerEscortBehavior : CampaignBehaviorBase
 				LeftPartyPrisonersSizeLimit = Math.Max(selectable.TotalManCount + current.TotalManCount, limit),
 				RightPartyMembersSizeLimit = 0,
 				RightPartyPrisonersSizeLimit = limit,
-				LeftPartyName = new TextObject("玩家主队中的英雄俘虏"),
-				RightPartyName = new TextObject(GetModeTitle(mode) + "（上限 " + limit + "）"),
+				LeftPartyName = UiText("AF_ENC_UI_Escort_HeroPrisoners", "Hero prisoners in the player's main party"),
+				RightPartyName = new TextObject("{=AF_ENC_UI_Escort_ModeWithLimit}{MODE} (limit {LIMIT})").SetTextVariable("MODE", GetModeTitle(mode)).SetTextVariable("LIMIT", limit),
 				TroopTransferableDelegate = PrisonerTransferable,
 				CanTalkToTroopDelegate = null,
 				PartyPresentationDoneButtonDelegate = SelectionDone,
@@ -638,7 +644,7 @@ public sealed class NoblePrisonerEscortBehavior : CampaignBehaviorBase
 				PartyScreenClosedDelegate = OnSelectionClosed,
 				IsDismissMode = true,
 				IsTroopUpgradesDisabled = true,
-				Header = new TextObject("配置 " + GetModeTitle(mode)),
+				Header = new TextObject("{=AF_ENC_UI_Escort_ConfigureMode}Configure {MODE}").SetTextVariable("MODE", GetModeTitle(mode)),
 				TransferHealthiesGetWoundedsFirst = true,
 				ShowProgressBar = false,
 				MemberTransferState = PartyScreenLogic.TransferState.NotTransferable,
@@ -652,14 +658,14 @@ public sealed class NoblePrisonerEscortBehavior : CampaignBehaviorBase
 			state.IsDonating = false;
 			state.PartyScreenMode = PartyScreenHelper.PartyScreenMode.Normal;
 			Game.Current.GameStateManager.PushState((GameState)(object)state, 0);
-			ShowMessage("【贵族俘虏随行】正在配置" + GetModeTitle(mode) + "。", InfoColor);
+			ShowMessage(new TextObject("{=AF_ENC_UI_Escort_Configuring}Configuring {MODE}.").SetTextVariable("MODE", GetModeTitle(mode)).ToString(), InfoColor);
 			NoblePrisonerEscortLog.Log("Opened profile selection. mode=" + mode + ", current=" + current.TotalManCount + ", selectable=" + selectable.TotalManCount);
 		}
 		catch (Exception ex)
 		{
 			_pendingSelection = null;
 			NoblePrisonerEscortLog.Log("Open profile selection failed. mode=" + mode + ", error=" + ex);
-			ShowMessage("【贵族俘虏随行】打开配置界面失败。", WarningColor);
+			ShowMessage(UiString("AF_ENC_UI_Escort_ConfigOpenFailed", "Could not open the configuration screen."), WarningColor);
 		}
 	}
 
@@ -681,7 +687,7 @@ public sealed class NoblePrisonerEscortBehavior : CampaignBehaviorBase
 		{
 			return new Tuple<bool, TextObject>(true, TextObject.GetEmpty());
 		}
-		return new Tuple<bool, TextObject>(false, new TextObject("贵族俘虏随行不能超过 " + limit + " 人。"));
+		return new Tuple<bool, TextObject>(false, new TextObject("{=AF_ENC_UI_Escort_LimitExceeded}Noble prisoner escort cannot exceed {LIMIT} people.").SetTextVariable("LIMIT", limit));
 	}
 
 	private static void OnSelectionClosed(PartyBase leftOwnerParty, TroopRoster leftMemberRoster, TroopRoster leftPrisonerRoster, PartyBase rightOwnerParty, TroopRoster rightMemberRoster, TroopRoster rightPrisonerRoster, bool fromCancel)
@@ -694,19 +700,22 @@ public sealed class NoblePrisonerEscortBehavior : CampaignBehaviorBase
 		}
 		TroopRoster saved = ResolveProfile(rightPrisonerRoster, PartyBase.MainParty?.PrisonRoster, pending.Limit, out _, out _);
 		SetProfile(pending.Mode, saved);
-		ShowMessage("【贵族俘虏随行】" + GetModeTitle(pending.Mode) + "已保存 " + saved.TotalManCount + "/" + pending.Limit + "。", SuccessColor);
+		ShowMessage(new TextObject("{=AF_ENC_UI_Escort_ProfileSaved}{MODE} saved: {COUNT}/{LIMIT}.").SetTextVariable("MODE", GetModeTitle(pending.Mode)).SetTextVariable("COUNT", saved.TotalManCount).SetTextVariable("LIMIT", pending.Limit).ToString(), SuccessColor);
 		NoblePrisonerEscortLog.Log("Saved profile. mode=" + pending.Mode + ", count=" + saved.TotalManCount + ", limit=" + pending.Limit);
 	}
 
 	private static InquiryElement BuildModeChoice(NoblePrisonerEscortMode mode)
 	{
 		TroopRoster live = ResolveLiveProfile(mode, out int configured, out int unavailable);
-		string hint = "当前可用 " + live.TotalManCount + "/" + GetLimit(mode) + " 名";
+		TextObject hintText = new TextObject("{=AF_ENC_UI_Escort_AvailableHint}{COUNT}/{LIMIT} available").SetTextVariable("COUNT", live.TotalManCount).SetTextVariable("LIMIT", GetLimit(mode));
 		if (unavailable > 0)
 		{
-			hint += "，另有 " + unavailable + " 名已不在玩家主队俘虏栏";
+			hintText = new TextObject("{=AF_ENC_UI_Escort_AvailableWithMissing}{COUNT}/{LIMIT} available; {MISSING} are no longer in the player's main-party prisoner roster.")
+				.SetTextVariable("COUNT", live.TotalManCount).SetTextVariable("LIMIT", GetLimit(mode)).SetTextVariable("MISSING", unavailable);
 		}
-		return new InquiryElement(mode, GetModeTitle(mode), null, isEnabled: true, hint + "。已配置记录：" + configured + "。只允许英雄俘虏。");
+		hintText = new TextObject("{=AF_ENC_UI_Escort_AvailableConfigured}{TEXT} Configured: {CONFIGURED}. Hero prisoners only.")
+			.SetTextVariable("TEXT", hintText).SetTextVariable("CONFIGURED", configured);
+		return new InquiryElement(mode, GetModeTitle(mode), null, isEnabled: true, hintText.ToString());
 	}
 
 	private static TroopRoster BuildSelectableRoster(TroopRoster source)
@@ -841,11 +850,11 @@ public sealed class NoblePrisonerEscortBehavior : CampaignBehaviorBase
 	{
 		return mode switch
 		{
-			NoblePrisonerEscortMode.TownAftermath => "城镇攻城处置随行（5名）",
-			NoblePrisonerEscortMode.SettlementEntry => "正常城镇/城堡场景随行（5名）",
-			NoblePrisonerEscortMode.LordsHall => "城镇/城堡领主大厅随行（5名）",
-			NoblePrisonerEscortMode.WorldMapEncounterMeeting => "野外会面场景随行（1名）",
-			_ => "贵族俘虏随行"
+			NoblePrisonerEscortMode.TownAftermath => UiString("AF_ENC_UI_Escort_ModeTownAftermath", "Town siege aftermath escort (5)"),
+			NoblePrisonerEscortMode.SettlementEntry => UiString("AF_ENC_UI_Escort_ModeSettlementEntry", "Town/castle settlement escort (5)"),
+			NoblePrisonerEscortMode.LordsHall => UiString("AF_ENC_UI_Escort_ModeLordsHall", "Town/castle lord's hall escort (5)"),
+			NoblePrisonerEscortMode.WorldMapEncounterMeeting => UiString("AF_ENC_UI_Escort_ModeWorldMeeting", "Wilderness meeting escort (1)"),
+			_ => UiString("AF_ENC_UI_Escort_ModeDefault", "Noble prisoner escort")
 		};
 	}
 

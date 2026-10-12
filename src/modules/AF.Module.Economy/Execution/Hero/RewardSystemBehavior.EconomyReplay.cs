@@ -175,7 +175,7 @@ private bool TryReplayAction(
         {
             return false;
         }
-        factText = "已实际转移 " + actual.ToString(CultureInfo.InvariantCulture) + " 第纳尔。";
+        factText = EconomySourceTexts.Get("S029") + actual.ToString(CultureInfo.InvariantCulture) + EconomySourceTexts.Get("S030");
         return true;
     }
 
@@ -272,7 +272,7 @@ private bool TryReplayAction(
         {
             return false;
         }
-        factText = (generated ? "已生成并实际转移 RP 物品 " : "已实际转移物品 ")
+        factText = (generated ? EconomySourceTexts.Get("S031") : EconomySourceTexts.Get("S032"))
             + (itemName ?? lookup) + " ×" + actual.ToString(CultureInfo.InvariantCulture) + "。";
         return true;
     }
@@ -295,9 +295,9 @@ private bool TryReplayAction(
         {
             return false;
         }
-        factText = "已记录玩家对 " + (giver.Name?.ToString() ?? giver.StringId ?? "NPC")
-            + " 的债务承诺：" + amount.ToString(CultureInfo.InvariantCulture)
-            + " 第纳尔，债务ID=" + line.DebtId + "。";
+        factText = EconomySourceTexts.Get("S033") + (giver.Name?.ToString() ?? giver.StringId ?? "NPC")
+            + EconomySourceTexts.Get("S034") + amount.ToString(CultureInfo.InvariantCulture)
+            + EconomySourceTexts.Get("S035") + line.DebtId + "。";
         return true;
     }
 
@@ -318,7 +318,7 @@ private bool TryReplayAction(
             return false;
         }
         if (string.IsNullOrWhiteSpace(statusText)
-            || statusText.IndexOf("已按协商解除", StringComparison.OrdinalIgnoreCase) < 0)
+            || statusText.IndexOf(EconomySourceTexts.Get("S036"), StringComparison.OrdinalIgnoreCase) < 0)
         {
             return false;
         }
@@ -354,7 +354,7 @@ private bool TryReplayAction(
             return false;
         }
         factText = string.IsNullOrWhiteSpace(statusText)
-            ? "已完成固定资产转移：" + action.SettlementToken + "。"
+            ? EconomySourceTexts.Get("S037") + action.SettlementToken + "。"
             : statusText;
         return true;
     }

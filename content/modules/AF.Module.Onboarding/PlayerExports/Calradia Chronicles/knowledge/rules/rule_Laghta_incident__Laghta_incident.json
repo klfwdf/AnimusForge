@@ -1,0 +1,126 @@
+{
+  "Id": "rule_Laghta_incident",
+  "Keywords": [
+    "Laqta Incident"
+  ],
+  "RagShortTexts": [
+    "The Laghta incident is one of the most disgraceful chapters in the history of imperial expansion. An exiled imperial merchant dedicated the city to the empire after murdering the Pala chief who took him in.",
+    "The Senate publicly denounced the merchants' behavior as \"violating the laws of gods and men\", while accepting the city without hesitation.",
+    "The Lageta incident became the source of the Battania people's everlasting distrust of the Empire. Whenever the Empire talked about a treaty, the Battanians only had to answer with one word - Lageta."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Laghta incident is one of the most disgraceful chapters in the history of imperial expansion. It happened in the early days of the imperial conquest: an exiled imperial merchant was employed by a Pala chief and gained protection and trust in the chief's city. But the merchant did not repay the trust - he murdered the chief, captured the city, and extended an invitation to the empire. Imperial colonists flocked to the city, and merchants dedicated entire cities as gifts to the empire. The Senate denounced the merchant's behavior in public, calling it 'a violation of the laws of gods and men', and then welcomed the city without hesitation. Since then, Laqta has become the city of the imperial people. But the Battania people in the north never forgot it. Whenever the Empire's envoys boasted of the sanctity of treaties and agreements, the Battanians had only one word to reply - Lakta."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Laghta Incident is a disgraceful old account in the history of the empire. The businessman was indeed a villain - he was taken in by the chief of the Pala people during his exile, but he repaid his kindness with vengeance, killed his employer, seized the city, and used it as his surrender certificate. The Senate was also in a dilemma at the time: it was certainly not okay to praise this behavior publicly, but a ready-made walled fortress was placed to the north, surrounded by the forests of the Battania people, so don't be fooled. Therefore, the Senate used the most imperial way to deal with it - publicly condemning it and privately accepting it. Hundreds of years have passed, and Laguta has become a city of the empire."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Laguta incident is a classic negative teaching material in the history of imperial political ethics. An exiled imperial merchant—whose name has been lost in historical records—murdered a Pala chief who took him in, occupied his city by force, and then actively invited imperial colonists to settle in, dedicating the city to the empire as a gift. The Senate's reaction was a model of imperial hypocrisy: it publicly denounced the merchant as unforgivable, and then in the same session approved the proposal to incorporate Lagerta into the imperial fold. This incident established an informal pattern during the period of imperial expansion—maintaining the moral high ground on the surface and accepting any convenience behind the scenes."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "We remember the Laqta incident much more clearly than the Imperial people. We still remember the name of the exiled imperial businessman - although no one knows whether it is the real name now, the song sings about him as 'Oathbreaker'. The chief of the Pala people took him in, gave him food and shelter, and asked him to help manage the city. The way he helped manage it was by stabbing the chief to death, occupying the city, and then asking his fellow imperial compatriots to take over. The Senate said 'oh this is terrible, we condemn this' - and they took the city. This is empire. From then on, the Pala people were devoured one by one by the imperial people, and in the end no one even spoke their language. We in Battania can still stand here and scold the Imperials because we have not been fooled by them. Every time the Imperials come to talk about a peace treaty, all we have to do is say 'Lagta' and they'll understand."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The story of Lakta has been told in the songs of our Battania people for hundreds of years. Not because we enjoy singing it, but because it reminds us of what the Imperials are like. The Oathbreaker killed the Pala chief who had taken him in, and the Imperial Senate took over the city while scolding him. What happened to the Pala people? They believed the Imperials' treaty and disappeared. We are still in the forest now because we have no faith. Each generation of Battania children would be taken to the mountains to the north to see Lagta from a distance through the woods. Then the elders will say: That city was built with the swords of the Oathbreakers and the lies of the Imperials."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "We Vlandians have also heard of the Lakta incident. The Imperials traded a merchant's betrayal for a city, and then spent hundreds of years turning it into a military fortress in the north. To be honest, this method is not unusual in the eyes of us Vlandians - our ancestors were also deceived by the imperial people with treaties and agreements. The difference is that we later rebelled and drove the Imperials out of Vlandia; the Pala people did not rebel, so they were gone. Laqta is still Imperial, but the Battanians around it have not forgotten it."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "steward": 150
+        }
+      },
+      "Content": "The Laguta incident is an iconic case in the ethics of imperial expansion. An exiled imperial merchant - the name of this person is inconsistently recorded in historical records - gained trust under the protection of the chief of the Pala people, and then captured the chief's city by murder, and actively invited imperial colonists to settle in, dedicating the city to the empire as a gift. The Senate adopted a typical political double-sided strategy: publicly condemning the merchants' personal behavior to maintain the moral image of the empire, while quickly approving the inclusion of Lageta in the imperial territory to obtain practical benefits. This incident established an informal pattern during the period of imperial expansion: denouncing illegal means on the stage and accepting the results of illegal means off the stage. The Laguta Incident occupies an extremely important place in the historical memory of the Battania people, becoming synonymous with the hypocrisy of imperial 'treaties and agreements'. Whenever the Empire enters into diplomatic negotiations with Battania, the name 'Lagta' becomes the ultimate argument from the Battanian side to question the integrity of the Empire. This event also had a profound impact on the fate of the Pala people: after the Pala chief of Lageta was murdered, his tribe was quickly assimilated by the empire, becoming a microcosm of the overall demise of the Pala people."
+    }
+  ],
+  "TextMappings": []
+}

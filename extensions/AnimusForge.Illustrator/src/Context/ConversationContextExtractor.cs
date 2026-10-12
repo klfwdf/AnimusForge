@@ -34,40 +34,40 @@ namespace AnimusForge.Illustrator.Context
         public string BuildDialogueBlock()
         {
             var sb = new StringBuilder();
-            sb.AppendLine("【会话台词与历史记录（用于理解情绪、关系、已发生动作与现场氛围；严禁在画面中绘制任何台词文字、对话框、气泡框或字幕）】");
+            sb.AppendLine(IllustratorText.Get("Conversation_0"));
             sb.AppendLine(Core.VisualFidelityRules.ConversationActionPriority);
             if (!string.IsNullOrWhiteSpace(RecentDialogueHistory)) sb.AppendLine(RecentDialogueHistory);
             else if (!string.IsNullOrWhiteSpace(DialogueSentence))
-                sb.AppendLine($"焦点台词：\"{DialogueSentence}\"");
+                sb.AppendLine(IllustratorText.Format("Conversation_1", DialogueSentence));
             return sb.ToString().TrimEnd();
         }
 
         public string BuildHardFacts()
         {
             var sb = new StringBuilder();
-            sb.AppendLine("【玩家主角】");
+            sb.AppendLine(IllustratorText.Get("Conversation_2"));
             // Conversation mount presence comes from the live Agent evidence in SceneFacts.
             // The equipment snapshot may contain an available horse even when the current
             // tableau/map conversation has no mounted Agent; exposing that slot makes the
             // image model invent a horse in an otherwise on-foot scene.
             if (MainHeroProfile != null) sb.AppendLine(MainHeroProfile.BuildVisualSummary(includeMount: false));
-            sb.AppendLine("【对话对象】");
+            sb.AppendLine(IllustratorText.Get("Conversation_3"));
             if (InterlocutorProfile != null)
             {
                 sb.AppendLine(InterlocutorProfile.BuildVisualSummary(includeMount: false));
             }
             else if (InterlocutorCharacter != null)
             {
-                sb.AppendLine($"【人物】{InterlocutorCharacter.Name} ({InterlocutorCharacter.Culture?.Name}文化, {(InterlocutorCharacter.IsFemale ? "女性" : "男性")})");
+                sb.AppendLine(IllustratorText.Format("Conversation_4", InterlocutorCharacter.Name, InterlocutorCharacter.Culture?.Name, (InterlocutorCharacter.IsFemale ? IllustratorText.Get("Hero_320") : IllustratorText.Get("Hero_321"))));
             }
             if (EnvironmentProfile != null)
             {
-                sb.AppendLine("【当前现场】");
+                sb.AppendLine(IllustratorText.Get("Conversation_5"));
                 sb.AppendLine(EnvironmentProfile.BuildHardFactsSummary());
             }
             // 空间关系是构图硬约束，不能只放在开放艺术指导中，否则导演可能退化为平地对话。
             if (!string.IsNullOrWhiteSpace(SceneFacts))
-                sb.AppendLine("【当前人物空间与动作硬事实】" + SceneFacts);
+                sb.AppendLine(IllustratorText.Get("Conversation_6") + SceneFacts);
             return sb.ToString().TrimEnd();
         }
 
@@ -95,7 +95,7 @@ namespace AnimusForge.Illustrator.Context
 
         public string BuildCompositeContext()
         {
-            return BuildHardFacts() + "\n\n【导演专属背景】\n" + BuildDirectorOnlyFacts() + "\n\n【开放艺术指导】\n" + BuildArtDirection();
+            return BuildHardFacts() + IllustratorText.Get("Conversation_7") + BuildDirectorOnlyFacts() + IllustratorText.Get("Conversation_8") + BuildArtDirection();
         }
     }
 
@@ -207,14 +207,14 @@ namespace AnimusForge.Illustrator.Context
                 var profile = new HeroVisualProfile
                 {
                     HeroName = partnerChar.Name?.ToString() ?? partnerChar.StringId,
-                    Culture = partnerChar.Culture?.Name?.ToString() ?? "未知文化",
-                    Gender = partnerChar.IsFemale ? "女性" : "男性",
+                    Culture = partnerChar.Culture?.Name?.ToString() ?? IllustratorText.Get("Conversation_9"),
+                    Gender = partnerChar.IsFemale ? IllustratorText.Get("Conversation_10") : IllustratorText.Get("Conversation_11"),
                     SpeciesDescription = HeroVisualExtractor.DescribeSpecies(
                         (partnerChar.StringId ?? string.Empty) + " " + (partnerChar.Culture?.StringId ?? string.Empty) + " " + (partnerChar.Culture?.Name?.ToString() ?? string.Empty),
                         appearance?.Race ?? partnerChar.Race),
                     Age = age,
-                    AgeSource = age > 0 ? "当前一对一会话NPC实例的游戏年龄参数；外观成熟度、皮肤纹理和须发颜色按本人参考图，不能按年龄数字添加衰老特征。"
-                        : "未取得当前NPC实例的有效年龄；不使用兵种模板或其他同名人物的年龄，外观按本人参考图。",
+                    AgeSource = age > 0 ? IllustratorText.Get("Conversation_12")
+                        : IllustratorText.Get("Conversation_13"),
                     PhysicalFeatures = HeroVisualExtractor.ExtractCharacterPhysicalFeatures(partnerChar, snapshot, age)
                 };
 
@@ -237,8 +237,8 @@ namespace AnimusForge.Illustrator.Context
                 {
                     string c1Name = HeroVisualExtractor.ResolveColorName(color1);
                     string c1Hex = "#" + (color1 & 0x00FFFFFF).ToString("X6");
-                    string c2Part = (color2 != 0 && color2 != color1) ? $"，辅以 {HeroVisualExtractor.ResolveColorName(color2)} (#{(color2 & 0x00FFFFFF):X6})" : "";
-                    profile.LiveryColorsSummary = $"引擎服饰染色通道辅助值为【{c1Name}】({c1Hex}){c2Part}；仅影响支持染色的材质区域，不代表整件衣服的实际主色。衣着颜色、纹样及深浅分区以本人参考图为准，不按此值整件重染。";
+                    string c2Part = (color2 != 0 && color2 != color1) ? IllustratorText.Format("Conversation_14", HeroVisualExtractor.ResolveColorName(color2), (color2 & 0x00FFFFFF)) : "";
+                    profile.LiveryColorsSummary = IllustratorText.Format("Conversation_15", c1Name, c1Hex, c2Part);
                 }
 
                 HeroVisualExtractor.ApplyEquipmentSnapshot(profile, snapshot, source);
@@ -266,18 +266,18 @@ namespace AnimusForge.Illustrator.Context
                     context.EnvironmentProfile.HostSceneDescription = hostScene;
                     string loc = context.EnvironmentProfile.SpecificLocation ?? string.Empty;
                     bool hostIsSea = IsExplicitSeaScene(hostScene);
-                    bool weSaidSea = loc.Contains("海船") || loc.Contains("Naval") || loc.Contains("海");
-                    bool hostIsWild = hostScene.Contains("野外") || hostScene.Contains("平原") || hostScene.Contains("森林")
-                        || hostScene.Contains("山地") || hostScene.Contains("荒原") || hostScene.Contains("海岸");
-                    bool weSaidTown = loc.Contains("城镇") || loc.Contains("市集") || loc.Contains("街道") || loc.Contains("Marketplace");
+                    bool weSaidSea = loc.Contains(IllustratorText.Raw("Conversation_16")) || loc.Contains("Naval") || loc.Contains(IllustratorText.Raw("Conversation_17"));
+                    bool hostIsWild = hostScene.Contains(IllustratorText.Raw("Conversation_18")) || hostScene.Contains(IllustratorText.Raw("Conversation_19")) || hostScene.Contains(IllustratorText.Raw("Conversation_20"))
+                        || hostScene.Contains(IllustratorText.Raw("Conversation_21")) || hostScene.Contains(IllustratorText.Raw("Conversation_22")) || hostScene.Contains(IllustratorText.Raw("Conversation_23"));
+                    bool weSaidTown = loc.Contains(IllustratorText.Raw("Conversation_24")) || loc.Contains(IllustratorText.Raw("Conversation_25")) || loc.Contains(IllustratorText.Raw("Conversation_26")) || loc.Contains("Marketplace");
                     if (hostIsSea && !weSaidSea)
                     {
-                        context.EnvironmentProfile.SpecificLocation = "海船甲板/海上接舷会面（宿主确认：" + hostScene + "）";
-                        context.EnvironmentProfile.IndoorOutdoorDetails = "波涛起伏的辽阔海面：木质战船甲板、桅杆索具与鼓满风的帆布，远处隐现海岸线与海鸟；双方立于甲板或两船接舷处会面。";
+                        context.EnvironmentProfile.SpecificLocation = IllustratorText.Get("Conversation_27") + hostScene + "）";
+                        context.EnvironmentProfile.IndoorOutdoorDetails = IllustratorText.Get("Conversation_28");
                     }
                     else if (hostIsWild && weSaidTown)
                     {
-                        context.EnvironmentProfile.SpecificLocation = "开阔野外会面地（宿主确认：" + hostScene + "）";
+                        context.EnvironmentProfile.SpecificLocation = IllustratorText.Get("Conversation_29") + hostScene + "）";
                         context.EnvironmentProfile.IndoorOutdoorDetails = EnvironmentVisualExtractor.NeutralWildDetails;
                     }
                 }
@@ -299,8 +299,8 @@ namespace AnimusForge.Illustrator.Context
                     : ((mainHero != null && mainHero.IsPrisoner) ? mainHero : null);
                 if (captive != null && context.EnvironmentProfile != null)
                 {
-                    string captiveName = captive == mainHero ? "玩家"
-                        : (captive.Name != null ? captive.Name.ToString() : "对方");
+                    string captiveName = captive == mainHero ? IllustratorText.Get("Conversation_30")
+                        : (captive.Name != null ? captive.Name.ToString() : IllustratorText.Get("Conversation_31"));
                     PartyBase holder = null;
                     try { holder = captive.PartyBelongedToAsPrisoner; } catch { }
                     string holderDesc = string.Empty;
@@ -314,11 +314,11 @@ namespace AnimusForge.Illustrator.Context
                             heldByParty = holder.IsMobile && holder.MobileParty != null;
                             if (heldInSettlement)
                             {
-                                holderDesc = (holder.Settlement.Name != null ? holder.Settlement.Name.ToString() : holder.Settlement.StringId) + "的地牢";
+                                holderDesc = (holder.Settlement.Name != null ? holder.Settlement.Name.ToString() : holder.Settlement.StringId) + IllustratorText.Get("Conversation_32");
                             }
                             else if (heldByParty)
                             {
-                                holderDesc = (holder.MobileParty.Name != null ? holder.MobileParty.Name.ToString() : "一支队伍") + "的队伍";
+                                holderDesc = (holder.MobileParty.Name != null ? holder.MobileParty.Name.ToString() : IllustratorText.Get("Conversation_33")) + IllustratorText.Get("Conversation_34");
                             }
                         }
                         catch
@@ -326,20 +326,20 @@ namespace AnimusForge.Illustrator.Context
                         }
                     }
 
-                    captiveDirective = $"【俘虏处境】{captiveName}当前为俘虏" + (string.IsNullOrWhiteSpace(holderDesc) ? "" : $"（关押方信息：{holderDesc}）") +
-                        "；关押身份不证明当前换装、缴械或镣铐，人物装备和物理现场只遵循本次实际快照";
+                    captiveDirective = IllustratorText.Format("Conversation_35", captiveName) + (string.IsNullOrWhiteSpace(holderDesc) ? "" : IllustratorText.Format("Conversation_36", holderDesc)) +
+                        IllustratorText.Get("Conversation_37");
                 }
             }
             catch
             {
             }
 
-            string mainName = mainHero != null && mainHero.Name != null ? mainHero.Name.ToString() : "主角";
-            string partnerName = partnerHero != null && partnerHero.Name != null ? partnerHero.Name.ToString() : (partnerChar != null && partnerChar.Name != null ? partnerChar.Name.ToString() : "对方");
+            string mainName = mainHero != null && mainHero.Name != null ? mainHero.Name.ToString() : IllustratorText.Get("Conversation_38");
+            string partnerName = partnerHero != null && partnerHero.Name != null ? partnerHero.Name.ToString() : (partnerChar != null && partnerChar.Name != null ? partnerChar.Name.ToString() : IllustratorText.Get("Conversation_39"));
             string subLoc = !string.IsNullOrWhiteSpace(context.EnvironmentProfile?.SpecificLocation)
                 ? $" · {context.EnvironmentProfile.SpecificLocation}"
                 : "";
-            string locName = (settlement != null && settlement.Name != null ? settlement.Name.ToString() : "卡拉迪亚会面现场") + subLoc;
+            string locName = (settlement != null && settlement.Name != null ? settlement.Name.ToString() : IllustratorText.Get("Conversation_40")) + subLoc;
 
             // 2. 检测会话现场 Agent 状态：坐骑、护卫与站位
             TaleWorlds.MountAndBlade.Agent partnerAgent = null;
@@ -406,28 +406,28 @@ namespace AnimusForge.Illustrator.Context
             }
 
             string siegeFacts = isUnderSiege
-                ? $"当前处于围城情境，玩家一方为{(playerIsDefender ? "守方" : "攻方")}；具体地形以现场记录和实景参考图为准"
+                ? IllustratorText.Format("Conversation_41", (playerIsDefender ? IllustratorText.Get("Conversation_58") : IllustratorText.Get("Conversation_56")))
                 : string.Empty;
             string siegeForces = isUnderSiege ? DescribeSiegeForces(settlement, playerIsDefender) : string.Empty;
             string elevationFacts = DescribeConversationElevation(playerAgent, partnerAgent, mainName, partnerName);
-            string guardFacts = bodyguardCount > 0 ? $"现场对方随行队列中另有 {bodyguardCount} 名角色" : "未确认额外随行角色";
+            string guardFacts = bodyguardCount > 0 ? IllustratorText.Format("Conversation_43", bodyguardCount) : IllustratorText.Get("Conversation_44");
 
             context.SceneFacts =
                 (string.IsNullOrWhiteSpace(entry.Fact) ? string.Empty : entry.Fact + "。\n") +
                 (string.IsNullOrWhiteSpace(captiveDirective) ? string.Empty : captiveDirective + "。\n") +
-                $"参与会话者：【{mainName}】与【{partnerName}】。\n" +
-                $"现场状态：{mountPosture}；{guardFacts}。\n" +
+                IllustratorText.Format("Conversation_45", mainName, partnerName) +
+                IllustratorText.Format("Conversation_46", mountPosture, guardFacts) +
                 (string.IsNullOrWhiteSpace(siegeFacts) ? string.Empty : siegeFacts + "。\n") +
                 (string.IsNullOrWhiteSpace(elevationFacts) ? string.Empty : elevationFacts + "\n") +
                 (string.IsNullOrWhiteSpace(siegeForces) ? string.Empty : siegeForces + "\n") +
-                $"地点为【{locName}】。";
+                IllustratorText.Format("Conversation_47", locName);
             context.SceneDirective =
-                "优先采用当前会话最近两轮对话中已发生或正在进行的动作，导演据此设计镜头；对话未涉及的骑乘状态与环境空间关系保留已知记录。" +
-                "有【双方实测高差】时按实测米数画出落差：用城墙墙面、垛口与人物身高作比例参照，下方人物按距离明显缩小，选择能同时容纳上下双方与其间墙面的机位，不用会挤掉墙面的过肩中景。" +
+                IllustratorText.Get("Conversation_48") +
+                IllustratorText.Get("Conversation_49") +
                 (string.IsNullOrWhiteSpace(siegeForces) ? string.Empty :
-                    "有【围城兵力】时，城墙上的守军队列与城外的军阵、营帐、营火按兵力实数组织为有纵深的远景群体，采用能看到对话双方、城防与远处军势的中远景或高位广角。") +
+                    IllustratorText.Get("Conversation_50")) +
                 (string.IsNullOrWhiteSpace(basePose) ? string.Empty :
-                    $"\n【引擎待机线索（仅在对话没有动作描述时参考，不覆盖对话动作）】{basePose}。");
+                    IllustratorText.Format("Conversation_51", basePose));
 
             return context;
         }
@@ -456,15 +456,15 @@ namespace AnimusForge.Illustrator.Context
         internal static string FormatElevationFact(float partnerMinusPlayer, double horizontal, string playerName, string partnerName)
         {
             float drop = Math.Abs(partnerMinusPlayer);
-            string distance = $"水平距离约{horizontal:0.#}米";
+            string distance = IllustratorText.Format("Conversation_52", horizontal);
             if (drop < 1.5f)
-                return $"【双方实测高差】{playerName}与{partnerName}脚底高度基本相同（高差{drop:0.#}米，引擎实测），{distance}。";
+                return IllustratorText.Format("Conversation_53", playerName, partnerName, drop, distance);
             string upper = partnerMinusPlayer > 0 ? partnerName : playerName;
             string lower = partnerMinusPlayer > 0 ? playerName : partnerName;
             // 1.8 m reference body height; stated so the image model gets a readable scale.
             double bodies = drop / 1.8;
-            return $"【双方实测高差】{upper}的脚底比{lower}高约{drop:0.#}米（约{bodies:0.#}个成人身高，引擎实测值，不是估计），{distance}；" +
-                $"画面中两人之间的墙面或台地落差须达到这个比例，{lower}仰视、{upper}俯视，不能压缩成台阶或矮墙。";
+            return IllustratorText.Format("Conversation_54", upper, lower, drop, bodies, distance) +
+                IllustratorText.Format("Conversation_55", lower, upper);
         }
 
         // Once per generation request while under siege: one pass over each side's involved parties.
@@ -506,13 +506,13 @@ namespace AnimusForge.Illustrator.Context
         internal static string FormatSiegeForces(int attackers, int attackerParties, string attackerFaction, string armyName,
             int defenders, int defenderParties, string defenderFaction, bool playerIsDefender)
         {
-            string attackerLabel = (string.IsNullOrWhiteSpace(attackerFaction) ? "攻方" : "攻方" + attackerFaction) +
+            string attackerLabel = (string.IsNullOrWhiteSpace(attackerFaction) ? IllustratorText.Get("Conversation_56") : IllustratorText.Get("Conversation_57") + attackerFaction) +
                 (string.IsNullOrWhiteSpace(armyName) ? string.Empty : "（" + armyName + "）");
-            string defenderLabel = string.IsNullOrWhiteSpace(defenderFaction) ? "守方" : "守方" + defenderFaction;
-            return $"【围城兵力（战役地图实数）】{attackerLabel}可战兵员约{attackers}人、{attackerParties}支部队，驻营于城外；" +
-                $"{defenderLabel}可战兵员约{defenders}人、{defenderParties}支部队，驻守城内与城防。玩家属{(playerIsDefender ? "守方" : "攻方")}。" +
-                "这是画面外与远景的匿名大军证据：城墙巡道上成列的守军、城下与远方的军阵、营帐、营火与攻城器械可按此规模组织为远景群体轮廓，" +
-                "不计入【附近人群活动依据】的近处可辨认人数上限，也不据此新增具名人物。";
+            string defenderLabel = string.IsNullOrWhiteSpace(defenderFaction) ? IllustratorText.Get("Conversation_58") : IllustratorText.Get("Conversation_59") + defenderFaction;
+            return IllustratorText.Format("Conversation_60", attackerLabel, attackers, attackerParties) +
+                IllustratorText.Format("Conversation_61", defenderLabel, defenders, defenderParties, (playerIsDefender ? IllustratorText.Get("Conversation_58") : IllustratorText.Get("Conversation_56"))) +
+                IllustratorText.Get("Conversation_62") +
+                IllustratorText.Get("Conversation_63");
         }
 
         /// <summary>
@@ -520,7 +520,7 @@ namespace AnimusForge.Illustrator.Context
         /// 与主模组聊天提示词的场景注入同源；主模组未加载或失败时返回空串。
         /// </summary>
         internal static bool IsExplicitSeaScene(string scene)
-            => !string.IsNullOrWhiteSpace(scene) && (scene.Contains("海上航行") || scene.Contains("海船甲板") || scene.Contains("海上接舷"));
+            => !string.IsNullOrWhiteSpace(scene) && (scene.Contains(IllustratorText.Raw("Conversation_64")) || scene.Contains(IllustratorText.Raw("Conversation_65")) || scene.Contains(IllustratorText.Raw("Conversation_66")));
 
         private static string TryGetHostSceneDescription()
         {
@@ -603,13 +603,13 @@ namespace AnimusForge.Illustrator.Context
             }
 
             var sb = new StringBuilder();
-            sb.AppendLine($"【当前会话最近至多{maxRounds}轮对话（共{lines.Count - start}条发言，按时间先后；不足时仅使用已有记录）】");
+            sb.AppendLine(IllustratorText.Format("Conversation_67", maxRounds, lines.Count - start));
             for (int i = start; i < lines.Count; i++)
             {
                 var entry = lines[i];
                 string speaker = string.Equals(entry.Kind, "player", StringComparison.OrdinalIgnoreCase)
-                    ? "玩家"
-                    : (!string.IsNullOrWhiteSpace(entry.Speaker) ? entry.Speaker.Trim() : "对方");
+                    ? IllustratorText.Get("Conversation_68")
+                    : (!string.IsNullOrWhiteSpace(entry.Speaker) ? entry.Speaker.Trim() : IllustratorText.Get("Conversation_69"));
                 // Preserve the whole selected utterance: a late refusal/action can change the scene.
                 sb.AppendLine(speaker + "：" + CleanText(entry.Text));
             }
@@ -618,7 +618,7 @@ namespace AnimusForge.Illustrator.Context
 
         internal static string DescribeMountState(string name, bool hasAgent, bool mounted)
         {
-            return $"{name}：" + (!hasAgent ? "现场骑乘状态未确认" : mounted ? "现场处于骑乘状态" : "现场未骑乘");
+            return $"{name}：" + (!hasAgent ? IllustratorText.Get("Conversation_70") : mounted ? IllustratorText.Get("Conversation_71") : IllustratorText.Get("Conversation_72"));
         }
 
         private static string MapActionToPoseDirective(string actionName)
@@ -626,27 +626,27 @@ namespace AnimusForge.Illustrator.Context
             if (string.IsNullOrWhiteSpace(actionName)) return string.Empty;
             if (actionName.IndexOf("closed", StringComparison.OrdinalIgnoreCase) >= 0 || actionName.IndexOf("cross", StringComparison.OrdinalIgnoreCase) >= 0)
             {
-                return "【现场互动身姿】对方双臂交叠环抱于胸前，神态严谨审视，身姿沉静内敛";
+                return IllustratorText.Get("Conversation_73");
             }
             if (actionName.IndexOf("hip", StringComparison.OrdinalIgnoreCase) >= 0)
             {
-                return "【现场互动身姿】对方单手自然扶腰带，身形从容放松、自信笃定";
+                return IllustratorText.Get("Conversation_74");
             }
             if (actionName.IndexOf("aggressive", StringComparison.OrdinalIgnoreCase) >= 0)
             {
-                return "【现场互动身姿】对方身躯微倾前逼，姿态威严迫人、带有强烈气场";
+                return IllustratorText.Get("Conversation_75");
             }
             if (actionName.IndexOf("warrior", StringComparison.OrdinalIgnoreCase) >= 0)
             {
-                return "【现场互动身姿】机警戒备的防守立姿，身体重心微侧，处于随时应对突发的沉着备战状态";
+                return IllustratorText.Get("Conversation_76");
             }
             if (actionName.IndexOf("demure", StringComparison.OrdinalIgnoreCase) >= 0)
             {
-                return "【现场互动身姿】双手自然交叠于身前，体态谦逊端庄、从容知礼";
+                return IllustratorText.Get("Conversation_77");
             }
             if (actionName.IndexOf("weary", StringComparison.OrdinalIgnoreCase) >= 0)
             {
-                return "【现场互动身姿】身形略显风霜疲惫，体态松弛深沉";
+                return IllustratorText.Get("Conversation_78");
             }
             return string.Empty;
         }
@@ -656,27 +656,27 @@ namespace AnimusForge.Illustrator.Context
             if (string.IsNullOrWhiteSpace(idleName)) return string.Empty;
             if (idleName.IndexOf("closed", StringComparison.OrdinalIgnoreCase) >= 0 || idleName.IndexOf("cross", StringComparison.OrdinalIgnoreCase) >= 0)
             {
-                return "【现场互动身姿】对方双臂交叠环抱于胸前，神态严谨审视，身姿沉静内敛";
+                return IllustratorText.Get("Conversation_79");
             }
             if (idleName.IndexOf("hip", StringComparison.OrdinalIgnoreCase) >= 0)
             {
-                return "【现场互动身姿】对方单手自然扶腰带，身形从容放松、自信笃定";
+                return IllustratorText.Get("Conversation_80");
             }
             if (idleName.IndexOf("aggressive", StringComparison.OrdinalIgnoreCase) >= 0)
             {
-                return "【现场互动身姿】对方身躯微倾前逼，姿态威严迫人、带有强烈气场";
+                return IllustratorText.Get("Conversation_81");
             }
             if (idleName.IndexOf("warrior", StringComparison.OrdinalIgnoreCase) >= 0)
             {
-                return "【现场互动身姿】机警戒备的防守立姿，身体重心微侧，处于随时应对突发的沉着备战状态";
+                return IllustratorText.Get("Conversation_82");
             }
             if (idleName.IndexOf("demure", StringComparison.OrdinalIgnoreCase) >= 0)
             {
-                return "【现场互动身姿】双手自然交叠于身前，体态谦逊端庄、从容知礼";
+                return IllustratorText.Get("Conversation_83");
             }
             if (idleName.IndexOf("weary", StringComparison.OrdinalIgnoreCase) >= 0)
             {
-                return "【现场互动身姿】身形略显风霜疲惫，体态松弛深沉";
+                return IllustratorText.Get("Conversation_84");
             }
             return string.Empty;
         }

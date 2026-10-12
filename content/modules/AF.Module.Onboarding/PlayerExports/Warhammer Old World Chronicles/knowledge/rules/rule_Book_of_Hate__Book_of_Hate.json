@@ -1,0 +1,206 @@
+{
+  "Id": "rule_Book_of_Hate",
+  "Keywords": [
+    "book of hatred",
+    "Dawi Grudge",
+    "Dwarven Oath",
+    "revenge",
+    "never forget"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Great Book of Grudges—known in Khazalid as the \"Dammaz Kron\"—is the foundational document of Dwarf civilization. Within this massive iron-bound tome, too heavy for a mortal man to lift with ease, is recorded every slight, every broken oath, and every invasion suffered by the Dwarf race since ancient times. From unpaid ale-reckonings to entire holds sacked and despoiled, every offense is set down in full and preserved forever in Dwarf memory until the debt is paid in full. The maxim of the Dwarfs is: \"Never forget, never forgive.\""
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Book of Grudges is not a wrathful ledger of vengeance—it is the memory of justice. Men say \"forgiveness is a virtue\" because they are weak, their memories are short, and they fear the price of settling accounts. Yet we Dawi are different: if we do not remember who owes what, how can justice exist? Every Grudge entered is a promise to the world that the past will not simply pass away and that wrongs will be righted, even if righting them takes a thousand years. Greenskins smashed the east gate of Karak Eight Peaks? Strike it into the ledger. The Elves shaved the beard of our envoy? Strike it into the ledger—even if to this day that reckoning has not been settled in full. Yet we will settle it. That is credit and honor: having your name in the Book of Grudges means that before the Dawi can trust you, you have a debt waiting to be paid."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Book of Hatred is the core operating manual for dwarven politics and diplomacy. For outsiders, understanding the operating rules of the Book of Hatred is the key to avoiding catastrophic conflicts with dwarves: any action by a foreigner towards a dwarf - whether positive or negative - may create an \"entry\" in the dwarf's memory. This entry can be paid off - by payment of money, services rendered, or in some extreme cases by duels and wars. Unpaid entries are \"weighted\" over time - a century-old debt is worth far more than a fresh little offense. Therefore, the best strategy for dealing with dwarven diplomacy is to \"keep your books clean\" - never owe the dwarves anything, and if you owe anything, pay it back as soon as possible - with interest."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 100
+        },
+        "IdentityIds": null
+      },
+      "Content": "The system of the Book of Grudges (Dammaz Kron) is intricate and exacting, and its core principles can be summarized as follows: every Grudge entry (Grudge/Dammaz) comprises five elements—the aggrieved party (the entire Dwarf race, a specific karak, a specific clan, or a specific individual), the offender (a foreign race or individual), the substance of the offense (a description of the event), the evidence (typically cross-testimony from multiple Dwarf witnesses), and the reckoning valuation (from a weight of gold to a measure of blood, assessed by the council of elders). Entries are divided into four tiers of severity: Trivial (watered-down ale, short-weight dealings by human merchants)—settled by payment, replacement goods, or a formal apology; Ordinary (border encroachment, serious breach of contract)—settled through trade reparations, formal humiliation of the offender, or military action; Severe (the fall of a karak, a mass slaughter)—for which war is the only reckoning; and Undying (Karak Eight Peaks, the War of Vengeance)—deemed impossible to settle within the current age and inherited by every generation of Dwarfs until final reckoning is achieved. Crucially, the Book of Grudges records not only negative entries, but also \"positive debts\"—boons and favors: any outsider who aids the Dwarfs is likewise inscribed in the tome, and that positive entry can offset future slights or exert a lasting favorable influence through Dwarf compacts and alliances. That is the true foundation of the millennial alliance between the Empire of Man and the Dwarfs—the positive entry for Sigmar rescuing the High King continues to this day to offset minor Imperial transgressions in the eyes of the Dwarfs."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Dwarven women play a severely neglected role in the workings of the Book of Hatred. When a male dwarf is killed in battle, it is his wife or mother who records the new hatred - they provide the clan elders with a narrative of the entry. Many entries recorded as \"betrayals\" or \"insults\" in the Book of Hatred were actually first identified and reported by dwarven women - as they were more sensitive than men to the subtle unfairness of transactions and moments when social conventions were broken."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The function of the Book of Hatred in dwarf family politics goes far beyond recording hatred against foreign enemies. Each clan has its own local book of feuds, and the entries in these books effectively form an informal debt accounting system between clans—an unsettled feud is a receivable. The six-hundred-year-old legal dispute between my family and the Anvil family was finally resolved by canceling dozens of small hate entries - a dispute that might require hundreds of thousands of words of testimony in a human court but is compressed into two lines of runes in the dwarven system."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "If you work as a mercenary in the old world and have the opportunity to chat with a dwarf tavernkeeper for a night - he will tell you that the dwarves do not remember what they ate yesterday but remember that a certain Brokennose family owed his clan an iron nail two thousand years ago. The Tome of Hatred is not a tome that serves as a symbol - every clan in every Kharak has one, and the High King's Tome of Hatred is simply the final combined version of all the local Tomes of Hatred."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The hidden impact of the Book of Hatred on Old World commerce lies in the irreparable nature of dwarven trade - if you, as a human merchant, get into any dispute with a dwarf in a commercial transaction and are unable to prove your innocence before the Dwarven Council of Elders, a lone entry will be added to the Book of Hatred, and thereafter all of your commercial agents will be considered persona non grata in all dwarven strongholds. Many imperial merchants were unaware of this system when trading with the dwarves, and as a result were blacklisted by the entire dwarf empire without any knowledge."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Tome of Hatred - Warhammer Old World Core Concepts Entry",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "The Origin and Legend of the Book of Hatred"
+  ]
+}

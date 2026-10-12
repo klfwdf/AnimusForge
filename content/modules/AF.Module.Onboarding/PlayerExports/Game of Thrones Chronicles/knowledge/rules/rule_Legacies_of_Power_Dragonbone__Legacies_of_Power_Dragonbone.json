@@ -1,0 +1,147 @@
+{
+  "Id": "rule_Legacies_of_Power_Dragonbone",
+  "Keywords": [
+    "Dragonbone",
+    "Legacy",
+    "Symbols of Power"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Entry Dragon bones are light and hard and can be made into utensils, weapon handles and handicrafts, so they are highly valued in the market and the court. It comes from the remains of a dragon and has both practical value and the shadow of legend; for most people, touching a piece of dragon bone is enough to become a lifelong conversation"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "scholar",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Dragonbone"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Dragonbone"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Dragonbone"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Dragonbone Dragon bones are light and hard and can be made into utensils, weapon handles and handicrafts, so they are highly valued in the market and the court. It comes from the remains of a dragon and has both practical value and the shadow of legend; for most people, touching a piece of dragon bone is enough to become a lifelong conversation. A past war or a dynastic change will determine today's tax rates, covenants, roads and who has the right to speak first in the hall."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Dragonbone Dragon bones are light and hard and can be made into utensils, weapon handles and handicrafts, so they are highly valued in the market and the court. It comes from the remains of a dragon and has both practical value and the shadow of legend; for most people, touching a piece of dragon bone is enough to become a lifelong conversation. They remember which flag fell, which bridge was burned, and who shared the last sip of water in the snow; for them, history is first and foremost the memory left by the body."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Dragonbone Dragon bones are light and hard and can be made into utensils, weapon handles and handicrafts, so they are highly valued in the market and the court. It comes from the remains of a dragon and has both practical value and the shadow of legend; for most people, touching a piece of dragon bone is enough to become a lifelong conversation. The winner will write it as a proof of order, the loser will keep it as a warning, and ordinary people will only remember how much the price of food and cemeteries increased that year."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Dragonbone Dragon bones are light and hard and can be made into utensils, weapon handles and handicrafts, so they are highly valued in the market and the court. It comes from the remains of a dragon and has both practical value and the shadow of legend; for most people, touching a piece of dragon bone is enough to become a lifelong conversation. They learn about the past through old houses, family trees, tombstones, and taboos spoken by old men; as long as an event affects taxes, conscription, or marriage, it is not truly over."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Dragonbone: Dragon bones are light and hard and can be made into utensils, weapon handles and handicrafts, so they are highly valued in the market and the court. It comes from the remains of a dragon and has both practical value and the shadow of legend; for most people, touching a piece of dragon bone is enough to become a lifelong conversation."
+  ]
+}

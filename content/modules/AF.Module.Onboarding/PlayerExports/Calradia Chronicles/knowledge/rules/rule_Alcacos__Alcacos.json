@@ -1,0 +1,59 @@
+{
+  "Id": "rule_Alcacos",
+  "Keywords": [
+    "Alcacos",
+    "God King"
+  ],
+  "RagShortTexts": [
+    "Alcacos was the founder of the city of Wostrum and a mercenary from Kalad."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "steward": 60
+        }
+      },
+      "Content": "Alcakos, the founder of the city of Wostrum, was originally a Karad mercenary and served the imperial army as a mercenary commander during the expansion of the empire. He was brave and good at fighting, and made many military exploits during the empire's westward expansion. He was given land around Wostrum as a reward, and became one of the military lords with military power on the border of the empire. However, Alcachus ultimately chose to turn his back on the empire. Unlike other defecting commanders—most of whom were under the banner of restoring republican traditions and opposing imperial centralization—Arcacos embarked on a completely opposite path. He did not claim to reestablish the authority of the Senate, nor did he promote republican ideals. Instead, he established himself as the God-King in Wostrum, established himself as a ruler with both secular power and divine identity, and established a small dynasty with a cult of personality as its core. The rule of the god-kings at Alcacus lasted for several generations. His successors followed this title and ruling model, erecting deified statues in the city of Wostrum, shaping the founder Alcacos and the successive god-kings into idols for people to worship. This regime existed on the borders of the empire for many years and became a heretical regime in the western part of the empire that was difficult to eradicate for a long time. The empire finally freed up its hands and mobilized heavy troops to conquer Wostrum and overthrow the rule of the Alcacus family. Every statue of a god-king in the city - from Alcachus himself to his successive successors - was toppled and smashed by soldiers, and traces of the deified cult were systematically erased. Vostrum was reintegrated into the imperial province system, and the era of the God-King was characterized as tyranny and blasphemy. Still, the shadow left by Alcacos has not completely dissipated. To this day, senators from the northern part of the empire still use the history of Wostrum as a warning in senate debates to accuse certain prominent families in the region (southern part of the empire) of harboring secret monarchist tendencies. To them, \"Wostrum's legacy\" was a veiled accusation that someone might follow Alcachus and put individual rights ahead of republican tradition."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": [
+          "town_es2"
+        ],
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Alcakos, the founder of the city of Wostrum, was originally a mercenary from Karad and served the imperial army as a mercenary commander during the expansion of the empire. He was brave and good at fighting, and made many military exploits during the empire's westward expansion. He was given land around Wostrum as a reward, and became one of the military lords with military power on the border of the empire. However, Alcachus ultimately chose to turn his back on the empire. Unlike other defecting commanders—most of whom were under the banner of restoring republican traditions and opposing imperial centralization—Arcacos embarked on a completely opposite path. He did not claim to reestablish the authority of the Senate, nor did he promote republican ideals. Instead, he established himself as the God-King in Wostrum, established himself as a ruler with both secular power and divine identity, and established a small dynasty with a cult of personality as its core. The rule of the god-kings at Alcacus lasted for several generations. His successors followed this title and ruling model, erecting deified statues in the city of Wostrum, shaping the founder Alcacos and the successive god-kings into idols for people to worship. This regime existed on the borders of the empire for many years and became a heretical regime in the western part of the empire that was difficult to eradicate for a long time. The empire finally freed up its hands and mobilized heavy troops to conquer Wostrum and overthrow the rule of the Alcacus family. Every statue of a god-king in the city - from Alcachus himself to his successive successors - was toppled and smashed by soldiers, and traces of the deified cult were systematically erased. Vostrum was reintegrated into the imperial province system, and the era of the God-King was characterized as tyranny and blasphemy. Alcakos was one of the founders of the monarchy in the city-states of the Southern Empire. Today, Vostroom is ruled by A"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "A",
+      "Kind": "settlement_owner_leader_name",
+      "TargetId": "town_ES2",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

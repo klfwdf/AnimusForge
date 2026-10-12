@@ -266,7 +266,7 @@ internal static class ConfiguredChatApplicationAdapter
 			legacyResult.Success = generated?.Status == LlmResultStatus.Succeeded;
 			legacyResult.Content = CleanAIResponse(generated?.RawText ?? string.Empty);
 			legacyResult.ErrorMessage = generated?.ErrorCode == "cancelled"
-				? "叛乱命名请求超时（60 秒）。"
+				? LlmSourceTexts.Get("RebelNamingTimeoutError")
 				: (generated?.ErrorCode ?? string.Empty);
 			legacyResult.StatusCode = metadata.StatusCode;
 			legacyResult.IsRateLimit = metadata.IsRateLimit;
@@ -480,7 +480,7 @@ internal static class ConfiguredChatApplicationAdapter
 			{
 				apiCallResult.Success = false;
 				apiCallResult.ErrorMessage = LlmRetryPrompt.BuildFailureDetail(
-					"API 已响应，但没有解析出模型回复。",
+					LlmSourceTexts.Get("Legacy_2aa03e2ae8fd"),
 					apiCallResult.Content,
 					responseBody);
 			}
@@ -521,7 +521,7 @@ internal static class ConfiguredChatApplicationAdapter
 		}
 		catch (Exception exception)
 		{
-			apiLog("[ERROR] CallUniversalApi Gateway 异常: " + exception);
+			apiLog(LlmSourceTexts.Get("UniversalGatewayErrorLogPrefix") + exception);
 			apiCallResult.ErrorMessage = LlmRetryPrompt.BuildFailureDetail(
 				exception.Message,
 				apiCallResult.Content,
@@ -537,7 +537,7 @@ internal static class ConfiguredChatApplicationAdapter
 		{
 			return apiCallResult.Content ?? "";
 		}
-		return "错误: " + (apiCallResult.ErrorMessage ?? "未知错误");
+		return LlmSourceTexts.Get("ErrorPrefixShort") + (apiCallResult.ErrorMessage ?? LlmSourceTexts.Get("UnknownErrorFallback"));
 	}
 
 	internal static async Task<string> CallAuxiliaryApiTextForExternal(string sys, string user, string source, Func<bool> ownerAvailable)
@@ -546,7 +546,8 @@ internal static class ConfiguredChatApplicationAdapter
 		{
 			if (!ownerAvailable())
 			{
-				LlmRetryPrompt.ShowFailurePopup((source ?? "ExternalAuxiliary") + " 失败", LlmRetryPrompt.BuildFailureDetail("找不到 MyBehavior，无法调用辅助模型。", ""));
+				LlmRetryPrompt.ShowLocalizedFailurePopup("{=AF_UI_Retry_ExternalAuxiliaryFailed}{SOURCE} failed", LlmRetryPrompt.BuildFailureDetail(LlmSourceTexts.Get("AuxiliaryErrorHostUnavailable"), ""), source ?? "ExternalAuxiliary",
+					reasonTemplate: "{=AF_UI_Retry_AuxiliaryHostUnavailable}MyBehavior could not be found; the auxiliary model cannot be called.", modelReply: "");
 				return "";
 			}
 			ApiCallResult apiCallResult = await CallAuxiliaryGatewayDetailed(sys, user, source, 0, forceThinkingDisabled: true);
@@ -554,20 +555,23 @@ internal static class ConfiguredChatApplicationAdapter
 			{
 				return apiCallResult.Content ?? "";
 			}
-			LlmRetryPrompt.ShowFailurePopup((source ?? "ExternalAuxiliary") + " 失败", apiCallResult.ErrorMessage ?? LlmRetryPrompt.BuildFailureDetail("辅助模型调用失败。", apiCallResult.Content, apiCallResult.ResponseBody));
+			LlmRetryPrompt.ShowLocalizedFailurePopup("{=AF_UI_Retry_ExternalAuxiliaryFailed}{SOURCE} failed", apiCallResult.ErrorMessage ?? LlmRetryPrompt.BuildFailureDetail(LlmSourceTexts.Get("AuxiliaryErrorCallFailed"), apiCallResult.Content, apiCallResult.ResponseBody), source ?? "ExternalAuxiliary",
+				reasonTemplate: apiCallResult.ErrorMessage == null ? "{=AF_UI_Retry_AuxiliaryCallFailed}The auxiliary model call failed." : null,
+				modelReply: apiCallResult.ErrorMessage == null ? apiCallResult.Content ?? "" : null, rawResponse: apiCallResult.ErrorMessage == null ? apiCallResult.ResponseBody : null);
 			return "";
 		}
 		catch (Exception ex)
 		{
 			Logger.Log(source ?? "ExternalAuxiliary", "[ERROR] CallAuxiliaryApiTextForExternal: " + ex.Message);
-			LlmRetryPrompt.ShowFailurePopup((source ?? "ExternalAuxiliary") + " 失败", LlmRetryPrompt.BuildFailureDetail(ex.Message, ""));
+			LlmRetryPrompt.ShowLocalizedFailurePopup("{=AF_UI_Retry_ExternalAuxiliaryFailed}{SOURCE} failed", LlmRetryPrompt.BuildFailureDetail(ex.Message, ""), source ?? "ExternalAuxiliary",
+				reasonTemplate: "{=AF_UI_Retry_ProviderException}{CODE}", modelReply: "", reasonCode: ex.Message ?? "");
 			return "";
 		}
 	}
 
 	internal static bool IsQuotaLimitResponseBody(string responseBody)
 	{
-		return ContainsAnyIgnoreCase(responseBody, "quota", "balance", "insufficient", "credit", "billing", "额度", "余额", "欠费");
+		return ContainsAnyIgnoreCase(responseBody, "quota", "balance", "insufficient", "credit", "billing", LlmSourceTexts.Get("Legacy_32ce9f06589c"), LlmSourceTexts.Get("Legacy_dc569f3d8dfd"), LlmSourceTexts.Get("Legacy_252837b321b2"));
 	}
 
 	internal static bool IsRequestsPerMinuteLimitResponseBody(string responseBody)
@@ -577,18 +581,18 @@ internal static class ConfiguredChatApplicationAdapter
 		{
 			return false;
 		}
-		if (ContainsAnyIgnoreCase(text, "rpm", "requests per minute", "request per minute", "requests/min", "request/min", "requests per min", "request per min", "req/min", "req per min", "每分钟请求", "每分钟最多请求"))
+		if (ContainsAnyIgnoreCase(text, "rpm", "requests per minute", "request per minute", "requests/min", "request/min", "requests per min", "request per min", "req/min", "req per min", LlmSourceTexts.Get("Legacy_dd31f827f431"), LlmSourceTexts.Get("Legacy_9c17551161d0")))
 		{
 			return true;
 		}
-		bool flag = ContainsAnyIgnoreCase(text, "request", "requests", "请求", "req");
-		bool flag2 = ContainsAnyIgnoreCase(text, "minute", "min", "/min", "per min", "per-minute", "每分钟");
+		bool flag = ContainsAnyIgnoreCase(text, "request", "requests", LlmSourceTexts.Get("Legacy_393e1241552b"), "req");
+		bool flag2 = ContainsAnyIgnoreCase(text, "minute", "min", "/min", "per min", "per-minute", LlmSourceTexts.Get("Legacy_52a0cbef7917"));
 		return flag && flag2;
 	}
 
 	internal static bool IsGenericRateLimitResponseBody(string responseBody)
 	{
-		return ContainsAnyIgnoreCase(responseBody, "rate limit", "too many requests", "ratelimit", "限流", "请求过于频繁", "请求频率过高", "速率限制");
+		return ContainsAnyIgnoreCase(responseBody, "rate limit", "too many requests", "ratelimit", LlmSourceTexts.Get("Legacy_d4e54d7e01e7"), LlmSourceTexts.Get("Legacy_9be2505cb51c"), LlmSourceTexts.Get("Legacy_785aa9f7fe11"), LlmSourceTexts.Get("Legacy_a59ce525bdb7"));
 	}
 
 	internal static int? TryGetRetryAfterSeconds(HttpResponseMessage response)
@@ -661,24 +665,24 @@ internal static class ConfiguredChatApplicationAdapter
 		StringBuilder stringBuilder = new StringBuilder();
 		if (isRequestsPerMinuteLimit)
 		{
-			stringBuilder.Append("请求疑似触发了 RPM（每分钟请求数）限流");
+			stringBuilder.Append(LlmSourceTexts.Get("ErrorMessageRpmLimit"));
 		}
 		else if (isQuotaLimit)
 		{
-			stringBuilder.Append("账号额度或余额不足，导致请求被拒绝");
+			stringBuilder.Append(LlmSourceTexts.Get("ErrorMessageQuotaExhausted"));
 		}
 		else if (isRateLimit)
 		{
-			stringBuilder.Append("请求触发了速率限制");
+			stringBuilder.Append(LlmSourceTexts.Get("ErrorMessageRateLimited"));
 		}
 		else
 		{
-			stringBuilder.Append("接口请求失败");
+			stringBuilder.Append(LlmSourceTexts.Get("ErrorMessageRequestFailed"));
 		}
 		stringBuilder.Append("（HTTP ").Append(text).Append("）");
 		if (retryAfterSeconds.HasValue)
 		{
-			stringBuilder.Append("，建议等待 ").Append(retryAfterSeconds.Value).Append(" 秒后再试");
+			stringBuilder.Append(LlmSourceTexts.Get("ErrorMessageRetryAfterPrefix")).Append(retryAfterSeconds.Value).Append(LlmSourceTexts.Get("ErrorMessageRetryAfterSuffix"));
 		}
 		return LlmRetryPrompt.BuildFailureDetail(stringBuilder.ToString(), "", text2);
 	}

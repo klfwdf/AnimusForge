@@ -1,0 +1,153 @@
+{
+  "Id": "rule_World_Mechanics_The_Others_and_Wights",
+  "Keywords": [
+    "Wights",
+    "Great Other"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Others are inhuman beings from the freezing darkness of the far north, roughly human in shape yet accompanied by ice, silence, and an eerie pale light, wielding blades that shatter common steel. Dragonglass and Valyrian steel can slay the Others. Wights, by contrast, are corpses reanimated by some power, retaining their rotting shells while no longer being the men they were in life; severing limbs may not stop them, and fire is the surer means of destruction. The Others can turn the slain of the battlefield into fresh threats, so that every casualty may swell the enemy's ranks. Southerners often lump the two together as nursery tales; those who truly face them learn first to tell whether obsidian or fire is called for."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nightswatch",
+          "freefolk"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer",
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Folk near the Wall no longer argue over whether such things fit the legends neatly. They check whether corpses are burned to ash and whether dragonglass is close at hand, because a single oversight may let a fallen comrade rise again."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "peasant",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Northmen respect tales of the Long Night more than southerners do, yet even among them some refuse to believe until they see with their own eyes. To believe means admitting that castle walls, titles, and old wars may suddenly cease to matter."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "scholar",
+          "priest",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Scholars check corpses, wounds, and ancient scrolls, while priests explain the darkness through their own faiths. The most useful argument is not whose god bears the truer name, but what truly stops the dead from moving again."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Lords and merchants see the Others as an enforceable order. The Others and Wights: The Others are inhuman beings that command the cold, while wights are dead men driven by their power; their weaknesses and threats are not the same. Whether it is valid depends on who can grant the rights, collect the consideration, and actually make the judgment come to fruition in the event of default."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "When soldiers and travelers speak of the Others, they care about how they affect roads, orders, and safety. The Others and Wights: The Others are inhuman beings that command the cold, while wights are dead men driven by their power; their weaknesses and threats are not the same. The distant system is not empty talk only if it can be implemented in campfires, city gates and inns."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Craftsmen and clergy understand the Others through custom and symbol. The Others and Wights: The Others are inhuman beings that command the cold, while wights are dead men driven by their power; their weaknesses and threats are not the same. If a rule is practiced over and over again, it will find its way into rituals, crafts, and prayers; if it is sustained only by fear, cracks will show at the onset of a crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Farmers and villagers feel the Others in the smallest and most accurate ways. The Others and Wights: The Others are inhuman beings that command the cold, while wights are dead men driven by their power; their weaknesses and threats are not the same. They remember taxes, grain, labor, relief and who can speak for them; these grand names will eventually fall on the family's rice pot."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "The Others and Wights: The Others are inhuman beings that command the cold, while wights are dead men driven by their power; their weaknesses and threats are not the same."
+  ]
+}

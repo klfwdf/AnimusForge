@@ -6,6 +6,7 @@ using TaleWorlds.InputSystem;
 using TaleWorlds.Library;
 using AnimusForge.Illustrator.Core;
 using AnimusForge.Illustrator.Engine;
+using AnimusForge.Illustrator.UI;
 
 namespace AnimusForge.Illustrator.UI.Gallery
 {
@@ -13,6 +14,7 @@ namespace AnimusForge.Illustrator.UI.Gallery
     {
         private readonly CachedIllustrationItem _item;
         private readonly Action<IllustrationItemVM> _onSelect;
+        private readonly string _displayTitle;
         private bool _isSelected;
 
         public CachedIllustrationItem Item => _item;
@@ -21,11 +23,12 @@ namespace AnimusForge.Illustrator.UI.Gallery
         {
             _item = item;
             _onSelect = onSelect;
+            _displayTitle = string.IsNullOrWhiteSpace(item?.Title) ? IllustratorUiText.GalleryTitle : IllustratorUiText.ProjectKnownDefaultTitle(item.Title, item.Category);
             // 纹理材质采用延迟按需加载 (Lazy Loading)：仅在用户选中具体条目时才读取文件并注册纹理，避免打开画廊瞬间阻塞主线程与显存膨胀
         }
 
         [DataSourceProperty]
-        public string Title => (string.IsNullOrWhiteSpace(_item.Title) ? "卡拉迪亚纪事画卷" : _item.Title) + (_item.IsDefault ? "【默认】" : string.Empty) + (_item.IsFavorite ? "【收藏】" : string.Empty);
+        public string Title => IllustratorUiText.GalleryItemTitle(_displayTitle, _item.IsDefault, _item.IsFavorite);
 
         [DataSourceProperty]
         public string DateText => _item.CreatedTime.ToLocalTime().ToString("yyyy/MM/dd HH:mm");
@@ -66,7 +69,7 @@ namespace AnimusForge.Illustrator.UI.Gallery
         private string _selectedTitle = string.Empty;
         private string _selectedDate = string.Empty;
         private string _selectedTheme = string.Empty;
-        private string _statusText = "欢迎查阅卡拉迪亚纪事画廊";
+        private string _statusText = IllustratorUiText.GalleryWelcome;
         private string _loadedPreviewSpriteName;
         private int _previewCounter;
         private readonly GalleryPreviewLoader _previewLoader;
@@ -75,6 +78,15 @@ namespace AnimusForge.Illustrator.UI.Gallery
         private readonly Func<bool> _isCurrent;
         private bool _rpConversionOpen;
         private bool _redrawing, _settingDefault;
+        private readonly string _galleryTitleText;
+        private readonly string _allText;
+        private readonly string _favoritesText;
+        private readonly string _redrawBasedOnImageText;
+        private readonly string _convertToRpItemText;
+        private readonly string _setDefaultText;
+        private readonly string _deleteText;
+        private readonly string _openFolderText;
+        private readonly string _closeText;
         internal Action<CachedIllustrationItem> RedrawSelected;
         private string _pendingSelectionKey;
         internal CachedIllustrationItem SelectedImage => _selectedItem?.Item;
@@ -98,10 +110,29 @@ namespace AnimusForge.Illustrator.UI.Gallery
             _onClose = onClose;
             _campaignKey = campaignKey;
             _isCurrent = isCurrent;
+            _galleryTitleText = IllustratorUiText.GalleryTitle;
+            _allText = IllustratorUiText.All;
+            _favoritesText = IllustratorUiText.Favorites;
+            _redrawBasedOnImageText = IllustratorUiText.RedrawBasedOnImage;
+            _convertToRpItemText = IllustratorUiText.ConvertToRpItem;
+            _setDefaultText = IllustratorUiText.SetDefault;
+            _deleteText = IllustratorUiText.Delete;
+            _openFolderText = IllustratorUiText.OpenFolder;
+            _closeText = IllustratorUiText.Close;
             _previewLoader = new GalleryPreviewLoader(() => !_disposed && isCurrent(),
                 IllustratorRuntime.PostCritical, GauntletTextureLoader.ReadPreparedImageForUi);
             RefreshItems(false);
         }
+
+        [DataSourceProperty] public string GalleryTitleText => _galleryTitleText;
+        [DataSourceProperty] public string AllText => _allText;
+        [DataSourceProperty] public string FavoritesText => _favoritesText;
+        [DataSourceProperty] public string RedrawBasedOnImageText => _redrawBasedOnImageText;
+        [DataSourceProperty] public string ConvertToRpItemText => _convertToRpItemText;
+        [DataSourceProperty] public string SetDefaultText => _setDefaultText;
+        [DataSourceProperty] public string DeleteText => _deleteText;
+        [DataSourceProperty] public string OpenFolderText => _openFolderText;
+        [DataSourceProperty] public string CloseText => _closeText;
 
         [DataSourceProperty]
         public MBBindingList<IllustrationItemVM> Items
@@ -174,7 +205,7 @@ namespace AnimusForge.Illustrator.UI.Gallery
         public bool IsAllTab => !_showFavorites;
 
         [DataSourceProperty]
-        public string FavoriteButtonText => _selectedItem?.Item?.IsFavorite == true ? "取消收藏" : "收藏";
+        public string FavoriteButtonText => _selectedItem?.Item?.IsFavorite == true ? IllustratorUiText.GalleryUnfavorite : IllustratorUiText.GalleryFavorite;
 
         [DataSourceProperty]
         public string SelectedDate
@@ -234,7 +265,7 @@ namespace AnimusForge.Illustrator.UI.Gallery
             _selectedItem = null;
             Items.Clear();
             HasSelection = false;
-            StatusText = "正在读取画廊目录…";
+            StatusText = IllustratorUiText.GalleryReading;
 
             if (!IllustratorRuntime.Start(
                 () => Task.Run(() => DiskImageCacheManager.GetAllCachedIllustrations(_campaignKey, forceRefresh)),
@@ -243,7 +274,7 @@ namespace AnimusForge.Illustrator.UI.Gallery
                     if (_disposed || version != _refreshVersion) return;
                     if (error != null)
                     {
-                        StatusText = "画廊操作失败：" + error.Message;
+                        StatusText = IllustratorUiText.GalleryError(error.Message);
                         return;
                     }
                     try { ApplyCachedItems(cached, _pendingSelectionKey ?? keepKey); _pendingSelectionKey = null; }
@@ -251,11 +282,11 @@ namespace AnimusForge.Illustrator.UI.Gallery
                     {
                         HasSelection = false;
                         SelectedSpriteName = string.Empty;
-                        StatusText = "画廊操作失败：" + ex.Message;
+                        StatusText = IllustratorUiText.GalleryError(ex.Message);
                     }
                 }))
             {
-                StatusText = "画廊后台读取忙碌，请稍后刷新。";
+                StatusText = IllustratorUiText.GalleryBusy;
             }
         }
 
@@ -280,7 +311,7 @@ namespace AnimusForge.Illustrator.UI.Gallery
 
             if (Items.Count > 0)
             {
-                StatusText = _showFavorites ? $"共收藏 {Items.Count} 幅画卷" : $"共收录 {Items.Count} 幅历史画卷";
+                StatusText = _showFavorites ? IllustratorUiText.GalleryCountFavorites(Items.Count) : IllustratorUiText.GalleryCountAll(Items.Count);
                 IllustrationItemVM target = Items[0];
                 if (!string.IsNullOrEmpty(keepKey))
                     foreach (var item in Items)
@@ -291,7 +322,7 @@ namespace AnimusForge.Illustrator.UI.Gallery
             {
                 HasSelection = false;
                 OnPropertyChanged(nameof(FavoriteButtonText));
-                StatusText = _showFavorites ? "暂无收藏画卷，可在“全部”中选中画卷后点击“收藏”" : "暂无收录画卷，将在周报生成时自动为您绘制";
+                StatusText = _showFavorites ? IllustratorUiText.GalleryEmptyFavorites : IllustratorUiText.GalleryEmptyAll;
             }
         }
 
@@ -307,7 +338,7 @@ namespace AnimusForge.Illustrator.UI.Gallery
             OnPropertyChanged(nameof(IsFavoritesTab));
             OnPropertyChanged(nameof(IsAllTab));
             try { RebuildVisibleItems(_selectedItem?.Item?.Key); }
-            catch (Exception ex) { HasSelection = false; StatusText = "画廊操作失败：" + ex.Message; }
+            catch (Exception ex) { HasSelection = false; StatusText = IllustratorUiText.GalleryError(ex.Message); }
         }
 
         public void ExecuteToggleFavorite()
@@ -318,7 +349,7 @@ namespace AnimusForge.Illustrator.UI.Gallery
             bool favorite = !item.IsFavorite;
             if (!DiskImageCacheManager.SetFavorite(item, _campaignKey, favorite))
             {
-                StatusText = favorite ? "收藏失败" : "取消收藏失败";
+                StatusText = favorite ? IllustratorUiText.GalleryFavoriteFailed : IllustratorUiText.GalleryUnfavoriteFailed;
                 return;
             }
             // Patch the in-memory snapshot rather than re-scanning the cache directory.
@@ -330,19 +361,19 @@ namespace AnimusForge.Illustrator.UI.Gallery
             if (_showFavorites && !favorite)
             {
                 RebuildVisibleItems(null);
-                StatusText = "已取消收藏：" + title;
+                StatusText = IllustratorUiText.GalleryFavoriteStatus(false, title);
                 return;
             }
             _selectedItem.RefreshTitle();
             SelectedTitle = _selectedItem.Title;
             OnPropertyChanged(nameof(FavoriteButtonText));
-            StatusText = (favorite ? "已收藏：" : "已取消收藏：") + title;
+            StatusText = IllustratorUiText.GalleryFavoriteStatus(favorite, title);
         }
 
         private void HandleItemSelect(IllustrationItemVM selected)
         {
             try { HandleItemSelectCore(selected); }
-            catch (Exception ex) { HasSelection = false; SelectedSpriteName = string.Empty; StatusText = "画廊操作失败：" + ex.Message; }
+            catch (Exception ex) { HasSelection = false; SelectedSpriteName = string.Empty; StatusText = IllustratorUiText.GalleryError(ex.Message); }
         }
 
         private void HandleItemSelectCore(IllustrationItemVM selected)
@@ -366,24 +397,24 @@ namespace AnimusForge.Illustrator.UI.Gallery
                 string spriteName = "Gallery_" + selected.Item.Key + "_" + (++_previewCounter);
                 SelectedTitle = selected.Title;
                 SelectedDate = selected.DateText;
-                SelectedTheme = selected.Item.DisplayStatusText;
-                StatusText = "正在载入画卷…";
+                SelectedTheme = IllustrationStatusUiText.Cached(selected.Item);
+                StatusText = IllustratorUiText.GalleryLoading;
                 _previewLoader.Select(selected.Item.FilePath, prepared =>
                 {
                     var sprite = GauntletTextureLoader.LoadOrRegisterPreparedImage(spriteName, prepared);
                     if (sprite == null)
                     {
                         HasSelection = false;
-                        StatusText = "图片纹理加载失败，请刷新画廊。";
+                        StatusText = IllustratorUiText.GalleryTextureFailed;
                         return;
                     }
                     _loadedPreviewSpriteName = spriteName;
                     SelectedSpriteName = spriteName;
-                    StatusText = selected.Item.DisplayStatusText;
+                    StatusText = IllustrationStatusUiText.Cached(selected.Item);
                 }, error =>
                 {
                     HasSelection = false;
-                    StatusText = "画卷载入失败：" + error;
+                    StatusText = IllustratorUiText.GalleryLoadError(error);
                 });
             }
             else
@@ -421,8 +452,8 @@ namespace AnimusForge.Illustrator.UI.Gallery
             _rpConversionOpen = true;
             OnPropertyChanged(nameof(CanConvertToRpItem));
                     OnPropertyChanged(nameof(CanRedrawBasedOnImage));
-            bool opened = CourierLetterInputPopup.Show("转为 RP 物品", GalleryRpItemConverter.ItemName(image),
-                "确认画卷介绍后加入背包。向 NPC 展示时会读取这段介绍；可在此修正画面内容。",
+            bool opened = CourierLetterInputPopup.Show(IllustratorUiText.GalleryConvertTitle, GalleryRpItemConverter.DisplayItemName(image),
+                IllustratorUiText.GalleryConvertHint,
                 GalleryRpItemConverter.BuildIntroduction(image), description =>
                 {
                     _rpConversionOpen = false;
@@ -435,27 +466,27 @@ namespace AnimusForge.Illustrator.UI.Gallery
                         GalleryRpItemConverter.TryConvert(image, _campaignKey, description, out string result);
                         StatusText = result;
                     }
-                    catch (Exception ex) { StatusText = "转换未完成，请检查背包后再试：" + ex.Message; }
+                    catch (Exception ex) { StatusText = IllustratorUiText.GalleryError(ex.Message); }
                 }, () =>
                 {
                     _rpConversionOpen = false;
                     OnPropertyChanged(nameof(CanConvertToRpItem));
                     OnPropertyChanged(nameof(CanRedrawBasedOnImage));
-                    if (!_disposed) StatusText = "已取消转换，未添加物品。";
+                    if (!_disposed) StatusText = IllustratorUiText.GalleryConvertCancelled;
                 });
             if (!opened)
             {
                 _rpConversionOpen = false;
                 OnPropertyChanged(nameof(CanConvertToRpItem));
                     OnPropertyChanged(nameof(CanRedrawBasedOnImage));
-                StatusText = "无法打开画卷介绍编辑框。";
+                StatusText = IllustratorUiText.GalleryConvertUnavailable;
             }
         }
 
         public void ExecuteSetDefault()
         {
             try { ExecuteSetDefaultCore(); }
-            catch (Exception ex) { HasSelection = false; SelectedSpriteName = string.Empty; StatusText = "画廊操作失败：" + ex.Message; }
+            catch (Exception ex) { HasSelection = false; SelectedSpriteName = string.Empty; StatusText = IllustratorUiText.GalleryError(ex.Message); }
         }
 
         private void ExecuteSetDefaultCore()
@@ -463,7 +494,7 @@ namespace AnimusForge.Illustrator.UI.Gallery
             if (_disposed || !_isCurrent() || _settingDefault || _selectedItem?.Item == null) return;
             var selected = _selectedItem.Item.CopyMetadata();
             _settingDefault = true;
-            StatusText = "正在重新读取本地图并设置默认…";
+            StatusText = IllustratorUiText.GallerySetDefaultLoading;
             if (!IllustratorRuntime.Start(() => Task.Run(() => {
                 // Re-read the selected file even when its path/key is unchanged after an external replacement.
                 selected.ImageData = ImagePayload.ReadFile(selected.FilePath);
@@ -471,16 +502,16 @@ namespace AnimusForge.Illustrator.UI.Gallery
             }), (loaded, error) => {
                 _settingDefault = false;
                 if (_disposed || !_isCurrent()) return;
-                if (error != null) { StatusText = "读取本地图失败，默认图未变更：" + error.Message; return; }
+                if (error != null) { StatusText = IllustratorUiText.GalleryError(error.Message); return; }
                 try
                 {
-                    if (!DiskImageCacheManager.SetDefault(loaded, _campaignKey)) { StatusText = "设为默认失败，请保留图片原名及同名 JSON。"; return; }
+                    if (!DiskImageCacheManager.SetDefault(loaded, _campaignKey)) { StatusText = IllustratorUiText.GallerySetDefaultFailed; return; }
                     IllustratorRuntime.PublishDefaultImageChanged(loaded);
                     _pendingSelectionKey = loaded.Key;
                     RefreshItems();
                 }
-                catch (Exception ex) { StatusText = "设为默认失败：" + ex.Message; }
-            })) { _settingDefault = false; StatusText = "图片读取忙碌，请稍后重试。"; }
+                catch (Exception ex) { StatusText = IllustratorUiText.GalleryError(ex.Message); }
+            })) { _settingDefault = false; StatusText = IllustratorUiText.GalleryBusy; }
         }
 
         public void ExecuteDelete()
@@ -489,12 +520,12 @@ namespace AnimusForge.Illustrator.UI.Gallery
             string title = _selectedItem.Title;
             if (DiskImageCacheManager.DeleteItem(_selectedItem.Item, _campaignKey))
             {
-                StatusText = $"已删除：{title}（文件已移入回收区）";
+                StatusText = IllustratorUiText.GalleryDeleted(title);
                 RefreshItems();
             }
             else
             {
-                StatusText = "删除失败";
+                StatusText = IllustratorUiText.GalleryDeleteFailed;
             }
         }
 
@@ -523,7 +554,7 @@ namespace AnimusForge.Illustrator.UI.Gallery
             }
             catch (Exception ex)
             {
-                StatusText = "打开目录失败: " + ex.Message;
+                StatusText = IllustratorUiText.GalleryFolderFailed(ex.Message);
             }
         }
 

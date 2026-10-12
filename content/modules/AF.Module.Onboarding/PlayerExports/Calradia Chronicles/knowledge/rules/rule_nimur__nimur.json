@@ -1,0 +1,50 @@
+{
+  "Id": "rule_nimur",
+  "Keywords": [
+    "Nimr"
+  ],
+  "RagShortTexts": [
+    "Nimr was executed for seducing a girl from Girard",
+    "The Nimr incident led to the feud between the Sarangiled family"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Nimr of the Aserai was a young warrior of the Sallan tribe who led the Aserai army in reserve at the Battle of Pandrak. After the Battle of Pandrak, he returned to his hometown and was praised as a hero by his tribe. However, because there were not a few young people from the Gilard family on the death list, he incurred the resentment of the Gilard family. What's even more terrible is that he was eventually executed by the tribe for seducing a young girl from the Gilad tribe. Although the Gilad tribe and the Saran tribe have their own arguments, no one can deny that the two families eventually formed an irresolvable hatred."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Nimr of Aserai is a warrior of the Salan tribe, who fought bravely in the Battle of Pandrak and is a hero of Aserai. However, he fell in love with a girl from the Girard family, which caused dissatisfaction with the Girard family, and he was actually executed by the family. Since then, the two families have developed an indissoluble feud."
+    }
+  ],
+  "TextMappings": []
+}

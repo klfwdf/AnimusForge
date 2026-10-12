@@ -1,0 +1,160 @@
+{
+  "Id": "rule_auter",
+  "Keywords": [
+    "Otel"
+  ],
+  "RagShortTexts": [
+    "The Autor family is a prominent family in the Beinland area, and the patriarch Asgatha"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Otel family is one of the most prominent families in the Beinland region of the Kingdom of Nord. The current patriarch is Asgatha. The history of this family is full of Nord-like twists - they once led the Beinland colonists to resist King Volbjorn in the Unification War. After the defeat, they did not choose to be exterminated, but exchanged a marriage for survival. They betrothed the chief's daughter Asgatha to the king's brother Sunil. This marriage, which began as a political compromise, eventually became one of the most successful marriages in Nordic history: Asgatha was a shieldmaiden who fought side by side with Sunil, and the couple fought together on the battlefield until Sunil was killed in a conflict with the Sturgians. Instead of reclaiming the territory, the new king Haldarr appointed Asgatha as Yael of Bernland, allowing her to continue to rule over this remote island in the north. Now the Otells have a firm foothold in Beinland, but they have always felt humiliated by the rule of House Schulf, the royal family."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "clan_nord_3"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "We are House Alter, the true masters of Beinland. When King Volbjorn went south to unify Nord, we were the fiercest resisters - we Bainland people never obey anyone. But we lost. Our ancestors betrothed the leader's daughter to the king's younger brother, Sunil, not because we were afraid of death, but because we did not want to see our people exterminated. The marriage was humiliating at first - a defeated family gave its daughter to the victor's brother as a wife. But Asgatha was not the kind of woman to be given away as a gift. She was the Shieldmaiden, and her ax wielded side by side with Sunil's sword for so many years, until Sunil died by the sword of the Sturgia. King Haldarr recognized our Oter family's rights to the land by appointing her Jarl of Bernland. But the way the Xuerf family looks at us has never changed - in their eyes, we will always be the family that was defeated by the old king."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "clan_nord_4"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Those Beinlanders of the Otel family have never really obeyed us. When the old king defeated them, they bowed their heads and gave their daughters in marriage. Asgatha was indeed a good woman—when Sunil was with her, the two of them fought many good battles in the north with their axes and swords. But deep down, the Otel family still felt that they were the masters of Beinland, not the king's subjects. Haldarr wanted Asgatha to be Yael in order to appease Beinland, but some people took appeasement for granted."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nord"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Otter family is in Beinland, the most remote place in the north, where the winter is so long that a person’s beard can freeze into ice strips. They were old Volbjorn's strongest back then - how long did the Bainland colonists follow the Otel family to resist reunification? It was not suppressed until Volbjorn personally led his troops northward. Later, the Otel family bowed their heads by marrying their daughter Asgatha to Sunil. But Asgatha is no ordinary woman - she fought side by side with Sunil, a shield maiden and a prince, and made a name for herself on the North Sea. After Sunil's death, Haldarr did not take back Beinland and let Asgatha become Yael. Now the Otter family is in charge of the port of Walvik, which used to be a few shabby shacks of whalers and is now the most prosperous town in Beinland. They didn't talk much in the royal court of the Xuerf family, but everyone knew that the people of the Otel family had the final say on Beinland matters."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nord"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Asgartha Yar is the pride of our Bainland. She was a shieldmaiden when she was young - a real shieldmaiden, not the one she sings about in songs. She went to the battlefield with Sunil, and the two stood side by side in the first row of the shield wall. It is said that once her shield was broken, she picked up the enemy's shield and continued to hit it. After hitting it, the shield also broke. She was present the day Sunil died, an encounter with the Sturgians, in which Sunil was struck by a spear, and she dragged his body back from the battlefield. Later, King Haldarr asked her to be a yair, and no one dared to say no. She is now the head of the Otel family, Jarl of Beinland, and those of us who make a living in Waalvik Port recognize her."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Otters have a quarrel with us Sturgians. Sunil—the younger brother of the Nord King Haldarr and the son-in-law of the Oter family—was killed in a skirmish with us. The battle was not a big one, but when a prince died, things became big. Asgatha was on the battlefield and saw her husband fall at the hands of our men. I heard that every time she talked about the Sturgia people later, her tone was as cold as the ice water of the North Sea. Now she is Jarl of Beinland, in charge of the port of Walvik, not far from our northern border. Sooner or later we will have to fight with the Nords, and when the time comes, the Autor family won't be standing behind."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Otel family is an anomaly among the Nords in the north. They surrendered to the royal family after being defeated, and the peace was obtained through marriage, but the result of the marriage was better than conquest - Asgatha was not a simple woman, she was born as a shield maiden, and after her husband died, she became Yael and took charge of a large piece of the northern island of Beinland. We Vlandians don't have much dealings with the Nords, but word from the North Sea is that the Otters speak louder than the king in Beinland. In a loose kingdom like Nord, a powerful local like this would sooner or later have to have friction with the royal family again."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "steward": 150
+        }
+      },
+      "Content": "The Autor family is a typical case of \"defeat integration\" in the power structure of the Nord Kingdom. In King Volbjorn's war to unify Nord, the Beinland colonists led by House Oter were the strongest resistance force in the north. After the defeat, the Oter family chose to complete political integration through marriage rather than exile - betrothing Asgatha, the leader's daughter, to Sunil, the king's brother. From a political point of view, this marriage was a typical compromise of the defeated party, but its subsequent development exceeded the expectations of both parties: Asgatha fought side by side with Sunil as a shield maiden. The military partnership between the couple was extremely rare in the history of Nord, and it also won the Otel family a political status beyond the marriage tool. After Sunil died in battle, King Haldarr did not take back Beinland, but appointed Asgatha as Yael. This was both a recognition of her personal military prestige and a royal strategy to appease the local forces in Beinland. At present, the Oter family has substantial local governance rights in Beinland, and the port of Waalvik has developed into the most prosperous trading stronghold in the region. However, there has always been potential tension in the relationship between the Otel family and the royal Schulf family - the historical memory of defeat and the demand for local autonomy have allowed the Otel family to always maintain a subtle independence in the power structure of the Kingdom of Nord."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Asgatha",
+      "Kind": "clan_leader_name",
+      "TargetId": "clan_nord_3",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

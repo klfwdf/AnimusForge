@@ -1,0 +1,152 @@
+{
+  "Id": "rule_Islands_of_Salt_and_Iron_Orkmont",
+  "Keywords": [
+    "Orkmont",
+    "House Orkwood of Orkmont"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Oak Island is a small island in the Iron Islands, associated with the Oakwood family and the forest resources on the island. The rare oak of the Iron Islands is more practical than many precious metals: it can be used as keels, oars, decks, rafters, and harbor repair materials. Islanders know that a forest cannot sustain an endless fleet forever, so felling, building ships, fishing, and guarding water all require meticulous local rules. Oak Island provides docking and supply on the route between the larger islands, and is also easily involved in the exchanges of larger maritime powers."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Orkmont Local families also relied on salt fish, ore, barren fields, sheltered anchorages, and longships to return home; if any road, well, or dock failed, the price would fall first on them."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Orkmont Entry Orkmont"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Orkmont They will also recognize the accents, laws and credentials of the Iron Islands; reputations may travel great distances from taverns, but true distances must still be measured by wheel, oar or horse's hoof."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Orkmont Entry Orkmont"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Orkmont If you can supply supplies, avoid danger, and find a guide, it is worth marking in your itinerary; if you don't have these three things, no matter how loud your family name is, it won't be able to save the lost."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Oak Island is not just the main hall; ship repair wood, canvas, salt, fish catch and stones to resist the sea wind also shape this place along with the Drowned God, the Sea Stone Seat and the songs left by the island's ancestors. A stronghold was therefore not just a lord's hall, but also a place where weddings and funerals, vows, labor and local memories recurred."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Orkmont They care about salt fish, ore, barren fields, sheltered anchorages, and the return of longships. They also look at whether seeds are left after collecting grain and whether the city gates are open in times of disaster. When people from afar see coats of arms, what they see is whether there will be food to eat tomorrow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Orkmont: Oak Island is a small island in the Iron Islands, associated with the Oakwood family and the forest resources on the island. The rare oak of the Iron Islands is more practical than many precious metals: it can be used as keels, oars, decks, rafters, and harbor repair materials. Islanders know that a forest cannot sustain an endless fleet forever, so felling, building ships, fishing, and guarding water all require meticulous local rules. Oak Island provides docking and supply on the route between the larger islands, and is also easily involved in the exchanges of larger maritime powers."
+  ]
+}

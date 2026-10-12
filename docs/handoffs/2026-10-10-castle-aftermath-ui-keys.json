@@ -1,0 +1,28 @@
+{
+  "englishFallbackSource": "src/AF.GameAdapter.Bannerlord/Composition/SiegeAftermath/CastleAftermathUiText.cs",
+  "chinese": {
+    "AF_CASTLE_UI_LORD": "该被俘领主",
+    "AF_CASTLE_UI_LETTER_DELIVERED": "【城堡处置来信】{SENDER} 的引见信已在 {RECIPIENT} 处送达；没有生成信使部队。",
+    "AF_CASTLE_UI_NO_UNASSIGNED": "【城堡处置】当前没有未分配的普通战俘；若要推翻旧安排，请明确说反悔、全部重来或推翻之前安排。",
+    "AF_CASTLE_UI_SLAUGHTER_STARTED": "【城堡处置】编队1已开始实际攻击指定的 {COUNT} 名战俘；只有现场死亡者才会从名册扣除。",
+    "AF_CASTLE_UI_STAGED": "【城堡处置】已暂定“{ACTION}” {COUNT} 人；未分配 {UNASSIGNED} 人。离场时才执行。",
+    "AF_CASTLE_UI_DEFERRED_FAILED": "【城堡处置】离场结算失败：分组“{ACTION}”（{COUNT} 人）无人生效，原因：{REASON}。这些战俘继续保持俘虏身份。",
+    "AF_CASTLE_UI_RECRUITMENT_PARTIAL": "【城堡处置】收编仅部分执行：计划 {PLANNED} 人，实际入队 {COUNT} 人（主队编制已满）；其余继续保持俘虏身份。",
+    "AF_CASTLE_UI_DUEL_FAILED": "【城堡决斗】未能布置同场决斗，俘虏处置状态未改变。",
+    "AF_CASTLE_UI_CARE_INSUFFICIENT": "【城堡处置】随军食物不足，善待俘虏流程未结算，也未扣除物资。",
+    "AF_CASTLE_UI_CARE": "【城堡处置】已按兵种等级向 {COUNT} 名普通战俘发放物资并禁止虐待；俘虏信任 {TRUST}。",
+    "AF_CASTLE_UI_ARMAMENTS": "【城堡处置】已收缴{COUNT} 名普通战俘的军械与随身财物，直接送入背包：物品 {ITEMS} 件 / {KINDS} 类，金币 {GOLD}；不打开战利品界面。",
+    "AF_CASTLE_UI_SLAUGHTER_KILLS": "【城堡处置】普通战俘实际死亡累计 {KILLED} 人；仍有 {REMAINING} 人待实际击杀。",
+    "AF_CASTLE_UI_LORD_ARMAMENTS": "【城堡处置】已收缴 {LORD} 的武器与盔甲，共 {ITEMS} 件，直接送入背包。",
+    "AF_CASTLE_UI_LORD_CARE": "【城堡处置】已向 {LORD} 提供物资并禁止虐待；该流程只针对这名领主。",
+    "AF_CASTLE_UI_LORD_RECRUITMENT": "【城堡处置】{LORD}：{BRANCH}。",
+    "AF_CASTLE_UI_LORD_RECRUITMENT_STATUS": "【城堡处置】{LORD}：{BRANCH}；{STATUS}",
+    "AF_CASTLE_UI_LORD_SALE": "【城堡处置】已将 {LORD} 交给赎金经纪人，严格按原版酒馆实时赎卖价获得 {GOLD} 金币；该领主已解除俘虏并离开现场。",
+    "AF_CASTLE_UI_EXECUTION_QUEUED": "【城堡处置】已对 {LORD} 下达处刑命令，正在打开原版处刑确认；取消不会改变其生死或俘虏状态。",
+    "AF_CASTLE_UI_EXECUTION_FAILED": "【城堡处置】未能打开 {LORD} 的原版处刑确认，未结算死亡；可稍后重试，详情已写入日志。",
+    "AF_CASTLE_UI_EXECUTION_COMPLETED": "【城堡处置】{LORD} 已由玩家确认处刑，并在城堡场景内当场倒地；原版角色死亡已经持久化，关系与家族后果由原版战役系统结算。",
+    "AF_CASTLE_UI_EXECUTION_COMPLETED_NO_SCENE": "【城堡处置】{LORD} 已由玩家确认处刑；场景倒地表现未成功，死亡结算仍已登记；原版角色死亡已经持久化，关系与家族后果由原版战役系统结算。",
+    "AF_CASTLE_UI_CAPACITY_NONE": "【城堡处置】主队当前没有可用于收编的空余编制（空余 {FREE}，已被此前收编组占用），本次收编未暂存；可先释放编制或改用其他处置。",
+    "AF_CASTLE_UI_CAPACITY_TRIM": "【城堡处置】主队空余编制不足，本次收编由 {REQUESTED} 人调整为 {STAGED} 人；其余战俘保持未分配，可另行处置。"
+  }
+}

@@ -16,16 +16,16 @@ namespace AnimusForge.Illustrator.Engine
         {
             IllustratorRuntime.AssertMainThread();
             if (snapshot == null || snapshot.IsDisposed || snapshot.Scene == null || snapshot.Scene.Pointer == UIntPtr.Zero)
-                throw new ArgumentException("观察补光需要有效的独立场景副本。", nameof(snapshot));
+                throw new ArgumentException("Observation lighting requires a valid isolated scene copy.", nameof(snapshot));
             if (frames == null || frames.Length == 0)
-                throw new ArgumentException("观察补光缺少离屏镜头位置。", nameof(frames));
+                throw new ArgumentException("Observation lighting has no off-screen camera position.", nameof(frames));
 
             Vec3 origin = frames[0].origin;
             Vec3 forward = new Vec3(-frames[0].rotation.u.x, -frames[0].rotation.u.y, 0f);
             float length = (float)Math.Sqrt(forward.x * forward.x + forward.y * forward.y);
             if (!Finite(origin) || !Finite(snapshot.CaptureCenter) || !Finite(forward) ||
                 float.IsInfinity(length) || length < 0.0001f)
-                throw new InvalidOperationException("观察补光的离屏镜头坐标无效。");
+                throw new InvalidOperationException("The off-screen observation lighting camera position is invalid.");
             forward *= 1f / length;
             Vec3 right = new Vec3(forward.y, -forward.x, 0f);
             Vec3 raisedOrigin = origin + new Vec3(0f, 0f, 0.75f);
@@ -44,7 +44,7 @@ namespace AnimusForge.Illustrator.Engine
                 float distance = (float)Math.Sqrt(positions[i].DistanceSquared(snapshot.CaptureCenter));
                 float radius = ScreenCaptureHelper.PanoramaCaptureRadius + distance + 5f;
                 if (float.IsNaN(radius) || float.IsInfinity(radius))
-                    throw new InvalidOperationException("观察补光的覆盖范围无效。");
+                    throw new InvalidOperationException("The observation lighting coverage is invalid.");
                 string name = "afi_l" + i;
                 AddPointLight(snapshot.Scene, name, positions[i], radius, intensities[i]);
                 lights.Add(new JObject
@@ -82,8 +82,8 @@ namespace AnimusForge.Illustrator.Engine
                 carrier = GameEntity.CreateEmpty(scene, isModifiableFromEditor: false,
                     createPhysics: false, callScriptCallbacks: false);
                 if (carrier == null || carrier.Pointer == UIntPtr.Zero || carrier.Scene?.Pointer != scene.Pointer)
-                    throw new InvalidOperationException("无法在独立场景创建观察灯。");
-                if (name.Length > 16) throw new InvalidOperationException("原生观察灯名称超过安全长度。");
+                    throw new InvalidOperationException("Observation lights could not be created in the isolated scene.");
+                if (name.Length > 16) throw new InvalidOperationException("The native observation light name exceeds the safe length.");
                 carrier.Name = name;
                 carrier.EntityFlags |= EntityFlags.DoNotTick | EntityFlags.DontTickChildren;
                 // Dynamic rendering registration does not animate/tick this frozen
@@ -95,7 +95,7 @@ namespace AnimusForge.Illustrator.Engine
 
                 light = Light.CreatePointLight(radius);
                 if (light == null || !light.IsValid)
-                    throw new InvalidOperationException("引擎未创建有效的观察灯。");
+                    throw new InvalidOperationException("The engine did not create a valid observation light.");
                 light.LightColor = new Vec3(1f, 1f, 1f);
                 light.Intensity = intensity;
                 light.ShadowEnabled = false;
@@ -103,10 +103,10 @@ namespace AnimusForge.Illustrator.Engine
                 light.SetVolumetricProperties(false, 0f);
                 light.SetLightFlicker(0f, 1f);
                 if (!carrier.AddLight(light))
-                    throw new InvalidOperationException("无法将观察灯挂载到独立场景。");
+                    throw new InvalidOperationException("The observation light could not be attached to the isolated scene.");
                 attached = true;
                 if (light.GetEntity().Pointer != carrier.Pointer)
-                    throw new InvalidOperationException("观察灯未归属于独立场景实体。");
+                    throw new InvalidOperationException("The observation light does not belong to an isolated scene entity.");
                 light.SetVisibility(true);
                 carrier.UpdateVisibilityMask();
             }

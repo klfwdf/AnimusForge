@@ -498,7 +498,7 @@ public sealed class OnnxEmbeddingEngine
 				if (_tokenizer == null)
 				{
 					_available = false;
-					_lastError = "tokenizer 解析失败。";
+					_lastError = "Failed to parse the tokenizer.";
 					return;
 				}
 				SessionOptions sessionOptions = new SessionOptions();
@@ -524,7 +524,7 @@ public sealed class OnnxEmbeddingEngine
 				_lastError = "";
 				try
 				{
-					Logger.Log("OnnxEmbedding", string.Format("初始化成功 model={0} tokenizer={1} inputType={2} maxLen={3}", System.IO.Path.GetFileName(text5), System.IO.Path.GetFileName(text6), _useInt64Input ? "int64" : "int32", _maxLength));
+					Logger.Log("OnnxEmbedding", string.Format("Initialized model={0} tokenizer={1} inputType={2} maxLen={3}", System.IO.Path.GetFileName(text5), System.IO.Path.GetFileName(text6), _useInt64Input ? "int64" : "int32", _maxLength));
 				}
 				catch
 				{
@@ -533,10 +533,10 @@ public sealed class OnnxEmbeddingEngine
 			catch (Exception ex)
 			{
 				_available = false;
-				_lastError = ex.Message ?? "初始化异常";
+				_lastError = ex.Message ?? "Initialization exception";
 				try
 				{
-					Logger.Log("OnnxEmbedding", "初始化失败: " + _lastError);
+					Logger.Log("OnnxEmbedding", "Initialization failed: " + _lastError);
 				}
 				catch
 				{
@@ -767,7 +767,7 @@ public sealed class OnnxEmbeddingEngine
 			stopwatch.Stop();
 			try
 			{
-				Logger.Log("OnnxEmbedding", "推理失败: " + ex.Message);
+				Logger.Log("OnnxEmbedding", "Inference failed: " + ex.Message);
 			}
 			catch
 			{

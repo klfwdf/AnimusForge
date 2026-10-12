@@ -1,0 +1,213 @@
+{
+  "Id": "rule_Kingdom_Knight",
+  "Keywords": [
+    "Kingdom Knight",
+    "fief knight",
+    "official knight",
+    "Bretonnia main force",
+    "Heraldic Knight",
+    "knight class",
+    "kingdom knight knight",
+    "vassal",
+    "Knights (Kingdom Knight)",
+    "cavalry main force",
+    "Heavy Knight",
+    "noble cavalry"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The knights of the kingdom are the backbone of the knightly class in Bretonnia, formal knights who have obtained fiefs and have full heraldry rights. They are the most feared heavy cavalry on the battlefield, shattering enemy lines with thunderous charges."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Kingdom Knight——The embodiment of Bretonnia Iron Fist! After being tempered and promoted from a knight errant, each kingdom knight owns a manor, a coat of arms passed down from generation to generation, and a team of loyal sergeants. When hundreds of kingdom knights charged side by side, the earth wailed under the hoofs, the spears were laid flat like a steel forest, and only the neighing of war horses and the roar of steel clashing were left in the air. No mortal infantryman could withstand such a charge head on and still maintain his formation. We are not only warriors, but also the cornerstone of the kingdom - managing fiefdoms, collecting taxes, and adjudicating disputes in peacetime. In wartime, we put on armor and mount horses, and sacrifice our lives for the king and goddess. This is an honor, but also a responsibility."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Knights of the Kingdom are the core striking force of any Bretonnian army. A standard Kingdom Knight charge can penetrate most enemy defenses except for the Chaos Chosen and the Dwarf Iron Breaker Shield Wall. But their weaknesses are also obvious: once the charge stalls, the efficiency of the kingdom knights wielding swords on horseback is far less efficient than that of professional infantry units. Therefore, it is necessary to ensure that every charge can decide the outcome with one blow-either using precise reconnaissance to select weak points before the charge, or keeping reserves for a second strike."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "The institution of kingdom chivalry holds a central place in Bretonnian law. Each knight of the kingdom must swear the \"Knightly Way\" when being awarded the title, which includes: loyalty to the lord, protecting the weak, worshiping the goddess, not telling lies, and never retreating. The fief area of ​​a kingdom knight usually ranges from five to twenty manors, and the annual income is equivalent to about 200 to 800 gold crowns. They had the right to exercise primary judicial power within their domain, but death sentences were subject to approval by the lord or duke. The coat of arms of the Kingdom's knights needs to be registered at the Curona Heraldry Institute. In the case of intermarriage with different surnames, the coat of arms needs to be redesigned to reflect the marriage. Militaryly, the basic equipment of a kingdom knight is a full-body plate armor, a lance, a long sword, a kite-shaped shield and at least one war horse. Qualified knights will also be equipped with spare war horses and three to five armed followers."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Knights of the Realm - These men are often stubborn and arrogant in life, but on the battlefield they do deserve respect. As a female lord, managing the knights in the kingdom is a delicate art: inspiring them with honor, restraining them with law, and gathering them with favor. But never show weakness in front of them."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Our clan's ability to support three kingdom knights is the limit - the cost of fiefdom, horses, equipment and servants consumes almost 70% of the clan's annual income. But this is the price that must be paid. Without the Kingdom Knights, bandits and orcs will come to plunder our territory."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The knights of the kingdom always hold their heads high when they pass by, and the coat of arms on their armor is shiny, as if the whole world belongs to them. They would give a few coins to beggars on the roadside - but never look at them. Don't fight with them in the tavern. They are best at nailing you to the wall with their lances in a duel."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The knights of the kingdom are the best high-end clients—customized armor, gilded spurs, hand-embroidered heraldic robes. The annual equipment expenditure of a kingdom knight is equivalent to the total of fifty sergeants. But they bargained with a tooth-gripping arrogance and didn't allow anyone to cut corners on the craftsmanship."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Knights of the Kingdom are official knights of Bretonnia, possessing fiefdoms and full heraldry rights",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "The Knights of the Kingdom are the backbone of the knightly class of Bretonnia"
+  ]
+}

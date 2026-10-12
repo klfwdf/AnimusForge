@@ -1,0 +1,133 @@
+{
+  "Id": "rule_House_Foundations_House_Oakheart",
+  "Keywords": [
+    "House Oakheart",
+    "Oak Leaves",
+    "Our Roots Go Deep",
+    "Dornish Borderlands"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Oakheart family is based in Ancient Oak City and is one of the oldest families in the Reach. The family emblem has an oak leaf on a gold background as the core, and the motto is \"rooted in roots\". The family history is connected to the time of the Gardener King and the long-term war on the Reach-Dorne border. The old songs also preserve the memory of the blood feud between Oakheart and the Dornish people. Antiquity does not mean that each generation must repeat the hatred of its ancestors; to the natives, the real value of the oak lies in its shade, wood, and roots in the earth. Nobles use \"deep roots\" to talk about blood, while farmers use it to measure whether a city can survive wars and poor harvests."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "reach"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Oakheart in Ancient Oak is considered a true old tree by the lords of the Reach. \"Being deeply rooted\" is both a motto and their explanation of their status: dynasties can change, marriage alliances can be rewritten, and oak trees still use their growth rings to prove who lives here longer. Antiquity brings respect, but it also makes it easy for families to mistake change for betrayal."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "reach"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Foresters, carpenters, and orchardists have a more practical understanding of oak trees than singers: it takes many years to wait for a good tree, but only a moment to chop it down. If Oakheart is willing to shelter from the wind like an old tree, the people living there will be proud of the longevity of their family; if the roots only compete for water and soil, the people nearby will also look forward to being struck by lightning."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Oakheart The River Bend Ancient Clan in Ancient Oak City has an oak leaf on a gold background as their family emblem, and their motto is \"rooted in roots\". The Age of Gardeners, frontier wars and ancient bloodline shaped its reputation, leaving behind the old feud between Reach and Dorne. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Oakheart The River Bend Ancient Clan in Ancient Oak City has an oak leaf on a gold background as their family emblem, and their motto is \"rooted in roots\". The Age of Gardeners, frontier wars and ancient bloodline shaped its reputation, leaving behind the old feud between Reach and Dorne. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Oakheart The River Bend Ancient Clan in Ancient Oak City has an oak leaf on a gold background as their family emblem, and their motto is \"rooted in roots\". The Age of Gardeners, frontier wars and ancient bloodline shaped its reputation, leaving behind the old feud between Reach and Dorne. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Oakheart The River Bend Ancient Clan in Ancient Oak City has an oak leaf on a gold background as their family emblem, and their motto is \"rooted in roots\". The Age of Gardeners, frontier wars and ancient bloodline shaped its reputation, leaving behind the old feud between Reach and Dorne. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "House Oakheart: The River Bend Ancient Clan in Ancient Oak City has an oak leaf on a gold background as their family emblem, and their motto is \"rooted in roots\". The Age of Gardeners, frontier wars and ancient bloodline shaped its reputation, leaving behind the old feud between Reach and Dorne."
+  ]
+}

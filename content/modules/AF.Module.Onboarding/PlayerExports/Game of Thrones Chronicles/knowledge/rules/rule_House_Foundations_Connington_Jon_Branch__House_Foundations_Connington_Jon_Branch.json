@@ -1,0 +1,132 @@
+{
+  "Id": "rule_House_Foundations_Connington_Jon_Branch",
+  "Keywords": [
+    "Connington (Jon Branch)",
+    "Connington - Jon Branch",
+    "Lord Jon Connington"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Jon Connington was born in the Connington family of Falcon's Nest in the Stormlands. The family emblem is two red griffins standing opposite each other. He was once a close friend of Rhaegar Targaryen and was appointed Hand of the King by Lys II; the failure at the Battle of the Bell cost him his official position, home, and reputation, and his years in exile left that failure with an old wound that he could not let go of. Later, he took care of the young Griffin in the name of \"Griffin\" and handed over the training of language, war, etiquette and common people's life to this young man called Aegon. Following young Aegon is not an inherent choice of the Clinton family, but Jon's personal love for Rhaegar, the shame of failure and the desire to regain his reputation are tied to the same future."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "stormlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Old acquaintances of the Stormlands look at Jon Connington and remember not just an exile, but also a man who had suddenly risen to the king's hand and fallen due to a failure. Some sympathize with his loyalty to Rhaegar, while others think that loyalty has long since turned into obsession. The name of Eagle's Nest therefore carries with it the uneasiness of both loss and return."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Golden Company soldiers look at Griffin first to see if he understands marching, punctuality and punishment. Jon doesn’t win followers with his smile, he drives them with an urgency that feels like time is running out. Such a commander could make the exiles believe that home was just ahead, or he might make them worry about how much retreat he was willing to burn to get there."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "crownlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Those familiar with the Old Dynasty know that Jon's confidence in Young Aegon is itself part of the claim. Rhaegar's closest old friend is willing to stake everything for this, making the story credible; the same personal emotion leads doubters to ask whether he is protecting the prince or protecting his last chance to win Rhaegar back."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Connington (Jon Branch) Jon Connington was Rhaegar's friend and King's Hand of Lys II; his failure and exile made him tightly tie his reputation, loyalty and the future of young Aegon. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Connington (Jon Branch) Jon Connington was Rhaegar's friend and King's Hand of Lys II; his failure and exile made him tightly tie his reputation, loyalty and the future of young Aegon. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Connington (Jon Branch) Jon Connington was Rhaegar's friend and King's Hand of Lys II; his failure and exile made him tightly tie his reputation, loyalty and the future of young Aegon. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Jon Connington was Rhaegar's friend and King's Hand of Lys II; his failure and exile made him tightly tie his reputation, loyalty and the future of young Aegon."
+  ]
+}

@@ -1,0 +1,214 @@
+{
+  "Id": "rule_colleges_of_magic",
+  "Keywords": [
+    "Colleges of Magic",
+    "Colleges of the Eight Winds",
+    "Colleges of Altdorf",
+    "Colleges of Magic Teclis",
+    "Colleges of Magic Light College",
+    "Colleges of Magic Bright College",
+    "Colleges of Magic Celestial College",
+    "Gold College",
+    "Jade College",
+    "Amethyst College",
+    "Grey College",
+    "Amber College",
+    "Orders of Magic"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Colleges of Magic are the eight legal institutions of magical education established by the Empire in Altdorf; each College corresponds to one of the Winds of Magic and is responsible for training human spellcasters to harness these perilous forces safely. The existence of the eight Colleges makes the Empire the only human nation in the Old World to possess a systematic, institutionalized military magical order—every other human civilization either leaves magic unchecked until it leads to Chaos corruption, or else bans all magical practice outright."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Colleges of Magic—when folk in Altdorf mention those words, they first glance left and right to see whether a Witch Hunter is nearby. The eight Colleges are distributed across eight different districts of Altdorf, each corresponding to one of the Winds of Magic: the Light College occupies the highest spires in Altdorf—where the Wind of Hysh is focused into purifying radiance; the Bright College sits near the riverfronts, its buildings wreathed in smoke year-round as apprentice wizards burn down their dormitories every few days—something the neighbors have long since grown used to; the Jade College lies in the city's botanical district, isolated from the outside world by a high wall behind which grow exotic plants unseen anywhere else in the Empire; the astronomical towers of the Celestial College rise high enough to pierce the clouds, where wizards observe the tracks of the stars to divine the future; the Gold College stands in the forge district, perpetually shrouded in yellow-orange alchemical fumes; the Amethyst College is an exception—located in the cemetery district outside the walls of Altdorf, because no one wishes to live next door to it; the gates of the Grey College bear no markings—if you cannot find it, that proves you are not a Grey Wizard; and the Amber College makes its home in old cellars beneath the city walls, where the cries of birds and roars of beasts kept within attest to the Amber Wizards' kinship with primal nature. Rivalry between the Colleges borders on hostility—Bright Wizards arrogantly regard their spells as the purest force of destruction, while Celestial Astromancers mock Bright Wizards as 'barbarians waving torches'; yet when facing the outside world, the eight Colleges form an unassailable alliance—any attack directed against one of the Colleges will be met by the collective retaliation of the wizards of the other seven."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "In the game of Imperial power politics, the Colleges of Magic are a vital piece on the board. The chief wizards of the eight Colleges—known as the 'Patriarchs and Matriarchs of the Colleges'—collectively constitute the Supreme Council of Magic of the Empire, a council that is theoretically independent of the direct jurisdiction of any Elector Count or Church. As a lord, you cannot directly order a College of Magic to supply you with Battle Wizards—you must submit a formal petition to the College accompanied by a statement of strategic necessity, and the College decides for itself whom to dispatch and in what numbers. Yet the potential contained within this arrangement is what truly matters: if you can cultivate a close relationship with a specific College through sustained political investment—such as providing funds for the College to purchase magical materials or defending its autonomy in the Imperial Diet—you effectively gain an exclusive magical force that owes no allegiance to other lords. The danger of such an investment, however, is that should your rivals push legislation through the Council of Electors restricting the authority of the Colleges of Magic, or worse still—persuade the Grand Theogonist of Sigmar to publicly question the 'purity of faith' of a certain College—the political capital you invested could vanish in smoke overnight."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "The founding of the Colleges of Magic is a rare success story in the institutional history of magic in the Old World. In 2304 IC, just after the Great War Against Chaos had ended and the entire Empire was filled with dread of Chaos and an even deeper hatred of magic, the High Elf Archmage Teclis put forward a proposal that seemed borderline absurd to Elves yet represented the sole way forward for humanity: he petitioned the reigning Emperor Magnus to grant him license to found eight Colleges of Magic in Altdorf. Teclis's plan was radically bold—he classified human magical talent according to the Eight Winds: Hysh (Light), Azyr (Heavens), Chamon (Metal), Ghyran (Life), Shyish (Death), Ulgu (Shadow), Aqshy (Fire), and Ghur (Beasts), establishing an independent College and instructional curriculum for each Wind. He designed the 'Single-Wind Isolation' system: every apprentice studies only the single Wind of Magic to which they are attuned and is strictly forbidden from touching the other seven Winds—a design that sacrifices theoretical omniscience in exchange for practical safety. The most crucial innovation was the 'Capacity Ceiling Covenant'—upon passing their examinations, every full wizard must sign a magical oath with their College promising never to attempt channeling a volume of magic exceeding their personal capacity; such self-limitation does not exist in Elven magic, yet for humans it serves as the final line of defense against Chaos incursion. The serving heads of the eight Colleges include: Arch-Lector of Light Elisse von Greifen of the Light College, Flame-Spirit Matriarch Talis Flame-Singer of the Bright College (one of the few female heads of a College), Star-Lord Roderick Helmhart of the Celestial College, Gold Patriarch Voland von Glanz of the Gold College, Verdant Matriarch Nora Ither of the Jade College, Requiem Patriarch Alfred Bone-Whisper of the Amethyst College, Mist Matriarch Elisa Darkwing of the Grey College, and Beast-Lord Heinrich Wildclaw of the Amber College. According to statistics, fewer than fifty newly discovered magical apprentices are registered across the Empire each year, and after rigorous training and culling, fewer than half ultimately become full-fledged wizards."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "In the world of Imperial noblewomen, the Colleges of Magic are a presence shrouded in taboo. Mothers use the Eight Colleges to frighten disobedient daughters—warning them that if they do not study their needlework and household management properly, they will be sent off to the Grey College to become apprentice Shadow Wizards. In reality, however, it is said that a tiny handful of noble girls born with magical talent are secretly sent into the Colleges—secretly, because publicly admitting that one's daughter possesses 'magical talent' is tantamount to admitting that your bloodline may have been brushed by Chaos, which is devastating to the reputation of any noble house."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "For the great noble houses of the Empire, the Colleges of Magic represent the thorny problem of family resources. If magical talent is detected in one of your offspring—which almost always happens before a child reaches the age of ten—you face two choices: report it immediately to the Colleges and send the child away, allowing them to acquire legal status as a wizard while becoming effectively dead to the family line; or hide the child secretly at home until their magic spirals out of control and triggers a catastrophe. Either choice means losing a member of your family; the only difference is whether you also lose your neighbors' lives along with them."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "In thecoaching inns of the Empire, the topic of the Colleges of Magic never fails to spark an argument. Wandering folk like us scoff at wizards—they hole up in their academies, and you can never trust a man when you have no idea what he is thinking—yet whenever you run into a Chaos spawn along a post road and happen to have a Light Wizard traveling in your company, you instantly forget every doubt you ever held about magic. I once saw a Celestial Wizard call down a thunderbolt that scattered an entire Goblin warband; that kind of power is nothing any sword or blade can match."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Eight Colleges are the largest buyers of consumable supplies in Altdorf—their demand for magical reagents, spices, metals, crystals, and specialty woods is vast enough to single-handedly sustain several merchant guilds. The procurement lists of the Jade College even include botanical specimens from as far away as Lustria, supplied along routes monopolized by the shrewdest ocean-going merchants in the Empire. Every year, the volume of black-powder experimental materials purchased by the Bright College from the arsenals of Nuln equals the annual material consumption of a small Electoral province's military budget."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "The Eight Winds—the eight fundamental classifications of the Winds of Magic: Hysh, Aqshy, Chamon, Ghyran, Shyish, Ulgu, Azyr, and Ghur",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Theological Attributes and Belief Systems of the Colleges of Magic"
+  ]
+}

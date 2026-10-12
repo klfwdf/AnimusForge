@@ -9,20 +9,22 @@ namespace AnimusForge;
 /// </summary>
 internal static class GcczTownManualResourceProvider
 {
-	private const string FileName = "GcczTownManual.zh-CN.json";
-	private const string EmbeddedResourceName = "AnimusForge.Defaults.GcczTownManual.zh-CN.json";
-	private static readonly Lazy<TownManualCatalog> CachedCatalog = new Lazy<TownManualCatalog>(LoadCatalog, true);
+	private const string BaseName = "GcczTownManual";
+	private static readonly Lazy<TownManualCatalog> ChineseCatalog = new Lazy<TownManualCatalog>(() => LoadCatalog("zh-CN"), true);
+	private static readonly Lazy<TownManualCatalog> EnglishCatalog = new Lazy<TownManualCatalog>(() => LoadCatalog("en"), true);
 
 	internal static TownManualCatalog GetCatalog()
 	{
-		return CachedCatalog.Value;
+		return GcczLocalizedResourceLoader.UseChineseInterface ? ChineseCatalog.Value : EnglishCatalog.Value;
 	}
 
-	private static TownManualCatalog LoadCatalog()
+	internal static TownManualCatalog GetFactCatalog() => ChineseCatalog.Value;
+
+	private static TownManualCatalog LoadCatalog(string language)
 	{
 		return GcczLocalizedResourceLoader.Load(
-			FileName,
-			EmbeddedResourceName,
+			BaseName + "." + language + ".json",
+			"AnimusForge.Defaults." + BaseName + "." + language + ".json",
 			"GcczManual",
 			Deserialize,
 			TownManualCatalog.CreateEnglishFallback);

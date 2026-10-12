@@ -4,7 +4,7 @@ R=Path(__file__).resolve().parents[4];H=Path(__file__).parent;out=Path(sys.argv[
 project=ET.Element('Project',Sdk='Microsoft.NET.Sdk');props=ET.SubElement(project,'PropertyGroup')
 for k,v in [('OutputType','Exe'),('TargetFramework','net8.0'),('LangVersion','latest'),('EnableDefaultCompileItems','false')]:ET.SubElement(props,k).text=v
 items=ET.SubElement(project,'ItemGroup')
-for f in [H/'Stubs.cs',H/'Program.cs',R/'src/AF.GameAdapter.Bannerlord/UI/Common/DevPopupInputLease.cs',R/'src/AF.GameAdapter.Bannerlord/UI/Common/DevTextEditorHelper.cs',R/'src/AF.GameAdapter.Bannerlord/UI/Editors/DevHistoryEditPopup.cs',R/'src/AF.GameAdapter.Bannerlord/UI/Editors/DevHistoryEditPopupVM.cs']:ET.SubElement(items,'Compile',Include=str(f))
+for f in [H/'Stubs.cs',H/'Program.cs',H/'LocalizationFixture.cs',R/'src/AF.GameAdapter.Bannerlord/UI/Common/DevPopupInputLease.cs',R/'src/AF.GameAdapter.Bannerlord/UI/Common/DevTextEditorHelper.cs',R/'src/AF.GameAdapter.Bannerlord/UI/Editors/DevHistoryEditPopup.cs',R/'src/AF.GameAdapter.Bannerlord/UI/Editors/DevHistoryEditPopupVM.cs']:ET.SubElement(items,'Compile',Include=str(f))
 ET.ElementTree(project).write(out/'Tests.csproj',encoding='utf-8')
 dotnet=R/'local/dotnet/8.0.425/dotnet.exe'
 r=subprocess.run([str(dotnet),'run','--project',str(out/'Tests.csproj'),'-c','Release'],capture_output=True,text=True,encoding='utf-8',errors='replace',timeout=120)

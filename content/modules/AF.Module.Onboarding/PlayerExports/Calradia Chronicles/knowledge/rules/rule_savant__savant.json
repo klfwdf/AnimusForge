@@ -1,0 +1,103 @@
+{
+  "Id": "rule_savant",
+  "Keywords": [
+    "Sawant"
+  ],
+  "RagShortTexts": [
+    "The village of Savant is located in the grassland north of Salas Bay and is a high-quality horse farm in Vlandia."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Sawant is a village near Salas, located on the warm grasslands north of the Gulf of Salas. This land is recognized as a fine horse farm in Vlandia, and the horses it produces are famous throughout the kingdom. Many of the cavalry of the Sharas ruling family came from here."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Savant's horse farm is one of the best in Vlandia. The grassland north of Salas Bay has rich grass and beautiful water. The horses can run on it for several months, and their legs are strong and their endurance is good. Most of the mounts of the elite cavalry of the noble family that controlled Sharas were selected from Sawant."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "townsfolk"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Sawant’s horses are good, but expensive. The noble masters from Salas picked out the best horses, and it was the turn of us merchants to buy the rest. But having said that, even the horses they picked were still better than the horses elsewhere."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "I stayed in Sawant for a while, helping the stud to train horses. The horses on that grassland have been running around since they were young. They are wild-tempered, but once they are tamed, they become first-class war horses. Every time before Sharas sends troops to fight, the ruling family will come here to pick horses."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Sawant",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "Salas",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "Day Kortan",
+      "Kind": "bound_clan_name",
+      "TargetId": "__bound_clan__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

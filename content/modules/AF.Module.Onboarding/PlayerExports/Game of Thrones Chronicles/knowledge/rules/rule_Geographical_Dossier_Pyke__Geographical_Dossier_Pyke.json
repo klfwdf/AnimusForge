@@ -1,0 +1,129 @@
+{
+  "Id": "rule_Geographical_Dossier_Pyke",
+  "Keywords": [
+    "Pyke",
+    "Seastone Chair",
+    "Greyjoy",
+    "Kraken"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Pyke is located on the Isle of Pyke in the Iron Islands. It is the ancestral castle of House Greyjoy and the most important stronghold of the Crown of the Isles. The waves have eroded the originally connected headlands into isolated stone pillars. The main castle, sea tower and other towers can only be connected by stone bridges and long shaky bridges; the sound of wind, salt and tide penetrates into almost every wall. The Sea Stone Seat is placed in the hall, allowing it to simultaneously bear the rule of Greyjoy, the memory of the old kings of the Ironborn and the tradition of the Drowned God; Pyke itself is a barren land, and its power must rely on longships, island vassals and control of sea routes."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "What the ironborn saw at Pike was not an exquisite palace, but salt spray, rope bridges, longships, and seastone seats. Some people regard it as the heart of the old road, and some regard it as the place where lords ask others to pay for the dreams of their ancestors; no matter how they quarrel, they all understand that Pike's stones never allow people to forget the cruelty of the sea."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia",
+          "battania",
+          "reach"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "When coastal dwellers in the West, the North, and the Reach hear the name Pike, they often think of plundered sheep, burned docks, and longships in the rain. But they also know that the barren island cannot support people who live only by legends. The threat of Pike comes from its ability to turn the sea into a road, and also from the fact that many islanders have only learned to survive on this road since childhood."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Pyke Entry Greyjoy Seastone Chair It embodies the Iron Islands' barrenness, longships, maritime livelihoods and Old Way traditions. They care about water sources, roads, customs and garrison, and know that behind the place names there is often a food road that can keep the castle alive."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Pyke Entry Greyjoy Seastone Chair It embodies the Iron Islands' barrenness, longships, maritime livelihoods and Old Way traditions. The reputation of a place is often determined by the number of people who died there."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Pyke Entry Greyjoy Seastone Chair It embodies the Iron Islands' barrenness, longships, maritime livelihoods and Old Way traditions. Stones, trees, rivers or mountain passes can become places of livelihood, and may also be endowed with sanctity, taboos and ancestral memories, so they cannot be measured in terms of money alone."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Pyke Entry Greyjoy Seastone Chair It embodies the Iron Islands' barrenness, longships, maritime livelihoods and Old Way traditions. They first checked whether the place could draw water, farm, graze, and avoid military disasters; a line of words on the map, and when it landed in the village, it turned out to be firewood, well rope, and winter food."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Pyke: Pyke is located on the Isle of Pyke in the Iron Islands. It is the ancestral castle of House Greyjoy and the most important stronghold of the Crown of the Isles. The waves have eroded the originally connected headlands into isolated stone pillars. The main castle, sea tower and other towers can only be connected by stone bridges and long shaky bridges; the sound of wind, salt and tide penetrates into almost every wall. The Sea Stone Seat is placed in the hall, allowing it to simultaneously bear the rule of Greyjoy, the memory of the old kings of the Ironborn and the tradition of the Drowned God; Pyke itself is a barren land, and its power must rely on longships, island vassals and control of sea routes."
+  ]
+}

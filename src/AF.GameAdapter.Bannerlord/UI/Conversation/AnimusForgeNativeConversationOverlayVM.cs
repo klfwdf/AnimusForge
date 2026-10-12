@@ -1,5 +1,6 @@
 using System;
 using TaleWorlds.Library;
+using TaleWorlds.Localization;
 
 namespace AnimusForge;
 
@@ -8,6 +9,7 @@ public sealed class AnimusForgeNativeConversationOverlayVM : ViewModel
     private readonly Func<bool> _illustrationAvailable;
     private readonly Action _onIllustration;
     [DataSourceProperty] public bool IsIllustrationAvailable => _illustrationAvailable?.Invoke() == true;
+    [DataSourceProperty] public string IllustrationText => ConversationUiLocalization.Text("AF_CONV_UI_Native_Illustration", "Scene illustration");
     public void ShowIllustration() { if (IsIllustrationAvailable) _onIllustration?.Invoke(); }
 	private readonly Action<string> _onSubmit;
 
@@ -23,6 +25,7 @@ public sealed class AnimusForgeNativeConversationOverlayVM : ViewModel
 	private readonly Action _onDirectActions;
 	[DataSourceProperty] public bool CanOpenDirectActions { get => _canOpenDirectActions; set { if (_canOpenDirectActions != value) { _canOpenDirectActions = value; OnPropertyChangedWithValue(value, nameof(CanOpenDirectActions)); } } }
 	private bool _canOpenDirectActions = true;
+    [DataSourceProperty] public string DirectActionsButtonText => ConversationUiLocalization.Text("AF_CONV_UI_Direct_Button", "Direct actions");
 	public void OpenDirectActions() { if (CanOpenDirectActions) _onDirectActions?.Invoke(); }
 
 	private string _inputText;
@@ -247,13 +250,13 @@ public sealed class AnimusForgeNativeConversationOverlayVM : ViewModel
 		_onGiveShow = onGiveShow;
 		_onEditPersona = onEditPersona;
 		_onTagTest = onTagTest;
-		PersonaEditButtonText = "编辑NPC";
-		TagTestButtonText = "标签输入";
+		PersonaEditButtonText = new TextObject("{=AF_UI_Conversation_EditNpc}Edit NPC").ToString();
+		TagTestButtonText = new TextObject("{=AF_UI_Conversation_TagInput}Tag input").ToString();
 		IsPersonaEditVisible = false;
 		IsTagTestVisible = false;
 		InputText = "";
-		AIChatHistoryButtonText = "对话历史";
-		GiveShowButtonText = "给予/展示";
+		AIChatHistoryButtonText = new TextObject("{=AF_UI_Conversation_History}Conversation history").ToString();
+		GiveShowButtonText = new TextObject("{=AF_UI_Conversation_GiveShow}Give / show").ToString();
 		IsInputEnabled = true;
 		CanSwitchTalk = true;
 		AIChatboxOffset = 0f;
@@ -336,6 +339,6 @@ public sealed class AnimusForgeNativeConversationOverlayVM : ViewModel
 
 	private void RefreshSwitchTitle()
 	{
-		SwitchTitle = IsCustomAnswerVisible ? "普通模式" : "AI模式";
+		SwitchTitle = IsCustomAnswerVisible ? new TextObject("{=AF_UI_Conversation_NormalMode}Normal mode").ToString() : new TextObject("{=AF_UI_Conversation_AiMode}AI mode").ToString();
 	}
 }

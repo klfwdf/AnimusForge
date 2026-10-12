@@ -1,0 +1,30 @@
+{
+  "Id": "rule_Dryashan",
+  "Keywords": [
+    "Mount Drya"
+  ],
+  "RagShortTexts": [
+    "Mount Drya forms a natural barrier from the Miron River in the west to Argoron in the east."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "scouting": 50
+        }
+      },
+      "Content": "The Dryya Mountains are a group of tall mountains in the north of the empire. The mountains are red in color and are named after rich iron ore veins. They share the same ancient name with the Dryya people who once lived here. It starts from the Miron River in the west and reaches Argoron in the east. It straddles the northwest of the northern empire and other regions, forming a natural geographical barrier. Traffic is blocked on both sides of the mountain range, and the climate and vegetation are very different. The administrative and military divisions in the northern part of the empire have long been bounded by this ridge. The iron ore in the mountain is one of the most important metal producing areas in the northern part of the empire. The iron produced in Drya Mountain supports the supply of weapons and agricultural tools in the surrounding provinces."
+    }
+  ],
+  "TextMappings": []
+}

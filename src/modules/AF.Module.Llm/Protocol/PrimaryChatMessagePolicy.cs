@@ -10,7 +10,7 @@ internal static class PrimaryChatMessagePolicy
 {
 	private const string EmptyResponseRetryMarker = "[AF_EMPTY_RESPONSE_RETRY]";
 
-	private const string EmptyResponseRetryInstruction = EmptyResponseRetryMarker + " 上一次模型响应为空白。请严格按既有角色、格式和字数要求，直接输出NPC本轮回复；禁止只输出空白、换行或无内容。";
+	private static string EmptyResponseRetryInstruction => EmptyResponseRetryMarker + " " + LlmPromptTexts.Get("AF_LLM_PROMPT_EmptyResponseRetry", "The previous model response was blank. Follow the existing role, format, and length requirements strictly and output this turn's NPC reply directly. Do not output only whitespace, a line break, or no content.");
 
 	internal static bool HasEmptyResponseRetryMarker(List<object> messages)
 	{
@@ -30,11 +30,11 @@ internal static class PrimaryChatMessagePolicy
 		return false;
 	}
 
-	private const string GenericContinuationInstruction =
-		"请继续完成当前请求，只输出最终结果。";
+	private static string GenericContinuationInstruction =>
+		LlmPromptTexts.Get("AF_LLM_PROMPT_GenericContinuation", "Continue the current request and output only the final result.");
 
-	private const string BattleSpeechContinuationInstruction =
-		"请继续完成当前阵前演讲请求，只输出协议规定的最终结果，不要生成普通NPC回复。";
+	private static string BattleSpeechContinuationInstruction =>
+		LlmPromptTexts.Get("AF_LLM_PROMPT_BattleSpeechContinuation", "Continue the current pre-battle speech request. Output only the final result required by the protocol; do not generate an ordinary NPC reply.");
 
 	internal static bool IsBattleSpeechRequest(IEnumerable<object> messages)
 	{
@@ -45,7 +45,7 @@ internal static class PrimaryChatMessagePolicy
 				continue;
 			}
 			string text = content ?? string.Empty;
-			if (text.IndexOf("【阵前演讲", StringComparison.Ordinal) >= 0 ||
+			if (text.IndexOf(LlmSourceTexts.Get("BattleSpeechMarker"), StringComparison.Ordinal) >= 0 ||
 				text.IndexOf("SPEECH_BEGIN", StringComparison.Ordinal) >= 0)
 			{
 				return true;

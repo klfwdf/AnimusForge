@@ -1,0 +1,132 @@
+{
+  "Id": "rule_House_Foundations_Selerjin",
+  "Keywords": [
+    "Selerjin",
+    "House Selerjin"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Selerjin family belongs to a wealthy family in Braavos, and the form of power is different from that of the Westeros fiefdom nobility: it exists more in ship shares, warehouses, debt rights, mansions and city relations. The waterways of Braavos allow goods and news to move extremely quickly, allowing a breach to spread rapidly across the docks. If Celerjin wants to maintain its position, it must deal with maritime risks, trade competition, Neptune politics and the influence of the Iron Bank at the same time. The lack of confirmed family crests and ancestral precepts does not prevent people from judging it by the most practical standard - whether it is trustworthy."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Braavos merchants look at Celer Jin first to see if the contract can be honored. The nobles of the Republic did not have a large number of serfs to back them up. A shipwreck, a bad debt or a wrong alliance could quickly tarnish their appearance."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "sailor",
+          "artisan",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The shipwrights and sailors did not care where Serejin sat at the banquet. They remember which family paid for ship repairs on time and which family allowed widows to receive pensions; maritime credit consists of these detailed accounts."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Selerjin Selerjin is a noble merchant family in Braavos. Its status relies on ships, warehouses, marriage alliances and credibility in republican politics. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Selerjin Selerjin is a noble merchant family in Braavos. Its status relies on ships, warehouses, marriage alliances and credibility in republican politics. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Selerjin Selerjin is a noble merchant family in Braavos. Its status relies on ships, warehouses, marriage alliances and credibility in republican politics. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Selerjin Selerjin is a noble merchant family in Braavos. Its status relies on ships, warehouses, marriage alliances and credibility in republican politics. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Selerjin: Selerjin is a noble merchant family in Braavos. Its status relies on ships, warehouses, marriage alliances and credibility in republican politics."
+  ]
+}

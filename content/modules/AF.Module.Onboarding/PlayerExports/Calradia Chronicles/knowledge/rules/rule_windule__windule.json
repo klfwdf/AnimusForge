@@ -1,0 +1,244 @@
+{
+  "Id": "rule_windule",
+  "Keywords": [
+    "Wendule"
+  ],
+  "RagShortTexts": [
+    "Wendule was the leader of the Archite tribe and was assassinated in a night attack by the Sturgia shieldmaiden Siga."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": [
+          "clan_khuzait_3"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "hero:lord_6_5"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Wendule is my uncle and the pillar of the Aqite tribe after my father Kuyuge died. When he took over the tribe, we had just snatched Balgad from the Kugits, and our strength had not yet recovered. We were surrounded by enemies - the Kugits hated us, and the Ulhunaite family was staring at us. He wanted to take another path, marry the Sturgians, and exchange marriage for peace. At the time, I thought this was not a bad idea, at least it was better than making enemies on all sides. As a result, he was killed by the woman. Siga. Shield Maiden. She sneaks into his castle and stabs him in the night. A warrior died under a woman's sword without even having time to pull out his sword. This was not the way my uncle deserved to die. What makes me even more unable to swallow this breath is Langward - he cut off Varla's head and sent it to him, saying that he was giving an explanation. One life, one head, is it considered an apology? Wendule owes me his life, and I will avenge him. I swore an oath at my father's grave that I would cut Sika's throat in sacrifice to him. This vow has not been fulfilled to this day, but it will not expire."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "hero:lord_2_4"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "onehanded": 100,
+          "twohanded": 100
+        }
+      },
+      "Content": "I killed Wendule. I don’t deny it, I don’t regret it, and I don’t expect forgiveness from the Achitians. He thought that by marrying my sister he would tie Sturgia's blood to Archite's horse. Walra was not an animal, not a piece of meat and bones that Langward fed to the coyotes. She is 31 years younger than that old dog! ! My sister shouldn't live like this all her life! The night I sneaked into his castle, he was reading a map, a glass of wine in his hand. He was stunned for a moment when he saw me, and then reached out to draw his sword. His sword was not drawn. I stabbed him three times, in the chest. He's a fighter, I admit. But soldiers should not think that marriage can replace war. It was fair that he died under my knife, at least fairer than when he took Valla away from home. The Achites want revenge on me, let them do it. I killed Wendule, and this life is waiting for someone to take it at any time."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": [
+          "clan_sturgia_2"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "hero:lord_2_3"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Wendule almost became my brother-in-law. It sounds a little queasy to say this now, but at the time I did. Langward betrothed Valra to him, saying that it was for the northern barrier of Sturgia. I don't agree with this marriage, but I won't stop my sister from getting married. Siga didn't think so. She thought it was Langwald who took her biological sister to feed the prairie wolves. She killed Wendule. I don't blame Seaga, she did what she wanted to do. What I hate is Langward - in order to appease the anger of the Archite tribe, he chopped off Valla's head and sent it over, as if one head could smooth the ledger. Wendule's death was caused by Xiga, but Valla was killed by Langvald. It was no shame for Wendule to die on the battlefield, but he died in the mud of a political marriage. His death was a disgrace to Sturgia, not to Archit."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": [
+          "clan_sturgia_1"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "hero:lord_2_1"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Windule. I saw him as a nail in the northern barrier, and he died. I drove the nail in with my own hands, and pulled it out with my own hands. I married Varla to him so that the Aqit tribe could protect us from the pressure from the Khuzait people on the eastern front. The deal turned out to be a good deal - a sister from a disobedient family in exchange for a barrier on the Eastern Front. But Seaga ruined it all. After Wendulu died, the Archite tribe demanded blood. I couldn't let them turn on Sturgia, so I sent Valra off with his head. That's revenge and stop loss. Wendule is a loss, and so is Varra. The two losses are recorded in the same account and offset. But his nephew Tu Lage didn't think so, and he wanted Xijia to pay for his life. I will not hand over Xijia - not because I protect her, but because I can't catch her. If I catch her, I will send her out, hahahahaha"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Wendule is a tragedy, but a tragedy with a Sturgian roughness from beginning to end. The Grand Duke Langward married off Valla as a marriage tool, which was not a glorious thing in the first place; Siga stabbed the groom to death, turning the marriage into a farce; in the end, the Grand Duke chopped off Valla's head and sent it to the Athit Ministry for explanation. From beginning to end, Sturgia was bleeding and humiliated. But in the final analysis, we mind this not because Wendule died unjustly, but because Olek and Siga are still standing in the court. Archduke Langward had offended the Kulov family in this matter, and this was a political bill that could be settled at any time."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Wendule was a short-lived leader in the brief resurgence of the Achite tribe. After he established a foothold in Balgard, he tried to resolve the pressure on the Eastern Front through marriage. His original intention was to stabilize his territory, but he was killed by a woman in a night attack. This is an extremely useless way to die on the grassland. But looking at it from another perspective, Wendule's death also caused a complete rift between the Archite tribe and Sturgia. Sturgia still does not forget the blood feud, which is a long-term restriction on the strategic direction of the Archite tribe. Wendule is remembered in prairie politics not for his exploits but for how tragically he died."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": [
+          "clan_khuzait_2"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "hero:lord_6_4"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Wendule is Kuyuge’s younger brother. After Pandlak, the Archite tribe took advantage of our Balgard when the Kugit men were almost gone. After Kuyuge died, Wendule continued to occupy it. None of the descendants of this group of she-wolves are good. He was later stabbed to death in the castle by a Sturgia woman, which, to be honest, made me laugh when I heard the news. It's not that he was gloating, but he felt that he deserved it. A tribe that started by stealing other people's towns wanted to whitewash itself through marriage, but was tricked into death by marriage. This is called retribution. But after I laughed, I felt a little reluctant - Wendule should have died by the arrows of the Kugits, not the swords of the Sturgia women. The debt owed by the Achit tribe to Kujit was not repaid by Wendule when he was alive, and he could not repay it even after his death."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": [
+          "clan_khuzait_1"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "hero:lord_6_1"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Wendule is an unlucky leader. He tried to marry Sturgia after establishing a foothold in Balgard, and there was nothing wrong with this idea. Achit has Kugit enemies to the east, Sturgia border pressure to the west, and my Khan's court to the south. His strategic space is very narrow, and marriage is a way to break the dilemma. But the marriage partner was wrongly chosen, and the internal contradictions of the Sturgia people are even more unreliable than the alliance of us steppe people. His death is not a bad thing for the Khanate - the more the Aqit tribe is entangled in external hatred, the less energy they have to cause trouble within the grassland. The Sturgians still hold grudges against the Sturgians, which is a good thing for me. But I won’t say anything publicly. Let the Aqit tribe continue to bear their hatred, and the Kujit tribe continue to bear their hatred. The hatred on both sides will consume each other, and the Khan Court will be stable."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Wendule was a short-lived chief of the Aqit tribe within the Khuzait Khanate. During the critical stage of tribal rejuvenation, he tried to exchange political marriage for external stability. This strategy itself was in line with the common expansion-consolidation logic of nomadic regimes. However, it failed due to backstabbing by allies during the execution, and triggered a series of subsequent chain reactions. From an outside perspective, Wendule's death was a blow to the Archite tribe not just in losing a leader, but more importantly in interrupting the strategic detente between them and Sturgia. This interruption has returned the Athit tribe to a state of having enemies on all sides, making it difficult to attempt similar foreign alliances again in the short term. After Turaq succeeded to the throne, he turned to an internal narrative of revenge, which was conducive to maintaining tribal cohesion, but not conducive to expanding diplomatic space."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Wendule? who? Oh, that prairie leader who was stabbed to death by a woman. The merchant told this story, saying that a shieldmaiden from Sturgia came into his castle at night and killed him because she did not want him to marry her sister. This woman is really ruthless. There are also cases of bride snatching here, but I have never heard of a bride being stabbed to the point of stabbing the groom. Later, the bride's brother or whoever beheaded the bride and sent him back to the grassland people to apologize. This family is really chaotic. The bride is dead, the groom is dead, the bride’s sister is the one who killed the groom, and the bride’s brother is the one who killed the bride. This kind of story can sell a lot of drinks in a tavern. As for Wendule himself, the businessman didn't say there was anything special about him, he was just an unlucky groom."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Wendule? It was the grassland leader who was killed by our shield girl. The older generation gave a thumbs up when they talked about this - this woman from Xijia was so brave that she dared to break into the prairie castle alone in order to save her sister and stabbed the groom directly. Archduke Langward later cut off Valla's head and sent it to him as an apology, but the older generation became silent when talking about it. It's important to take action for one's own people, but what's the point of killing one's own people to make amends? But after all, this matter has nothing to do with us ordinary people. The marriage between Archduke Langvald and the Boyers has been messed up, and the taxes we pay will not be less."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Wendule is the leader of the Aqite tribe and the younger brother of Kuyuga Nayan. I know him, he was killed by the Sturgians not long after he was in charge of Balgard. People on the grassland feel ashamed when they talk about it - he was stabbed to death by a woman in the castle without even pulling out his sword. Men on our grasslands either die on horseback or on the battlefield. What does it mean to die under a woman's knife? The people of Aqite's tribe are still holding grudges for this incident, and Turag Nayan said he wanted to take revenge. We feel that this newspaper is not only for Wendule, but also for the face of the prairie people. But in the final analysis, this matter has nothing to do with us ordinary herders. The Athit tribe and the Sturgia people stab each other, but our sheep still eat grass."
+    }
+  ],
+  "TextMappings": []
+}

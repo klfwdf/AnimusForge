@@ -1,0 +1,57 @@
+{
+  "Id": "rule_Politics_of_the_Northern_Empire",
+  "Keywords": [
+    "Politics of the Northern Empire",
+    "Aristocratic republic",
+    "Republic",
+    "Senatorial system"
+  ],
+  "RagShortTexts": [
+    "The politics of the Northern Empire was an aristocratic-senator republic."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Northern Empire? On the surface they call themselves a republic, but it is nothing more than a game played among noble lords. What does their republic have to do with common folk like us?"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "We in the Northern Empire follow tradition and still implement the republican system of the Senate to protect the interests of us senators and their families. We speak freely in the Senate and we formulate policies. There is no autocratic monarch. Our emperor is elected by us and is naturally a servant of the Senate. We believe that this system allows us to brainstorm and formulate national policies that are in line with our vital interests."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The senatorial republic of the Northern Empire is a joke. Their so-called republic is merely a fig leaf for pursuing their own self-interest. Their emperor is said to have no power, yet which of their policies is not decided by their emperor? Even when they hold elections, they are rigged elections—either the wealthiest or the most powerful gets chosen, and certainly no one is ever elected for virtuous conduct."
+    }
+  ],
+  "TextMappings": []
+}

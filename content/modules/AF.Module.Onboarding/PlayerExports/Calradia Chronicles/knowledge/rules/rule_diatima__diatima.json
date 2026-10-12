@@ -1,0 +1,42 @@
+{
+  "Id": "rule_diatima",
+  "Keywords": [
+    "Diat horse",
+    "Northbound at"
+  ],
+  "RagShortTexts": [
+    "The imperial general built the Dyat Horse on the ruins of the Temple of Drya"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Diatema, the city of the Holy Inquisition, was founded by an Imperial general on the ruins of the Temple of Drya overlooking Lake Laconis. It was here that the Dryans, the northernmost Palas, fought their last battle, revolting against the Empire and then being annihilated. According to legend, they were surrounded in the shallows of the lake and bravely fought to the last man before the crimson water swallowed them up Diatema was the capital of Lucon. A"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "A",
+      "Kind": "status|clan|has_any_town",
+      "TargetId": "clan_empire_north_1",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": "The rule of Lucon and his successors remains secure",
+      "FalseText": "Diatema has fallen into enemy hands"
+    }
+  ]
+}

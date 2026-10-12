@@ -1,0 +1,211 @@
+{
+  "Id": "rule_vampire",
+  "Keywords": [
+    "vampire",
+    "midnight dignitary",
+    "undead",
+    "Vampire von Carstein",
+    "Five major pedigrees",
+    "Curse of Nagash",
+    "elixir of life",
+    "Vampire Sylvania",
+    "dark magic (vampire)",
+    "eternal damnation"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Vampires are the most feared undead creatures in the Old World. They live on blood and rule Sylvania, a shadowy land in the east of the Empire. Legend has it that these midnight dignitaries possess eternal life and extraordinary power, but are forever cursed to be trapped in the gap between life and death. The von Carstein family is the most notorious vampire bloodline among them, and has launched many undead wars in an attempt to conquer the entire empire."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "We are the Midnight Nobles, the supreme creation left behind by Nagash in the world. Mortals fear us because they know we are stronger, more graceful, and more eternal than they are. Sylvania is our realm, every inch drenched in the power of death, and the dead rise from their graves at our call. The blood of von Carstein runs within us - but remember, the strife within the Kindred is far deadlier than against the Empire, and our enemies often wear the same black cloak. The weak are just food; the real power lies in harnessing dark magic and letting the army of the dead crush any living person who dares to resist."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Vampire Counts are essentially the most dangerous of warlords - they do not rely on mortal loyalty or food supplies, but instead use necromancy to power endless legions of skeletons and zombies. Any lord bordering Sylvania must be wary of its infiltration: vampires are adept at corrupting mortal courts with charm, bribery, and fear, often breaking down their opponents' defenses from within before they even reach the gates. The key to dealing with a vampire army is decapitation - destroy the mage controlling the undead or the vampire itself, and the entire army will collapse."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 100
+        },
+        "IdentityIds": null
+      },
+      "Content": "The origins of vampires can be traced back to Nagash, the priest-king of ancient Nehekhara, who invented the elixir of immortality in the process of trying to conquer death with dark magic - a forbidden alchemical creation induced by human blood. Queen Neferata of Nehekhara, one of Nagash's lieutenants, became the first true vampire after drinking the potion, and she later passed the curse on to her followers in Lahmia. The blood of the Lahmian blood family eventually flowed north, and over the long years split into five major lineages: von Carstein, Blood Dragon, Niklaschi, Strigoi, and Lachemia. Each lineage has developed a unique talent due to the curse - von Carstein is proficient in charm and politics, the blood dragon pursues absolute perfection in martial arts, Niklas is addicted to the abyss of necromancy, Strygoi degenerates into a monstrous predator, and Lahmia weaves the most exquisite conspiracy in the dark."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The problem of vampires has far-reaching significance for a female noble lord than military defense-the best way for vampires to infiltrate is precisely through noble social circles. I saw a baroness from Ostermark who, after the death of her husband, was visited three times by an elegant gentleman who claimed to be a distant relative of the deceased, and by the fourth visit she had prepared for him a room for his permanent residence in the castle cellar. When I sent someone to investigate the background of this gentleman, I found that the time when he appeared in that territory showed an almost irrefutable synchronicity with the number of consecutive missing girls in nearby villages. Female aristocrats have an advantage that men do not have in fighting vampire penetration: vampires can imitate the sense of authority of male aristocrats, but it is difficult for them to imitate an aristocratic woman's intuition for social details - I can detect whether a person's palm temperature is normal when shaking hands for the first time, and whether the other person never eats during the day at the second afternoon tea."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The vampire threat to the ancient family isn't just military - it's bloodline. One of the most despicable strategies of the von Carstein family is 'bloodline pollution': they do not directly kill all members of a noble family, but transform certain family members into blood servants or low-level vampires, so that the family's bloodline continues on the surface but is actually controlled by vampires. Our family keeps a sealed genealogy, which lists the branches of the family that have been confirmed or suspected to have had some relationship with vampires in the past three hundred years - the descendants of those branches are still being observed today. The biggest attack of vampires on noble families is not the undead army on the battlefield, but their ability to use immortality as bait to create rifts within the family. A side heir who is third in the line of succession and has no possibility of naturally inheriting the title is the easiest target to be recruited by vampires, because he can replace the inner humiliation of \"never being able to inherit\" with \"gaining immortality\"."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Vampires are the opponents I least want to take on among all mercenary missions - not because they can't be dealt with, but because you never know whether you are killing a real vampire or just an ordinary mortal whose mind has been controlled by a vampire. I spent a year as a freelance scout for the Imperial Border Guards on the edge of the Ostermark Marsh, specializing in guarding the paths leading away from Sylvania at night. One night I saw a girl who looked to be only twelve years old walking from the direction of Sylvania - she was barefoot, wearing a shabby dress from who knows how many centuries ago, and had a never-changing smile on her face that you would never see on a living person. I let her go, not because I was soft-hearted, but because my gut told me that letting her go would be more predictable than shooting her. The scariest thing about vampires is not how many people they kill, but that they turn death into a tradable resource - every time you kill a zombie villager on the Sylvania border, the vampire count saves the magic cost of keeping that corpse alive."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Sylvania under vampire control is a complete economic wasteland for merchants - but is therefore an extremely high risk-reward market. Vampires do not participate in normal commercial exchanges, but they need iron, cloth, and certain magical materials not produced in Sylvania itself to maintain the operation of the castle and perform undead rituals. Our Chamber of Commerce has never traded directly with Sylvania - that is an act of treason under Imperial law - but I know that there are at least three small underground caravans that specialize in crossing the swamp from the direction of Osterland into Sylvania at night, exchanging Imperial iron for dark magic amulets and purified soul essence provided by vampires. These goods command an astonishing premium in the empire's underground magic market, and every caravan owner writes a will before setting off. The economic value of vampires is a taboo subject within the Imperial Business Council - but in an honest but off-the-record private discussion I can say this: if the Empire one day wiped out all vampires in Sylvania, some of the underground alchemist chambers that rely on vampires for their spell extracts would be out of business within a year."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Neferata - Queen Lahmia, the first true vampire, the mother of the five veins",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Vampire’s family background and political status"
+  ]
+}

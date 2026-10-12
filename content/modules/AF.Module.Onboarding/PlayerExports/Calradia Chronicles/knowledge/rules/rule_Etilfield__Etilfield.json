@@ -1,0 +1,94 @@
+{
+  "Id": "rule_Etilfield",
+  "Keywords": [
+    "Etilfield",
+    "Battania boundary"
+  ],
+  "RagShortTexts": [
+    "Etilfield is located on the border of Battania, near Sargot, and grows wheat."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Etilfield is a village near Sargot, situated near the mouth of a low mountain on the border of Battania. The Ethier River gushes out of springs on the cliffs of the Ucarion massif and flows through the village. Local villagers grow wheat and sell it mainly to the army stationed nearby."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Etilfield is on the border, opposite the territory of the Battania people. This village is not rich, but its location is important - the water of the Etier River gushes out from the cliffs, watering the wheat fields on both sides. For the army stationed at Sargoth, half of the wheat in the rations was supplied here. If this side is lost one day, the defender's job will be ruined in half."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "townsfolk"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Etilfield's wheat flour is sold to the garrison. The price is stable and there is no need to worry about sales. The soldiers in the fortresses on the border drilled every day and ate a lot. The flour grinded from Etilfield's wheat just filled their bellies. But this place is too close to Battania, so it’s hard to say if a fight breaks out."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "When I arrived at Etirefield, the first thing I saw was the Etire River - the water spurted out from the spring on the cliff, white and bitingly cold. Next to the village is the border line. The wheat fields are spread all the way to the foot of the mountain. Beyond that is the territory of the Battania people. The villagers grew wheat and sold it to the garrison. Their life was tight, but still peaceful."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Etilfield",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "Sargot",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

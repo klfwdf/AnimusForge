@@ -1,0 +1,212 @@
+{
+  "Id": "rule_Vault_of_Heaven_Demonic_Center",
+  "Keywords": [
+    "Sky Demonic Hub",
+    "paradise academy",
+    "magic chariot",
+    "Meteor Summon",
+    "battle prediction",
+    "celestial dome observer",
+    "Astro Chariot",
+    "Celestine Nexus",
+    "Heavenly Mage",
+    "Eye of the storm",
+    "Star Magic"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Vault of Heaven is a huge magical chariot built by the Heaven Academy of the Imperial Academy of Magic - a rotating star observer is installed on the top, driven by the power of Azir's blue wind. It can summon meteorites to fall from the sky on the battlefield, or predict the enemy's next tactical move with incredibly accurate predictions. It was towed by several armored horses, and its body was covered with astronomical instruments and star runes. The air where it passed was filled with the smell of ozone after the lightning fell."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Sky Demonic Hub is the most spectacular witness to the empire's secret technology - it is the fundamental reason why the mages of Paradise Academy are tolerated and even respected by the empire! Do you think the citizens of Altdorf are afraid of magic? Let them hear the sound of the Celestial Nexus slowly coming from the other side of the Reik River - the crackle of those low blue lightnings as they dance across the scope - and they will tell you that it is not fear, that is the divine will that Sigmar has given mankind to look into! The core of the Sky Demonic Hub is the 'Celestial Orb' that was personally blessed by the Dean of Heaven Academy - it is made up of one thousand two hundred polished crystal flakes stacked layer by layer at extremely precise angles. It can continuously capture the weak fluctuations of Azir's wind during the battle and amplify it into magical energy enough to summon a meteorite rainstorm. When the Demonic Nexus is working on the battlefield, the top of its observer will shoot out a blue beam of light that shoots straight into the sky - any Imperial soldier who sees that beam of light will know that the sky above the enemy's head will no longer be sky, but judgment. Of course, the Imperial people also know that the Magic Nexus is not omnipotent - its prophetic ability is not perfect, and it has even given contradictory tactical predictions on the battlefield many times. However, any Imperial person will support the Imperial Parliament to increase the funding for Paradise Academy: because on the battlefield, when rocks are raining down from above your head and hitting the enemy, your heart will be convinced like never before - we are right."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The core problem in the tactical deployment of the Sky Demonic Hub is that it is not only the empire's most powerful long-range magic suppression platform, but also the most vulnerable strategic target on the empire's battlefield. The Nexus itself's size and weight prevent it from moving on the battlefield faster than a warhorse's trot, and once deployed out of position it is completely impossible to reposition during combat. The mages of Heaven claim that the prophetic ability of the Demonic Nexus can 'tell us in advance when the enemy will attack our weak points' - this is my personal experience. This kind of prediction is theoretically true, but its accuracy in actual combat is about 60% to 70%, and the other 30% of false predictions will cause you to invest your reserves in the wrong direction, leaving no troops available when the real breakthrough comes. Any commander commanding the Nexus must equip it with at least a full force of protection - a ring of Halberdiers or Greatswordsmen, plus at least one team of Musketeers to provide long-range suppression - because every enemy commander with any semblance of savvy will concentrate all ranged firepower and cavalry raids on the Nexus at the beginning of the battle. What is the cost of losing a demonic hub? The estimated cost of the Artillery Academy is about 80,000 imperial gold coins - but let me tell you, Heaven Academy counts money, I count time: creating a new Demonic Nexus requires at least six senior Heaven mages to work continuously for more than four years, and the Empire does not have the luxury of four years to wait and face Chaos."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "The magical theoretical basis of the Sky Demonic Nexus comes from the in-depth study of the Wind of Azir - the wind of blue magic - by the Academy of Heaven. The essence of Azir in the Eight Winds is the sky, stars, omens, and the future. Its special connection with the time dimension allows the Heavenly Mage to perform 'battle foresight' within a limited range - that is, by interpreting the flow direction of Azir's wind and the celestial indications of the large star instrument to infer the course of action that the enemy may take under optimal probability. But this kind of foresight is not unlimited - it is called the 'Law of Prophecy Clarity Decay' within Paradise Academy: the longer the time span of the prophecy, the wider the geographical scope, and the more variables involved, the greater the ambiguity of the foreseeing results. Under ideal experimental conditions, the Heavenly Mage can make highly accurate small-area tactical predictions about fifteen minutes before a conflict occurs - but once the time exceeds half an hour, the value of the prediction drops to the same as the intuitive inference of an experienced general. The meteorite summoning function of the Sky Demonic Hub uses a completely different Azir application logic - it uses the Azir wind resonance generated by the rotation of the large star instrument at a specific frequency to aggregate, accelerate and induce the meteorite dust in the sky to fall dozens of miles away. The magic consumption of this process is extremely staggering - a magic hub can continuously summon meteorites no more than four times during a battle, and then it is necessary to return to camp for a recalibration of the star instrument that takes at least six hours. Celestine Alder of Paradise Academy is recognized as the master of the construction of the Sky Demonic Nexus - he completed the construction of the second Magic Nexus in 2470 of the Imperial Calendar, making it the first time that the Imperial Army deployed this weapon on two fronts at the same time."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "There are actually many female mages in Paradise Academy - Azir's Wind is not as picky about gender as Aegir, but the control room of the Sky Demonic Hub is almost never open to female scholars from Paradise Academy. The reason is very sad and very realistic: all the control instruments of the Magic Hub are designed according to the average height and arm span of the male scholars of Paradise Academy - the manual calibration rod of the rotating star instrument requires a person to lean back with his whole body weight to pull it, which is almost impossible for most smaller women. But the first thing I did for the Paradise College stationed laboratory in the armory of my province was to invest three hundred gold coins for them to install a lever assist system on the magic hub - the effect was that the operating efficiency of women changed from the original need for the assistance of two male students to a single-person operation. Paradise College has never officially acknowledged the effects of the improvements, but since then the enrollment rate of female mages in my provincial magic station has increased by one-third. I don’t hate tradition, but sometimes tradition is just laziness of people in the past."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "There is a technical cooperation channel between our family's astronomy tower and Paradise College that has never been written into any document but has been implemented for nearly a hundred years - every year our family donates an unnamed research fund to Paradise College, and in return we receive the priority service of the Heaven Master in provincial weather forecasting. This was a quietly huge strategic bonus for a family with its roots in farming and river shipping: Knowing in advance when a storm was coming meant that the entire grape harvest hidden behind that ridge could be salvaged, and it meant riverboats could get into port ahead of the flood. The summoning of meteorites from the Sky Demonic Hub is a miracle in the eyes of farmers - but they don’t know that behind the miracle is our family’s Ji Kui trust deed. On the surface, the magic of the empire and the interests of the nobility are divided - the emperor warns all lords to be wary of the influence of magic - but in fact every forward-looking family is trying in different ways to nail a wind of magic into their own family shield."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "It's one thing to see the Sky Demonic Hub from the ground - it's another thing to see it from the ground where it's about to drop meteorites. I stood on the right wing of the Imperial defense line as a mercenary crossbowman during the Battle of Wilton, and witnessed with my own eyes the effects of the Vault of Heaven - or the Vault of Heaven. First, there was suddenly so much static electricity in the air that the hairs on your fingertips all stood up, and then there was a crackling sound that was not thunder but definitely not any natural object above the area illuminated by the beam at the top of the magic hub - then a stone falling from the sky hit an entire group of green-skinned war pig cavalry. When the flying fragments bounced to the ground in front of our formation, each piece was still burning with blue after-flames. Then the prophecy of the Demonic Nexus - or the remote communication of the wizards of heaven - reached the frontline commander, who told us that the enemy's next main charge would be launched along the river valley on the right. The commander believed the prophecy and moved all the reserves to the right wing - the charge really came, but not from the valley on the right, but from the front. The Heavenly Mage later explained that this was a 'normal error in tactical predictions', and two of my mercenary buddies did not survive to determine whether it was an error or a lie. The Nexus's light is so beautiful that it makes people tremble - but those who stand outside its light pay with legs and heads for every error it makes."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The manufacture and maintenance of the Sky Demonic Hub involves a highly specialized and extremely profitable magic instrument supply chain - most links in this supply chain are firmly controlled internally by the Academy of Heaven, but the peripheral material procurement and logistics inevitably flow into the commercial market. The core crystal pieces of the Demonic Nexus Orb must be purchased from the dwarf mines in the World's Edge Mountains - the quality grading of these crystal pieces is extremely complex, and each piece needs to be personally inspected by the Heavenly Mage under the moonlight for uniformity of the internal cloud veins. Less than 20% of them can pass the inspection. The craziest price I have ever seen in a crystal purchase contract was one hundred pieces of special white crystal purchased from Karak Vane ten years ago for sixty imperial gold coins per piece - while the market price of ordinary glass pieces of the same area was six copper coins. In addition, the metal support part of the magic hub requires a special alloy that can resist magnetization deviation in Azir's energy - Paradise Academy calls it 'Star Brass', and its formula is listed as one of the empire's top technical secrets. Only the dwarves of Nunn's franchised foundry know the complete formula. From a businessman's perspective, the Sky Magic Hub is the ultimate non-standard item - every repair and every accessory replacement is an irreplaceable customization project. What you earn from it is not repeated orders, but an astonishing premium for each order."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Azir Blue Wind - the magical wind of Paradise Academy, which dominates the sky, stars, predictions and the future",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Magic Chariot of Heaven Academy"
+  ]
+}

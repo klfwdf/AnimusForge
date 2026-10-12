@@ -8,7 +8,7 @@ DialogueUiSettings.Instance=null;
 Check(DialogueUiOptions.SkinEnabled && DialogueUiOptions.PanelStyle==ShoutPanelStyle.Scroll && DialogueUiOptions.BodyFontSize==24,"missing settings use new UI, scroll and 24");
 var settings=new DialogueUiSettings();DialogueUiSettings.Instance=settings;
 Check(settings.InterfaceStyleDropdown.SelectedIndex==1 && settings.ShoutPanelStyleDropdown.SelectedIndex==1,"fresh MCM defaults");
-Check(settings.InterfaceStyleDropdown.Values.SequenceEqual(new[]{"原版","新 UI"}),"two explicit UI options");
+Check(settings.InterfaceStyleDropdown.Values.SequenceEqual(new[]{"Original","New UI"}),"two explicit UI options");
 settings.InterfaceStyleDropdown.SelectedIndex=0;
 Check(!DialogueUiOptions.SkinEnabled && !DialogueUiOptions.UsesSceneSession,"original mode disables replacements and scene session");
 settings.InterfaceStyleDropdown.SelectedIndex=1;

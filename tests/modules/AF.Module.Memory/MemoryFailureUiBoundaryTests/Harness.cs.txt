@@ -28,7 +28,7 @@ namespace TaleWorlds.CampaignSystem
 }
 namespace AnimusForge
 {
-    public static class Logger { public static bool Fail; public static void Log(string a,string b) { if(Fail)throw new Exception("log failure"); } }
+    public static class Logger { public static bool Fail; public static List<string> Messages=new(); public static void Log(string a,string b) { if(Fail)throw new Exception("log failure");lock(Messages)Messages.Add(b); } }
     public partial class MyBehavior
     {
         public static MyBehavior Instance {get;set;}
@@ -56,6 +56,10 @@ namespace AnimusForge
             string error="fixture error";var failures=new List<string>{"fixture failure"};var ex=new Exception("fixture exception");
             switch(index) { @@PRODUCERS@@ }
         }
+#if !ORIGINAL
+        public void NotifyDisplay(long generation) => MemoryFailureNotices.PublishMemoryFailureNotice("原始诊断标题", "原始诊断正文", generation,
+            new MemoryFailureDisplay(MemoryFailureUiText.T("AF_MEMORY_UI_SummaryFailedTitle", "End-of-day summary failed"), MemoryFailureUiText.T("AF_MEMORY_UI_DailyFailureLine", "{NAME}, day {DAY}: {ERROR}", ("NAME", "Ada"), ("DAY", 5), ("ERROR", "detail"))));
+#endif
         @@SHOW@@
         @@TICK@@
         @@TICK_STUBS@@
@@ -67,6 +71,9 @@ namespace AnimusForge
         static void Case(string name,Action<MyBehavior,long> body)
         {
             TWParallel.MainId=Thread.CurrentThread.ManagedThreadId;Logger.Fail=false;InformationManager.Shown.Clear();InformationManager.OffThread=0;InformationManager.DuringShow=null;
+#if !ORIGINAL
+            Logger.Messages.Clear();TaleWorlds.Localization.TextObject.Translations.Clear();TaleWorlds.Localization.TextObject.OffThread=0;TaleWorlds.Localization.TextObject.IsMainThread=TWParallel.IsMainThread;
+#endif
             var owner=new MyBehavior();MyBehavior.Instance=owner;TaleWorlds.CampaignSystem.Campaign.Available=true;TaleWorlds.CampaignSystem.Campaign.Owner=owner;TaleWorlds.CampaignSystem.Campaign.OffThread=0;long gen=SaveRuntimeGuard.AdvanceGeneration("fixture");
             try {body(owner,gen);}catch(Exception e){Check(false,name+": "+e);}
         }
@@ -93,6 +100,17 @@ namespace AnimusForge
             Case("UI failure",(o,g)=>{InformationManager.DuringShow=_=>throw new Exception("UI failure");o.Notify("failed","body",g);Check(!o.Active,"UI failure releases owned state");var old=InformationManager.Shown[0];InformationManager.DuringShow=null;o.Notify("next","body",g);old.AffirmativeAction();Check(o.Active,"failed-show callback cannot clear newer UI");});
             Case("reentrant show",(o,g)=>{InformationManager.DuringShow=data=>{InformationManager.DuringShow=null;data.AffirmativeAction();o.Notify("nested","body",g);throw new Exception("outer UI failure");};o.Notify("outer","body",g);Check(Count==2&&o.Active,"outer failure cannot clear reentrant newer notice");});
             Case("parallel publishers",(o,g)=>{Parallel.For(0,100,_=>o.Notify("same","body",g));Tick(o);Check(Count==1&&InformationManager.OffThread==0,"concurrent publishers coalesce");});
+#if !ORIGINAL
+            Case("detached bilingual display",(o,g)=>{
+                Task.Run(()=>o.NotifyDisplay(g)).GetAwaiter().GetResult();
+                Check(Count==0&&TaleWorlds.Localization.TextObject.OffThread==0,"worker publishes without resolving text");
+                TaleWorlds.Localization.TextObject.Translations["AF_MEMORY_UI_SummaryFailedTitle"]="日结压缩总结失败";
+                TaleWorlds.Localization.TextObject.Translations["AF_MEMORY_UI_DailyFailureLine"]="{NAME} 第{DAY}日：{ERROR}";
+                Tick(o);Check(Count==1&&InformationManager.Shown[0].Title=="日结压缩总结失败"&&InformationManager.Shown[0].Text=="Ada 第5日：detail","display resolves current language and placeholders on main thread");
+                Check(Logger.Messages.Exists(x=>x.Contains("原始诊断标题 :: 原始诊断正文"))&&TaleWorlds.Localization.TextObject.OffThread==0,"original diagnostic and localization thread preserved");
+            });
+            Case("English display fallback",(o,g)=>{Task.Run(()=>o.NotifyDisplay(g)).GetAwaiter().GetResult();Tick(o);Check(InformationManager.Shown[0].Title=="End-of-day summary failed"&&InformationManager.Shown[0].Text=="Ada, day 5: detail","English fallback contains original detail");});
+#endif
             for(int i=0;i<9;i++)
             {
                 int producer=i;

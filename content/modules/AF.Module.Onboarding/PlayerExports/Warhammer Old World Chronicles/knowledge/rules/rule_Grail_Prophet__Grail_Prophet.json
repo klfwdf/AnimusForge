@@ -1,0 +1,213 @@
+{
+  "Id": "rule_Grail_Prophet",
+  "Keywords": [
+    "Holy Grail Prophet",
+    "high priest",
+    "life magic",
+    "heaven magic",
+    "magic consultant",
+    "Maid of the Lake Goddess",
+    "priestess",
+    "prophet",
+    "magic tutor",
+    "oracle",
+    "prophecy",
+    "divine magic"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Seer of the Holy Grail is the highest-ranking female priest in the Church of the Lake Goddess. She has the ability to predict the future and cast magic of life and heaven. They are often the most important magical advisors to kings and dukes, and hold high status in Bretonnian aristocratic society."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Seer of the Holy Grail - the goddess' spokesperson in the mortal world! These holy women have been admitted to the Holy Grail Cathedral since childhood, study oracles and magic in closed monasteries, remain celibate throughout their lives, and devote their entire lives to the cause of the goddess. They can heal the dying, summon the fountain of life that nourishes all things, and predict the enemy's movements on the battlefield. Every Duke longs to have a Holy Grail Seer at his court - their words carry more weight to some degree than the Duke's own orders. When the Holy Grail Seer gazes at the changing water patterns in the Holy Grail Pool and whispers the goddess' revelation, the entire council chamber will fall into pious silence. They are Bretonnia's brightest light in a dark world."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Having a Grail Seer as an advisor is a great advantage to any Bretonnia lord. Their life magic can significantly reduce the attrition of diseases during the march of the army, their heaven magic can predict the weather so as to choose the best time to attack, and their ability to predict is a priceless weapon on the battlefield. But it must be noted: the Holy Grail Seer is loyal to the goddess first, and the lord secondly. When secular orders conflict with oracles, they will choose God's will without hesitation. In addition, Holy Grail Prophets are extremely rare, with perhaps less than twenty alive in all of Bretonnia."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "The theological and magical systems of the Seers of the Holy Grail are unique in the Old World. They are no ordinary mages - the source of power of the Holy Grail Prophets is the oracular grace of the Lady of the Lake rather than the eight magical winds. This distinction is extremely important: because they use \"holy magic\" rather than \"arcane magic\", they are not affected by the fluctuations of the winds of magic, and do not face the risk of Chaos corruption. The training of the Holy Grail Seer begins at the age of five to seven and takes place in more than a dozen forest monasteries throughout Bretonnia. The entire process takes about twenty years. They master the spells in the two fields of the wind of life (Jian) ​​and the wind of heaven (Agil), and are proficient in divination, healing and lifting curses. Each prophet is bound to a Holy Grail Pool and receives the goddess's oracle through the changes in the water. After the Holy Grail Prophet dies, her soul is said to sink into the Holy Grail Pool and become the guide for the next Prophet."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Seer of the Grail is the only path in Bretonnia that allows a woman to wield true power. They are not controlled by any man and are only responsible to the goddess. When I was young, I also dreamed of being chosen to be the Seer of the Holy Grail - but the Goddess had other plans, and I married into earthly power. Today I still respect them and occasionally envy them their freedom."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Prophet of the Holy Grail once predicted that our family would face three disasters - the first two have come true, so we were able to prepare in advance and avoid the disaster of annihilation. Now that the third time has not yet come, the whole clan is living cautiously under the watchful eye of the goddess. The words of the Holy Grail Prophet are not child's play and must be respected with life."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "I met the Seer of the Holy Grail outside a remote forest monastery. She stood there and looked at me without saying a word, as if she could see through all my secrets. I didn't like that feeling - like being judged and then forgiven even though she didn't say anything. Later that night I escaped an ambush by bandits, and perhaps it was her foresight that saved me."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Monastery of the Seer of the Holy Grail never haggles when purchasing supplies - they regard money as a worldly corruption. So you need to be extra careful when doing business with them: setting the price too high will be seen as greedy, setting the price too low will make them suspicious. The best strategy is to quote a reasonable price and say \"please pay according to the goddess's wishes\". Usually they will pay double."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "The Holy Grail Seer is the highest-ranking female priest of the Church of the Lake Goddess, proficient in prophecy and magic of life and heaven.",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Holy Grail Seer High Priest Life Magic"
+  ]
+}

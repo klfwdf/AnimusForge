@@ -1,0 +1,68 @@
+<?xml version='1.0' encoding='utf-8'?>
+<base type="string">
+  <tags>
+    <tag language="English" />
+  </tags>
+  <strings>
+    <string id="AF_EX_MCM_DeathRate" text="Military exercise death rate intensity" />
+    <string id="AF_EX_MCM_DeathRate_Hint" text="Military exercise only. 0% = human units can fall only wounded; 50% = native death rate; 100% = eligible targets always die when they fall." />
+    <string id="AF_EX_MCM_Group" text="11. Military exercise" />
+    <string id="AF_EX_MCM_PlayerDeath" text="Allow player death" />
+    <string id="AF_EX_MCM_PlayerDeath_Hint" text="Military exercise only. Enabled: the player may die according to the exercise death rate. Disabled: the player is always wounded instead of killed when downed." />
+    <string id="AF_EX_MCM_CompanionDeath" text="Allow companion death" />
+    <string id="AF_EX_MCM_CompanionDeath_Hint" text="Military exercise only. Enabled: participating hero companions may die according to the exercise death rate. Disabled: participating companions are always wounded instead of killed when downed. Regular soldiers are not protected by this setting." />
+    <string id="AF_EX_UI_OpenSelectionFailed" text="Failed to open selection screen" />
+    <string id="AF_EX_UI_ExerciseStarted" text="Military exercise started." />
+    <string id="AF_EX_UI_ExerciseOpenFailed" text="Failed to open military exercise." />
+    <string id="AF_EX_UI_ExercisePreparing" text="Military exercise is preparing." />
+    <string id="AF_EX_UI_ExerciseAlreadyActive" text="A military exercise is already in progress." />
+    <string id="AF_EX_UI_ExerciseProcessing" text="Military exercise is being processed." />
+    <string id="AF_EX_UI_ExerciseCancelled" text="Military exercise cancelled." />
+    <string id="AF_EX_UI_SelectionFailed" text="Selection failed." />
+    <string id="AF_EX_UI_ExercisePreparationFailed" text="Military exercise preparation failed." />
+    <string id="AF_EX_UI_ExerciseEnded" text="Military exercise ended." />
+    <string id="AF_EX_UI_ExerciseSettlementError" text="Military exercise settlement failed." />
+    <string id="AF_EX_UI_ExerciseNoPlayerParty" text="There is no player party available for a military exercise." />
+    <string id="AF_EX_UI_ExerciseMissionBlocked" text="A military exercise cannot start during a mission." />
+    <string id="AF_EX_UI_ExerciseEncounterBlocked" text="An encounter or battle is already active, so a military exercise cannot start." />
+    <string id="AF_EX_UI_ExerciseNoSecondTeamMembers" text="The player party has no members available for the second team." />
+    <string id="AF_EX_UI_ExerciseStateBlocked" text="The current state prevents a military exercise from starting." />
+    <string id="AF_EX_UI_ExerciseSelectableMembers" text="Selectable members" />
+    <string id="AF_EX_UI_ExerciseFirstTeam" text="First team (the player is fixed to this team)" />
+    <string id="AF_EX_UI_ExerciseRemainingMembers" text="Remaining members" />
+    <string id="AF_EX_UI_ExerciseSecondTeam" text="Second team" />
+    <string id="AF_EX_UI_ExerciseSecondTeamMinimum" text="The second team must contain at least one member." />
+    <string id="AF_EX_UI_ExerciseOpponentParty" text="AnimusForge military exercise opponent" />
+    <string id="AF_EX_UI_ExerciseHoldingParty" text="AnimusForge military exercise reserve" />
+    <string id="AF_EX_UI_ExerciseFailureUnknown" text="Unknown reason." />
+    <string id="AF_EX_UI_ExerciseFailureRosterMismatch" text="The team selection is inconsistent. Please select the teams again." />
+    <string id="AF_EX_UI_ExerciseFailureEmptySecondTeam" text="The second team has no participating members." />
+    <string id="AF_EX_UI_ExerciseFailureMainParty" text="The player party is unavailable. Return to the campaign map and try again." />
+    <string id="AF_EX_UI_ExerciseFailurePlayerParty" text="The player is not in the main party, so the military exercise cannot start." />
+    <string id="AF_EX_UI_ExerciseFailureBattleScene" text="The exercise battle could not be opened. Move elsewhere and try again." />
+    <string id="AF_EX_UI_InspectionStarted" text="Troop inspection started." />
+    <string id="AF_EX_UI_InspectionOpenFailed" text="Failed to open troop inspection." />
+    <string id="AF_EX_UI_InspectionPreparing" text="Troop inspection is preparing." />
+    <string id="AF_EX_UI_InspectionSelectionOpen" text="The troop inspection selection screen is already open." />
+    <string id="AF_EX_UI_InspectionPlayerWounded" text="You are wounded and cannot inspect troops." />
+    <string id="AF_EX_UI_InspectionNoHealthyTroops" text="There are no healthy soldiers available for inspection." />
+    <string id="AF_EX_UI_InspectionEncounterBlocked" text="The current encounter state prevents troop inspection." />
+    <string id="AF_EX_UI_InspectionStateBlocked" text="The current state prevents troop inspection." />
+    <string id="AF_EX_UI_InspectionMissionBlocked" text="Troop inspection is unavailable during a mission." />
+    <string id="AF_EX_UI_InspectionConversationBlocked" text="Troop inspection is unavailable during a conversation." />
+    <string id="AF_EX_UI_InspectionLocationBlocked" text="Troop inspection is unavailable at the current location." />
+    <string id="AF_EX_UI_InspectionCancelled" text="Troop inspection cancelled." />
+    <string id="AF_EX_UI_InspectionPreparationFailed" text="Troop inspection preparation failed: the team selection is inconsistent. Please select again." />
+    <string id="AF_EX_UI_InspectionSelectableMembers" text="Selectable members / not in inspection" />
+    <string id="AF_EX_UI_InspectionTeam" text="Inspection team (the player is fixed to this team)" />
+    <string id="AF_EX_UI_CastleDispositionHint" text="Castle disposition: use the native command system to arrange soldiers and prisoners. Press TAB to finish." />
+    <string id="AF_EX_UI_InspectionModeHint" text="Inspection mode: command the formation freely during inspection. Press TAB to retreat and finish." />
+    <string id="AF_EX_UI_PrisonerRosterUnavailable" text="Parade: the prisoner roster is unavailable." />
+    <string id="AF_EX_UI_NoPrisoners" text="Parade: there are no prisoners available to participate." />
+    <string id="AF_EX_UI_ParadePrefix" text="Parade: " />
+    <string id="AF_EX_UI_ParadeLords" text="{COUNT} lord prisoners (lord formation 8)," />
+    <string id="AF_EX_UI_ParadeRegulars" text="{COUNT} soldier prisoners (prisoner formation 7)" />
+    <string id="AF_EX_UI_PrisonerSpawnFailed" text="Parade: prisoner spawning failed ({ERRORS}/{TOTAL}). Error: {ERROR}" />
+    <string id="AF_EX_UI_PrisonerSpawnAllFailed" text="Parade: prisoner spawning failed ({COUNT} attempts, 0 succeeded)." />
+  </strings>
+</base>

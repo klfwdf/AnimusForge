@@ -1,0 +1,213 @@
+{
+  "Id": "rule_Blood_Beast_Chariot",
+  "Keywords": [
+    "Blood Beast Chariot",
+    "Mutated heavy beast",
+    "Crush Infantry",
+    "Chaos Chariot",
+    "heavy impact",
+    "Blood beast pulling",
+    "The chariot is fierce",
+    "steel giant ship",
+    "crushing force",
+    "Chaos Armor (Blood Beast Chariot)",
+    "charge breakthrough",
+    "battlefield crusher"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Blood Beast Chariot is a heavy steel chariot pulled by giant beasts distorted and mutated by Chaos energy. It crushes infantry formations with its collision and crushing force. It is like an unstoppable torrent of iron and blood on the battlefield. It is the most breakthrough ground unit in the Chaos army."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "chaos_culture"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Have you ever heard the sound of a blood beast chariot approaching from afar? It was a cacophony of steel wheels crushing bones and chains dragging the floor. The blood beasts themselves - do you know what they once were? They are the giant boars and mountain bears of the north, who lost their original forms after receiving too many gifts from Chaos. Their muscles exploded from beneath their skin, their mouths sprouted fangs longer than swords, and their eyes were filled with pure rage. You can't \"drive\" the blood beast - you can only steer the front of the car as hard as possible at the enemy as it is irritated by the scent of the enemy ahead, like riding a storm. Once it starts charging, the only safe place is in the car."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Blood Beast Chariot is your ultimate weapon to break enemy lines. They have extremely high collision damage to dense infantry, and a single charge can destroy the entire phalanx. However, the weaknesses of the Blood Beast Chariot are its low agility and slow start - it requires sufficient acceleration distance to reach fatal speeds. They work best when deployed on the flanks and charged parallel to the enemy line. Combined with Chaos War Dogs to clean up deserters, the tank's battle results can be maximized."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "According to the records in the \"Chaos War Weaponry\", the design of the Blood Beast Chariot originated from the dwarf Chaos Dwarf \"Forge Lord\" Baal-Zahak, who combined dwarf chariot technology with Chaos Sacrifice to create the first batch of twelve Blood Beast Chariots. Each chariot is pulled by one to three blood beasts: a single-beast chariot is fast and suitable for flanking raids; a two-beast chariot is standard, taking into account both speed and impact; a three-beast chariot is extremely rare and requires three drivers to coordinate and control, but its charge on flat ground is powerful enough to knock down a city wall. The breeding of blood beasts is a specialized dark art - the breeders must feed the blood beasts with blood (human blood or animal blood) mixed with crushed obsidian powder every day, otherwise the blood beasts will turn to attack their masters. The most famous chariot is Khorne's \"Bloodcrusher\" - it is said that it has a daemon's spine permanently embedded in its wheel axle."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "My blood beast chariot is pulled by the female beast \"Wrathful Horn\" that I personally tamed. Controlling such a violent creature requires intelligence rather than brute strength—a strength that female masters possess."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Building a blood beast chariot requires three things: a mutant beast that is strong enough, a casting platform dedicated to the evil god, and - the most crucial part - a warrior who volunteers to be the driver of the chariot. This driver will establish a spiritual connection with the blood beast during every charge of the chariot, and over time their sanity will become one with the blood beast."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The ground starts shaking, and you think it's an earthquake—and then you see it. A huge iron chariot rushed over, pulled by a twisted and deformed beast, with black steam spurting out from its nostrils."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Bloodbeast Chariot is one of the most fearsome weapons in the armory of Chaos. It was crafted using a combination of dwarven forging and chaos magic, and the wheels were engraved with glowing runes. The chariot itself was often forged from fragments of armor from fallen warriors, and was thought to embody these warriors' will for revenge."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Blood Beast Chariot - a heavy steel chariot pulled by a chaotic mutant beast, crushing infantry lines.",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Blood Beast Chariot’s family background and political status"
+  ]
+}

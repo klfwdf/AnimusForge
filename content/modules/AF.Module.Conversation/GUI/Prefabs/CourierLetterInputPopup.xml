@@ -39,13 +39,13 @@
               <Children>
                 <ButtonWidget DoNotPassEventsToChildren="true" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="380" SuggestedHeight="44" Brush="AFCourierLetter.Band.Button" Command.Click="ExecuteCancel" UpdateChildrenStates="true">
                   <Children>
-                    <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="24" VerticalAlignment="Center" MarginLeft="20" MarginRight="20" Brush="AFCourierLetter.Band.Button.Text" Text="取消" DoNotAcceptEvents="true" />
+                    <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="24" VerticalAlignment="Center" MarginLeft="20" MarginRight="20" Brush="AFCourierLetter.Band.Button.Text" Text="@CancelText" DoNotAcceptEvents="true" />
                   </Children>
                 </ButtonWidget>
                 <Widget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="1" SuggestedHeight="10" />
                 <ButtonWidget DoNotPassEventsToChildren="true" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="380" SuggestedHeight="44" Brush="AFCourierLetter.Band.Button" Command.Click="ExecuteSubmit" UpdateChildrenStates="true">
                   <Children>
-                    <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="24" VerticalAlignment="Center" MarginLeft="20" MarginRight="20" Brush="AFCourierLetter.Band.Button.Text" Text="发送" DoNotAcceptEvents="true" />
+                    <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="24" VerticalAlignment="Center" MarginLeft="20" MarginRight="20" Brush="AFCourierLetter.Band.Button.Text" Text="@SubmitText" DoNotAcceptEvents="true" />
                   </Children>
                 </ButtonWidget>
               </Children>

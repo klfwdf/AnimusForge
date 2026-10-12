@@ -1,0 +1,64 @@
+{
+  "Id": "rule_gondal",
+  "Keywords": [
+    "Gondar"
+  ],
+  "RagShortTexts": [
+    "Gondar established the Gondarov dynasty."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Gondal? Never heard of it, maybe from Sturgia?"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Gondar is our founding monarch. He was extremely brave and expanded from Balgad. He soon established the Gondarov dynasty and led all the boyars, making us a unified country."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Gondar is our founding monarch. He unified Sturgia by force, drove the Battania people out of the Cachar Peninsula, and put our Poyers under unified leadership. However, the Kulov family was very dissatisfied with the rule of the Gondarov family."
+    }
+  ],
+  "TextMappings": []
+}

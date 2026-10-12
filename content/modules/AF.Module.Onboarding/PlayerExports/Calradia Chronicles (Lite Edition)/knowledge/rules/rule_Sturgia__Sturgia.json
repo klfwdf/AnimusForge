@@ -1,0 +1,255 @@
+{
+  "Id": "rule_Sturgia",
+  "Keywords": [
+    "Sturgia"
+  ],
+  "RagShortTexts": [
+    "The Grand Duchy of Sturgia was formed a century ago by northern tribes united to resist imperial expansion.",
+    "The eastern Sturgian city of Tyal has long intermarried with the Khuzait Khanate, and boyar genealogies include the names of khans",
+    "Revyl, Balgard, and Omor originally belonged to Battania and still retain ancient stone circles and customs within their borders"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The present Grand Duchy of Sturgia was formed only a century ago. Before that, it was a loose confederation of small kingdoms and tribes. As new cities sprang up across the lakes and bays of the north, local tribal chiefs began to forge alliances with Nords and other adventurers, hiring their forces to conquer their neighbors. Continued pressure from the empire eventually forced them to elect a prince to lead the unified campaign, a title that gradually became a hereditary title. However, the highly independent boyars are not keen on the monarchy, and the seeds of rebellion have always been buried deep under the political surface of Sturgia?"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "We Sturgia were forced out by the sword of the Empire. A century ago, the north was nothing but small kingdoms scattered around lakes and bays, each doing their own thing. Later, as the empire's legions continued to move north, our ancestors elected the first prince to unified command of all Boya's troops. The title of prince later became hereditary, but this does not mean that the boyars have no ideas - we northerners are tough-boned, who is willing to listen to the words of one family forever?"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The formation of Sturgia was not just a matter of the northern tribes themselves. The Achit tribe of Khuzait once established a small khanate in Varnovapol. That city was originally a penal colony for the empire and later fell into our hands. Not to mention the Tiar side - it is common for families there to marry Khuzait Khan. In some of the old ancestral halls of the Boyer family, the name of Khuzait Khan is placed next to the ancestral tablet. As for the west, Reville, Bargaard, and Omor, all those lands originally belonged to the Battania people. We took it down, but they never really accepted it. Under that piece of land are their sacred groves and the bones of their ancestors buried?"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "townsfolk"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "In the western part of our Sturgia, the areas of Reville, Bargard, and Omor, you can feel the difference when you walk in - the land belongs to Sturgia, but the people living on it still retain the habits of Battania, speak their own old dialects, and believe in their own gods. Those lands were conquered, but it is easier to conquer them than to digest them. The Tiar people in the east get along well with the Khuzait people. They have been married for several generations and it is convenient for trade?"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "I have run all over Sturgia. In Tiar in the east, the name of Khuzait Khan can be found in Boyer's family tree. People there have long been indistinguishable from each other in doing business and intermarrying on the grasslands. The west side is a completely different story - the area of ​​Reville, Bargaard, and Omore. You can still step on the stone formations left by the Battania people when walking in the forest. The land has changed its owner, but do you still remember whose stones and trees belonged to them before?"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Sturgians now occupy Reville, Bargard, and Omor—that is our native land. They robbed it with swords, built castles and set up customs on it, and still called it civilization. But they cannot erase the memory of the land. Those ancient stone formations are still there. Our sacred grove has been cut down, but the roots are still underground. One day, the people of Sturgia will understand that the land they robbed is not so easy to digest?"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The western territory taken away by the Sturgians is a wound in the hearts of us Battanians that will never heal. Reville, Bargaard, Omore—these are places where our ancestors are buried and where our stone formations stood. Now the Sturgians grazed cattle, collected taxes, and garrisoned troops on it, thinking that the land was already theirs. But the land never belongs to anyone, people just borrow it."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The relationship between Sturgia and us Khuzait is deeper than outsiders think. The Achit tribe once established a small khanate in Varnovapol. That city is now owned by Sturgia, but the imprint of that time is still there - ask the old Boya family in Tiar. The name of our Khuzait Khan is next to the tablet in their ancestral hall. Marriage, trade, and war, the grassland and the north have never been truly separated?"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The history of marriages between the Boyer family of Tiar and our Khuzait royal family goes back several generations. The descendants of Ulhun Khan can be found in their family trees, and the names of northern women can also be found in our family trees. Some say that Sturgia and us Khuzait are feuding, but the people of Tiar never see it that way. Things on the border have always been entangled with grudges. It's hard to tell who owes whom more?"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "steward": 150
+        }
+      },
+      "Content": "The formation of the Grand Duchy of Sturgia was not a simple integration of northern tribes, but a process of multi-ethnic and multi-cultural collision and integration. In the east, the Boya family in the Tiar region maintained a long-term marriage relationship with the Khuzait Khan. This political marriage spanning the Khanate and the Grand Duchy made the eastern border of Sturgia a place where the two civilizations met. At the same time, the Achite tribe of Khuzait briefly established a state in Varnovapol, and this history left a residual imprint of Khuzait culture in eastern Sturgia. In the west, large areas of territory such as Reville, Bargard, and Omor originally belonged to Battania. Sturgia incorporated them into its territory through military conquest. However, Battania's cultural and religious traditions are still deeply rooted in these areas, which has become a long-term cultural integration problem faced by Sturgia?"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Grand Duchy of Sturgia is far away in the northern ice fields. Most of what we Aserai know about them comes from caravans and sailors. I heard that their country was forced out by the empire - a group of tribes mixed with Nord adventurers and chose a leader to fight in unison. The origin of this alliance is somewhat similar to our Aserai tribal alliance, but their grand duke later became hereditary?"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Grand Duchy of Sturgia was formed at about the same time as our kingdom, but their road was more bumpy than ours. Although we, the barons of Vlandia, have disputes from time to time, our loyalty to the king is engraved in our bones. Sturgia Where are those boyars? They themselves may turn against the Grand Duke they elected at any time. If the Imperials hadn't been pressing down from the south, Sturgia would have broken into several pieces on its own?"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Grand Duchy of Sturgia? It was just the product of the gathering of barbarians on the northern border of our empire. A century ago, it was a chaotic mess of small kingdoms and tribes. It was our empire's continued Northern Expedition that forced them to elect a leader to unite and resist. The result was not good. The prince they elected turned out to be hereditary, and now he has become a serious problem in the northern border of the empire. But to be honest, the boyars didn't listen to the Grand Duke very much, and internal rebellions occurred from time to time?"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The political structure of the Sturgians was simply absurd in the eyes of the Empire. Their princes are nominally the supreme ruler, but the boyars below all have private soldiers, and they may stab them in the back if something goes wrong. But this is exactly why they are difficult to completely conquer - even if you defeat their archduke, the boyars will still fight on their own, and you will never find someone who can make the entire Sturgia surrender?"
+    }
+  ],
+  "TextMappings": []
+}

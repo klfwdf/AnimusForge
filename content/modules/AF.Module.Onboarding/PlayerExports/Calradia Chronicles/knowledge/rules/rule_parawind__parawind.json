@@ -1,0 +1,104 @@
+{
+  "Id": "rule_parawind",
+  "Keywords": [
+    "Palawind",
+    "Baravinos",
+    "Old Imperial Capital"
+  ],
+  "RagShortTexts": [
+    "Palawind is the most prosperous city in western Vlandia."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Palawind is the most prosperous city in western Vlandia, with tall walls and a busy port. Commoners know the city as once the capital of the Empire, but today its markets, courts, and arenas are run by Vlandian nobles. To ordinary Vlandians, Palawind is \"our city\" - although there are still many descendants of the Empire in the city speaking the old language and doing ancestral businesses. Blacksmiths and traders care more about tariffs and guild rules than the surrender agreement of a hundred years ago. They revere the name Osric \"Iron Arm\" and regard him as a wise ancestor who turned the spoils of war into a foundation."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Vlandian nobility regarded Palavund as the western crown of the dynasty. Although the Dai Tiha family is not directly related to the throne, they possess prestige that is not inferior to that of the Duke because they hold this city. Nobles often compete for influence in the parliament on the grounds that \"whoever controls Palawind will control the western trade routes.\" They are familiar with the story of Osric's bypassing plunder and bribery of senators, and regard it as an example of \"a conqueror also needs the ability to govern a country\". The attitude towards the remnants of the empire is quite complex: while taking advantage of its administrative experience and wealth network, it is also wary of its possible secret connections with the remaining forces in the eastern part of the empire."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "In the towns and villages of the empire, young commoners will be unfamiliar with this town that has long been reduced to an important town in Vlandia, while older commoners often speak with regret and reluctance in their voices when they mention Palawind. They remembered that Palavendor's real name was Palavinos, the glorious city built by Kaladius himself. Today it has been renamed by the barbarians, the descendants of the senators have been reduced to vassals, and the harbor is filled with Vlandia merchant ships. The elders occasionally whispered, \"If the senators had not surrendered...\", but more people admitted that at least Palawind was not massacred, and the church and bathhouse still existed. The civilians of the empire regarded it as a lost territory, but they also secretly envied that it had not become a battlefield like the cities in the south."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Imperial nobles sometimes mentioned in private banquets their regret and shame over the fall of Palawind, formerly known as Palavinos, the second important colony founded by Emperor Caladius himself. The nobles would scold Osric the Iron Wall for his rebellion against the empire, and then shift the topic to Pandrak. King Detel, a descendant of Osric the Iron Wall, also chose to treacherously leave the empire and become an enemy of the empire. In the end, all the words in his heart turned into sighs. In short, the vast majority of nobles regard the fall of Palawind as another important historical node in the gradual decline of the empire. A few pragmatists privately admit that Osric's strategy of recruiting the Imperial senators to serve him has indeed preserved the city's fabric. If it had been the Khuzait or Sturgia people, they would have been left with nothing but scorched earth. Regardless of faction, Palawind has always been a target that \"must be taken back but is temporarily out of reach\" in the hearts of the imperial nobles."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Battania's mountain folk's memory of Palawind is a mixture of hostility and alienation. They remembered that during the Imperial era, the garrison of Baravinos had gone deep into the forest to collect grain; they also remembered that after Vlandia took over, the forest edges were designated as hunting grounds for the nobles. To ordinary Battanians, whether the town belonged to the Empire or Vlandia, it was a foreign stronghold where sacred groves were cut down and stone roads were paved. There are few traders coming and going, and there are many stories of archers ambushing caravans."
+    }
+  ],
+  "TextMappings": []
+}

@@ -13,6 +13,9 @@
     <Compile Include="../../../src/AF.Persistence/PlayerExportsPackageExport.cs" Link="PlayerExportsPackageExport.cs" />
     <Compile Include="../../../src/AF.Persistence/AnimusForgeDataPaths.cs" Link="AnimusForgeDataPaths.cs" />
     <Compile Include="../../../src/AF.Persistence/NpcDataFileName.cs" Link="NpcDataFileName.cs" />
+    <Compile Include="../../../src/AF.GameAdapter.Bannerlord/UI/Kingdom/KingdomStabilityUiText.cs" Link="KingdomStabilityUiText.cs" />
+    <Compile Include="../../../src/modules/AF.Module.Kingdom/Stability/KingdomStabilityPolicy.cs" Link="KingdomStabilityPolicy.cs" />
+    <Compile Include="../../modules/AF.Module.Weekly/EditorLifecycleTests/TextObjectFixture.cs" Link="TextObjectFixture.cs" />
     <Reference Include="Newtonsoft.Json"><HintPath>@@NEWTONSOFT@@</HintPath></Reference>
   </ItemGroup>
 </Project>

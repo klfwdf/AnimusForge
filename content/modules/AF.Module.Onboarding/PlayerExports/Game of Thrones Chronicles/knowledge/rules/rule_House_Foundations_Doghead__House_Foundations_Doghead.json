@@ -1,0 +1,151 @@
+{
+  "Id": "rule_House_Foundations_Doghead",
+  "Keywords": [
+    "Doghead"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The dog-headed forces formed around the \"dog-headed\" Ha Ma and her warriors. Harma has a stocky build and a pockmarked face. She uses a severed dog head as a flag and regularly replaces it with a new one; this uncomfortable symbol is both intimidating and reflects her hatred of dogs. She fought against the King of Bones until Mance Rayder forced both sides to make peace. Harma's authority comes from her fierceness, trophies, and her tribe's recognition of her abilities, not from inheritance documents; the alliance of free people can suppress old hatreds, but it will not make them disappear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "freefolk"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Harma's men saw the kobold flag as a warning: their leader was neither gentle nor easily deterred. As long as she brought back food, protected the camp, and was impartial in distributing the spoils, the flag's stench wasn't a problem."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "freefolk"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "wanderer",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Other free folk viewed Harma with mixed feelings of respect and disgust. She can fight and hold grudges; Mance asked her to have a truce with the King of Bones, proving that the alliance beyond the wall was not about friendship, but about temporarily tying the people they wanted to kill to the same path of survival."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nightswatch"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Night's Watch If you see the dog's head flag from a distance, you will know that the opponent is prone to fear. The old rangers didn't lose their judgment because of the nausea of ​​the flag. They paid more attention to how Harma's forward moved and which side was protecting the supplies."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Doghead The dog-headed forces are led by Ha Ma. She uses the beheaded dog head as her banner and has a fierce style. She once fought with the King of Bones and accepted Mance's mediation. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Doghead The dog-headed forces are led by Ha Ma. She uses the beheaded dog head as her banner and has a fierce style. She once fought with the King of Bones and accepted Mance's mediation. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Doghead The dog-headed forces are led by Ha Ma. She uses the beheaded dog head as her banner and has a fierce style. She once fought with the King of Bones and accepted Mance's mediation. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Doghead The dog-headed forces are led by Ha Ma. She uses the beheaded dog head as her banner and has a fierce style. She once fought with the King of Bones and accepted Mance's mediation. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Doghead: The dog-headed forces are led by Ha Ma. She uses the beheaded dog head as her banner and has a fierce style. She once fought with the King of Bones and accepted Mance's mediation."
+  ]
+}

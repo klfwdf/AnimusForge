@@ -1,0 +1,101 @@
+{
+  "Id": "rule_Northern_Empires_military_strength",
+  "Keywords": [
+    "Military strength of the Northern Empire"
+  ],
+  "RagShortTexts": [
+    "The Northern Empire is strong on paper, but its offensive capabilities are limited."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Northern Empire seems not very strong. I don’t know. They are all civil servants. How can any of them know how to fight? A"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "townsfolk"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Our military strength in the Northern Empire is still very strong. We have had to face the two-front battle between Sturgia and Khuzait for generations, and now we have to defend the Western Empire and the Southern Empire. The capabilities we have developed are very strong."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "battania",
+          "empire_s",
+          "empire_w",
+          "khuzait",
+          "sturgia",
+          "vlandia"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Northern Empire is a sheep in tiger skin. Their supply lines are long, their reserve forces are insufficient, and the three fronts are under great pressure. The defensive forces will be sufficient, but forget about attacking. We should actively seek to go to war with the Northern Empire to obtain maximum benefits.A"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Northern Empire is strong or weak. On paper, the data is still very strong. However, the extremely long front line makes its army always exhausted and cares about the head and tail. Moreover, they are all civil servants and there are only one or two veterans who are military generals, so they suffer a lot during the war. A"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "A",
+      "Kind": "status|kingdom|is_eliminated",
+      "TargetId": "empire",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": "But these are all in the past, the Northern Empire has died",
+      "FalseText": "The Northern Empire is such a country"
+    }
+  ]
+}

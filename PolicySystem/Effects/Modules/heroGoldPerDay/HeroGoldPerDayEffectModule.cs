@@ -17,11 +17,12 @@ internal sealed class HeroGoldPerDayEffectModule : PolicyEffectModuleBase<HeroGo
 		allowedScopes: new[] { PolicyEffectScopes.Kingdom, PolicyEffectScopes.Local, PolicyEffectScopes.Vassal },
 		allowedSelectorKinds: new[] { PolicyEffectTargetKind.Hero, PolicyEffectTargetKind.Settlement },
 		targetKinds: new[] { PolicyEffectTargetKind.Hero },
-		cueTerms: new[] { "内部人物第纳尔每日" },
-		retrievalText: "内部运行模块：政策有效期间每日人物第纳尔变化。",
-		catalogSummary: "内部：人物第纳尔每日变化",
-		mainInstruction: "内部模块，不向模型暴露。",
-		postprocessRule: "内部模块，不得直接输出。",
+		cueTerms: new[] { PolicyCompatibilityTexts.Get("Module_heroGoldPerDay_Original_6") },
+		retrievalText: PolicyGenerationPromptTexts.Get("Module_heroGoldPerDay_retrievalText", "Internal runtime module: daily changes to personal denars while the policy is active."),
+		catalogSummary: PolicyGenerationPromptTexts.Get("Module_heroGoldPerDay_catalogSummary", "Internal: daily personal denar change"),
+		playerDisplayName: PolicyCompatibilityTexts.Get("Module_heroGoldPerDay_OriginalName"),
+		mainInstruction: PolicyGenerationPromptTexts.Get("Module_heroGoldPerDay_mainInstruction", "Internal module; not exposed to the model."),
+		postprocessRule: PolicyGenerationPromptTexts.Get("Module_heroGoldPerDay_postprocessRule", "Internal module; do not output it directly."),
 		payloadPromptSchema: PolicyEffectPayloadSchemas.CreateIntegerValueSchema(),
 		family: PolicyEffectFamily.Fiscal,
 		executionKind: PolicyEffectExecutionKind.DailyMutation,
@@ -44,7 +45,7 @@ internal sealed class HeroGoldPerDayEffectModule : PolicyEffectModuleBase<HeroGo
 	{
 		if (!HeroGoldPayloadValidation.HasIntegerProperty(rawPayload, "value"))
 		{
-			error = "heroGoldPerDay 的 value 必须是 32 位整数";
+			error = "heroGoldPerDay value must be a 32-bit integer";
 			return false;
 		}
 		error = string.Empty;
@@ -64,7 +65,7 @@ internal sealed class HeroGoldPerDayEffectModule : PolicyEffectModuleBase<HeroGo
 		}
 		if (payload.Value == int.MinValue)
 		{
-			error = "heroGoldPerDay 不接受 int.MinValue";
+			error = "heroGoldPerDay does not accept int.MinValue";
 			return false;
 		}
 		error = string.Empty;
@@ -85,7 +86,7 @@ internal sealed class HeroGoldPerDayEffectModule : PolicyEffectModuleBase<HeroGo
 		}
 		if (context.GameBridge == null)
 		{
-			return Failed("heroGoldPerDay 缺少 game bridge", false);
+			return Failed("heroGoldPerDay requires a game bridge", false);
 		}
 		if (!context.GameBridge.TryReadHeroGold(heroId, out bool available, out int current, out string readError))
 		{
@@ -129,14 +130,14 @@ internal sealed class HeroGoldPerDayEffectModule : PolicyEffectModuleBase<HeroGo
 		JObject target = context?.ExistingReceipt?.AppliedPayload?["target"] as JObject;
 		if (instance == null || payload == null || target == null || context.GameBridge == null)
 		{
-			return Failed("heroGoldPerDay compensation 缺少执行上下文、回执或 game bridge", false);
+			return Failed("heroGoldPerDay compensation requires execution context, receipt and game bridge", false);
 		}
 		if (!string.Equals(instance.ModuleId, ModuleDescriptor.Id, StringComparison.Ordinal)
 			|| !string.Equals(context.ExistingReceipt.ModuleId, ModuleDescriptor.Id, StringComparison.Ordinal)
 			|| !string.Equals(context.ExistingReceipt.InstanceId, instance.InstanceId, StringComparison.Ordinal)
 			|| context.ExistingReceipt.Status != PolicyEffectExecutionStatus.Applied)
 		{
-			return Failed("heroGoldPerDay compensation 回执身份或状态不匹配", false);
+			return Failed("heroGoldPerDay compensation receipt identity or status does not match", false);
 		}
 		string heroId = ((string)target["heroId"] ?? string.Empty).Trim();
 		if (heroId.Length == 0
@@ -146,7 +147,7 @@ internal sealed class HeroGoldPerDayEffectModule : PolicyEffectModuleBase<HeroGo
 			|| target["after"]?.Type != JTokenType.Integer
 			|| target["actualDelta"]?.Type != JTokenType.Integer)
 		{
-			return Failed("heroGoldPerDay compensation 回执无效", false);
+			return Failed("heroGoldPerDay compensation receipt is invalid", false);
 		}
 		int before;
 		int expectedAfter;
@@ -161,13 +162,13 @@ internal sealed class HeroGoldPerDayEffectModule : PolicyEffectModuleBase<HeroGo
 		}
 		catch
 		{
-			return Failed("heroGoldPerDay compensation 回执数值越界", false);
+			return Failed("heroGoldPerDay compensation receipt values are out of range", false);
 		}
 		if (requestedDelta != payload.Value
 			|| actualDelta != requestedDelta
 			|| (long)expectedAfter - before != actualDelta)
 		{
-			return Failed("heroGoldPerDay compensation 回执不守恒", false);
+			return Failed("heroGoldPerDay compensation receipt does not conserve the balance", false);
 		}
 		if (!context.GameBridge.TryRestoreHeroGold(
 			heroId,
@@ -210,17 +211,17 @@ internal sealed class HeroGoldPerDayEffectModule : PolicyEffectModuleBase<HeroGo
 		heroId = (context?.TargetId ?? string.Empty).Trim();
 		if (instance == null || string.IsNullOrWhiteSpace(context.PreparedInstance.IdempotencyKey))
 		{
-			error = "heroGoldPerDay 缺少执行上下文或幂等键";
+			error = "heroGoldPerDay requires an execution context and idempotency key";
 			return false;
 		}
 		if (!string.Equals(instance.ModuleId, ModuleDescriptor.Id, StringComparison.Ordinal) || payload == null)
 		{
-			error = "heroGoldPerDay payload 与模块不匹配";
+			error = "heroGoldPerDay payload does not match the module";
 			return false;
 		}
 		if (context.TargetKind != PolicyEffectTargetKind.Hero || heroId.Length == 0)
 		{
-			error = "heroGoldPerDay 缺少有效人物目标";
+			error = "heroGoldPerDay requires valid character targets";
 			return false;
 		}
 		error = string.Empty;

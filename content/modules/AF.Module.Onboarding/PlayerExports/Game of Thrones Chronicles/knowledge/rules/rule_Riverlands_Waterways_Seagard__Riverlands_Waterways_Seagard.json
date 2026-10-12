@@ -1,0 +1,152 @@
+{
+  "Id": "rule_Riverlands_Waterways_Seagard",
+  "Keywords": [
+    "Seagard",
+    "Ironman's Bay"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Seaside City is located in the northwest of the Riverlands, near Ironborn Bay. It is the coastal fortress of the Mallister family. Most towns in the Riverlands face rivers and inland, but Seaside City always looks towards the Sunset Sea. Therefore, it felt the threat of Ironborn longships, pirates and west coast storms earlier than many Riverland territories. Castles, lights, harbors, and coastal patrols combined to provide defense, while surrounding villages and towns still relied on fishing, salt, trade, and sea routes to survive. The name of Seaside City clearly states its duty: to guard the edge of the Riverlands leading to the sea."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "river"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Seagard Local families also relied on river transportation, ferries, wheat fields, mills, and hiding places when war came; if any road, well, spring, or dock failed, the price would fall first on them."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "river"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Seagard Entry Seagard"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Seagard They also recognize the accents, laws, and credentials of the Riverlands; reputations can travel great distances from taverns, but true distances must still be measured by wheel, oar, or horse's hooves."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Seagard Entry Seagard"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Seagard If you can supply supplies, avoid danger, and find a guide, it is worth marking in your itinerary; if you don't have these three things, no matter how loud your family name is, it won't be able to save the lost."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "From workshops to sanctuaries, Seaside City juxtaposes shipbuilding wood, canvas, salt, fish catches, and wind-proof stones with the memory of the Seven Gods, ancient legends of river kings, and the memory of a land that changed hands over and over again. A stronghold was therefore not just a lord's hall, but also a place where weddings and funerals, vows, labor and local memories recurred."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Seagard They care about river transportation, ferries, wheat fields, mills, and hiding places when war comes. They also care about whether seeds are left after collecting grain and whether the city gates are open in times of disaster. When people from afar see coats of arms, what they see is whether there will be food to eat tomorrow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Seagard: Seaside City is located in the northwest of the Riverlands, near Ironborn Bay. It is the coastal fortress of the Mallister family. Most towns in the Riverlands face rivers and inland, but Seaside City always looks towards the Sunset Sea. Therefore, it felt the threat of Ironborn longships, pirates and west coast storms earlier than many Riverland territories. Castles, lights, harbors, and coastal patrols combined to provide defense, while surrounding villages and towns still relied on fishing, salt, trade, and sea routes to survive. The name of Seaside City clearly states its duty: to guard the edge of the Riverlands leading to the sea."
+  ]
+}

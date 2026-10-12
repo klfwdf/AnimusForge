@@ -34,16 +34,16 @@ namespace AnimusForge.Illustrator.Core
             var uri = new Uri((url ?? string.Empty).Trim(), UriKind.Absolute);
             string path = uri.AbsolutePath.TrimEnd('/');
             if (path.EndsWith(":streamGenerateContent", StringComparison.OrdinalIgnoreCase))
-                throw new InvalidOperationException("原生谷歌生图请使用 :generateContent 非流式端点；未发送请求。");
+                throw new InvalidOperationException("Native Gemini image generation requires the non-streaming :generateContent endpoint. No request was sent.");
             if (path.EndsWith(":generateContent", StringComparison.OrdinalIgnoreCase)) return uri.ToString();
             if (exactUrl)
-                throw new InvalidOperationException("已勾选完整URL，请填写 /models/模型名:generateContent；未发送请求。");
+                throw new InvalidOperationException("The complete URL option requires /models/MODEL:generateContent. No request was sent.");
             model = (model ?? string.Empty).Trim();
             if (model.StartsWith("models/", StringComparison.Ordinal)) model = model.Substring(7);
-            if (model.Length == 0) throw new InvalidOperationException("原生谷歌生图需要模型名称；未发送请求。");
+            if (model.Length == 0) throw new InvalidOperationException("Native Gemini image generation requires a model name. No request was sent.");
             foreach (char c in model)
                 if (!(char.IsLetterOrDigit(c) || c == '-' || c == '_' || c == '.'))
-                    throw new InvalidOperationException("原生谷歌模型名称格式无效；未发送请求。");
+                    throw new InvalidOperationException("The native Gemini model name is invalid. No request was sent.");
             if (path.Length == 0) path = "/v1beta";
             if (!path.EndsWith("/models", StringComparison.OrdinalIgnoreCase)) path += "/models";
             return new UriBuilder(uri) { Path = path + "/" + model + ":generateContent", Fragment = "" }.Uri.ToString();
@@ -104,7 +104,7 @@ namespace AnimusForge.Illustrator.Core
         {
             var messages = chatPayload["messages"] as JArray;
             if (messages?.Count != 1 || (string)messages[0]["role"] != "user")
-                throw new InvalidOperationException("原生谷歌生图请求缺少完整的用户内容；未发送请求。");
+                throw new InvalidOperationException("The native Gemini image request is missing complete user content. No request was sent.");
             var parts = new JArray();
             JToken content = messages[0]["content"];
             if (content?.Type == JTokenType.String) parts.Add(new JObject { ["text"] = content.Value<string>() });
@@ -118,13 +118,13 @@ namespace AnimusForge.Illustrator.Core
                         string image = (string)block["image_url"]?["url"];
                         const string prefix = "data:image/png;base64,";
                         if (image == null || !image.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
-                            throw new InvalidDataException("原生谷歌参考图必须为已验证的PNG数据；未发送请求。");
+                            throw new InvalidDataException("Native Gemini reference images must be validated PNG data. No request was sent.");
                         parts.Add(new JObject { ["inlineData"] = new JObject { ["mimeType"] = "image/png", ["data"] = image.Substring(prefix.Length) } });
                     }
-                    else throw new InvalidOperationException("原生谷歌生图包含未支持的内容块；未发送请求。");
+                    else throw new InvalidOperationException("The native Gemini image request contains an unsupported content block. No request was sent.");
                 }
             }
-            if (parts.Count == 0) throw new InvalidOperationException("原生谷歌生图内容为空；未发送请求。");
+            if (parts.Count == 0) throw new InvalidOperationException("The native Gemini image request is empty. No request was sent.");
             var config = new JObject { ["responseModalities"] = new JArray("TEXT", "IMAGE") };
             string ratio = ExactAspectRatio(size);
             if (ratio != null && SupportedRatios.Contains(ratio)) config["imageConfig"] = new JObject { ["aspectRatio"] = ratio };

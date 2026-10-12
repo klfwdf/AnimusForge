@@ -1,0 +1,231 @@
+{
+  "Id": "rule_ergon",
+  "Keywords": [
+    "Ergon"
+  ],
+  "RagShortTexts": [
+    "Elgon is the patriarch of the Fin Dengil family, the younger brother of the former High King Eril, the uncle of the current High King Caladog, the Prince of Battania, and his status is second only to Caladog."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Elgon is the head of the family of Fin Dengil, the younger brother of the former High King Eril, and the uncle of the current High King Caladog. He is the Prince of Battania, second only to Caladog himself. His domain is in Dunglanis, the ancient fortress that stands on a high mountain overlooking Lake Tavar and is the most sacred symbol of kingship in Battania. Elgon was not a High King, but he controlled the Holy Land that every High King desires. He is the most orthodox paternal bloodline of the Dengil family - Caladog is just the adopted son and son-in-law of Eril, and the bloodline of the High King actually only continues in Elgon. His brother Ariel mysteriously disappeared on the eve of the Battle of Pandrak, and the biggest beneficiary was his brother's adopted son Caladog. Ergon knew what this meant. But he chose silence. He cut off twelve Imperial heads with his own hands on the battlefield of Pandrak, and used the blood of his enemies to lay a brick for Caladog's throne. He is one of the most powerful men in Battania and also the most silent man in Battania."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Prince Elgon is the younger brother of the late King Eril. This sentence speaks for itself. Caladog was the High King, and yes, he fought Pandrak, who was the most powerful king after King Mon. But he was Ariel's adopted son, and there was no Dengil blood in his veins. Elgon has. He is the only remaining male line of the Dengil family. He lived in Dunglanis, the old fortress on the hilltop, the most sacred royal seat of Battania. Queen Grannis had been married to five High Kings there, and she outranked them all. Now Ergon guards the city. He was not the High King, but he held in his hand the symbol of royal power. He never said a bad word about Caladog, never made a problem in the lords' meeting, and never made a fuss about his bloodline. He rushed to the front in Pandlak, chopped off twelve heads, and gave the imperial people all the justice he should seek for his brother as a biological brother. Some feel he is Battania's biggest loyalist. Some feel he is the most dangerous man in Battania. Both statements are correct."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Prince Elgon is the most unpredictable of us all. He didn't talk much at the lords' meeting. Every time Caladog proposed a plan, he would just nod his head and express his opinion. But everyone knew the weight of his nod - he was the late king's biological brother, the lord of Dunglaness, and by blood he was closer to the throne than Caladog. If he stops nodding one day, the person sitting on the throne of the supreme king may not be able to sit still. But he never spoke out against Caladog in public. In the battle with Pandrac, he killed more fiercely than anyone else, as if he was answering everyone's questions with the blood of the Imperial people. He said Ariel had never won a fight in his life like Caladog had that day. When a biological brother evaluates his own brother in this way, how many layers of meaning does it have in your taste?"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "druid"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Dunglanis is the sacred place left by Queen Grannis. She was married to five High Kings, each of whom preceded her in death, and she lived to a very old age. Since then, Dunglanis has become a symbol of royal power - it was not the High King who gave Dunglanis meaning, but Dunglanis who gave the High King legitimacy. Dunglanis was now in the hands of Prince Elgon. He is the only inheritor of the paternal lineage of the Dengil family. Caladog is High King, but he is the adopted son and son-in-law of King Eril, and his throne comes by marriage and adoption. In terms of paternal lineage, Ergon is the true descendant of Dengil. He did not sit on the throne, but he guarded the source of royal power. From the high walls of Dunglaness he looked out over Lake Tavar, overlooking the reign of the Caladog. His silence is a verdict, the results of which have not yet been announced."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Prince Ergon was next to me that day on Pandrak. After Caladog blew his horn, a hail of arrows rained down, and the Imperials were in chaos in the valley. Then Ergon was the first to rush down with his sickle in hand. He chopped people like wood, one knife at a time, without stopping. After the war he counted twelve heads. The late king's younger brother, the lord of Dunglanis, charged forward faster than any ordinary warrior. Some say he does it for Battania, some say he does it for Caladog, some say he does it to wash away something in his heart with the blood of the Imperials. It doesn’t matter how many of us are soldiers—the prince who is at the front is worth following."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "townsfolk",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Prince Elgon lived in Dunglaness, an old fortress on the top of a high mountain. Looking up from the foot of the mountain, the city walls seemed to grow out of the cliff. Dunglanis is the city left by the old Queen Grannis - she married five high kings, each of whom died earlier than her, and only that city remains. The old men said that the city was heavier than any of the High Kings. There now lives Prince Ergon, the late king's younger brother. He is not the king - the king is his brother's adopted son. But he guards the most sacred place in Battania. He was up there looking at us and at Caladog."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Ergon is a figure that cannot be ignored in Imperial intelligence. He is the younger brother of the former High King Ariel of Battania and the uncle of the current High King Caladog, who controls Dunglanis, the most symbolic royal sanctuary in Battania. Significantly, after Ariel's disappearance, Elgon did not question Caladog's succession - even though he was the more legitimate heir on a paternal basis. Not only did he not question it, he became one of Caladog's fiercest comrades during the Battle of Pandrak, personally slaying twelve Imperial soldiers. From the perspective of the Imperial North, this man is either Caladog's staunchest ally, or a potential adversary deferring revenge until an unknown moment. Whatever the case, the hilltop fortress of Dunglanis, home to a silent man of pure blood, military prowess, and authority, was both a source of support and a danger to the Caladog."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Ergon is a man who seems too tolerable to us Sturgians. When his brother Ariel disappears, the biggest beneficiary is Caladog - an adopted son who is not related to him by blood. In his hand was Dunglanis, the holiest place in Battania; he had the blood of House Dengil, more righteous than the Caladog; he had soldiers, prestige, and the exploits of having cut off twelve heads at Pandrak. If it were any of our Sturgia boyes, he would have fallen out with the Grand Duke long ago with these things. But he didn't. He helped Caladog fight the war and helped a man who might have been his brother-killer secure the throne. This is either someone who is truly convinced by Caladog, or someone who is just waiting. We northerners know what it means to wait - to wait for the winter to pass, for the ice to melt, for the boats to be launched. When that day comes, some accounts should be settled."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Dunglanis' status in the hearts of the Battania people is probably similar to that of Palawind in the hearts of us Vlandia people - it is the foundation of royal power. Now the city is in the hands of Elgon. He is the biological brother of the late King Eril, the purest blood. But on the throne was Caladog, an adopted son-in-law. If something like this happened to Vlandia, the king would have sent troops to kill the uncle who occupied the holy land. But the Battanians didn't - Elgon was fighting for Caladog, and Caladog let Elgon continue to live in Dunglanis. We Barons of Vlandia think this is ridiculous, but we don't mind that there is such a thorn in the bowels of Battania."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Prince Elgon's position in Battania seems very delicate to us Aserai. He lived in the old town called Dunglanis - a place that was as important in Battania as the Sultan's Palace in Sanara plus the Holy Mosque put together. He was the late king's biological brother with the purest bloodline, yet he allowed an unrelated adopted son to sit on the throne. What's even more surprising is that he still sacrificed his life for his adopted son on the battlefield. We had something similar happen in the desert - sometimes a better person chose not to fight in order to keep the tribe from being divided. But that person will always be watching from above. Ergon was now high on Dunglanis, overlooking the sacred lake of Battania, and overlooking his nephew."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Ergon is in Battania, just like the old Khan's biological brother guarding the ancestral camp, while the new Khan is the old Khan's son-in-law and has no blood relationship with the old Khan. Whoever holds the ancestral camp will be respected by the people on the grassland. The new Khan sits on the throne, but the blood of the old Khan is in the ancestral camp. Ergon chopped off twelve heads at Pandrak, which is also a very hard feat on our grasslands. He can fight, has blood, and ancestry, but he is not a khan. He helped the new Khan fight the war. When people on the grassland see this situation, they will say: Either this person is really convinced by the new Khan, or he is waiting for the new Khan to make a mistake. The Battania people don't seem to worry much about the latter, but we on the grasslands know that those who wait longer will become more ruthless."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nord"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Ergon occupies Dunglanis, the most sacred old city in Battania. He is the biological brother of the late king, and his bloodline is more correct than that of the current adopted son. But instead of seizing the throne, he helped his adopted son to fight the war and chopped off twelve heads in Pandrak. We Nord have similar rules - when the old chief dies, the younger brother will sometimes give up his position to the old chief's son, if that son is strong enough. But in Battania's case, it was not that the biological brother was given up to his biological son, but that the biological brother was given up to his adopted son. This is not giving in, this is forbearing. I can bear it for a while, but I can't bear it forever. We in Nord have an old saying: The longer the knife is kept, the more powerful it will be when it is pulled out."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "steward": 150
+        }
+      },
+      "Content": "Ergon is the most tense figure in the political power structure of Battania. As the patriarch of the Fin Dengil family and the younger brother of the former High King Ariel, he is the most orthodox heir of the Dengil family in terms of paternal lineage. His domain of Dunglanis—a fortress named after the ancient queen Granis and located on the top of a mountain above Lake Tavar—holds an irreplaceable symbolic status as a symbol of royal power in Battania's political symbology. Queen Grannis has been married to five high kings, and her status is even above them. The political connotation of this legend is that royal power is given, not inherent in itself. Dunglanis thus became the source symbol of the legitimacy of royal power. Elgon controls this symbolic sanctuary, but is not the High King. Caladog, the current High King, has only tenuous blood ties to House Dengil - he is Eril's adopted son and son-in-law, and came to the throne through marriage and adoption. The most symbolic royal sanctuary in Battania is held in the hands of a silent man with pure paternal blood; and the person sitting on the throne has neither blood nor sacred land. Ergon's military support for the Caladog regime was demonstrated through his outstanding military exploits at the Battle of Pandrak - the killing of twelve men with his own hands - but this support did not dissolve the structural contradiction between blood and symbol. His silence is a container that carries all the unanswered questions about the truth about Ariel's disappearance, and also carries the last dignity of the paternal lineage of the Dengil family. He is the most solid pillar of Caladog's royal power, and also the most deadly danger. The balance between the two depends on when Ergon stops being silent."
+    }
+  ],
+  "TextMappings": []
+}

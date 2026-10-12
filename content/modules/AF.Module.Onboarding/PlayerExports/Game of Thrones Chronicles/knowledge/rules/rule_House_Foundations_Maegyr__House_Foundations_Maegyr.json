@@ -1,0 +1,151 @@
+{
+  "Id": "rule_House_Foundations_Maegyr",
+  "Keywords": [
+    "Maegyr",
+    "House Maegyr"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "House Maegor belongs to the ancient bloodline within the Black Wall of Volantis, and the family name is closely linked to the appearance, privileges, and city politics of Valyrian descendants. Characters such as Malachor Meguya make this family often associated with the Tiger Party, which advocates expansion and force. The ruling position of Volantis is elected, and the Oldbloods still need to win the votes of the free people, fund celebrations, and maintain a vast network of connections. Bloodline can allow one to enter the Black Wall, but it cannot guarantee victory in every political contest."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "volantine"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The old-blood nobles within the Black Wall regard Megorya as a strong family that maintains the honor of their ancestors, and appreciate their willingness to let the Volantis show their power again; opponents worry that the Tiger Party's ambition will plunge the city's wealth into endless war."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "volantine"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "artisan",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The free people outside the city have votes, but they know that the banquets and alms given by the rich have a purpose. If Megoir wants to win support, she must not just talk about her Valyrian ancestors, but she must also answer whether the war will raise the price of food and take away her sons."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "volantine"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "slave"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Slaves watch the various families vying for position within the black wall and rarely believe that winning or losing will change the tattoos on their necks. To them, tigers and elephants both ride on the same back. The only difference is the speed of their steps."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Maegyr Maegea is an ancient Valyrian bloodline within the Black Wall of Volantis, closely associated with the Tiger Party, military politics, and the Old Blood tradition of rule. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Maegyr Maegea is an ancient Valyrian bloodline within the Black Wall of Volantis, closely associated with the Tiger Party, military politics, and the Old Blood tradition of rule. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Maegyr Maegea is an ancient Valyrian bloodline within the Black Wall of Volantis, closely associated with the Tiger Party, military politics, and the Old Blood tradition of rule. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Maegyr Maegea is an ancient Valyrian bloodline within the Black Wall of Volantis, closely associated with the Tiger Party, military politics, and the Old Blood tradition of rule. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Maegyr: Maegea is an ancient Valyrian bloodline within the Black Wall of Volantis, closely associated with the Tiger Party, military politics, and the Old Blood tradition of rule."
+  ]
+}

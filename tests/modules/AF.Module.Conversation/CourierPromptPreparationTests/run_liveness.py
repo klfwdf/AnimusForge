@@ -26,7 +26,7 @@ if a.current_consumer:
  # Historical oracle sources, shortened timers and truncated commit bodies are never inputs here.
  import json,hashlib,subprocess,xml.etree.ElementTree as ET
  from output_isolation import resolve_dotnet,minimal_test_environment
- test_paths=[HERE/'run_liveness.py',HERE/'LivenessHooks.cs.txt',HERE/'LivenessCases.cs.txt']
+ test_paths=[HERE/'run_liveness.py',HERE/'LivenessHooks.cs.txt',HERE/'LivenessCases.cs.txt',HERE/'CourierLocalizationBoundary.cs.txt']
  test_inputs=[{'path':path.relative_to(ROOT).as_posix(),'rawSha256':hashlib.sha256(path.read_bytes()).hexdigest()} for path in test_paths]
  if a.old or a.mutate or a.output_name: p.error('current consumer requires --run-root and forbids legacy inverse/mutants')
  if not a.run_root: p.error('current consumer requires a new explicit --run-root')
@@ -157,7 +157,7 @@ if a.current_consumer:
 
  scene_current=(ROOT/'src/modules/AF.Module.Conversation/Channels/Scene/ShoutBehavior.cs').read_text(encoding='utf-8-sig')
  retry_current=(ROOT/'src/AF.GameAdapter.Bannerlord/UI/Errors/LlmRetryPrompt.cs').read_text(encoding='utf-8-sig')
- facade_helpers='public partial class ShoutBehavior {'+'\n'.join(exact(scene_current,sig) for sig in ['public static bool HasInjectedRuleBlockForExternal(','internal static bool HasPreprocessRuleHitForExternal('])+'}internal static partial class LlmRetryPrompt {'+'\n'.join(exact(retry_current,sig) for sig in ['public static bool IsRetryableLlmError(','public static string BuildRetryDescription('])+'}'
+ facade_helpers='public partial class ShoutBehavior {'+'\n'.join(exact(scene_current,sig) for sig in ['public static bool HasInjectedRuleBlockForExternal(','internal static bool HasPreprocessRuleHitForExternal('])+'}internal static partial class LlmRetryPrompt {'+'\n'.join(exact(retry_current,sig) for sig in ['public static bool IsRetryableLlmError(','public static string BuildRetryDescription(','private static string RetryStageDisplay('])+'}'
  (seed/'CourierCurrentPolicyFacades.cs').write_text('using System;using System.Collections.Generic;using System.Linq;namespace AnimusForge;'+facade_helpers,encoding='utf-8')
  (seed/'CourierMyCurrentPrompt.cs').write_text('using System;using System.Collections.Generic;using System.Linq;using TaleWorlds.CampaignSystem;using TaleWorlds.CampaignSystem.Roster;using TaleWorlds.Library;using AnimusForge.Refactor.Contracts;using AnimusForge.Refactor.Runtime;using AnimusForge.Refactor.Adapters;namespace AnimusForge;internal sealed partial class MyBehavior {'+my_wrappers+'}',encoding='utf-8')
  bootstrap='using System;using System.Collections.Generic;using System.Collections.Concurrent;using System.Linq;using System.Text;using System.Text.RegularExpressions;using System.Threading;using System.Threading.Tasks;using System.Runtime.CompilerServices;using TaleWorlds.CampaignSystem;using TaleWorlds.CampaignSystem.Party;using TaleWorlds.CampaignSystem.Roster;using TaleWorlds.Library;using TaleWorlds.Core;using AnimusForge.Refactor.Adapters;using AnimusForge.Refactor.Contracts;using AnimusForge.Refactor.Modules;using AnimusForge.Refactor.Runtime;namespace AnimusForge;public sealed partial class CourierDeliveryBehavior {'+consts+dtos+registry_method+life_field+life_methods+phase+runtime+extra+'}'
@@ -332,9 +332,12 @@ if a.current_consumer:
 
  cases=(HERE/'LivenessCases.cs.txt').read_text(encoding='utf-8-sig').split('// @@COURIER_CURRENT_CASES@@')[1]
  (seed/'CourierCurrentLeaves.cs').write_text(hooks,encoding='utf-8');(seed/'CourierCurrentCases.cs').write_text(cases,encoding='utf-8')
+ # Scalar localization boundary for the current helper; native language loading is a separate check.
+ (seed/'CourierLocalizationBoundary.cs').write_text((HERE/'CourierLocalizationBoundary.cs.txt').read_text(encoding='utf-8-sig'),encoding='utf-8')
  project=seed/'CurrentConsumer.csproj';tree=ET.parse(project);item=ET.SubElement(tree.getroot(),'ItemGroup')
  for file in sorted(seed.glob('Courier*.cs')):ET.SubElement(item,'Compile',{'Include':str(file)})
  ET.SubElement(item,'Compile',{'Include':str(ROOT/'src/modules/AF.Module.Conversation/Channels/Courier/CourierVisibleLetterSanitizer.cs')})
+ ET.SubElement(item,'Compile',{'Include':str(ROOT/'src/modules/AF.Module.Conversation/Channels/Courier/CourierFailureUiText.cs')})
  ET.SubElement(item,'Compile',{'Include':str(ROOT/'src/modules/AF.Module.Conversation/Channels/Courier/CourierInboundCompletionReceipt.cs')})
  ET.SubElement(item,'Compile',{'Include':str(ROOT/'src/modules/AF.Module.Conversation/Channels/Courier/CourierInboundCompletionCommitCoordinator.cs')})
  ET.SubElement(item,'Compile',{'Include':str(ROOT/'src/modules/AF.Module.Llm/Transport/LegacyShoutNetworkGateway.cs')})

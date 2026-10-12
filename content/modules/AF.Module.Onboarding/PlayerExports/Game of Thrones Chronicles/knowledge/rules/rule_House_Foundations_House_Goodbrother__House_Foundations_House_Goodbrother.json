@@ -1,0 +1,131 @@
+{
+  "Id": "rule_House_Foundations_House_Goodbrother",
+  "Keywords": [
+    "House Goodbrother"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "House Gubler is an important family in the Iron Islands, with its main branch based on Warhammer Point on Great Wyk Island. The islands can support a population better than many Ironborn territories, and salt, fish, iron, timber, and harbors give Gubler the resources to participate in the politics of the islands. The Ironborn king selection and Drowned God rituals shape the family's public identity, but true power still depends on fleets, kin, distribution of spoils, and whether the islanders can convince the islanders that a certain lord is worthy of following. The land of Great Wyk does not mean that Gubler broke away from the old road, it only means that the old road of the Iron Islands also needs food and craftsmen."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The families of the Iron Islands looked to Gubler not only for how many people they could feed in Great Wyk, but also how many boats they could launch. Wealth gives a family more room for negotiation and makes predators and competitors more willing to test its defenses."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "sailor",
+          "artisan",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The boatwrights, fishermen, and farmers of Great Wyk Island knew that longships did not appear out of thin air. Timber needs to be cut, nails need to be forged, and food needs to be stored. If Gubler only talks about the glory of the sea and forgets these, the bravest ship will be short of food before leaving the shore."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Goodbrother The Gubler family is one of the important families in the Iron Islands, connected to Great Wyk Island, maritime traditions and the culture of the Iron Chosen Kings; the island's resources and longships determine its strength. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Goodbrother The Gubler family is one of the important families in the Iron Islands, connected to Great Wyk Island, maritime traditions and the culture of the Iron Chosen Kings; the island's resources and longships determine its strength. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Goodbrother The Gubler family is one of the important families in the Iron Islands, connected to Great Wyk Island, maritime traditions and the culture of the Iron Chosen Kings; the island's resources and longships determine its strength. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Goodbrother The Gubler family is one of the important families in the Iron Islands, connected to Great Wyk Island, maritime traditions and the culture of the Iron Chosen Kings; the island's resources and longships determine its strength. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "House Goodbrother: The Gubler family is one of the important families in the Iron Islands, connected to Great Wyk Island, maritime traditions and the culture of the Iron Chosen Kings; the island's resources and longships determine its strength."
+  ]
+}

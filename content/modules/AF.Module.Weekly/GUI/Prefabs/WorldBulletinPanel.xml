@@ -1,5 +1,5 @@
 <Prefab>
-  <!-- Layout mirrors pencil-new.pen frame sAH0C (1920×1080 新快报面板 v3｜列国邸报 · 铜版雕刻做旧): 1280x814 sheet on the 1730x1100 wide plate (ornaments kept at native ratio). -->
+  <!-- Layout mirrors pencil-new.pen frame sAH0C (1920x1080 bulletin panel v3, kingdom gazette with aged copperplate engraving): 1280x814 sheet on the 1730x1100 wide plate (ornaments kept at native ratio). -->
   <Window>
     <Widget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent">
       <Children>
@@ -10,7 +10,7 @@
             <!-- Masthead: title sits on the engraved ribbon baked into the parchment -->
             <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="600" SuggestedHeight="19" MarginLeft="340" MarginTop="102" Brush="AFCourierLetter.Meta.Text" Brush.FontSize="13" Brush.FontColor="#9B2A1EFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" Text="@MastheadText" DoNotAcceptEvents="true" />
             <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="400" SuggestedHeight="63" MarginLeft="440" MarginTop="131" Brush="AFCourierLetter.Title.Text" Brush.FontSize="44" Brush.FontColor="#2B1C10FF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" Text="@TitleText" DoNotAcceptEvents="true" />
-            <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="300" SuggestedHeight="16" MarginLeft="490" MarginTop="216" Brush="AnimusForge.EntityLink.PopupTitle.Text" Brush.FontSize="15" Brush.FontColor="#5A4028FF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" Text="Chronica  Regnorum" DoNotAcceptEvents="true" />
+            <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="300" SuggestedHeight="16" MarginLeft="490" MarginTop="216" Brush="AnimusForge.EntityLink.PopupTitle.Text" Brush.FontSize="15" Brush.FontColor="#5A4028FF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" Text="@SubtitleText" DoNotAcceptEvents="true" />
 
             <!-- Main row: optional illustration column + lead story -->
             <ListPanel WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="1078" SuggestedHeight="318" MarginLeft="94" MarginTop="247" LayoutImp.LayoutMethod="HorizontalLeftToRight">
@@ -47,7 +47,7 @@
                             </ScrollablePanel>
                             <ButtonWidget DoNotPassEventsToChildren="true" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="110" SuggestedHeight="26" HorizontalAlignment="Right" VerticalAlignment="Bottom" MarginRight="10" MarginBottom="8" Command.Click="ExecuteCopyPrompt">
                               <Children>
-                                <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="AFCourierLetter.Button.Text" Brush.FontSize="13" Brush.FontColor="#E8C66AFF" Text="复制提示词" DoNotAcceptEvents="true" />
+                                <TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="AFCourierLetter.Button.Text" Brush.FontSize="13" Brush.FontColor="#E8C66AFF" Text="@CopyPromptText" DoNotAcceptEvents="true" />
                               </Children>
                             </ButtonWidget>
                           </Children>
@@ -62,20 +62,20 @@
                     <ListPanel WidthSizePolicy="CoverChildren" HeightSizePolicy="Fixed" SuggestedHeight="17" MarginTop="276" MarginRight="28" HorizontalAlignment="Right" LayoutImp.LayoutMethod="HorizontalLeftToRight">
                       <Children>
                         <ButtonWidget DoNotPassEventsToChildren="true" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="32" SuggestedHeight="17" Command.Click="ExecuteRegenerate" IsEnabled="@CanRegenerate">
-                          <Children><TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="AFCourierLetter.Button.Text" Brush.FontSize="12" Brush.FontColor="#9B2A1EFF" Text="重绘" DoNotAcceptEvents="true" /></Children>
+                          <Children><TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="AFCourierLetter.Button.Text" Brush.FontSize="12" Brush.FontColor="#9B2A1EFF" Text="@RedrawText" DoNotAcceptEvents="true" /></Children>
                         </ButtonWidget>
                         <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="16" SuggestedHeight="17" Brush="AFCourierLetter.Meta.Text" Brush.FontSize="12" Brush.FontColor="#9B2A1EFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" Text="·" DoNotAcceptEvents="true" />
                         <ButtonWidget IsEnabled="@CanRegenerateWithPrompt" DoNotPassEventsToChildren="true" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="116" SuggestedHeight="17" Command.Click="ExecuteRegenerateWithPrompt">
-                          <Children><TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="AFCourierLetter.Button.Text" Brush.FontSize="12" Brush.FontColor="#9B2A1EFF" Text="重绘（带提示词）" DoNotAcceptEvents="true" /></Children>
+                          <Children><TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="AFCourierLetter.Button.Text" Brush.FontSize="12" Brush.FontColor="#9B2A1EFF" Text="@RedrawPromptText" DoNotAcceptEvents="true" /></Children>
                         </ButtonWidget>
 
                         <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="16" SuggestedHeight="17" Brush="AFCourierLetter.Meta.Text" Brush.FontSize="12" Brush.FontColor="#9B2A1EFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" Text="·" DoNotAcceptEvents="true" />
                         <ButtonWidget DoNotPassEventsToChildren="true" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="32" SuggestedHeight="17" Command.Click="ExecuteOpenGallery">
-                          <Children><TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="AFCourierLetter.Button.Text" Brush.FontSize="12" Brush.FontColor="#9B2A1EFF" Text="画廊" DoNotAcceptEvents="true" /></Children>
+                          <Children><TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="AFCourierLetter.Button.Text" Brush.FontSize="12" Brush.FontColor="#9B2A1EFF" Text="@GalleryText" DoNotAcceptEvents="true" /></Children>
                         </ButtonWidget>
                         <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="16" SuggestedHeight="17" Brush="AFCourierLetter.Meta.Text" Brush.FontSize="12" Brush.FontColor="#9B2A1EFF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" Text="·" DoNotAcceptEvents="true" />
                         <ButtonWidget DoNotPassEventsToChildren="true" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="32" SuggestedHeight="17" Command.Click="ExecuteDelete" IsEnabled="@HasIllustration">
-                          <Children><TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="AFCourierLetter.Button.Text" Brush.FontSize="12" Brush.FontColor="#9B2A1EFF" Text="删除" DoNotAcceptEvents="true" /></Children>
+                          <Children><TextWidget WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" Brush="AFCourierLetter.Button.Text" Brush.FontSize="12" Brush.FontColor="#9B2A1EFF" Text="@DeleteText" DoNotAcceptEvents="true" /></Children>
                         </ButtonWidget>
                       </Children>
                     </ListPanel>
@@ -122,7 +122,7 @@
             <!-- Other news: title sits on the small ribbon baked into the parchment -->
             <Widget IsVisible="@HasMinors" WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="1078" SuggestedHeight="100" HorizontalAlignment="Center" MarginTop="593" DoNotAcceptEvents="false">
               <Children>
-                <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="219" SuggestedHeight="30" HorizontalAlignment="Center" Brush="AFCourierLetter.Title.Text" Brush.FontSize="20" Brush.FontColor="#2B1C10FF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" Text="其 余 消 息" DoNotAcceptEvents="true" />
+                <TextWidget WidthSizePolicy="Fixed" HeightSizePolicy="Fixed" SuggestedWidth="219" SuggestedHeight="30" HorizontalAlignment="Center" Brush="AFCourierLetter.Title.Text" Brush.FontSize="20" Brush.FontColor="#2B1C10FF" Brush.TextHorizontalAlignment="Center" Brush.TextVerticalAlignment="Center" Text="@OtherMessagesText" DoNotAcceptEvents="true" />
                 <ScrollablePanel Id="MinorScrollPanel" WidthSizePolicy="StretchToParent" HeightSizePolicy="Fixed" SuggestedHeight="68" MarginTop="32" ClipRect="MinorClip" InnerPanel="MinorClip\MinorInner" VerticalScrollbar="..\MinorScrollbar" AutoHideScrollBars="true" DoNotAcceptEvents="false">
                   <Children>
                     <Widget Id="MinorClip" WidthSizePolicy="StretchToParent" HeightSizePolicy="StretchToParent" ClipContents="true">

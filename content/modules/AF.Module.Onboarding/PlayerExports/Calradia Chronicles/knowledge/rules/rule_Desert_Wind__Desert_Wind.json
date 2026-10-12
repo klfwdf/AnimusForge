@@ -1,0 +1,132 @@
+{
+  "Id": "rule_Desert_Wind",
+  "Keywords": [
+    "Desert Wind"
+  ],
+  "RagShortTexts": [
+    "Desert Wind is an ordinary horse named after the arena and is not suitable for the battlefield."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Is this name given to the arena? It sounds quite bluffing. In fact, it is just an ordinary horse that can run well. It can run two laps in the arena but is not qualified for the battlefield. Imperial aristocrats would not ride such horses in the streets, it would be a loss of status."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Hippodrome horses. Giving a name with \"Desert\" in it is irritating us? If you really pull it into Nahasa, it will be useless in just a long time. The name scares people, but the legs don't."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Stuff in the arena. The name \"desert\" indicates that it was born in a hot place. Horses from hot areas suffer when they come to Sturgia. Their coats are not thick enough and their hooves are not strong enough. They hang in the stables outside in the winter. When I look at them the next morning, they are huddled up and shaking like chaff. When we ride horses in winter, we first see if the horses can survive the winter. Desert Wind doesn't work."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "A horse in the arena with \"Desert\" in its name. To the south of our Khuzait grassland is the desert, and we know what desert horses look like. This horse is not a desert horse, it doesn't have that bloodline. He had a bluffing name, he was okay for running a few laps, but he wasn't qualified for fighting."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The horse racing in the arena has a bluffing name. If you win a few games in the arena, you will be named Desert Wind. If you win a few more games, will you have to call it Hurricane, Thunder, Tornado? After all, it is still an ordinary horse and is useless in battle."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Stuff in the arena. The name is bluffing, Battania can’t even get through the bushes at the foot of our mountain. Moreover, this horse was born in a hot place. It shivers with cold here in winter, and it doesn't even look like a desert wind. Just call it a gerbil."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nord"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Horses in the arena. A fast horse can't be exchanged for beer here."
+    }
+  ],
+  "TextMappings": []
+}

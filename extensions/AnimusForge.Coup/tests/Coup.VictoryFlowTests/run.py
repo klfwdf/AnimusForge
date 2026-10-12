@@ -2,6 +2,7 @@
 Real Bannerlord scene assets, input routing and political actions are NOT simulated acceptance.
 """
 from pathlib import Path
+import shutil
 import subprocess
 ROOT=Path(__file__).resolve().parents[4]
 SRC=ROOT/'extensions/AnimusForge.Coup/src/CoupSystem'
@@ -47,6 +48,27 @@ fixture=fixture.replace('__CAMPAIGN__','\n'.join(extract(campaign,m) for m in ca
 fixture=fixture.replace('__MISSION__','\n'.join(extract(mission,m) for m in mission_methods))
 OUT.mkdir(parents=True,exist_ok=True)
 (OUT/'Program.cs').write_text(fixture,encoding='utf-8')
-links=''.join(f'<Compile Include="{SRC / name}" />' for name in ['CoupSession.cs','CoupOutcomeReport.cs','CoupBecomeKingSceneNotification.cs'])
-(OUT/'Flow.csproj').write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><EnableDefaultCompileItems>false</EnableDefaultCompileItems></PropertyGroup><ItemGroup><PackageReference Include="Newtonsoft.Json" Version="13.0.3" /><Compile Include="Program.cs" />'+links+'</ItemGroup></Project>',encoding='utf-8')
+(OUT/'TextObjectStub.cs').write_text('''namespace TaleWorlds.Localization {
+public sealed class TextObject {
+    private string _text;
+    public TextObject(string text) {
+        _text = text ?? string.Empty;
+        if (_text.StartsWith("{=") && _text.IndexOf('}') >= 0) _text = _text.Substring(_text.IndexOf('}') + 1);
+    }
+    public TextObject SetTextVariable(string name, string value) {
+        _text = _text.Replace("{" + name + "}", value ?? string.Empty);
+        return this;
+    }
+    public TextObject SetTextVariable(string name, int value) => SetTextVariable(name, value.ToString());
+    public TextObject SetTextVariable(string name, TextObject value) => SetTextVariable(name, value?.ToString() ?? string.Empty);
+    public override string ToString() => _text;
+}
+}''',encoding='utf-8')
+links=''.join(f'<Compile Include="{SRC / name}" />' for name in ['CoupSession.cs','CoupOutcomeReport.cs','CoupUiText.cs','CoupBecomeKingSceneNotification.cs','CoupSourceTexts.cs','CoupPromptTexts.cs'])
+package=OUT/'ModuleData'
+package.mkdir(exist_ok=True)
+for name in ['CoupSourceTexts.json','CoupPromptTexts.json']:
+    shutil.copyfile(ROOT/'content/modules/AnimusForge.Coup/ModuleData'/name,package/name)
+(OUT/'PackagePaths.cs').write_text('namespace AnimusForge { internal static class AnimusForgeModulePaths { internal static string GetModuleDataFilePath(string file) => System.IO.Path.Combine("'+str(package).replace('\\','\\\\')+'", System.IO.Path.GetFileName(file)); } }',encoding='utf-8')
+(OUT/'Flow.csproj').write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><EnableDefaultCompileItems>false</EnableDefaultCompileItems></PropertyGroup><ItemGroup><PackageReference Include="Newtonsoft.Json" Version="13.0.3" /><Compile Include="Program.cs" /><Compile Include="TextObjectStub.cs" /><Compile Include="PackagePaths.cs" />'+links+'</ItemGroup></Project>',encoding='utf-8')
 subprocess.run(['dotnet','run','--project',str(OUT/'Flow.csproj')],cwd=ROOT,check=True)

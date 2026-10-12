@@ -1,0 +1,93 @@
+{
+  "Id": "rule_Karius",
+  "Keywords": [
+    "Kalius"
+  ],
+  "RagShortTexts": [
+    "The village of Kalius is foggy and humid, and the villagers’ accents are unique and difficult to understand."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Kalius is a village near Kaliusburg, located on the foggy coastal plain south of the Walceg Bay. The local villagers speak a language that is a mixture of Vlandia, Sturgia and Battania elements, and growing flax in the lowlands is their main livelihood."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The accent spoken in Kalius’s village is very strange. The Vlandia language is mixed with the retroflex of Sturgia and the final sound of Battania. It’s hard to get used to it at first. That place is on the edge of Walchego Bay, with a lot of fog and wet ground, which is suitable for growing flax. The garrison of Castle Carius was stationed above, guarding against movements to the north and east."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "townsfolk"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Kalius is a place where several countries meet, and the accents of the villagers will never be forgotten after hearing them. But the flax they grew was quite good. It was foggy and humid near Walchego Bay, and the flax grew tall. It's just that the road is not easy to walk, and you have to climb several foggy ridges to get in."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "I stopped at Carius and found that I could not understand half of what the natives said. An old farmer told me that his grandfather was from Sturgia, his grandmother was from Battania, and his mother was from Vlandia. The conversation in the family was always chaotic. It was so foggy there that I couldn't even see the houses opposite in the morning."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Kalius",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "Karius Castle",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

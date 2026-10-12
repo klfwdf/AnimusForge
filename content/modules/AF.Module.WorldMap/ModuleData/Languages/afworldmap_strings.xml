@@ -1,0 +1,334 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base type="string">
+  <tags><tag language="English" /></tags>
+  <strings>
+    <string id="AF_WM_ActionRaid" text="raid" />
+    <string id="AF_WM_ActionBesiege" text="besiege" />
+    <string id="AF_WM_GoToSettlementUntil" text="{ACTOR} is heading to {SETTLEMENT}; it will stay there until the specified deadline." />
+    <string id="AF_WM_GoToSettlement" text="{ACTOR} is heading to {SETTLEMENT} and will stay there for {DAYS} days." />
+    <string id="AF_WM_Patrol" text="{ACTOR} is heading near {SETTLEMENT} and will patrol for {DAYS} days." />
+    <string id="AF_WM_SettlementAttack" text="{ACTOR} is moving toward {SETTLEMENT} to {ACTION}; limit: {DAYS} days ({MODE})." />
+    <string id="AF_WM_WaitForHero" text="{ACTOR} is heading outside {SETTLEMENT} and waiting for {HERO} to leave before attacking." />
+    <string id="AF_WM_TrackHero" text="{ACTOR} is tracking {HERO}'s party to attack; limit: {DAYS} days ({MODE})." />
+    <string id="AF_WM_TrackParty" text="{ACTOR} is tracking {PARTY} to attack; limit: {DAYS} days ({MODE})." />
+    <string id="AF_WM_MergeForeign" text="{HERO} is returning to the player's party and will merge as a guest force while keeping the original clan identity." />
+    <string id="AF_WM_Merge" text="{HERO} is returning to the player's party to regroup and transfer troops." />
+    <string id="AF_WM_FollowStart" text="{ACTOR} is heading to and following {TARGET} for {DAYS} days." />
+    <string id="AF_WM_HideoutTravel" text="{ACTOR} is heading to {SETTLEMENT} to clear the hideout." />
+    <string id="AF_WM_HideoutEngage" text="{ACTOR} is starting a hideout-clear battle at {SETTLEMENT}; the native battle resolves the outcome and casualties." />
+    <string id="AF_WM_ForeignGuestDepart" text="{HERO}'s faction is now at war with the player; the foreign guest hero has left the player's party." />
+    <string id="AF_WM_ForeignGuestDetachmentReleased" text="{HERO}'s faction is now at war with the player; the foreign guest detachment is no longer under player control." />
+    <string id="AF_WM_PartyName" text="{HERO}'s party" />
+    <string id="AF_WM_Target" text="target" />
+    <string id="AF_WM_TrackRisk" text="{ACTOR} is near {TARGET}, but the strength assessment considers the risk too high; waiting for a better attack window." />
+    <string id="AF_WM_TrackBlocked" text="{ACTOR} is near {TARGET}, but the attack requirements are not met; continuing to track the target." />
+    <string id="AF_WM_TrackLost" text="The engagement conditions between {ACTOR} and {TARGET} were temporarily lost; pursuing again." />
+    <string id="AF_WM_Tracking" text="{ACTOR} is tracking {TARGET} and preparing to execute the attack command." />
+    <string id="AF_WM_ResultActorPartyDestroyed" text="The executing party was destroyed." />
+    <string id="AF_WM_ResultTargetDefeated" text="The target party was defeated." />
+    <string id="AF_WM_ResultTargetDestroyed" text="The target party was destroyed or disbanded." />
+    <string id="AF_WM_ResultNoWinner" text="The battle ended, but the native event did not declare a winner." />
+    <string id="AF_WM_ResultActorCaptured" text="The executor was captured; the attack command failed." />
+    <string id="AF_WM_ResultTargetCaptured" text="{TARGET} was captured; the target party was defeated." />
+    <string id="AF_WM_ResultActorKilled" text="The executor died; the attack command failed." />
+    <string id="AF_WM_ResultSettlementCaptured" text="{SETTLEMENT} was captured." />
+    <string id="AF_WM_ResultSiegeFailed" text="The besieging force failed to capture the target." />
+    <string id="AF_WM_ResultSettlementOwnerChanged" text="{SETTLEMENT} was captured and changed hands." />
+    <string id="AF_WM_ResultVillageRaided" text="The village was raided." />
+    <string id="AF_WM_ResultRaidRepelled" text="The defenders repelled the raid; the village was not looted." />
+    <string id="AF_WM_ResultVillageLooted" text="The village is now in a looted state." />
+    <string id="AF_WM_Admission_StopOrder" text="Invalid world-map command order: STOP is only valid as the first effective world-map tag in this round; the STOP was ignored." />
+    <string id="AF_WM_Admission_HideoutUnavailable" text="The hideout-clear command was not accepted: the hideout was not found, already empty, occupied by a quest, in battle, or the safe interface was not ready." />
+    <string id="AF_WM_Admission_NotReady" text="The world-map command system is not initialized." />
+    <string id="AF_WM_Admission_NoParty" text="World-map command failed: the current non-hero speaker has no field party that can be taken over." />
+    <string id="AF_WM_Admission_QueueCleared" text="{ACTOR} cleared the previous world-map command queue." />
+    <string id="AF_WM_Admission_NonHeroLimit" text="World-map command failed: a non-hero party can only execute party-level move, patrol, follow, and attack commands." />
+    <string id="AF_WM_Admission_NoTarget" text="World-map command failed: there is no valid executable target ID." />
+    <string id="AF_WM_Admission_CompanionOrder" text="Invalid world-map command order: a merge command before party creation cannot run; processing starts at the first effective task command." />
+    <string id="AF_WM_Admission_GovernorNoTask" text="World-map command failed: a governor in a settlement needs at least one move, patrol, follow, or attack task to form an expedition." />
+    <string id="AF_WM_Admission_GovernorOrder" text="Invalid world-map command order: a merge command before governor party creation cannot run; processing starts at the first effective task command." />
+    <string id="AF_WM_Admission_ProcessingFailed" text="World-map command processing failed: {ERROR}" />
+    <string id="AF_WM_CommandMissingSource" text="World-map command failed: the external command source is missing." />
+    <string id="AF_WM_CommandInvalidHeroSettlement" text="World-map command failed: no valid hero or settlement was found." />
+    <string id="AF_WM_CommandExisting" text="{HERO} already has another world-map command and cannot be reassigned to the feast yet." />
+    <string id="AF_WM_StopMissingHeroSource" text="Stopping the world-map command failed: the hero or command source is missing." />
+    <string id="AF_WM_StopWrongSource" text="{HERO}'s current command does not belong to this feast source and was not stopped." />
+    <string id="AF_WM_CannotControlPlayerParty" text="World-map command failed: the player's own party cannot be commanded this way." />
+    <string id="AF_WM_NoControllableParty" text="World-map command failed: {HERO} has no independent controllable party." />
+    <string id="AF_WM_NoValidCommands" text="World-map command failed: no command passed ID validation." />
+    <string id="AF_WM_WaitingBattleReplace" text="{ACTOR} is waiting for the current battle to resolve safely; the world-map command cannot be replaced yet." />
+    <string id="AF_WM_WaitingBattleAppend" text="{ACTOR} is waiting for the current battle to resolve safely; new world-map commands cannot be appended yet." />
+    <string id="AF_WM_IsolatedSource" text="{ACTOR} is executing an isolated-source command; the chat command did not change that queue." />
+    <string id="AF_WM_QueueStarted" text="{ACTOR} {ACTION} {COUNT} world-map command(s)." />
+    <string id="AF_WM_QueueAppended" text="{ACTOR} {ACTION} {COUNT} world-map command(s)." />
+    <string id="AF_WM_QueueStartedAction" text="started executing" />
+    <string id="AF_WM_QueueAppendedAction" text="appended" />
+    <string id="AF_WM_NonHeroNoParty" text="World-map command failed: the current non-hero speaker has no field party that can be taken over." />
+    <string id="AF_WM_NonHeroQueueUnavailable" text="World-map command failed: a stable non-hero party command queue could not be created." />
+    <string id="AF_WM_AcceptedQueue" text="{ACTOR} accepted the world-map command queue ({COUNT} command(s){CONVERSION})." />
+    <string id="AF_WM_NativeBattleReplaceBlocked" text="{ACTOR} is participating in a native battle; the current world-map command cannot be replaced until it resolves." />
+    <string id="AF_WM_GovernorInvalidState" text="This governor is dead, captured, disabled, or not currently eligible to lead an expedition." />
+    <string id="AF_WM_GovernorNotCurrent" text="This hero is no longer the valid current governor of a town or castle." />
+    <string id="AF_WM_GovernorAway" text="The governor is not currently in the settlement under their authority." />
+    <string id="AF_WM_GovernorClanMismatch" text="The settlement ownership does not match the governor's clan." />
+    <string id="AF_WM_GovernorAlreadyAttached" text="The governor already belongs to another independent party or prisoner party." />
+    <string id="AF_WM_GovernorCannotLead" text="The governor cannot lead a party because of a quest or native game rule." />
+    <string id="AF_WM_GovernorSettlementBusy" text="{SETTLEMENT} is under siege or in battle; its garrison cannot be drafted." />
+    <string id="AF_WM_GovernorGarrisonUnavailable" text="{SETTLEMENT} has no garrison that can be safely drafted." />
+    <string id="AF_WM_GovernorValidationFailed" text="Governor expedition eligibility check failed: {ERROR}" />
+    <string id="AF_WM_GovernorGarrisonUnavailableGeneric" text="The garrison party is unavailable." />
+    <string id="AF_WM_GovernorTroopsInsufficient" text="Fewer than {MINIMUM} healthy garrison troops can be drafted; at least {RESERVE} regular troops must remain and the governor party limit must be respected." />
+    <string id="AF_WM_GovernorPlanIncomplete" text="The garrison draft plan could not produce a complete troop list." />
+    <string id="AF_WM_GovernorNoTask" text="No valid task command is available for the expedition." />
+    <string id="AF_WM_GovernorRequestChanged" text="The governor's settlement or clan changed while the request was waiting." />
+    <string id="AF_WM_GovernorIdentityChanged" text="The governor identity or settlement ownership changed before party creation." />
+    <string id="AF_WM_GovernorStarted" text="{HERO} drafted {TROOPS} troops from the garrison of {SETTLEMENT} and began the expedition." />
+    <string id="AF_WM_GovernorCreationFailed" text="Creating the governor expedition failed: {ERROR}" />
+    <string id="AF_WM_MergeNotPlayerMember" text="World-map command failed: {ACTOR} is not a player clan member, companion, or registered temporary detachment and cannot merge back." />
+    <string id="AF_WM_MergeMissingForeignClan" text="World-map command failed: {ACTOR} is not a player member and has no foreign clan identity to preserve." />
+    <string id="AF_WM_MergeInactiveOrCaptive" text="World-map command failed: {ACTOR} is dead, inactive, or captive and cannot join as a foreign guest force." />
+    <string id="AF_WM_MergeNotOwnParty" text="World-map command failed: {ACTOR} is not leading their own clan's lord party and cannot merge the whole party." />
+    <string id="AF_WM_MergeGovernor" text="World-map command failed: {ACTOR} is still a governor; the foreign guest force cannot merge without removing the native office." />
+    <string id="AF_WM_MergeInArmy" text="World-map command failed: {ACTOR} is currently in an army and must leave it before merging into the player's party." />
+    <string id="AF_WM_MergeAtWar" text="World-map command failed: {ACTOR}'s faction is at war with the player and cannot merge as a foreign guest force." />
+    <string id="AF_WM_MergeNoIndependentParty" text="World-map command failed: {ACTOR} has no independent field party to merge." />
+    <string id="AF_WM_MergePartyMismatch" text="World-map command failed: {ACTOR} no longer leads the field party and the merge was stopped." />
+    <string id="AF_WM_MergeHeroMissing" text="World-map command failed: {ACTOR} is not in the field party roster and the merge was stopped." />
+    <string id="AF_WM_MergeMainPartyInvalid" text="World-map command failed: the player's main party is unavailable for the merge." />
+    <string id="AF_WM_MergeEligibilityUnknown" text="World-map command failed: {ACTOR} does not meet the merge requirements ({REASON})." />
+    <string id="AF_WM_ConversionBoth" text=", hostile settlements were handled as AI attacks and besieged settlements were changed to attacks on the besieging force." />
+    <string id="AF_WM_ConversionBesieged" text=", besieged settlements were changed to attacks on the besieging force." />
+    <string id="AF_WM_ConversionHostile" text=", hostile settlements were handled as AI attacks." />
+    <string id="AF_WM_GovernorRequestQueued" text="Recorded {HERO}'s governor expedition request; {REASON}. The garrison will be drafted and the expedition formed after the blocking screen or conversation closes." />
+    <string id="AF_WM_GovernorBlockedCampaign" text="the campaign system is not ready" />
+    <string id="AF_WM_GovernorBlockedScene" text="the player is still in a mission" />
+    <string id="AF_WM_GovernorBlockedConversation" text="a conversation is still in progress" />
+    <string id="AF_WM_GovernorBlockedPartyScreen" text="a party screen is already open" />
+    <string id="AF_WM_GovernorRequestMissingIdentity" text="The governor expedition request is missing required identity information." />
+    <string id="AF_WM_GovernorRequestTicketExpired" text="An existing governor expedition request has an expired runtime ticket." />
+    <string id="AF_WM_GovernorRequestStateChanged" text="A pending governor expedition request already exists, but its settlement or clan has changed." />
+    <string id="AF_WM_GovernorRequestTicketFailed" text="The governor expedition request ticket could not be created." />
+    <string id="AF_WM_CompanionHeroMissing" text="Only a non-player Hero present in the player's main-party roster can implicitly create a task party." />
+    <string id="AF_WM_CompanionRequestQueued" text="Recorded {HERO}'s companion-party request; {REASON}. The native party screen will open after returning to the world map." />
+    <string id="AF_WM_CompanionScreenOpenFailed" text="Opening the native companion-party screen failed: {ERROR}" />
+    <string id="AF_WM_CompanionBlockedMission" text="the player is still in a mission or review" />
+    <string id="AF_WM_CompanionBlockedConversation" text="a conversation is still in progress" />
+    <string id="AF_WM_CompanionBlockedPartyScreen" text="a party screen is already open" />
+    <string id="AF_WM_CompanionBlockedGameState" text="the game UI state is not ready" />
+    <string id="AF_WM_CompanionBlockedMainParty" text="the player's main party is unavailable" />
+    <string id="AF_WM_CompanionScreenPending" text="A companion-party creation screen is already waiting to complete." />
+    <string id="AF_WM_CompanionScreenOpened" text="Opened the party-splitting screen for {HERO}." />
+    <string id="AF_WM_StatusGoToSettlement" text="{ACTOR} is heading to {SETTLEMENT}; if native AI interrupts, the move command will be issued again." />
+    <string id="AF_WM_StatusPatrolSettlement" text="{ACTOR} is patrolling near {SETTLEMENT}; if native AI interrupts, the patrol command will be issued again." />
+    <string id="AF_WM_StatusFollowSiegeWaitExit" text="{ACTOR} is finishing the current battle; after it resolves, the party will leave the siege and resume following." />
+    <string id="AF_WM_StatusFollowing" text="{ACTOR} is following {TARGET}; if native AI interrupts, the follow command will be issued again." />
+    <string id="AF_WM_StatusFollowSiegeTravel" text="{ACTOR} is following {TARGET} to join the player's siege of {SETTLEMENT}." />
+    <string id="AF_WM_StatusFollowSiegeActive" text="{ACTOR} has joined the siege of {SETTLEMENT}." />
+    <string id="AF_WM_StatusRaidInterrupted" text="{ACTOR}'s village raid was interrupted by a native event; maintaining the raid command against {SETTLEMENT} again." />
+    <string id="AF_WM_StatusReengageParty" text="{ACTOR} caught up with {TARGET} again and is continuing the attack command." />
+    <string id="AF_WM_StatusReengageHero" text="{ACTOR} caught up with {TARGET}'s party again and is continuing the attack command." />
+    <string id="AF_WM_StatusMergeForeign" text="{HERO} is leading the guest force toward the player's main party; if native AI interrupts, the guest-force merge command will be issued again." />
+    <string id="AF_WM_StatusMerge" text="{HERO} is returning to the player's party; if native AI interrupts, the merge command will be issued again." />
+    <string id="AF_WM_StatusMergeDestroyStopped" text="{HERO}'s temporary party could not be safely destroyed; automatic merging stopped to avoid transferring assets twice." />
+    <string id="AF_WM_StatusMergeTransferStopped" text="Transferring troops from {HERO} failed repeatedly; automatic merging stopped to avoid damaging assets through repeated rollback." />
+    <string id="AF_WM_StatusMergeTransferRetry" text="{HERO} reached the player's party, but the troop transfer failed; assets were rolled back and will be retried in six in-game hours." />
+    <string id="AF_WM_StatusGoToBesiegedConverted" text="{ACTOR}'s destination {SETTLEMENT} is under siege by hostile {BESIEGER}; the move command was changed to attack the besieging force." />
+    <string id="AF_WM_StatusGoToHostileConverted" text="{ACTOR}'s destination {SETTLEMENT} is hostile; the move command will use the native attack behavior." />
+    <string id="AF_WM_StatusPreemptMapEvent" text="{ACTOR} is participating in {REASON}; the new world-map command will run after the native battle resolves." />
+    <string id="AF_WM_StatusPreemptSiege" text="{ACTOR} is participating in the current siege event; after it resolves, the party will leave the siege and run the new world-map command." />
+    <string id="AF_WM_StatusPreemptChanged" text="{ACTOR} abandoned {REASON} and switched to the new world-map command." />
+    <string id="AF_WM_PreemptNativeEvent" text="the current native event" />
+    <string id="AF_WM_PreemptRaid" text="the current raid" />
+    <string id="AF_WM_PreemptSupplies" text="the current supply requisition" />
+    <string id="AF_WM_PreemptVolunteers" text="the current volunteer requisition" />
+    <string id="AF_WM_PreemptSiege" text="the current siege" />
+    <string id="AF_WM_PreemptStrategicAction" text="the current strategic action" />
+    <string id="AF_WM_PreemptNativeAction" text="the current native action" />
+    <string id="AF_WM_DisplayCompanionCreateFailed" text="{HERO} cannot create companion party: {DETAIL}" />
+    <string id="AF_WM_DisplayCompanionFollowUpFailed" text="{HERO} cannot continue follow-up world-map commands after creating companion party: {DETAIL}" />
+    <string id="AF_WM_DisplayCompanionCreateException" text="{HERO} failed to create companion party: {DETAIL}" />
+    <string id="AF_WM_DisplayGovernorExpeditionFailed" text="{HERO} cannot form governor expedition: {DETAIL}" />
+    <string id="AF_WM_DisplayFollowUpCommandsFailed" text="Cannot continue follow-up commands after party creation: {DETAIL}" />
+    <string id="AF_WM_DisplayGovernorExpeditionDeparted" text="{HERO} stepped down as governor of {SETTLEMENT}, drafted {COUNT} troops, and began the expedition." />
+    <string id="AF_WM_DisplayQueueEnded" text="{ACTOR}'s world-map command queue has ended ({REASON})." />
+    <string id="AF_WM_DisplayQueueEndedWithTail" text="{ACTOR}'s world-map command queue has ended ({REASON}), {TAIL}" />
+    <string id="AF_WM_DisplayHideoutOutcome" text="{ACTOR} hideout clear against {TARGET} {OUTCOME}: {DETAIL}" />
+    <string id="AF_WM_DisplayOutcomeSucceeded" text="succeeded" />
+    <string id="AF_WM_DisplayOutcomeFailed" text="failed" />
+    <string id="AF_WM_DisplayOutcomeIncomplete" text="incomplete" />
+    <string id="AF_WM_DisplayRaidSuccess" text="{ACTOR} successfully raided {TARGET}: {DETAIL}" />
+    <string id="AF_WM_DisplayRaidFailed" text="{ACTOR} raid on {TARGET} failed: {DETAIL}" />
+    <string id="AF_WM_DisplayRaidIncomplete" text="{ACTOR}'s raid on {TARGET} was incomplete: {DETAIL}" />
+    <string id="AF_WM_DisplaySiegeSuccess" text="{ACTOR} successfully besieged {TARGET}: {DETAIL}" />
+    <string id="AF_WM_DisplaySiegeFailed" text="{ACTOR} siege of {TARGET} failed: {DETAIL}" />
+    <string id="AF_WM_DisplaySiegeIncomplete" text="{ACTOR}'s siege of {TARGET} was incomplete: {DETAIL}" />
+    <string id="AF_WM_DisplayAttackSuccess" text="{ACTOR}'s attack on {TARGET} succeeded: {DETAIL}" />
+    <string id="AF_WM_DisplayAttackFailed" text="{ACTOR}'s attack on {TARGET} failed: {DETAIL}" />
+    <string id="AF_WM_DisplayAttackIncomplete" text="{ACTOR}'s attack on {TARGET} was incomplete: {DETAIL}" />
+    <string id="AF_WM_DisplayWaitingHeroShelter" text="{HERO} is inside {SHELTER}; {ACTOR} is waiting outside for departure to attack." />
+    <string id="AF_WM_DisplayWaitingPartyShelter" text="{PARTY} is inside {SHELTER}; {ACTOR} is waiting outside for departure to attack." />
+    <string id="AF_WM_DisplayRaidStartedUnderway" text="{ACTOR} began raiding {SETTLEMENT}; battle underway." />
+    <string id="AF_WM_DisplaySiegeStartedUnderway" text="{ACTOR} began besieging {SETTLEMENT}; siege underway." />
+    <string id="AF_WM_DisplayAttackHeroStartedUnderway" text="{ACTOR} attacked {TARGET}'s party; battle underway." />
+    <string id="AF_WM_DisplayAttackPartyStartedUnderway" text="{ACTOR} attacked {TARGET}; battle underway." />
+    <string id="AF_WM_DisplayArrivedSettlementHolding" text="{ACTOR} arrived at {SETTLEMENT} and is holding position." />
+    <string id="AF_WM_DisplayArrivedSettlementPatrolling" text="{ACTOR} arrived near {SETTLEMENT} and began patrolling." />
+    <string id="AF_WM_DisplayFollowStartedUnderway" text="{ACTOR} caught up and is following {TARGET}." />
+    <string id="AF_WM_DisplayFollowJoinedSiege" text="{ACTOR} accompanied {TARGET} and joined the siege of {SETTLEMENT}." />
+    <string id="AF_WM_DisplayAbandonedForNewCommand" text="{ACTOR} abandoned {REASON} and switched to the new world-map command." />
+    <string id="AF_WM_DisplaySettlementAttackFinished" text="{HERO} ended the assault on {SETTLEMENT}." />
+    <string id="AF_WM_RebellionNoPlayerClan" text="Player clan does not exist; cannot execute rebellion attack." />
+    <string id="AF_WM_RebellionOnlyPlayerCompanion" text="Only independent companion parties of the player clan can execute rebellion attacks on the player's behalf." />
+    <string id="AF_WM_RebellionNoControllableParty" text="The executor does not currently lead a controllable independent companion party; cannot execute rebellion attack." />
+    <string id="AF_WM_RebellionNotPlayerClanParty" text="The executing party does not belong to the player clan; cannot trigger player clan rebellion." />
+    <string id="AF_WM_RebellionPlayerNotInKingdom" text="The player clan does not belong to any kingdom; kingdom rebellion is unnecessary and cannot be executed." />
+    <string id="AF_WM_RebellionTargetNotSameKingdom" text="Target does not belong to the player's current kingdom and cannot trigger a rebellion attack." />
+    <string id="AF_WM_RebellionKingdomEliminated" text="The player's kingdom has been eliminated; cannot execute kingdom rebellion." />
+    <string id="AF_WM_RebellionMercenaryCannotRebel" text="The player clan is currently under mercenary service and cannot execute kingdom rebellion." />
+    <string id="AF_WM_RebellionRulingClanCannotRebel" text="The player clan is the ruling clan and cannot execute rebellion against its own kingdom." />
+    <string id="AF_WM_RebellionTargetIsPlayerClanHero" text="Target belongs to the player clan; cannot attack own clan forces through rebellion." />
+    <string id="AF_WM_RebellionTargetIsPlayerClanParty" text="Target party belongs to the player clan; cannot attack own clan forces through rebellion." />
+    <string id="AF_WM_RebellionTargetIsPlayerSettlement" text="Target settlement belongs to the player clan; cannot attack own fiefs through rebellion." />
+    <string id="AF_WM_AttackTargetSameParty" text="Target and executor are in the same party; cannot initiate attack." />
+    <string id="AF_WM_AttackPartySameParty" text="Target party and executor party are the same party; cannot initiate attack." />
+    <string id="AF_WM_AttackTargetDefeatedDeadOrCaptured" text="Target was defeated, killed, or captured." />
+    <string id="AF_WM_AttackTargetDeadCapturedOrInvalid" text="Target is dead, captured, or invalid." />
+    <string id="AF_WM_AttackTargetPartyDefeatedOrDisbanded" text="Target party was defeated or disbanded." />
+    <string id="AF_WM_AttackTargetNoAttackableParty" text="Target has no attackable party." />
+    <string id="AF_WM_AttackTargetPartyInvalidOrMissing" text="Target party is invalid or no longer on the world map." />
+    <string id="AF_WM_AttackBesiegerNoLongerHostile" text="The besieging party is no longer hostile; attack discontinued." />
+    <string id="AF_WM_AttackSettlementInvalid" text="Target settlement is invalid or not an attackable target." />
+    <string id="AF_WM_AttackTargetUnavailable" text="Target is no longer attackable." />
+    <string id="AF_WM_AttackActorLostPartyOrCaptured" text="Executor lost controllable party or was captured; command failed." />
+    <string id="AF_WM_ResultTargetAchieved" text="Target objective was achieved." />
+    <string id="AF_WM_ResultNativeFailed" text="Native event determined failure." />
+    <string id="AF_WM_ResultNoClearOutcome" text="No definitive outcome was reached." />
+    <string id="AF_WM_TimeoutTargetInShelter" text="{TARGET} remained inside {SHELTER}; time limit expired before battle could begin." />
+    <string id="AF_WM_TimeoutTrackExpired" text="Time limit expired before tracking target could engage in battle." />
+    <string id="AF_WM_TimeoutAttackExpired" text="Time limit expired before attack could engage in battle." />
+    <string id="AF_WM_ReasonQueueDone" text="all commands completed" />
+    <string id="AF_WM_ReasonMergeInvalid" text="merge conditions no longer met" />
+    <string id="AF_WM_ReasonMergeTransferFailed" text="troop transfer failed" />
+    <string id="AF_WM_ReasonMergeDestroyFailed" text="temporary party could not be safely disbanded" />
+    <string id="AF_WM_ReasonTimeout" text="time limit expired" />
+    <string id="AF_WM_ReasonActorInvalid" text="executor invalid" />
+    <string id="AF_WM_ReasonTargetInvalid" text="target invalid or inexecutable" />
+    <string id="AF_WM_ReasonCommandInvalid" text="command invalid" />
+    <string id="AF_WM_TailGovernorReturning" text="governor expedition returning to return garrison troops." />
+    <string id="AF_WM_TailGovernorEnded" text="governor expedition ended or returned to native AI." />
+    <string id="AF_WM_TailNativeResumed" text="resuming native behavior." />
+    <string id="AF_WM_Review_HoldUntilCompleted" text="{ACTOR} completed the order to stay in {SETTLEMENT} until the specified date." />
+    <string id="AF_WM_Review_HoldDaysCompleted" text="{ACTOR} completed the order to stay in {SETTLEMENT} for {DAYS} days." />
+    <string id="AF_WM_Review_PatrolCompleted" text="{ACTOR} completed the order to patrol near {SETTLEMENT} for {DAYS} days." />
+    <string id="AF_WM_Review_FollowCompleted" text="{ACTOR} completed the order to follow {TARGET} for {DAYS} days." />
+    <string id="AF_WM_Review_PartyCreationCancelled" text="Companion party creation for {HERO} was cancelled; follow-up world-map commands were not executed." />
+    <string id="AF_WM_Review_PartyCreated" text="{HERO} created a companion party and received {TROOPS} troops and {PRISONERS} prisoners." />
+    <string id="AF_WM_Review_QueueSafeExit" text="{ACTOR}'s world-map command queue ended; after the current battle resolves, the party will safely leave the siege and resume native behavior." />
+    <string id="AF_WM_Review_TimeoutCommand" text="{ACTOR}'s world-map command timed out; the current command was skipped." />
+    <string id="AF_WM_Review_TimeoutTravel" text="{ACTOR} could not reach {SETTLEMENT} before the time limit; the travel command was skipped." />
+    <string id="AF_WM_Review_TimeoutPatrol" text="{ACTOR} could not reach the area near {SETTLEMENT} before the time limit; the patrol command was skipped." />
+    <string id="AF_WM_Review_TimeoutFollow" text="{ACTOR} could not catch up with {TARGET} before the time limit; the follow command was skipped." />
+    <string id="AF_WM_Review_TimeoutMerge" text="{ACTOR} could not meet the player's party before the time limit; the return command was skipped." />
+    <string id="AF_WM_Review_RaidCompleted" text="{HERO} completed the raid on {SETTLEMENT}." />
+    <string id="AF_WM_Review_PartyDefeated" text="{PARTY}'s party was defeated." />
+    <string id="AF_WM_Review_PartyRepelled" text="{PARTY}'s party was repelled." />
+    <string id="AF_WM_Review_SettlementCaptured" text="{SETTLEMENT} was captured." />
+    <string id="AF_WM_Review_GovernorNoReturnTarget" text="{HERO}'s governor expedition has no safe clan town or castle to return to; the party was preserved and returned to native AI." />
+    <string id="AF_WM_Review_GovernorReturnUnsafe" text="{HERO}'s governor expedition could not safely transfer assets on return; the party was preserved and returned to native AI." />
+    <string id="AF_WM_Review_HideoutMissingResult" text="The native battle ended without a confirmed hideout result; the attack was not repeated." />
+    <string id="AF_WM_Review_HideoutQuestBusy" text="The target is reserved by a story or quest; the hideout attack was not started." />
+    <string id="AF_WM_Review_HideoutUnavailable" text="The target is unavailable or safe battle resolution is not ready; the hideout attack was not started." />
+    <string id="AF_WM_Review_HideoutAlreadyEmpty" text="The target no longer has bandits; another party's clearance was not counted as this command's success." />
+    <string id="AF_WM_Review_HideoutActorIneligible" text="The executing party cannot fight the target bandits; no war was declared and the target was not forcibly removed." />
+    <string id="AF_WM_Review_HideoutBattleNotCreated" text="The native hideout battle could not be created." />
+    <string id="AF_WM_Review_HideoutCleared" text="The native battle was won and the resident bandits were cleared." />
+    <string id="AF_WM_Review_HideoutDefeated" text="The native battle determined that the clearing party was defeated." />
+    <string id="AF_WM_Review_HideoutIncomplete" text="No definitive clearance was confirmed, or the target still has resident bandits." />
+    <string id="AF_WM_Review_TimeoutNoResult" text="The command timed out without a definitive result." />
+    <string id="AF_WM_Review_PartyCreationInvalid" text="The new task party was not created correctly." />
+    <string id="AF_WM_Review_GovernorResignFailed" text="The current governor could not safely step down." />
+    <string id="AF_WM_Review_GovernorPartyInvalid" text="The native lord party was not correctly created for this governor and clan." />
+    <string id="AF_WM_Review_GovernorRosterMissing" text="The new lord party roster is unavailable." />
+    <string id="AF_WM_Review_GovernorUnexpectedHero" text="An unexpected hero appeared in the new lord party; creation was stopped." />
+    <string id="AF_WM_Review_GovernorTemplateRemaining" text="Native template troops, prisoners, or ships could not be fully removed." />
+    <string id="AF_WM_Review_GovernorTemplateShips" text="Native lord party template ships could not be removed." />
+    <string id="AF_WM_Review_GovernorTransferInputs" text="The garrison, expedition party, or troop transfer plan is unavailable." />
+    <string id="AF_WM_Review_GovernorTransferTroop" text="The garrison transfer plan contains an invalid troop type." />
+    <string id="AF_WM_Review_GovernorTroopChanged" text="Garrison troop state changed before transfer: {TROOP}" />
+    <string id="AF_WM_Review_GovernorTroopDeduction" text="Garrison troop deduction verification failed: {TROOP}" />
+    <string id="AF_WM_Review_GovernorXpDeduction" text="Garrison XP deduction was inconsistent: {TROOP}" />
+    <string id="AF_WM_Review_GovernorTroopWrite" text="Expedition troop insertion verification failed: {TROOP}" />
+    <string id="AF_WM_Review_GovernorConservation" text="Garrison and expedition troop or XP conservation verification failed: {TROOP}" />
+    <string id="AF_WM_Review_GovernorTransferFailure" text="Governor expedition troop transfer failed: troop={TROOP} step={STEP}" />
+    <string id="AF_WM_Review_ArmyMaintained" text="{ACTOR} spent {COST} influence to maintain the army and continue {ACTION} {SETTLEMENT} (leader influence: {INFLUENCE})." />
+    <string id="AF_WM_Review_MergeCompleted" text="{HERO} met the player's party and transferred {TROOPS} members, {PRISONERS} prisoners, and all supplies; the temporary expedition record was cleared." />
+    <string id="AF_WM_Review_GuestMergeCompleted" text="{HERO} met the player's party and transferred {TROOPS} members, {PRISONERS} prisoners, and all supplies; the original party was disbanded. {GUEST} accompanies the player as a foreign-clan guest, retaining clan, occupation, and companion status." />
+    <string id="AF_WM_Review_GovernorReturned" text="{HERO}'s expedition returned to {SETTLEMENT}; troops, prisoners, and supplies were placed and the temporary party was removed.{SHIPS} {RESTORATION}" />
+    <string id="AF_WM_Review_ForeignGuestWarDeparture" text="{HERO}'s faction is at war with the player, so the foreign-clan guest left the player's party and returned to {DESTINATION}; troops and supplies previously merged into the player's party were not automatically withdrawn." />
+    <string id="AF_WM_Review_ForeignGuestPartyReleased" text="{HERO}'s faction is at war with the player, so the foreign-clan guest party left player control and returned to the original clan's native AI; its troops and supplies were not automatically transferred to the player's party." />
+    <string id="AF_WM_Review_Raiding" text="raiding" />
+    <string id="AF_WM_Review_Besieging" text="besieging" />
+    <string id="AF_WM_Review_ClanTerritory" text="the original clan's territory" />
+    <string id="AF_WM_Review_GovernorRestored" text="The original governorship was restored." />
+    <string id="AF_WM_Review_GovernorRetained" text="The current governor was not displaced." />
+    <string id="AF_WM_Review_ShipsReturned" text=" {COUNT} accompanying ships were transferred to the settlement." />
+    <string id="AF_WM_Review_Casualties" text=" Battle losses: own side {ACTOR}, enemy side {TARGET}." />
+    <string id="AF_WM_Review_RebellionNoFiefs" text="The player's clan has no fiefs and cannot rebel while retaining land." />
+    <string id="AF_WM_Review_RebellionWarMissing" text="The rebellion action failed to establish war with the former kingdom." />
+    <string id="AF_WM_Review_RebellionException" text="The player's clan rebellion failed: {DETAIL}" />
+    <string id="AF_WM_Review_RebellionStarted" text="The player's clan retained its fiefs and rebelled against {KINGDOM}; {HERO} then continued {ACTION} {TARGET}." />
+    <string id="AF_WM_Review_TroopXpInputs" text="Troop XP adjustment parameters are invalid: {TROOP}" />
+    <string id="AF_WM_Review_TroopXpWrite" text="Troop XP write verification failed: {TROOP}; context={CONTEXT}" />
+    <string id="AF_WM_Review_Attacking" text="attacking" />
+
+    <!-- Command Task Prompt UI (BuildCurrentNpcCommandTasksPromptCore) -->
+    <string id="AF_WM_CurrentNpcCommandTasksHeader" text="【Current NPC Command Tasks】" />
+    <string id="AF_WM_NoTasks" text="None" />
+    <string id="AF_WM_TaskStatusCurrent" text="Current:" />
+    <string id="AF_WM_TaskStatusThen" text="Then:" />
+    <string id="AF_WM_TasksRemaining" text="{COUNT} more" />
+
+    <!-- Command Summary UI (BuildNaturalCommandSummary) -->
+    <string id="AF_WM_CmdMergeToPlayer" text="Return to party {DAYS} days" />
+    <string id="AF_WM_CmdGoToSettlement" text="Go to {TARGET} {DAYS} days" />
+    <string id="AF_WM_CmdClearHideout" text="Clear {TARGET} (time limit {DAYS} days)" />
+    <string id="AF_WM_CmdPatrolSettlement" text="Patrol {TARGET} {DAYS} days" />
+    <string id="AF_WM_CmdFollow" text="Follow {TARGET} {DAYS} days" />
+    <string id="AF_WM_CmdAttack" text="Attack {TARGET} {DAYS} days" />
+    <string id="AF_WM_CmdForceAttack" text="Force attack {TARGET} {DAYS} days" />
+    <string id="AF_WM_CmdUnknown" text="Unknown task {DAYS} days" />
+
+    <!-- LLM Prompt Rule (pure prompt text) -->
+    <string id="AF_WM_PromptReturnToPartyRule" text="When you output other ACTION:WORLDMAP tags, if the player has not actively mentioned no need to return to the party, you must output this tag at the bottom, never omit this tag" />
+    <!-- Additional internal error review strings -->
+    <string id="AF_WM_Review_MergeSourceHasRemainingAssets" text="Source party still has untransferred assets after merging into main party." />
+    <string id="AF_WM_Review_GovernorRecordMissingIdentity" text="Governor expedition record is missing required identity information." />
+    <string id="AF_WM_Review_GovernorRollbackMissingTroop" text="Governor expedition roster rollback is missing troop or roster." />
+    <string id="AF_WM_Review_GovernorRollbackTroopFailed" text="Governor expedition roster exact rollback failed: {TROOP}" />
+    <string id="AF_WM_Review_GarrisonRollbackMissingSnapshot" text="Garrison rollback is missing valid transaction snapshot." />
+    <string id="AF_WM_Review_GarrisonRollbackFailed" text="Garrison transaction snapshot rollback verification failed: {TROOP}" />
+    <string id="AF_WM_Review_GarrisonRosterSnapshotMismatch" text="Full garrison roster does not match pre-creation snapshot." />
+    <string id="AF_WM_Review_GovernorLeaderNotInRoster" text="Expedition leader hero is no longer in member roster." />
+    <string id="AF_WM_Review_MergeChangedHeroIdentity" text="Merge altered accompanying hero's clan, occupation, or companion status: {HERO}" />
+    <string id="AF_WM_Review_MergeCountConservationFailed" text="Roster head count or wounded conservation verification failed: {TROOP}" />
+    <string id="AF_WM_Review_MergeXpBoundaryFailed" text="Roster experience boundary verification failed: {TROOP}" />
+    <string id="AF_WM_Review_MergeTransferFailed" text="Roster transfer failed: troop={TROOP} step={STEP}" />
+    <string id="AF_WM_Review_MergePartiesUnavailable" text="Source party or target party is unavailable during merge." />
+    <string id="AF_WM_Review_MergeHeroPartyChanged" text="Accompanying hero's belonging party has changed: {HERO}" />
+    <string id="AF_WM_Review_MergeHeroNotMerged" text="Accompanying hero failed to merge into player's main party: {HERO}" />
+    <string id="AF_WM_Review_MergeRollbackShipsFailed" text="Merge rollback failed to restore source party ship ownership." />
+    <string id="AF_WM_Review_MergeRollbackAssetsMismatch" text="Source party assets after merge rollback do not match transaction snapshot." />
+    <string id="AF_WM_Review_MergeRollbackMissingRecords" text="Merge roster rollback is missing transaction records." />
+    <string id="AF_WM_Review_MergeRollbackTroopFailed" text="Merge roster transaction snapshot rollback failed: {TROOP}" />
+    <string id="AF_WM_Review_MergeRollbackPrisonerFailed" text="Hero prisoner merge rollback failed: {HERO}" />
+    <string id="AF_WM_Review_MergeRollbackItemsMissing" text="Merge items rollback is missing source, target, or snapshot." />
+    <string id="AF_WM_Review_MergeRollbackItemsDiff" text="Merge items rollback difference inconsistency." />
+    <string id="AF_WM_Review_MergeRollbackItemsFailed" text="Merge items rollback verification failed." />
+    <string id="AF_WM_Review_MergeItemsConservationFailed" text="Item conservation verification failed." />
+    <string id="AF_WM_Review_MergeShipsInvalidSourceTarget" text="Source or target for ship transfer is invalid." />
+    <string id="AF_WM_Review_MergeShipsOwnershipChanged" text="Ship ownership changed before transfer." />
+    <string id="AF_WM_Review_MergeShipsTransferFailed" text="Ship ownership transfer verification failed." />
+    <string id="AF_WM_Review_MergeShipsTransferFailedRollbackFailed" text="Ship transfer failed and could not be fully rolled back." />
+    <string id="AF_WM_Review_MergeShipsTransferFailedRollbackDone" text="Ship transfer failed; ownership has been rolled back." />
+  </strings>
+</base>

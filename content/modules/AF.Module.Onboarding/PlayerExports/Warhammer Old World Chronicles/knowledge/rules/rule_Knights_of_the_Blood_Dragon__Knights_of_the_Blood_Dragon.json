@@ -1,0 +1,205 @@
+{
+  "Id": "rule_Knights_of_the_Blood_Dragon",
+  "Keywords": [
+    "Blood Dragon Knights_BD",
+    "Wallachhaken_BD",
+    "BloodDragons_BD",
+    "Blood Dragon Riding Oath_BD"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Knights of the Blood Dragon are the most legendary vampire military order in the old world - they do not bow to any king, do not rule any territory, but pursue the highest realm of pure martial arts throughout their lives. The ancestor of the Blood Dragon Knight, Wallach Harken, received a blood kiss after being defeated in a duel with the first-generation blood dragon - Abolash. Since then, his original martial-artistic nature as a human knight has been magnified into the dimension of immortality. Every blood dragon knight has experienced a similar path: first he must be a human martial arts master, accept transformation after defeating or being defeated, and then start embarking on a road of pursuit of martial arts without an end. They are not interested in politics, wealth, or territory—only in the next opponent worth defeating."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "blooddragons"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "We blood dragons disdain the company of those cowards who hide in castles and drink expired plasma. Lord Wallach taught us that only through repeated clashes of swords can we develop perfect martial arts that are close to the peak of immortality. I don't need a palace, my horse is my kingdom. I don't need farmland or serfs. The dying breath of every warrior I defeat is my harvest. The Knights of the Old World mock us as 'traitors of the undead' - let them mock us, for their swordsmanship cannot stand up to a second sword against us. The only living things we respect are a good horse and a good sword—and an opponent worthy of fighting with them."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Knights of the Blood Dragon are a force in the military and political landscape that cannot be dealt with by the conventional alliance framework - they do not accept territorial exchanges, do not participate in marriage politics, and do not sign alliance treaties. Their loyalty can be temporarily purchased at the campaign level - but the currency of purchase is not gold, but the location of a sufficiently powerful enemy. A lord who understands the workings of the Blood Dragon Knights can 'accidentally' inform the Blood Dragon Scouts on the borders of their domain that a powerful Chaos Champion or Greenskin Warlord has recently appeared in a certain direction - the Blood Dragon Knights will travel on their own within two weeks to challenge the target in single combat. This 'passive exploitation' is the only effective strategy when facing the Blood Dragon Knight but requires extremely high intelligence accuracy."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "The transformation ritual of the Order of the Blood Dragon is one of the most rigorous and academic screening systems in the vampire lineage. Different from von Carstein's bloodline inheritance model or Nick Lachey's academic transformation path, the prerequisite for the transformation of the blood dragon is that the person being transformed must already be a human being recognized as a top warrior before receiving the blood kiss. This requirement has resulted in the Order of the Blood Dragon being the smallest of all vampire lineages in practice - the total number of Blood Dragon Knights has almost never exceeded three digits at any historical period - but their individual combat prowess ranking among the highest among all vampire lineages. The first century after the blood dragon's transformation is called the \"Sword Tempering Period\" - during this period, the newly transformed blood dragon knights are prohibited from drinking the blood of intelligent creatures and can only satisfy their hunger with the blood of animals to prevent the sensory temptation of blood from interfering with the pure pursuit of martial arts. Only blood dragon knights who have completed the sword tempering period can obtain the official \"Blood Dragon Name\" and be allowed to go out alone to pursue powerful opponents under the orders of Wallach. Those members who cannot restrain their blood lust during the sword tempering period will be directly executed by their trainers."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Order of the Blood Dragon does not acknowledge female weakness. In their eyes, gender is meaningless in the face of swordsmanship - who holds a sword depends on the skill of the wielder, not the body of the wielder. I personally saw a female blood dragon knight at the Bretonnia Border Tourney - she participated in the tourney for three days without revealing her vampire characteristics, and defeated six Bretonnia knights, including two squires of the Grail Knight. On the third day, one of her opponents saw through her secret and complained to the referee that she was \"unrighteous.\" She tore her scarf in public at the referee's bench to reveal the old blood holes on her neck - and then politely asked the referee to decide whether to declare her victory invalid. The referee's ruling was to uphold her victory - while requiring her to leave Bretonnia territory before sunset. This is the only case I have seen among the Bretonnian aristocracy where the honor process was kept intact while recognizing the dual illegitimacy of being 'female' and 'vampire'."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The relationship between Wallach Harkon of the Order of the Blood Dragon and my family is one of pure unrequited love that transcends generational play - we keep trying to find him when we need him, and he keeps ignoring us. My great-grandfather, grandfather, and father all sent requests to the Knights of the Blood Dragon through goblin messengers, mercenary intermediaries, and notice boards during their respective reigns - each time worded as 'There is an orc warlord in the north of the Badlands, whose exploits include the defeat of four human knight captains' - but no messenger, human or non-human, has been able to confirm whether Wallachi himself received these letters. However, within six to twelve months of each time we send such a letter, there is an unnatural drop in the number of individual elite warlords involved in Frontier Orc raids - but we have no way of confirming whether this is due to Wallach's actions or other factors. This interaction is known in my family's archives as the 'Presumptive Blood Dragon Response' - a three-generation statistical puzzle rather than a diplomatic outcome."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "In an abandoned dwarven outpost in the southern section of the Gray Mountains, I once encountered a blood dragon knight wiping a heavy sword almost equal to my height in the moonlight late at night. He didn't attack me - he didn't even stand up, just looked up at me for a moment and then back down again to clean his sword with a piece of black silk he'd torn from his cloak. I squatted in another corner of the abandoned outpost for the whole second half of the night. Before dawn, he stood up, inserted his sword into the side sheath of the saddle, mounted his black horse, and said something in the direction of me before leaving - the voice was not speaking to me, but more like the reflection of the waning moon on his sword - 'There is an ogre tyrant seventeen leagues north of the Qiaotou Inn. If you want to go in that direction, it is recommended to take a detour. ’ He added: ‘I’m going in that direction. ’ Then he rode off and disappeared into the shadows of the gray mountains before dawn. A few weeks later, I passed through that area - in the valley north of the Qiaotou Inn lay three neatly decapitated ogre corpses. The fractures were so clean that they seemed to have been cut by the same huge arc at once."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Knights of the Blood Dragon are an anomaly in our business risk assessment that completely fails to fit into the model – their position in any risk assessment matrix depends on whether you are on their travel path. I once did a trade route security assessment in a war-torn area for a trade guild, and finally marked a separate footnote in the area where the Blood Dragon Knights were active: 'The safety factor of this area is not an environmental variable, but determined by an unpredictable independent actor - if he happens to pass through the area on the day you pass, your safety factor jumps from 20% to 80%; if he does not pass by, everything is business as usual. 'Ultimately the guild chose to avoid areas where the Blood Dragon was active - not because of fear of being attacked, but because the business model could not operate on such an assumption that was too volatile."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Knights of the Blood Dragon - a vampire military order that pursues pure martial arts led by Wallach Harken",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Knights of the Blood Dragon Wallachihaken Vampire Martial Arts Military Order"
+  ]
+}

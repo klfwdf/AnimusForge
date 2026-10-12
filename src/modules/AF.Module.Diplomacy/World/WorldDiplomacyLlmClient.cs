@@ -1,3 +1,4 @@
+using AnimusForge;
 using System;
 using System.Globalization;
 using System.Net;
@@ -482,7 +483,7 @@ internal static class WorldDiplomacyLlmClient
 		apiKey = "";
 		modelName = "";
 		route = "event_rebellion_fallback_main";
-		errorMessage = "请检查 MCM 的事件/叛乱 API 或主 API 设置。";
+		errorMessage = DiplomacyMiscPromptTexts.Get("Llm_CheckApiSettings", "Check event/rebellion API or main API settings in MCM.");
 		if (settings == null)
 		{
 			return false;

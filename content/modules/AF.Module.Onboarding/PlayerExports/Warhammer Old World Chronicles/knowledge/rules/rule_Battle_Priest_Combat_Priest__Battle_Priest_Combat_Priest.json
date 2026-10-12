@@ -1,0 +1,210 @@
+{
+  "Id": "rule_Battle_Priest_Combat_Priest",
+  "Keywords": [
+    "Battle Priest",
+    "Sigmar Prayer",
+    "Warhammer Priest",
+    "Zealot",
+    "Battle Priest Power of Faith",
+    "Warrior of Divine Grace",
+    "Sigmar Warrior",
+    "Holy War Monk",
+    "Servant of Ares"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "War Priests are special priests in the Church of Sigmar who have abandoned their scriptures and picked up war hammers - they stand on the front lines wearing heavy steel armor, chanting Sigmar's prayers while smashing the skulls of their enemies with their war hammers. The very existence of the War Priests is the embodiment of the Empire's belief: they believe that the divine power of Sigmar can be transformed into a true fighting force through pious words and iron will, protecting believers on the battlefield and driving away demons."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Battle Chaplain - Imperial troops don't need pep talks because this man is already standing there shouting all the words for you. Each of the War Chaplains was a former seminarian of the Church of Sigmar, but unlike the Archbishops who remained in churches to pray to the Emperor, the War Chaplains chose to go into the trenches, stand among the state soldiers, and inflict the wrath of Sigmar directly on the enemy. Their training is completed in the \"Jihad Seminary\" - not a place to study, but a place to temper the will with hammers, sweat and continuous recitation of prayer books. The weapon of the War Priests is always a warhammer - for Sigmar himself wields a warhammer called the Skullcrusher - and the armor they wear is engraved with Sigmar scriptures, and it is said that the light of these scriptures alone is enough to scare away the undead. The battle chaplain on the battlefield is both a commander, a medic, and a spiritual pillar: he will shout orders for the musketeers to line up in a continuous shooting formation, while he presses his hands on the wound of a soldier whose arm was cut off and recited healing prayers, and at the same time stares at the distance to see if anyone hesitates and shrinks on the battlefield. There is a saying among Imperial soldiers: \"When you see a Battle Priest surrounded by enemies and still laughing - you'd better charge with him, because Sigmar is clearly on his side.\""
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The value of Battle Chaplains within the Imperial military command hierarchy far exceeds their combat prowess. On a rainy day, when an ordinary state soldier was soaked and his boots were stuck in the mud, he saw an overwhelming amount of enemy heavy cavalry charging towards him. The only reason why he could stand still and not run away was because the combat priest next to him did not run away. This is the core strategic function of battle chaplains in large corps battles - they are the physical anchor of morale. Commanders should place Battle Chaplains in the weakest companies, especially units with a high ratio of new recruits - veterans don't need much faith support, but new recruits need to see someone standing still amid the chaos. Combat Priests also have the ability to resist magic given by the church - their prayers can interrupt the spells of enemy spellcasters, especially when fighting Necromancers. The Combat Priest's Sigmar Exorcism Ritual can make an entire row of skeletons collapse in the middle of a charge. But as a commander, you must pay attention: Combat Priests are not mages. Their \"miracles\" are maintained by the strength of their faith. If a Combat Priest loses his faith in Sigmar - for example, after witnessing too many tragedies - all his abilities will disappear in an instant."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "The institutional origins of the Fighting Chaplains can be traced to the early \"armed missionary\" tradition of the Sigmar Church. In the early centuries of the Imperial Calendar, the Sigmar faith spread to the borderlands through armed missionaries - missionaries who acted as both spreaders of the faith and guardians of the borders, converting pagan tribes while fending off incursions by beastmen and orcs. The Holy War monastery system was formally established by Archbishop Valdemar I in 1350 of the Imperial Calendar. He established five monasteries corresponding to the five major regions of the empire: Sigmar's Hammer Monastery in Altdorf, White Wolf Monastery in Middenheim, Holy Sword Monastery in Talabek, Anvil Monastery in Nuln, and Holy Sea Monastery in Nordland. Each monastery focuses on a different combat training tradition: Sigmar's Hammer monastery specializes in close combat and anti-demons, White Wolf monastery combines the wild fighting style of the Cult of Ulric, and Holy Sword Monastery is known for its priestly tactics in cavalry combat. The miracles of the War Priests do not come from the wind of magic, but from the \"collective field of belief\" - that is, the convergence of beliefs of all warriors who believe in Sigmar around the battlefield. This theory was proposed by the church theologian Caspar von Feuerbach in 1901 Imperial Calendar, and it is still one of the core doctrines of Sigmar theology. But the military implications of this theory are heavy: you must deploy the Combat Priest in areas with high density of believers for maximum effect, and when alone or caught in an ambush, the Combat Priest is as useless as an ordinary heavily armored soldier."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "From the perspective of imperial noble women, battle priests are a strange existence. They are more human than the monks of the ordinary church because they have seen so much death - which makes them more sincere in the face of those priests who are always hiding in safety. But on the other hand, the zealotry of combat chaplains also worries us: the greatest fear we have had sons enlisted in is not the enemy's sword, but the fact that their unit has been assigned an overzealous combat chaplain—the kind of chaplain who would view withdrawal as intolerable cowardice."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "War Priests have a subtle family value in the political struggles between the Imperial families. Letting a second son in the family take the path of a fighting priest would not only be no less honorable than the eldest son who joins the Knights, but also ensure that this line maintains its influence on the church. When your family is fighting to the death with another family in the Imperial Council, your family's war priest can use the authority of the church to question the other family's lack of enthusiasm for the Sigmar faith. This is better than hiring assassins and is completely legal."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Battle Priests are the most enviable existences of us wandering mercenaries - not because they can cast spells, but because they don't need to worry about fear. I once guarded the fortifications at an intersection with a battle priest. When the orc night goblin ambush emerged from the shadows, I almost lost my grip on my sword, but he just growled \"Sigmar, look at these ugly things\" and then rushed straight into the goblin group. That kind of absolute, unquestionable self-confidence is something that no mercenary or adventurer can possess after years of training."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The customization of equipment for Battle Priests is a special niche industry within the Empire's craft industry. Each of their warhammers is custom-made - the handle is engraved with Sigmar scripture, the head is cast with consecrated silver powder mixed in, and the base of the handle often contains a hollow tube to hold a vial of holy water from Altdorf's cathedral. Altdorf's weapon craftsmen have made a living forging \"priest warhammers\" for generations - this craft requires mastering both blacksmithing skills and theological knowledge, and is not a job that just any weapons shop can take on."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Holy War Seminary - a training institution for combat priests, with one in each of the five major regions of the empire",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "War Priest Sigmar Prayer Warhammer Priest"
+  ]
+}

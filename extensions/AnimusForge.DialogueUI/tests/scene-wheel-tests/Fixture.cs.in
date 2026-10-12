@@ -66,6 +66,8 @@ namespace TaleWorlds.CampaignSystem {public sealed class Campaign{public static 
 namespace TaleWorlds.MountAndBlade {public enum MissionMode{StartUp,Conversation}public sealed class Mission{public static Mission Current;public bool IsMissionEnding;public MissionMode Mode;public List<Agent> Agents=new(){new()};}public sealed class Agent{public static Agent Main;public int Index;public bool IsActive()=>true;}}
 namespace AnimusForge.Refactor.Runtime {public static class SaveRuntimeGuard{public static long Generation=1;public static long CaptureGeneration()=>Generation;public static bool IsCurrentGeneration(long g)=>g==Generation;}}
 namespace AnimusForge {
+ // UI localization leaf only; real keyed reader/XML are covered by PlayerDirectActionTests.
+ internal static class ConversationUiLocalization{internal static string Text(string id,string fallback,params (string Name,object Value)[] variables)=>fallback;}
  public enum InputKey{Invalid,T,Y}
  public static class Input{public static InputKey Pressed,Down,Released;public static bool IsKeyPressed(InputKey k)=>k!=InputKey.Invalid&&k==Pressed;public static bool IsKeyDown(InputKey k)=>k!=InputKey.Invalid&&k==Down;public static bool IsKeyReleased(InputKey k)=>k!=InputKey.Invalid&&k==Released;}
  internal static class Logger{internal static void Log(string a,string b){}internal static void LogVerbose(string a,string b,Func<string> c,double d){}}

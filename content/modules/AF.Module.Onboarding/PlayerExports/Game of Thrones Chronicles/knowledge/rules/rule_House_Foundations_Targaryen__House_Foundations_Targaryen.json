@@ -1,0 +1,155 @@
+{
+  "Id": "rule_House_Foundations_Targaryen",
+  "Keywords": [
+    "House Targaryen",
+    "Targaryen",
+    "Three-Headed Dragon",
+    "Fire and Blood"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "House Targaryen is one of the remaining dragonlord houses after the end of the Valyrian Freehold. The family moved to Dragonstone before the End, and the Seven Kingdoms were later founded with dragonfire by Aegon the Conqueror and his sisters. The red three-headed dragon on a black background, the silver-gold Valyrian appearance, the tradition of incest and the motto \"blood and fire come from the same origin\" together constitute its most easily identifiable heritage. For Targaryen, the dragon is not only the power left by the ancestors, but also the language in which the dynasty speaks of rule as destiny; for many Westeros people, the three-headed dragon simultaneously means unity, burning cities, ancient kingship and distant exile. The family's membership, wealth, and actual power may change, but the legacy of Valyrian memory and conquest will always inspire awe, resentment, and hope in its name."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "crownlands",
+          "dragonstone"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The nobleman of Westeros looks at the three-headed dragon and cannot choose just one memory. It not only represents the unification of the Seven Kingdoms, the royal road and the three-hundred-year order, but also represents dragon flames, incest marriages and the madness of certain monarchs. The return of the Targaryen is a restoration to some, and a rekindling of old wounds to others."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "ghiscari"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "slave",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "People in Slaver's Bay know Targaryen, not necessarily from Aegon the Conqueror, but from the Silver-Haired Queen, Dragon Shadow and the shattered old order. The freedmen saw her as a hope, the old masters saw her as a disaster, and the merchants worried that every emancipation would redefine contracts and wealth. The three-headed dragon here is not the emblem of a distant king, but a force that has changed lives."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "valyrian"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "People with Valyrian legacy often view Targaryen with a mixture of closeness, jealousy, and fear. The Dragon King bloodline makes them the most dazzling surviving family after the apocalypse, making other ancient bloodlines look like tiny stars next to the firelight. Blood and fire can bring back lost glory, and may remind the world again why Valyria is feared."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Targaryen A family of Dragonlords from Valyria who first settled in Dragonstone. The red three-headed dragon on a black background, the appearance of silver and gold, the tradition of inbreeding and the \"blood and fire originate from the same origin\" connect it to the dynasty legacy of conquering the seven kingdoms. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Targaryen A family of Dragonlords from Valyria who first settled in Dragonstone. The red three-headed dragon on a black background, the appearance of silver and gold, the tradition of inbreeding and the \"blood and fire originate from the same origin\" connect it to the dynasty legacy of conquering the seven kingdoms. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Targaryen A family of Dragonlords from Valyria who first settled in Dragonstone. The red three-headed dragon on a black background, the appearance of silver and gold, the tradition of inbreeding and the \"blood and fire originate from the same origin\" connect it to the dynasty legacy of conquering the seven kingdoms. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Targaryen A family of Dragonlords from Valyria who first settled in Dragonstone. The red three-headed dragon on a black background, the appearance of silver and gold, the tradition of inbreeding and the \"blood and fire originate from the same origin\" connect it to the dynasty legacy of conquering the seven kingdoms. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "House Targaryen: A family of Dragonlords from Valyria who first settled in Dragonstone. The red three-headed dragon on a black background, the appearance of silver and gold, the tradition of inbreeding and the \"blood and fire originate from the same origin\" connect it to the dynasty legacy of conquering the seven kingdoms."
+  ]
+}

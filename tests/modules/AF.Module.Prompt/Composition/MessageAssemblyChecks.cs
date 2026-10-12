@@ -28,6 +28,7 @@ internal static class MessageAssemblyChecks
         Check(Field(reply[0],"role")=="system", "system first");
         Check(Field(reply[0],"content").StartsWith("custom rule\n"), "custom rule order");
         Check(Field(reply[0],"content").Contains("persona") && Field(reply[0],"content").Contains("exclusion"), "system sections");
+        Check(Field(reply[0],"content").EndsWith(PromptComposerTexts.Get("conversation_reply_language")), "package reply language is appended after custom and role rules");
         Check(Field(reply[1],"content").Contains("recalled history") && Field(reply[1],"content").Contains("recent facts"), "history and fact contexts");
         Check(Field(reply[2],"role")=="user" && Field(reply[2],"content").EndsWith("hello"), "player role");
         Check(Field(reply[3],"role")=="assistant" && Field(reply[3],"content").EndsWith("answer"), "viewer role");
@@ -37,6 +38,7 @@ internal static class MessageAssemblyChecks
         Check(Field(reply[7],"content").Contains("current letter") && Field(reply[7],"content").Contains("delivery fact"), "current letter last");
         var inbound = MainPromptMessageAssemblyOwner.BuildInboundNpcLetterMessages("Alda", "Player", "intent", "rules", "inbound fact", "history", history, "persona", "exclude", "recent", "recipient", "kinship", "location", "date", 220, "私人来信", "custom");
         Check(inbound.Count==reply.Count, "same history cardinality across direction");
+        Check(Field(inbound[0],"content").EndsWith(PromptComposerTexts.Get("conversation_reply_language")), "inbound letters use the same package language requirement");
         for(int i=2;i<7;i++) Check(Field(inbound[i],"role")==Field(reply[i],"role") && Field(inbound[i],"content")==Field(reply[i],"content"), "history direction parity " + i);
         Check(Field(inbound[7],"content").Contains("intent") && Field(inbound[7],"content").Contains("inbound fact"), "inbound current suffix");
         Check(!MainPromptMessageAssemblyOwner.TryConvertCourierMemoryMessageToChatMessage(null,"Alda","Player",out _), "null history rejected");

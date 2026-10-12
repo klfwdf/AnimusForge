@@ -45,6 +45,12 @@ public sealed class NativeOverlayVM : ViewModel
         && (!DialogueUiOptions.AutoEnterAiModeHeroOnly
             || Campaign.Current?.ConversationManager?.OneToOneConversationCharacter?.IsHero == true);
     [DataSourceProperty] public string SwitchTitle => Original.SwitchTitle;
+    [DataSourceProperty] public string InputPlaceholderText => DialogueUiLocalization.Text("AFD_UI_Native_InputPlaceholder", "Type what you want to say…");
+    [DataSourceProperty] public string InputHintText => DialogueUiLocalization.Text("AFD_UI_Native_InputHint", "Enter send · Shift+Enter new line");
+    [DataSourceProperty] public string ConversationHistoryText => DialogueUiLocalization.Text("AFD_UI_Native_ConversationHistory", "Conversation history");
+    [DataSourceProperty] public string GiveShowText => DialogueUiLocalization.Text("AFD_UI_Native_GiveShow", "Give / show");
+    [DataSourceProperty] public string IllustrationText => DialogueUiLocalization.Text("AFD_UI_Native_Illustration", "Scene illustration");
+    [DataSourceProperty] public string LeaveText => DialogueUiLocalization.Text("AFD_UI_Native_Leave", "Leave");
     [DataSourceProperty] public string AIChatHistoryButtonText => Original.AIChatHistoryButtonText;
     [DataSourceProperty] public string GiveShowButtonText => Original.GiveShowButtonText;
     [DataSourceProperty] public string PersonaEditButtonText => Original.PersonaEditButtonText;

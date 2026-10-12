@@ -1,3 +1,4 @@
+using AnimusForge;
 using System;
 using AnimusForge.Refactor.Contracts;
 using AnimusForge.Refactor.Domain;
@@ -48,7 +49,7 @@ internal static class WorldDiplomacyPlayerApplication
         // Resolve advisory context at submission, without requiring its old round
         // to exist or treating the button as a separate response mechanism.
         WorldDiplomacyDocument source = world.ResolveDocument(command.SourceDocumentId);
-        if (source == null) return "原公文已不可用，请重新打开撰写界面。";
+        if (source == null) return DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_ReplySourceUnavailable", "The original document is no longer available. Please reopen the drafting window.");
         return SubmitPlayerDocument(world, command.Body, orchestration, source);
     }
     internal static string SubmitPlayerDocument(IWorldDiplomacyPlayerWorld world, string body,
@@ -57,19 +58,19 @@ internal static class WorldDiplomacyPlayerApplication
         string cleanBody = WorldDiplomacyTextRules.NormalizeBody(body);
         if (string.IsNullOrWhiteSpace(cleanBody))
         {
-            return "外交宣言正文不能为空。";
+            return DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_DeclareBodyEmpty", "The diplomatic declaration body cannot be empty.");
         }
         WorldDiplomacyPlayerContext player = world.Player;
         string playerKingdom = player.KingdomId;
         if (!player.IsRuler)
         {
-            return "你当前不再是王国统治者，外交宣言没有发布。";
+            return DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_DeclareNotRuler", "You are no longer the ruler of your kingdom, so the diplomatic declaration was not published.");
         }
         WorldDiplomacyRound round = orchestration.EnsureActiveRound(playerKingdom, null, isPlayerInsertion: true);
         WorldDiplomacyDocument document = orchestration.CreateDocument(
             playerKingdom,
             null,
-            "外交宣言",
+            DiplomacyMiscPromptTexts.Get("Document_DefaultTitleDeclaration", "Diplomatic Declaration"),
             cleanBody,
             "player",
             isPlayerAuthored: true,
@@ -94,6 +95,6 @@ internal static class WorldDiplomacyPlayerApplication
         }
         orchestration.PublishPlayerAuthoredDocumentImmediately(document);
         orchestration.EnqueueAnalysisJob(document, priority: 100);
-        return "外交宣言已经公开发布；系统正在后台解析其对象、诉求与外交动作。";
+        return DiplomacyUiLocalization.Text("AF_DIP_UI_WorldDiplomacy_DeclarePublished", "The diplomatic declaration has been published; the system is resolving its target, demands, and diplomatic actions in the background.");
     }
 }

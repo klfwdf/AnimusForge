@@ -1,0 +1,211 @@
+{
+  "Id": "rule_rune",
+  "Keywords": [
+    "runes",
+    "Rune Runesmith",
+    "Dwarf magic",
+    "Rune Technology",
+    "ancient runes",
+    "Geromir",
+    "Runeforging",
+    "three runes",
+    "Rune Ancestel",
+    "Rune of domination"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Runes are a unique magic technology of the dwarves - instead of channeling the wind of magic by chanting spells, the ancient runes are precisely hammered into the metal, permanently \"sealing\" the magic in weapons, armor and buildings. Dwarf runesmiths are the rarest craftsmen in the old world. Their skills can only be passed down secretly from master to apprentice and have never been mastered by outsiders. A set of carefully inscribed runes can make an ordinary battle ax sharper than a human knight's sword, and a simple shield resistant to dragon's breath - but this skill is slowly being lost."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Runes are not magic - magic is the fancy wind changes that elves and humans do. Runes are truth, eternal laws sealed in metal. Our ancestors learned the first runes in ancient times from the mountains themselves - words of primal power contained in the bones of the earth. Runesmiths are not \"using\" magic, they are talking to the soul of the metal, using the forging hammer as a medium to \"convince\" power into the weapon. Humans would be surprised that a rune sword never rusts or becomes dull - but this is just the most basic ability of runes. True ancient runes - the kind that few can forge today - can banish demons and reflect the breath of dragons back. But our ancestors took these secrets to their graves."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Rune weapons are one of the Old World's most valuable strategic assets—and their most scarce resource. Obtaining dwarf rune equipment requires meeting three conditions at the same time: maintaining an excellent relationship with the dwarves, being able to pay astronomical amounts of gold, and waiting for decades or even hundreds of years for the production cycle. On the battlefield, runic gear can make a decisive difference against supernatural foes - the Burning Rune, for example, deals fire damage effective against Trolls, while the Banishing Rune deals true damage against Demons. Any political entity that can obtain runic gear from the dwarves should pursue this goal as a priority."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 100
+        },
+        "IdentityIds": null
+      },
+      "Content": "Rune forging is a magic sealing technology unique to dwarves, and its principle is completely different from the spellcasting systems of elves and humans. For other races, the winds of magic require channeling and releasing—but for dwarves, this channeling causes them to turn to stone. Runesmiths interact with magic in another way: they use special rune hammers to \"beat\" the wind of magic into the metal lattice, and the runes serve as \"anchors\" to fix the magic. Each rune weapon contains one to three runes - single-rune items only have basic effects, double-runes can create synergistic effects, and three-runes are the most powerful - but the inscription of each rune requires a part of the runesmith's life force. The reason why runesmithing is being lost is due to the fact that the ancient runesmiths passed down their deepest secrets orally only to their direct disciples, the extreme secrecy of the current guild, and the depletion of the veins of the rare magical metal Geromir."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Runesmiths' Guild has never admitted women - this is an open and unabashed tradition. But dwarf women have an irreplaceable indirect contribution to the survival of rune technology: it is women who maintain the selection and recommendation system for rune blacksmith apprentices. If every dwarf boy shows sensitivity to metals during adolescence, the first person to notice this talent is usually not his father (who works at the forge all day), but his mother - she noticed in her daily upbringing that he could sense the temperature changes of the forged pieces without touching them, and could shape the approximate rune shape out of clay without guidance. When a mother delivers a gifted son to the door of the Runesmith Guild, the guild asks no questions - they trust the mother's judgment, because the entire dwarven society is built on that trust."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "My family owns a three-rune battle ax - it's called the 'Wrath of the Ancestors' - which is the most precious heirloom in my clan and my heaviest burden. This battle ax has been passed down in my family for eleven generations, and each holder must use his/her own blood to reactivate the third rune on the axe—the Blood Pact Rune—during his/her succession ceremony. The activation ritual requires at least three runesmiths to be present at the same time - which means I have to pay Karak Azul enough gold to bankrupt a minor human noble for each inheritance. I'd rather pay: Because if I try to use this ax without activating the runes, the soul of the previous wielder will be trapped in the axe forever - one of my family's most basic responsibilities."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "During my wanderings around the Old World, the most precious commodity I ever encountered was a thumb-sized shard of Geromir—sold at an underground auction in Marienburg for the equivalent of a small barony. This meteoric iron is not only a necessary material for dwarven rune forging, but also the Holy Grail of Imperial alchemists - they believe that mixing trace amounts of Gelromir powder into ordinary molten steel can permanently increase the toughness of weapons. Of course, the dwarves strictly prohibit any exit from Geromir - but the rock dust blown out of the mining tunnels occasionally contains microscopic particles of Geromir, and human 'dust collectors' collect this dust with screens and magnets on the outside of the dwarven mines. This is a gray area between legal and illegal."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The trade in rune weapons is one of the most mysterious and opaque segments of the Old World luxury market. The starting price on the Imperial black market for a simple piece of single-rune armor - with only a single rune for fire or impact resistance engraved in key areas - is roughly equivalent to the annual income of a small barony. But price isn't the biggest obstacle: the question is who can you buy it from? Dwarves do not openly sell rune weapons, and the human empire prohibits trade with rune sources other than dwarves (which is considered to possibly involve Chaos runes). The only way to legally obtain rune weapons is either that your family has saved a dwarf king in a battle in the past, or that your ancestors have a mutual trust in business with a dwarf clan that has lasted for more than five hundred years. In other words, you can't buy runes with money - you can only buy them with the history of your name."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Rune Forging—The dwarves’ unique hammering technology that seals magic in metal forever.",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "runes runes runes blacksmith dwarf magic"
+  ]
+}

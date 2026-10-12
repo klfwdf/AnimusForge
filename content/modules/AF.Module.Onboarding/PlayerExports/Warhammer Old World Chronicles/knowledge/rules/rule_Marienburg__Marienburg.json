@@ -1,0 +1,210 @@
+{
+  "Id": "rule_Marienburg",
+  "Keywords": [
+    "Marienburg",
+    "old world trade center",
+    "Rick's Bayou",
+    "independent city-state",
+    "council of merchant aristocrats",
+    "sea ​​trade",
+    "Mercenary Center",
+    "gate to the open sea",
+    "golden waterway"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Marienburg - also known as Marienburg - is located on the archipelago at the mouth of the Reik River. It is the largest trading city in the old world and the only independent human city-state outside the empire's territory. Once the capital of the Imperial Vast Territory, it bought its independence from Emperor Dieter IV with a huge bribe in 2429 Imperial Calendar, and has been ruled by a board of directors composed of the richest business families ever since. Marienburg guards the mouth of the Reik River and controls the waterway trade chokepoint throughout the empire - any merchant ship sailing from the empire to the ocean or from the ocean into the empire must pass through the Marienburg checkpoint. Extremely rich, extremely corrupt, extremely independent - these three labels flow into the daily life of Marienburgers in an almost unnoticed way."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Marienburg - the gash in the chest of our empire that was pried open with gold coins. Yes, every gold coin, every bag of grain, and every iron ingot shipped from the World's Edge Mountains in our empire must be inspected at the docks of Marienburg as long as it enters and leaves the empire by water, and we have to pay those satin-clad \"directors\" a sum of money they call \"navigation fees.\" Dieter IV - may Sigmar forgive his greed - sold an entire empire to his mistress and a group of Marienburg merchant families, spending the money in exchange for falcons and oriental perfumes. The Imperial fleet has not dared to forcefully enter the port of Marienburg, not because of fear of those merchants - but because Marienburg has the largest mercenary market in the old world. Any imperial army that attempts to take back the city by force will have to face a mercenary coalition composed of Tilian spearmen, Norsca privateer captains, Arabi horse archers and dwarf gunners, pieced together with gold rather than loyalty. We hate Marienburg, but we can’t live without it—and they know we can’t live without it. This is the most excruciating part of this resentful relationship."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Marienburg was virtually unconquerable militarily—not because of how thick its walls were, but because the marshes and shoals surrounding it at the mouth of the Reik made it impossible for armies of any size to deploy directly. The city itself is built on fourteen main islands and dozens of small sandbars, and the islands are connected by more than two hundred bridges and plank roads, which means that the siege here must be broken down into hundreds of independent small-scale bridge battles - a hellish logistical nightmare for the commander. The Marienburg Navy is the only established human naval force in the Old World besides the Imperial Fleet. Although its fleet is mainly composed of small and medium-sized fast gunboats rather than main warships, the local navigators who are familiar with every sandbar, tide and reef in the estuary make them almost invincible in defensive battles. For the empire's military decision-makers, the most realistic strategy for retaking Marienburg was not a frontal military attack but rather through an economic blockade - establishing an alternative inland transit port on the upper reaches of the Reik River - or through political infiltration to bribe hostile factions in the boardroom. But both paths have been discussed for two hundred years without making any progress."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "Marienburg's independence was the most embarrassing but instructive diplomatic event in the history of the Empire. In the year 2429 of the Imperial Calendar, the then Emperor Dieter IV—a figure who was unanimously rated as one of the worst emperors in the Empire by later historians because he spent far more on falcons and luxurious banquets than on military defense—secretly accepted a bribe jointly proposed by the ten major families of Marienburg: a huge sum of money that was rumored to be equivalent to the empire's total revenue of three years in exchange for the signing of the \"Charter of Independence of the Vast Territory\", which allowed Marienburg, the capital of the Vast Territory, and the surrounding area at the mouth of the Reik River to break away from the empire and become a free city-state. Dieter was deposed by a coalition of Elector Counts just two years after he signed the charter - but it was too late, as Marienburg's merchant families had quickly formed a board of directors to replace the Imperial Governor in the political vacuum and refused to return sovereignty on the grounds that the Empire was then in a period of weakness due to border conflicts with Bretonnia. Marienburg's governing structure - the board of directors - is an extremely rare oligarchy of commercial aristocrats: some forty families in the city who hold ancient citizenship and can appoint themselves candidates for life as directors by paying an entry fee control all city legislation. The board's decision-making process is completely closed, with voting using a weighted voting system weighted in proportion to family wealth - so the three richest families effectively have veto power. There is a unique concept of \"perpetual water lease rights\" in the Marienburg title system, which allows private individuals to permanently own the toll rights of specific waterway sections - this concept does not exist in imperial law, and it is also a gray area that jurists have debated for two hundred years."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Marienburg's board of directors was a men's club - at least on the public list - but between the lists of men holding public seats and the actual distribution of power lay an entire invisible network of women, including their wives, widows and mistresses. As a noble of the Imperial Province, I visited the residence of the board members of Marienburg several times. The \"women's retreat\" time after each dinner was the real purpose of my visit - because in that side room hung with silk curtains, the information revealed in the conversations of the directors' wives about the imminent increase in port tariffs or the imminent collapse of a certain spice futures company was of greater commercial value than anything their husbands could say at the dinner table for two hours. Marienburg's female inheritance law is more flexible than that of the Empire - a businessman without a son can designate his daughter to inherit all family businesses and board seats, and only needs to pay a \"special inheritance notary fee\" to the Municipal Legal Department, which is exactly equal to half of the seat transfer tax - you can say it is a law, or you can say it is a side door with money as the key."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Our family is not a member of the board of directors in Marienburg - that is the prerogative of local families, and foreign families, no matter how wealthy they are, can only be \"naturalized businessmen\" rather than legal citizens - but we have something more valuable than public seats: a private dock warehouse in the multi-island area of ​​Marienburg's eastern harbor that has been owned for five generations. The right of way that came with the warehouse entitled my goods to be exempt from municipal tonnage taxes on a specific section of the waterway—a permanent privilege sold to my great-great-grandfather by a beleaguered Marienburg treasurer in the 1980s, and every municipal official who has since tried to revoke it has received a legal defense letter from our family just before the vote, signed by every ancestor who purchased the privilege. Families do not fight with each other by force in Marienburg - a city where the law can do more harm than the sword. The whole point of winning a family war is if you can sign a contract that bankrupts your opponent before he bleeds his last drop."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "I spent three years in the dock area of ​​Marienburg - working as an errand boy for a mercenary agency in the \"Sea Dragon Tavern\". My daily job was to go to different liveaboards with wine and ask the captain if he needed a knife. The mercenary market in Marienburg - not exactly a market, is a self-operating ecosystem. You can walk into the main hall of the Sea Dragon Tavern before sunrise and find the crossbowman who has just escaped from the Arabi shipwreck, the retired spear company captain who took the wrong side in the coup in the city-state of Tilia, or the dwarf gunner apprentice who escaped from the dwarf caravan - all of them are waiting for the next drink and the next war regardless of the reason. Marienburg itself does not wage wars, but it provides the flesh and blood for every war in the Old World. I have seen an exiled knight of Bretonnia receive three invitations at the same time in the mercenary registration office of Marienburg - from the Count of the Imperial Border, the Merchant Prince of Tilia and a Chaos Champion in the Northern Wastes - not because he has three heads and six arms, but because in this city loyalty is a variable with no price and can be scratched from the contract at any time."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The laws of trade in Marienburg are simpler than anywhere else in the Empire - there is only one law: all money eventually flows through Marienburg. The River Reik is the artery of the Empire, and Marienburg occupies the only interface between the Arterial Heart (Altdorf) and the outside sea. The actual operating logic of the Marienburg Chamber of Commerce is not \"who owns the goods\" but \"who knows when the goods will arrive\" - ​​the first lesson I learned while working in the river port registration office was: you don't need to own the ship, you just need to know when the ship will arrive two days before the people on the Reich side. Information itself is the most expensive commodity in Marienburg - news of a blockade on the upper Reik River can take ten days to travel from Marienburg to Tyrell, but during those ten days merchants sitting on the Reik River supplies can easily triple the sale price. Marienburg's accumulation of wealth was based on two irreproducible conditions: an irreplaceable geographical location and a completely free board of directors - the combination of which allowed the city to miraculously prosper for three hundred years in an old world full of war and destruction."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Board of Directors - the ruling body of Marienburg's business aristocracy, with a weighted voting system based on family wealth.",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Marienburg’s geographical location and strategic significance"
+  ]
+}

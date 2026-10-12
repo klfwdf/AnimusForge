@@ -1,0 +1,205 @@
+{
+  "Id": "rule_Skull_Broken_Tribe",
+  "Keywords": [
+    "Skull Crusher Tribe_SS",
+    "Uglock_SS",
+    "Splittusk Orc_SS",
+    "SkullSmasherz_SS"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Skullbreakers are one of the most notorious orc tribes in the southwestern Badlands, known for their warriors' morbid obsession with skulls. They used a custom-made skull-crushing hammer that was thicker and heavier than a conventional war hammer. Several fang fragments knocked off the prisoners were cast on both sides of the hammer head. This allowed their weapon to crush the skull while leaving a highly recognizable zigzag pattern on the bone fragments. The leader Ugrok Splittusk is said to have a hobby of stringing the skulls of his defeated generals into a belt and wearing it - the oldest bone fragment in this belt is believed to be the skull of a dwarf leader, which is more than three hundred years old."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Our heads will be broken! Other tribes would just chop it down, but we want to smash it - one blow with the hammer will not cut the opening, but the whole head will shatter like a rotten melon! That sound—poof! ——Louder than war drums! Every bone on Boss Uglock's belt is a leader who died under his hammer - dwarves, humans, elves, and even orcs from other tribes! He said that after smashing a person's head, the smartest bits of scum in his life will fly to him - so the more we smash, the smarter we are! I don’t know if this makes sense, but Uglock is indeed the best in our tribe!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Skullcrusher Horde in the southwestern Badlands pose a serious immediate threat to any military force that needs to travel through the area. Unlike other greenskin tribes, the Skullcrushers appear to be less interested in looting per se - their primary motivation is to collect skulls through kills, making their combat behavior patterns more difficult to predict and dissuade. The traditional tactic of dropping supplies and luggage to distract the pursuing orcs was of little use against the Skullcrusher Horde. The most effective way to fight the Skull Crusher Horde is to use a heavy crossbow to deliver precise headshots before engaging the enemy - not because they are particularly afraid of headshots, but because this allows your soldiers to kill a certain number of enemies at a psychological distance before seeing the Skull Crusher smash the skulls of their companions at close range."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "The skull-collecting behavior of the Skullbreaker tribe is a typical \"trophy-type honor system\" in green skin ethnology - that is, a social mechanism in which specific body parts are retained as permanent status symbols after physical killing. This system is common among the badland greenskin tribes, but the Skullcrusher tribe has taken it to an extreme: they not only collect skulls, but also classify, label, and store the skulls according to the race, identity, and specific circumstances of the kill. According to incomplete statistics, the skulls hanging on Ugrok's belt may include three Imperial Elector Count-level lords, two dwarf clan leaders, at least twelve human knight leaders, and an unconfirmed number of various orc and goblin tribal leaders. This accumulation of loot creates a self-reinforcing power cycle in Greenskin society: more skulls means stronger opponents you have defeated, and stronger opponents you have defeated means higher status in tribal politics, and higher status brings more opportunities to challenge more powerful opponents."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "In the records of border conflicts, the Skullbreaker tribe is the most difficult of all greenskins to report to the Imperial Council in conventional military language - because the purpose of their battle does not involve territory, does not involve supplies, and does not involve revenge, but only involves a primitive loot collection that has no equivalent in the vocabulary of Imperial military bureaucracy. I went back and forth with five different terms to describe the Skullcrusher Horde's threat level in my annual defense report to Altdorf, and the one that was taken most seriously was my definition of their attacks as 'directed officer hunts of a ritualistic nature' - a definition that finally triggered the attention of the Imperial Military Comptroller, securing an additional budget for helmet reinforcements for my domain. This budget probably saved the lives of at least three infantry sergeants, but I can't prove it - because they didn't die, and the victims who didn't have their skulls smashed don't exist in the Imperial statistical tables."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The relationship between Ugrok of the Skullcrusher tribe and my family has gone beyond warfare—it has become a personal feud passed down through the generations. When my father was in office, he assigned a cavalry commando to capture Uglock's heads on the southern edge of the Badlands - not as a necessary military action, but because he personally couldn't bear to read 'Ug'lock once again successfully evacuated unscathed' in the border war report on the wall of his study. The commando never returned. Three months later, Uglock sent my father a hammer through a freed prisoner - a small hammer issued by an Imperial Cavalry officer. Four orc symbols were hand-cut on the hammer - 'Next time you come in person'. My father slept with that hammer in his arms every night for the next ten years until he died of a stroke. I put the hammer in my father's coffin at his funeral—not out of grief, but out of a determination not to let my children inherit their father's old battles."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "On a rocky ground stripped bare by wind and sand in the southwest of the Badlands, I squatted behind a protruding rock and smelled the smell of scorched earth in the wind. Suddenly I saw an inexplicably neat short stone pillar standing fifty steps in front of me. When I got closer, I realized that it was not a stone pillar, but a pillar made of skulls. From the human skull at the bottom to the goblin skull at the top, the layers were as clear as a dark sculpture specially used to show the sequence of killing enemies. Just when I wanted to leave, the sound of a skull-crushing hammer hitting rocks sounded in the distance—a dull, regular muffled sound, like a heartbeat amplified a hundred times. I didn't wait to see who had thrown the stone. One of the most important rules I learned in the Badlands: When you smell scorched earth, see pillars of skulls, and hear the sound of rocks being smashed, you've been in the area too long."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Skullbreaker tribe's indirect influence on Badlands border trade is reflected in a unique financial product called 'Skull Insurance'. Some small private banks on the edge of the Badlands provide a special personal accident compensation clause for businessmen who go to areas where the Skull Crusher tribe is active - if the insured's complete head cannot be recovered and buried, the compensation will be automatically doubled. The premium for this kind of insurance is extremely high, with the annual rate reaching 18% of the insured amount, but it still has a steady demand among certain groups of merchants—mainly those ore collectors who need to personally lead teams through the southwest of the Badlands. This market is dark and niche enough that its existence is not recorded in the Imperial Treasury's official insurance directory, but it has been quietly operating in the badland frontier economy for at least forty years."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "The Skullbreaker Tribe - an orc warband in the southwestern Badlands known for their Skullbreakers and skull collecting.",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Skullcrusher Horde Orc Ugrok's Skullcrusher Hammer Skull"
+  ]
+}

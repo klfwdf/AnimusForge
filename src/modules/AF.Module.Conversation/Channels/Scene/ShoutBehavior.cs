@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -1082,7 +1082,7 @@ _j17SceneTradeController = new SceneTradeController(new SceneTradeControllerPort
 
 	private HashSet<string> _sceneHeroFirstMeetingShownThisSession => _sceneRevisitState.FirstMeetingShownThisSession;
 
-	private const string PlayerCraftedAfefInspectionSuffix = ScenePromptMessageProjectionComposer.PlayerCraftedAfefInspectionSuffix;
+	private static string PlayerCraftedAfefInspectionSuffix => ScenePromptMessageProjectionComposer.PlayerCraftedAfefInspectionSuffix;
 
 	private readonly SceneDeferredHistoryFactOwner _deferredHistoryFacts;
 	private string _pendingHeroHistoryExtraFactAfterSceneReply { get => _deferredHistoryFacts.Fact; set => _deferredHistoryFacts.Fact = value; }
@@ -1202,7 +1202,7 @@ private Dictionary<string, float> _passiveCooldowns { get => _j17ScenePassiveInt
 
 	private const string AutoGroupRelayRuleId = "scene_auto_group_relay";
 
-	private const string AutoGroupRelayTagTemplate = "[RELAY:接力编号]";
+	private static readonly string AutoGroupRelayTagTemplate = ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0676");
 
 	internal const string AutoGroupRelayPositiveSoundEvent = "event:/ui/notification/relation";
 
@@ -1749,7 +1749,7 @@ public static bool CanAgentParticipateInSceneSpeechExternal(int agentIndex) => S
 
 	internal static string BuildAutoGroupRelayThinkingInfoMessage(NpcDataPacket npc)
 	{
-		return BuildAutoGroupRelayInfoDisplayName(npc) + "正在思考该说什么。";
+		return ConversationUiLocalization.Text("AF_CONV_UI_Shout_RelayThinking", "{NAME} is thinking about what to say.", "NAME", BuildAutoGroupRelayInfoDisplayName(npc));
 	}
 
 	private static string ResolveSceneHistorySpeakerNameForPrompt(int speakerAgentIndex, string fallbackSpeakerName, IEnumerable<NpcDataPacket> nearbyData = null)
@@ -2731,7 +2731,7 @@ private static void CaptureNativeIllustrationHistoryBoundary()
 				text = "T";
 				text2 = "Y";
 			}
-			AnimusForgeQuickInfo.Show("按住" + text + "键预览喊话范围，松开后说话；按住" + text2 + "键打开复杂交流");
+			AnimusForgeQuickInfo.Show(ConversationUiLocalization.Text("AF_CONV_UI_Shout_KeyHint", "Hold {KEY} to preview the shout range, then release to speak; hold {SPECIAL} to open advanced interaction.", ("KEY", text), ("SPECIAL", text2)));
 		}
 		catch
 		{
@@ -4049,7 +4049,7 @@ private bool TryTriggerNativeConversationOpenLordsHallAction(Hero targetHero, Ch
 
 	internal static string BuildNativeConversationPreprocessUnavailableText()
 	{
-		return "（API请求失败: 原生对话前处理超时或上一轮仍在运行，请稍后重试）";
+		return ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0677");
 	}
 
 	public static bool IsNativeConversationPreprocessUnavailableTextForExternal(string text)
@@ -4069,6 +4069,8 @@ private bool TryTriggerNativeConversationOpenLordsHallAction(Hero targetHero, Ch
 	internal sealed class NativeConversationGameActionResult
 	{
 		public string Content;
+        public string DiplomacyReplyBody;
+        public List<string> DiplomacyReplyReceipts;
 		public WorldMapPartyCommandBehavior.WorldMapOrderApplyResult WorldMapResult;
 		public bool ResponseDiscarded;
 		public string FinalVisible;

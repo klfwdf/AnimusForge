@@ -1,0 +1,30 @@
+{
+  "Id": "rule_Rodock",
+  "Keywords": [
+    "Rhodok",
+    "South Vlandia",
+    "The land of freedom"
+  ],
+  "RagShortTexts": [
+    "Rhodok is the southern land of Vlandia."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Rhodok is the southern land of Vlandia and the ancestral land of Vlandia (Sharas, Galen). The moderates of Vlandia are all in this area"
+    }
+  ],
+  "TextMappings": []
+}

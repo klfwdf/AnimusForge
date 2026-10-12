@@ -1,3 +1,4 @@
+using AnimusForge;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -36,7 +37,7 @@ internal static class WorldDiplomacyThreatApplication
 			WarPressureEntry existing = findPressure(document.AuthorKingdomId, targetId);
             int scaledDelta = WorldDiplomacyWarPressureRules.CalculateDocumentPressureDelta(
                 document.Intent, document.Tone, existing?.LastIntent, existing?.ConsecutiveSimilarCount ?? 0);
-			if (scaledDelta != 0) applyPressure(document.AuthorKingdomId, targetId, scaledDelta, "外交宣言：" + document.Title, document.Intent);
+			if (scaledDelta != 0) applyPressure(document.AuthorKingdomId, targetId, scaledDelta, DiplomacyMiscPromptTexts.Get("Threat_DeclarationPrefix", "Diplomatic Declaration: ") + document.Title, document.Intent);
 		}
 	}
 
@@ -52,9 +53,9 @@ internal static class WorldDiplomacyThreatApplication
         if (!valid) return;
         int reduction = intent == "concession" ? -22 : -16;
         addWarPressure(authorId, targetId, reduction,
-            "正式" + (intent == "concession" ? "让步" : "道歉") + "：" + document.Title, intent);
+            (intent == "concession" ? DiplomacyMiscPromptTexts.Get("Threat_FormalConcession", "Formal concession") : DiplomacyMiscPromptTexts.Get("Threat_FormalApology", "Formal apology")) + ": " + document.Title, intent);
         addWarPressure(targetId, authorId, reduction / 2,
-            "对方作出正式" + (intent == "concession" ? "让步" : "道歉"), intent);
+            (intent == "concession" ? DiplomacyMiscPromptTexts.Get("Threat_OpponentFormalConcession", "Opponent made a formal concession") : DiplomacyMiscPromptTexts.Get("Threat_OpponentFormalApology", "Opponent made a formal apology")), intent);
     }
 
     internal static void RecordTargetDecision(

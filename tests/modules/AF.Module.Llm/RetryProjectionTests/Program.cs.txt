@@ -1,0 +1,75 @@
+using System;
+using System.Threading;
+using System.Threading.Tasks;
+using AnimusForge;
+using TaleWorlds.Localization;
+using TaleWorlds.Library;
+
+// Only terminal UI endpoints are captured. Production retry/source/localization types are linked whole.
+namespace AnimusForge {
+internal static class Logger { internal static void Log(string category, string message) { } }
+internal static class NonBlockingErrorReport {
+    internal static string Diagnostic, Display;
+    internal static void Show(string title, string diagnostic, bool remember = true, string display = null) { Diagnostic = diagnostic; Display = display ?? diagnostic; }
+}
+internal static class InformationManager {
+    internal static InquiryData Inquiry;
+    internal static void ShowInquiry(InquiryData data, bool pauseGameActiveState, bool prioritize) { Inquiry = data; data.NegativeAction(); }
+}
+}
+
+class Program {
+static int Checks;
+static void Check(bool condition, string name) { Checks++; if (!condition) throw new Exception(name); }
+static string N(string value) => (value ?? "").Replace("\r\n", "\n").Replace('\r', '\n').Trim();
+static string Original(string reason, string reply, string response) {
+    string r=N(reason), m=N(reply), a=N(response);
+    if(r.Length==0)r="未知错误";
+    string text=r+Environment.NewLine+Environment.NewLine+"【模型回复（完整）】"+Environment.NewLine+(m.Length==0?"（未收到或未能解析出模型回复）":m);
+    if(a.Length!=0 && a!=m)text+=Environment.NewLine+Environment.NewLine+"【API原始响应（完整）】"+Environment.NewLine+a;
+    return text.TrimEnd();
+}
+static async Task<int> Main(string[] args) {
+    LocalizedTextManager.LoadLocalizationXmls(new[]{args[0]});
+    string action=LlmSourceTexts.Get("RetryActionTagsMissing");
+    string reasonCode="{REASON}$1 {=AF_UI_Retry_UnknownError}玩家原文";
+    string preprocess=LlmSourceTexts.Get("RetryPreprocessFormatPrefix")+reasonCode+LlmSourceTexts.Get("RetryPreprocessFormatSuffix");
+    string reply="玩家原文 {DETAIL}$1\n\n【模型回复（完整）】\n\n【API原始响应（完整）】\n请检查 MCM 设置。\n"+action;
+    string response="{\"content\":\"【模型回复（完整）】 / 【API原始响应（完整）】\"}";
+    foreach(string language in new[]{"English","简体中文","English"}) {
+        Check(MBTextManager.ChangeLanguage(language),"UI language "+language);
+        bool en=language=="English";
+        foreach(string reason in new[]{action, preprocess, "provider private unknown error", "", LlmSourceTexts.Get("LegacyErrorPrefixMissingApiKey")}) {
+            string diagnostic=LlmRetryPrompt.BuildFailureDetail(reason,reply,response);
+            Check(diagnostic==Original(reason,reply,response),"raw diagnostic byte semantics preserved");
+            string projected=LlmRetryPrompt.ProjectKnownErrorForUi(diagnostic);
+            Check(projected.Contains(reply,StringComparison.Ordinal)&&projected.Contains(response,StringComparison.Ordinal),"literal complete bodies preserved");
+            Check(projected.Contains(en?"Model reply (complete)":"【模型回复（完整）】",StringComparison.Ordinal),"localized model heading");
+            if(reason==action)Check(projected.StartsWith(en?"(API response format error) Action postprocessing":"（API响应格式错误）动作后处理",StringComparison.Ordinal),"ACTION reason localized");
+            if(reason==preprocess)Check(projected.Contains(reasonCode,StringComparison.Ordinal),"preprocess dynamic reason literal");
+            LlmRetryPrompt.ShowFailurePopup("",diagnostic);
+            Check(NonBlockingErrorReport.Diagnostic==N(diagnostic)&&NonBlockingErrorReport.Display==projected,"full ShowFailurePopup flow keeps diagnostic and projects original instance");
+            LlmRetryPrompt.ShowLocalizedFailurePopup("{=AF_UI_Retry_RequestFailed}AnimusForge request failed",diagnostic);
+            Check(NonBlockingErrorReport.Diagnostic==N(diagnostic)&&NonBlockingErrorReport.Display==projected,"full ShowLocalizedFailurePopup flow");
+            if(LlmRetryPrompt.IsRetryableLlmError(diagnostic)) {
+                Check(!await LlmRetryPrompt.PromptRetryAsync(LlmSourceTexts.Get("RetryStagePostprocess"),diagnostic),"retry choice preserved");
+                Check(NonBlockingErrorReport.Diagnostic==diagnostic&&N(NonBlockingErrorReport.Display).Contains(N(projected),StringComparison.Ordinal),"ShowRetryPrompt end-to-end original diagnostic identity");
+            }
+            string copy=new string(diagnostic.ToCharArray());
+            Check(LlmRetryPrompt.ProjectKnownErrorForUi(copy)==copy,"unowned copied diagnostic is preserved");
+        }
+        foreach(string unknown in new[]{reply,response,"  unrelated 玩家正文\n\n【模型回复（完整）】\n"+action+"  "})
+            Check(LlmRetryPrompt.ProjectKnownErrorForUi(unknown)==unknown,"unknown/model text marker preserved");
+        foreach(string error in new[]{"（API请求失败: Forbidden）","（程序错误: HttpRequestException）","（API响应格式错误: BadJson）","（错误：未配置模型名称）","timeout_x","http_500","x_config_invalid","empty_content"})
+            Check(LlmRetryPrompt.IsRetryableLlmError(error),"legacy retry recognition preserved");
+        Check(!LlmRetryPrompt.IsRetryableLlmError("普通玩家发言"),"unrelated input not retryable");
+        string empty=LlmRetryPrompt.BuildFailureDetail(action,"", "");
+        Check(LlmRetryPrompt.ProjectKnownErrorForUi(empty).Contains(en?"No model reply was received":"未收到或未能解析出模型回复",StringComparison.Ordinal),"empty model reply localized");
+        SynchronizationContext.SetSynchronizationContext(new SynchronizationContext());
+        LlmRetryPrompt.CaptureMainThreadContext();
+        Check(!LlmRetryPrompt.PromptRetryBlocking(LlmSourceTexts.Get("RetryStagePreprocess"),empty),"main-thread blocking retry behavior preserved");
+        Check(NonBlockingErrorReport.Diagnostic==empty&&N(NonBlockingErrorReport.Display).Contains(N(LlmRetryPrompt.ProjectKnownErrorForUi(empty)),StringComparison.Ordinal),"blocking retry reports raw and UI projection");
+    }
+    Console.WriteLine("PASS real TW whole LlmRetryPrompt UI flow checks="+Checks);return 0;
+}
+}

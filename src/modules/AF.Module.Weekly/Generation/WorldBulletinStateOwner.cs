@@ -437,8 +437,8 @@ internal bool TryRecordCoupOutcomeWithParticipantsForBulletin(string coupId, boo
 		if (EnsureWorldBulletinState().Events.Any(e => e != null && string.Equals(e.Key, key, StringComparison.Ordinal))) return true;
 		return CaptureWorldBulletinEvent(success ? "coup_success" : "coup_failure", key, success ? 95 : 80,
 			sentence, true, "coup:" + coupId.Trim(), detail, new[] {
-				new WorldBulletinParticipant { HeroId = actorId ?? "", Role = "政变发动者" },
-				new WorldBulletinParticipant { HeroId = formerKingId ?? "", Role = "政变针对的原国王" }
+				new WorldBulletinParticipant { HeroId = actorId ?? "", Role = WorldBulletinPolicyTexts.Raw("WBLT_Raw_041") },
+				new WorldBulletinParticipant { HeroId = formerKingId ?? "", Role = WorldBulletinPolicyTexts.Raw("WBLT_Raw_042") }
 			}, kingdomId, actorKingdomId);
 	}
 internal string ExportJson(){if(State!=null&&CorruptRaw!=null)State.PreservedUnreadableState=CorruptRaw;return State!=null?Newtonsoft.Json.JsonConvert.SerializeObject(State):(CorruptRaw??"");}

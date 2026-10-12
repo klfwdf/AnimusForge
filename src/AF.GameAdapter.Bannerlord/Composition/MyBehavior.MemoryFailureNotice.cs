@@ -1,9 +1,9 @@
-using System;using TaleWorlds.Library;using TaleWorlds.CampaignSystem;
+using System;using TaleWorlds.Library;using TaleWorlds.CampaignSystem;using TaleWorlds.Localization;
 namespace AnimusForge;
 public partial class MyBehavior {
  private readonly MemoryFailureNoticeOwner _memoryFailureNotices = new MemoryFailureNoticeOwner();
  private MemoryFailureNoticePort _memoryFailureNoticePort;
- private MemoryFailureNoticeOwner MemoryFailureNotices {get { _memoryFailureNotices.Bind(_memoryFailureNoticePort ??= new MemoryFailureNoticePort {IsCurrentOwner=IsCurrentMemoryFailureOwner,IsCurrentCampaign=IsCurrentMemoryFailureCampaign,IsMainThread=TWParallel.IsMainThread,Observe=ObserveMemoryFailureNotice,Show=(title,message,complete)=>InformationManager.ShowInquiry(new InquiryData(title,message,isAffirmativeOptionShown:true,isNegativeOptionShown:false,"知道了","",complete,null),pauseGameActiveState:true)});return _memoryFailureNotices;}}
+ private MemoryFailureNoticeOwner MemoryFailureNotices {get { _memoryFailureNotices.Bind(_memoryFailureNoticePort ??= new MemoryFailureNoticePort {IsCurrentOwner=IsCurrentMemoryFailureOwner,IsCurrentCampaign=IsCurrentMemoryFailureCampaign,IsMainThread=TWParallel.IsMainThread,Observe=ObserveMemoryFailureNotice,Show=(title,message,complete)=>InformationManager.ShowInquiry(new InquiryData(title,message,isAffirmativeOptionShown:true,isNegativeOptionShown:false,new TextObject("{=AF_UI_MemoryFailure_Acknowledge}Acknowledge").ToString(),"",complete,null),pauseGameActiveState:true)});return _memoryFailureNotices;}}
 private bool IsCurrentMemoryFailureOwner(long generation)
     {
         return ReferenceEquals(Instance, this) && SaveRuntimeGuard.IsCurrentGeneration(generation);

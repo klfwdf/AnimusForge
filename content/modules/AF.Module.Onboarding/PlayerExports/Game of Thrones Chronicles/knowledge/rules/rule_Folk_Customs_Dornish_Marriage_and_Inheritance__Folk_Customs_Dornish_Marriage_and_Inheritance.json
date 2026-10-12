@@ -1,0 +1,159 @@
+{
+  "Id": "rule_Folk_Customs_Dornish_Marriage_and_Inheritance",
+  "Keywords": [
+    "Dornish Inheritance",
+    "Equal Primogeniture",
+    "Dornish Marriage",
+    "Ruling Ladies",
+    "Rhoynish Traditions"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Dorne’s inheritance habits are deeply influenced by the Rhoynar. Legal children are usually arranged in order of birth rather than gender. The eldest daughter can inherit the family name, territory and governance responsibilities before the younger brothers. This makes female lords and heiresses more natural in Dornish politics, and also changes the calculation of marriage contracts: the husband's family may not necessarily annex the woman's family name, and the ownership of children and living arrangements need to be clearly negotiated. Dornish society often has a more relaxed attitude towards lovers and illegitimate children than other areas of the Seven Kingdoms, but legality still affects formal inheritance, and tolerance does not mean the absence of jealousy and power struggles. Foreign nobles sometimes mistake this system for weakness, but the Dornish people regard it as part of their family law and identity."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Dornish nobles will not naturally look for a replacement just because the heir is a daughter, but are more concerned about her ability to maintain the family name. A younger brother can be an important support, or he can be a flag for others to provoke."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Ordinary Dornishmen are familiar with female inheritance, but are still limited by wealth, marriage, and local customs. The law provides a position, but daily respect still depends on the ability to govern."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "reach",
+          "stormlands",
+          "crownlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "priest",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Outsiders may call Dornish customs abnormal, but when negotiating a marriage contract, one must take the legal rights of an heiress seriously. Prejudice cannot sign a valid contract for them."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Dornish Inheritance Dornish Marriage and Inheritance: Influenced by Rhoynar tradition, the legitimate eldest child has priority in inheritance regardless of gender, and it is not uncommon for women to be in charge of the territory. Whether it is valid depends on who can grant the rights, collect the consideration, and actually make the judgment come to fruition in the event of default."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Dornish Inheritance Dornish Marriage and Inheritance: Influenced by Rhoynar tradition, the legitimate eldest child has priority in inheritance regardless of gender, and it is not uncommon for women to be in charge of the territory. The distant system is not empty talk only if it can be implemented in campfires, city gates and inns."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Dornish Inheritance Dornish Marriage and Inheritance: Influenced by Rhoynar tradition, the legitimate eldest child has priority in inheritance regardless of gender, and it is not uncommon for women to be in charge of the territory. If a rule is practiced over and over again, it will find its way into rituals, crafts, and prayers; if it is sustained only by fear, cracks will show at the onset of a crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Dornish Inheritance Dornish Marriage and Inheritance: Influenced by Rhoynar tradition, the legitimate eldest child has priority in inheritance regardless of gender, and it is not uncommon for women to be in charge of the territory. They remember taxes, grain, labor, relief and who can speak for them; these grand names will eventually fall on the family's rice pot."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Dornish Marriage and Inheritance: Influenced by Rhoynar tradition, the legitimate eldest child has priority in inheritance regardless of gender, and it is not uncommon for women to be in charge of the territory."
+  ]
+}

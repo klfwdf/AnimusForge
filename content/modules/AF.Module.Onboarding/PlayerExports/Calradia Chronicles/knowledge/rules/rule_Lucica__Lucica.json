@@ -1,0 +1,59 @@
+{
+  "Id": "rule_Lucica",
+  "Keywords": [
+    "Lucica",
+    "Wife of Marshal Clotor"
+  ],
+  "RagShortTexts": [
+    "Lysica is the wife of Marshal Clotor and a female general."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Lysica? She is a famous female general. She and her husband Clottor have been stationed in the western border of the empire (now ruled by the A family) for generations, and have made great achievements in battle."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_w"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Mrs. Dionykos (Lucica) is the wife of our Marshal Clottor. She is not only her husband’s virtuous wife, but also an excellent female general. It can be said that without her, our Marshal Crotor would not be able to fight with peace of mind on the front line."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "A",
+      "Kind": "settlement_owner_clan_name",
+      "TargetId": "town_EW1",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

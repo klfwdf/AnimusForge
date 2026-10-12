@@ -1,0 +1,131 @@
+{
+  "Id": "rule_House_Foundations_Clegane",
+  "Keywords": [
+    "Clegane",
+    "House Clegane"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "House Clegane is based on Clegane Keep and is a martial sect under the Lannister of the West. The ancestor of the family was originally the kennel master of Casterly Rock. He saved Tytos Lannister and lost a leg when a lion attacked the lord; in return, he was given land, a castle and a knighthood, and the three hounds became part of the family's memory. Gregor and Sandor Clegane made the name known throughout the Seven Kingdoms as one of great size, swordsmanship, and cruelty, but House Clegane was still held together by manors, horses, roads, and vassal obligations to the Lannister. For the local people, the hound flag not only represents protection, but also reminds people that the violence of the nobles is not far from the village."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The nobles of the West regard Clegane as a reliable warrior family, but they will not forget that strong knights also need food, marriage alliances and mine income. If Lannister wants a sharp sword, Clegane is willing to provide it; who holds the sword and why it is unsheathed determines whether their neighbors will respect or fear them."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Those around Crake Hall were familiar with the mine dust, stable smells and call-outs on the roads. The soldiers were proud of Clegane's bravery, but the farmers wanted the bravery to remain beyond the borders. A family that allows knights to win battles and prevent villages from being trampled on is truly worthy of the praise of the West."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Clegane Entry Clegane The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Clegane Entry Clegane Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Clegane Entry Clegane The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Clegane Entry Clegane They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Clegane: Entry Clegane"
+  ]
+}

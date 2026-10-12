@@ -1,0 +1,154 @@
+{
+  "Id": "rule_Watch_on_the_Wall_Nightfort",
+  "Keywords": [
+    "Nightfort",
+    "The Nightfort",
+    "Black Gate",
+    "Legends"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Nightfort is one of the oldest and most shadowy abandoned castles on the Wall. It predates Castle Black by a long time, and its halls, wells, tunnels, and legends of the Black Gate have always had a place in the story of Night's Watch. Abandoned doesn't mean irrelevant: an old castle, with its stone walls, storage spaces, secret passages and disturbing memories, can become a place of refuge or an empty shell where no one dares to stay for long. The desolation of the Nightfort reflects the long-term decline of the Night's Watch - most of the nineteen castles are no longer guarded, and the defense line is long on the map, but there are large gaps in reality."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Nightfort Local families also rely on frozen soil, firewood, seal meat, supply convoys and long vigils; if any road, well or dock fails, the price falls first on them."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Nightfort Entry Nightfort"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Nightfort They'll also recognize the accents, laws, and credentials of the Wall; reputations can travel great distances from taverns, and real distances must still be measured by wheel, oar, or horse's hooves."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Nightfort Entry Nightfort"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Nightfort If you can supply supplies, avoid danger, and find a guide, it is worth marking in your itinerary; if you don't have these three things, no matter how loud your family name is, it won't be able to save the lost."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "In the Nightfort, craftsmen see stone walls, wooden beams, iron doors, tombs and seams left by generations of repairs. The clergy keep the oath of Night's Watch, the memories of the dead in the shadow of the old gods and the Great Wall. A stronghold was therefore not just a lord's hall, but also a place where weddings and funerals, vows, labor and local memories recurred."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Nightfort They care about frozen soil, firewood, seal meat, supply convoys and long vigils. They also look at whether seeds are left after the food collection and whether the city gates are open in times of disaster. When people from afar see the coat of arms, what they see is whether there will be food to eat tomorrow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Nightfort: The Nightfort is one of the oldest and most shadowy abandoned castles on the Wall. It predates Castle Black by a long time, and its halls, wells, tunnels, and legends of the Black Gate have always had a place in the story of Night's Watch. Abandoned doesn't mean irrelevant: an old castle, with its stone walls, storage spaces, secret passages and disturbing memories, can become a place of refuge or an empty shell where no one dares to stay for long. The desolation of the Nightfort reflects the long-term decline of the Night's Watch - most of the nineteen castles are no longer guarded, and the defense line is long on the map, but there are large gaps in reality."
+  ]
+}

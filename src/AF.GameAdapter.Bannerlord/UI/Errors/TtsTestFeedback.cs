@@ -16,7 +16,7 @@ internal static class TtsTestFeedback
         {
             // StopPlayback / game teardown can invalidate an already posted failure.
             if (request.IsCancellationRequested) { return; }
-            InformationManager.DisplayMessage(new InformationMessage("[TTS] 测试语音失败：" + reason, Color.FromUint(4294901760u)));
+            InformationManager.DisplayMessage(new InformationMessage(DuelSettingsUiLocalization.Format("AF_LLM_UI_Tts_TestFailure", "[TTS] Test voice failed: {REASON}", ("REASON", TtsErrorUiText.Describe(reason))), Color.FromUint(4294901760u)));
         });
     }
 

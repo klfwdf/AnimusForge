@@ -91,7 +91,7 @@ internal static class WorldDiplomacyDraftRepairApplication
 			repairTarget == null ? "" : world.KingdomName(repairTarget),
 			repairTarget == null ? "" : WorldDiplomacyPromptComposer.BilateralStateLabel(world, author, repairTarget),
 			requiredPeaceOffer,
-			() => world.BuildGovernmentHardFact(author));
+			() => world.BuildGovernmentHardFact(author), world.LocalizePrompt);
 		correctionBuilder.AppendLine(orchestration.BuildCurrentLegalDiplomaticOptions(
 			repairRound,
 			author,
@@ -100,7 +100,7 @@ internal static class WorldDiplomacyDraftRepairApplication
 			source.ResultSettlementSlotId,
 			source.IsExternalResponseOnly,
 			world.ResolveDocument(source.SourceDocumentId)));
-		string correction = WorldDiplomacyPromptContractRules.BuildDeclareModePrompt(correctionBuilder.ToString());
+		string correction = WorldDiplomacyPromptContractRules.BuildDeclareModePrompt(correctionBuilder.ToString(), world.LocalizePrompt);
 		List<WorldDiplomacyLlmMessage> messages = WorldDiplomacyPromptContractRules.CloneLlmMessages(WorldDiplomacyLlmMessageApplication.BuildLlmMessagesForJob(source, orchestration.BuildCanonicalHistoryBlock));
 		messages.Add(new WorldDiplomacyLlmMessage { Role = "assistant", Content = rejectedRaw ?? "" });
 		messages.Add(new WorldDiplomacyLlmMessage { Role = "user", Content = correction });

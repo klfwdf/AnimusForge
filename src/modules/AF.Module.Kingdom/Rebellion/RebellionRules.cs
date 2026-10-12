@@ -13,28 +13,30 @@ internal sealed class RebellionClanFacts
 internal static class RebellionRules
 {
 	internal const uint DefaultBackground = 4291609515U;
+	// Relation-to-king floor for an automatic candidate. Single source so the rule and its player-visible note cannot drift.
+	private const int CandidateRelationToKingFloor = -5;
 	internal static string CandidatePreflightNote(RebellionClanFacts f)
 	{
 		if (!f.Exists)
-			return "家族为空。";
+			return CivilWarUiText.T("AF_KINGDOM_UI_Rebellion_ClanMissing", "The clan is missing.");
 		if (!f.KingdomExists || f.KingdomEliminated)
-			return "王国不存在或已灭亡。";
+			return CivilWarUiText.T("AF_KINGDOM_UI_Rebellion_KingdomMissing", "The kingdom does not exist or has been eliminated.");
 		if (f.PlayerClan)
-			return "玩家家族不参与该系统的自动叛乱。";
+			return CivilWarUiText.T("AF_KINGDOM_UI_Rebellion_PlayerClan", "The player clan does not take part in this system's automatic rebellions.");
 		if (!f.InKingdom)
-			return "该家族当前不隶属于此王国。";
+			return CivilWarUiText.T("AF_KINGDOM_UI_Rebellion_NotInKingdom", "This clan is not currently part of that kingdom.");
 		if (f.RulingClan)
-			return "执政家族不会作为叛乱候选。";
+			return CivilWarUiText.T("AF_KINGDOM_UI_Rebellion_RulingClan", "The ruling clan is never a rebellion candidate.");
 		if (f.Eliminated)
-			return "该家族已灭亡。";
+			return CivilWarUiText.T("AF_KINGDOM_UI_Rebellion_ClanEliminated", "This clan has been eliminated.");
 		if (f.Bandit || f.Minor || f.Rebel)
-			return "该家族派系类型不适合纳入该叛乱逻辑。";
+			return CivilWarUiText.T("AF_KINGDOM_UI_Rebellion_FactionType", "This clan's faction type is not eligible for this rebellion logic.");
 		if (f.Mercenary)
-			return "佣兵家族不会作为叛乱候选。";
+			return CivilWarUiText.T("AF_KINGDOM_UI_Rebellion_Mercenary", "Mercenary clans are never rebellion candidates.");
 		if (!f.LeaderExists || !f.LeaderAlive || f.LeaderChild)
-			return "族长状态无效。";
+			return CivilWarUiText.T("AF_KINGDOM_UI_Rebellion_LeaderInvalid", "The clan leader's state is invalid.");
 		if (f.LeaderPrisoner)
-			return "族长当前被囚，暂不触发带城反出。";
+			return CivilWarUiText.T("AF_KINGDOM_UI_Rebellion_LeaderPrisoner", "The clan leader is imprisoned; a rebellion with settlements cannot start yet.");
 		return "";
 	}
 
@@ -44,9 +46,9 @@ internal static class RebellionRules
 		if (preflight.Length > 0)
 			return preflight;
 		if (f.TownCount + f.CastleCount <= 0)
-			return "该家族没有城镇或城堡，不能带城反出。";
-		if (!force && f.RelationToKing > -5)
-			return "与国王关系未低于 -5，暂不列入自动叛乱候选。";
+			return CivilWarUiText.T("AF_KINGDOM_UI_Rebellion_NoFortification", "This clan holds no town or castle and cannot rebel with settlements.");
+		if (!force && f.RelationToKing > CandidateRelationToKingFloor)
+			return CivilWarUiText.T("AF_KINGDOM_UI_Rebellion_RelationTooHigh", "Relation with the king is not below {THRESHOLD}; the clan is not an automatic rebellion candidate yet.", ("THRESHOLD", CandidateRelationToKingFloor.ToString()));
 		return "";
 	}
 
@@ -64,8 +66,8 @@ internal static class RebellionRules
 		return score;
 	}
 
-	internal static string FollowerPreflightNote(bool clan, bool leaderClan, bool sameClan) => !clan || !leaderClan ? "家族为空。" : sameClan ? "主导家族不作为跟随候选。" : "";
-	internal static string FollowerLeaderNote(bool leader, bool otherLeader) => leader && otherLeader ? "" : "族长状态无效。";
+	internal static string FollowerPreflightNote(bool clan, bool leaderClan, bool sameClan) => !clan || !leaderClan ? CivilWarUiText.T("AF_KINGDOM_UI_Rebellion_ClanMissing", "The clan is missing.") : sameClan ? CivilWarUiText.T("AF_KINGDOM_UI_Rebellion_LeadingClan", "The leading clan cannot be a follower candidate.") : "";
+	internal static string FollowerLeaderNote(bool leader, bool otherLeader) => leader && otherLeader ? "" : CivilWarUiText.T("AF_KINGDOM_UI_Rebellion_LeaderInvalid", "The clan leader's state is invalid.");
 	internal static float FollowerScore(RebellionClanFacts f)
 	{
 		float score = 0;

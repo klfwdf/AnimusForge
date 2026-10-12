@@ -1,0 +1,129 @@
+{
+  "Id": "rule_Geographical_Dossier_Riverrun",
+  "Keywords": [
+    "Riverrun",
+    "Tully",
+    "Red Fork",
+    "Tumblestone"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Riverrun is located in the western part of the Riverlands, at the confluence of the Red Fork and Tumblestone rivers. It is the ancestral castle of the Tully family and the traditional political center of the river lords. The castle is triangular in shape, with two sides facing the river, and the third side can be used to divert water through trenches and gates, making the entire fortress resemble an island in times of crisis; waterways, ferries, and roads leading to the west and the hinterland between the rivers all intersect nearby. Riverrun does not have the wealth of Casterly Rock, nor the danger of the Eyrie. Its power comes from the river, the network of vassals, and whether the Tully family's \"family, duty, and honor\" can reunite a war-torn land."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "river"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Riverlanders look at Riverrun for more than just Tully's salmon banner. They looked at the sluice gate, the ferry, the water level in the coming year and which army would pass through their fields again. The castle can borrow river water to defend itself during a siege, but it cannot build walls for every mill and village in the Riverlands; this helplessness makes Tully's \"responsibility\" sound like an honor and a debt that can never be repaid."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia",
+          "battania",
+          "stormlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Foreign generals will admire Riverrun's water defenses, but they will also find that every river in the Riverlands slows down the march. The people in the north regard it as a reliable friendly city on the way south, the people in the west know that it is stuck between the mountain pass and the river, and the knights of the Stormlands will find that the war here is not decided by a charge. Riverrun teaches every visitor that water can both feed a land and bring battle back to the same place over and over again."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Riverrun Entry Red Fork Tumblestone Tully It reflects the fragile connection between water transportation, farmland, and ferries in the Riverlands and \"family, responsibility, and honor.\" They care about water sources, roads, customs and garrison, and know that behind the place names there is often a food road that can keep the castle alive."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Riverrun Entry Red Fork Tumblestone Tully It reflects the fragile connection between water transportation, farmland, and ferries in the Riverlands and \"family, responsibility, and honor.\" The reputation of a place is often determined by the number of people who died there."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Riverrun Entry Red Fork Tumblestone Tully It reflects the fragile connection between water transportation, farmland, and ferries in the Riverlands and \"family, responsibility, and honor.\" Stones, trees, rivers or mountain passes can become places of livelihood, and may also be endowed with sanctity, taboos and ancestral memories, so they cannot be measured in terms of money alone."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Riverrun Entry Red Fork Tumblestone Tully It reflects the fragile connection between water transportation, farmland, and ferries in the Riverlands and \"family, responsibility, and honor.\" They first checked whether the place could draw water, farm, graze, and avoid military disasters; a line of words on the map, and when it landed in the village, it turned out to be firewood, well rope, and winter food."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Riverrun: Riverrun is located in the western part of the Riverlands, at the confluence of the Red Fork and Tumblestone rivers. It is the ancestral castle of the Tully family and the traditional political center of the river lords. The castle is triangular in shape, with two sides facing the river, and the third side can be used to divert water through trenches and gates, making the entire fortress resemble an island in times of crisis; waterways, ferries, and roads leading to the west and the hinterland between the rivers all intersect nearby. Riverrun does not have the wealth of Casterly Rock, nor the danger of the Eyrie. Its power comes from the river, the network of vassals, and whether the Tully family's \"family, duty, and honor\" can reunite a war-torn land."
+  ]
+}

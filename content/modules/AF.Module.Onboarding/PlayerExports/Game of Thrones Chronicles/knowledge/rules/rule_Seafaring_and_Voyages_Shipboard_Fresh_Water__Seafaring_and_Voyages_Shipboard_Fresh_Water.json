@@ -1,0 +1,147 @@
+{
+  "Id": "rule_Seafaring_and_Voyages_Shipboard_Fresh_Water",
+  "Keywords": [
+    "Shipboard Fresh Water"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Fresh water, one of the most stringent restrictions on a voyage, was usually stored in wooden barrels and rationed on a daily basis. Water can become stale, grow filth, or be lost through cracks in barrels; ships must therefore calculate replenishment ports and rainy seasons, and a lack of water often destroys discipline faster than a lack of food."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Shipboard Fresh Water Fresh water, one of the most stringent restrictions on a voyage, was usually stored in wooden barrels and rationed on a daily basis. Water can become stale, grow filth, or be lost through cracks in barrels; ships must therefore calculate replenishment ports and rainy seasons, and a lack of water often destroys discipline faster than a lack of food. The rules of the sea ultimately have to withstand wet ropes, bad water and sudden turns of weather."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Shipboard Fresh Water Fresh water, one of the most stringent restrictions on a voyage, was usually stored in wooden barrels and rationed on a daily basis. Water can become stale, grow filth, or be lost through cracks in barrels; ships must therefore calculate replenishment ports and rainy seasons, and a lack of water often destroys discipline faster than a lack of food. If any maritime plan ignores the crew's physical strength and return conditions, victory may turn into drifting."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Shipboard Fresh Water Fresh water, one of the most stringent restrictions on a voyage, was usually stored in wooden barrels and rationed on a daily basis. Water can become stale, grow filth, or be lost through cracks in barrels; ships must therefore calculate replenishment ports and rainy seasons, and a lack of water often destroys discipline faster than a lack of food. A single misjudgment can cost you goods, credit, and lives at the same time."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Shipboard Fresh Water Fresh water, one of the most stringent restrictions on a voyage, was usually stored in wooden barrels and rationed on a daily basis. Water can become stale, grow filth, or be lost through cracks in barrels; ships must therefore calculate replenishment ports and rainy seasons, and a lack of water often destroys discipline faster than a lack of food."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Shipboard Fresh Water Fresh water, one of the most stringent restrictions on a voyage, was usually stored in wooden barrels and rationed on a daily basis. Water can become stale, grow filth, or be lost through cracks in barrels; ships must therefore calculate replenishment ports and rainy seasons, and a lack of water often destroys discipline faster than a lack of food. There are no extra roads to go around on the ship, and mistakes can often only be shared by the entire ship."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Shipboard Fresh Water Fresh water, one of the most stringent restrictions on a voyage, was usually stored in wooden barrels and rationed on a daily basis. Water can become stale, grow filth, or be lost through cracks in barrels; ships must therefore calculate replenishment ports and rainy seasons, and a lack of water often destroys discipline faster than a lack of food. Wood and knots maintain the hull, while faith helps people face the uncontrollable sea."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Shipboard Fresh Water Fresh water, one of the most stringent restrictions on a voyage, was usually stored in wooden barrels and rationed on a daily basis. Water can become stale, grow filth, or be lost through cracks in barrels; ships must therefore calculate replenishment ports and rainy seasons, and a lack of water often destroys discipline faster than a lack of food. The changes on the distant sea often turn into empty stalls in the market the next day."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Shipboard Fresh Water: Fresh water, one of the most stringent restrictions on a voyage, was usually stored in wooden barrels and rationed on a daily basis. Water can become stale, grow filth, or be lost through cracks in barrels; ships must therefore calculate replenishment ports and rainy seasons, and a lack of water often destroys discipline faster than a lack of food."
+  ]
+}

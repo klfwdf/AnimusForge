@@ -1,0 +1,153 @@
+{
+  "Id": "rule_House_Foundations_House_Hightower",
+  "Keywords": [
+    "House Hightower",
+    "The Hightower (House Foundations House Hightower)",
+    "We Light the Way"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "With their roots in the towering tower at the mouth of the mead estuary in Oldtown, House Hightower is one of the oldest and wealthiest families in Westeros, probably predating the arrival of the Andals. The family emblem is a tall white tower with a soot background, with a flame burning on the top of the tower, and the motto \"Light up the future.\" The old status of Oldtown Port, the Citadel, the Starry Cathedral, and the vast city population mean that Hightower's power comes from trade, knowledge, faith, and land, not just the number of knights. The nobles of the River Reach respect their antiquity and wealth, and will be wary of a vassal with a large city and long-term relationships with scholars and churches. Ordinary Oldtowners are more likely to know them by port rules, grain prices, policing and tower lights."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "reach"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The nobles of the Reach spoke of Hightower with a mixture of respect and wariness. Highgarden rules over the vast fertile fields, but the towering tower guards Oldtown, the Citadel, the faith center and the busy seaport; Hightower does not need to stand next to the throne every time, but can also let bachelors, monks, merchant ships and marriage alliances extend their influence for them. The older the family, the more they understand that silence is sometimes more powerful than an oath."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "reach"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The merchants, craftsmen and shipowners of Oldtown looked at Hightower, first of all looking at the fire on the top of the tower, the order of the harbor and the cargo ships on the Mead River. The towering tower is a wonder that everyone in the seven countries has heard of, but it is also a beacon and a shadow of power to the dock people. If the taxes are fair and the rivers are safe, the ancient bloodline will be respectable; if the goods rot in the warehouse, no matter how long the pedigree is, it will not be able to exchange for its capital."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "reach"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "priest",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Citadel and the Cathedral of the Stars both grew up in Oldtown, but each obeyed different traditions. The maester sees the Hightower as a secular family that protects knowledge and order in the city, while the monk remembers that the Faith once spoke to the Seven Kingdoms from here. Both understand that the Tower does not directly rule over every book or prayer, but its shadow long falls between them."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Hightower Oldtown is an ancient and powerful family with towering towers. Their family emblem is a white tower with a fire burning under the ashes, and their motto is \"Light up the future.\" The port, the Citadel, ecclesiastical tradition, city population and land combine to form its unique power. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Hightower Oldtown is an ancient and powerful family with towering towers. Their family emblem is a white tower with a fire burning under the ashes, and their motto is \"Light up the future.\" The port, the Citadel, ecclesiastical tradition, city population and land combine to form its unique power. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Hightower Oldtown is an ancient and powerful family with towering towers. Their family emblem is a white tower with a fire burning under the ashes, and their motto is \"Light up the future.\" The port, the Citadel, ecclesiastical tradition, city population and land combine to form its unique power. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Hightower Oldtown is an ancient and powerful family with towering towers. Their family emblem is a white tower with a fire burning under the ashes, and their motto is \"Light up the future.\" The port, the Citadel, ecclesiastical tradition, city population and land combine to form its unique power. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "House Hightower: Oldtown is an ancient and powerful family with towering towers. Their family emblem is a white tower with a fire burning under the ashes, and their motto is \"Light up the future.\" The port, the Citadel, ecclesiastical tradition, city population and land combine to form its unique power."
+  ]
+}

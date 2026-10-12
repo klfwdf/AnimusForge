@@ -1,0 +1,152 @@
+{
+  "Id": "rule_House_Foundations_House_Banefort",
+  "Keywords": [
+    "House Banefort"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Benfort family, with their seat at Warfort, are ancient nobles on the west coast, loyal to Casterly Rock. Before the war of conquest, this area was ruled by the ancestor kings known as the \"hooded kings\"; the black hooded figure is the most eye-catching pattern in the family emblem. Bane's Bastion faces the Sunset Sea, and the family's history has long been shaped by Ironborn raids and coastal vigilance. City walls, beacons, fishing ports, and roads leading inland all formed its foundation, and the reputation of a coastal lord depended above all on his ability to protect his subjects in the event of an enemy sail."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The lords of the Westerlands regard Banefortress as an old sentinel on the coast. Bamford did not have the wealth of Casterly Rock, but it bore the inland storms and ironmen who were the first to reach the shore; if the beacon fire was delayed a night, the damage would spread along the roads."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "sailor",
+          "artisan"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The fishermen near Fu Lei depend on the sea for their livelihood, but they are also afraid of people coming from the sea. If Benfort maintained the lights and left rations for reconstruction in the attacked villages, the hooded flag would be a shield; if it only appeared when collecting taxes, it would be just another shadow."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "sailor",
+          "soldier",
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The old ironborn captain remembered every landing beach on the western coast, and knew that Scourge was not an unprepared sheep. To them, Benfort was both a potential prize and an obstacle that had to be overcome before the tide and the beacon ignited."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Banefort House Bamfort holds the fortress of Bane on the coast of the Westerlands, and its history is closely connected with the legend of the \"Hooded King\", Ironborn invasions and coastal defense. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Banefort House Bamfort holds the fortress of Bane on the coast of the Westerlands, and its history is closely connected with the legend of the \"Hooded King\", Ironborn invasions and coastal defense. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Banefort House Bamfort holds the fortress of Bane on the coast of the Westerlands, and its history is closely connected with the legend of the \"Hooded King\", Ironborn invasions and coastal defense. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Banefort House Bamfort holds the fortress of Bane on the coast of the Westerlands, and its history is closely connected with the legend of the \"Hooded King\", Ironborn invasions and coastal defense. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "House Banefort: House Bamfort holds the fortress of Bane on the coast of the Westerlands, and its history is closely connected with the legend of the \"Hooded King\", Ironborn invasions and coastal defense."
+  ]
+}

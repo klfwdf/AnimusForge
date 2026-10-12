@@ -15,10 +15,10 @@ namespace AnimusForge.Illustrator.Core
             RegexOptions.CultureInvariant);
         private static readonly HashSet<string> DirectorSections = new HashSet<string>(StringComparer.Ordinal)
         {
-            "人物与镜头", "人物镜头", "角色与镜头", "人物与构图",
-            "场景空间", "场景环境", "环境空间", "空间与环境",
-            "光线与色彩", "光影与色彩", "光线与光影", "光照与色彩", "光影色彩",
-            "空间关系", "空间透视", "透视与空间", "透视关系", "空间与景深"
+            IllustratorText.Raw("Residual_ImagePromptBudget_9d74adf88df4"), IllustratorText.Raw("Residual_ImagePromptBudget_2a8ae329881c"), IllustratorText.Raw("Residual_ImagePromptBudget_3733c837db22"), IllustratorText.Raw("Residual_ImagePromptBudget_067a21c2cea5"),
+            IllustratorText.Raw("Residual_ImagePromptBudget_6b05b94fef37"), IllustratorText.Raw("Residual_ImagePromptBudget_fe33ab426448"), IllustratorText.Raw("Residual_ImagePromptBudget_b31fac91d9ec"), IllustratorText.Raw("Residual_ImagePromptBudget_7f003b063fac"),
+            IllustratorText.Raw("Residual_ImagePromptBudget_c03fde28bf42"), IllustratorText.Raw("Residual_ImagePromptBudget_7e5c54d063ea"), IllustratorText.Raw("Residual_ImagePromptBudget_a8e4d458fea9"), IllustratorText.Raw("Residual_ImagePromptBudget_8024c01bbd87"), IllustratorText.Raw("Residual_ImagePromptBudget_5f5cece52e49"),
+            IllustratorText.Raw("Residual_ImagePromptBudget_59419c80e872"), IllustratorText.Raw("Residual_ImagePromptBudget_7648a5db94f6"), IllustratorText.Raw("Residual_ImagePromptBudget_2aaf40f10949"), IllustratorText.Raw("Residual_ImagePromptBudget_c4719f13a055"), IllustratorText.Raw("Residual_ImagePromptBudget_2941ee1c6fd2")
         };
 
         private sealed class Part
@@ -87,7 +87,7 @@ namespace AnimusForge.Illustrator.Core
                     result.Add(new Part { Text = text.Substring(position, header.Index - position) });
                 result.Add(new Part { Text = header.Value });
                 string name = header.Groups[1].Value;
-                if (name == "不可改写的核心事实" || name == "画面呈现规范") authoritative = true;
+                if (name == IllustratorText.Raw("Residual_ImagePromptBudget_5960cf16ee62") || name == IllustratorText.Raw("Residual_ImagePromptBudget_780da068d119")) authoritative = true;
                 int end = index + 1 < matches.Count ? matches[index + 1].Index : text.Length;
                 result.Add(new Part { Text = text.Substring(header.Index + header.Length, end - header.Index - header.Length),
                     Flexible = !authoritative && DirectorSections.Contains(name) });
@@ -113,6 +113,6 @@ namespace AnimusForge.Illustrator.Core
         }
 
         private static InvalidDataException TooLong(int limit) => new InvalidDataException(
-            "生图提示词超过" + limit + "字符预算，无法在保留事实、参考图约束和完整段落的前提下缩短；请求未发送。请缩短自定义画风/要求或减少本次素材。");
+            IllustratorText.Raw("Residual_ImagePromptBudget_ebbc6f54b09c") + limit + IllustratorText.Raw("Residual_ImagePromptBudget_624ff0057c84"));
     }
 }

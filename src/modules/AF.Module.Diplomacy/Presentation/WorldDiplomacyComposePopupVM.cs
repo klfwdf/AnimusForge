@@ -11,16 +11,48 @@ public sealed partial class WorldDiplomacyComposePopupVM : ViewModel
 	private string _subtitleText;
 	private string _hintText;
 	private string _bodyText;
+	private string _cancelText;
+	private string _publishText;
 	private bool _canPublish;
 
 	public WorldDiplomacyComposePopupVM(string title, string subtitle, string hint, Action<string> onSubmit, Action onCancel)
 	{
 		_onSubmit = onSubmit;
 		_onCancel = onCancel;
-		TitleText = string.IsNullOrWhiteSpace(title) ? "撰写外交宣言" : title;
+		TitleText = string.IsNullOrWhiteSpace(title) ? DiplomacyUiLocalization.Text("AF_DIP_UI_Compose_Title", "Write diplomatic declaration") : title;
 		SubtitleText = subtitle ?? "";
-		HintText = string.IsNullOrWhiteSpace(hint) ? "可先写下标题或要点，再请书记官代笔。" : hint;
+		HintText = string.IsNullOrWhiteSpace(hint) ? DiplomacyUiLocalization.Text("AF_DIP_UI_Compose_Hint", "Write a title or outline first, then ask the scribe to draft it.") : hint;
+		CancelText = DiplomacyUiLocalization.Text("AF_DIP_UI_Compose_Cancel", "Cancel");
+		PublishText = DiplomacyUiLocalization.Text("AF_DIP_UI_Compose_Publish", "Publish diplomatic document");
 		BodyText = "";
+	}
+
+	[DataSourceProperty]
+	public string CancelText
+	{
+		get => _cancelText;
+		private set
+		{
+			if (value != _cancelText)
+			{
+				_cancelText = value;
+				OnPropertyChangedWithValue(value, nameof(CancelText));
+			}
+		}
+	}
+
+	[DataSourceProperty]
+	public string PublishText
+	{
+		get => _publishText;
+		private set
+		{
+			if (value != _publishText)
+			{
+				_publishText = value;
+				OnPropertyChangedWithValue(value, nameof(PublishText));
+			}
+		}
 	}
 
 	[DataSourceProperty]

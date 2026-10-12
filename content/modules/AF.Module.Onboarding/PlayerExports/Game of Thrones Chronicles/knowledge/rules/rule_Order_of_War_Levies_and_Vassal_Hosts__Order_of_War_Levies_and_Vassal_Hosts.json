@@ -1,0 +1,152 @@
+{
+  "Id": "rule_Order_of_War_Levies_and_Vassal_Hosts",
+  "Keywords": [
+    "Levies",
+    "Military Service",
+    "Westerosi Warfare",
+    "Lords",
+    "Levies and Vassal Hosts"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Westeros has no realm-wide standing army; large-scale war relies chiefly on lords summoning bannermen, knights, squires, peasant levies, and hired men-at-arms according to oath. The size of an army depends not only on banners, but on harvests, horses, roads, supplies, the season, and whether a lord can persuade or compel his subordinates to march. Nobles regard the levy as duty and glory, while peasants see the risk of leaving their fields, losing labor, and having their families go hungry. Terms of service, quality of equipment, and degrees of loyalty vary widely, and prolonged campaigning wears down the network of bannermen."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Before levied hosts and feudal armies, lords speak of rights, clerks speak of procedure, and common folk speak of whether they can make it home safely; command and execution decide whether a written order is a binding obligation or the start of another round of bargaining."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Levies and Vassal Hosts"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "wanderer",
+          "priest",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Levies and Vassal Hosts"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "When lords and merchants speak of levied armies, they think first of war chests, supply lines, and alliances. Levies and Vassal Hosts: Westeros has no realm-wide standing army; large-scale war relies chiefly on lords summoning bannermen, knights, squires, peasant levies, and hired men-at-arms according to oath. The size of an army depends not only on banners, but on harvests, horses, roads, supplies, the season, and whether a Victory or defeat on the battlefield is important, but who can keep the army with horse supplies and silver coins in the second month often determines the length of the war."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Levies Levies and Vassal Hosts: Westeros has no realm-wide standing army; large-scale war relies chiefly on lords summoning bannermen, knights, squires, peasant levies, and hired men-at-arms according to oath. The size of an army depends not only on banners, but on harvests, horses, roads, supplies, the season, and whether a They look at whether the flag is at the front, whether the order is clear, and whether the wounded are recovered; a beautiful strategy is not worth singing if it does not allow people to return to the camp alive."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Levies Levies and Vassal Hosts: Westeros has no realm-wide standing army; large-scale war relies chiefly on lords summoning bannermen, knights, squires, peasant levies, and hired men-at-arms according to oath. The size of an army depends not only on banners, but on harvests, horses, roads, supplies, the season, and whether a Blacksmiths re-heat broken swords red, priests keep vigil for the dead; the war continues long after it has left the battlefield, on anvils, in graveyards, and on empty seats."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Levies Levies and Vassal Hosts: Westeros has no realm-wide standing army; large-scale war relies chiefly on lords summoning bannermen, knights, squires, peasant levies, and hired men-at-arms according to oath. The size of an army depends not only on banners, but on harvests, horses, roads, supplies, the season, and whether a The expedition took away horses, grain, and sons. The flags were changed several times, but they still had to repair houses, bury people, and wait for the next winter; they judged victory or defeat only by whether the village was still there."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Levies and Vassal Hosts: Westeros has no realm-wide standing army; large-scale war relies chiefly on lords summoning bannermen, knights, squires, peasant levies, and hired men-at-arms according to oath. The size of an army depends not only on banners, but on harvests, horses, roads, supplies, the season, and whether a"
+  ]
+}

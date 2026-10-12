@@ -1,0 +1,152 @@
+{
+  "Id": "rule_Beyond_the_Wall_Crasters_Keep",
+  "Keywords": [
+    "Craster's Keep",
+    "Craster"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Entry Custer Fort is located in the Ghost Forest and is a rare fixed wooden fence settlement outside the Great Wall. It relies on woodland, game, a little farming and unstable exchange with Night's Watch to provide fire, roof, food and information, so it is very useful to those who walk in the wilderness The fortress also reminds people that there is not only free tribal life outside the wall; isolation, deprivation and parental authority can also breed extremely distorted order. Fixed is its location in the Haunted Forest as the intersection of supply, shelter and moral shadow."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Craster's Keep"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Craster's Keep"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "scholar",
+          "wanderer",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Craster's Keep"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Craster's Keep Custer Fort is located in the Ghost Forest and is a rare fixed wooden fence settlement outside the Great Wall. It relies on woodland, game, a little farming and unstable exchange with Night's Watch to provide fire, roof, food and information, so it is very useful to those who walk in the wilderness. Whether it is valid depends on who can grant the rights, collect the consideration, and actually make the judgment come to fruition in the event of default."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Craster's Keep Custer Fort is located in the Ghost Forest and is a rare fixed wooden fence settlement outside the Great Wall. It relies on woodland, game, a little farming and unstable exchange with Night's Watch to provide fire, roof, food and information, so it is very useful to those who walk in the wilderness. The distant system is not empty talk only if it can be implemented in campfires, city gates and inns."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Craster's Keep Custer Fort is located in the Ghost Forest and is a rare fixed wooden fence settlement outside the Great Wall. It relies on woodland, game, a little farming and unstable exchange with Night's Watch to provide fire, roof, food and information, so it is very useful to those who walk in the wilderness. If a rule is practiced over and over again, it will find its way into rituals, crafts, and prayers; if it is sustained only by fear, cracks will show at the onset of a crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Craster's Keep Custer Fort is located in the Ghost Forest and is a rare fixed wooden fence settlement outside the Great Wall. It relies on woodland, game, a little farming and unstable exchange with Night's Watch to provide fire, roof, food and information, so it is very useful to those who walk in the wilderness. They remember taxes, grain, labor, relief and who can speak for them; these grand names will eventually fall on the family's rice pot."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Craster's Keep: Custer Fort is located in the Ghost Forest and is a rare fixed wooden fence settlement outside the Great Wall. It relies on woodland, game, a little farming and unstable exchange with Night's Watch to provide fire, roof, food and information, so it is very useful to those who walk in the wilderness."
+  ]
+}

@@ -1,0 +1,128 @@
+{
+  "Id": "rule_Folk_Customs_Betrothals_and_Dowries",
+  "Keywords": [
+    "Betrothals and Dowries"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "In the hands of nobles, a marriage contract is a calculation of land, military strength and peace, but in the hands of ordinary people, it is more often about work, household registration and a dowry that can be taken away. The bride and groom may not be able to choose each other, but every family understands that a marriage can settle old debts can also leave old grudges to the next generation."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Betrothals and Dowries"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Betrothals and Dowries"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Betrothals and Dowries"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Betrothals and Dowries In the hands of nobles, a marriage contract is a calculation of land, military strength and peace, but in the hands of ordinary people, it is more often about work, household registration and a dowry that can be taken away. The bride and groom may not choose each other, but every family understands that a marriage can settle old debts. Whether it is valid depends on who can grant the rights, collect the consideration, and actually make the judgment come to fruition in the event of default."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Betrothals and Dowries In the hands of nobles, a marriage contract is a calculation of land, military strength and peace, but in the hands of ordinary people, it is more often about work, household registration and a dowry that can be taken away. The bride and groom may not choose each other, but every family understands that a marriage can settle old debts. If a rule is practiced over and over again, it will find its way into rituals, crafts, and prayers; if it is sustained only by fear, cracks will show at the onset of a crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Betrothals and Dowries In the hands of nobles, a marriage contract is a calculation of land, military strength and peace, but in the hands of ordinary people, it is more often about work, household registration and a dowry that can be taken away. The bride and groom may not choose each other, but every family understands that a marriage can settle old debts. They remember taxes, grain, labor, relief and who can speak for them; these grand names will eventually fall on the family's rice pot."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Betrothals and Dowries: In the hands of nobles, a marriage contract is a calculation of land, military strength and peace, but in the hands of ordinary people, it is more often about work, household registration and a dowry that can be taken away. The bride and groom may not be able to choose each other, but every family understands that a marriage can settle old debts."
+  ]
+}

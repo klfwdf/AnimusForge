@@ -1,0 +1,153 @@
+{
+  "Id": "rule_House_Foundations_Errol",
+  "Keywords": [
+    "Errol",
+    "House Errol",
+    "Haystack"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The home of the Errol family is Hay Hall, and the family emblem is a yellow haystack on an orange background, allegiance to Storm's End. This simple heraldry is true to its roots: pastures, barns, livestock and roads to the frontier are more important than jewels in determining whether a family will survive the long war. During Aegon's conquest, Earl Errol, Fell and Buckler ambushed Olys Baratheon; after the three families retreated into the Kingswood, Rhaenys rode Meraxes and set fire to force him to evacuate. Earl Errol did not survive the final storm. What remains of that old incident is not a future position, but a local memory - the people in Caoting know that small families will also choose to resist between the dragon and the army."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "stormlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "When the Stormland nobles talk about Errol, they often mention the Thatched Hall and the ambush in the War of Conquest. Some people call it courage, while others say it is just a stubbornness that will lead to defeat; both accounts admit that this family is unwilling to bow before the first trumpet."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "stormlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Farmers near Caoting do not rely on ancient war songs to survive the winter. They are more concerned about whether barns are moisture-proof, whether roads are trampled by the army, and whether lords have left behind livestock for sowing after taking away their horses."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "stormlands",
+          "reach"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Travelers traveling between the Stormlands and the Reach used the Thatched Hall as a place to stay for food and pack animals. If Errol can restrain the checkpoints and road guards, the haystacks will mean supplies; if the roads are out of order, it will just remind travelers to leave as soon as possible."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Errol The ancient Stormlands families of Hayhall, founded on memories of haystack heraldry, border estates and resistance in conquest wars. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Errol The ancient Stormlands families of Hayhall, founded on memories of haystack heraldry, border estates and resistance in conquest wars. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Errol The ancient Stormlands families of Hayhall, founded on memories of haystack heraldry, border estates and resistance in conquest wars. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Errol The ancient Stormlands families of Hayhall, founded on memories of haystack heraldry, border estates and resistance in conquest wars. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Errol: The ancient Stormlands families of Hayhall, founded on memories of haystack heraldry, border estates and resistance in conquest wars."
+  ]
+}

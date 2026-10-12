@@ -380,13 +380,13 @@ public partial class SiegeAiInterventionBehavior
 					? SiegeLootAccountingProfile.CulturalRepopulationActionName
 					: SiegeLootAccountingProfile.MassacreActionName;
 				InformationManager.DisplayMessage(new InformationMessage(
-					SiegeLootAccountingProfile.BuildDirectDevastateSettlementMessage(action),
+					SiegeLootAccountingProfile.BuildDirectDevastateSettlementMessage(action, isEnglish: !GcczLocalizedResourceLoader.UseChineseInterface),
 					Color.FromUint(SiegeLootAccountingProfile.DirectDevastateSettlementMessageColor)));
 			}
 			else
 			{
 				InformationManager.DisplayMessage(new InformationMessage(
-					SiegeLootAccountingProfile.BuildDirectPlunderSettlementMessage(),
+					SiegeLootAccountingProfile.BuildDirectPlunderSettlementMessage(isEnglish: !GcczLocalizedResourceLoader.UseChineseInterface),
 					Color.FromUint(SiegeLootAccountingProfile.DirectPlunderSettlementMessageColor)));
 			}
 
@@ -395,7 +395,7 @@ public partial class SiegeAiInterventionBehavior
 					_lastMarketGoldLoot,
 					_lastCivilianGoldLoot,
 					_lastLootItemTotal,
-					_lastLootStackKinds),
+					_lastLootStackKinds, isEnglish: !GcczLocalizedResourceLoader.UseChineseInterface),
 				Color.FromUint(SiegeLootAccountingProfile.LootMessageColor)));
 		}
 		catch

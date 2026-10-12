@@ -559,7 +559,7 @@ internal class FakeOrchestrationHost : IWorldDiplomacyOrchestrationHost
     public virtual IWorldDiplomacyPromptWorld PromptWorld()
     {
         Calls.Add("PromptWorld");
-        return null;
+        return new PromptWorldFixture { EnglishPrompts = SmokeLocalizationEnvironment.EnglishPackage };
     }
     public virtual IWorldDiplomacyDraftRepairWorld DraftRepairWorld()
     {

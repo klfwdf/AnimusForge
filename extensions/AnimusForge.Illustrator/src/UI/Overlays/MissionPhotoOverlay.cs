@@ -60,7 +60,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
         }
         internal void Aim(int count)
         {
-            _vm.Set("Enter 回车截取第 " + (count + 1) + " 张 · Esc 取消", false, "", "", null, null);
+            _vm.Set(IllustratorRemainingUiText.PhotoAim(count + 1), false, "", "", null, null);
             _layer.UIContext.Root.IsVisible = true;
             _layer.InputRestrictions.SetInputRestrictions(false, InputUsageMask.All);
             ScreenManager.TrySetFocus(_layer);
@@ -73,13 +73,13 @@ namespace AnimusForge.Illustrator.UI.Overlays
         }
         internal void Decision(int count)
         {
-            _vm.Set("已截取 " + count + " 张，是否开始生成？", true, "生成", count == 1 ? "继续截取" : "重新截取",
+            _vm.Set(IllustratorRemainingUiText.PhotoDecision(count), true, IllustratorRemainingUiText.PhotoGenerate, count == 1 ? IllustratorRemainingUiText.PhotoContinue : IllustratorRemainingUiText.PhotoRestart,
                 _vm.Generate, count == 1 ? _vm.More : _vm.Restart);
             ShowButtons();
         }
         internal void CancelChoice()
         {
-            _vm.Set("已中止本次取景", true, "重新截取", "取消", _vm.Restart, _vm.Cancel);
+            _vm.Set(IllustratorRemainingUiText.PhotoStopped, true, IllustratorRemainingUiText.PhotoRestart, IllustratorUiText.Cancel, _vm.Restart, _vm.Cancel);
             ShowButtons();
         }
         private void ShowButtons()

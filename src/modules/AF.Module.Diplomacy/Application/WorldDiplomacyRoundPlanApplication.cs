@@ -1,3 +1,4 @@
+using AnimusForge;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -41,7 +42,7 @@ internal static class WorldDiplomacyRoundPlanApplication
                 || !WorldDiplomacyLiveRoundRules.Contains(storage, round)
                 || !WorldDiplomacyRoundLifecycleRules.IsActiveRoundState(round.State)) return;
             JObject json = WorldDiplomacyEnvelopeJsonRules.ParseJsonObject(raw);
-            round.RoundTopic = WorldDiplomacyTextRules.Limit(WorldDiplomacyTextRules.SanitizePublicDiplomacyText(WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(WorldDiplomacyEnvelopeJsonRules.ReadString(json, "topic"), root.PlannedRoundTopic, root.Title, "外交交涉")), 120);
+            round.RoundTopic = WorldDiplomacyTextRules.Limit(WorldDiplomacyTextRules.SanitizePublicDiplomacyText(WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(WorldDiplomacyEnvelopeJsonRules.ReadString(json, "topic"), root.PlannedRoundTopic, root.Title, DiplomacyMiscPromptTexts.Get("Round_DefaultTopicNegotiation", "Diplomatic Negotiation"))), 120);
             round.TopicCategory = ((root.Actions?.Any(x => x != null && WorldDiplomacyIntentVocabulary.NormalizeIntent(x.Intent) is "warning" or "ultimatum") == true)
                 || WorldDiplomacyIntentVocabulary.NormalizeIntent(root.Intent) is "warning" or "ultimatum")
                 ? "war_escalation"

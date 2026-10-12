@@ -1,0 +1,200 @@
+{
+  "Id": "rule_Mount_Elytrus",
+  "Keywords": [
+    "Mount Elytrus"
+  ],
+  "RagShortTexts": [
+    "Mount Elytryus is the most majestic mountain in the Calradia continent. It is located in the Arminis River Valley and is composed of dark basalt rocks. The top of the mountain is covered with snow all year round.",
+    "At the foot of the mountain is the prosperous city of Lotai, close to the Arminius River channel. It is the hub for grain export in the valley. The grain flows south along the river to the Perlas Sea.",
+    "There is a group of natural caves halfway up the mountain. It is said that there are some practitioners who never come down from the mountain and live in peace with the world. No one knows who they are or where they come from."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Mount Elytryus is the most majestic mountain in the continent of Calradia, nestled in the embrace of the Armenes Valley. The entire mountain is composed of dark basalt rocks, with steep rock walls rising from the valley. The top of the mountain is covered with snow all year round. There is a rich and prosperous city at the foot of the mountain - Luotai, surrounded by mountains and rivers, close to the channel of the Arminius River. The snow on the mountains melted and merged into the Arminius River, which meandered down from the city of Lotay, flowing southward, passing through the fields of the empire, and finally emptied into the Sea of ​​Perlas. Lothai was the trading hub of the Arminius Valley, where the empire's grain was loaded onto ships and transported south along the Arminius River to large and small ports along the Perlas Sea. There is a group of naturally formed caves halfway up the mountain. Legend has it that there are some practitioners living in it. They never come down from the mountain and have nothing to do with the world. No one knows who they are or where they come from, but everyone who has heard of them has a vague respect for them."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "At the foot of Mount Elytrus is Lothai, which is one of the richest places in the empire. The Arminius River Valley was one of the most important grain-producing areas in the empire, and Luotai was right at the throat of the valley. Grain was transported from four miles and eight villages to the city, and then shipped south along the Arminius River. When you stand on the pier of Luotai and look at it, you will see huge black rocks and white snowtops on one side, and densely packed grain ships on the river on the other. This magnificent and wealthy scene may not be comparable to other cities in the empire. The practitioners on the mountain guard such beautiful scenery, but never come down from the mountain. People in Luotai City occasionally look up at the mountains and wonder what kind of life those practitioners live on the mountainside. But no one thinks much about it when they are busy - Luotai is a commercial city, and there are always ships waiting to be loaded at the dock, so there is no time to think about things on the mountain."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_w"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Mount Elytryus and the city of Lothai are the most important assets in our area. The Arminis Valley is one of the largest granaries in the hinterland of the continent, and Lotay is the outlet for the granaries. Grain was transported from various parts of the river valley to Luotai, and then from the wharf in Luotai, it went south along the Arminius River and all the way to the Perlas Sea to supply the cities along the coast. Whoever controls Lotai controls the food lifeline of the entire Arminius Valley. The water source of Lotay is on Mount Elytryus, and the Arminius River formed from snow-water never freezes or dries up, ensuring that the wharf of Lotay can load ships all year round. This black giant rock is not just a scenery, it is the root of Luotai, and it is also an important foundation for this land to hold up even when it is attacked from all sides. As for those practitioners on the mountain, they live in caves on the mountainside, isolated from the world. We don't bother them. Frankly speaking, having them on the mountain seems to give the mountain an extra layer of protection that needs no words."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_w"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "We were stationed at Lothai. It was a good place, lively, the docks were full of workers loading and unloading grain, and there were as many boats on the river as in a market. It was just after the autumn harvest when we went, and the entire Arminius River was filled with grain transport ships. The aroma of bread on both sides of the river can draw your nose away. The locals say that Lothai is so wealthy because of the Mount Elytrus behind it. The melted snow water from the mountain pours out the best wheat in the valley, and also fills the Arminius River so that grain ships can float all the way to the sea in the south. We soldiers could eat wherever we went. The food in Luotai was the best among all the camps. We have never seen the practitioners on the mountain with our own eyes, but we heard from locals that they never come down the mountain. A new recruit asked me: Aren't they bored? I asked him back: Look at the fighting at the bottom of the mountain, what’s wrong with it being more boring on the top?"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Mount Elytryus has a name in our Battania legend, but each tribe calls it differently. Some call it 'Black Wall', while others call it 'White Crown'. It is not very close to us, but when the weather is particularly good, standing on the southwest edge of the plateau, we can see its snow top shimmering in the distance. Our druids say that is where the earth meets the sky, and that the people who live there are no longer alive—not that they are dead, but that they no longer belong to this world. It's vague, but vague is just the way we like it. Some things don't have to be said too clearly. As for the city called Lotay at the foot of the mountain, we Battanians don't care much. The imperial granaries and docks have nothing to do with us."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Mount Elytryus hardly exists in our Aserai legends. It is so far away that our caravan only went as far as Lycaron. From Lycaron we have to walk a long, long way to the west to reach the place called Arminius Valley. An imperial businessman described the mountain to us, saying that it was a black stone mountain with snow on the top. There was a river flowing under the mountain to the sea, and at the mouth of the river there was a wealthy city called Luotai. We asked him if there were any treasures on the mountain. He laughed and said that there were only a group of practitioners on the mountain who didn't care about anything. If you gave them gold, they wouldn't look at you twice. After hearing this, we didn't ask any more questions - the Aserai, who were businessmen, didn't know what to do when dealing with people who didn't care about gold."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Mount Elytryus is in the center of the continent, far away from us. We Sturgia merchants occasionally go to the hinterland of the empire, and when we come back we talk about that mountain - black stone, white top, with a bustling city called Lotai at the foot of the mountain, and some people who never come down live on the mountainside. To be honest, we don’t quite understand that kind of living. Although we northerners don't like to be controlled, we won't lock ourselves in a cave. We would rather build a shack on the ice sheet, where we could at least see the sky. But the mountain itself is quite awe-inspiring - our Sturgia mountain doesn't have those black rock cliffs, it looks like a wound left by a knife in the earth."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Mount Elytryus is not far from us. We started from Palawind and walked eastward. When we entered the hinterland of the empire, we could see the black mountain shadow in the distance. There is a city called Lotai at the foot of the mountain, which is the granary and river port of the Arminis Valley. Our geographers say that the mountain is one of the highest on the continent. The snow on the top of the mountain does not melt all year round, and the snow water on the mountain feeds the entire river valley. The food output in Lothai is also a reference for us - if one day we want to move eastward and control the granary in the Arminius Valley, the imperial people will starve. But no one has hit that place yet. We have heard about those practitioners on the mountain, but no one has ever really confirmed them. Who would take a detour on the way to a war to see a group of secluded people?"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Mount Elytryus is too far away from the grassland. We Khuzait people have only gone as far west as Pandrak. After Pandrak finished the battle, some veterans chatted and said that the weather was good that day. Looking far to the south, you could see a white line emerging from the clouds. The Imperials said that was Mount Elutraus. I haven't seen it with my own eyes, and I don't want to go out and see it. There are no such mountains on the grassland, and we don’t need such mountains. Our horses can't run on that stony ground. As for the place called Luotai at the foot of the mountain, it is said to be a large granary for the imperial people - no matter how much food there is, it doesn't matter to us, our supplies are on the grassland."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "steward": 150
+        }
+      },
+      "Content": "Mount Elytryus is one of the most prominent natural geographical landmarks of the Calradia continent. It is located in the Arminis Valley. The mountain is mainly composed of basalt and has an ancient geological age. The melted snow on the top of the mountain is the main source of the Arminis River, which flows southward into the Perlas Sea. The Arminis Valley irrigated along the way is one of the core agricultural areas of the empire. Luotai City is located at the foot of the mountain and on the banks of the Arminis River. It is the distribution center and inland river port for grain export in the Arminis Valley. It occupies an important position in the economic geography of the empire. At the cultural level, there are vague rumors about the secluded groups halfway up the mountain circulating in the area around Mount Eluterus. These rumors still occupy a lasting position in local folk memory despite the lack of precise records, and constitute the unique cultural landscape of this area. From a geographical perspective, Mount Elytrus and its associated water systems were of great strategic value to the regime that controlled the Arminius Valley."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": [
+          "town_ew6"
+        ],
+        "Roles": [
+          "townsfolk"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "We Lothai people depend on Mount Elytrus for our food. Every drop of water in the Arminis River is melted from the snow on the mountains. The wheat fields in the valley rely on it to water, the canals in our city rely on it to provide water, and the grain ships on the dock rely on it to navigate. Merchants from all over the empire know Lotay - our granaries are filled with wheat from the Arminis Valley, and ship after ship is going south, as far as Guyaz on the other side of the Perlas Sea. The city has everything: warehouses along the river, cranes on the docks, rows of businesses along the river bank. You are busy from morning to night, and when you look up, you see the huge black rock and the snow on the top of the mountain. Businessmen from other places always say that the scenery in Luotai is beautiful, but we have become accustomed to seeing it every day. As for the practitioners on the mountainside—occasionally, some people go up the mountain to collect medicine, and they see figures at the entrance of the cave from a distance, but they never say hello. They don’t go down the mountain, and we don’t go up the mountain either. The mountain gave us water and a place to hide, each taking what he needed."
+    }
+  ],
+  "TextMappings": []
+}

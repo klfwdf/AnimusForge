@@ -1,0 +1,157 @@
+{
+  "Id": "rule_World_Mechanics_Horses_and_Pastures",
+  "Keywords": [
+    "Horses",
+    "Pastures",
+    "Destriers",
+    "Packhorses",
+    "Oats"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Horses are not an interchangeable resource. A heavily armored knight needs a war horse with suitable physique, courage and training, a messenger needs endurance and speed, a team relies on pack horses and draft horses, and farmland requires livestock that can work for a long time. Breeding a good horse takes many years and requires pasture, oats, hay, water, stables, farriers, and skilled grooms. Recruiting horses from the army will immediately increase mobility, and may also leave no one to plow the fields next season; if there is insufficient forage during a long march, no matter how expensive the horse is, it will become weak and die. Dothraki people integrate horses into their identity and life, while Westeros knights more often regard good horses as an extension of their class and martial arts."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Dothraki judge a person by the way he rides, the condition of his horse, and the way he is cared for. Having many horses is not as good as truly knowing them, and mistreating your mounts will reveal an incompetence deeper than poverty."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "reach",
+          "vale",
+          "stormlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Knights value pedigree and training and know that a reliable war horse is almost a companion. Gorgeous horse clothes on the jousting field cannot replace a steady gait and the courage to face a long shot."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "merchant",
+          "artisan"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Farmers, coachmen, and farriers are more concerned with whether their animals can work. If a noble takes away an inconspicuous plow horse, it may be equivalent to taking away a family's next harvest."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Horses Horses and Pastures: War horses, riding horses, draft horses, and plow horses supported warfare, communications, and agriculture, while fodder, breeding, farriers, and grooms also determined horse power. Whether it is valid depends on who can grant the rights, collect the consideration, and actually make the judgment come to fruition in the event of default."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Horses Horses and Pastures: War horses, riding horses, draft horses, and plow horses supported warfare, communications, and agriculture, while fodder, breeding, farriers, and grooms also determined horse power. The distant system is not empty talk only if it can be implemented in campfires, city gates and inns."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Horses Horses and Pastures: War horses, riding horses, draft horses, and plow horses supported warfare, communications, and agriculture, while fodder, breeding, farriers, and grooms also determined horse power. If a rule is practiced over and over again, it will find its way into rituals, crafts, and prayers; if it is sustained only by fear, cracks will show at the onset of a crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Horses Horses and Pastures: War horses, riding horses, draft horses, and plow horses supported warfare, communications, and agriculture, while fodder, breeding, farriers, and grooms also determined horse power. They remember taxes, grain, labor, relief and who can speak for them; these grand names will eventually fall on the family's rice pot."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Horses and Pastures: War horses, riding horses, draft horses, and plow horses supported warfare, communications, and agriculture, while fodder, breeding, farriers, and grooms also determined horse power."
+  ]
+}

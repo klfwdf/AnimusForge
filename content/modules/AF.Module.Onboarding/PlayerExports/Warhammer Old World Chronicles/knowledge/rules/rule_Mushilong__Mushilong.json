@@ -1,0 +1,213 @@
+{
+  "Id": "rule_Mushilong",
+  "Keywords": [
+    "Mousilon (Mushilong)",
+    "cursed city",
+    "Possessed by the Undead",
+    "vampire legend",
+    "dark swamp",
+    "Fallen Duke",
+    "ruins",
+    "Curse of Immortality",
+    "place of despair",
+    "rot",
+    "swamp city",
+    "the last duke"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Mousilon, once one of the most prosperous principality capitals in Bretonnia, is now a cursed ruin. Legend has it that the last Duke degenerated into a vampire, and the undead and swamp creatures inhabited the city, fearing to be avoided by the living."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Mousilon - may the goddess have mercy on us and never mention this name! Merovingian, the last Duke there, betrayed the sacred oath of the Lady of the Lake and instead embraced the power of darkness, dragging the entire city into doom. Nowadays, most of Mousilon's city wall has been swallowed up by the swamp, and the undead in the city will wail sadly at night. Our fathers warned us that those who come near that cursed place will never be cleansed of its putrid stench. The knights said that the black coat of arms of the Merovingian family still hung there, waiting for some brave or fool to come and remove it."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Mousilon's existence is an eternal mockery of Bretonnian chivalry. From a military perspective, the swamp formed a natural barrier that was difficult for the garrison to cross. Successive kings have considered recapturing Musilon, but each expedition has ended in disastrous failure—not because the enemy forces were superior, but because the land itself resisted the living. If the enemy uses Mousilon as a base, they will have a lair that is difficult to siege."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "The Curse of Mousilon has deep historical roots. Around 500 BC, after successive defeats in foreign wars, the Merovingian Duke began to seek forbidden techniques to reverse his defeat. He was first exposed to shadow magic, then seduced by the vampire emissary of the von Carstein family, and finally accepted the blood kiss of the vampire. Mousilon's fall did not happen overnight - according to fragments of palace records, residents in the city first disappeared, then crops withered, and finally the entire city fell in just three years. The formation of the swamps around Mousilon is also related to dark magic: the winds of death gathered in the city, polluting the once fertile alluvial plain. There are still scholars who believe that the dark tomes and artifacts collected by Duke Merovingian may be buried under the castle of Mousilon."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Mousilon's story circulates among our noblewomen as a warning of the dangers of pride and vanity. It is said that the Merovingian Duke's wife was once the most beautiful woman in the kingdom, but she was driven mad by her husband's dark secret. That ruin reminds us that beneath the glory may lie unspeakable horrors."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Ancestors in my clan once participated in the expedition against Musilon, and they did not want to mention that experience until they died. They say that the undead in Mousilon are not just soldiers - there are children, women, and entire cities twisted by dark forces into eternal prisoners. We must hold our borders and not let the same fate befall us."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "I once saw Mu Silon from a distance. Under the moonlight, the dead city was shrouded in a faint green light. The swamp smelled sickly of sulfur. The local guide refused to come within five miles, saying that there was no return. But this is a good excuse to hunt for treasure - there are no living people guarding the ruins, and naturally no living people can stop me."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "There are rumors on the black market in Mousilon that someone has stolen Merovingian jewelry and ancient swords from the ruins. Buyers are willing to pay exorbitant prices, but sellers often die suddenly or disappear. I never take on Musilon's goods - the trade of curses is not worth the money."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Mousilon is the cursed capital of the abandoned principality of Bretonnia, overrun by the undead.",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Mousilon is occupied by the undead of the cursed city"
+  ]
+}

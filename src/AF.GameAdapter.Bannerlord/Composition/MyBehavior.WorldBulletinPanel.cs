@@ -16,9 +16,6 @@ public partial class MyBehavior
 
 	private const int WorldBulletinMaxMetaKingdoms = 3;
 
-	private const string WorldBulletinMajorHeader = "【大事件】";
-
-	private const string WorldBulletinMinorHeader = "【其他消息】";
 
 	private void RecordWorldBulletinLayout(string eventId, WorldBulletinSelection selection) => WorldBulletinState.RecordWorldBulletinLayout(eventId, selection);
 

@@ -1,0 +1,213 @@
+{
+  "Id": "rule_von_Carstein_family",
+  "Keywords": [
+    "von Carstein family",
+    "orthodox vampire",
+    "Army of the Undead",
+    "Dark Night Dynasty",
+    "Sylvania ruler",
+    "Vlad bloodline",
+    "von Carstein",
+    "vampire royal family",
+    "vampire leader",
+    "Immortal Dynasty",
+    "Night Noble",
+    "Vlad"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The von Carstein family is the most powerful and dominant vampire bloodline in the Old World, the self-proclaimed Immortal Kings of Sylvania. Based on Drakkenhof, they have launched many vampire wars aimed at conquering the empire. They are the deadliest vampire threat in the living world."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The name von Carstein is the loudest thunder across the dark nights of the Old World! Beginning with our great progenitor Vlad, we built an undying dynasty in Sylvania. House von Carstein is unlike the other bloodlines: we do not cower in the shadows merely to survive—we reign over the entire province in the open. The cowards of the Empire have waged three Vampire Wars to root us out, claiming \"victory\" after each one, yet behold—Castle Drakkenhof still stands, and the Vampire Counts still rule the nights of Sylvania. Vlad, Konrad, Mannfred—these names are carved into the history of the Old World, and both the living and the dead tremble to hear them. That is the von Carstein way: to conquer openly and with majesty, neither whispering in corners like the Lahmians nor merely sharpening their own blades like the Blood Dragons."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "House von Carstein represents a challenge altogether different from an ordinary military threat. They are not merely an enemy army—they are a force that subverts entire provinces from within. Under their rule, Sylvania has been transformed from an imperial province into a warped realm where the dead and the living coexist. Countering the von Carsteins demands full coordination between conventional military force and religious, magical, and intelligence measures. Most crucial of all is understanding that slaying individual vampires is not enough: so long as Castle Drakkenhof still stands, and so long as a single scion of House von Carstein remains unvanquished, they can always rise again."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "The origin of the von Carstein family can be traced back to the era of the \"first descendants\" after the great wizard Nagash ascended to god in about 2,000 BC. Vlad von Carstein, whose real name is believed to be Varshanash, was one of the twelve original vampires to receive the Blood Kiss. The von Carstein family's ruling model is not pure terror and suppression - they cleverly combine dark religion (mind control of the ruled), feudal land system (peasants still keep the land but need to pay blood tax and labor) and undead military deterrence. In the three vampire wars, the von Carstein family almost succeeded - Vlad's first war failed because his resurrection ring was stolen, leading to his real death, Konrad von Carstein's second war was defeated due to his own madness, and Mannfred von Carstein's third war was frustrated by the joint intervention of all parties. The current nominal ruler of Sylvania is Mannfred, but the secret fighting among the various von Carstein heirs never stops."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "There is one woman in the von Carstein family whose story is often overlooked – Isabella von Carstein, Vlad’s spouse. She was originally a human noblewoman who chose eternal darkness because of love. She reminds us that the temptation of vampires sometimes comes not from claws and fangs, but from some kind of twisted \"love.\" As a woman, this story alarms me more than any scare."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The von Carstein family once sent envoys to our clan's territory to demand \"tribute\" - in fact, they regularly provided a group of living people as a \"blood tax\". We declined. That winter, the undead army massed on our borders for three months, and we spent almost every night on the defensive. Eventually we moved deeper inland. The war is not to be won every time - but to ensure that the clan survives."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The farmers of Sylvania have a strange resignation to their fate. Mention the von Carstein family, and they're not as horrified as out-of-towners are - they talk about the vampire count as much as they talk about their landlord. \"The blood tax has increased again this year,\" they sighed, and then continued to plant wheat. Centuries of domination have conditioned the living of Sylvania to live in the vampire's shadow, a normalized horror more unsettling than the horror itself."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The von Carstein family is the greatest economic destabilizer - the Sylvania they control is still technically part of the Empire, but is effectively independent of the Empire's monetary system. Gold crowns circulated very little in Sylvania - the entire province practiced a mixed system of barter and \"blood tax servitude\". Trading with the von Carstein realm means you'll fall into a gray area of Imperial law."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "The von Carstein family is the most powerful vampire bloodline in the Old World, ruling Sylvania",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "The family background and political status of the von Carstein family"
+  ]
+}

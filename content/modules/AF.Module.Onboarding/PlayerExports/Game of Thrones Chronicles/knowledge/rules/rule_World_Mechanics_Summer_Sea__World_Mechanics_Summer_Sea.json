@@ -1,0 +1,157 @@
+{
+  "Id": "rule_World_Mechanics_Summer_Sea",
+  "Keywords": [
+    "Summer Sea",
+    "Southern Coast of Dorne",
+    "Summer Islands Sea Lanes",
+    "Southern Waters"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Summer Sea stretches between southern Westeros and the southern coast of Essos, its sea lanes reaching Dorne, the Stepstones, Lys, Volantis, Slaver's Bay, and the Summer Isles. These warm waters nurture trade in spices, wine, hardwoods, silk, and slaves, while drawing pirates, privateers, and fleets contending for ports. Seasonal winds govern the timing of long voyages, while fresh water, canvas, salt provisions, and reliable pilots decide whether a ship arrives. At noble feasts it appears as exotic wares, while on the bodies of sailors it shows as sun-cracked skin, fevers, and the exhaustion of months out of sight of land."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai",
+          "summer",
+          "lyseni",
+          "volantine"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "sailor",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Those who know the Summer Sea arrange their fortunes by the seasons of the wind. Sailing a few days early may fetch a handsome price, while misjudging a gale can send a whole cargo of spices and years of savings to the bottom."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai",
+          "summer"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Coastal rulers collect taxes from the sea, yet must also guard against pirates and slavers. If a port has tollgates but no patrol ships, the customs officers will grow rich while the coastal villages grow ever emptier."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "slave"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Common folk draw salt, work, and foreign goods from the Summer Sea, and may also have their kin carried off by it. To those chained in a ship's hold, these warm waters are not a road, but a wall without a door."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Summer Sea The warm sea linking Dorne, the Stepstones, the Free Cities, Slaver's Bay, and the Summer Isles, rich in trade and perilous in passage. Whether it is valid depends on who can grant the rights, collect the consideration, and actually make the judgment come to fruition in the event of default."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Summer Sea The warm sea linking Dorne, the Stepstones, the Free Cities, Slaver's Bay, and the Summer Isles, rich in trade and perilous in passage. The distant system is not empty talk only if it can be implemented in campfires, city gates and inns."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Summer Sea The warm sea linking Dorne, the Stepstones, the Free Cities, Slaver's Bay, and the Summer Isles, rich in trade and perilous in passage. If a rule is practiced over and over again, it will find its way into rituals, crafts, and prayers; if it is sustained only by fear, cracks will show at the onset of a crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Summer Sea The warm sea linking Dorne, the Stepstones, the Free Cities, Slaver's Bay, and the Summer Isles, rich in trade and perilous in passage. They remember taxes, grain, labor, relief and who can speak for them; these grand names will eventually fall on the family's rice pot."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Summer Sea: The warm sea linking Dorne, the Stepstones, the Free Cities, Slaver's Bay, and the Summer Isles, rich in trade and perilous in passage."
+  ]
+}

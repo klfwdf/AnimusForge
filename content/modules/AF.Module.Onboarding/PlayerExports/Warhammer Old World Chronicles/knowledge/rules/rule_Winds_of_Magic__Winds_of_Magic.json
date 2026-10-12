@@ -1,0 +1,207 @@
+{
+  "Id": "rule_winds_of_magic",
+  "Keywords": [
+    "Winds of Magic",
+    "Winds of Magic Eight Winds",
+    "Winds of Magic Colleges of Magic",
+    "Winds of Magic Battle Wizards",
+    "Spellcasting",
+    "Winds of Magic Azyr Blue Wind"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Winds of Magic are invisible currents of energy pouring ceaselessly from the collapsed polar Warp Gates in the north, serving as the ultimate source of all magic across the Old World. Through the eight Colleges of Magic, the Empire divides this perilous energy into eight differently colored Winds to be harnessed, each Wind corresponding to a distinct temperament and lore of magic."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Winds of Magic are both a power and a curse. When High Loremaster Teclis founded the Colleges of Magic in the Empire, he refracted the raw energy of Chaos into the Eight Winds—Hysh, the White Wind of purification and radiance; Aqshy, the Red Wind of fire and heat; Chamon, the Gold Wind of metal and transmutation; Ghyran, the Jade Wind of life and growth; Azyr, the Blue Wind of the heavens and lightning; Shyish, the Purple Wind of death and time; Ulgu, the Grey Wind of shadow and illusion; and Ghur, the Amber Wind of beasts and savagery. Every Battle Wizard studies only a single Wind throughout their entire life, because any mortal who attempts to master multiple Winds simultaneously inevitably falls to the temptations of Chaos. Our magic is dangerous, yet unlike Elves and Chaos Sorcerers, we have built an entire system of discipline, inspection, and licensing to control the risk—every Imperial Wizard carries licensing documents on their person at all times, subject to inspection at any moment by Witch Hunters and the Cult of Sigmar."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The military application of the Winds of Magic has transformed the nature of warfare in the Old World. A well-trained Battle Wizard of the Celestial Wind can call down chain lightning above an enemy host, a wizard of the Gold Wind can heat the armor of enemy knights until it glows red-hot, and a wizard of the Bright Wind hurls devastating fireballs directly into the fray. Yet every wizard on the battlefield is a double-edged sword—excessive use of magic can trigger a miscast backlash, inadvertently summon Daemons, or cause localized magical storms. The adversaries of the Empire likewise field spellcasters of their own: Chaos Sorcerers draw directly upon the power of the Dark Gods, Necromancers siphon dark energy from the legacy of Nagash, Greenskin Shamans warp reality using Waaagh! energy, and Elven Mages safely manipulate multiple Winds through their ancient heritage."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "The Eight Winds system is a limited framework through which humans comprehend magic—it is valid, yet incomplete. The Khainite blood-sorcery and High Magic of the Elves, the earth-runes of the Dwarfs, the dark Necromancy of Nagash, and the Waaagh! energy of Greenskin Shamans are not wholly contained within the Eight Winds. When Teclis established the Colleges, he chose the Eight Winds system because human souls are far too easily drawn directly to Chaos and require a strict, restrained, clearly categorized system of management. High Elves can draw energy of all eight colors or more directly from the Winds of Magic without being tainted by Chaos, because the spiritual architecture of their race has adapted to magic over millennia. The Dwarfs took an entirely different path—innately resistant to the Winds of Magic, they developed the art of Runesmithing, inscribing runes to bind and release energy inherent within the earth itself (rather than the Winds blowing from the Warp Gates). That is why every act of spellcasting carries risk, and why every wizard walks along a razor's edge."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The attitude of the Imperial Colleges of Magic toward female wizards is pragmatic—more open than the Church, yet still possessing its unspoken boundaries. Women exhibit a marked distribution across the Eight Winds: the proportion of female wizards in the Jade Wind of Ghyran and the Celestial Wind of Azyr is far higher than in the Gold Wind of Chamon, which is attributed to some psychic resonance between women and the realms of life and sky rather than any institutional discrimination. Yet the most unsettling statistic is this: in the Grey College of Ulgu (Shadow), female wizards are very few in number yet suffer an exceptionally high failure rate—women who attempt to master the Wind of Shadow 'vanish' far more frequently than in any other College; not dying, simply walking into a heavy fog one day and never walking back out. The male magisters of the Grey College claim this is 'the selective affinity of the Grey Wind' and offer no further explanation."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "On my family's estate in Ostland stands a small family chapel, and hidden in the cellar beneath that chapel lies our house's true treasure—a set of wind-gauging crystals purchased from the Colleges of Magic in Altdorf and hidden away here by an ancestor twelve generations ago. Looked at individually, these crystals appear to be mere colored glass—yet when the Winds of Magic surge abnormally within the bounds of our estate, they glow at night with a fluorescence matching the corresponding Wind's color. My grandfather used this system to evacuate an unregistered female magic-user hiding on our fief ahead of the arrival of Imperial Witch Hunters—not out of sympathy for magic-users, but because she happened to be my cousin. A noble family's attitude toward magic is forever contradictory: oppose it in public, protect your own in private."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "When traveling across the provinces of the Empire, you will discover that ordinary folk in different regions hold vastly different attitudes toward the Winds of Magic. In Reikland—the heartland of the Empire—Battle Wizards are accorded a strict but open tolerance; people eye them sideways in the street, but they do not scream. In Stirland—bordering Sylvania—anyone displaying magical talent may well be tied to a stake and burned by villagers that very night, not because of Church doctrine, but because over the past several centuries Stirlanders have seen far too many Vampires and Necromancers drifting across from Sylvania wielding dark magic. The safest place of all is Talabecland, where the Bright College's country retreats lie—though even there, being too close to the Red Wind means you might be accidentally blown to bits at any moment."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The commercial value of the Winds of Magic forms a vast grey economy that Imperial authorities refuse to acknowledge openly yet exists in practice. A byproduct generated by Alchemists of the Gold College (Chamon) during transmutation processes—known as 'gold-slag'—is a strictly regulated yet impossible-to-eradicate high-demand material in the Imperial metallurgical industry. Gold-slag has been proven, when added in small quantities to molten steel, to enhance the metal's toughness and quench-hardenability—which is why the Imperial Metallurgists' Guild is willing to pay three times its weight in silver for it. In theory, all gold-slag must be recovered and disposed of by the Gold College; in practice, every Gold apprentice privately sells a bit on the side to middlemen from the metallurgical guilds. Whenever the Cult of Sigmar demands an audit, the Gold College replies that 'all gold-slag has been fully recovered,' and then goes right on selling it."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Hysh—the White Wind, representing purification, light, and wisdom, the Imperial Light College",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Theological Attributes and Belief Systems of the Winds of Magic"
+  ]
+}

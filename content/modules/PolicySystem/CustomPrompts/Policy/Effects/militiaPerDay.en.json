@@ -1,0 +1,6 @@
+{
+  "Version": 1,
+  "ModuleId": "militiaPerDay",
+  "UnderstandingPrompt": "Militia is mainly affected by training, levies, disbanding, local defense, morale, food and pay, and population pressures. When policies continuously change actual settlement defense headcounts through these mechanisms, militia is a direct consequence. Increasing militia incurs corresponding costs only when the policy actually requisitions food or labor or forces military service.",
+  "EvaluationPrompt": "Judge daily changes per affected settlement. Mild impact: ±0.5 to ±1.5; regular training, levies or morale changes: ±1.5 to ±4; strong militia mobilization or local-defense reforms: ±4 to ±8; nationwide war mobilization, large-scale militarization or militia collapse: ±8 to ±12. More than ±12 is reserved for brief extreme war mobilization or severe military collapse."
+}

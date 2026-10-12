@@ -1,0 +1,94 @@
+{
+  "Id": "rule_alostang",
+  "Keywords": [
+    "Alostang",
+    "Mount Biscayne"
+  ],
+  "RagShortTexts": [
+    "The village of Alostang is located on the boulder at the foot of Biscayne Mountain, overlooking the ocean."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Aroostang is a village near Jequlang, located on a large rock overlooking the ocean at the foot of Biscayne Mountain. This warm patch of land in southern Vlandia is ideal for growing olives, with olive groves dotting the hillsides."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "In the village of Alostona, you can see the sea from the huge rock. There are rows of olive trees at the foot of the mountain. The sea breeze blows and the leaves rustle. In the olive-producing area of ​​​​Jetriang, the scenery of Aroostang is the best."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "townsfolk"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The olives of Aroostang grow on a slope overlooking the sea. Locals say that the salt in the sea breeze can give the olive oil a special flavor. I don’t know if it’s true or not, but their oil does have a unique freshness."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The giant rock of Aroostang is a perfect location to watch the sunset. Standing on it, there are mountains on one side, the sea on the other, and olive groves at your feet. I have traveled to so many places, but few can compare with the scenery here."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Alostang",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "Jie Qu Lang",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

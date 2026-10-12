@@ -1,0 +1,152 @@
+{
+  "Id": "rule_Storm_Coast_Greenstone",
+  "Keywords": [
+    "Greenstone",
+    "Greenstone Island"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Greenstone Castle is located on Greenstone Island, an island castle off the coast of Stormland. It is related to the territorial tradition of House Ismon. What the islanders face is not vast farmland, but salty winds, rocks, small harbors, and unpredictable sea conditions; boats, salt, catches, and coastal trade determine the days of the year more than plowing. It is close to the Stepstones and the Stormlands coast, so it has long been familiar with the news of privateers, pirates, drifters and warships. Greenstone Castle is like a distant rock to land nobles, but to sailors it is a sign to identify routes and find shelter from the wind."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "stormlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Greenstone Local families also depend on rainforest timber, game, barren farmland, fisheries, and roofs to protect themselves from storms; any time a road, well, or dock fails, the price falls first on them."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "stormlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Greenstone Entry Greenstone"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Greenstone They also recognize the accents, laws, and credentials of the Stormlands; reputations can travel great distances from taverns, but true distances must still be measured by wheel, oar, or horse's hoof."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Greenstone Entry Greenstone"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Greenstone If you can supply supplies, avoid danger, and find a guide, it is worth marking in your itinerary; if you don't have these three things, no matter how loud your family name is, it won't be able to save the lost."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Greenstone A stronghold was therefore not just a lord's hall, but also a place where weddings and funerals, vows, labor and local memories recurred."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Greenstone They care about rainforest timber, prey, barren farmland, fish catches, and roofs to shelter from storms. They also look at whether seeds are left after harvesting grain, and whether the city gates are open in times of disaster. When people from afar see coats of arms, what they see is whether there will be food to eat tomorrow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Greenstone: Greenstone Castle is located on Greenstone Island, an island castle off the coast of Stormland. It is related to the territorial tradition of House Ismon. What the islanders face is not vast farmland, but salty winds, rocks, small harbors, and unpredictable sea conditions; boats, salt, catches, and coastal trade determine the days of the year more than plowing. It is close to the Stepstones and the Stormlands coast, so it has long been familiar with the news of privateers, pirates, drifters and warships. Greenstone Castle is like a distant rock to land nobles, but to sailors it is a sign to identify routes and find shelter from the wind."
+  ]
+}

@@ -1,0 +1,142 @@
+{
+  "Id": "rule_Watch_on_the_Wall_Castle_Black",
+  "Keywords": [
+    "Castle Black"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Castle Black is located in the middle of the Wall and is the main fortress of the Night's Watch, the headquarters of the Commander-in-Chief, and the legion's training and dispatch center. It guards the important tunnel through the ice wall, climbs to the top of the wall with a lifting cage, and communicates with the grant and other fortresses through the crow's nest, granary, armory, stables and roads; the south-facing side lacks a complete city wall because the Night's Watch's duty should not be to resist the Seven Kingdoms. Recruits are divided into rangers, craftsmen and stewards here, and men from different classes must live under the same oath; the strength of Castle Black therefore lies not in its splendor, but in its discipline, supplies and the fact that there are still people willing to keep vigil."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nightswatch"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "For the brothers in black, Castle Black is not a palace of glory, but a place where oaths are made. In the morning, there were bugles, cold water, and sword practice, followed by horse feeding, wall repair, snow path clearing, and patrol report writing; at night, there were always people talking about the old days in the South by the brazier, but no one could really go back. People here will despise each other because of their origins, and they will also understand in the wind on the top of the wall that each other only has the same black cloak."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "freefolk"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "In the eyes of many free folk, Castle Black is a black nail driven into the wall of ice by the crows. The men there gave up their wives, their names, and their lands to keep a wall for the southern lords that they never asked those outside the wall if they wanted to exist. But the hunters beyond the wall also knew that the rangers of Castle Black knew the forest and dared to go out in the blizzard; it was one thing to despise them, but it was another thing to underestimate them."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "To the southern lords and local dignitaries, Castle Black was an old ledger that was uneconomical but not easily discarded. It does not produce gold, does not collect taxes from the prosperous port, and only keeps asking for food, timber, horses, soldiers and ravens; but once the north is really lost, no one dares to seriously calculate the cost. Some people regard Night's Watch as a place for criminals, while others still regard it as the last stone gate in the entire kingdom."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "To soldiers, traders, and wanderers passing through Castle Black, the first smells of horses, soot, leather, and frozen meat came to mind. The wall is too high, the elevator is too slow, and the man in black is too silent; but as long as the weather turns bad, everyone will admit how valuable a bowl of hot soup, a room with a fire, and a south-facing door are."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Castle Black Night's Watch main castle in the middle of the Wall. It serves as a training, supply, patrol and raven communications center, as well as an ice wall stronghold with different meanings in the eyes of black brothers, free folk, southern lords and passers-by. Whether it is valid depends on who can grant the rights, collect the consideration, and actually make the judgment come to fruition in the event of default."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Castle Black Night's Watch main castle in the middle of the Wall. It serves as a training, supply, patrol and raven communications center, as well as an ice wall stronghold with different meanings in the eyes of black brothers, free folk, southern lords and passers-by. If a rule is practiced over and over again, it will find its way into rituals, crafts, and prayers; if it is sustained only by fear, cracks will show at the onset of a crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Castle Black Night's Watch main castle in the middle of the Wall. It serves as a training, supply, patrol and raven communications center, as well as an ice wall stronghold with different meanings in the eyes of black brothers, free folk, southern lords and passers-by. They remember taxes, grain, labor, relief and who can speak for them; these grand names will eventually fall on the family's rice pot."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Castle Black: Castle Black is located in the middle of the Wall and is the main fortress of the Night's Watch, the headquarters of the Commander-in-Chief, and the legion's training and dispatch center. It guards the important tunnel through the ice wall, climbs to the top of the wall with a lifting cage, and communicates with the grant and other fortresses through the crow's nest, granary, armory, stables and roads; the south-facing side lacks a complete city wall because the Night's Watch's duty should not be to resist the Seven Kingdoms. Recruits are divided into rangers, craftsmen and stewards here, and men from different classes must live under the same oath; the strength of Castle Black therefore lies not in its splendor, but in its discipline, supplies and the fact that there are still people willing to keep vigil."
+  ]
+}

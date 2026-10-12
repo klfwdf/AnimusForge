@@ -1,0 +1,211 @@
+{
+  "Id": "rule_Tara_Beckham",
+  "Keywords": [
+    "Tara Beckham",
+    "Crater City",
+    "The capital of Talabek",
+    "The Holy Land of Tal and Leia",
+    "Eye of the forest",
+    "Three Emperors Era",
+    "emperor tarabek",
+    "meteorite wall",
+    "Otilia",
+    "river trade"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Tarabekheim - the Eye of the Forest - is a city of wonder built in a huge crater, the crater walls themselves being the most majestic natural walls. As the capital of the Talabek Territory, this city is the center of faith for the nature god Tal and the earth goddess Leia. It is located on the banks of the Talabek River and is surrounded by boundless forests. During the turbulent era of the separation of the three emperors, Otilia of Tarabek declared herself emperor and created the \"Tarabek Emperor\" lineage, allowing the city to compete with Altdorf for hundreds of years. Talabekheim is still known for its defiance of Altdorf's centralized authority - the waterborne trade of the Talabek River brought prosperity, while the great forest surrounding the city provided an almost impenetrable natural barrier."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Tara Beckham - We Tarabecks never see ourselves as subordinates of the Empire, we are the conscience of the Empire. While Altdorf is obsessed with their magic academy and golden dome, what is Tara Beckham doing? Day after day, we piled the heads of beastmen into hills on the borders of the forest, painted protective charms with deer blood on the stone altar of the Great Temple of Taal, and transported the wood needed to build houses and ships throughout the empire along the Talabek River downstream to various parts of the empire. The Eye of the Forest is not a self-enclosed fortress - it is a pair of giant eyes that never sleep, watching the never-safe green sea for the empire. Altdorf will tell you the history of the Empire, but Tara Beckheim will tell you the prehistoric truths of the Empire that have never been written into the official chronicles - before humans had iron ores, Taal's horned helmets shone in the gloom of the forest. The Emperor of the Imperium may live in Altdorf, but the will of the Imperium - the indomitable will of those who march for weeks through the jungle to fight the Beastmen without taking a step back - has its source in Tara Beckheim."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The military defenses of Tarabekheim were built on an extremely rare natural-artificial composite fortification structure. The crater wall - the \"Thar Fortress\" - is a circular natural stone wall with an average height of between 80 and 120 feet. Dozens of generations later added battlements and towers to the top, forming a defense system that is far thicker than any artificial city wall. The crater itself was approximately two miles in diameter, and contained an entire city within it along with ample farmland and water - meaning Tarabekheim could be self-sufficient long enough if it came under siege. But the city's most deadly strategic challenge did not come from the ground - the vast forests surrounding Tarabekheim provided endless cover for the enemy's stealthy approach. The worst attacks on Tarabekheim in history were not frontal assaults, but were the result of Ork hordes or Orc warbands suddenly appearing on the edge of the crater using the cover of the forest. Therefore, the most important thing in Talabekheim's defense system is not the city wall, but the network of sentry towers and the hunter patrol system scattered in the large forest - the former provides early warning when the enemy passes through the forest, and the latter engages in bloody guerrilla warfare in the forest with the enemy before they approach the city."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "Tarabekheim's most striking geological feature - the crater - dates back to approximately 12,000 years of prehistory. The impact of the meteorite formed a nearly perfect circular basin, and the surrounding raised rock walls formed an extremely solid crystallized basalt structure during the cooling process. This is the geological reason why later city builders were able to build fortifications directly on it. About three miles east of the crater, there is a smaller secondary impact debris splash zone, geologically known as the \"Thar Debris Belt\". The fragments of meteorite scattered in it were regarded as artifacts from the sky by early settlers in prehistoric times. Taal belief may have originated from the primitive worship of this huge crater dropped from the sky - the early human tribes in the great forest interpreted the crater as the mark of the nature god Taal hitting the earth with his giant fist, and the winter-free spring at the bottom of the crater was regarded as the tears of the goddess Leia. In the history of the empire, the most glorious and bloody period of Tarabekheim began in 1360 of the Imperial Calendar - Countess Otilia of Tarabekland, after suspecting that the Archbishop of Altdorf's Sigmar Church was trying to interfere with the ritual autonomy of the Forest Sect, publicly refused to recognize the authority of the Imperial Emperor, and was crowned the first female emperor of the empire by the Forest High Priest with the \"Crown of Tar\" in the Great Temple of Tal. The \"Three Emperors Era\" triggered by this lasted for hundreds of years. During this period, there were many self-proclaimed orthodox emperors in the empire at the same time. Tara Beckheim's Otilia lineage - the \"Ottilia Emperors\" - was one of the longest-lasting branches. Analysis of the crater's original impact debris revealed that the meteorite contained an alloy component not found in any known veins in the Old World - what metallurgists call \"star iron\" - a material that is only occasionally found in the ceremonial utensils of priests of the Great Temple of Tarabek due to its extremely small reserves and lost smelting techniques."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Tara Beckheim’s court — if you can call it a court — is nothing like Altdorf’s. The noble women here don't need to learn how to smile thirty times at the banquet table without showing any real emotion; you only need to learn how to stand in front of the open-air stone altar of the Great Temple of Taal for three full hours without trembling when the forest priest chants the blessing. As a female lord, I feel a kind of residual power in Talabekheim that does not exist in any other major city in the empire, derived from ancient matrilineal nature worship - the goddess Leia is the mother of the earth, and the female nobles of Talabekheim have always had an unwritten but generally respected traditional influence in the management of agriculture, water sources and forest resources. Otilia's historical legacy is still alive in the city - you can hear old women mentioning \"our empress\" in a nonchalant tone at bonfires in any of the villages around the crater, as if she were referring to last season's harvest. Of course, this does not mean that Tara Beckheim is a feminist paradise - the Jaeger Guild has still refused to admit female Jaegers, and the high priest of Taal must be male - but the proportion of women here holding real power is much higher than the imperial average, and they do not need to marry into a family to obtain this power."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Our family owns the largest privately owned hard oak acreage in the Old World in the forests of Tarabec Territory—not an official document, but an actual measured acreage. The timber trade on the Talabek supported sawmills, shipyards and charcoal kilns across Talabekham, and our family’s woodland produced about three per cent of the river’s fine oak – a proportion that had remained unchallenged for at least seven generations. Territory laws in the Great Forest are fundamentally different from the Empire's regular land laws: you can't erect fences in the Great Forest - your power in the forest depends on how far your Jaeger patrols can drive away loggers, poachers, and beastmen from outside. Our family's political power in Tara Beckham was based on a very simple fact: If the Elector Count's table was made of oak, the oak was probably supplied by our family. The forest is power—and in this city, that phrase is both metaphorical and literal."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The first time I walked out of the forest trail in the early morning mist and saw the edge of the Tarabekheim crater, I had an illusion - it was not a human city, but a wound left by the earth itself, and a group of people made their home in this wound. Entering the city requires walking through a tunnel carved into the crater wall—inside you smell not the sewers and soot of Altdorf, but the smell of damp rock, ancient moss, and the pine incense from the Temple of Taal. The city's interior is much larger than it appears from the outside—the crater's basin is packed with tiers of timber-framed houses and stone towers, all built around an ancient oak grove in the center known as \"Thar's Courtyard.\" Talabeks have a silence characteristic of forest dwellers - they look at you with the look of a hunter assessing whether a deer is worth the draw of his bow, and you'd better get used to that look, for in Talabekheim it's polite rather than offensive. If you're spending the night here, remember not to enter the large forest outside the crater after dark—Tal protects hunters, not the lost."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The transportation of timber on the Tarabek River is one of the most important economic lifelines of the Empire, and our timber trading house in Tarabekheim controls the upstream supply of this lifeline. About half of the hard oak used in all the Empire's warships, siege engines, and large buildings—from the beams of Altdorf's Great Temple to the keels of the Nord fleet—passes through Talabekheim via the Talabek River. This means that if Tarabekheim's Timber Chamber announced export restrictions this quarter - perhaps because of \"reduced logging due to increased beastman activity in the forest,\" or perhaps just because we want to remind Altdorf who the real people are in the forest - shipbuilding and construction work across the empire would grind to a halt within three months. In the Imperial Council in Altdorf, when the representative of Talabek Territory spoke, everyone would subconsciously remain silent for a few seconds - not because of fear of Talabek Territory's army, but because of fear of Talabek Territory's timber pricing list."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Tarr Fortress - the natural fortification of the crater wall where Tara Beckheim is located, artificially added to it",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Tara Beckham’s location and strategic significance"
+  ]
+}

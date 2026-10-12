@@ -1,0 +1,169 @@
+{
+  "Id": "rule_Mut",
+  "Keywords": [
+    "mutt",
+    "Mut Province_MT",
+    "Elder Mut_MT",
+    "Halfling Mutt_MT",
+    "Hisim Stutthart_MT",
+    "Aisol_MT",
+    "Mutt Stew_MT",
+    "Halfling Militia_MT"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Mutt—the only autonomous halfling province in the Old World—is located in the middle of the empire, at the junction of Iverland and Stirland. It is an idyllic land composed of rolling hills, lush farmland, and quiet villages with smoke rising from the kitchen. The Empire de jure considers Mutt an official province of Elector Count, but its inhabitants, the halflings, regard the so-called \"Elector Count\" title with a gentle, slightly teasing smile. Known for his pyrotechnic skills and unforgettable feasts, Mutt's \"Elder\" (not Elector Count) Sheasm Stutthart rules over a tiny nation that solves problems with stew pots rather than swords."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Mutt - The Imperials always talk about Mutt with a mixture of doting and contempt. The imperial people like halfling food (more than half of the best chefs in the empire are from Mutt, and the other half are saving money to learn cooking skills from Mutt). The imperial people rely on halfling pipe grass (the grass blades produced by Mutt are hard currency throughout the empire), but the imperial people never consider Mutt's opinions in military meetings. Halflings don't care at all - they respond to slights with smiles and political snubs with hearty meals. Please have a meal at the long banquet table of any Mutt village next, and you will find that the halflings have a keener insight into imperial politics than more than 80% of the members of the Imperial Parliament - they just choose not to participate in the noise, because they feel that an afternoon spent arguing is not as good as an afternoon spent on slow-cooking a pot of beef. Imperial officials believe that halflings lack ambition, and halflings know it well - they do not lack ambition, they have witnessed two thousand years of human war and have come to the rational conclusion that \"conquering the world is not as good as conquering a pot of stew.\""
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Mut's mark on the empire's military and political map is almost negligible - it has no standing army, no walled capital, no arsenals or naval bases - but no experienced ruler would dare to truly ignore Mut. There is only one reason: Mutt is one of the most important grain-producing areas in the empire. During the three famous national famines in the history of the empire, the halfling farmers of Mut relied on their original terrace irrigation and winter storage and salting techniques to supply the empire with enough food to save hundreds of thousands of lives. Without these food surpluses, the empire would have collapsed in civil strife caused by famine at least twice. Hisham Stutthart's foreign policy was the simplest in the empire: no alliances, no threats, no negotiations. Halflings won't vote for you in the Imperial Council, but they will provide your army with the best marching rations in the Empire when they pass through Mutt - provided you restrain your soldiers not to steal halfling chickens. Anyone seeking to overrun Mutt will find that forcing the halflings to resist armed resistance will not only sacrifice the Empire's most stable source of food, but also cause anger among all the subjects of the Empire - because every Imperial man loves the halflings of Mutt."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "Mut's governance system is an anomaly among the imperial provincial systems - its legal basis is the \"Halfling Native Home Autonomy Charter\" signed by the imperial emperor six hundred years ago, rather than provincial status obtained through noble inheritance or political marriage. This charter granted the halflings full land ownership, judicial autonomy, and special exemption from the common tax laws within the Empire - in exchange, Mutt was required to provide a rationed food supply when the Empire declared a state of maximum alert, and to allow Imperial troops to cross its territory in emergencies. Hisim Stutthart's administration is handled by Mut's \"Council of Elders\", each elder represents a village or a group of small settlements, and decisions are made by unanimous vote rather than majority vote - this means that Mut's political pace is extremely slow (a proposal for water diversion channel repairs can be discussed for a whole month), but once a decision is made there is little resistance to implementation. Evaluated from the perspective of governance efficiency, Mut's social organization model shows amazing stability in the management of large-scale agricultural production - the halflings' land output rate (average yield per acre) is almost twice the empire's average, and the degree of soil depletion is lower than the empire's average. This is due to organic crop rotation and composting techniques passed down from generation to generation among halflings, techniques that have not yet been officially recorded in any Imperial agricultural manuals - not because Imperial agricultural officials are not interested, but because halflings politely but firmly refuse to fully share their agricultural knowledge with any \"non-halfling\"."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Mutt is the only place in the Empire where female power is naturally structurally equal to male power - not through any legal reform or political movement, but because halflings never see any logical connection between gender and the ability to rule in the first place. Mut's council of elders is almost evenly divided between women and men - a female halfling village chief chosen by her villagers not because she is the widow of a certain family or because her husband is absent, but because she makes the best blackberry pie and handles neighborhood land disputes with the patience to make both sides of the argument feel better than any man. Mut women have a mild sympathy for the plight of imperial noble women - they believe that it is a waste for human women to spend half their lives fighting for political equality with men, and that half of their lives could be used to grow better pumpkins."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The \"rule\" of the Stutthart family in Mutt is a completely foreign concept to the human Elector Counts - they are not ruling, they are cooking. The Stutthart family initially gained the status of Mutt's elders because four consecutive generations provided Mutt's annual harvest thanksgiving feast with an unparalleled stew recipe that could feed five thousand people. Hissim himself was the only representative of the Empire who was respected in the Imperial Parliament as the \"Pyrotechnics Brewer\" (his home-brewed spirits can turn the entire village's sky into a colorful fireworks curtain on harvest night celebrations). As any family that wants to establish influence in Mutt, you must completely abandon all traditional means of human nobility: land is worthless (halfling land is not sold, but exchanged), marriage is not feasible (marriage between halflings and humans is not legally recognized throughout the empire), and military deterrence is completely counterproductive (human lords who have tried to threaten Mutt have historically been destroyed by empire-wide scandals and consumer boycotts). Your only capital of power in Mutt is your cooking skills, your generosity, and your sense of humor—if you can make six hundred halflings laugh at a village feast in Mutt and have them ask for more bowls after eating your stew, your influence in Mutt will be far greater than that of any Elector Count in his own province."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Mut is the most dangerous and safest province I have ever visited in the empire - the danger is that you will lose all motivation to leave after staying for a long time, but the safety lies in the fact that there are almost no threats in the traditional sense here. Halflings have the friendliest attitude towards foreign wanderers in the Empire: you don't ask for much (usually just a meal and a bed for the night), and what they give comes with food and a detailed recommendation on the best local routes (Halflings have the strongest sense of direction in the Empire - they can find the nearest trail among the hills of Mutt after dark without any markers). The only way to make a little money in Mutt is to help with the farm work - harvesting, brewing and winter pickling seasons all require a few extra hands, and wages are settled in kind (food and wine), but the satisfaction you get from a full meal in Mutt outweighs the feast you'd buy after earning the best bounty in any city in the empire. A word of advice to outcasts: Don't enter into a drinking contest with any halfling at Mutt's banquet—you'll lose so hard that everyone you meet in the Empire for the next year has heard the story."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The essence of Mutter's business was to transform the empire's most despised products - food, tobacco and joy - into the empire's most stable stream of commercial profits. Mutt pipe grass occupies a near-monopoly position in the high-end variety market across the empire. Every piece of mutt tobacco must be certified by the Halflings' own grading system before being exported. The export price is uniformly set by the Mutt Exporters Chamber of Commerce - the business discipline displayed by the Halflings on this bulk commodity far exceeds that of any similar human chamber of commerce. Mutter stew powder - a trade innovation that concentrates the essence of Mutter cooking into a powdered condiment - is in unlimited demand in the kitchens of Altdorf, Nunn and Middenheim, but the halflings control annual export volumes with the utmost care to ensure stable prices. As an imperial merchant who wants to do business with Mutt, your first business lesson is to give up your bargaining experience - halfling pricing is a \"fair price\", which means it is non-negotiable. Their logic is very simple: If the product is so good that you don't want to counter-offer, there's no point in counter-offering. The strange thing is that the most astute businessmen in the empire tried various calculations and unanimously concluded that doing business with halflings at their prices will indeed make more money than if you try to bargain."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Mut - the only halfling autonomous province in the empire, famous for its delicious food, tobacco leaves and eternal pastoral tranquility.",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Mutt Halfling Province Empire Pastoral Food"
+  ]
+}

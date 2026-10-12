@@ -576,8 +576,10 @@ function Invoke-ManagedStageDeployment {
         }
         # Player-owned runtime files are never managed resources, even if present in Stage.
         if ($relative.StartsWith('Logs\', [System.StringComparison]::OrdinalIgnoreCase) -or
+            $relative.StartsWith('Cache\', [System.StringComparison]::OrdinalIgnoreCase) -or
             $relative.StartsWith('Recovery\', [System.StringComparison]::OrdinalIgnoreCase)) { continue }
         if (($relative.StartsWith('CustomPrompts\', [System.StringComparison]::OrdinalIgnoreCase) -or
+             $relative.StartsWith('Configs\', [System.StringComparison]::OrdinalIgnoreCase) -or
              $relative.Equals('ModuleData\TerminalSettings.json', [System.StringComparison]::OrdinalIgnoreCase)) -and
             (Test-Path -LiteralPath $target -PathType Leaf)) { continue }
         $isExport = $relative.StartsWith('PlayerExports\', [System.StringComparison]::OrdinalIgnoreCase)

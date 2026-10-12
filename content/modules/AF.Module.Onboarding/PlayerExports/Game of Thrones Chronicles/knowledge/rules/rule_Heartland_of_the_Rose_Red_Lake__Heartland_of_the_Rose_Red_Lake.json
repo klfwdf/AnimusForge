@@ -1,0 +1,153 @@
+{
+  "Id": "rule_Heartland_of_the_Rose_Red_Lake",
+  "Keywords": [
+    "Red Lake",
+    "The Red Lake",
+    "Westerlands Border"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Red Lake City is located in the west of the Reach, close to the Westerlands. The lake, wetlands and surrounding fields make it a place where water and land meet: timber and fish can be transported on the lake, and grain, pasture and roads leading inland can be found on the shore. The borders of the Reach are not as clear as the Wall, and western strongholds like Red Lake City often feel the food order of Highgarden and the minerals, knights, and mountain roads of the Westerlands at the same time. The color of the lake can become a legend, but it cannot replace the actual banks, ferries and grain stores. Its value comes from regulating border trade and local transportation, not the inevitable outcome of a future war."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Red Lake Local families also relied on grain, wine, orchards, pastures, and markets along the Mander River; if any road, well, or dock failed, the price would fall first on them."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Red Lake Entry Red Lake"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Red Lake They also recognize the accents, laws, and credentials of the Reach; reputations can travel great distances from taverns, but true distances must still be measured by wheel, oar, or horse's hooves."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Red Lake Entry Red Lake"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Red Lake If you can supply supplies, avoid danger, and find a guide, it is worth marking in your itinerary; if you don't have these three things, no matter how loud your family name is, it won't be able to save the lost."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Red Lake A stronghold was therefore not just a lord's hall, but also a place where weddings and funerals, vows, labor and local memories recurred."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Red Lake They care about grain, wine, orchards, pastures and markets along the Mander River. They also look at whether seeds are left after the grain collection and whether the city gates are open in times of disaster. When people from afar see coats of arms, what they see is whether there will be food to eat tomorrow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Red Lake: Red Lake City is located in the west of the Reach, close to the Westerlands. The lake, wetlands and surrounding fields make it a place where water and land meet: timber and fish can be transported on the lake, and grain, pasture and roads leading inland can be found on the shore. The borders of the Reach are not as clear as the Wall, and western strongholds like Red Lake City often feel the food order of Highgarden and the minerals, knights, and mountain roads of the Westerlands at the same time. The color of the lake can become a legend, but it cannot replace the actual banks, ferries and grain stores. Its value comes from regulating border trade and local transportation, not the inevitable outcome of a future war."
+  ]
+}

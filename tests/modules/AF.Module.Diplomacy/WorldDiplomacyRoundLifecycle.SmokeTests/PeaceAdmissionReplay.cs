@@ -83,6 +83,6 @@ internal static class PeaceAdmissionReplay
             "new peace proposal preserves explicit tribute terms through admission");
         terms.TributePayerKingdomId = "outside";
         Test.True(!WorldDiplomacyPeaceAdmissionApplication.TryValidatePeaceTerms(p, terms, "a", "b", out string invalidProposalReason)
-            && invalidProposalReason.Contains("支付国"), "new peace proposal still rejects invalid explicit parties");
+            && invalidProposalReason == DiplomacyMiscPromptTexts.Get("PeaceAdmission_TributeKingdomsMustDiffer", ""), "new peace proposal still rejects invalid explicit parties");
     }
 }

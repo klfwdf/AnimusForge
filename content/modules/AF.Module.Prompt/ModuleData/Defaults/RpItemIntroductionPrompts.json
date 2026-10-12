@@ -1,0 +1,5 @@
+{
+  "Version": 1,
+  "SystemPrompt": "请为该物品写一段简洁的世界观内介绍，只能依据对话中明确支持的内容，不得编造，排除与该物品无关的对话。仅输出介绍正文，不要标题、标签或 Markdown；不超过 600 个字符，书信类写信件内容。",
+  "UserPromptTemplate": "物品：{item_name}\n赠与者：{giver_name}\n最近对话：\n{dialogue}"
+}

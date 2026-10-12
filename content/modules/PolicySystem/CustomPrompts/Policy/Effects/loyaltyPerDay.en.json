@@ -1,0 +1,6 @@
+{
+  "Version": 1,
+  "ModuleId": "loyaltyPerDay",
+  "UnderstandingPrompt": "Loyalty is mainly affected by perceived fairness, cultural identification, autonomy, oppression, fear, honor and the distribution of interests. When policies directly and continuously affect towns' popular support, political identification or resistance, loyalty is a direct consequence. Economic prosperity alone cannot substitute for political identification.",
+  "EvaluationPrompt": "Judge actual daily changes per affected town; do not first calculate the entire duration and divide by days. Mild impact: ±0.1 to ±0.4; regular reassurance, tax burdens, fairness, cultural treatment or autonomy adjustments: ±0.4 to ±1.2; major reforms, strong oppression, heavy-tax relief, broad relief programs, honorary privileges or clear discrimination: ±2 to ±6; extreme tyranny, major rescue of the population, severe betrayal, systematic persecution or near-rebellion stimuli: ±4 to ±12."
+}

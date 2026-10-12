@@ -1,0 +1,47 @@
+{
+  "Id": "rule_Duel_between_Ochilegan_and_Granis",
+  "Keywords": [
+    "Duel between Ochilegan and Granis",
+    "Ochilegan",
+    "Grannis"
+  ],
+  "RagShortTexts": [
+    "The heroic story passed down by the bards, known to everyone in Badania, is the duel between Ochilegan and the seven sons of the tyrant Granis."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Marunas means \"running horse of the shallows\" in the language of Battania, but the village does not sit next to any river. Surrounded by rolling hills and oak forests, the only source of water is the swamps that accumulate in low-lying areas during the rainy season. The bards of Battania love this kind of place the most - places whose names don't match the land, perfect for telling violent tales about prophecies. They sang that the gods deliberately put their names in the wrong places so that the heroes would have to fill them in with their own blood and lives. The story begins with the High King Granis. He was the ancient tyrant who ruled over all the tribes between the highlands and the lowlands, maintaining his throne by chains and the stake. He had seven sons, all of whom were tall and round-waisted, and even more cruel than their father. They levied double the tribute for Granis and hung the rebels from elm trees by the roadside, allowing crows to peck at them. The druids of Battania prophesied a hundred years ago that a hero named Ochilegan would defeat the seven sons of Granis at the seven fords, and the tyranny would break like a dead branch from the trunk of a tree. Ochilegan was born in the ashes of a burned village. He had been familiar with this prophecy since he was a child, and when he grew up, he actually began to look for the seven shoals. He killed his eldest son on the shallows on the east shore of Lake Tavar, and his second son on the shallows on the west shore of Lake Tavar. The two shoals are three miles apart, and the lake water glows with the same cold light in the moonlight. He killed the third son on the ford of the Mir River, the fourth son on the ford of the Arminius River, and the fifth son on the ford of the Trang River. Every duel took place on the shoal, and every time he stepped on the running water to confront his opponent. By the sixth scene, he killed his sixth son on the shallows on the north shore of Lake Tavar, and that son was Gernat Narr. Nal was known for his silence and fierceness among the Seven Sons. He struggled with Ochilegan for an entire hour in the shallow water on the northern shore of Lake Tavar, and was eventually stabbed through the throat with a sword. Ochilegan cut off his head and placed it on a boulder by the lake. Later, a village was built next to the huge rock, and it was called Gnat Nar, which means \"Nar's Skull\". Only the last son is left. The prophecy said that the final enemy would wait for him at the seventh ford, and the name of the seventh ford was Marunas. It was a gray morning when Ochilegan led the horse to Marunas. He searched around the village all day but could not find any streams or riverbanks. There is only hard yellow soil on the hills, not even a dry ravine. He asked the old man in the village, who said that there had never been water here. The name Marunas was passed down from ancient times, and no one knew why. Ochilegan knew that he had gone to the wrong place, because the seventh son of Granis was already waiting for him in the open space outside the village. The man's name was Kulkan, the youngest of the seven sons. He held a spear in his hand that was half a head taller than an ordinary person. Kulkan did not speak, but tapped the ground with the tip of his spear, indicating that there was no water or shoals here, and the prophecy could not be fulfilled. Ochilegan looked at his horse. It was an old war horse that had been with him since the first duel, and it also had a few healed knife marks on it. He took off the saddle, wrapped the reins around his wrists, and slit the horse's throat with his sword. The horse made no struggle and looked at him as he fell. The blood flowed out and flowed down the low ground, creating a shallow ditch in the loess. The blood gathered into a small puddle and continued to flow forward, actually becoming a small stream. The blood stream was not wide, but it was big enough for two people to stand on both sides. Ochilegan waded through the bloody stream, and the soles of his boots stepped on the blood-soaked mud, making a sound only heard when wading. This has since become a shallow beach. Kurkan finally spoke. He said, you made a river out of your own horse, but you will die here too. Ochilegan didn't answer, just drew his sword. They faced each other for a moment on both sides of the bloody stream, and then stepped into the stream at the same time. Kulkan's spear pierced Ochilegan's left shoulder, and Ochilegan's sword cut off the shaft of Kulkan's spear. The two struggled for a long time in ankle-deep blood until Ochilegan stabbed Kurkan in the throat with the broken tip of his spear. As Kulkan fell, his head rolled to the ground. Ochilegan picked up the head and placed it on the pile of stones at the entrance of the village. Villagers said that on rainy nights, they can still hear Kulkan's low roar beside the pile of rocks. But the bards did not often sing of Kulkan's head, they more often sang of Gnart Narr - for Narr died on the real shoal of Lake Tavar, and the shoal of Marunas was shed with the blood of horses. Ochilegan fulfilled the prophecy on the fords of Marunas. All seven sons were killed, and King Granis' tribe was quickly overrun by the rebels, thus ending the tyranny. There is still no river in Marunas, only a shallow ditch that only appears during the rainy season. The soil at the bottom of the ditch is dark red like rust. The bards of Battania say that the shallow ditch was the veins of the horse, which still carries the water for the hero to cross."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": ""
+    }
+  ],
+  "TextMappings": []
+}

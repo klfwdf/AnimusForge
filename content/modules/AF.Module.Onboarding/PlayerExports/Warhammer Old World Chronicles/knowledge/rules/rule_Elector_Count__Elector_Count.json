@@ -1,0 +1,213 @@
+{
+  "Id": "rule_Elector_Count",
+  "Keywords": [
+    "Elect Count",
+    "Elector Count system",
+    "Imperial Elector",
+    "suffrage",
+    "provincial ruler",
+    "Elector Count Imperial Council",
+    "Electoral College",
+    "Elector Count Franz Family",
+    "Wolfgaard family",
+    "Feuerbach family",
+    "Feud of the Electors",
+    "vote trading"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Elector Count is the most noble title in the imperial political system. They are the hereditary rulers of their respective provinces and have the sacred right to vote to elect the emperor. Fifteen electors - ten secular Elector Counts and three ecclesiastical electors - formed the electoral college in the Imperial Diet, which gathered in Altdorf whenever the imperial throne became vacant and used their votes to decide who would become the next emperor."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Elector Count - The name itself means power. The ten secular Elector Counts rule over Reikland, Midenland, Talabekland, Stirland, Nordland, Osterland, Ostermarkland, Iverland, Wesenland and Nulnland, and their titles are granted by Sigmar himself - or so they claim. Two other Archbishops of Sigmar and one Archbishop of Euric also had the sacred right to vote as ecclesiastical electors. Elector Counts were kings in their own domain: they made laws, minted coins, levied taxes, commanded armies, and their only legal obligation was to swear allegiance to the emperor and provide troops in the event of an invasion of the empire. But that's exactly the problem - Elector Counts are equal, and no one is willing to admit the superiority of another, so the history of the empire is, to a certain extent, a cycle of Elector Counts fighting, forming alliances, betraying, and reconciling with each other. The feud between the Wolfgaard family in Middenland and the Franz family in Reikland can be traced back to the time of the separation of the Three Emperors; the Feuerbach family in Talabekland is said to be the oldest human noble bloodline - it is said that one of their female ancestors once fought alongside Sigmar himself; the Elector Count in Stirland is known as a cavalry commander, and their family motto is 'Wrap your body in horse leather and not die on your bed'. For any Elector Count, the continuation of the family is more pressing than the survival of the empire."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The rules of the game of Elector Count are the most refined competitive art of imperial politics. As the Elector Count, you must always pay attention to three battlefields: in the conference room of the Imperial Parliament, you must use rhetoric and bribery to promote resolutions that benefit the province; in your own palace, you must ensure that your heir is cultivated by you to be strong enough, but also prevent him from wanting to take over power prematurely; on the borders of the provinces, you must use marriage to weave an airtight alliance network. The most ambitious of the Elector Counts - such as the Elector Count of Middenland - have never been willing to accept that the throne is monopolized by the Reiklanders. They will put forward their own candidates in every election, and even if they fail, they can use this to bargain. The power of the Church Electors is often underestimated: Archbishop Sigmar can have an Elector Count proposal shelved by the Imperial Council with a single word, and Archbishop Ulric can mobilize the people of the entire North to resist imperial decrees. For the Elector Count, the biggest pitfall is hubris - none of the rulers in history who thought they could act arbitrarily around other electors ended well."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 100
+        },
+        "IdentityIds": null
+      },
+      "Content": "As the core political structure of the empire, the Elector Count system's legal basis and evolution can be regarded as the most sophisticated research field in the history of political systems in the old world. The current Electoral College consists of fifteen members: ten secular Elector Counts representing the ten largest provinces of the empire, including the Franz family of Reikland (the current emperor), the Wolfgaard family of Middenland (the white wolf Elector Count, the guardian of Ulric's faith), the Feuerbach family of Talabekland (the oldest Elector Count Bloodline), Stirland (the core of the Imperial Cavalry tradition), Nordland (controllers of the North Sea Fleet), Osterland and Ostermarkland (guardians of the eastern border), Iverland (the empire's breadbasket), Wesenland (the barrier to the southern frontier), and Nulnland (the center of industry and military industry). Among the three church electors, Archbishop Sigmar was produced by the Archbishop of Altdorf, Archbishop Ulric came from the White Wolf Temple of Middenheim, and Archbishop Al Ulric was another high-ranking priest within the White Wolf Church. Historically, Sol and Driba also had the right to vote, but their votes were withdrawn after Sol was destroyed by the Chaos invasion, and Driba lost its electoral status in complex political transactions. These two cases are typical evidence of the dynamic evolution of the electoral system. The most academically controversial issue is the 'legitimacy threshold' of the election: According to the vague formulation of the Sigmar Code, the election of the emperor is not a simple majority rule, but requires a voting result called a 'consensus majority' - that is, the elected candidate must win at least ten votes. This design is designed to ensure that the emperor has the support of a broad rather than a weak majority. Historically, however, Emperor Magnus was supposedly elected unanimously, while Karl Franz also received thirteen votes - suggesting that true political legitimacy is far more nuanced than the letter of the law."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The gender issue in the Elector Count system is not a legal one but a reality - the Imperial Electoral Law has never prohibited women from serving as Elector Counts, but in the history of two thousand and five hundred years, the number of female Elector Counts who have sat in the Imperial Parliament in their own names rather than as guardians of their late husbands does not add up to more than one hand. When I myself exercised the electorate in my son’s capacity as regent, I felt that subtle change in the air every time I entered the halls of Parliament—not open hostility, but a collective, almost unconscious confusion, like a handful of fine furniture that had been misplaced. When voting in Parliament, other electors would automatically look first at the male steward behind me when they turned to me for a position. My strategy to deal with this is not to protest - protesting will only strengthen the 'abnormal' positioning - but to use an almost exhausting control of details to make every speech impeccable, and to make every submitted motion watertight in terms of data and logic. It took me three years for the old Elector Count of Middenland to come to me during recess for expert advice on Ostermark winter supplies - when your expertise reaches a point where they can't get around it, gender finally takes a backseat to a secondary attribute."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The position of Elector Count is not a position but a destiny for the family - once you obtain the title of Elector Count, your family no longer lives just for yourself, but for the continuation of power in the entire province. A mini-history of Imperial politics could be written about the investment our family has made in the last five generations to retain the Elector Count seat: in my grandfather's time, he bribed three other Elector Counts to prevent a behind-the-scenes motion to disenfranchise our family - an expense that is still disguised in the family books as a 'charitable donation'; in my father's time, he was forced to vote for Reikland in the Imperial elections. candidate and gave up my favorite Middenland candidate - because the invading greenskin army was besieging our border fortress at that time, and the only one who could mobilize reinforcements was Reikland; and in order to ensure that my son would not be easily overthrown from the seat of Elector Count in the future, I sent my eldest son to Altdorf University as a follower of Emperor Karl himself - this arrangement was both a statement of allegiance to the emperor and a subtle arrangement of exchanging hostages for trust."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "What does Elector Count look like to someone living on the streets? Once, I was squatting outside the Imperial Parliament building in Altdorf, eating a piece of brown bread for lunch, and happened to see two Elector Count's entourage standing in a stalemate at the street corner over which family's carriage would go first - they remained deadlocked for a full twenty minutes, and no one gave in. Finally, the attachés of the two families came out and had a friendly competition with training swords in the middle of the road to decide who would go first. I thought the scene was absolutely ridiculous—the men of the most powerful man in the empire were jousting in the street like two children competing for candy to decide the right of way for carriages. But later I gradually understood something: the feud and comparison between the Elector Counts is not a matter of personal emotions, but an inevitable product of the entire system - when the legitimacy of a provincial ruler is completely based on not having his power weakened by other provincial rulers, humility is equivalent to showing weakness, and showing weakness is equivalent to giving a knife to your political opponents. The Elector Counts are not afraid of the Emperor, because they can vote to replace the Emperor; they are afraid of other Elector Counts, because they cannot vote to replace them - the equality between Elector Counts makes the competition between them the most irreconcilable part of imperial politics."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Elector Count's pocketbook is the most alluring and dangerous investment in imperial business. Each Elector Count required a large amount of working capital—to maintain court decency, pay for the standing garrison, and buy swing votes in imperial elections—and the seasonal nature of rent income meant that all Elector Count families relied to varying degrees on short-term credit from merchants. As a chamber of commerce, we provide services to three Elector Count families. The core principle is: never become the largest creditor of any Elector Count family - because when a family owes you more money than they can repay, their easy solution is often not to sell off the property, but to find a way to 'permanently silence' you, the creditor. But at the same time, extending modest credit and allowing them to defer repayment in bad years can accrue a political protection stronger than any security treaty - no Elector Count will sit back and watch its main source of credit be deprived by another Elector Count. In the financial ecosystem of Elector Count, the safest profits lie not in interest and commissions, but in information: as a financial advisor to several major families, you can know who is likely to start a war and who is secretly gathering troops three months in advance before the Imperial Parliament. Sharing this information with the right buyers in the right way is often more substantial than direct financial returns."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "The title of Elector Count - Sigmar is a hereditary right of suffrage granted to tribal leaders, the cornerstone of imperial politics.",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Elector Count Elector Count System Empire Elector"
+  ]
+}

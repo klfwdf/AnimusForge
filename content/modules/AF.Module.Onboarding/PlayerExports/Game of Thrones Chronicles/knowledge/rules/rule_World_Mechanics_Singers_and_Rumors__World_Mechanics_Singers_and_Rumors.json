@@ -1,0 +1,150 @@
+{
+  "Id": "rule_World_Mechanics_Singers_and_Rumors",
+  "Keywords": [
+    "Singers",
+    "Tavern News",
+    "Reputation",
+    "Oral Tales"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Most folk read neither chronicles nor decrees, so singers, merchants, soldiers, servants, and tavern talk carry the news. A song can carry a battle, an elopement, or a sobriquet across the Seven Kingdoms, while dropping the vanquished for the sake of a rhyme, magnifying romance, or turning a patron into a hero. Rumor often outflies ravens yet defies tracing to its source; courts release tales on purpose to test reactions, while common folk use mocking songs to pay back high lords they cannot openly rebuke. A person's actual deeds may change, yet a reputation already abroad does not easily change its tune."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer",
+          "sailor",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Travelers and soldiers use songs to remember roads, names, and courage, knowing full well that every campfire adds another verse. Those who were there often fail to recognize in the song a version of themselves ten times braver than life."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "High lords need singers to spread their renown, yet dread mocking ballads slipping into the markets. Killing a singer may buy silence for a night, and make the song all the more worth singing thereafter."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "merchant",
+          "artisan"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Common folk sense levies, marriage pacts, and grain prices ahead of time through rumor, yet must judge truth from falsehood for themselves. The most dangerous tale is seldom a whole fabrication, but half a truth delivered to the ears most eager to believe it."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Singers Singers and Rumors: Songs and word of mouth cross the bounds of literacy to shape heroes, traitors, and scandals; the faster a tale travels, the more easily rhyme and interest rewrite the facts. Whether it is valid depends on who can grant the rights, collect the consideration, and actually make the judgment come to fruition in the event of default."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Singers Singers and Rumors: Songs and word of mouth cross the bounds of literacy to shape heroes, traitors, and scandals; the faster a tale travels, the more easily rhyme and interest rewrite the facts. The distant system is not empty talk only if it can be implemented in campfires, city gates and inns."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Singers Singers and Rumors: Songs and word of mouth cross the bounds of literacy to shape heroes, traitors, and scandals; the faster a tale travels, the more easily rhyme and interest rewrite the facts. If a rule is practiced over and over again, it will find its way into rituals, crafts, and prayers; if it is sustained only by fear, cracks will show at the onset of a crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Singers Singers and Rumors: Songs and word of mouth cross the bounds of literacy to shape heroes, traitors, and scandals; the faster a tale travels, the more easily rhyme and interest rewrite the facts. They remember taxes, grain, labor, relief and who can speak for them; these grand names will eventually fall on the family's rice pot."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Singers and Rumors: Songs and word of mouth cross the bounds of literacy to shape heroes, traitors, and scandals; the faster a tale travels, the more easily rhyme and interest rewrite the facts."
+  ]
+}

@@ -25,11 +25,11 @@ internal sealed class VoicePersonaImportExportAdapter
 			ExportVoiceMappingToDirectory(text);
 			export.Publish();
 			VoiceMapper.SetPreferredExportFolder(export.FinalPath);
-			InformationManager.DisplayMessage(new InformationMessage("导出完成：" + export.FinalPath));
+			InformationManager.DisplayMessage(new InformationMessage(ImportExportUiText.ExportCompleted(export.FinalPath)));
 		}
 		catch (Exception ex)
 		{
-			InformationManager.DisplayMessage(new InformationMessage("导出失败：" + ex.Message));
+			InformationManager.DisplayMessage(new InformationMessage(ImportExportUiText.ExportFailed(ex.Message)));
 		}
 	}
 
@@ -43,7 +43,7 @@ internal sealed class VoicePersonaImportExportAdapter
 			string importDir = PlayerExportsStore.ResolveImportFolderPath(folderName);
 			if (string.IsNullOrEmpty(importDir) || !Directory.Exists(importDir))
 			{
-				InformationManager.DisplayMessage(new InformationMessage("导入失败：找不到导出目录。"));
+				InformationManager.DisplayMessage(new InformationMessage(ImportExportUiText.MissingExportDirectory()));
 				completion?.Finish(OnboardingImportResult.Failed);
 				return;
 			}
@@ -60,14 +60,14 @@ internal sealed class VoicePersonaImportExportAdapter
 			}
 			if (string.IsNullOrEmpty(text) || !File.Exists(text))
 			{
-				InformationManager.DisplayMessage(new InformationMessage("导入失败：找不到 voice_mapping/VoiceMapping.json。"));
+				InformationManager.DisplayMessage(new InformationMessage(ImportExportUiText.MissingFile("voice_mapping/VoiceMapping.json")));
 				completion?.Finish(OnboardingImportResult.Failed);
 				return;
 			}
 			string json = File.ReadAllText(text, Encoding.UTF8);
 			if (string.IsNullOrWhiteSpace(json))
 			{
-				InformationManager.DisplayMessage(new InformationMessage("导入失败：VoiceMapping.json 为空。"));
+				InformationManager.DisplayMessage(new InformationMessage(ImportExportUiText.EmptyFile("VoiceMapping.json")));
 				completion?.Finish(OnboardingImportResult.Failed);
 				return;
 			}
@@ -87,7 +87,7 @@ internal sealed class VoicePersonaImportExportAdapter
 				{
 					_persistVoiceJson(VoiceMapper.ExportMappingJson(pretty: false) ?? "");
 				}
-				InformationManager.DisplayMessage(new InformationMessage(flag2 ? ("导入完成：" + importDir) : "导入失败：VoiceMapping JSON 无效。"));
+				InformationManager.DisplayMessage(new InformationMessage(flag2 ? ImportExportUiText.ImportCompleted(importDir) : ImportExportUiText.VoiceMappingInvalid()));
 
                 completion?.Finish(flag2 ? OnboardingImportResult.Completed : OnboardingImportResult.Failed);
 };
@@ -98,7 +98,7 @@ internal sealed class VoicePersonaImportExportAdapter
 				{
 					_persistVoiceJson(VoiceMapper.ExportMappingJson(pretty: false) ?? "");
 				}
-				InformationManager.DisplayMessage(new InformationMessage(flag2 ? ("导入完成（已合并）：" + importDir) : "导入失败：VoiceMapping JSON 无效。"));
+				InformationManager.DisplayMessage(new InformationMessage(flag2 ? ImportExportUiText.ImportCompletedMerged(importDir) : ImportExportUiText.VoiceMappingInvalid()));
 
                 completion?.Finish(flag2 ? OnboardingImportResult.Completed : OnboardingImportResult.Failed);
 };
@@ -106,7 +106,7 @@ internal sealed class VoicePersonaImportExportAdapter
 			if (flag)
 			{
 				completion?.Pending();
-				_showDuplicate("检测到重复 - VoiceMapping", "当前已存在声音映射。\n请选择处理方式：", action, onSkipDuplicates, delegate
+				_showDuplicate(ImportExportUiText.VoiceMappingDuplicateTitle(), ImportExportUiText.VoiceMappingDuplicateBody(), action, onSkipDuplicates, delegate
 				{
                     if (completion != null && !completion.CanApply()) return;
                     completion?.Finish(OnboardingImportResult.Cancelled);
@@ -120,7 +120,7 @@ internal sealed class VoicePersonaImportExportAdapter
 		catch (Exception ex)
 		{
             completion?.Finish(OnboardingImportResult.Failed);
-			InformationManager.DisplayMessage(new InformationMessage("导入失败：" + ex.Message));
+			InformationManager.DisplayMessage(new InformationMessage(ImportExportUiText.ImportFailed(ex.Message)));
 		}
 	}
 
@@ -194,7 +194,7 @@ bool flag3 = true;
 				}
 				if (!flag3)
 				{
-					InformationManager.DisplayMessage(new InformationMessage("警告：VoiceMapping 导入失败，已跳过。"));
+					InformationManager.DisplayMessage(new InformationMessage(ImportExportUiText.VoiceMappingWarningSkipped()));
 				}
  }
 

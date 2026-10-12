@@ -490,11 +490,11 @@ public sealed partial class ProactiveNpcRequestBehavior
 	private static string BuildLetterNeedFact(ProactiveCandidate candidate)
 	{
 		string npcName = candidate?.Hero?.Name?.ToString() ?? "NPC";
-		string playerName = MyBehavior.BuildPlayerPublicDisplayNameForExternal(candidate?.Hero) ?? Hero.MainHero?.Name?.ToString() ?? "玩家";
+		string playerName = MyBehavior.BuildPlayerPublicDisplayNameForExternal(candidate?.Hero) ?? Hero.MainHero?.Name?.ToString() ?? SocialSourceTexts.Get("S001");
 		string needType = NormalizeNeedType(candidate?.NeedType);
 		if (string.Equals(needType, NeedPolicyDiscussion, StringComparison.OrdinalIgnoreCase))
 		{
-			return "[AFEF NPC行为补充] " + npcName + "决定主动写信给" + playerName + "。"
+			return SocialSourceTexts.Get("S308") + npcName + SocialSourceTexts.Get("S309") + playerName + "。"
 				+ BuildPolicyDiscussionSituation(new PolicyDiscussionSnapshot
 				{
 					PolicyId = candidate?.PolicyDiscussionPolicyId,
@@ -503,10 +503,10 @@ public sealed partial class ProactiveNpcRequestBehavior
 					KingdomName = candidate?.PolicyDiscussionKingdomName,
 					PublishedDay = candidate?.PolicyDiscussionPublishedDay ?? 0
 				}, npcName, playerName)
-				+ "这是你自己的来意；" + playerName + "尚未答应任何事。";
+				+ SocialSourceTexts.Get("S310") + playerName + SocialSourceTexts.Get("S311");
 		}
 		string evidence = BuildLetterNeedEvidence(candidate, needType);
-		return "[AFEF NPC行为补充] " + npcName + "决定主动写信给" + playerName + "。" + evidence + "这封信只谈这一件眼前事；" + playerName + "尚未答应任何安排。";
+		return SocialSourceTexts.Get("S308") + npcName + SocialSourceTexts.Get("S309") + playerName + "。" + evidence + SocialSourceTexts.Get("S312") + playerName + SocialSourceTexts.Get("S313");
 	}
 
 	private static string BuildLetterNeedIntent(ProactiveCandidate candidate)
@@ -609,71 +609,71 @@ public sealed partial class ProactiveNpcRequestBehavior
 		{
 			return "";
 		}
-		if (string.Equals(needType, NeedFoodShortage, StringComparison.OrdinalIgnoreCase)) return "队伍的粮食已快见底。";
-		if (string.Equals(needType, NeedMoneyShortage, StringComparison.OrdinalIgnoreCase)) return "军饷和行军开销让队伍难以周转。";
-		if (string.Equals(needType, NeedTroopShortage, StringComparison.OrdinalIgnoreCase)) return "队伍人手单薄，难以独自应付眼前局面。";
-		if (string.Equals(needType, NeedPrisonerOverload, StringComparison.OrdinalIgnoreCase)) return "随军俘虏过多，已经难以妥善看守。";
-		if (string.Equals(needType, NeedClanCaptive, StringComparison.OrdinalIgnoreCase)) return string.IsNullOrWhiteSpace(candidate.CaptiveClanHeroName) ? "家族中有人被俘，音讯令人焦灼。" : candidate.CaptiveClanHeroName + "被俘，家族正设法营救。";
-		if (string.Equals(needType, NeedLowMorale, StringComparison.OrdinalIgnoreCase)) return "队中人心浮动，需要尽快稳住军心。";
-		if (string.Equals(needType, NeedMountShortage, StringComparison.OrdinalIgnoreCase)) return "队伍缺少坐骑，行军明显受拖累。";
-		if (string.Equals(needType, NeedOverburdened, StringComparison.OrdinalIgnoreCase)) return "队伍携带的辎重过多，行军十分吃力。";
-		if (string.Equals(needType, NeedClanFinanceStrain, StringComparison.OrdinalIgnoreCase)) return "家族账目吃紧，维持开销十分艰难。";
-		if (string.Equals(needType, NeedClanService, StringComparison.OrdinalIgnoreCase)) return "家族没有封地，正在为今后的归处寻一条路。";
-		if (string.Equals(needType, NeedRomanticInteraction, StringComparison.OrdinalIgnoreCase)) return "他想向玩家坦露自己的牵挂。";
-		if (string.Equals(needType, NeedGreeting, StringComparison.OrdinalIgnoreCase)) return "他想向一位熟人问候近况。";
-		if (string.Equals(needType, NeedFriendship, StringComparison.OrdinalIgnoreCase)) return "他听闻玩家在本地颇有名声，想结识这位尚未熟悉的人。";
-		if (string.Equals(needType, NeedCourtship, StringComparison.OrdinalIgnoreCase)) return "他听闻玩家的名声，想向这位尚未熟悉的人表达好感。";
-		if (string.Equals(needType, NeedArmyJoinRequest, StringComparison.OrdinalIgnoreCase)) return "战局不利，军团急需更多人手。";
-		if (string.Equals(needType, NeedBanditSuppression, StringComparison.OrdinalIgnoreCase)) return (candidate.BanditSuppressionSettlementName ?? "一处家族封地") + "附近强盗横行。";
-		if (string.Equals(needType, NeedPoliticalRivalSuppression, StringComparison.OrdinalIgnoreCase)) return "他与" + (candidate.PoliticalRivalSuppressionRivalClanName ?? "同阵营的一家势力") + "积怨甚深，正需要盟友撑腰。";
-		if (string.Equals(needType, NeedSettlementPurchase, StringComparison.OrdinalIgnoreCase)) return "他看中玩家手中的封地，想商谈购入其中一处。玩家现有封地包括：" + (candidate.SettlementPurchasePlayerFiefsText ?? "未详") + "。";
-		if (string.Equals(needType, NeedSettlementSale, StringComparison.OrdinalIgnoreCase)) return (candidate.SettlementSaleTargetSettlementName ?? "一处边境封地") + "地处边境、收益不佳，又邻近" + (candidate.SettlementSaleForeignFactionName ?? "其他势力") + "的" + (candidate.SettlementSaleForeignSettlementName ?? "封地") + "；他想商谈将其转手。";
-		if (string.Equals(needType, NeedTerritorialInterrogation, StringComparison.OrdinalIgnoreCase)) return "他在" + (candidate.TerritorialInterrogationSettlementName ?? "本国领地") + "附近遇见一位来历不明的异乡人。";
-		if (string.Equals(needType, NeedMarriageAlliancePressure, StringComparison.OrdinalIgnoreCase)) return "家族正为传承和婚配的事忧心。";
-		if (string.Equals(needType, NeedRevengePressure, StringComparison.OrdinalIgnoreCase)) return "家族因" + (candidate.RevengeReasonText ?? "近来的风波") + "承受压力" + (string.IsNullOrWhiteSpace(candidate.RevengeTargetName) ? "。" : "，矛头指向" + candidate.RevengeTargetName + "。 ");
-		if (string.Equals(needType, NeedFiefGovernanceAnxiety, StringComparison.OrdinalIgnoreCase)) return (candidate.FiefProblemName ?? "一处封地") + "正受" + (candidate.FiefIssueText ?? "治理困境") + "困扰。";
-		if (string.Equals(needType, NeedAllySupport, StringComparison.OrdinalIgnoreCase)) return "家族在王国内显得孤立，正需要可信的盟友。";
-		if (string.Equals(needType, NeedKingdomMercenaryInvite, StringComparison.OrdinalIgnoreCase)) return "王国正缺能立刻上阵的可靠人手。";
-		if (string.Equals(needType, NeedKingdomVassalInvite, StringComparison.OrdinalIgnoreCase)) return "王国需要愿意长期分担责任的家族。";
-		if (string.Equals(needType, NeedPoliticalAgenda, StringComparison.OrdinalIgnoreCase)) return "王国内有一件议事正需要有人表态。";
-		if (string.Equals(needType, NeedPolicySupport, StringComparison.OrdinalIgnoreCase)) return "他一直主张《" + (candidate.PolicySupportPolicyName ?? "某项政策") + "》。";
-		if (string.Equals(needType, NeedDiplomacy, StringComparison.OrdinalIgnoreCase)) return "本国近日收到了一些值得商议的外交消息。";
+		if (string.Equals(needType, NeedFoodShortage, StringComparison.OrdinalIgnoreCase)) return SocialSourceTexts.Get("S314");
+		if (string.Equals(needType, NeedMoneyShortage, StringComparison.OrdinalIgnoreCase)) return SocialSourceTexts.Get("S315");
+		if (string.Equals(needType, NeedTroopShortage, StringComparison.OrdinalIgnoreCase)) return SocialSourceTexts.Get("S316");
+		if (string.Equals(needType, NeedPrisonerOverload, StringComparison.OrdinalIgnoreCase)) return SocialSourceTexts.Get("S317");
+		if (string.Equals(needType, NeedClanCaptive, StringComparison.OrdinalIgnoreCase)) return string.IsNullOrWhiteSpace(candidate.CaptiveClanHeroName) ? SocialSourceTexts.Get("S318") : candidate.CaptiveClanHeroName + SocialSourceTexts.Get("S319");
+		if (string.Equals(needType, NeedLowMorale, StringComparison.OrdinalIgnoreCase)) return SocialSourceTexts.Get("S320");
+		if (string.Equals(needType, NeedMountShortage, StringComparison.OrdinalIgnoreCase)) return SocialSourceTexts.Get("S321");
+		if (string.Equals(needType, NeedOverburdened, StringComparison.OrdinalIgnoreCase)) return SocialSourceTexts.Get("S322");
+		if (string.Equals(needType, NeedClanFinanceStrain, StringComparison.OrdinalIgnoreCase)) return SocialSourceTexts.Get("S323");
+		if (string.Equals(needType, NeedClanService, StringComparison.OrdinalIgnoreCase)) return SocialSourceTexts.Get("S324");
+		if (string.Equals(needType, NeedRomanticInteraction, StringComparison.OrdinalIgnoreCase)) return SocialSourceTexts.Get("S325");
+		if (string.Equals(needType, NeedGreeting, StringComparison.OrdinalIgnoreCase)) return SocialSourceTexts.Get("S326");
+		if (string.Equals(needType, NeedFriendship, StringComparison.OrdinalIgnoreCase)) return SocialSourceTexts.Get("S327");
+		if (string.Equals(needType, NeedCourtship, StringComparison.OrdinalIgnoreCase)) return SocialSourceTexts.Get("S328");
+		if (string.Equals(needType, NeedArmyJoinRequest, StringComparison.OrdinalIgnoreCase)) return SocialSourceTexts.Get("S329");
+		if (string.Equals(needType, NeedBanditSuppression, StringComparison.OrdinalIgnoreCase)) return (candidate.BanditSuppressionSettlementName ?? SocialSourceTexts.Get("S330")) + SocialSourceTexts.Get("S331");
+		if (string.Equals(needType, NeedPoliticalRivalSuppression, StringComparison.OrdinalIgnoreCase)) return SocialSourceTexts.Get("S332") + (candidate.PoliticalRivalSuppressionRivalClanName ?? SocialSourceTexts.Get("S333")) + SocialSourceTexts.Get("S334");
+		if (string.Equals(needType, NeedSettlementPurchase, StringComparison.OrdinalIgnoreCase)) return SocialSourceTexts.Get("S335") + (candidate.SettlementPurchasePlayerFiefsText ?? SocialSourceTexts.Get("S336")) + "。";
+		if (string.Equals(needType, NeedSettlementSale, StringComparison.OrdinalIgnoreCase)) return (candidate.SettlementSaleTargetSettlementName ?? SocialSourceTexts.Get("S337")) + SocialSourceTexts.Get("S338") + (candidate.SettlementSaleForeignFactionName ?? SocialSourceTexts.Get("S339")) + SocialSourceTexts.Get("S045") + (candidate.SettlementSaleForeignSettlementName ?? SocialSourceTexts.Get("S340")) + SocialSourceTexts.Get("S341");
+		if (string.Equals(needType, NeedTerritorialInterrogation, StringComparison.OrdinalIgnoreCase)) return SocialSourceTexts.Get("S342") + (candidate.TerritorialInterrogationSettlementName ?? SocialSourceTexts.Get("S343")) + SocialSourceTexts.Get("S344");
+		if (string.Equals(needType, NeedMarriageAlliancePressure, StringComparison.OrdinalIgnoreCase)) return SocialSourceTexts.Get("S345");
+		if (string.Equals(needType, NeedRevengePressure, StringComparison.OrdinalIgnoreCase)) return SocialSourceTexts.Get("S346") + (candidate.RevengeReasonText ?? SocialSourceTexts.Get("S347")) + SocialSourceTexts.Get("S348") + (string.IsNullOrWhiteSpace(candidate.RevengeTargetName) ? "。" : SocialSourceTexts.Get("S349") + candidate.RevengeTargetName + "。 ");
+		if (string.Equals(needType, NeedFiefGovernanceAnxiety, StringComparison.OrdinalIgnoreCase)) return (candidate.FiefProblemName ?? SocialSourceTexts.Get("S350")) + SocialSourceTexts.Get("S351") + (candidate.FiefIssueText ?? SocialSourceTexts.Get("S352")) + SocialSourceTexts.Get("S353");
+		if (string.Equals(needType, NeedAllySupport, StringComparison.OrdinalIgnoreCase)) return SocialSourceTexts.Get("S354");
+		if (string.Equals(needType, NeedKingdomMercenaryInvite, StringComparison.OrdinalIgnoreCase)) return SocialSourceTexts.Get("S355");
+		if (string.Equals(needType, NeedKingdomVassalInvite, StringComparison.OrdinalIgnoreCase)) return SocialSourceTexts.Get("S356");
+		if (string.Equals(needType, NeedPoliticalAgenda, StringComparison.OrdinalIgnoreCase)) return SocialSourceTexts.Get("S357");
+		if (string.Equals(needType, NeedPolicySupport, StringComparison.OrdinalIgnoreCase)) return SocialSourceTexts.Get("S358") + (candidate.PolicySupportPolicyName ?? SocialSourceTexts.Get("S359")) + "》。";
+		if (string.Equals(needType, NeedDiplomacy, StringComparison.OrdinalIgnoreCase)) return SocialSourceTexts.Get("S360");
 		return "";
 	}
 
 	private static string GetNeedDisplayName(string needType)
 	{
-		if (string.Equals(needType, NeedFoodShortage, StringComparison.OrdinalIgnoreCase)) return "缺粮";
-		if (string.Equals(needType, NeedMoneyShortage, StringComparison.OrdinalIgnoreCase)) return "缺钱";
-		if (string.Equals(needType, NeedTroopShortage, StringComparison.OrdinalIgnoreCase)) return "缺兵";
-		if (string.Equals(needType, NeedPrisonerOverload, StringComparison.OrdinalIgnoreCase)) return "俘虏过载或赎买";
-		if (string.Equals(needType, NeedClanCaptive, StringComparison.OrdinalIgnoreCase)) return "家族成员被俘";
-		if (string.Equals(needType, NeedLowMorale, StringComparison.OrdinalIgnoreCase)) return "队伍士气低落";
-		if (string.Equals(needType, NeedMountShortage, StringComparison.OrdinalIgnoreCase)) return "缺少坐骑";
-		if (string.Equals(needType, NeedOverburdened, StringComparison.OrdinalIgnoreCase)) return "负重压力";
-		if (string.Equals(needType, NeedClanFinanceStrain, StringComparison.OrdinalIgnoreCase)) return "家族财政紧张";
-		if (string.Equals(needType, NeedClanService, StringComparison.OrdinalIgnoreCase)) return "家族请求效力";
-		if (string.Equals(needType, NeedRomanticInteraction, StringComparison.OrdinalIgnoreCase)) return "亲密互动";
-		if (string.Equals(needType, NeedGreeting, StringComparison.OrdinalIgnoreCase)) return "主动问候";
-		if (string.Equals(needType, NeedPolicyDiscussion, StringComparison.OrdinalIgnoreCase)) return "讨论近来政策";
-		if (string.Equals(needType, NeedFriendship, StringComparison.OrdinalIgnoreCase)) return "主动交友";
-		if (string.Equals(needType, NeedCourtship, StringComparison.OrdinalIgnoreCase)) return "主动求爱";
-		if (string.Equals(needType, NeedArmyJoinRequest, StringComparison.OrdinalIgnoreCase)) return "请求加入军团";
-		if (string.Equals(needType, NeedBanditSuppression, StringComparison.OrdinalIgnoreCase)) return "请求剿匪";
-		if (string.Equals(needType, NeedPoliticalRivalSuppression, StringComparison.OrdinalIgnoreCase)) return "压制政敌";
-		if (string.Equals(needType, NeedSettlementPurchase, StringComparison.OrdinalIgnoreCase)) return "购买封地";
-		if (string.Equals(needType, NeedSettlementSale, StringComparison.OrdinalIgnoreCase)) return "出售边境封地";
-		if (string.Equals(needType, NeedTerritorialInterrogation, StringComparison.OrdinalIgnoreCase)) return "领地盘问";
-		if (string.Equals(needType, NeedMarriageAlliancePressure, StringComparison.OrdinalIgnoreCase)) return "联姻压力";
-		if (string.Equals(needType, NeedRevengePressure, StringComparison.OrdinalIgnoreCase)) return "复仇或营救压力";
-		if (string.Equals(needType, NeedFiefGovernanceAnxiety, StringComparison.OrdinalIgnoreCase)) return "封地治理压力";
-		if (string.Equals(needType, NeedAllySupport, StringComparison.OrdinalIgnoreCase)) return "缺少盟友支持";
-		if (string.Equals(needType, NeedKingdomMercenaryInvite, StringComparison.OrdinalIgnoreCase)) return "王国缺少雇佣兵";
-		if (string.Equals(needType, NeedKingdomVassalInvite, StringComparison.OrdinalIgnoreCase)) return "王国缺少封臣";
-		if (string.Equals(needType, NeedPoliticalAgenda, StringComparison.OrdinalIgnoreCase)) return "王国政治议程";
-		if (string.Equals(needType, NeedPolicySupport, StringComparison.OrdinalIgnoreCase)) return "支持政策";
-		if (string.Equals(needType, NeedDiplomacy, StringComparison.OrdinalIgnoreCase)) return "讨论外交局势";
-		return string.IsNullOrWhiteSpace(needType) ? "具体请求" : needType;
+		if (string.Equals(needType, NeedFoodShortage, StringComparison.OrdinalIgnoreCase)) return SocialPromptTexts.Get("AF_SOCIAL_UI_ProactiveNeed_01");
+		if (string.Equals(needType, NeedMoneyShortage, StringComparison.OrdinalIgnoreCase)) return SocialPromptTexts.Get("AF_SOCIAL_UI_ProactiveNeed_02");
+		if (string.Equals(needType, NeedTroopShortage, StringComparison.OrdinalIgnoreCase)) return SocialPromptTexts.Get("AF_SOCIAL_UI_ProactiveNeed_03");
+		if (string.Equals(needType, NeedPrisonerOverload, StringComparison.OrdinalIgnoreCase)) return SocialPromptTexts.Get("AF_SOCIAL_UI_ProactiveNeed_04");
+		if (string.Equals(needType, NeedClanCaptive, StringComparison.OrdinalIgnoreCase)) return SocialPromptTexts.Get("AF_SOCIAL_UI_ProactiveNeed_05");
+		if (string.Equals(needType, NeedLowMorale, StringComparison.OrdinalIgnoreCase)) return SocialPromptTexts.Get("AF_SOCIAL_UI_ProactiveNeed_06");
+		if (string.Equals(needType, NeedMountShortage, StringComparison.OrdinalIgnoreCase)) return SocialPromptTexts.Get("AF_SOCIAL_UI_ProactiveNeed_07");
+		if (string.Equals(needType, NeedOverburdened, StringComparison.OrdinalIgnoreCase)) return SocialPromptTexts.Get("AF_SOCIAL_UI_ProactiveNeed_08");
+		if (string.Equals(needType, NeedClanFinanceStrain, StringComparison.OrdinalIgnoreCase)) return SocialPromptTexts.Get("AF_SOCIAL_UI_ProactiveNeed_09");
+		if (string.Equals(needType, NeedClanService, StringComparison.OrdinalIgnoreCase)) return SocialPromptTexts.Get("AF_SOCIAL_UI_ProactiveNeed_10");
+		if (string.Equals(needType, NeedRomanticInteraction, StringComparison.OrdinalIgnoreCase)) return SocialPromptTexts.Get("AF_SOCIAL_UI_ProactiveNeed_11");
+		if (string.Equals(needType, NeedGreeting, StringComparison.OrdinalIgnoreCase)) return SocialPromptTexts.Get("AF_SOCIAL_UI_ProactiveNeed_12");
+		if (string.Equals(needType, NeedPolicyDiscussion, StringComparison.OrdinalIgnoreCase)) return SocialPromptTexts.Get("AF_SOCIAL_UI_ProactiveNeed_13");
+		if (string.Equals(needType, NeedFriendship, StringComparison.OrdinalIgnoreCase)) return SocialPromptTexts.Get("AF_SOCIAL_UI_ProactiveNeed_14");
+		if (string.Equals(needType, NeedCourtship, StringComparison.OrdinalIgnoreCase)) return SocialPromptTexts.Get("AF_SOCIAL_UI_ProactiveNeed_15");
+		if (string.Equals(needType, NeedArmyJoinRequest, StringComparison.OrdinalIgnoreCase)) return SocialPromptTexts.Get("AF_SOCIAL_UI_ProactiveNeed_16");
+		if (string.Equals(needType, NeedBanditSuppression, StringComparison.OrdinalIgnoreCase)) return SocialPromptTexts.Get("AF_SOCIAL_UI_ProactiveNeed_17");
+		if (string.Equals(needType, NeedPoliticalRivalSuppression, StringComparison.OrdinalIgnoreCase)) return SocialPromptTexts.Get("AF_SOCIAL_UI_ProactiveNeed_18");
+		if (string.Equals(needType, NeedSettlementPurchase, StringComparison.OrdinalIgnoreCase)) return SocialPromptTexts.Get("AF_SOCIAL_UI_ProactiveNeed_19");
+		if (string.Equals(needType, NeedSettlementSale, StringComparison.OrdinalIgnoreCase)) return SocialPromptTexts.Get("AF_SOCIAL_UI_ProactiveNeed_20");
+		if (string.Equals(needType, NeedTerritorialInterrogation, StringComparison.OrdinalIgnoreCase)) return SocialPromptTexts.Get("AF_SOCIAL_UI_ProactiveNeed_21");
+		if (string.Equals(needType, NeedMarriageAlliancePressure, StringComparison.OrdinalIgnoreCase)) return SocialPromptTexts.Get("AF_SOCIAL_UI_ProactiveNeed_22");
+		if (string.Equals(needType, NeedRevengePressure, StringComparison.OrdinalIgnoreCase)) return SocialPromptTexts.Get("AF_SOCIAL_UI_ProactiveNeed_23");
+		if (string.Equals(needType, NeedFiefGovernanceAnxiety, StringComparison.OrdinalIgnoreCase)) return SocialPromptTexts.Get("AF_SOCIAL_UI_ProactiveNeed_24");
+		if (string.Equals(needType, NeedAllySupport, StringComparison.OrdinalIgnoreCase)) return SocialPromptTexts.Get("AF_SOCIAL_UI_ProactiveNeed_25");
+		if (string.Equals(needType, NeedKingdomMercenaryInvite, StringComparison.OrdinalIgnoreCase)) return SocialPromptTexts.Get("AF_SOCIAL_UI_ProactiveNeed_26");
+		if (string.Equals(needType, NeedKingdomVassalInvite, StringComparison.OrdinalIgnoreCase)) return SocialPromptTexts.Get("AF_SOCIAL_UI_ProactiveNeed_27");
+		if (string.Equals(needType, NeedPoliticalAgenda, StringComparison.OrdinalIgnoreCase)) return SocialPromptTexts.Get("AF_SOCIAL_UI_ProactiveNeed_28");
+		if (string.Equals(needType, NeedPolicySupport, StringComparison.OrdinalIgnoreCase)) return SocialPromptTexts.Get("AF_SOCIAL_UI_ProactiveNeed_29");
+		if (string.Equals(needType, NeedDiplomacy, StringComparison.OrdinalIgnoreCase)) return SocialPromptTexts.Get("AF_SOCIAL_UI_ProactiveNeed_30");
+		return string.IsNullOrWhiteSpace(needType) ? SocialPromptTexts.Get("AF_SOCIAL_UI_ProactiveNeed_31") : needType;
 	}
 
 	private bool TryBuildBaseCandidate(MobileParty party, MobileParty mainParty, DuelSettings settings, out ProactiveCandidate candidate, out string skipReason)
@@ -1836,13 +1836,13 @@ public sealed partial class ProactiveNpcRequestBehavior
 		}
 		string policyName = (snapshot.PolicyName ?? "").Trim();
 		string policyContent = (snapshot.PolicyContent ?? "").Trim();
-		string targetName = string.IsNullOrWhiteSpace(playerName) ? "玩家" : playerName.Trim();
+		string targetName = string.IsNullOrWhiteSpace(playerName) ? SocialSourceTexts.Get("S001") : playerName.Trim();
 		if (string.IsNullOrWhiteSpace(policyName) || string.IsNullOrWhiteSpace(policyContent))
 		{
 			return "";
 		}
-		return "近来公布了一项政策《" + policyName + "》。政策全文如下：\n" + policyContent
-			+ "\n你想与" + targetName + "谈谈自己对这项政策的看法。";
+		return SocialSourceTexts.Get("S392") + policyName + SocialSourceTexts.Get("S393") + policyContent
+			+ SocialSourceTexts.Get("S394") + targetName + SocialSourceTexts.Get("S395");
 	}
 
 	private bool TryBuildFriendshipCandidate(ProactiveCandidate source, DuelSettings settings, out ProactiveCandidate candidate)
@@ -2455,7 +2455,7 @@ public sealed partial class ProactiveNpcRequestBehavior
 			}
 			snapshot = new PolicySupportSnapshot
 			{
-				KingdomName = (kingdom.Name?.ToString() ?? "该王国").Trim(),
+				KingdomName = (kingdom.Name?.ToString() ?? SocialSourceTexts.Get("S396")).Trim(),
 				PlayerClanRelation = playerClanRelation,
 				PolicyName = cachedSnapshot.PolicyName,
 				Description = cachedSnapshot.Description,
@@ -2631,8 +2631,8 @@ public sealed partial class ProactiveNpcRequestBehavior
 			}
 			snapshot = new ClanServiceNeedSnapshot
 			{
-				TargetClanName = targetClan.Name?.ToString() ?? "该家族",
-				CurrentKingName = currentRulingClan.Leader?.Name?.ToString() ?? "现任国王",
+				TargetClanName = targetClan.Name?.ToString() ?? SocialSourceTexts.Get("S397"),
+				CurrentKingName = currentRulingClan.Leader?.Name?.ToString() ?? SocialSourceTexts.Get("S398"),
 				PlayerRelation = playerRelation,
 				CurrentKingRelation = currentKingRelation,
 				RelationGap = relationGap
@@ -2700,10 +2700,10 @@ public sealed partial class ProactiveNpcRequestBehavior
 
 			snapshot = new PoliticalRivalSuppressionSnapshot
 			{
-				KingdomName = (kingdom.Name?.ToString() ?? "该王国").Trim(),
-				RequesterClanName = (requesterClan.Name?.ToString() ?? "该家族").Trim(),
+				KingdomName = (kingdom.Name?.ToString() ?? SocialSourceTexts.Get("S396")).Trim(),
+				RequesterClanName = (requesterClan.Name?.ToString() ?? SocialSourceTexts.Get("S397")).Trim(),
 				PlayerClanRelation = playerClanRelation,
-				RivalClanName = (rivalClan.Name?.ToString() ?? "同阵营家族").Trim(),
+				RivalClanName = (rivalClan.Name?.ToString() ?? SocialSourceTexts.Get("S399")).Trim(),
 				RivalClanRelation = rivalClanRelation
 			};
 			return true;
@@ -2773,11 +2773,11 @@ public sealed partial class ProactiveNpcRequestBehavior
 			int requesterCastleCount = requesterFiefs.Count(x => x.IsCastle);
 			snapshot = new SettlementPurchaseSnapshot
 			{
-				KingdomName = (kingdom.Name?.ToString() ?? "该王国").Trim(),
+				KingdomName = (kingdom.Name?.ToString() ?? SocialSourceTexts.Get("S396")).Trim(),
 				PlayerFiefCount = playerFiefs.Count,
 				PlayerTownCount = playerTowns.Count,
 				PlayerCastleCount = playerCastles.Count,
-				PlayerFiefsText = "城镇：" + (playerTowns.Count > 0 ? string.Join("、", playerTowns) : "无") + "；城堡：" + (playerCastles.Count > 0 ? string.Join("、", playerCastles) : "无"),
+				PlayerFiefsText = SocialSourceTexts.Get("S400") + (playerTowns.Count > 0 ? string.Join("、", playerTowns) : SocialSourceTexts.Get("S401")) + SocialSourceTexts.Get("S402") + (playerCastles.Count > 0 ? string.Join("、", playerCastles) : SocialSourceTexts.Get("S401")),
 				NpcFiefCount = requesterFiefs.Count,
 				NpcTownCount = requesterTownCount,
 				NpcCastleCount = requesterCastleCount
@@ -2862,7 +2862,7 @@ public sealed partial class ProactiveNpcRequestBehavior
 			}
 			snapshot = new SettlementSaleSnapshot
 			{
-				KingdomName = (kingdom.Name?.ToString() ?? "该王国").Trim(),
+				KingdomName = (kingdom.Name?.ToString() ?? SocialSourceTexts.Get("S396")).Trim(),
 				PlayerClanRelation = playerClanRelation,
 				NpcFiefCount = clanSnapshot.NpcFiefCount,
 				TargetSettlementName = clanSnapshot.TargetSettlementName,
@@ -2985,7 +2985,7 @@ public sealed partial class ProactiveNpcRequestBehavior
 			{
 				NpcFiefCount = fiefIncomes.Count,
 				TargetSettlementName = GetSettlementDisplayName(target.Settlement),
-				TargetSettlementType = target.Settlement.IsTown ? "城镇" : "城堡",
+				TargetSettlementType = target.Settlement.IsTown ? SocialSourceTexts.Get("S403") : SocialSourceTexts.Get("S404"),
 				TargetDailyIncome = target.DailyIncome,
 				HighestFamilyDailyIncome = highestIncome,
 				ForeignSettlementName = GetSettlementDisplayName(foreignSettlement),
@@ -3069,11 +3069,11 @@ public sealed partial class ProactiveNpcRequestBehavior
 			return (settlement?.MapFaction?.Name?.ToString()
 				?? settlement?.OwnerClan?.Kingdom?.Name?.ToString()
 				?? settlement?.OwnerClan?.Name?.ToString()
-				?? "其他势力").Trim();
+				?? SocialSourceTexts.Get("S339")).Trim();
 		}
 		catch
 		{
-			return "其他势力";
+			return SocialSourceTexts.Get("S339");
 		}
 	}
 
@@ -3352,7 +3352,7 @@ public sealed partial class ProactiveNpcRequestBehavior
 			}
 			snapshot = new ArmyJoinRequestSnapshot
 			{
-				ArmyName = (army.Name?.ToString() ?? (hero.Name?.ToString() ?? "该领主") + "的军团").Trim(),
+				ArmyName = (army.Name?.ToString() ?? (hero.Name?.ToString() ?? SocialSourceTexts.Get("S405")) + SocialSourceTexts.Get("S406")).Trim(),
 				OwnStrength = ownStrength,
 				EnemyStrength = enemyStrength,
 				EnemyKingdomCount = enemyKingdomCount,
@@ -3474,7 +3474,7 @@ public sealed partial class ProactiveNpcRequestBehavior
 				{
 					result = new BanditSuppressionSnapshot
 					{
-						SettlementName = (settlement.Name?.ToString() ?? settlement.StringId ?? "某处封地").Trim(),
+						SettlementName = (settlement.Name?.ToString() ?? settlement.StringId ?? SocialSourceTexts.Get("S407")).Trim(),
 						BanditCount = banditCount,
 						Radius = radius
 					};
@@ -3584,7 +3584,7 @@ public sealed partial class ProactiveNpcRequestBehavior
 			}
 			result = new TerritorialSettlementSnapshot
 			{
-				SettlementName = (settlement.Name?.ToString() ?? settlement.StringId ?? "该王国定居点").Trim(),
+				SettlementName = (settlement.Name?.ToString() ?? settlement.StringId ?? SocialSourceTexts.Get("S408")).Trim(),
 				Distance = distance
 			};
 		}

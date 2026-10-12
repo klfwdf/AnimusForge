@@ -108,12 +108,13 @@ Assert-Contract ($deploy.Contains('Invoke-AnimusForgeContentProjection -ProjectR
 Assert-Contract ($deploy.Contains('Assert-AnimusForgeCleanStage -ProjectRoot $projectRootFull -StageModuleDir $projectStageDir -RequireCurrentArtifacts')) 'deploy does not validate current Stage artifacts'
 Assert-Contract (-not $deploy.Contains('Invoke-Robocopy') -and -not $deploy.Contains('/MIR')) 'deploy still contains broad installed-directory copying'
 Assert-Contract (-not $deploy.Contains('Merge-InstalledCustomPromptsIntoStaging')) 'deploy still merges installed prompt overrides into Stage'
-$promptEntries = @($realMap.entries | Where-Object { $_.target.StartsWith('CustomPrompts/') })
-$policyEntries = @($promptEntries | Where-Object { $_.target.StartsWith('CustomPrompts/Policy/') })
-Assert-Contract ($promptEntries.Count -eq 30 -and $policyEntries.Count -eq 22) 'mapped prompt default counts'
+$promptEntries = @($realMap.entries | Where-Object { $_.target.StartsWith('ModuleData/Defaults/CustomPrompts/') })
+$policyEntries = @($promptEntries | Where-Object { $_.target.StartsWith('ModuleData/Defaults/CustomPrompts/Policy/') })
+Assert-Contract ($promptEntries.Count -eq 31 -and $policyEntries.Count -eq 22) 'mapped immutable prompt default counts'
+Assert-Contract (@($realMap.entries | Where-Object { $_.target.StartsWith('CustomPrompts/') }).Count -eq 0) 'user overrides must not be packaged as defaults'
 foreach ($entry in $promptEntries) {
     $source = Join-Path $ProjectRoot ([string]$entry.source)
     $target = Join-Path $realDestination ([string]$entry.target)
     Assert-Contract ((Get-FileHash -LiteralPath $source -Algorithm SHA256).Hash -eq (Get-FileHash -LiteralPath $target -Algorithm SHA256).Hash) 'prompt default drift'
 }
-Write-Output 'customPromptProjection defaults=30 policy=22 installedMerge=ABSENT PASS'
+Write-Output 'customPromptProjection defaults=31 policy=22 userOverrideTargets=0 installedMerge=ABSENT PASS'

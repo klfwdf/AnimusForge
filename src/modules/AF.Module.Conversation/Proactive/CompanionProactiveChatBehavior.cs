@@ -28,10 +28,10 @@ internal sealed class CompanionProactiveChatMapNotification : InformationData
 	public override string SoundEventPath => "event:/ui/notification/kingdom_decision";
 
 	public CompanionProactiveChatMapNotification(string sessionId, string titleText, string descriptionText)
-		: base(new TextObject(string.IsNullOrWhiteSpace(descriptionText) ? "一名队内 Hero 想与你交谈。" : descriptionText))
+		: base(new TextObject(string.IsNullOrWhiteSpace(descriptionText) ? "{=AF_CONV_UI_Companion_DefaultDescription}A hero in your party would like to talk to you." : descriptionText))
 	{
 		SessionId = (sessionId ?? "").Trim();
-		_titleText = new TextObject(string.IsNullOrWhiteSpace(titleText) ? "队内 Hero 想与你交谈" : titleText);
+		_titleText = new TextObject(string.IsNullOrWhiteSpace(titleText) ? "{=AF_CONV_UI_Companion_DefaultTitle}A party hero would like to talk to you" : titleText);
 	}
 
 	public override bool IsValid()
@@ -210,7 +210,7 @@ public sealed class CompanionProactiveChatBehavior : CampaignBehaviorBase
 		}
 		if (TryGetUnsafePlayerState(out string busyReason))
 		{
-			InformationManager.DisplayMessage(new InformationMessage("当前不便交谈；通知会暂时保留。"));
+			InformationManager.DisplayMessage(new InformationMessage(ConversationUiLocalization.Text("AF_CONV_UI_Companion_ChatDelayed", "You cannot talk right now; the notification will remain available.")));
 			LogDebug("click delayed hero=" + HeroId(hero) + " reason=" + busyReason);
 			return false;
 		}
@@ -236,7 +236,7 @@ public sealed class CompanionProactiveChatBehavior : CampaignBehaviorBase
 		{
 			pending.State = StatePending;
 			pending.OpeningAttemptUtcTicks = 0L;
-			InformationManager.DisplayMessage(new InformationMessage("打开交谈失败，通知会保留。"));
+			InformationManager.DisplayMessage(new InformationMessage(ConversationUiLocalization.Text("AF_CONV_UI_Companion_OpenFailed", "Could not open the conversation; the notification will remain available.")));
 			Logger.Log("CompanionProactiveChat", "open conversation failed hero=" + HeroId(hero) + " error=" + ex);
 			return false;
 		}
@@ -497,8 +497,8 @@ public sealed class CompanionProactiveChatBehavior : CampaignBehaviorBase
 				StableKey = "hero_event:" + HeroId(hero) + ":" + heroEventKey,
 				IsEvent = true,
 				Urgency = ClampFloat(100f - age * 4f, 60f, 100f),
-				FactText = heroName + "近期有一段真实经历：" + LimitText(heroEventText, 320),
-				IntentText = "你决定主动谈起这件近期真实经历；不要改写结果或虚构后续。"
+				FactText = heroName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0001") + LimitText(heroEventText, 320),
+				IntentText = ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0002")
 			});
 		}
 
@@ -513,8 +513,8 @@ public sealed class CompanionProactiveChatBehavior : CampaignBehaviorBase
 				StableKey = "player_event:" + playerEventKey,
 				IsEvent = true,
 				Urgency = ClampFloat(95f - age * 3.5f, 60f, 95f),
-				FactText = "玩家近期有一段真实经历：" + LimitText(playerEventText, 320),
-				IntentText = "你与玩家同队，决定主动谈谈这件近期真实行动；不要虚构未提供的细节。"
+				FactText = ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0003") + LimitText(playerEventText, 320),
+				IntentText = ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0004")
 			});
 		}
 
@@ -525,10 +525,10 @@ public sealed class CompanionProactiveChatBehavior : CampaignBehaviorBase
 				Type = MotiveCare,
 				StableKey = "wounded:" + HeroId(hero),
 				Urgency = 72f,
-				FactText = heroName + "当前处于受伤状态。",
+				FactText = heroName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0005"),
 				IntentText = minor
-					? "你决定以未成年家族成员或队内成员的身份谈谈自己的伤势和感受。"
-					: "你决定主动谈谈自己的伤势、恢复或由此产生的担忧。"
+					? ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0006")
+					: ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0007")
 			});
 		}
 
@@ -542,8 +542,8 @@ public sealed class CompanionProactiveChatBehavior : CampaignBehaviorBase
 					Type = MotivePartyMorale,
 					StableKey = "morale:" + currentDay,
 					Urgency = ClampFloat(60f + (40f - party.Morale), 60f, 100f),
-					FactText = "队中士气低落，气氛沉闷。",
-					IntentText = "你决定主动反馈队伍士气低落，但不要谈挨饿、欠饷、逃跑或劫村抱怨。"
+					FactText = ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0008"),
+					IntentText = ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0009")
 				});
 			}
 			if (party.MemberCount > 0 && party.WoundedRatio >= 0.25f)
@@ -553,8 +553,8 @@ public sealed class CompanionProactiveChatBehavior : CampaignBehaviorBase
 					Type = MotivePartyWounded,
 					StableKey = "party_wounded:" + currentDay,
 					Urgency = ClampFloat(60f + (party.WoundedRatio - 0.25f) * 53.34f, 60f, 100f),
-					FactText = "队中伤兵不少，众人都在担心恢复。",
-					IntentText = "你决定主动谈谈伤兵、恢复或队伍健康压力。"
+					FactText = ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0010"),
+					IntentText = ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0011")
 				});
 			}
 			if (party.PrisonerLimit > 0 && party.PrisonerRatio >= 0.75f)
@@ -564,8 +564,8 @@ public sealed class CompanionProactiveChatBehavior : CampaignBehaviorBase
 					Type = MotivePrisoners,
 					StableKey = "prisoners:" + currentDay,
 					Urgency = ClampFloat(60f + (party.PrisonerRatio - 0.75f) * 80f, 60f, 100f),
-					FactText = "队伍带着太多俘虏，照看起来很费心。",
-					IntentText = "你决定主动反馈俘虏管理、赎买或转运压力；不要假定任何交易已经成立。"
+					FactText = ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0012"),
+					IntentText = ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0013")
 				});
 			}
 			if (party.InventoryCapacity > 0 && party.BurdenRatio >= 0.9f)
@@ -575,8 +575,8 @@ public sealed class CompanionProactiveChatBehavior : CampaignBehaviorBase
 					Type = MotiveBurden,
 					StableKey = "burden:" + currentDay,
 					Urgency = ClampFloat(60f + (party.BurdenRatio - 0.9f) * 100f, 60f, 100f),
-					FactText = "队伍辎重过多，行军颇受拖累。",
-					IntentText = "你决定主动反馈负重、运输或物资整理压力。"
+					FactText = ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0014"),
+					IntentText = ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0015")
 				});
 			}
 
@@ -584,16 +584,16 @@ public sealed class CompanionProactiveChatBehavior : CampaignBehaviorBase
 			if (!string.IsNullOrWhiteSpace(role))
 			{
 				float roleUrgency = 35f;
-				string roleFact = heroName + "当前担任玩家主队的" + role + "。";
-				if (string.Equals(role, "医师", StringComparison.Ordinal) && party.WoundedRatio >= 0.15f)
+				string roleFact = heroName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0016") + role + "。";
+				if (string.Equals(role, ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0017"), StringComparison.Ordinal) && party.WoundedRatio >= 0.15f)
 				{
 					roleUrgency = ClampFloat(45f + party.WoundedRatio * 35f, 45f, 70f);
-					roleFact += " 队中伤兵不少，正需要留心照料。";
+					roleFact += ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0018");
 				}
-				else if (string.Equals(role, "军需官", StringComparison.Ordinal) && party.BurdenRatio >= 0.75f)
+				else if (string.Equals(role, ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0019"), StringComparison.Ordinal) && party.BurdenRatio >= 0.75f)
 				{
 					roleUrgency = ClampFloat(45f + party.BurdenRatio * 25f, 45f, 70f);
-					roleFact += " 队伍辎重过多，行军颇受拖累。";
+					roleFact += ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0020");
 				}
 				motives.Add(new CompanionChatMotive
 				{
@@ -601,7 +601,7 @@ public sealed class CompanionProactiveChatBehavior : CampaignBehaviorBase
 					StableKey = "duty:" + HeroId(hero) + ":" + currentDay,
 					Urgency = roleUrgency,
 					FactText = roleFact,
-					IntentText = "你决定以" + role + "身份做一次职责反馈；未提供具体发现时不得虚构敌情、伤病、工程或物资事实。"
+					IntentText = ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0021") + role + ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0022")
 				});
 			}
 		}
@@ -615,8 +615,8 @@ public sealed class CompanionProactiveChatBehavior : CampaignBehaviorBase
 					Type = MotiveFamily,
 					StableKey = "family:" + HeroId(hero) + ":" + currentDay,
 					Urgency = ClampFloat(40f + Math.Max(0, personalTrust) * 0.2f, 40f, 60f),
-					FactText = heroName + "尚未成年，也是玩家的家人，对玩家十分亲近。",
-					IntentText = "你决定以未成年家族成员的身份主动谈谈家庭、关心或自己的近况；禁止恋爱化和成人职责表达。"
+					FactText = heroName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0023"),
+					IntentText = ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0024")
 				});
 			}
 			else if (personalTrust >= 30)
@@ -626,8 +626,8 @@ public sealed class CompanionProactiveChatBehavior : CampaignBehaviorBase
 					Type = MotiveCare,
 					StableKey = "minor_care:" + HeroId(hero) + ":" + currentDay,
 					Urgency = ClampFloat(40f + personalTrust * 0.25f, 40f, 65f),
-					FactText = heroName + "尚未成年，与玩家同行已久，也愿意说些心里话。",
-					IntentText = "你决定以未成年队内成员的身份表达信任或关心；禁止恋爱化和成人职责表达。"
+					FactText = heroName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0025"),
+					IntentText = ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0026")
 				});
 			}
 		}
@@ -641,7 +641,7 @@ public sealed class CompanionProactiveChatBehavior : CampaignBehaviorBase
 					Type = MotiveRomanticInteraction,
 					StableKey = "romantic_interaction:" + HeroId(hero),
 					Urgency = ClampFloat(60f + Math.Max(0, privateRelation - 30) * 0.4f, 60f, 88f),
-					FactText = heroName + "与玩家相识已久，心中有些牵挂。",
+					FactText = heroName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0027"),
 					IntentText = AIConfigHandler.GetProactiveNpcRequestCompanionIntent(MotiveRomanticInteraction)
 				});
 			}
@@ -657,11 +657,11 @@ public sealed class CompanionProactiveChatBehavior : CampaignBehaviorBase
 					StableKey = "emotion:" + HeroId(hero) + ":" + currentDay,
 					Urgency = emotionUrgency,
 					FactText = strained
-						? heroName + "与玩家之间仍有未解开的芥蒂。"
-						: heroName + "与玩家颇为亲近，也信得过对方。",
+						? heroName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0028")
+						: heroName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0029"),
 					IntentText = strained
-						? "你决定主动表达与当前低关系或低信任相符的不满、疑虑或冲突；不要虚构具体过错。"
-						: "你决定主动表达关心或感受；克制，不夸大感情，也不虚构承诺。"
+						? ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0030")
+						: ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0031")
 				});
 			}
 		}
@@ -690,8 +690,8 @@ public sealed class CompanionProactiveChatBehavior : CampaignBehaviorBase
 				StableKey = "followup:" + memoryKey,
 				IsEvent = true,
 				Urgency = ClampFloat(55f - age * 0.25f, 35f, 55f),
-				FactText = "你想起此前与玩家的一段互动" + memoryDateSuffix + "：" + LimitText(memoryText, 320),
-				IntentText = "你决定从这段互动引出的感受、想法或关切开口；不要把它当作未结束的对话续写，也不要虚构互动外的事实。"
+				FactText = ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0032") + memoryDateSuffix + "：" + LimitText(memoryText, 320),
+				IntentText = ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0033")
 			});
 		}
 
@@ -700,10 +700,10 @@ public sealed class CompanionProactiveChatBehavior : CampaignBehaviorBase
 			Type = MotiveCasual,
 			StableKey = "casual:" + HeroId(hero) + ":" + currentDay,
 			Urgency = 20f,
-			FactText = heroName + "正与玩家同行，只想聊几句日常。",
+			FactText = heroName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0034"),
 			IntentText = minor
-				? "你决定以未成年队内成员的身份主动闲聊；只谈日常、家庭或可确认的当下，不得恋爱化。"
-				: "你决定主动进行一次普通闲聊；只谈日常或可确认的当下，不要虚构事件、困难或请求。"
+				? ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0035")
+				: ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0036")
 		});
 		return motives;
 	}
@@ -713,13 +713,13 @@ public sealed class CompanionProactiveChatBehavior : CampaignBehaviorBase
 		Hero hero = selected.Hero;
 		CompanionChatMotive motive = selected.Motive;
 		string heroName = HeroName(hero);
-		string fact = "[AFEF NPC行为补充] " + heroName + "正与玩家同行，此次由" + heroName + "主动开口。"
+		string fact = ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0037") + heroName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0038") + heroName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0039")
 			+ motive.FactText;
 		if (IsMinor(hero))
 		{
-			fact += " " + heroName + "尚未成年；谈话只限家庭、关心、近况和日常。";
+			fact += " " + heroName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0040");
 		}
-		string prompt = motive.IntentText + "先开口，只谈这件事，只输出台词。";
+		string prompt = motive.IntentText + ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0041");
 		int noticeDays = ClampInt(settings.CompanionProactiveChatNoticeLifetimeDays, 1, 30);
 		_storage.PendingSession = new CompanionChatSession
 		{
@@ -892,14 +892,14 @@ public sealed class CompanionProactiveChatBehavior : CampaignBehaviorBase
 		{
 			return;
 		}
-		string heroName = HeroName(hero);
+		string heroName = hero.Name?.ToString() ?? ConversationUiLocalization.Text("AF_CONV_UI_Companion_Hero", "this party member");
 		try
 		{
 			_publishedSessionIds.Add(pending.Id);
 			MBInformationManager.AddNotice(new CompanionProactiveChatMapNotification(
 				pending.Id,
-				heroName + "想与你交谈",
-				heroName + "就在你的队伍中，想在你方便时与你谈谈。"));
+				ConversationUiLocalization.Text("AF_CONV_UI_Companion_Title", "{HERO} would like to talk to you", ("HERO", heroName)),
+				ConversationUiLocalization.Text("AF_CONV_UI_Companion_Description", "{HERO} is in your party and would like to talk when you have time.", ("HERO", heroName))));
 			LogDebug("notification published session=" + pending.Id + " hero=" + pending.HeroId);
 		}
 		catch (Exception ex)
@@ -1051,10 +1051,10 @@ public sealed class CompanionProactiveChatBehavior : CampaignBehaviorBase
 			{
 				return "";
 			}
-			if (party.GetRoleHolder(PartyRole.Scout) == hero) return "斥候";
-			if (party.GetRoleHolder(PartyRole.Engineer) == hero) return "工程师";
-			if (party.GetRoleHolder(PartyRole.Surgeon) == hero) return "医师";
-			if (party.GetRoleHolder(PartyRole.Quartermaster) == hero) return "军需官";
+			if (party.GetRoleHolder(PartyRole.Scout) == hero) return ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0042");
+			if (party.GetRoleHolder(PartyRole.Engineer) == hero) return ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0043");
+			if (party.GetRoleHolder(PartyRole.Surgeon) == hero) return ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0044");
+			if (party.GetRoleHolder(PartyRole.Quartermaster) == hero) return ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0045");
 		}
 		catch
 		{
@@ -1216,10 +1216,10 @@ public sealed class CompanionProactiveChatBehavior : CampaignBehaviorBase
 		string value = (text ?? "").ToLowerInvariant();
 		string[] terms =
 		{
-			"挨饿", "饥饿", "缺粮", "断粮", "starv", "food shortage",
-			"欠饷", "军饷", "未付工资", "unpaid wage", "wage",
-			"逃跑", "逃离战场", "撤退", "临阵脱逃", "deserted battle", "retreat",
-			"劫村", "烧村", "洗劫村庄", "劫掠村庄", "village raid", "village looted"
+			ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0046"), ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0047"), ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0048"), ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0049"), "starv", "food shortage",
+			ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0050"), ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0051"), ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0052"), "unpaid wage", "wage",
+			ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0053"), ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0054"), ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0055"), ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0056"), "deserted battle", "retreat",
+			ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0057"), ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0058"), ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0059"), ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0060"), "village raid", "village looted"
 		};
 		return terms.Any(term => value.IndexOf(term, StringComparison.OrdinalIgnoreCase) >= 0);
 	}
@@ -1288,7 +1288,7 @@ public sealed class CompanionProactiveChatBehavior : CampaignBehaviorBase
 	private static string HeroName(Hero hero)
 	{
 		string name = (hero?.Name?.ToString() ?? "").Trim();
-		return string.IsNullOrWhiteSpace(name) ? "这名队内成员" : name;
+		return string.IsNullOrWhiteSpace(name) ? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0061") : name;
 	}
 
 	private void LogDebug(string message)

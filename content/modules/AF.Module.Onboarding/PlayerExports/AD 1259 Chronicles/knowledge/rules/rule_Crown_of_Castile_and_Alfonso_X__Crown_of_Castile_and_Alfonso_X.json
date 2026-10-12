@@ -1,0 +1,23 @@
+{
+  "Id": "rule_Crown_of_Castile_and_Alfonso_X",
+  "Keywords": [
+    "Crown of Castile",
+    "Alfonso X the Wise",
+    "Toledo Translation",
+    "Siete Partidas",
+    "Reconquista",
+    "Feudal Law"
+  ],
+  "RagShortTexts": [
+    "Alfonso X the Wise elevated Castile to an intellectual powerhouse through the Toledo translations and Siete Partidas, but his imperial ambitions strained the realm."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Crown of Castile and León in 1259 was ruled by King Alfonso X (El Sabio), whose court in Toledo served as Europe's premier center of scientific and philosophical translation, rendering Arabic and Hebrew astronomy, mathematics, and philosophy into the vernacular. Alfonso also promulgated the monumental Siete Partidas, synthesizing Roman civil jurisprudence with canon law to create a unified royal code.\n\nHowever, Alfonso's lifelong quest to secure the crown of the Holy Roman Empire (the fecho del imperio) placed severe strains on the Castilian economy. Extravagant subsidies paid to German electors, combined with monetary debasement and heavy taxes, triggered sharp resistance among Castilian magnates (ricoshombres) and town brotherhoods (hermandades), forcing pauses in the advance against Moorish Granada."
+    }
+  ],
+  "TextMappings": []
+}

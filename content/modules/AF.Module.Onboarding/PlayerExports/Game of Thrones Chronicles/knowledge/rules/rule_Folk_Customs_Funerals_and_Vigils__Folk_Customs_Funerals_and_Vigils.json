@@ -1,0 +1,155 @@
+{
+  "Id": "rule_Folk_Customs_Funerals_and_Vigils",
+  "Keywords": [
+    "Funerals",
+    "Vigil",
+    "Burial",
+    "Cremation",
+    "Memory of the Dead"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Treatment after death varies with belief and region. The followers of the Seven Gods will have the Silent Sisters sort out the body, pray for wakes and bury them. The followers of the Old Gods more often bid farewell in the memory of the family crypt, tomb mound or heart tree. Night's Watch and the Northerners will also burn the corpse when in danger. Noble funerals display family crests, succession orders, and close relatives, while ordinary families rely on neighbors to wash corpses, dig graves, prepare meals, and accompany them. War, plague and severe winter often make it impossible to carry out complete rituals, leaving unmarked graves and uncollected corpses as social scars. Funerals let both the deceased and the living know who will bear the debts, children, and responsibilities left behind."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "priest",
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Clergy emphasized correct rituals, and nobles also confirmed inheritance and allies from funerals. The more public the mourning, the less likely politics will be temporarily absent."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Ordinary people remember best who helped dig graves, deliver firewood, and take care of children. A decent funeral does not require gold or silver, but it does require a community willing to stop what it is doing."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nightswatch",
+          "freefolk",
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The danger in the north brings practical significance to corpse burning. Burning the remains of your companions with your own hands is not only a way of protection, but also an acknowledgment that in some times even lying down quietly became a luxury."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Funerals Funerals and Vigils: Corpse washing, prayer, wake, cremation or burial vary according to regional beliefs, and the living use rituals to confirm the identity of the deceased and the memory of the community. Whether it is valid depends on who can grant the rights, collect the consideration, and actually make the judgment come to fruition in the event of default."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Funerals Funerals and Vigils: Corpse washing, prayer, wake, cremation or burial vary according to regional beliefs, and the living use rituals to confirm the identity of the deceased and the memory of the community. The distant system is not empty talk only if it can be implemented in campfires, city gates and inns."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Funerals Funerals and Vigils: Corpse washing, prayer, wake, cremation or burial vary according to regional beliefs, and the living use rituals to confirm the identity of the deceased and the memory of the community. If a rule is practiced over and over again, it will find its way into rituals, crafts, and prayers; if it is sustained only by fear, cracks will show at the onset of a crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Funerals Funerals and Vigils: Corpse washing, prayer, wake, cremation or burial vary according to regional beliefs, and the living use rituals to confirm the identity of the deceased and the memory of the community. They remember taxes, grain, labor, relief and who can speak for them; these grand names will eventually fall on the family's rice pot."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Funerals and Vigils: Corpse washing, prayer, wake, cremation or burial vary according to regional beliefs, and the living use rituals to confirm the identity of the deceased and the memory of the community."
+  ]
+}

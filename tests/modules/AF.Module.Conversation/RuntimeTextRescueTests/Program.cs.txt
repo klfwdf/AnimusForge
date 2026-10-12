@@ -1,0 +1,161 @@
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
+using System.Linq;
+using System.Text.RegularExpressions;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Newtonsoft.Json;
+using AnimusForge;
+
+namespace TaleWorlds.Localization
+{
+    internal sealed class TextObject
+    {
+        private readonly string value;
+        internal TextObject(string text) { value = text; }
+        public override string ToString() => value;
+    }
+}
+namespace AnimusForge
+{
+    internal static class AnimusForgeModulePaths
+    {
+        internal static string Root;
+        internal static int Reads;
+        internal static string GetModuleDataFilePath(string name) { Reads++; return Path.Combine(Root, name); }
+    }
+    internal static class Logger { internal static void Log(string owner, string message) { } }
+    internal sealed class TownAmbientLine
+    {
+        internal string Id, Text;
+        internal List<string> TextVariants, TimeBands;
+        internal int? MinHour, MaxHour;
+        internal bool HasText => !string.IsNullOrWhiteSpace(Text) || TextVariants?.Any(text => !string.IsNullOrWhiteSpace(text)) == true;
+    }
+    internal static class ConversationActionPostprocessOwner
+    {
+        POSTPROCESS_METHOD
+    }
+    internal static class ConversationSpeechTextRules
+    {
+        SPEECH_METHODS
+    }
+    internal static class SceneHistoryMessageAssemblyOwner
+    {
+        internal static string LastPrefix;
+        internal static string NormalizeAfefFactLineForPrompt(string text, string prefix) { LastPrefix = prefix; return text; }
+    }
+    internal static class SceneWrapperProbe
+    {
+        DEFAULT_PREFIX_METHOD
+    }
+}
+internal static class Program
+{
+    private static int checks;
+    private static void Check(bool condition, string label) { checks++; if (!condition) throw new Exception("FAIL: " + label); }
+    private static void Main(string[] args)
+    {
+        AnimusForgeModulePaths.Root = args[0];
+        string root = args[2];
+        var sourceFiles = JsonConvert.DeserializeObject<List<string>>(File.ReadAllText(args[3]));
+        foreach (string path in sourceFiles)
+        foreach (string api in new[] { "1.3", "1.4" })
+        {
+            var options = CSharpParseOptions.Default.WithLanguageVersion(LanguageVersion.Latest);
+            if (api == "1.4") options = options.WithPreprocessorSymbols("BANNERLORD_1_4_OR_GREATER");
+            var tree = CSharpSyntaxTree.ParseText(File.ReadAllText(Path.Combine(root, path)), options, path);
+            var errors = tree.GetDiagnostics().Where(diagnostic => diagnostic.Severity == DiagnosticSeverity.Error).ToArray();
+            Check(errors.Length == 0, api + " syntax " + path + ": " + string.Join("; ", errors.Select(error => error.ToString())));
+            foreach (var invocation in tree.GetRoot().DescendantNodes().OfType<InvocationExpressionSyntax>().Where(node => node.Expression.ToString().StartsWith("ConversationRuntimeTexts.")))
+            {
+                var ancestors = invocation.Ancestors().ToArray();
+                Check(!ancestors.OfType<ParameterSyntax>().Any(parameter => parameter.Default != null && parameter.Default.Span.Contains(invocation.Span)), "resource call cannot be optional parameter default " + path);
+                Check(!ancestors.OfType<FieldDeclarationSyntax>().Any(field => field.Modifiers.Any(SyntaxKind.ConstKeyword)) && !ancestors.OfType<LocalDeclarationStatementSyntax>().Any(local => local.Modifiers.Any(SyntaxKind.ConstKeyword)), "resource call cannot be const initializer " + path);
+                Check(!ancestors.Any(node => node is CaseSwitchLabelSyntax || node is ConstantPatternSyntax || node is AttributeSyntax), "resource call cannot be constant case/pattern/attribute " + path);
+            }
+        }
+        var raw = JsonConvert.DeserializeObject<Dictionary<string, string>>(File.ReadAllText(Path.Combine(root, "content/modules/AF.Module.Conversation/ModuleData/ConversationRuntimeCompatibility.json")));
+        var prompt = JsonConvert.DeserializeObject<Dictionary<string, string>>(File.ReadAllText(Path.Combine(args[0], "ConversationRuntimePrompts.json")));
+        foreach (var pair in raw) Check(ConversationRuntimeTexts.Raw(pair.Key) == pair.Value, "raw exact " + pair.Key);
+        foreach (var pair in prompt) Check(ConversationRuntimeTexts.Prompt(pair.Key) == pair.Value, "package prompt " + pair.Key);
+        if (args[1] == "EN") Check(ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0740").Contains("English description"), "EN profile generation explicitly selects English");
+        Check(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0310") == "[RELAY:接力编号]", "relay template identity");
+        Check(ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0395").Contains("[RELAY:接力编号]"), "relay instruction matches raw template");
+        Check(SceneWrapperProbe.NormalizeAfefFactLineForPrompt("raw fact") == "raw fact" && SceneHistoryMessageAssemblyOwner.LastPrefix == ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0729"), "omitted prefix resolves original raw default at runtime");
+        SceneWrapperProbe.NormalizeAfefFactLineForPrompt("raw fact", null);
+        Check(SceneHistoryMessageAssemblyOwner.LastPrefix == ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0729"), "null prefix uses default");
+        SceneWrapperProbe.NormalizeAfefFactLineForPrompt("raw fact", "");
+        Check(SceneHistoryMessageAssemblyOwner.LastPrefix == "", "explicit empty prefix preserved");
+        SceneWrapperProbe.NormalizeAfefFactLineForPrompt("raw fact", "custom");
+        Check(SceneHistoryMessageAssemblyOwner.LastPrefix == "custom", "explicit custom prefix preserved");
+
+        foreach (string prefix in new[] { "[AFEF玩家行为补充] ", "[AFEF NPC行为补充] " })
+            Check(ConversationSpeechTextRules.NormalizeNativeConversationFactLineForPrompt(prefix + "given 5 denars", "NPC") == prefix + "given 5 denars", "existing AFEF prefix preserved");
+        Check(ConversationSpeechTextRules.NormalizeNativeConversationFactLineForPrompt("delivered 5 denars", "NPC") == "[AFEF NPC行为补充] delivered 5 denars", "new NPC fact retains raw identity");
+        Check(ConversationSpeechTextRules.NormalizeNativeConversationFactLineForPrompt("delivered 5 denars", "player") == "[AFEF玩家行为补充] delivered 5 denars", "new player fact retains raw identity");
+        Check(ConversationSpeechTextRules.StripAutoGroupRelaySignal("Hello [RELAY:17]") == "Hello", "numeric relay removed from speech");
+        Check(ConversationSpeechTextRules.StripAutoGroupStopSignal("Hello [STP][END]") == "Hello", "stop markers removed");
+        foreach (string text in new[] { "【近期对话窗口】text", "【长期记忆摘要】text", "必须严格遵守 instructions", "InventoryItems: item" })
+            Check(ConversationSpeechTextRules.IsLeakedPromptLineForShout(text), "legacy leak recognition " + text);
+        Check(!ConversationSpeechTextRules.IsLeakedPromptLineForShout("Hello there."), "ordinary speech kept");
+
+        for (int hour = -24; hour < 48; hour++)
+        {
+            Check(TownAmbientTime.GetTag(hour) == LegacyTownAmbientTime.GetTag(hour), "ambient band " + hour);
+            Check(TownAmbientTime.GetDisplayName(hour) == LegacyTownAmbientTime.GetDisplayName(hour), "raw ambient label " + hour);
+            Check(TownAmbientTime.GetGreeting(hour) == LegacyTownAmbientTime.GetGreeting(hour), "raw greeting " + hour);
+            foreach (string text in new[] { "夜深了", "午安", "晚霞", "plain line" })
+            {
+                var line = new TownAmbientLine { Text = text };
+                Check(TownAmbientTime.Matches(line, hour) == LegacyTownAmbientTime.Matches(line, hour), "legacy time inference " + text + "/" + hour);
+            }
+        }
+        foreach (string band in new[] { "任意", "任何时间", "dawn", "清晨", "白天", "傍晚", "夜晚", "夜间", "unknown" })
+        foreach (int hour in new[] { 4, 5, 8, 16, 17, 19, 20 })
+        {
+            var line = new TownAmbientLine { TimeBands = new() { band }, Text = "text" };
+            Check(TownAmbientTime.Matches(line, hour) == LegacyTownAmbientTime.Matches(line, hour), "configured bilingual band " + band);
+        }
+
+        var current = new NativeMeetingElapsedOwner();
+        int captures = 0;
+        var conversation = new object();
+        var boundary = current.Capture(1, 2, conversation, "npc", () => { captures++; return new() { HasPriorDialogue = true, Day = 10, Hour = 8, NowHours = 253.25 }; });
+        Check(ReferenceEquals(boundary, current.Capture(1, 2, conversation, "npc", () => { captures++; return null; })) && captures == 1, "elapsed capture once per request scope");
+        current.Confirm(boundary);
+        Check(boundary.Accepted, "elapsed confirmation unchanged");
+        foreach (bool memory in new[] { false, true })
+        foreach (bool unknown in new[] { false, true })
+        foreach (int hour in new[] { -1, 8, 27 })
+        foreach (double now in new[] { double.NaN, 239, 249, 253.25, 300 })
+        {
+            string rendered = NativeMeetingElapsedOwner.BuildContext(new() { HasPriorDialogue = !memory, HasMemoryRecord = memory, TimeUnknown = unknown, Day = 10, Hour = hour, NowHours = now });
+            string legacy = LegacyNativeMeetingElapsedOwner.BuildContext(new() { HasPriorDialogue = !memory, HasMemoryRecord = memory, TimeUnknown = unknown, Day = 10, Hour = hour, NowHours = now });
+            if (args[1] == "CN") Check(rendered == legacy, "CN elapsed exact parity");
+            else Check(rendered.StartsWith("This is a new conversation;") && !System.Text.RegularExpressions.Regex.IsMatch(rendered, "[\\u3400-\\u9fff]"), "EN elapsed language");
+        }
+        string none = ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0343");
+        foreach (string empty in new[] { "（无）", none, "", " " })
+        {
+            Check(ConversationActionPostprocessOwner.AppendPostprocessContextBlockForScene("useful", empty) == "useful", "empty block old/new sentinel");
+            Check(ConversationActionPostprocessOwner.AppendPostprocessContextBlockForScene(empty, "useful") == "useful", "empty context old/new sentinel");
+        }
+        Check(ConversationActionPostprocessOwner.AppendPostprocessContextBlockForScene("alpha\n\nbeta", "alpha") == "alpha\n\nbeta", "deduplicate whole block");
+        Check(ConversationActionPostprocessOwner.AppendPostprocessContextBlockForScene("alpha", "beta") == "alpha\n\nbeta", "join preserves boundary");
+        foreach (string culture in new[] { "en-US", "fr-FR", "zh-CN" })
+        {
+            CultureInfo.CurrentCulture = new CultureInfo(culture);
+            float distance = 1.25f;
+            Check(string.Format(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0872"), distance) == $"；距离：{distance:0.0} 公里", "distance interpolation raw parity " + culture);
+        }
+        var entry = NativeHistoryIdentityProjectionOwner.BuildEntry(99, 12, "date", 9, "scene", "NPC", null, "[AFEF NPC行为补充] exact raw fact", "npc", 4, -1, null);
+        Check(entry.Text == "[AFEF NPC行为补充] exact raw fact" && entry.Speaker == "记录", "history text and fallback speaker exact");
+        File.WriteAllText(Path.Combine(args[0], "ConversationRuntimePrompts.json"), "{}");
+        Check(ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0343") == none && AnimusForgeModulePaths.Reads == 1, "prompt corpus cached once");
+        Console.WriteLine("PASS " + args[1] + ": " + checks + " checks; actual readers, ambient/elapsed owners, history/fact and empty-context methods; both-symbol syntax only, not full game build");
+    }
+}

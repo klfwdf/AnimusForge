@@ -1,3 +1,4 @@
+using AnimusForge;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -228,7 +229,7 @@ public static class WorldDiplomacyEnvelopeJsonRules
         }
         if (roundPlan["topic"] == null || roundPlan["topic"].Type == JTokenType.Null)
         {
-            roundPlan["topic"] = autonomousOpening ? WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(ReadString(json, "title"), "外交交涉") : "";
+            roundPlan["topic"] = autonomousOpening ? WorldDiplomacyRoundLifecycleRules.FirstNonEmpty(ReadString(json, "title"), DiplomacyMiscPromptTexts.Get("Round_DefaultTopicNegotiation", "Diplomatic Negotiation")) : "";
         }
         if (json["peace_terms"] is not JObject)
         {

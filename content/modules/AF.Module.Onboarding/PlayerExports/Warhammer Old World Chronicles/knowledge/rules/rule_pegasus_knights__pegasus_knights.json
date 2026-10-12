@@ -1,0 +1,210 @@
+{
+  "Id": "rule_pegasus_knights",
+  "Keywords": [
+    "Pegasus Knights",
+    "Bretonnian Pegasus",
+    "Aerial Cavalry",
+    "Diving Lance Charge",
+    "Purebred Pegasus",
+    "Elite of the Skies",
+    "Winged Riders",
+    "Heavenly Steed Knights",
+    "Skies of Bretonnia"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Pegasus Knights are the rarest elite cavalry of Bretonnia—only pure-blooded noble knights are worthy of riding these purebred Pegasi captured from the high peaks of the Grey Mountains. Diving down from the heavens, the tips of their lances flashing in the sunlight like falling meteors, Pegasus Knights shatter any enemy formation with absolute surprise and devastating impact. Their existence makes Bretonnia the only human kingdom in the Old World, after the Elves, to possess organized aerial cavalry."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Pegasi are not creatures you can simply spot at random across the plains of Bretonnia—they are heaven-sent steeds bestowed by the Lady of the Lake upon our most sacred order of knights. The natural habitat of the Pegasus is the freezing crags of the Grey Mountains above three thousand meters in elevation; they possess pure white coats, great wings with a span of up to twenty feet, and keen eagle eyes capable of piercing through cloud banks. Every year in late spring when the snows melt, the finest knights of Bretonnia form hunting parties and journey into the Grey Mountains—not to hunt and slay Pegasi, but to petition them for a covenant. This rite is known as the 'Covenant of Skyfall': a knight must climb alone to the cliff face where Pegasi roost, bearing no weapons whatsoever, and lie upon the bare rock waiting for three days and three nights—if on the third day a Pegasus descends from the high heavens and folds its wings to stand beside him, then that knight has been chosen by the Lady and gains a unique Pegasus companion for life. A Pegasus permits only a single knight to ride it throughout its entire life—if the knight falls in battle, the Pegasus will never accept another rider, usually flying back to the Grey Mountains to spend the remainder of its days in solitude. The total number of living Pegasus Knights across all of Bretonnia perpetually fluctuates between thirty and forty lances—not because we lack knights, but because the choice of the Pegasus lies beyond human control. When Pegasus Knights take to the sky, infantrymen gazing up from the ground behold a descent of divine warriors—lance strikes pouring down from the heavens can punch straight through a monster's skull, before the knight immediately pulls his Pegasus up to climb back into the sky and prepare for the next dive."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The strategic utility of Pegasus Knights on the battlefield centers on a single word: reconnaissance—and, built upon that foundation, one-strike destruction. The eyesight of a Pegasus far surpasses any telescope—when a squadron of Pegasus Knights flies at an altitude of a thousand feet, they can clearly discern the flank-deployment width of ground cavalry formations, the exact positions of enemy artillery batteries, and the precise strength of reserves concealed behind woods. The diving charge of Pegasus Knights is not meant to engage regular infantry phalanxes—the diving speed is too great, the lance would shatter on the instant of impact, and the knight himself would be dashed to death if he failed to pull his Pegasus up in time—rather, it is meant to hunt down enemy commanders, wizards, and colossal monsters. When a Pegasus Knight dives from five hundred feet in the air aiming his lance at the head of a giant beast, the impact force of the lance combined with the speed and weight of the Pegasus itself is equivalent in combat to a siege ballista bolt dropped from the sky—possessing enough penetrating power to pierce the scales of an adult dragon. Yet Pegasus Knights are also exceedingly vulnerable—they cannot wear full plate armor, as it is far too heavy for the Pegasus to take off, and instead can only wear reinforced leather armor or light half-plate harness, leaving them utterly defenseless against volleys from ground archers."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "The origin legends and military history of the Pegasus Knights form the most romantic—and least falsifiable—academic field within Bretonnian chivalric culture. According to the royal chronicle of Bretonnia, the 'Sacred Codex of Gilles,' the very first Pegasus Knight appeared at the founding of Bretonnia—during the wars in which Gilles le Breton unified the tribes of Bretonnia, his cousin Sir Landuin was willingly borne back from Eternal Winter Peak in the Grey Mountains by a white Pegasus, and in a subsequent apparition the Lady of the Lake proclaimed that Pegasi would grant their grace only to Bretonnians pure of heart. Academic circles—chiefly centered in the comparative military history community of the Empire—hold instead that the distribution of the Pegasus as a species in the Grey Mountains predates the arrival of humans in Bretonnia by ages, and that the domestication of the Pegasus was more likely the result of some ancient Bretonnian knight accidentally capturing a juvenile Pegasus in the mountains and establishing a training regimen, which was later absorbed into the mythological canon of the Lady of the Lake. The pinnacle tactic of the Pegasus Knights—known as the 'Falcon's Stoop'—requires the knight to precisely control the sweep-back angle of the Pegasus's wings during a dive so as to dampen the airflow tremors of a steep plunge, a technique believed to have been first perfected in the thirteenth century of the Bretonnian calendar by Pegasus Knight Master Etienne de Montfort and recorded in an unpublished manuscript. As of the most recent general muster roll of the Pegasus squadrons—conducted during Emperor Karl Franz's state visit to Bretonnia in 2521 IC—there were thirty-seven registered adult war-Pegasi in the royal armies of Bretonnia, sixteen of which were assigned to the Royal Pegasus Guard Squadron, with the remainder distributed among the personal retinues of the great Dukes."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Within the social circles of Bretonnian noblewomen, the Pegasus Knight inspires a distinctive romantic imagination. He is a man of the sky—not a man of the earth struggling in the mire like an ordinary knight—atop his Pegasus he is like a figure out of myth. Yet that is also his curse: he drifts ever further from the mortal world, a part of his soul having already flown above the clouds. Marrying a Pegasus Knight means that every time he takes to the sky on a mission, you must be prepared to receive either a letter—or his corpse fallen from the heavens."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "In the family lineages of Bretonnia, a Pegasus Knight is an existence that virtually transcends bloodline—when a family produces a Pegasus Knight, it signifies that the Lady has intervened directly through that house. The title cannot be inherited, nor will a Pegasus choose your son on your behalf—it chooses only whom it deems worthy—which gives houses that have produced a Pegasus Knight a voice in noble succession disputes far greater than the influence their landholdings alone would warrant."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Gazing up at Pegasus Knights from the ground is the purest aesthetic of war that warriors of humble birth like us can ever enjoy. During the summer I served as a mercenary along the Bretonnian border, I once saw a squadron of Pegasus Knights diving down out of the setting sun, the dying light framing the silhouettes of their white steeds; for a split second I even forgot I was standing in a battle line—all I wanted was to drop to my knees and pray. And then the sound of lances shattering as they struck home smashed that sense of holiness to pieces as well."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The equipment maintenance supply chain for Pegasus Knights is completely closed within the pure-blooded nobility of Bretonnia—no commoner workshop is ever permitted to touch the tack or horseshoes of a Pegasus. The horseshoes of a Pegasus are supplied exclusively by a family of silversmiths in Bastonne—solid silver horseshoes steeped in the Sacred Lake by Grail Damsels of the Lady—and it is said these blessed shoes grant a Pegasus absolute safety when landing from any height."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Purebred Pegasus—pure-white winged warhorses dwelling only among the high-altitude crags of the Grey Mountains, Bretonnia's most sacred military asset",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Pegasus Knights are the rarest elite cavalry of Bretonnia—only pure-blooded noble knights are worthy"
+  ]
+}

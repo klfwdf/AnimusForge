@@ -1,0 +1,156 @@
+{
+  "Id": "rule_World_Mechanics_Wolfswood",
+  "Keywords": [
+    "Wolfswood",
+    "Northern Forests",
+    "Timber",
+    "Game Trails"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Wolfswood is one of the greatest forests of the North, stretching westward from Winterfell toward the coast, with Deepwood Motte set amid its trees. Tall pines, oaks, and thick brush provide building timber, firewood, game, honey, and hiding places, while keeping roads from staying straight or clear. Winter snows blot out trails, and wolf packs, outlaws, or scouts who know the ground can vanish without a trace among the trees. Lords need timber to build halls and mend ships, while villagers must enter the woods for food and fuel, so hunting rights and felling bounds are a constant source of friction. The Wolfswood is no trackless waste, but a complex land by which many small communities live."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Woodcutters, hunters, and honey-gatherers know the sounds of the Wolfswood and which footpath disappears with the spring thaw. Outsiders see a sea of trees; locals see dozens of livelihoods and perils."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Northern lords regard the Wolfswood as a timber reserve and natural bulwark, knowing full well that a great host loses its formation once among the trees. Winning the trust of local guides matters more than proclaiming control upon a map."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "sailor",
+          "soldier",
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Raiders from the western sea know the Wolfswood can hide defenders as well as yield timber and cattle to carry off. Pushing too far inland may leave the longships waiting on the shore for a party that never returns."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Wolfswood The vast ancient forest west of Winterfell that supplies the North with timber, game, and fuel, while hindering armies with dense woods, wolf packs, and hidden tracks. Whether it is valid depends on who can grant the rights, collect the consideration, and actually make the judgment come to fruition in the event of default."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Wolfswood The vast ancient forest west of Winterfell that supplies the North with timber, game, and fuel, while hindering armies with dense woods, wolf packs, and hidden tracks. The distant system is not empty talk only if it can be implemented in campfires, city gates and inns."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Wolfswood The vast ancient forest west of Winterfell that supplies the North with timber, game, and fuel, while hindering armies with dense woods, wolf packs, and hidden tracks. If a rule is practiced over and over again, it will find its way into rituals, crafts, and prayers; if it is sustained only by fear, cracks will show at the onset of a crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Wolfswood The vast ancient forest west of Winterfell that supplies the North with timber, game, and fuel, while hindering armies with dense woods, wolf packs, and hidden tracks. They remember taxes, grain, labor, relief and who can speak for them; these grand names will eventually fall on the family's rice pot."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Wolfswood: The vast ancient forest west of Winterfell that supplies the North with timber, game, and fuel, while hindering armies with dense woods, wolf packs, and hidden tracks."
+  ]
+}

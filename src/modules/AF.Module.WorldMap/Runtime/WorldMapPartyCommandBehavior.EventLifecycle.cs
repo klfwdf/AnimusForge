@@ -170,9 +170,9 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			{
 				return false;
 			}
-			string destinationText = destination == null ? "原家族势力范围" : GetSettlementName(destination);
-			LogFact(guest, GetHeroName(guest) + "所属势力已与玩家开战，因此结束外族客军随队状态并离开玩家主队，返回" + destinationText + "；此前已并入玩家主队的普通兵员和物资不自动撤回。");
-			DisplayCommandMessage(GetHeroName(guest) + "所属势力已与玩家开战，该外族客军 Hero 已离开玩家主队。", CommandMessageTone.Failure);
+			string destinationText = destination == null ? WorldMapSourceTexts.Get("raw_literals.wm_lit_0324") : GetSettlementName(destination);
+			LogFact(guest, GetHeroName(guest) + WorldMapSourceTexts.Get("raw_literals.wm_lit_0326") + destinationText + WorldMapSourceTexts.Get("raw_literals.wm_lit_0327"));
+			DisplayCommandMessage(WorldMapUiText.ForeignGuestDepart(GetHeroName(guest)), CommandMessageTone.Failure);
 			return true;
 		}
 		catch (Exception ex)
@@ -199,8 +199,8 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			{
 				return false;
 			}
-			LogFact(guest, GetHeroName(guest) + "所属势力已与玩家开战，因此其外族客军分队已脱离玩家指挥并回归原家族的原版AI；该分队现有兵员和物资不自动转回玩家主队。");
-			DisplayCommandMessage(GetHeroName(guest) + "所属势力已与玩家开战，其外族客军分队已脱离玩家指挥。", CommandMessageTone.Failure);
+			LogFact(guest, GetHeroName(guest) + WorldMapSourceTexts.Get("raw_literals.wm_lit_0328"));
+			DisplayCommandMessage(WorldMapUiText.ForeignGuestDetachmentReleased(GetHeroName(guest)), CommandMessageTone.Failure);
 			return true;
 		}
 		catch (Exception ex)
@@ -354,7 +354,7 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			{
 				if (actorState != null && IsCurrentAttackCommand(actorState))
 				{
-					LogTerminalAttackFailure(actorState, "执行者部队已被消灭。", "actor_party_destroyed");
+					LogTerminalAttackFailure(actorState, WorldMapUiText.Result("AF_WM_ResultActorPartyDestroyed", "The executing party was destroyed."), "actor_party_destroyed");
 				}
 				else
 				{
@@ -378,13 +378,13 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 				if (IsKind(command, CommandKind.AttackHero) && !IsSettlementTarget(command) && !string.IsNullOrWhiteSpace(heroId) && string.Equals(command.TargetId, heroId, StringComparison.OrdinalIgnoreCase))
 				{
 					bool actorDestroyedTarget = PartyBaseMatchesActor(destroyerParty, state);
-					TryCompleteCurrentAttackResult(state, actorDestroyedTarget ? CommandResultOutcome.Success : CommandResultOutcome.Incomplete, actorDestroyedTarget ? "目标部队已被击溃。" : "目标部队已经被消灭或解散。", actorDestroyedTarget ? "target_party_destroyed_by_actor" : "target_party_destroyed");
+					TryCompleteCurrentAttackResult(state, actorDestroyedTarget ? CommandResultOutcome.Success : CommandResultOutcome.Incomplete, actorDestroyedTarget ? WorldMapUiText.Result("AF_WM_ResultTargetDefeated", "The target party was defeated.") : WorldMapUiText.Result("AF_WM_ResultTargetDestroyed", "The target party was destroyed or disbanded."), actorDestroyedTarget ? "target_party_destroyed_by_actor" : "target_party_destroyed");
 					continue;
 				}
 				if (IsKind(command, CommandKind.AttackParty) && !string.IsNullOrWhiteSpace(partyId) && string.Equals(command.TargetId, partyId, StringComparison.OrdinalIgnoreCase))
 				{
 					bool actorDestroyedTarget = PartyBaseMatchesActor(destroyerParty, state) || PartyBaseMatchesFaction(destroyerParty, state.ResultActorFactionId);
-					TryCompleteCurrentAttackResult(state, actorDestroyedTarget ? CommandResultOutcome.Success : CommandResultOutcome.Incomplete, actorDestroyedTarget ? "目标部队已被击溃。" : "目标部队已经被消灭或解散。", actorDestroyedTarget ? "target_mobile_party_destroyed_by_actor" : "target_mobile_party_destroyed");
+					TryCompleteCurrentAttackResult(state, actorDestroyedTarget ? CommandResultOutcome.Success : CommandResultOutcome.Incomplete, actorDestroyedTarget ? WorldMapUiText.Result("AF_WM_ResultTargetDefeated", "The target party was defeated.") : WorldMapUiText.Result("AF_WM_ResultTargetDestroyed", "The target party was destroyed or disbanded."), actorDestroyedTarget ? "target_mobile_party_destroyed_by_actor" : "target_mobile_party_destroyed");
 				}
 			}
 			if (handled)
@@ -427,11 +427,11 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 				}
 				if (!mapEvent.HasWinner)
 				{
-					TryCompleteCurrentAttackResult(state, CommandResultOutcome.Incomplete, "战斗已经结束，但原版事件没有明确胜负。", "map_event_no_winner");
+					TryCompleteCurrentAttackResult(state, CommandResultOutcome.Incomplete, WorldMapUiText.Result("AF_WM_ResultNoWinner", "The battle ended, but the native event did not declare a winner."), "map_event_no_winner");
 					continue;
 				}
 				bool won = mapEvent.WinningSide == actorSide;
-				string detail = won ? (GetStoredTargetName(state, command) + "的部队被击败。") : (GetStoredActorName(state) + "的部队被击退。");
+				string detail = won ? (GetStoredTargetName(state, command) + WorldMapSourceTexts.Get("raw_literals.wm_lit_0329")) : (GetStoredActorName(state) + WorldMapSourceTexts.Get("raw_literals.wm_lit_0330"));
 				detail += BuildMapEventCasualtySummary(mapEvent, actorSide, targetSide);
 				TryCompleteCurrentAttackResult(state, won ? CommandResultOutcome.Success : CommandResultOutcome.Failure, detail, won ? "map_event_attack_success" : "map_event_attack_failure");
 			}
@@ -472,7 +472,7 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 				}
 				if (!string.IsNullOrWhiteSpace(state.HeroId) && string.Equals(prisonerId, state.HeroId, StringComparison.OrdinalIgnoreCase))
 				{
-					LogTerminalAttackFailure(state, "执行者已经被俘，攻击命令失败。", "actor_prisoner_taken");
+					LogTerminalAttackFailure(state, WorldMapUiText.Result("AF_WM_ResultActorCaptured", "The executor was captured; the attack command failed."), "actor_prisoner_taken");
 					continue;
 				}
 				if (!string.Equals(prisonerId, command.TargetId, StringComparison.OrdinalIgnoreCase))
@@ -481,7 +481,7 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 				}
 				if (PartyBaseMatchesActor(capturer, state) || PartyBaseMatchesFaction(capturer, state.ResultActorFactionId))
 				{
-					TryCompleteCurrentAttackResult(state, CommandResultOutcome.Success, GetStoredTargetName(state, command) + "已被俘，目标部队被击败。", "target_prisoner_taken");
+					TryCompleteCurrentAttackResult(state, CommandResultOutcome.Success, WorldMapUiText.Result("AF_WM_ResultTargetCaptured", "{TARGET} was captured; the target party was defeated.", ("TARGET", GetStoredTargetName(state, command))), "target_prisoner_taken");
 				}
 			}
 		}
@@ -512,7 +512,7 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 			ReleasePartyAi(expeditionParty);
 			if (IsCurrentAttackCommand(victimState))
 			{
-				LogTerminalAttackFailure(victimState, "执行者已经死亡，攻击命令失败。", "actor_killed");
+				LogTerminalAttackFailure(victimState, WorldMapUiText.Result("AF_WM_ResultActorKilled", "The executor died; the attack command failed."), "actor_killed");
 			}
 			Log("governor expedition cleared after death hero=" + victimId);
 		}
@@ -541,7 +541,7 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 				{
 					continue;
 				}
-				string detail = siegeSuccess ? (GetSettlementName(settlement) + "已经被攻下。") : "攻城方未能攻下目标。";
+				string detail = siegeSuccess ? WorldMapUiText.Result("AF_WM_ResultSettlementCaptured", "{SETTLEMENT} was captured.", ("SETTLEMENT", GetSettlementName(settlement))) : WorldMapUiText.Result("AF_WM_ResultSiegeFailed", "The besieging force failed to capture the target.");
 				TryCompleteCurrentAttackResult(state, siegeSuccess ? CommandResultOutcome.Success : CommandResultOutcome.Failure, detail, siegeSuccess ? "siege_completed_success" : "siege_completed_failure");
 			}
 		}
@@ -570,7 +570,7 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 				bool actorCaptured = !string.IsNullOrWhiteSpace(state.HeroId) && string.Equals(capturerHero?.StringId, state.HeroId, StringComparison.OrdinalIgnoreCase);
 				if (actorFactionCaptured || actorCaptured)
 				{
-					TryCompleteCurrentAttackResult(state, CommandResultOutcome.Success, GetSettlementName(settlement) + "已经被攻下并易主。", "settlement_owner_changed_success");
+					TryCompleteCurrentAttackResult(state, CommandResultOutcome.Success, WorldMapUiText.Result("AF_WM_ResultSettlementOwnerChanged", "{SETTLEMENT} was captured and changed hands.", ("SETTLEMENT", GetSettlementName(settlement))), "settlement_owner_changed_success");
 				}
 			}
 		}
@@ -605,7 +605,7 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 				{
 					continue;
 				}
-				string detail = success ? "村庄已被洗劫。" : "守军击退了袭掠，村庄没有被洗劫。";
+				string detail = success ? WorldMapUiText.Result("AF_WM_ResultVillageRaided", "The village was raided.") : WorldMapUiText.Result("AF_WM_ResultRaidRepelled", "The defenders repelled the raid; the village was not looted.");
 				TryCompleteCurrentAttackResult(state, success ? CommandResultOutcome.Success : CommandResultOutcome.Failure, detail, success ? "raid_completed_success" : "raid_completed_failure");
 			}
 		}
@@ -634,7 +634,7 @@ public sealed partial class WorldMapPartyCommandBehavior : CampaignBehaviorBase
 				{
 					continue;
 				}
-				TryCompleteCurrentAttackResult(state, CommandResultOutcome.Success, "村庄已进入被洗劫状态。", "village_looted_success");
+				TryCompleteCurrentAttackResult(state, CommandResultOutcome.Success, WorldMapUiText.Result("AF_WM_ResultVillageLooted", "The village is now in a looted state."), "village_looted_success");
 			}
 		}
 		catch (Exception ex)

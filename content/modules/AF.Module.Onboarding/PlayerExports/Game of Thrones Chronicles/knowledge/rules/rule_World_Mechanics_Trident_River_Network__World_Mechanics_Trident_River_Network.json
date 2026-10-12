@@ -1,0 +1,151 @@
+{
+  "Id": "rule_World_Mechanics_Trident_River_Network",
+  "Keywords": [
+    "Blue Fork",
+    "Riverlands Crossings"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Trident is formed by the confluence of the Green Fork, Red Fork, and Blue Fork; the rivers and countless channels slice the Riverlands into fertile yet hard-to-defend fields. The network of waterways sustains grain, mills, fisheries, and barges, while forcing armies to contest bridges, shallows, and ferries; a single flood can turn a planned line of march into a quagmire. Places like the Ruby Ford are famed for old battles, yet to those living along the banks, the more enduring memories are of levees, floods, and one passing army after another. Who holds a given castle may change, but the rivers always compel those in power to respect fords and supply lines."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "river"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "sailor",
+          "artisan"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Riverlands farmers and boatmen treat the Trident both as life-giving water and as a neighbor that can turn on them at any moment. A lord draws a blue line on a map, while they know which ford will mire a wagon and which stretch of riverbank can drown a wheat field overnight."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "river"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Riverlords and soldiers calculate bridges, crossings, and water levels before all else. Holding a single river bend can stall a great host, while losing a single ferry may let the enemy slip behind one's lines; when fighting on the Trident, valor must yield to terrain."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Merchants and travelers love the cheapness of water transport, yet fear that war will add another tollbooth to every bridge. Those who know the roads would rather walk half a day longer to find a reliable ferryman than entrust their wagons and goods to soldiers temporarily holding a bank."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Lords and merchants see the Trident as an enforceable order. Trident River Network: Three tributaries—the Green, Red, and Blue Forks—run through the Riverlands, irrigating farmland and carrying goods while turning bridges and fords into strategic chokepoints. Whether it is valid depends on who can grant the rights, collect the consideration, and actually make the judgment come to fruition in the event of default."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "When soldiers and travelers speak of the Trident, they care about how it affects roads, orders, and safety. Trident River Network: Three tributaries—the Green, Red, and Blue Forks—run through the Riverlands, irrigating farmland and carrying goods while turning bridges and fords into strategic chokepoints. The distant system is not empty talk only if it can be implemented in campfires, city gates and inns."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Craftsmen and clergy understand the Trident through custom and symbol. Trident River Network: Three tributaries—the Green, Red, and Blue Forks—run through the Riverlands, irrigating farmland and carrying goods while turning bridges and fords into strategic chokepoints. If a rule is practiced over and over again, it will find its way into rituals, crafts, and prayers; if it is sustained only by fear, cracks will show at the onset of a crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Farmers and villagers feel the Trident in the smallest and most accurate ways. Trident River Network: Three tributaries—the Green, Red, and Blue Forks—run through the Riverlands, irrigating farmland and carrying goods while turning bridges and fords into strategic chokepoints. They remember taxes, grain, labor, relief and who can speak for them; these grand names will eventually fall on the family's rice pot."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Trident River Network: Three tributaries—the Green, Red, and Blue Forks—run through the Riverlands, irrigating farmland and carrying goods while turning bridges and fords into strategic chokepoints."
+  ]
+}

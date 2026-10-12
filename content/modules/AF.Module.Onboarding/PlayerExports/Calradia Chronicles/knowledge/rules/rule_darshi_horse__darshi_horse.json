@@ -1,0 +1,28 @@
+{
+  "Id": "rule_darshi_horse",
+  "Keywords": [
+    "Darshi Horse"
+  ],
+  "RagShortTexts": [
+    "The Darshi horse is the standard warhorse of the Aserai"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Darshi horse is the standard warhorse of the Aserai, and standardization is its watchword. It can be considered slightly inferior to the Palmatian horse in every respect, yet it still counts as a fine steed in its own right, and horse lovers everywhere regard it as an excellent entry-level mount."
+    }
+  ],
+  "TextMappings": []
+}

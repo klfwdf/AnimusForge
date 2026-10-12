@@ -1,227 +1,624 @@
+using System.Collections.Generic;
 using System;
+
+
 
 namespace AnimusForge.SiegeAftermathIntervention;
 
+
+
 /// <summary>
+
 /// Dependency-free policy for local civilian witness reactions when the player hurts a civilian
+
 /// during the active GCCZ scene. AF adapters own live agent lookup, movement, and speech dispatch; combat escalation stays outside this local panic policy.
+
 /// </summary>
+
 public static class SiegeLocalCivilianReactionProfile
+
 {
+
     public const float WitnessRadius = 24f;
+
+
 
     public const int MaxWitnessesPerIncident = 18;
 
+
+
     public const int MaxDefiantWitnessesPerIncident = 3;
+
+
 
     public const float LocalFleeMinDistance = 28f;
 
+
+
     public const float LocalFleeFallbackDistance = 36f;
+
+
 
     public const float LocalFleeArrivalRadius = 5f;
 
+
+
     public const float LocalFleeRefreshSeconds = 3.5f;
+
+
 
     public const float WitnessRepeatCooldownSeconds = 18f;
 
+
+
     public const uint SoldierWitnessFallbackMessageColor = 0xFFFFD27Fu;
+
+
 
     public const string WitnessFleeSource = "local_player_attack_witness_flee";
 
+
+
     public const string WitnessDefiantSource = "local_player_attack_witness_defiant";
+
+
 
     public const string NativeFleeBridgeSource = "local_player_attack_native_flee";
 
+
+
     public const string PlayerDownSource = "local_player_attack_down";
+
+
 
     public const string SoldierWitnessInquirySource = "local_player_attack_soldier_witness_inquiry";
 
-    public const string WitnessMemoryTitle = "局部恐慌";
 
-    public const string SoldierWitnessMemoryTitle = "士兵请示";
+
+    public static string WitnessMemoryTitle => TownPromptCatalogResources.Get(false).GetRuntimeText("LocalWitnessMemoryTitle");
+
+    public const string WitnessMemoryTitleEn = "Local Panic";
+
+
+
+    public static string SoldierWitnessMemoryTitle => TownPromptCatalogResources.Get(false).GetRuntimeText("LocalSoldierInquiryMemoryTitle");
+
+    public const string SoldierWitnessMemoryTitleEn = "Soldier Inquiry";
+
+
+
+    public static string GetWitnessMemoryTitle(bool isEnglish) => isEnglish ? WitnessMemoryTitleEn : WitnessMemoryTitle;
+
+    public static string GetSoldierWitnessMemoryTitle(bool isEnglish) => isEnglish ? SoldierWitnessMemoryTitleEn : SoldierWitnessMemoryTitle;
+
+
 
     public static bool IsInsideWitnessRadiusSquared(float distanceSquared)
+
     {
+
         return distanceSquared <= WitnessRadius * WitnessRadius;
+
     }
+
+
 
     public static int CalculateMaxDefiantWitnesses(int witnessCount, int defiantEligibleCount)
+
     {
+
         if (witnessCount <= 0 || defiantEligibleCount <= 0)
+
         {
+
             return 0;
+
         }
+
         int proportionalLimit = (int)Math.Round(witnessCount * 0.18d, MidpointRounding.AwayFromZero);
+
         int safeLimit = Math.Max(1, proportionalLimit);
+
         return Math.Min(MaxDefiantWitnessesPerIncident, Math.Min(defiantEligibleCount, safeLimit));
+
     }
+
+
 
     public static bool ShouldCivilianDefy(int deterministicSeed, bool isNotable, bool carriesWeapon, bool isGuardOrSoldier)
+
     {
+
         if (isGuardOrSoldier)
+
         {
+
             return false;
+
         }
+
         int normalizedSeed = deterministicSeed == int.MinValue ? int.MaxValue : Math.Abs(deterministicSeed);
+
         int bucket = normalizedSeed % 12;
+
         if (isNotable)
+
         {
+
             return bucket < 4;
+
         }
+
         if (carriesWeapon)
+
         {
+
             return bucket < 3;
+
         }
+
         return bucket == 0;
+
     }
+
+
 
     public static bool IsLocalFleeTargetFarEnough(float distanceSquared)
+
     {
+
         return distanceSquared >= LocalFleeMinDistance * LocalFleeMinDistance;
+
     }
+
+
 
     public static bool IsLocalFleeTargetReached(float distanceSquared)
+
     {
+
         return distanceSquared <= LocalFleeArrivalRadius * LocalFleeArrivalRadius;
+
     }
+
+
 
     public static bool ShouldRefreshLocalFleeOrder(bool force, bool hasTarget, bool hasLastOrder, bool reachedTarget, float elapsedSeconds)
+
     {
+
         return force
+
             || !hasTarget
+
             || !hasLastOrder
+
             || (!reachedTarget && elapsedSeconds >= LocalFleeRefreshSeconds);
+
     }
+
+
 
     public static string BuildPlayerDownMessage(string targetName)
+
+        => BuildPlayerDownMessage(targetName, false);
+
+
+
+    public static string BuildPlayerDownMessage(string targetName, bool isEnglish)
+
     {
-        return "【局部冲突】打倒" + NormalizeTargetName(targetName, "一名NPC") + "，附近逃散。";
+
+        if (isEnglish)
+
+        {
+
+            return "[Local conflict] Knocked down " + NormalizeTargetName(targetName, "an NPC") + "; nearby fleeing.";
+
+        }
+
+        return SiegeAftermathCompatibilityTexts.Raw("local_civ_knockdown_prefix") + NormalizeTargetName(targetName, SiegeAftermathCompatibilityTexts.Raw("attack_npc_fallback")) + SiegeAftermathCompatibilityTexts.Raw("local_civ_scatter_suffix");
+
     }
+
+
 
     public static string BuildPlayerDownMemoryText(string targetName)
+
+        => BuildPlayerDownMemoryText(targetName, false);
+
+
+
+    public static string BuildPlayerDownMemoryText(string targetName, bool isEnglish)
+
     {
-        return "玩家在攻城后处置场景中打倒了 " + NormalizeTargetName(targetName, "一名NPC") + "；这只触发局部区域恐慌和少量喝止/对峙，不得自动升级为全城血洗或士兵参战。";
+
+        if (isEnglish)
+
+        {
+
+            return "The player knocked down " + NormalizeTargetName(targetName, "an NPC") + " in the post-siege scene; this only triggers local street panic and defiance, and must not automatically escalate to full-city massacre.";
+
+        }
+
+        return SiegeAftermathCompatibilityTexts.Raw("local_civ_memory_prefix") + NormalizeTargetName(targetName, SiegeAftermathCompatibilityTexts.Raw("attack_npc_fallback")) + SiegeAftermathCompatibilityTexts.Raw("local_civ_memory_scuffle_suffix");
+
     }
+
+
 
     public static string BuildWitnessMemoryText(string targetName, int fleeingCount, int defiantCount)
+
+        => BuildWitnessMemoryText(targetName, fleeingCount, defiantCount, false);
+
+
+
+    public static string BuildWitnessMemoryText(string targetName, int fleeingCount, int defiantCount, bool isEnglish)
+
     {
-        return "玩家攻击 " + NormalizeTargetName(targetName, "一名NPC") + " 后，附近约 " + Math.Max(0, fleeingCount) + " 名民众开始逃散，约 " + Math.Max(0, defiantCount) + " 名民众尝试局部喝止/对峙；该反应只代表街巷区域性冲突，不接入血洗式敌对。";
+
+        int fleeing = Math.Max(0, fleeingCount);
+
+        int defiant = Math.Max(0, defiantCount);
+
+        if (isEnglish)
+
+        {
+
+            return "After the player attacked " + NormalizeTargetName(targetName, "an NPC") + ", approx " + fleeing + " civilians began fleeing and approx " + defiant + " attempted local restraint/defiance; this represents street-level conflict and does not link to massacre hostility.";
+
+        }
+
+        return SiegeAftermathCompatibilityTexts.Raw("local_civ_flee_prefix") + NormalizeTargetName(targetName, SiegeAftermathCompatibilityTexts.Raw("attack_npc_fallback")) + SiegeAftermathCompatibilityTexts.Raw("local_civ_flee_middle") + fleeing + SiegeAftermathCompatibilityTexts.Raw("local_civ_flee_count_prefix") + defiant + SiegeAftermathCompatibilityTexts.Raw("local_civ_flee_defy_suffix");
+
     }
 
+
+
     public static string BuildWitnessFact(string targetName, bool victimDown, bool witnessWillDefy, string settlementName)
+
+        => BuildWitnessFact(targetName, victimDown, witnessWillDefy, settlementName, false);
+
+
+
+    public static string BuildWitnessFact(string targetName, bool victimDown, bool witnessWillDefy, string settlementName, bool isEnglish)
+
     {
-        string scene = string.IsNullOrWhiteSpace(settlementName) ? SiegeAmbientReactionProfile.DefaultSettlementName : settlementName.Trim();
-        string target = NormalizeTargetName(targetName, "附近一名民众");
-        string incident = victimDown ? "玩家刚打倒了" : "玩家刚攻击了";
+
+        string scene = string.IsNullOrWhiteSpace(settlementName)
+
+            ? (isEnglish ? SiegeAmbientReactionProfile.DefaultSettlementNameEn : SiegeAmbientReactionProfile.DefaultSettlementName)
+
+            : settlementName.Trim();
+
+        string target = NormalizeTargetName(targetName, isEnglish ? "a nearby civilian" : SiegeAftermathCompatibilityTexts.Raw("local_civ_nearby_civilian"));
+
+        if (isEnglish)
+
+        {
+
+            string incidentEn = victimDown ? "the player just knocked down " : "the player just attacked ";
+
+            string roleEn = witnessWillDefy
+
+                ? "You are one of the few bold, armed, or prominent individuals nearby, currently standing defiant or calling for restraint. You may rebuke, curse, question, or verbally threaten the player, or show fear/plead; do not claim to have actively attacked the player or soldiers. "
+
+                : "You are a nearby witnessing civilian, currently taking shelter. You may shout for others to run, curse, grieve, or plead for mercy; do not invent unseen casualties. ";
+
+            return "[SIEGE AFTERMATH AMBIENT LINE] Current location is " + scene + ". " + incidentEn + target + "; this is only a local street conflict, not a general massacre order. "
+
+                + roleEn
+
+                + "The player holds on-site military disposition authority; whether this is a conquered enemy town or an internal incident in an owned/attached town follows runtime provenance. Your curses, threats, pleas, or statements of kneeling are spoken lines only; do not execute attacks, kneeling, submission, or loyalty settlement. Speak only one on-site line of 12 to 32 characters without narration, action descriptions, or bracketed tags.";
+
+        }
+
+
+
+        string incident = victimDown ? SiegeAftermathCompatibilityTexts.Raw("local_civ_player_knocked") : SiegeAftermathCompatibilityTexts.Raw("local_civ_player_attacked");
+
         string role = witnessWillDefy
-            ? "你是附近少数胆大、带武器或有身份的人，当前只在喝止/对峙。可以按性格当面怒斥、咒骂、质问或嘴上威胁玩家，也可以被眼前伤亡吓到、求饶或嘴硬；不要声称已经主动攻击玩家或士兵。"
-            : "你是附近目击的平民，当前正在避险。可以喊人快跑、怒骂、悲痛、求饶或嘴硬，不必人人同一句话；只根据自己的目击反应，不能编造亲属受害。";
-        return "【攻城处置环境发言】当前地点是" + scene + "。" + incident + target + "，这只是局部街巷冲突，不是全城血洗命令。"
+
+            ? SiegeAftermathCompatibilityTexts.Raw("local_civ_defy_prompt")
+
+            : SiegeAftermathCompatibilityTexts.Raw("local_civ_flee_prompt");
+
+        return SiegeAftermathCompatibilityTexts.Raw("local_civ_ambient_prefix") + scene + SiegeAftermathCompatibilityTexts.Raw("local_civ_ambient_body_prefix") + incident + target + SiegeAftermathCompatibilityTexts.Raw("local_civ_ambient_body_suffix")
+
             + role
-            + "玩家掌握现场军事处置权；是攻占敌城还是自有/附属城镇内部事件，以运行时来源为准。你的骂声、威胁或“我给你跪下”等服软只是台词，不执行攻击、跪地、臣服或忠诚结算。"
-            + "请只说一句12到32字的现场话，不要写旁白、动作描写或方括号标签。";
+
+            + SiegeAftermathCompatibilityTexts.Raw("local_civ_ambient_power")
+
+            + SiegeAftermathCompatibilityTexts.Raw("local_civ_ambient_limit");
+
+    }
+
+
+
+    public static string BuildSoldierWitnessInquiryFact(string targetName, bool victimDown, string settlementName, bool soldierIsBloodthirsty = false, string soldierPersonaText = null)
+
+        => BuildSoldierWitnessInquiryFact(targetName, victimDown, settlementName, soldierIsBloodthirsty, soldierPersonaText, false);
+
+
+
+    public static string BuildSoldierWitnessInquiryFact(string targetName, bool victimDown, string settlementName, bool soldierIsBloodthirsty, string soldierPersonaText, bool isEnglish)
+
+    {
+
+        string scene = string.IsNullOrWhiteSpace(settlementName)
+
+            ? (isEnglish ? SiegeAmbientReactionProfile.DefaultSettlementNameEn : SiegeAmbientReactionProfile.DefaultSettlementName)
+
+            : settlementName.Trim();
+
+        string target = NormalizeTargetName(targetName, isEnglish ? "a nearby civilian" : SiegeAftermathCompatibilityTexts.Raw("local_civ_nearby_civilian"));
+
+        if (isEnglish)
+
+        {
+
+            string incidentEn = victimDown ? "the player just knocked down " : "the player just attacked ";
+
+            string personaLineEn = string.IsNullOrWhiteSpace(soldierPersonaText) ? "" : " Your known traits: " + soldierPersonaText.Trim() + ". ";
+
+            string responsePolicyEn = soldierIsBloodthirsty
+
+                ? "You have bloodthirsty tendencies; you may proactively inquire whether to order a general massacre, but must frame it as an inquiry to the player. "
+
+                : (victimDown
+
+                    ? "A person was knocked down; ask whether to secure this street corner first; remind that any general pillage or massacre requires an explicit command. "
+
+                    : "This was a local strike; ask whether to restrain the crowd or secure the street, without actively proposing full plunder or slaughter. ");
+
+            return "[SIEGE AFTERMATH SOLDIER INQUIRY] Current location is " + scene + ". " + incidentEn + target + "; you witnessed this local violence within 24m. "
+
+                + "You are an allied soldier; address the player as commander or lord. " + personaLineEn + responsePolicyEn
+
+                + "Speak one natural short inquiry; do not declare executed actions or output bracketed tags.";
+
+        }
+
+
+
+        string incident = victimDown ? SiegeAftermathCompatibilityTexts.Raw("local_civ_player_knocked") : SiegeAftermathCompatibilityTexts.Raw("local_civ_player_attacked");
+
+        string personaLine = BuildSoldierPersonaLine(soldierPersonaText);
+
+        string responsePolicy = BuildSoldierWitnessResponsePolicy(victimDown, soldierIsBloodthirsty);
+
+        return SiegeAftermathCompatibilityTexts.Raw("local_civ_soldier_prompt_prefix") + scene + "." + incident + target + SiegeAftermathCompatibilityTexts.Raw("local_civ_soldier_prompt_signal")
+
+            + SiegeAftermathCompatibilityTexts.Raw("local_civ_soldier_prompt_role") + personaLine + responsePolicy
+
+            + SiegeAftermathCompatibilityTexts.Raw("local_civ_soldier_prompt_rule");
+
+    }
+
+
+
+    public static string BuildSoldierWitnessMemoryText(string targetName, bool victimDown, string soldierName, bool soldierIsBloodthirsty = false)
+
+        => BuildSoldierWitnessMemoryText(targetName, victimDown, soldierName, soldierIsBloodthirsty, false);
+
+
+
+    public static string BuildSoldierWitnessMemoryText(string targetName, bool victimDown, string soldierName, bool soldierIsBloodthirsty, bool isEnglish)
+
+    {
+
+        string actor = NormalizeTargetName(soldierName, isEnglish ? "nearby allied soldier" : SiegeAftermathCompatibilityTexts.Raw("local_civ_allied_soldier_noun"));
+
+        string incident = victimDown ? (isEnglish ? "knocking down" : SiegeAftermathCompatibilityTexts.Raw("local_civ_incident_knocked")) : (isEnglish ? "attacking" : SiegeAftermathCompatibilityTexts.Raw("local_civ_incident_attacked"));
+
+        if (isEnglish)
+
+        {
+
+            string inquiryEn = soldierIsBloodthirsty
+
+                ? "inquired with bloodthirsty tone whether to order massacre"
+
+                : (victimDown ? "inquired whether to secure the area or wait for player orders" : "inquired whether to restrain the crowd and secure the street");
+
+            return actor + " witnessed the player " + incident + " " + NormalizeTargetName(targetName, "an NPC") + " within 24m and " + inquiryEn + "; the inquiry itself does not execute destructive disposition.";
+
+        }
+
+
+
+        string inquiry = soldierIsBloodthirsty
+
+            ? SiegeAftermathCompatibilityTexts.Raw("local_civ_soldier_inquiry_massacre")
+
+            : (victimDown ? SiegeAftermathCompatibilityTexts.Raw("local_civ_soldier_inquiry_control_plunder") : SiegeAftermathCompatibilityTexts.Raw("local_civ_soldier_inquiry_control_crowd"));
+
+        return actor + SiegeAftermathCompatibilityTexts.Raw("local_civ_witness_24m") + incident + " " + NormalizeTargetName(targetName, SiegeAftermathCompatibilityTexts.Raw("attack_npc_fallback")) + SiegeAftermathCompatibilityTexts.Raw("local_civ_inquiry_sep") + inquiry + SiegeAftermathCompatibilityTexts.Raw("local_civ_inquiry_suffix");
+
+    }
+
+
+
+    public static string BuildSoldierWitnessFallbackMessage(string soldierName, string targetName, bool victimDown, bool soldierIsBloodthirsty = false)
+
+        => BuildSoldierWitnessFallbackMessage(soldierName, targetName, victimDown, soldierIsBloodthirsty, false);
+
+
+
+    public static string BuildSoldierWitnessFallbackMessage(string soldierName, string targetName, bool victimDown, bool soldierIsBloodthirsty, bool isEnglish)
+
+    {
+
+        string actor = NormalizeTargetName(soldierName, isEnglish ? "Allied soldier" : SiegeAftermathCompatibilityTexts.Raw("local_civ_allied_soldier_noun"));
+
+        if (isEnglish)
+
+        {
+
+            if (soldierIsBloodthirsty)
+
+            {
+
+                return "[Soldier inquiry] " + actor + ": Commander, shall we order a general massacre while chaos reigns? Say the word and we move.";
+
+            }
+
+            if (victimDown)
+
+            {
+
+                return "[Soldier inquiry] " + actor + ": Commander, someone is down. Shall I hold this area? If you want pillage or slaughter, give the word.";
+
+            }
+
+            return "[Soldier inquiry] " + actor + ": My lord, things are getting tense here. Shall I take men to hold the street and disperse onlookers?";
+
+        }
+
+
+
+        if (soldierIsBloodthirsty)
+
+        {
+
+            return SiegeAftermathCompatibilityTexts.Raw("local_civ_fallback_line_massacre").Replace("{actor}", actor);
+
+        }
+
+        if (victimDown)
+
+        {
+
+            return SiegeAftermathCompatibilityTexts.Raw("local_civ_fallback_line_control").Replace("{actor}", actor);
+
+        }
+
+        return SiegeAftermathCompatibilityTexts.Raw("local_civ_fallback_line_crowd").Replace("{actor}", actor);
+
+    }
+
+
+
+
+
+        private static string[] LoadCruelTerms()
+    {
+        var list = new List<string> { "bloodthirsty", "blood-thirsty", "cruel", "ruthless", "merciless", "sadistic", "brutal", "savage", "slaughter", "massacre", "plunder-hungry", "loot-hungry" };
+        string raw = SiegeAftermathCompatibilityTexts.Raw("cruel_keywords");
+        if (!string.IsNullOrEmpty(raw))
+        {
+            list.AddRange(raw.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries));
+        }
+        return list.ToArray();
     }
 
     public static bool ResolveSoldierWitnessBloodthirstyFromPersona(string personalityText, string backgroundText = null)
+
     {
+
         string text = ((personalityText ?? "") + " " + (backgroundText ?? "")).Trim();
+
         if (string.IsNullOrWhiteSpace(text))
+
         {
+
             return false;
+
         }
-        return ContainsAny(text,
-            "嗜血", "残酷", "残忍", "冷血", "好杀", "屠戮", "屠城", "杀戮", "杀人如麻", "渴望战利品", "贪战利", "贪婪好战", "劫掠成性", "掠夺成性",
-            "bloodthirsty", "blood-thirsty", "cruel", "ruthless", "merciless", "sadistic", "brutal", "savage", "slaughter", "massacre", "plunder-hungry", "loot-hungry");
+
+        return ContainsAny(text, LoadCruelTerms());
+
     }
 
-    public static string BuildSoldierWitnessInquiryFact(string targetName, bool victimDown, string settlementName, bool soldierIsBloodthirsty = false, string soldierPersonaText = null)
-    {
-        string scene = string.IsNullOrWhiteSpace(settlementName) ? SiegeAmbientReactionProfile.DefaultSettlementName : settlementName.Trim();
-        string target = NormalizeTargetName(targetName, "附近一名民众");
-        string incident = victimDown ? "玩家刚打倒了" : "玩家刚攻击了";
-        string personaLine = BuildSoldierPersonaLine(soldierPersonaText);
-        string responsePolicy = BuildSoldierWitnessResponsePolicy(victimDown, soldierIsBloodthirsty);
-        return "【攻城处置士兵请示】当前地点是" + scene + "。" + incident + target + "，你在24米内亲眼看到这个局部暴力信号。"
-            + "你是玩家己方入城士兵，必须称玩家为统帅/大人/长官。" + personaLine + responsePolicy
-            + "只说一句自然短句，不要写成三选一菜单，不要宣布已经执行处置，不得自行攻击平民，不得输出任何方括号动作标签。";
-    }
 
-    public static string BuildSoldierWitnessMemoryText(string targetName, bool victimDown, string soldierName, bool soldierIsBloodthirsty = false)
-    {
-        string actor = NormalizeTargetName(soldierName, "附近己方士兵");
-        string incident = victimDown ? "打倒" : "攻击";
-        string inquiry;
-        if (soldierIsBloodthirsty)
-        {
-            inquiry = "以嗜血/残酷口吻向玩家请示是否下令屠城/血洗";
-        }
-        else if (victimDown)
-        {
-            inquiry = "已向玩家请示是否控住现场，或由玩家明令扩大为搜掠/血洗";
-        }
-        else
-        {
-            inquiry = "已向玩家请示是否压住附近人群并控制街口";
-        }
-        return actor + " 在24米内目击玩家" + incident + " " + NormalizeTargetName(targetName, "一名NPC") + "，" + inquiry + "；该请示本身不代表已经执行破坏性处置。";
-    }
-
-    public static string BuildSoldierWitnessFallbackMessage(string soldierName, string targetName, bool victimDown, bool soldierIsBloodthirsty = false)
-    {
-        string actor = NormalizeTargetName(soldierName, "附近己方士兵");
-        if (soldierIsBloodthirsty)
-        {
-            return "【士兵请示】" + actor + "：统帅，要不要趁这股乱劲下屠城令？您一句话，我们就动手。";
-        }
-        if (victimDown)
-        {
-            return "【士兵请示】" + actor + "：统帅，人已经倒了。要我先控住这片？若要搜掠或血洗，请您明令。";
-        }
-        return "【士兵请示】" + actor + "：大人，这边乱起来了。要不要我带人压住街口，把围观的赶开？";
-    }
 
     private static string BuildSoldierWitnessResponsePolicy(bool victimDown, bool soldierIsBloodthirsty)
+
     {
+
         if (soldierIsBloodthirsty)
+
         {
-            return "你有嗜血/残酷倾向，允许更主动、更兴奋地请示是否趁乱下屠城令、血洗这座城或让士兵开杀；仍必须是在向玩家请令，不得说成已经执行。";
+
+            return SiegeAftermathCompatibilityTexts.Raw("local_civ_cruel_instruction");
+
         }
+
         return victimDown
-            ? "人已经倒下，局势可能扩大；请先请示是否控住这一片街口，只有在话语自然时才可提醒：若玩家要扩大为全城搜掠或血洗，必须由玩家明令。"
-            : "这只是一次近处打击，局势还停留在街巷局部；请请示是否压住附近人、驱散围观、护住玩家或控住街口，不要主动提全城搜掠或血洗。";
+
+            ? SiegeAftermathCompatibilityTexts.Raw("local_civ_down_instruction")
+
+            : SiegeAftermathCompatibilityTexts.Raw("local_civ_hit_instruction");
+
     }
+
+
 
     private static string BuildSoldierPersonaLine(string soldierPersonaText)
+
     {
+
         string persona = NormalizeOptionalText(soldierPersonaText);
+
         return string.IsNullOrWhiteSpace(persona)
+
             ? ""
-            : "你的已知个性/背景是：" + persona + "。请按这个性格组织语气，但仍服从玩家命令。";
+
+            : SiegeAftermathCompatibilityTexts.Raw("local_civ_persona_prefix") + persona + SiegeAftermathCompatibilityTexts.Raw("local_civ_persona_suffix");
+
     }
+
+
 
     private static string NormalizeOptionalText(string text)
+
     {
+
         return (text ?? "").Replace("\r", " ").Replace("\n", " ").Trim();
+
     }
+
+
 
     private static bool ContainsAny(string text, params string[] needles)
+
     {
+
         if (string.IsNullOrWhiteSpace(text) || needles == null)
+
         {
+
             return false;
+
         }
+
         foreach (string needle in needles)
+
         {
+
             if (!string.IsNullOrWhiteSpace(needle) && text.IndexOf(needle, StringComparison.OrdinalIgnoreCase) >= 0)
+
             {
+
                 return true;
+
             }
+
         }
+
         return false;
+
     }
 
+
+
     private static string NormalizeTargetName(string targetName, string fallback)
+
     {
+
         return string.IsNullOrWhiteSpace(targetName) ? fallback : targetName.Trim();
+
     }
+
 }
+

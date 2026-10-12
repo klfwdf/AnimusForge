@@ -14,6 +14,11 @@ internal static class Dpl080PromptReplay
         Test.True((string)fallback["primary_target_kingdom_id"] == "b" && (double)fallback["confidence"] == 0, "080 fallback target and uncertainty");
         var world = new PromptWorldFixture();
         var orch = new PromptOrch(world);
+        world.EnglishPrompts = true;
+        string englishPlan = WorldDiplomacyPromptComposer.BuildRoundPlanPrompt(world, orch, world.Document, new() { "b" });
+        Test.True(englishPlan.Contains("[Opening declaration]") && englishPlan.Contains("\"selected_kingdom_ids\":[\"ID\"]"), "localized English plan retains JSON schema");
+        Test.True(englishPlan.Contains("must participate") && englishPlan.Contains("use only candidate IDs"), "English plan retains mandatory targets and candidate limit");
+        world.EnglishPrompts = false;
         var round = world.Round;
         var doc = world.Document;
         string opening = WorldDiplomacyPromptComposer.BuildAutonomousOpeningPrompt(world, orch, "a", "r", new() { "a", "missing", "dead", "vassal", "b" });
@@ -87,6 +92,16 @@ internal static class Dpl080PromptReplay
 
 internal sealed class PromptWorldFixture : IWorldDiplomacyDraftRepairWorld
 {
+    internal bool EnglishPrompts;
+    private static readonly Dictionary<string, string> ChinesePrompts = LoadPromptStrings();
+    private static Dictionary<string, string> LoadPromptStrings()
+    {
+        using var stream = typeof(PromptWorldFixture).Assembly.GetManifestResourceStream("AnimusForge.Diplomacy.PromptCompatibility.json");
+        using var reader = new System.IO.StreamReader(stream);
+        return JObject.Parse(reader.ReadToEnd()).Properties().ToDictionary(x => x.Name, x => (string)x.Value);
+    }
+    public string LocalizePrompt(string id, string englishFallback)
+        => (EnglishPrompts ? englishFallback : ChinesePrompts.TryGetValue(id, out var legacy) ? legacy : DiplomacyPromptTexts.Get(id, englishFallback)).Replace("[[AF_JSON_OPEN]]", "{").Replace("[[AF_JSON_CLOSE]]", "}");
     internal readonly List<string> Events = new();
     internal readonly List<WorldDiplomacyJob> Enqueued = new();
     internal readonly List<string> Abandoned = new();

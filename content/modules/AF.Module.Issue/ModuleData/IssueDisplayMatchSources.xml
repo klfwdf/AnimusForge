@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<IssueDisplayMatchSources schemaVersion="1">
+  <Match id="NoQuestOrGiver">未找到任务或发放者。</Match>
+  <Match id="QuestNotCreated">任务对象未创建。</Match>
+  <Match id="AcceptBranchEnded">原版接取分支已立即结束或移除了任务，未能进入普通进行中状态。</Match>
+  <Match id="QuestNotOngoing">任务没有进入进行中状态。</Match>
+  <Match id="AcceptFinalizeException">原版任务接受收尾异常。</Match>
+  <Match id="NoOngoingVanillaQuest">当前没有进行中的原版任务。</Match>
+  <Match id="NoDiscussFlow">当前任务没有可用的原版 discuss 流。</Match>
+  <Match id="DiscussAgentMissing">当前场景中找不到原版 discuss 探测所需的 Agent。</Match>
+  <Match id="ConversationManagerUnavailable">当前原版 ConversationManager 不可用于静默任务交付。</Match>
+  <Match id="NoClearTurnInOption">当前原版 discuss 流里没有足够明确的可交付成功选项。</Match>
+  <Match id="TurnInMissingArgs">缺少原版任务交付执行参数。</Match>
+  <Match id="TurnInAmbiguousBranch">原版交付链在中途出现多条分支，且无法高置信度自动选择。</Match>
+  <Match id="TurnInNotCompleted">原版交付链已运行，但任务仍未完成。</Match>
+  <Match id="TurnInProbeExceptionPrefix">静默原版任务交付异常: </Match>
+  <Match id="UnknownCompanion">未知同伴</Match>
+  <Match id="CandidateSkillFallback">技能</Match>
+  <Match id="CandidateFailureRiskLabel">失败风险=</Match>
+  <Match id="CandidateDurationLabel">预计耗时=</Match>
+  <Match id="CandidateDaysSuffix">天</Match>
+  <Match id="CandidateTroopsLabel">需士兵=</Match>
+  <Match id="CandidateCasualtiesLabel">预计伤亡=</Match>
+  <Match id="UnnamedQuestFallback">未命名任务</Match>
+  <Match id="RecentJournalHeading">原版任务日志摘要：</Match>
+  <Match id="Raw_023">你已经把任务“</Match>
+  <Match id="Raw_024">”正式交给了玩家。</Match>
+  <Match id="Raw_025">你已经正式接下了对方交给你的任务“</Match>
+  <Match id="Raw_026">你已经同意让玩家派 </Match>
+  <Match id="Raw_027"> 率队代办任务“</Match>
+  <Match id="Raw_028">你已经与对方谈妥，让 </Match>
+  <Match id="Raw_029">你已确认玩家完成了任务“</Match>
+  <Match id="Raw_030">”。该任务奖励会按原版流程自动发放，无需你手动再次支付。</Match>
+  <Match id="Raw_031">你已向对方交付并验收任务“</Match>
+  <Match id="Raw_032">”。该任务奖励会按原版流程自动结算，无需NPC手动再次发放。</Match>
+  <Match id="Raw_033">一项原版任务</Match>
+  <Match id="Raw_034">你之前交给玩家的原版任务“</Match>
+  <Match id="Raw_035">”已经有结果了。</Match>
+  <Match id="Raw_036"> 结果：</Match>
+  <Match id="Raw_037"> 该任务的原版奖励 </Match>
+  <Match id="Raw_038"> 第纳尔已经由系统自动发放，无需你手动再次支付。</Match>
+  <Match id="Raw_039"> 若有原版任务奖励，也已由系统按原版流程自动结算，无需你手动再次发放。</Match>
+  <Match id="Raw_040"> 最近任务记录：</Match>
+  <Match id="Raw_041">任务已成功完成</Match>
+  <Match id="Raw_042">任务已失败</Match>
+  <Match id="Raw_043">任务以背叛结局失败</Match>
+  <Match id="Raw_044">任务已超时结束</Match>
+  <Match id="Raw_045">任务已取消</Match>
+  <Match id="Raw_046">玩家</Match>
+  <Match id="Raw_047">你已经加入了玩家队伍，成为了玩家的同伴。</Match>
+  <Match id="Raw_048"> 你对玩家的认识如下：</Match>
+  <Match id="Raw_049">回去找</Match>
+  <Match id="Raw_050">回到</Match>
+  <Match id="Raw_051">回去向</Match>
+  <Match id="Raw_052">你有足够</Match>
+  <Match id="Raw_053">已满足</Match>
+  <Match id="Raw_054">返回</Match>
+</IssueDisplayMatchSources>

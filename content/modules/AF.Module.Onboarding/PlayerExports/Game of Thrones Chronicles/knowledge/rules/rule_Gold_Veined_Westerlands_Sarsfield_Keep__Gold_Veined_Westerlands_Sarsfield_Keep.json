@@ -1,0 +1,153 @@
+{
+  "Id": "rule_Gold_Veined_Westerlands_Sarsfield_Keep",
+  "Keywords": [
+    "Sarsfield Keep",
+    "Hills",
+    "Mining Industry"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Sarsfield City is located in the western hilly area and is the center of the castle connecting the mining territory and the agricultural and pastoral hinterland. The wealth of the Westerlands has never flowed into Casterly Rock automatically: the mine roads have to be maintained, the animals have to be transported, the caravans have to obtain the permission of the lord, and the merchants have to bear the risk of bandits and road collapse. Local castles such as Sarsfield are responsible for linking underground resources, above-ground property and road order. Its residents may not have any direct connection with the royal capital's conspiracy, but they can immediately feel the politics of distant places from the price of gold, war requisitions, and currency shortages."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Sarsfield Keep Local families also relied on mining tunnels, pastures, mountain roads, gold and silver circulation and the market sheltered by Casterly Rock; if any road, well or dock failed, the price would fall first on them."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Sarsfield Keep Entry Sarsfield Keep"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Sarsfield Keep They also recognize the accents, laws, and credentials of the West; reputations can travel great distances from taverns, but true distances must still be measured by wheel, oar, or horse's hooves."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Sarsfield Keep Entry Sarsfield Keep"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Sarsfield Keep If you can supply supplies, avoid danger, and find a guide, it is worth marking in your itinerary; if you don't have these three things, no matter how loud your family name is, it won't be able to save the lost."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Sarsfield Keep A stronghold was therefore not just a lord's hall, but also a place where weddings and funerals, vows, labor and local memories recurred."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Sarsfield Keep They care about the mines, pastures, mountain roads, the circulation of gold and silver, and the market under the protection of Casterly Rock. They also look at whether seeds are left after the grain collection and whether the city gates are open in times of disaster. When people from afar see the coat of arms, what they see is whether there will be food to eat tomorrow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Sarsfield Keep: Sarsfield City is located in the western hilly area and is the center of the castle connecting the mining territory and the agricultural and pastoral hinterland. The wealth of the Westerlands has never flowed into Casterly Rock automatically: the mine roads have to be maintained, the animals have to be transported, the caravans have to obtain the permission of the lord, and the merchants have to bear the risk of bandits and road collapse. Local castles such as Sarsfield are responsible for linking underground resources, above-ground property and road order. Its residents may not have any direct connection with the royal capital's conspiracy, but they can immediately feel the politics of distant places from the price of gold, war requisitions, and currency shortages."
+  ]
+}

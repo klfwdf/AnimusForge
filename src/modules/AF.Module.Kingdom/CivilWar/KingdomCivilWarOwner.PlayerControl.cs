@@ -26,12 +26,14 @@ internal sealed partial class KingdomCivilWarOwner
         int cooldown = Math.Max(state?.CooldownUntilDay ?? 0, (state?.CooldownUntilWeek ?? 0) * 7);
         if (CivilWarWorld.CurrentDay() < cooldown)
         {
-            reason = "王国战后冷却至第 " + cooldown + " 天，玩家也不能手动起兵。";
+            reason = CivilWarUiText.T("AF_KINGDOM_CW_PlayerControl_KingdomCooldown", "The kingdom is in post-war cooldown until day {A}; the player cannot raise a rebellion by hand either.", ("A", cooldown.ToString()));
             return false;
         }
         int threshold = DuelSettings.BuildCivilWarTuning().PlayerDetonationStrengthPercent;
         float percent = PlayerStrengthPercent(kingdom, actor);
-        reason = percent < threshold ? "玩家家族军力占比 " + percent.ToString("0.0") + "% 未达到手动起兵门槛 " + threshold + "%。" : "";
+        reason = percent < threshold
+            ? CivilWarUiText.T("AF_KINGDOM_CW_PlayerControl_StrengthBelowThreshold", "Your clan holds {A}% of the kingdom's military strength, below the {B}% needed to raise a rebellion by hand.", ("A", percent.ToString("0.0")), ("B", threshold.ToString()))
+            : "";
         return reason.Length == 0;
     }
 
@@ -62,7 +64,7 @@ internal sealed partial class KingdomCivilWarOwner
     }
 
     private string ChangePlayerFactionDemand(Kingdom k, KingdomCivilWarKingdomState s, KingdomCivilWarFactionState f,
-        CivilWarActionRequest request, int week, CivilWarTuning tuning)
+        CivilWarActionRequest request, int week, CivilWarTuning tuning, out string displayDemand, out string displayRetained)
     {
         var oldDemand = CivilWarCatalog.FindDemand(f.DemandId);
         var newDemand = CivilWarCatalog.FindDemand(request.DemandId);
@@ -94,8 +96,16 @@ internal sealed partial class KingdomCivilWarOwner
             departed.Add(CivilWarWorld.ClanName(clan));
         }
         foreach (bool ignored in RebuildPoliticalCaches(s)) { }
-        return "你将派系诉求更改为" + FormatDemand(newDemand, f.TargetName) + "；" + retained + " 个其他家族继续参与，"
-            + departed.Count + " 个退出" + (departed.Count == 0 ? "。" : "（" + string.Join("、", departed) + "）。") + "派系不会自动起兵。";
+        // Deliberately not localized: this return value becomes CivilWarActionResult.Message, which the Applied
+        // path publishes as political-result material (LLM/AFEF), stores in the operation receipt and shows in the
+        // panel chronicle, so it must stay a stable rule string. A localized list separator would be needed if
+        // that decision is ever revisited.
+        // Display projection data for the result notification. The returned Message below stays the
+        // stable Chinese rule string that the receipt, AFEF and weekly material keep consuming.
+        displayDemand = CivilWarUiText.DemandDisplayText(newDemand, ResolveDemandTargetDisplay(newDemand, f, k));
+        displayRetained = retained.ToString();
+        return KingdomCivilWarTexts.Raw("KW_Raw_153") + FormatDemand(newDemand, f.TargetName) + "；" + retained + KingdomCivilWarTexts.Raw("KW_Raw_154")
+            + departed.Count + KingdomCivilWarTexts.Raw("KW_Raw_155") + (departed.Count == 0 ? "。" : "（" + string.Join("、", departed) + "）。") + KingdomCivilWarTexts.Raw("KW_Raw_156");
     }
 
     private void DissolvePlayerFaction(Kingdom k, KingdomCivilWarKingdomState s, KingdomCivilWarFactionState faction, Clan actor, int week, CivilWarTuning tuning, ICollection<Hero> affectedParticipants = null)

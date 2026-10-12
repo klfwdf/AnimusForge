@@ -1,0 +1,128 @@
+{
+  "Id": "rule_Folk_Customs_Maesters_and_Everyday_Medicine",
+  "Keywords": [
+    "Maesters and Everyday Medicine"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Maesters can write letters, keep accounts, and fight injuries and illnesses with herbs, sutures, and knowledge. The lords regard them as part of the order of the castle, and the people respect and doubt these chained people; when it comes to plague or difficult childbirth, many prejudices will give way to survival."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Maesters and Everyday Medicine"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Maesters and Everyday Medicine"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Maesters and Everyday Medicine"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Maesters and Everyday Medicine Maesters can write letters, keep accounts, and fight injuries and illnesses with herbs, sutures, and knowledge. The lords regard them as part of the order of the castle, and the people respect and doubt these chained people; when it comes to plague or difficult childbirth, many prejudices will give way to survival. Whether it is valid depends on who can grant the rights, collect the consideration, and actually make the judgment come to fruition in the event of default."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Maesters and Everyday Medicine Maesters can write letters, keep accounts, and fight injuries and illnesses with herbs, sutures, and knowledge. The lords regard them as part of the order of the castle, and the people respect and doubt these chained people; when it comes to plague or difficult childbirth, many prejudices will give way to survival. If a rule is practiced over and over again, it will find its way into rituals, crafts, and prayers; if it is sustained only by fear, cracks will show at the onset of a crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Maesters and Everyday Medicine Maesters can write letters, keep accounts, and fight injuries and illnesses with herbs, sutures, and knowledge. The lords regard them as part of the order of the castle, and the people respect and doubt these chained people; when it comes to plague or difficult childbirth, many prejudices will give way to survival. They remember taxes, grain, labor, relief and who can speak for them; these grand names will eventually fall on the family's rice pot."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Maesters and Everyday Medicine: Maesters can write letters, keep accounts, and fight injuries and illnesses with herbs, sutures, and knowledge. The lords regard them as part of the order of the castle, and the people respect and doubt these chained people; when it comes to plague or difficult childbirth, many prejudices will give way to survival."
+  ]
+}

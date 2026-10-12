@@ -1,0 +1,56 @@
+{
+  "Id": "rule_Eril_King",
+  "Keywords": [
+    "King Ariel",
+    "Ariel"
+  ],
+  "RagShortTexts": [
+    "The late king Eril Fenn Utharian, the benevolent High King of Badania, took the initiative to maintain peace with the empire during his decades of reign. Disappeared while hunting before the Battle of Pandrak. His adopted son Caladog succeeded to the throne, and the truth surrounding his disappearance remains unclear."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The full name of the late king Eril was Eril Fen Uthrainan. He was a rare benevolent high king in Batania. During the decades he led Batania, he had been taking the initiative to maintain peace with the empire. Before the Battle of Pandrak began, the late King Ariel accidentally disappeared while hunting. Ariel took in an adopted son, Caladog, the new High King who succeeded him. There are many theories about the disappearance of the late King Ariel, and some even point the finger at Caladog, suspecting that he assassinated his adoptive father and seized the throne of High King."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable",
+          "soldier",
+          "townsfolk",
+          "villager",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The late king Eril Fenn Utharian was a benevolent High King who had been actively maintaining peace with the empire for decades in power. Before the Battle of Pandrak, he accidentally disappeared while hunting. Caladog succeeds. Regarding the disappearance, the public has everything they say."
+    }
+  ],
+  "TextMappings": []
+}

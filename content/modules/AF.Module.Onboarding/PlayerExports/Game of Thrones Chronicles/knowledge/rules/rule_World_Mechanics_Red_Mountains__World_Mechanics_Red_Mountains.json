@@ -1,0 +1,157 @@
+{
+  "Id": "rule_World_Mechanics_Red_Mountains",
+  "Keywords": [
+    "Red Mountains",
+    "Dornish Marches"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Crimson Mountains form a natural barrier in northern Dorne, separating the sandy lands from the river bends and the stormlands. Rocks, canyons, lack of water, and scorching sun made it difficult for the army to cross freely, so the few passes such as the Bone Road and Prince's Pass had long been defended by frontier families. Mountain castles, beacon posts, and riders familiar with hidden paths can hold back powerful enemies with fewer troops. Water replenishment points are more important than formations on open plains. Hundreds of years of Dornish wars have accumulated marriages, trade, raids and revenge on both sides of the mountain. The so-called border has never been a quiet line, but a living area where residents must know how to fight and communicate at the same time."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Dornish people regard the Crimson Mountains as a shield, and they also know that the shield needs someone to guard the well, lead the way, and deliver messages. Foreign enemies see barren mountains, and local scouts see dozens of paths that can disappear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "reach",
+          "stormlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "From the mountain pass, the frontier knight sees glory and old hatred. People who have actually fought in mountain warfare are more in awe of the lack of water and arrows from high places, and will not mistake Dorne's retreat as a failure."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai",
+          "reach",
+          "stormlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "merchant",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Shepherds, traders and monks still have to cross this mountainous land filled with war songs. They knew that salt, cattle, and news also needed to be exchanged between rival families, and that life would not wait for a peace treaty to begin."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Red Mountains The scorching mountains that separated Dorne from the Reach and the Stormlands, the Bone Road and the Prince's Pass forced the army into a few dangerous passes. Whether it is valid depends on who can grant the rights, collect the consideration, and actually make the judgment come to fruition in the event of default."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Red Mountains The scorching mountains that separated Dorne from the Reach and the Stormlands, the Bone Road and the Prince's Pass forced the army into a few dangerous passes. The distant system is not empty talk only if it can be implemented in campfires, city gates and inns."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Red Mountains The scorching mountains that separated Dorne from the Reach and the Stormlands, the Bone Road and the Prince's Pass forced the army into a few dangerous passes. If a rule is practiced over and over again, it will find its way into rituals, crafts, and prayers; if it is sustained only by fear, cracks will show at the onset of a crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Red Mountains The scorching mountains that separated Dorne from the Reach and the Stormlands, the Bone Road and the Prince's Pass forced the army into a few dangerous passes. They remember taxes, grain, labor, relief and who can speak for them; these grand names will eventually fall on the family's rice pot."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Red Mountains: The scorching mountains that separated Dorne from the Reach and the Stormlands, the Bone Road and the Prince's Pass forced the army into a few dangerous passes."
+  ]
+}

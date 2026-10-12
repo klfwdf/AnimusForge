@@ -60,9 +60,9 @@ public sealed partial class CourierDeliveryBehavior
 					string playerName = MyBehavior.BuildPlayerPublicDisplayNameForExternal();
 					if (string.IsNullOrWhiteSpace(playerName))
 					{
-						playerName = Hero.MainHero?.Name?.ToString() ?? "玩家";
+						playerName = Hero.MainHero?.Name?.ToString() ?? ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0465");
 					}
-					bool historyAccepted = CommitCourierDialogueHistory(recipient, "【来信】" + playerName + "通过信使写道：" + session.LetterText, null, session.DeliveryFactText);
+					bool historyAccepted = CommitCourierDialogueHistory(recipient, ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0466") + playerName + ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0467") + session.LetterText, null, session.DeliveryFactText);
 					if (historyAccepted) RecordModuleCourierStep(session, CoreCourierAcceptedSteps.DeliveryHistory);
 					if (!payloadAccepted || !historyAccepted)
 					FailModuleCourierSession(session, payloadAccepted ? "courier.history_unconfirmed" : "courier.payload_unconfirmed");
@@ -305,7 +305,7 @@ public sealed partial class CourierDeliveryBehavior
 				if (!IsCourierPromptRunCurrent(promptRun)) return;
 				try
 				{
-					LlmRetryPrompt.ShowFailurePopup("信使回信前处理失败", ex.Message);
+					LlmRetryPrompt.ShowLocalizedFailurePopup("{=AF_UI_Retry_CourierReplyPreprocessFailed}Courier reply preprocessing failed", ex.Message);
 				}
 				catch
 				{
@@ -517,7 +517,7 @@ public sealed partial class CourierDeliveryBehavior
 			else
 			{
 				FailModuleCourierSession(session, "courier.postprocess_failed");
-				Logger.Log("CourierDelivery", "[UnifiedPostprocess] 调用失败: " + error);
+				Logger.Log("CourierDelivery", "[UnifiedPostprocess] failed: " + error);
 				postprocessed = workItem.FallbackText;
 			}
 			FinalizeCourierReplyGenerationOnMainThread(request, reply, postprocessed, completionLogDetails);
@@ -567,14 +567,14 @@ public sealed partial class CourierDeliveryBehavior
 			}
 			int retryChoice = 0;
 			// 此窗口仅用于选择重试或放弃；完整接口错误改由左下角消息和日志承载。
-			NonBlockingErrorReport.Show("信使回信生成失败", "信使回信正文生成失败：\n\n" + (error ?? "未知错误"));
+			NonBlockingErrorReport.Show(CourierFailureUiText.ReplyFailedTitle, CourierFailureUiText.ReplyFailedDetail(error));
 			InformationManager.ShowInquiry(new InquiryData(
-				"信使回信生成失败",
-				LlmRetryPrompt.BuildRetryDescription("信使回信正文生成", error),
+				CourierFailureUiText.ReplyFailedTitle,
+				LlmRetryPrompt.BuildRetryDescription(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0469"), error),
 				isAffirmativeOptionShown: true,
 				isNegativeOptionShown: true,
-				"重试",
-				"放弃",
+				CourierFailureUiText.Retry,
+				CourierFailureUiText.Abort,
 				delegate
 				{
 					if (Interlocked.CompareExchange(ref retryChoice, 1, 0) != 0) return;
@@ -622,7 +622,7 @@ public sealed partial class CourierDeliveryBehavior
 		session.ReplyPostprocessedText = string.Empty;
 		Log("detached courier reply stopped session=" + sessionId + " error=" + (errorCode ?? ""));
 		FailCourierReplyGenerationOnMainThread(sessionId, runtimeGeneration, "reply_detached_stopped");
-		NonBlockingErrorReport.Show("信使回信已停止", "本次回信未能安全完成，系统不会自动重试可能已生效的动作。请查看日志并核对实际结果。");
+		NonBlockingErrorReport.Show(CourierFailureUiText.ReplyStoppedTitle, CourierFailureUiText.ReplyStoppedDetail);
 	}
 
 	private void FailCourierReplyGenerationOnMainThread(string sessionId, long runtimeGeneration, string reason)
@@ -707,7 +707,7 @@ public sealed partial class CourierDeliveryBehavior
 				if (!IsCourierPromptRunCurrent(promptRun)) return;
 				try
 				{
-					LlmRetryPrompt.ShowFailurePopup("信使来信前处理失败", ex.Message);
+					LlmRetryPrompt.ShowLocalizedFailurePopup("{=AF_UI_Retry_CourierLetterPreprocessFailed}Courier letter preprocessing failed", ex.Message);
 				}
 				catch
 				{
@@ -811,14 +811,14 @@ public sealed partial class CourierDeliveryBehavior
 				return false;
 			}
 			// 此窗口仅用于选择重试或放弃；完整接口错误改由左下角消息和日志承载。
-			NonBlockingErrorReport.Show("信使来信生成失败", "信使来信正文生成失败：\n\n" + (error ?? "未知错误"));
+			NonBlockingErrorReport.Show(CourierFailureUiText.LetterFailedTitle, CourierFailureUiText.LetterFailedDetail(error));
 			InformationManager.ShowInquiry(new InquiryData(
-				"信使来信生成失败",
-				LlmRetryPrompt.BuildRetryDescription("信使来信正文生成", error),
+				CourierFailureUiText.LetterFailedTitle,
+				LlmRetryPrompt.BuildRetryDescription(ConversationRuntimeTexts.Raw("AF_CONV_Runtime_0470"), error),
 				isAffirmativeOptionShown: true,
 				isNegativeOptionShown: true,
-				"重试",
-				"放弃",
+				CourierFailureUiText.Retry,
+				CourierFailureUiText.Abort,
 				delegate
 				{
 					CourierSession retrySession = IsCourierInboundRequestCurrent(request) ? request.SourceRun.Session : null;

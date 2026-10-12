@@ -1,0 +1,212 @@
+{
+  "Id": "rule_Ranger",
+  "Keywords": [
+    "Ranger",
+    "ground patrol",
+    "crossbow arrow throwing ax",
+    "Dwarf Scout",
+    "Rare outdoor",
+    "mountain hunter",
+    "wilderness",
+    "patrol",
+    "reconnaissance",
+    "mountain trail",
+    "outdoor dwarf"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Ranger is the rarest profession in dwarf society - most dwarves never leave the underground tunnels throughout their lives, while rangers patrol, scout, and hunt enemy scouts passing through dwarf territory in the wilderness all year round. Wearing light armor to sneak among the rocks, they are armed with crossbows and throwing axes, and are the eyes of the dwarf army."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Ranger! Others thought that dwarves were afraid of the outdoors, so they couldn't survive once they got out of the tunnel - the way those people looked for the ranger standing in the wind vent at the mountain pass! You have to understand how strange it is to be a ranger among dwarves: We dwarves feel that the mountains are home from the bottom of our hearts, and the blue sky above is \"the broken curtain through which God yawns.\" But someone has to be out there watching, right? No matter how deep the tunnel is, you still have to know where the Waaagh outside is going and who is setting up a thief's sentry shack on the border ridge. Therefore, rangers have become a way out for those dwarfs who are not sociable in the tribe - they like to listen to the wind rather than the sound of hammers, and like to watch eagles flying in the sky instead of torches swinging on the walls. But this does not mean that they are deviant - rangers are still a tough opponent among dwarves: they can lie in the snow for a whole night without moving, an old crossbow can shoot more accurately than a human rifle, and when out in the wild, they will wear a throwing ax specially cut from exposed rocks and ground into it - did you know that thing can cut into plate armor and get stuck in it? Once the flying ax was embedded, the iron can couldn't walk fast, and then the crossbow arrows penetrated into the crack!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The rangers fill the biggest structural shortcoming of the dwarves' military strength - the lack of light infantry units that can conduct long-distance mobile reconnaissance on the ground. A standard ranger squad (five to eight people) can march twenty miles in the mountains and still retain full strength for ambush operations. Its stealth and concealment in high-altitude rocky areas is about twice that of human scouts. The most important tactical ability of the rangers is not killing but information: they can use the dwarf mountain sentry signal that no one can decipher to spread the size, direction and equipment information of an enemy army to the edge mountains of the world through continuous ridge beacon fire between Karak within a few hours. If your army has a dwarf ranger as an outpost, your commander will have a mountain eye that can break through the fog of war at any time."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "The history of the Rangers is about as old as the dwarves left Karak - the so-called \"Return to the Surface Period\" (ca. 2400 BC - ca. 1800 BC), when the dwarf kingdom began to extend its sphere of influence from the underground tunnels to the surface of the global mountain range. The original formation of the Rangers was not a military organization but a mineral exploration team. The older batch of Rangers were transformed from mining trackers called \"Cloud Walkers\". They searched for new gold mines and meteorite falling points in mountains with an altitude of more than 6,000 feet. As greenskins and other surface threats increased, Cloudwalkers gradually took on weapons and learned ambush tactics in the mountains, eventually evolving into an independent \"ranger\" unit. The ranger's throwing ax skill - called \"Kazak\" in Dwarven language - is not a simple throwing weapon, but a core symbol of the dwarven outdoor fighting philosophy: a throwing ax must bounce once on the stone ground before hitting the target's calf or ankle - using the elasticity of the stone ground to create unpredictable attack trajectories. Ballistic simulation research by the Imperial College of Engineering shows that the average accuracy of this technology is about 30% lower than direct projection, but in actual combat on rugged mountainous terrain, rebound attacks cannot be blocked - making its effective kill rate higher than that of straight-line projection. It is worth noting that due to long-term activities on the surface, the distribution ratio of rangers' rod cells and cone cells is different from that of ordinary dwarves - their visual distance is significantly higher than that of underground dwarves, and their night vision is slightly weaker - this is a rare example of the adaptive variation of dwarf biology to different habitats."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "In the military dictionary, we often talk about \"mobility\" and \"intelligence power\", but rarely discuss the \"presence power\" that adds the two together. The presence of the ranger lies in this: when you walk through a narrow mountain road, you don't know which rock has a ranger nestled behind it - you can't see him, but where he is, the ground is the safest - he has found all the goblin ambushes in advance and picked them off one by one. My general once said \"a ranger is worth more than a hundred of your scouts\" because he never lies - dwarves are not mentally wired to lie in military reports."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "My family's territory is sandwiched between two cliffs. The only pass outpost was guarded by an old dwarf, a retired ranger, for eighteen years alone. During his tenure, there was not a single successful goblin night attack on our territory - not zero casualties, but zero attacks. The year he retired, he gave the diary to the outpost: it was full of room, with only one line of words and a few symbols written on each page - no one could understand the information he had recorded for eighteen years, it was the symbolic language of the ranger. The journal is now on my bookshelf, and I'm still waiting for the next dwarf to arrive who can read it."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "I hired a dwarf ranger as a guide when I was leading a caravan in the World's Edge Mountains - he didn't want gold crowns, he just asked the caravan to drop him somewhere on the ridge and give him three days to return. He pointed out any night goblin ambush spots he could find on the road in advance, and even pointed to a pile of inconspicuous gravel and said that there was a vent for the goblin \"spy tunnel\" buried underneath. When asked how he knew, he said, \"The stone is not sitting on the right place,\" and then kept silent. The dwarf had as strong a foot as a blue sheep. We followed him over the mountains and walked twice as long as usual, but arrived half a day earlier than usual."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Have you heard about the business opportunity of transporting rangers to fly axes? A throwing ax used by a dwarf ranger can be sold for 600 gold crowns on the black market, because it is made of a special stone-cutting rock - the dwarves call it \"whining stone\" (I can't pronounce the dwarf word). It is said that it can only be found in the bare stone layer above 7,000 feet in the World's Edge Mountains. The highest offer I've ever heard came from a Nuln arms dealer who was willing to pay a thousand gold crowns for any number of ranger throwing axes - and then he was visited by dwarf agents and all similar minerals in the warehouse were confiscated. It turns out that the mining rights of \"Woo Stone\" are patented by the dwarf royal family."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "The only light infantry reconnaissance unit in the dwarf army that operates in the ground wilderness.",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Ranger Ground Patrol Crossbow Arrow Throwing Ax"
+  ]
+}

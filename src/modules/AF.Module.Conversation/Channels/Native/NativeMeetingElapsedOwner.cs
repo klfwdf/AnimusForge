@@ -49,27 +49,27 @@ internal sealed class NativeMeetingElapsedOwner
     internal static string BuildContext(NativeMeetingElapsedSnapshot value)
     {
         if (value == null || !value.HasPriorDialogue && !value.HasMemoryRecord) return "";
-        const string boundary = "本次是新的对话；";
-        const string ending = "保留既有经历，不把过去动作当成本轮正在发生。";
+        string boundary = ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0629");
+        string ending = ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0630");
         bool nowKnown = !double.IsNaN(value.NowHours) && !double.IsInfinity(value.NowHours) && value.NowHours >= 0;
-        if (value.TimeUnknown || !nowKnown || value.Day < 0) return boundary + (value.HasPriorDialogue ? "无法准确计算距上次与你交流的游戏时间。" : "现有记忆记录不足以确认先前交流的时刻。") + ending;
+        if (value.TimeUnknown || !nowKnown || value.Day < 0) return boundary + (value.HasPriorDialogue ? ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0631") : ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0632")) + ending;
         if (value.HasMemoryRecord)
         {
             int days = (int)Math.Floor(value.NowHours / 24d) - value.Day;
-            string record = days > 0 ? "既有记忆最近记录约在" + days.ToString(CultureInfo.InvariantCulture) + "个游戏日前；" : "既有记忆缺少可核对的交流时刻；";
-            return boundary + record + "不能据此确认上次与你交流的具体时间。" + ending;
+            string record = days > 0 ? ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0633") + days.ToString(CultureInfo.InvariantCulture) + ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0634") : ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0635");
+            return boundary + record + ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0636") + ending;
         }
         if (value.Hour < 0 || value.Hour > 23)
         {
             int days = (int)Math.Floor(value.NowHours / 24d) - value.Day;
-            string interval = days > 0 ? "上次交流记录约在" + days.ToString(CultureInfo.InvariantCulture) + "个游戏日前，具体小时无法准确判断。"
-                : "上次交流记录缺少可靠时刻，无法准确计算游戏小时差。";
+            string interval = days > 0 ? ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0637") + days.ToString(CultureInfo.InvariantCulture) + ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0638")
+                : ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0639");
             return boundary + interval + ending;
         }
         double elapsed = value.NowHours - (value.Day * 24d + value.Hour);
-        if (elapsed < 0) return boundary + "无法按现有记录准确计算距上次交流的游戏时间。" + ending;
+        if (elapsed < 0) return boundary + ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0640") + ending;
         // The anchor records only the hour, not the fraction: do not claim an exact sub-hour gap.
-        if (elapsed < 2d) return boundary + "距上次交流的间隔较短；记录只有整点，无法精确计算小时差。" + ending;
-        return boundary + "距上次与你交流约" + Math.Floor(elapsed).ToString("0", CultureInfo.InvariantCulture) + "个游戏小时。" + ending;
+        if (elapsed < 2d) return boundary + ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0641") + ending;
+        return boundary + ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0642") + Math.Floor(elapsed).ToString("0", CultureInfo.InvariantCulture) + ConversationRuntimeTexts.Prompt("AF_CONV_Prompt_0643") + ending;
     }
 }

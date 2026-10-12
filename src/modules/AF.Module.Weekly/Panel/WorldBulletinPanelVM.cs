@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using TaleWorlds.InputSystem;
 using TaleWorlds.Library;
+using TaleWorlds.Localization;
 
 namespace AnimusForge;
 
@@ -12,7 +13,7 @@ internal sealed class WorldBulletinPanelData
 
 	public string MastheadText = "";
 
-	public string TitleText = "列 国 邸 报";
+	public string TitleText = new TextObject("{=AF_UI_Weekly_BulletinMasthead}The States Gazette").ToString();
 
 	public string KindText = "";
 
@@ -91,6 +92,21 @@ public sealed class WorldBulletinMinorItemVM : ViewModel
 
 public sealed class WorldBulletinIllustrationVM : ViewModel, IWeeklyIllustrationSink
 {
+	[DataSourceProperty]
+	public string CopyPromptText { get; } = new TextObject("{=AF_UI_Weekly_Bulletin_CopyPrompt}Copy prompt").ToString();
+
+	[DataSourceProperty]
+	public string RedrawText { get; } = new TextObject("{=AF_UI_Weekly_Bulletin_Redraw}Redraw").ToString();
+
+	[DataSourceProperty]
+	public string RedrawPromptText { get; } = new TextObject("{=AF_UI_Weekly_Bulletin_RedrawPrompt}Redraw with prompt").ToString();
+
+	[DataSourceProperty]
+	public string GalleryText { get; } = new TextObject("{=AF_UI_Weekly_Bulletin_Gallery}Gallery").ToString();
+
+	[DataSourceProperty]
+	public string DeleteText { get; } = new TextObject("{=AF_UI_Weekly_Bulletin_Delete}Delete").ToString();
+
 	private bool _isAvailable;
 
 	private string _spriteName = "";
@@ -162,7 +178,16 @@ public sealed class WorldBulletinIllustrationVM : ViewModel, IWeeklyIllustration
 	}
 
 	[DataSourceProperty]
-	public string CaptionText => string.IsNullOrWhiteSpace(_titleText) ? "" : "图：" + _titleText.Trim();
+	public string CaptionText
+	{
+		get
+		{
+			if (string.IsNullOrWhiteSpace(_titleText)) return "";
+			var text = new TextObject("{=AF_UI_Weekly_BulletinCaption}Illustration: {TITLE}");
+			text.SetTextVariable("TITLE", _titleText.Trim());
+			return text.ToString();
+		}
+	}
 
 	[DataSourceProperty]
 	public string PromptText
@@ -213,7 +238,7 @@ public sealed class WorldBulletinIllustrationVM : ViewModel, IWeeklyIllustration
 	{
 		if (string.IsNullOrWhiteSpace(_promptText))
 		{
-			StatusText = "还没有可查看的提示词。";
+			StatusText = new TextObject("{=AF_UI_Weekly_Bulletin_NoPrompt}There is no prompt to view yet.").ToString();
 			ShowPrompt = false;
 			return;
 		}
@@ -234,7 +259,7 @@ public sealed class WorldBulletinIllustrationVM : ViewModel, IWeeklyIllustration
 		try
 		{
 			Input.SetClipboardText(_promptText);
-			InformationManager.DisplayMessage(new InformationMessage("提示词已复制到剪贴板。"));
+			InformationManager.DisplayMessage(new InformationMessage(new TextObject("{=AF_UI_Weekly_Bulletin_PromptCopied}Prompt copied to clipboard.").ToString()));
 		}
 		catch (Exception ex)
 		{
@@ -274,6 +299,12 @@ public sealed class WorldBulletinPanelVM : ViewModel
 	public string MastheadText { get; }
 
 	[DataSourceProperty]
+	public string SubtitleText { get; } = new TextObject("{=AF_UI_Weekly_Bulletin_Subtitle}Chronica Regnorum").ToString();
+
+	[DataSourceProperty]
+	public string OtherMessagesText { get; } = new TextObject("{=AF_UI_Weekly_Bulletin_OtherMessages}Other messages").ToString();
+
+	[DataSourceProperty]
 	public string TitleText { get; }
 
 	[DataSourceProperty]
@@ -307,10 +338,10 @@ public sealed class WorldBulletinPanelVM : ViewModel
 	public bool HasMinors { get; }
 
 	[DataSourceProperty]
-	public string FooterHintText { get; } = "点击人名与地名，查阅百科";
+	public string FooterHintText { get; } = new TextObject("{=AF_UI_Weekly_Bulletin_FooterHint}Click a person or settlement name to open the encyclopedia").ToString();
 
 	[DataSourceProperty]
-	public string CloseText { get; } = "封 存 快 报";
+	public string CloseText { get; } = new TextObject("{=AF_UI_Weekly_Bulletin_Close}Archive bulletin").ToString();
 
 	[DataSourceProperty]
 	public bool ShowCloseButton { get; } = true;
@@ -324,7 +355,7 @@ public sealed class WorldBulletinPanelVM : ViewModel
 		_onOpenEncyclopediaLink = onOpenEncyclopediaLink;
 		data ??= new WorldBulletinPanelData();
 		MastheadText = Sanitize(data.MastheadText);
-		TitleText = Sanitize(string.IsNullOrWhiteSpace(data.TitleText) ? "列 国 邸 报" : data.TitleText);
+		TitleText = Sanitize(string.IsNullOrWhiteSpace(data.TitleText) ? new TextObject("{=AF_UI_Weekly_BulletinMasthead}The States Gazette").ToString() : data.TitleText);
 		KindText = Sanitize(data.KindText);
 		HeadlineText = Sanitize(data.HeadlineText);
 		MetaText = Sanitize(data.MetaText);
@@ -333,7 +364,7 @@ public sealed class WorldBulletinPanelVM : ViewModel
 		string body = (data.BodyText ?? "").Replace("\r\n", "\n").Replace('\r', '\n').Trim();
 		if (body.Length == 0)
 		{
-			body = "本期快报正文为空。";
+			body = new TextObject("{=AF_UI_Weekly_Bulletin_EmptyBody}This bulletin has no body text.").ToString();
 		}
 		string formatted = _links.Format(body);
 		// The drop cap takes the first CJK character only when link markup has not claimed it,
@@ -372,7 +403,7 @@ public sealed class WorldBulletinPanelVM : ViewModel
 
 	private static bool IsCjk(char c)
 	{
-		return c >= '一' && c <= '鿿';
+		return c >= 0x4E00 && c <= 0x9FFF;
 	}
 
 	private static string Sanitize(string text)

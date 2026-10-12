@@ -55,10 +55,10 @@ internal sealed class WorldDiplomacyMapNotification : InformationData
 	public override string SoundEventPath => "event:/ui/notification/kingdom_decision";
 
 	public WorldDiplomacyMapNotification(string documentId, string title, string description)
-		: base(new TextObject(string.IsNullOrWhiteSpace(description) ? "点击查看外交宣言。" : description))
+		: base(new TextObject(string.IsNullOrWhiteSpace(description) ? DiplomacyUiLocalization.Text("AF_DIP_UI_Archive_NoticeDescription", "Click to view the diplomatic declaration.") : description))
 	{
 		DocumentId = (documentId ?? "").Trim();
-		_titleText = new TextObject(string.IsNullOrWhiteSpace(title) ? "新的外交宣言" : title);
+		_titleText = new TextObject(string.IsNullOrWhiteSpace(title) ? DiplomacyUiLocalization.Text("AF_DIP_UI_Archive_NoticeTitle", "New diplomatic declaration") : title);
 	}
 
 	public override bool IsValid()

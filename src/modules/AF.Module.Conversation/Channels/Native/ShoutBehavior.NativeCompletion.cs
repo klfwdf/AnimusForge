@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading;
 using AnimusForge.Refactor.Contracts;
 using TaleWorlds.CampaignSystem;
@@ -76,11 +76,12 @@ internal sealed partial class NativeConversationGameEffectsRuntime
         Hero hero = scope.Admission.Hero;
         var character = scope.Admission.Character;
         string cleaned = result.Content ?? "";
-        string visible = SanitizeSceneSpeechText(cleaned);
+        string visible = SanitizeSceneSpeechText(DiplomacyConversationBridge.ComposeReply(
+            result.DiplomacyReplyBody ?? cleaned, result.DiplomacyReplyReceipts, forUi: true));
         bool suppressHistoryWrite = IsNativeConversationNoSpeechPlaceholder(visible);
         string historyReplyText = suppressHistoryWrite ? null : PrepareSceneHistorySpeechText(cleaned);
         if (!suppressHistoryWrite && string.IsNullOrWhiteSpace(historyReplyText))
-            historyReplyText = visible;
+            historyReplyText = cleaned;
 
         // Transient scene NPCs and a genuinely empty payload request no durable-history write.
         // For applicable payloads, inspect the existing owner's acceptance instead of its old void facade.
@@ -112,7 +113,7 @@ internal sealed partial class NativeConversationGameEffectsRuntime
             _ports.TrySpeakNativeConversationReplyWithTts(hero, character, scope.Npc, scope.AgentIndex, visible);
 
         QueueNativeConversationCompletionExit(scope, result);
-        string finalVisible = string.IsNullOrWhiteSpace(visible) ? cleaned.Trim() : visible.Trim();
+        string finalVisible = string.IsNullOrWhiteSpace(visible) ? SanitizeSceneSpeechText(cleaned).Trim() : visible.Trim();
         scope.Admission.ModuleOperation?.RecordOwnerCompletion(finalVisible);
         return finalVisible;
     }

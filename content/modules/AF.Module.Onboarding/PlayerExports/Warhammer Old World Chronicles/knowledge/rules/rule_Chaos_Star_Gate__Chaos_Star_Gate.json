@@ -1,0 +1,209 @@
+{
+  "Id": "rule_Chaos_Star_Gate",
+  "Keywords": [
+    "Chaos Star Gate",
+    "polar gate",
+    "Chaos Star Gate Star Gate Collapse",
+    "source of magic",
+    "Chaos Star Gate Mutation Wind",
+    "Legacy of the Ancient Ones",
+    "warp rift",
+    "immaterial world"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Chaos Star Gate is said to be a huge teleportation device built in the polar regions by an unknown race of gods in ancient times. It collapsed tens of thousands of years ago, and has since continued to pour out the power of mutation and magical energy into the world. All the distortions in the northern wasteland - mutated creatures, chaotic evil forces, magical winds - ultimately originated from this collapsed star gate."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "chaos_culture"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Stargate is a blessing from the gods, not a curse. When it collapsed, the thin veil between the mortal world and the immaterial world was torn open with a rift that would never heal, allowing the will of the four great powers to flow unimpeded into the material world. Mutation is not corruption, but the true form of the mortal body embracing a higher being. The weak ones in the south tremble in front of the power of the Star Gate, but we become stronger under the shadow of the Star Gate - every mutation is a gift of strength, and every tempering of the soul is closer to the threshold of becoming a demon. The Stargate didn't collapse, it just opened."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The collapse of the Chaos Star Gate was the source of all disasters in the old world. The polar portal, a legacy of the Old Ones, was originally used for instantaneous teleportation between planets, but some unknown disaster caused its structure to collapse, and the barrier between the immaterial world (realm of chaos) and the material world was torn apart at the poles. From that moment on, the winds of magic continued to blow south from the poles, and the lands of the north gradually mutated into the Chaos Wastes, and all use of magic - whether human mages, dwarven runes, or elven sorcery - risked Chaos leakage while gaining power through the Stargate. The fundamental reason why the Empire's battle mages must undergo rigorous training and licensing is that every spell cast may become a tiny crack for Chaos to invade."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 100
+        },
+        "IdentityIds": null
+      },
+      "Content": "The Old Ones - Scholars have debated for thousands of years as to their true identity. What is certain is that they are an ancient civilization with abilities beyond the understanding of all current races. They have established a teleportation network between planets and carried out large-scale terraforming and racial creation in the old world. The collapse of the Chaos Stargate marked the end of the Age of the Old Saints, but the exact cause of the collapse has never been confirmed—high elf archives call it the Cataclysm, dwarf inscriptions record the pain of the earth being torn apart, and Chaos legends believe that four evil gods worked together to shatter the stargate. Regardless of the real cause, the direct consequence of the collapse is: the boundary between the immaterial world and the material world is permanently broken at the pole, Chaos energy begins to continuously gush out, the northern continent gradually deforms into uninhabitable Chaos Wastes, and Chaos demons can invade the real world to a certain extent. The Empire's Academy of Magic has classified the research of the Chaos Star Gate as top secret, because understanding the Star Gate may imply understanding how to close it - and closing the Star Gate is no less significant than ending Chaos' eternal threat to the old world. But all research shows that the structure of the Stargate is irreparable. It is not just a broken device, but a wound in the universe itself."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "There is a private observation circulated among the female mages of the Imperial Battle Mage Academy: the magic induction mode of female mages after the collapse of the Star Gate is essentially different from that of men. Since the Winds of Magic are themselves a diluted form of Chaos, each spellcaster will feel a certain 'calling' in channeling the winds - a temptation from the north, from the source of the Stargate. Imperial law requires that every mage who begins to feel a 'stargate call' must immediately self-report and undergo a purification ritual. But the experience of private exchanges between female mages is that this summons attacks female spellcasters in a more subtle and emotional way - it does not seduce with the promise of strength and power like it does with men, but imitates the voice of a lost loved one, appearing in late night dreams as the image of a grandmother or a dead child, offering comfort and advice. Many female mages who accidentally fell into Chaos were not because of greed for power, but because they could not refuse the 'child' who cried out for them in their dreams - and the true identity of that child was the consciousness fragment of the Star Gate."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Chaos Stargate's impact on Clan Norsca went far beyond environmental mutation - it shaped the psychic geopolitical landscape of the entire North. Each Norsca tribe's choice of territory is tied to the 'surge' route of Stargate energy: the winds of Chaos do not blow evenly from the poles, but surge in irregular swirls along specific leylines - similar to what the Golden Schools of the Old World South call 'dragon veins'. The most powerful clan always occupies the 'Surge Node' - that is, the place where the magical wind is most concentrated, because there is the highest probability of receiving a response from the gods when performing sacrificial rituals. The war for the Surge Node was the most brutal and insidious conflict in Northern politics, often invisible to Southerners' military records."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "During an investigation at the southern edge of the wasteland, I discovered a chilling fact: the Chaos Star Gate's area of ​​influence is slowly expanding southward. By comparing the 'habitable line' recorded in ancient dwarven inscriptions with the current boundaries of the wasteland, I estimate that the edge of the wasteland moves southward about a mile and a half every hundred years. What this means to the Empire is that the habitable lands of the Kislev are slowly being eaten away, and what it means to the Norsca tribes is that their hunting areas are becoming more dangerous - not because of deepening levels of mutation, but because the semi-stable areas they once relied on for survival are diminishing with each passing year. Most hopelessly, I don’t think any existing civilizational force can reverse this trend."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "An important indirect impact of the Chaos Gates on Old World commerce is reflected in the insurance surcharges on magic items. Any commercial magic item registered with the Empire - from enchanted torches to everlasting blades - must undergo regular security checks by the Magic Academy, and the core content of the check is to measure the 'Stargate Residual Energy Index' accumulated inside the item. This index is much higher in the northern provinces than in the south - the same enchanted sword may measure only a third of the residual power in Marienburg as in Altdorf, and this difference is directly reflected in insurance rates. More subtly, the southward trend of stargate energy means that insurance rates for all magic items are rising at a small but irreversible rate every year - an increase that is cleverly hidden in complex insurance terms, but if you do a rate comparison spanning ten years, the trend is unquestionable."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "The Polar Gate - an interstellar teleportation device built by the ancient saints in the polar regions. After its collapse, it became a source of chaotic energy.",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "The geographical location and strategic significance of Chaos Stargate"
+  ]
+}

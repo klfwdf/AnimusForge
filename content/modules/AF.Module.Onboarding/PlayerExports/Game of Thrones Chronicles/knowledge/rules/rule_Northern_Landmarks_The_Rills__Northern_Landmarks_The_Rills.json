@@ -1,0 +1,153 @@
+{
+  "Id": "rule_Northern_Landmarks_The_Rills",
+  "Keywords": [
+    "The Rills",
+    "Rills",
+    "Moorland"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Brooklands are the northern territory where the Ryswell family resides, and their name comes from the many creeks that pass through the frozen soil and hills. The waterways in the north supply pastures and mills in the warm season, but may freeze, overflow, or cut off roads in the cold season; people here must arrange grazing and transportation according to water flow, ice, and pasture. The Brooklands are not known for their grand cities, which is why they better reflect the true appearance of most of the northern territories: scattered manors, cabins, towers, granaries, and villages that care for each other in the distant wind and snow. The Ryswell family's relationship with Winterfell was part of a network of vassals, but local survival depended above all on weather and neighbours."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry The Rills Local families also rely on firewood, hunting grounds, peat, salt fish, and granaries to survive the long winter; if any road, well, spring, or wharf fails, the price will fall on them first."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry The Rills Entry The Rills"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry The Rills They also recognize the accents, laws, and credentials of the North; reputations can travel great distances from taverns, but true distances must still be measured by wheel, oar, or horse's hoof."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry The Rills Entry The Rills"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry The Rills If you can supply supplies, avoid danger, and find a guide, it is worth marking in your itinerary; if you don't have these three things, no matter how loud your family name is, it won't be able to save the lost."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Stone and wood will decay, but the streamlands still rely on craftsmen to take care of the boats, bridges, millstones, fishing nets, and riverside churches, and on the priests to preserve the old gods, weirwood trees, and cemeteries left by ancestors. A stronghold was therefore not just a lord's hall, but also a place where weddings and funerals, vows, labor and local memories recurred."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry The Rills They care about firewood, hunting grounds, peat, salt fish, and granaries that can survive the long winter. They also care about whether seeds are left after the grain collection and whether the city gates are open in times of disaster. When people from afar see coats of arms, they see whether there will be food to eat tomorrow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "The Rills: The Brooklands are the northern territory where the Ryswell family resides, and their name comes from the many creeks that pass through the frozen soil and hills. The waterways in the north supply pastures and mills in the warm season, but may freeze, overflow, or cut off roads in the cold season; people here must arrange grazing and transportation according to water flow, ice, and pasture. The Brooklands are not known for their grand cities, which is why they better reflect the true appearance of most of the northern territories: scattered manors, cabins, towers, granaries, and villages that care for each other in the distant wind and snow. The Ryswell family's relationship with Winterfell was part of a network of vassals, but local survival depended above all on weather and neighbours."
+  ]
+}

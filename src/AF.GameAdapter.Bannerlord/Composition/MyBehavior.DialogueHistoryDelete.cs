@@ -19,13 +19,13 @@ public partial class MyBehavior
 		status = "";
 		if (!TWParallel.IsMainThread())
 		{
-			status = "只能在游戏主线程删除记录。";
+			status = MemoryEditorUiText.T("AF_MEMORY_UI_HistoryDeleteMainThread", "Records can only be deleted on the game main thread.");
 			return false;
 		}
 		MyBehavior owner = Instance ?? Campaign.Current?.GetCampaignBehavior<MyBehavior>();
 		if (owner == null)
 		{
-			status = "当前没有可用的记录存储。";
+			status = MemoryEditorUiText.T("AF_MEMORY_UI_HistoryStoreUnavailable", "No record storage is currently available.");
 			return false;
 		}
 		try
@@ -35,7 +35,7 @@ public partial class MyBehavior
 		catch (Exception ex)
 		{
 			Logger.Log("DialogueHistory", "[ERROR] delete line failed memoryId=" + (memoryId ?? "") + " day=" + gameDayIndex + " ordinal=" + lineOrdinal + " error=" + ex.GetType().Name + ": " + ex.Message);
-			status = "删除失败，记录未改动。";
+			status = MemoryEditorUiText.T("AF_MEMORY_UI_HistoryDeleteFailed", "Deletion failed; the record was not changed.");
 			return false;
 		}
 	}

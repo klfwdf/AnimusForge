@@ -49,10 +49,23 @@ public static class SetsVillageVictoryRewardProfile
 
     public static string BuildRewardMessage(int gold, int itemCount)
     {
-        return "【SETS村庄战果】获得 "
+        return BuildRewardMessage(gold, itemCount, isEnglish: false);
+    }
+
+    public static string BuildRewardMessage(int gold, int itemCount, bool isEnglish)
+    {
+        if (isEnglish)
+        {
+            return "[SETS village result] Gained "
+                + Math.Max(0, gold)
+                + " denars; "
+                + Math.Max(0, itemCount)
+                + " village supplies were sent to the native loot screen.";
+        }
+        return "[SETS village result] Gained "
             + Math.Max(0, gold)
-            + " 第纳尔；"
+            + " denars; "
             + Math.Max(0, itemCount)
-            + " 件村庄物资已送入原版战利品界面。";
+            + " village supplies were sent to the native loot screen.";
     }
 }

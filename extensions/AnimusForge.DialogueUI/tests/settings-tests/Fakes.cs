@@ -21,6 +21,15 @@ namespace MCM.Common
 namespace AnimusForge.DialogueUI
 { internal static class DialogueUiRuntime { internal static void Log(string s){} } }
 namespace TaleWorlds.GauntletUI {public class UIContext{}public class Brush{public int FontSize{get;set;}}}
+namespace TaleWorlds.Localization
+{
+    public sealed class TextObject
+    {
+        private readonly string _text;
+        public TextObject(string text) { _text = text; }
+        public override string ToString() => _text.Replace("{=AFD_MCM_DisplayName}", "").Replace("{=AFD_MCM_InterfaceStyle}", "").Replace("{=AFD_MCM_InterfaceStyle_Hint}", "").Replace("{=AFD_MCM_InterfaceGroup}", "").Replace("{=AFD_MCM_BodyFontSize}", "").Replace("{=AFD_MCM_BodyFontSize_Hint}", "").Replace("{=AFD_MCM_ShoutStyle}", "").Replace("{=AFD_MCM_ShoutStyle_Hint}", "").Replace("{=AFD_MCM_AutoAi}", "").Replace("{=AFD_MCM_AutoAi_Hint}", "").Replace("{=AFD_MCM_AutoAiHeroOnly}", "").Replace("{=AFD_MCM_AutoAiHeroOnly_Hint}", "").Replace("{=AFD_MCM_HistoryDelete}", "").Replace("{=AFD_MCM_HistoryDelete_Hint}", "").Replace("{=AFD_MCM_Interface_Original}", "").Replace("{=AFD_MCM_Interface_New}", "").Replace("{=AFD_MCM_ShoutStyle_PausedScroll}", "").Replace("{=AFD_MCM_ShoutStyle_Scroll}", "").Replace("{=AFD_MCM_ShoutStyle_SideFolio}", "");
+    }
+}
 namespace TaleWorlds.GauntletUI.BaseTypes
 {
     public class TextWidget

@@ -72,7 +72,7 @@ internal sealed class CoupCaptivityBehavior : CampaignBehaviorBase
     internal static void RegisterDetention(string coupId, Hero king)
     {
         if (_instance == null || !_instance._saveValid || !AutomaticReleaseProtectionAvailable || string.IsNullOrWhiteSpace(coupId) || king == null || !IsInPlayerCustody(king))
-            throw new InvalidOperationException("政变拘押保护不可用，或目标尚未由玩家拘押。");
+            throw new InvalidOperationException(CoupSourceTexts.Get("CaptivityProtectionUnavailable"));
         _instance._detentions[king.StringId] = coupId;
         Logger.Log("Coup", "Detention registered. coup=" + coupId + ", hero=" + king.StringId);
     }

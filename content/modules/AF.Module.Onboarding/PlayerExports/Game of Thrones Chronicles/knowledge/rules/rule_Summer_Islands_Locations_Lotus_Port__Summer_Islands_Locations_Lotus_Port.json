@@ -1,0 +1,153 @@
+{
+  "Id": "rule_Summer_Islands_Locations_Lotus_Port",
+  "Keywords": [
+    "Lotus Port",
+    "Summer Islands",
+    "The Summer Sea"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Lotus Bay is located in the Summer Islands in the southwest of Westeros. It is politically within the island ports and swan ship routes of the Summer Islands. It is a town, a center where surrounding populations, markets, roads and local power converge. Walls and roads tied the surrounding population, storage, and garrison here; even if the flags were changed, this stronghold would still affect how nearby people paid taxes, traded, and sought refuge."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "summer"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Lotus Port Local families also relied on trade in fruit trees, spices, swan boats, bowwood, and warm seas; if a road, well, or dock failed, the price fell first to them."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "summer"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Lotus Port Lianhua Port is located in the power and trade network of the Midsummer Islands, and the rules inside and outside the city gates are determined by local order; whether the defenders are well fed and whether reinforcements can arrive on time are more important than the rhetoric in the meeting hall in determining whether this stronghold is reliable."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Lotus Port Entry Summer Islands"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Lotus Port Lotus Port is located in the power and trade network of the Summer Islands, and the rules inside and outside the city gate are determined by the local order; after the flag is changed, the roads, granaries, old debts, and local trusts still have to be taken over by the new owner one by one."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Lotus Port If you can supply supplies, avoid danger, and find a guide, it is worth marking in your itinerary; if you don't have these three things, no matter how loud your family name is, it won't be able to save the lost."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The traces left by generations of people in Lianhua Port are half hidden in the ship repair wood, canvas, salt, fish catch and stones used to resist the sea breeze, and the other half are hidden in the island gods, songs and dances, tattoos and the common precepts against slave raiding. A stronghold was therefore not just a lord's hall, but also a place where weddings and funerals, vows, labor and local memories recurred."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Lotus Port They care about the trade of fruit trees, spices, swan boats, bows and warm seas. They also look at whether seeds are left after collecting grain and whether the city gates are open in times of disaster. When people from afar see coats of arms, what they see is whether there will be food to eat tomorrow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Lotus Port: Lotus Bay is located in the Summer Islands in the southwest of Westeros. It is politically within the island ports and swan ship routes of the Summer Islands. It is a town, a center where surrounding populations, markets, roads and local power converge. Walls and roads tied the surrounding population, storage, and garrison here; even if the flags were changed, this stronghold would still affect how nearby people paid taxes, traded, and sought refuge."
+  ]
+}

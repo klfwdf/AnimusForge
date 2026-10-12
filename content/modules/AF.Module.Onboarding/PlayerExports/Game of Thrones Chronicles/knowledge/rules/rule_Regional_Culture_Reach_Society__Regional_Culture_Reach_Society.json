@@ -1,0 +1,134 @@
+{
+  "Id": "rule_Regional_Culture_Reach_Society",
+  "Keywords": [
+    "Reach Culture",
+    "Reach Society",
+    "Chivalric Culture"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Reach's wealth comes from the Mander River, the fertile plains, the long farming season, the port of Oldtown, and the roads that line the estates. Roses, banquets, jousts and etiquette are only the surface; beneath are grain, wine, honey, wool, ship materials and a large number of people who can be recruited mouth. Riverside nobles are good at turning generosity, marriage alliances and rituals into political resources, while farmers and towns maintain this wealthy daily production. Competition in the Reach is often not only for the throne, but also for who can control Highgarden, Oldtown, fleets and food routes."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "reach"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Reach Society"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "reach"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Reach Society"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Reach Society"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Reach Culture Reach Society: The Reach's wealth comes from the Mander River, the fertile plains, the long farming season, the port of Oldtown, and the roads that line the estates. Roses, banquets, jousts and etiquette are only the surface; beneath are grain, wine, honey, wool, ship materials and a large number of people who can be recruited They care about water sources, roads, customs and garrison, and know that behind the place names there is often a food road that can keep the castle alive."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Reach Culture Reach Society: The Reach's wealth comes from the Mander River, the fertile plains, the long farming season, the port of Oldtown, and the roads that line the estates. Roses, banquets, jousts and etiquette are only the surface; beneath are grain, wine, honey, wool, ship materials and a large number of people who can be recruited Stones, trees, rivers or mountain passes can become places of livelihood, and may also be endowed with sanctity, taboos and ancestral memories, so they cannot be measured in terms of money alone."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Reach Culture Reach Society: The Reach's wealth comes from the Mander River, the fertile plains, the long farming season, the port of Oldtown, and the roads that line the estates. Roses, banquets, jousts and etiquette are only the surface; beneath are grain, wine, honey, wool, ship materials and a large number of people who can be recruited They first checked whether the place could draw water, farm, graze, and avoid military disasters; a line of words on the map, and when it landed in the village, it turned out to be firewood, well rope, and winter food."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Reach Society: The Reach's wealth comes from the Mander River, the fertile plains, the long farming season, the port of Oldtown, and the roads that line the estates. Roses, banquets, jousts and etiquette are only the surface; beneath are grain, wine, honey, wool, ship materials and a large number of people who can be recruited"
+  ]
+}

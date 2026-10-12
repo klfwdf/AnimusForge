@@ -34,6 +34,11 @@ for name in ['SceneSpeechQueueOwner.cs','SceneSpeechExecutionRuntime.cs']:
     (out/name).write_text(runtime,encoding='utf-8')
 (out/'Ports.cs').write_text((src/'SceneSpeechEffectPorts.cs').read_text(encoding='utf-8-sig'),encoding='utf-8')
 (out/'Completion.cs').write_text(completion,encoding='utf-8')
+# Actual provenance value/scope sources; no fixture-shaped private API substitutes.
+for relative in ['src/modules/AF.Module.Diplomacy/Domain/Dialogue/DialogueInteractionOrigin.cs', 'src/modules/AF.Module.Diplomacy/Adapters/DiplomacyDialogueSourceScope.cs']:
+ (out/Path(relative).name).write_bytes((ROOT/relative).read_bytes())
+# Resource leaf remains a synthetic game-boundary substitute backed by real catalog bytes.
+(out/'ConversationResourceLeaf.cs').write_text('using System.Collections.Generic;\nusing System.IO;\nusing System.Text.Json;\nnamespace AnimusForge {\ninternal static class ConversationRuntimeTexts {\n private static readonly Dictionary<string,string> RawValues=JsonSerializer.Deserialize<Dictionary<string,string>>(File.ReadAllText("content/modules/AF.Module.Conversation/ModuleData/ConversationRuntimeCompatibility.json"));\n private static readonly Dictionary<string,string> PromptValues=JsonSerializer.Deserialize<Dictionary<string,string>>(File.ReadAllText("content/modules/AF.Module.Conversation/ModuleData/ConversationRuntimePrompts.json"));\n internal static string Raw(string key)=>RawValues[key];\n internal static string Prompt(string key)=>PromptValues[key];\n}\n}\n',encoding='utf-8')
 (out/'Proof.csproj').write_text('<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><LangVersion>latest</LangVersion><NoWarn>CS0649;CS0169;CS0414</NoWarn></PropertyGroup></Project>')
 # Compile the actual current AF edge, not a renamed old owner stub.
 bridge_path=ROOT/'src/bridges/Diplomacy/DiplomacyConversationBridge.cs'
@@ -41,7 +46,10 @@ bridge_source=bridge_path.read_text(encoding='utf-8-sig')
 bridge_matches=__import__('re').findall(r'(?m)^\s*internal static void ProcessDiplomacyTagsDispatch\([^\r\n]+\)\s*=>[^\r\n]+;',bridge_source)
 assert len(bridge_matches)==1, 'actual diplomacy dispatch edge must be unique'
 bridge=bridge_matches[0].strip()
-assert 'DiplomacyModuleServices.Conversation.ProcessDiplomacyTags(hero?.StringId, ref text)' in bridge
+assert 'DiplomacyModuleServices.Conversation.ProcessDiplomacyTags(hero?.StringId, ref text, receipts)' in bridge
+# Compile the actual AF presentation forwarding edge; the module leaf remains synthetic.
+compose = __import__('re').search(r'internal static string ComposeReply\([^;]+;', bridge_source).group(0)
+bridge += '\n' + compose
 (out/'DiplomacyBridge.cs').write_text('using TaleWorlds.CampaignSystem;\nnamespace AnimusForge { internal static class DiplomacyConversationBridge { '+bridge+' } }',encoding='utf-8')
 (out/'current-bridge-source.json').write_text(__import__('json').dumps({'path':bridge_path.relative_to(ROOT).as_posix(),'rawSha256':__import__('hashlib').sha256(bridge_path.read_bytes()).hexdigest(),'methodSha256':__import__('hashlib').sha256(bridge.encode()).hexdigest(),'scope':'actual AF edge; diplomacy module leaf synthetic, no diplomacy game effects claim'},indent=2),encoding='utf-8')
 (out/'NuGet.Config').write_text('<configuration><packageSources><clear/></packageSources></configuration>')

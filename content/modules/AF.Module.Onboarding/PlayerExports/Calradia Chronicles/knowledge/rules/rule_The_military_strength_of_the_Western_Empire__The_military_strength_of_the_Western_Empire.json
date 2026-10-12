@@ -1,0 +1,77 @@
+{
+  "Id": "rule_The_military_strength_of_the_Western_Empire",
+  "Keywords": [
+    "The military strength of the Western Empire"
+  ],
+  "RagShortTexts": [
+    "The military strength of the Western Empire: the strongest military and sufficient food and soldiers.",
+    "Generals of the Western Empire: Galios, Salatis and other generals are talented.",
+    "The Western Empire’s military shortcomings: the generals’ weak military skills and the pressure of multi-front combat."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Western Empire is the strongest military force after the empire was divided into three parts. The foundation is in the grain-producing area, with abundant grain, sufficient soldiers, and a stable supply of horses. Iron smelting is slightly weak, but smooth trade routes can make up for it. There are many generals with talents, and the division of labor is clear: Galios is in charge of the overall situation, Saratis defends the city, Desriboon provides mobile support, Achios is in charge of cavalry, Vipon is in charge of command and logistics, and Clotor is old but experienced. The shortcoming is that most generals are good at commanding troops but poor at personal martial arts, but the imperial system does not rely on the swordsmanship of generals to win. Fighting on multiple fronts is a constant pressure."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Western Empire? It's over there at A. They have plenty of food, soldiers, and horses. Fighting relies on large numbers of people. They are not like the Battania people who can fight several people at one time, nor are they like the Vlandia people who charge to death. But they have many generals and a detailed division of labor. If you can't defeat them, you won't be able to defeat them. I heard that they served as soldiers to provide food and land, and people from the Central Plains rushed to join the army."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "tactics": 40
+        }
+      },
+      "Content": "The Western Empire is the most powerful military force after the empire was divided into three parts, and its war potential is rooted in the Central Plains. The Central Plains is the leading grain-producing area in the continent, with three plains connected to form the largest granary in the empire. Food means population, and population means sources of soldiers. There is almost no quota pressure for recruitment in the Western Empire. Farmers in the Central Plains have a tradition of having many children, and joining the army is the second way out besides land. This allowed the Western Empire to withstand the attrition that the other two sides could not bear in the ongoing civil war. The horse output is also considerable. The mounts provided by the southern foot of the Ukarion Plateau and the plain pastures are good at endurance and are suitable for repeated attacks by heavy cavalry. The iron smelting industry is slightly insufficient, but the production areas are scattered and difficult to be cut off. In addition, the trade routes on the west coast are smooth, and the supply of iron materials is generally sufficient. The real advantage of the Western Empire lies in the generals' ability to command troops and the division of labor and cooperation among the generals who have their own strengths. Galios himself gathered the remaining troops from Pandrak's defeat and established the Western Empire step by step. He relied not on his personal swordsmanship, but on his ability to make a collapsed army willing to follow him again. The generals under his command each performed their duties and formed an efficient command system: Salatis was recognized as an expert in city defense by the empire. The enemy could rarely capture the city where he was stationed from the front; Desriboon was good at commanding small-scale legions and performing tasks of supporting large armies and mobile defense. , able to gain critical time before the main force deploys; Achios is a cavalry expert, accurately grasping the cavalry's battlefield dispatch and impact timing; Vipen is a rare talent in both command and logistics, able to coordinate the march of the army and arrange the supply lines in an orderly manner. The most special one among them is Crotor - he is very old, but he is one of the few generals in the Western Empire who is both civil and military. He was famous for his personal martial arts when he was young, and he also has experience in commanding large armies. He is a rare figure among the empire's generals who is capable of both strategy in the tent and fighting in front of the battle. Unfortunately, time is not forgiving, and his sword is now more often hung in the tent rather than on his waist. The common problem of imperial generals also exists in the Western Empire: most of them have excellent brains, but not sharp blades. With the exception of Crotor, the personal combat capabilities of the generals of the Western Empire were generally mediocre. This is in polar contrast with the military tradition of Battania - the chiefs of Battania are mostly warriors with high martial arts skills and are invincible when fighting alone, but they are messed up when commanding troops of more than a thousand people. The imperial system cultivated staff rather than warriors. In the Western Empire, Galios's own swordsmanship was only average in the military camp. Saratis sat at the top of the city all year round and hardly participated in field battles. Desiliboon and Vipon were typical generals in the tent. In the eyes of the Imperial people, this is not a shortcoming - what a general should do is to read the map and calculate supplies, and dueling in front of the battle line is only considered an honor by the barbarians. At a strategic level, the Western Empire occupies the hinterland of the Central Plains, and the terrain is flat, which is conducive to the deployment of large armies. However, there is also the hidden concern of too long a defense line: it borders Vlandia to the west, faces the mountainous invasion of Battania to the north, and is the battleground between the Northern and Southern Empires to the east. To cope with multi-front pressure, we rely on the food and population of the Central Plains to maintain a large standing field army that can assemble superior forces in any direction at any time. Salatis defends the city, Desriboon supports it, Achios and Vipon attack, and Clotor takes charge of the coordination - this command structure has become quite mature after years of development. As long as the wheat in the Central Plains continues to be harvested, the war machine of the Western Empire will not stop."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "A",
+      "Kind": "kingdom_leader_name",
+      "TargetId": "empire_w",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

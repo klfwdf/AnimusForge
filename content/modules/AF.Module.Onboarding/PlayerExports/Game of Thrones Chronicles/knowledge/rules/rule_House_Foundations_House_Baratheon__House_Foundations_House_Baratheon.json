@@ -1,0 +1,154 @@
+{
+  "Id": "rule_House_Foundations_House_Baratheon",
+  "Keywords": [
+    "House Baratheon",
+    "Durrandon",
+    "Fury",
+    "Black Stag",
+    "Ours Is the Fury"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The roots of House Baratheon lie in Storm's End and the Stormlands. Legend holds that its founder, Orys Baratheon, was Aegon the Conqueror's bastard brother or closest companion; after the Conquest, he slew the last Storm King, wed Argella Durrandon, and inherited the Durrandon lands, stag banner, and words, \"Ours Is the Fury.\" The crowned black stag on a field of gold thus points at once to the heritage of the Storm Kings and the rumored blood tie left by the Targaryen Conquest. Though the house's name is often linked with tall, powerful frames, blunt speech, and tempestuous tempers, the lords of the Stormlands also know that more than one temperament lies beneath the antlers—and the closer the house's name draws to the crown, the sharper the disputes over succession and rightful title become."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "stormlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The lords of the Stormlands regard the Baratheons as heirs to the royal line of Durrandon, while knowing full well that the blood of the black stag is mingled with the new order of the Conqueror's age. Storm's End can withstand any gale, yet the members of the house are often like the storm itself: fierce, proud, and hard-pressed to endure one another. Their bannermen admire strength, yet fear above all the day the antlers turn against their own brothers."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "stormlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Stormlands soldiers gladly follow a lord who will ride beside them through the driving rain, while smallfolk pray that such thunderous fury does not sweep away the next season's harvest along with it. \"Ours Is the Fury\" can stir men's hearts on the battlefield, yet in a quarrel among brothers it can leave every village paying the reckoning for noble tempers."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "crownlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Men of the Crownlands remember that a Baratheon won the Iron Throne with a warhammer, and so whenever they look upon the black stag they think both of a new dynasty and of how royal authority can be redefined by main strength. Robert's victory placed a crown upon the family name, yet it did not make succession, bloodline, or the order of brothers any simpler."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "When lords and merchants weigh House Baratheon, they look first to its lands, marriage pacts, bloodline, and debts. Rooted in Storm's End, the house takes its name and seat from Orys Baratheon's assumption of the Durrandon legacy. Its crowned black stag on gold and its words, \"Ours Is the Fury,\" link the tradition of the Storm Kings, the age of the Conquest, and disputes over the crown. A sigil is only a house's face; whether it can guard its fiefs, honor its marriage pacts, and muster men in an hour of crisis is the true measure of its weight."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "When soldiers and travelers speak of House Baratheon, what they remember is who shared out grain beside the campfires, who left them outside the walls, and who still stood by the banner when a battle turned sour. Rooted in Storm's End, the house takes its name and seat from Orys Baratheon's assumption of the Durrandon legacy. Its crowned black stag on gold and its words, \"Ours Is the Fury,\" link the tradition of the Storm Kings, the age of the Conquest, and disputes over the crown. In the end, a great house's renown comes down to specific men and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Artisans and clergy pay closer heed to the rites, tombs, and traditions left behind by House Baratheon. Rooted in Storm's End, the house takes its name and seat from Orys Baratheon's assumption of the Durrandon legacy. Its crowned black stag on gold and its words, \"Ours Is the Fury,\" link the tradition of the Storm Kings, the age of the Conquest, and disputes over the crown. A house's ancestors may be celebrated in song, or they may become shackles upon their descendants; the older the bloodline, the more old debts its heirs are called upon to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Smallfolk and villagers truly encounter House Baratheon only when a lord collects taxes, levies troops, mends a road, or opens relief grain. Rooted in Storm's End, the house takes its name and seat from Orys Baratheon's assumption of the Durrandon legacy. Its crowned black stag on gold and its words, \"Ours Is the Fury,\" link the tradition of the Storm Kings, the age of the Conquest, and disputes over the crown. They may not remember the full family tree, yet they remember which house opened its granaries in winter and which drove refugees back out into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "House Baratheon: Rooted in Storm's End, originating from the house name established when Orys Baratheon assumed the Durrandon legacy. Its crowned black stag on gold and words \"Ours Is the Fury\" connect the Storm King tradition, the age of the Conquest, and disputes over royal succession."
+  ]
+}

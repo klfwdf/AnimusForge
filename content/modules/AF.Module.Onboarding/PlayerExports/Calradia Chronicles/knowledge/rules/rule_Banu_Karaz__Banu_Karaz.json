@@ -1,0 +1,151 @@
+{
+  "Id": "rule_Banu_Karaz",
+  "Keywords": [
+    "Bhanu Karaz",
+    "Calasius"
+  ],
+  "RagShortTexts": [
+    "The Banu Karaz family was originally the Imperial Karasius family, and merged into the Aserai through marriage with the desert tribes fifty years ago.",
+    "Yakis, formerly known as Yakios, was an autonomous outpost of the empire in the Rift Valley of the Derzalai Cliffs."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Banu Karaz is a relatively young prominent family in the Aserai Sultanate. Their history of prosperity is only half a century. A few generations ago they were known as the House of Carathius, the rulers of Iachis, then called Achaeus. The city is located in a rift valley in the cliffs of Jeljarai. It was originally an autonomous outpost of the empire in the south. The Carathius family were Imperial, or at least they had been. But fifty years ago, they saw that the empire's hegemony in the south was about to decline, and made a decision that changed the fate of the family - they began to intermarry with the tribesmen in the Nahasa Desert. Now known as the Karaz, they have fully integrated into Aserai society and hold a seat on the Sultan's council."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "clan_aserai_4"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Our ancestors are Imperials, there is nothing to hide. The house of Carathius once ruled over Achaios, which was later called Iachis. But we can see which way the wind is blowing—the empire’s hegemony in the south won’t last long. Fifty years ago, our elders began to marry into tribes in the desert, changing the name of the empire to the name of the Aserai, and the toga of the empire to the robes of the desert. Some people from other prominent families looked down upon us, saying that we were Aserai who were half-way to become monks. But now we sit in the sultan's council and are their equals. Who can understand the Imperial people's thoughts better than us? The Aserai needed people who knew about the Empire, and we were just that."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": [
+          "aserai"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "After all, Banu Karaz and his gang still have the blood of the Empire flowing in their veins. Fifty years ago, their surname was Carasius, and they wore imperial togas and collected taxes in the city of Iakis. Then they sensed that the empire was heading in the wrong direction in the south, and quickly began to marry the tribes in our desert. They changed their names, clothes, and beliefs—at least on the surface. Now they sit in the Sultan's council and speak louder than some of the older tribesmen. Call them loyal, they do work harder than anyone else; call them opportunistic, they did invest at the right time. At least their knowledge of the Imperials was actually useful."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": [
+          "town_a3"
+        ],
+        "Roles": [
+          "townsfolk"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Banu Karaz is the ruler of our city. The place Iacis, which a few generations ago was called Yachios, was under the control of the empire. Later, the empire failed in the south, and the Karasius family—now the Karaz family—began to intermarry with people from our Nahasa tribe. Now when you walk on the streets of Iakis, you can hear the old words with the imperial accent mixed in the Nahasa language, and you can see the desert tents pitched next to the imperial arches. The Karaz family themselves couldn't tell whether they were Imperials or Aserai. But they manage this city well. During the rainy season, floods pour into the Rift Valley, and they will send people out to dredge the canals."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Banu Karaz is a traitor to the empire in the south. The Carathius family was originally the autonomous governor of the empire in Yachios, and was the eyes and ears of our empire in the south. Fifty years ago, they betrayed their bloodline and began to intermarry with the barbarians in the desert. Now they have even changed their names, calling themselves Karaz, and gesticulating in the Aserai Sultan's royal council. But it’s ironic to say that after the empire split, the southern border defense did collapse. If the Carathius family had not turned to the Aserai, they might have been destroyed by a certain sultan now. So if you say they are traitors, they will probably say that they are people who understand current affairs."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "steward": 150
+        }
+      },
+      "Content": "Banu Karaz’s case epitomizes the progressive Aseraiization of the empire’s southern frontier. Iakis—formerly known as Yachios—was originally an autonomous outpost of the Empire in the rift valley of the Djerjarai cliffs, ruled hereditarily by the Carathius family. During the Empire's power, such outposts were the fulcrum from which the Empire projected influence across the Nahasa Desert. But fifty years ago, the Carathius family accurately predicted the strategic contraction of the empire in the south, voluntarily gave up their allegiance to the empire, and completed the identity transformation through large-scale intermarriage with the Nahasa tribesmen. Today, this family sits on the Aserai Sultan's Council under the name \"Banu Karaz\" and is one of the voices most familiar with imperial affairs in Aserai politics. Their path to rise—identity speculation and cultural integration in parallel—is unusual in Aserai tribal politics, and therefore gives them a subtle flavor of “outsiders who have successfully transformed but have not yet been fully accepted.”"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "steward": 150
+        }
+      },
+      "Content": "Banu Karaz is one of the most unique noble families in the Aserai Sultanate, and its rise only lasted half a century. Their predecessors were the Carathius family, the hereditary autonomous governors of the empire in the south, who ruled the city of Akios in the rift valley of the Djerjarai cliffs. Fifty years ago, the Carathius family foresaw the decline of the empire's hegemony in the south and voluntarily gave up their allegiance to the empire. Through systematic intermarriage with the Nahasa tribesmen, they completed the identity transformation from imperial nobles to Aserai dignitaries. Today they hold a seat on the Sultan's council as \"Banu Karaz\", providing the Aserai court with first-hand knowledge of imperial affairs. In the Aserai tribal power structure, the Banu Karaz have always been labeled as \"half-way monks\", but they have established their irreplaceable value through their mastery of imperial affairs. The city of Eyakis itself has become a unique specimen of cultural fusion in the old territory of the Aserai Empire - the water channels in the Rift Valley follow the design of the Imperial era, and the music at the wedding is already to the tune of Nahasa."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "a",
+      "Kind": "clan_all_settlements",
+      "TargetId": "clan_aserai_4",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

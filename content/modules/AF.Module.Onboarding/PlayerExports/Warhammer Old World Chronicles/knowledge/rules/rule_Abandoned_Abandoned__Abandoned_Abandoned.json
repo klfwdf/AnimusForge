@@ -1,0 +1,213 @@
+{
+  "Id": "rule_Abandoned_Abandoned",
+  "Keywords": [
+    "derelict",
+    "The derelict loses his mind",
+    "mutated rage",
+    "Clawed Tentacle",
+    "Chaos Loser",
+    "Twisted Infantry",
+    "Gift the loser",
+    "excessive chaos",
+    "crazy warrior",
+    "loss of self",
+    "mutated victim",
+    "Chaos Elegy"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Forsaken are those Chaos warriors who failed on the road to glory - they received too many gifts from Chaos and exceeded the limits of their physical and mental endurance. They eventually lost all their sanity and became twisted monsters who only knew how to kill. They were proof of the cruelest irony of the power of Chaos."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "chaos_culture"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Forsaken... I don't want to talk about them, but every Chaos warrior must know of their existence. (After a moment of silence) They were once people like us - fierce marauders, glorious champions of Chaos, some even lords. But they were too greedy, or too ignorant, or too unlucky—they accepted more gifts than their bodies could handle. You can't miss the moment: their eyes will suddenly become empty for a moment, like the person inside is dead. Then their bodies began to mutate uncontrollably - tentacles, claws, roiling flesh - but they did not die, but the original \"person\" disappeared. We'll put them at the forefront of the battlefield, letting them rage and kill as many enemies as possible before being utterly destroyed. This... can be regarded as the final glory for them."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Derelict is your suicide charge unit. They have no sense of fear. After rushing into the enemy's position, they will attack wildly until they are completely eliminated. Deploy them at the forefront of all troops and use their sacrifices to disrupt the enemy's formation. But don't let the Forsaken get close to your own main army - their rage is indiscriminate and will attack any creature that comes close. The ideal way to use it is: the derelict leads the way to disrupt the enemy, and you surround it with regular troops on both flanks. Don't expect them to come back alive."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "According to clinical research from the Imperial College of Pathology, the abandonment process is divided into four stages: the first stage, the \"symptom stage\" - the individual begins to show exaggerated mood swings and uncoordinated behavior, which lasts for about a week; the second stage, the \"collapse stage\" - the individual experiences severe convulsions and hallucinations, claiming to \"hear the voice of God\" or \"see indescribable faces\" \"Color\", which lasts for about three days; the third stage \"catastrophic period\" - the body undergoes a violent physiological metamorphosis within minutes, and the original bones and organs are reorganized into new and unpredictable structures by chaotic energy. This is the most painful stage; the fourth stage is the state of the outcast - the individual permanently loses self-awareness and acts based on pure killing instinct. Pathological experiments have shown that the brain tissue of the abandoned people has been completely liquefied into chaotic energy plasma, which means that their \"soul\" no longer exists, but is sealed as a violent machine driven by chaotic energy. Ancient legends mention that there was once a Forsaken who \"reverse Abandonment\" - regained his self-awareness after receiving the special gift of Slaanesh. This is only recorded once in history. But the authenticity of this matter is highly disputed."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "I have seen a good sister turn into an outcast. One moment she was smiling, the next her smile was fixed on her face, and then her arms exploded into four tentacles. I ended her with my own hands - this was the last sisterhood I could give her."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Abandonment is the most feared fate for your people. As the leader, it is your responsibility to monitor the mental state of those tribesmen who have received too many gifts. Once you confirm that someone is about to \"disqualify\", you must organize a \"farewell ceremony\" - giving them final honor and closure on the battlefield. No one is allowed to privately execute a tribesman who is about to mutate. This will be regarded as murder and tarnish your status as leader."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "You see a bunch of twisted things wandering around the edge of the wasteland - were they ever human? Those extended tentacles, those extra limbs, those empty eyes seemed to be weeping. Your stomach churns. This is not the glory you imagined."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The existence of the Forsaken is the darkest page in the system of Chaos Glory. They remind everyone that the \"gift\" of chaos is not free, and its price may be everything you have. Some tribes view the Forsaken as \"tested\" - believing that they failed because the gods judged them to be unworthy of true favor."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "The Forsaken - a failed Chaos warrior who lost all his sanity due to too many gifts, a twisted killing machine.",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "The Abandoned. The Abandoned lost his mind, mutated and raged."
+  ]
+}

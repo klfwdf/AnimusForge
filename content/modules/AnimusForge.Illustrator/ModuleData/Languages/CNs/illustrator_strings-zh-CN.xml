@@ -1,0 +1,522 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base type="string">
+  <tags>
+    <tag language="简体中文" />
+  </tags>
+  <strings>
+    <string id="AF_ILL_AUTO_GENERATE" text="自动生图" />
+    <string id="AF_ILL_AUTO_GENERATE_HINT" text="仅在“生图开启”开启时生效。开启：快报生成时提前生成插画；关闭：快报右侧面板打开且缓存未命中时再自动生成。" />
+    <string id="AF_ILL_AUTO_REDRAW" text="NPC回复后自动重绘场景插画" />
+    <string id="AF_ILL_AUTO_REDRAW_HINT" text="开启后，玩家先手动生成本次对话的第一张插画；之后每次 NPC 回复自动重绘一张。后续请求复用首次采集的全景、人物参考和稳定硬事实，只更新当前会话最近两轮对话与动作。" />
+    <string id="AF_ILL_CACHE_LIMIT" text="本地缓存最大保留张数" />
+    <string id="AF_ILL_CACHE_LIMIT_HINT" text="生成的图片在本地持久化缓存的最大数量，避免重复调用消耗额度。" />
+    <string id="AF_ILL_CLEAN_TEMP" text="生成完成后自动清理临时文件" />
+    <string id="AF_ILL_CLEAN_TEMP_HINT" text="开启后，各提取任务结束时仅清理自己产生的离屏导出文件，不清理其他请求或历史调试文件。关闭时保留纹章导出便于排查；已读取的立绘临时文件仍按原有流程释放。不影响画廊缓存与默认插图。" />
+    <string id="AF_ILL_CUSTOM_DIRECTOR" text="自定义导演提示词" />
+    <string id="AF_ILL_CUSTOM_DIRECTOR_HINT" text="填写构图、动作、景别与叙事偏好，适用于百科、会晤和周报/快报。留空保持默认规则；只发给视觉导演，不直接追加到生图端。不能覆盖已知人物、装备、场景与事件事实或改变输出格式。导演关闭/未配置时不生效；修改后从下一次生成开始生效，正在生成的任务不变。" />
+    <string id="AF_ILL_CUSTOM_STYLE" text="自定义画风提示词 (Style=提示词 时生效)" />
+    <string id="AF_ILL_CUSTOM_STYLE_HINT" text="点击打开大文本编辑器，自由编辑画风指令。仅当上方画风预设选“提示词”时生效，作为【画风指令】注入所有生图通道的提示词，对任何模型生效。默认填入古典油画预设内容供参考。" />
+    <string id="AF_ILL_DIRECTOR_BASE_URL" text="导演 API 端点地址 (Base URL)" />
+    <string id="AF_ILL_DIRECTOR_BASE_URL_HINT" text="视觉导演 API 端点地址。留空时自动复用主模块正文对话 API 端点；若需指定独立的 LLM 模型或第三方中转作为提示词扩写导演，请在此填写 Base URL（如 https://api.openai.com/v1）。" />
+    <string id="AF_ILL_DIRECTOR_KEY" text="导演 API 密钥 (API Key)" />
+    <string id="AF_ILL_DIRECTOR_KEY_HINT" text="视觉导演 API 密钥 (Key)。留空时自动复用主模块正文对话 API Key。" />
+    <string id="AF_ILL_DIRECTOR_MAX_TOKENS" text="导演最大输出 Tokens" />
+    <string id="AF_ILL_DIRECTOR_MAX_TOKENS_HINT" text="实际发送给导演API的 max_tokens，默认25000；这是允许的输出预算，不是目标篇幅，也不是字符数。思考消耗是否计入由接口决定；请按接口支持范围设置。" />
+    <string id="AF_ILL_DIRECTOR_MODEL" text="导演模型名称 (Model)" />
+    <string id="AF_ILL_DIRECTOR_MODEL_HINT" text="视觉导演模型名称（如 gpt-4o、qwen-plus、deepseek-chat 等）。留空时自动复用主模块正文对话模型。" />
+    <string id="AF_ILL_DIRECTOR_REFERENCE_TOKENS" text="导演提词参考篇幅（约 Token）" />
+    <string id="AF_ILL_DIRECTOR_REFERENCE_TOKENS_HINT" text="软性篇幅参考，不是API输出上限。强制缩减开启时优先遵守字符预算；否则完整回复最多30000字符。保留完整四段，不为凑数扩写。" />
+    <string id="AF_ILL_DISPLAY" text="AnimusForge - AI 画卷生图系统 (Illustrator)" />
+    <string id="AF_ILL_DISPLAY_MODE" text="绘图显示效果" />
+    <string id="AF_ILL_DISPLAY_MODE_HINT" text="独立面板：使用右侧场景插画面板；全屏覆盖：插画铺满屏幕作为对话背景，按钮位于上方约四分之三区域，底部保留对话与输入区域；打开百科、菜单等界面时自动隐藏。自动重绘沿用此选择。" />
+    <string id="AF_ILL_ENABLED" text="生图开启" />
+    <string id="AF_ILL_ENABLED_HINT" text="所有生图链路的总开关。关闭后百科、对话、快报、画廊等入口都不会发起生图请求。" />
+    <string id="AF_ILL_FETCH" text="点击拉取" />
+    <string id="AF_ILL_FETCH_DIRECTOR_MODELS" text="拉取导演模型列表" />
+    <string id="AF_ILL_FETCH_DIRECTOR_MODELS_HINT" text="向填写的导演 Base URL 发起查询拉取可用模型列表。若未填写导演 Base URL，则向主模块正文 API 发起拉取。" />
+    <string id="AF_ILL_FETCH_IMAGE_MODELS" text="拉取生图模型列表" />
+    <string id="AF_ILL_FETCH_IMAGE_MODELS_HINT" text="向配置接口查询模型列表，Google原生用其 /models 与原生鉴权；只读取当前返回页，未列出时可手动填写模型名。优先排列图像与绘画模型。" />
+    <string id="AF_ILL_FULL_URL" text="使用完整调用 URL (不自动拼接后缀)" />
+    <string id="AF_ILL_FULL_URL_HINT" text="开启后，系统将直接使用填写的端点地址发起请求，不自动追加后缀。适合自定义特殊反代或中转路径；Google原生勾选后必须填写完整 :generateContent 地址，实际模型以URL为准。" />
+    <string id="AF_ILL_GEAR_FIDELITY" text="按 AF 装备保真" />
+    <string id="AF_ILL_GEAR_FIDELITY_HINT" text="默认开启，保留装备款式身份，但允许叙事中已发生的撕裂、污渍、湿透等状态变化。关闭后衣服、盔甲、武器和配饰按自定义导演规则或导演构思设计，不锁定AF装备与立绘衣装；面容、发型、体型、人物身份及事件事实仍保留。只影响新请求，不修改游戏装备。" />
+    <string id="AF_ILL_GROUP_BASIC" text="1. 基础设置" />
+    <string id="AF_ILL_GROUP_DIRECTOR_API" text="3. 视觉导演 API 配置 (OpenAI 兼容 · 留空使用正文API)" />
+    <string id="AF_ILL_GROUP_DISPLAY" text="4. 周报与展示场景" />
+    <string id="AF_ILL_GROUP_IMAGE_API" text="2. 生图 API 配置 (OpenAI 兼容)" />
+    <string id="AF_ILL_GROUP_STORAGE" text="5. 存储与性能" />
+    <string id="AF_ILL_IMAGE_BASE_URL" text="生图 API 端点地址 (Base URL)" />
+    <string id="AF_ILL_IMAGE_BASE_URL_HINT" text="兼容接口填写服务根地址或 /v1；Google原生填写 https://generativelanguage.googleapis.com/v1beta 或完整 /models/模型名:generateContent，按原生鉴权发送。Player2填写http://127.0.0.1:4315即可自动识别，模型在Player2应用选择，无需开关。默认有参考图时优先 /images/edits（真实上传参考图），无参考图才用 /images/generations；完整 edits 地址也可识别。模型必须支持所选通道；不支持 edits 不会静默丢图转文生图。" />
+    <string id="AF_ILL_IMAGE_KEY" text="生图 API 密钥 (API Key)" />
+    <string id="AF_ILL_IMAGE_KEY_HINT" text="用于鉴权的 API Key。若端点无需鉴权或为本地反代可留空。" />
+    <string id="AF_ILL_IMAGE_MODEL" text="生图模型名称 (Model)" />
+    <string id="AF_ILL_IMAGE_MODEL_HINT" text="生图模型名称。支持常规生图模型（如 FLUX.1-schnell、dall-e-3、gpt-image-1.5 等）以及对话原生多模态出图模型（如 gemini-3.1-flash-image 等，系统会自动识别并走对话图生图通道）。" />
+    <string id="AF_ILL_IMAGE_SIZE" text="生图分辨率 (Size)" />
+    <string id="AF_ILL_IMAGE_SIZE_HINT" text="快报与“全屏覆盖”场景插画按预设转为16:9：1024方形及1280/720档→1280×720；1344/1536档→1536×864；2048方形→2048×1152。百科与“独立面板”场景插画使用所选尺寸。需生图服务支持对应尺寸。" />
+    <string id="AF_ILL_IMAGE_TIMEOUT" text="生图请求总超时" />
+    <string id="AF_ILL_IMAGE_TIMEOUT_HINT" text="单次生图的总等待上限，默认240秒；包含 Edits 尝试、对话通道回退和结果图下载。高画质多参考图重绘或中转较慢时可调大。下一次生图生效；不影响视觉导演请求与离屏采集超时。" />
+    <string id="AF_ILL_NEGATIVE_PROMPT" text="负面提示词 (Negative Prompt)" />
+    <string id="AF_ILL_NEGATIVE_PROMPT_HINT" text="点击打开大文本编辑器，填写画面中不希望出现的元素，例如：模糊, 变形, 多余手指, 现代物品, 水印文字。仅在画风预设选“提示词(自定义画风)”时生效，作为禁止指令追加在预设负面词之后。默认填入古典油画预设内容供参考。" />
+    <string id="AF_ILL_OFFSCREEN_ENV" text="启用场景离屏渲染 (环境全景)" />
+    <string id="AF_ILL_OFFSCREEN_ENV_HINT" text="开启后，会话插画会在后台离屏渲染玩家附近 30 米的场景全景，作为环境参考还原建筑、陈设与材质；采集需要数秒并占用少量 GPU。关闭后不渲染全景，环境仅依据当前画面截图与文字事实。人物立绘始终离屏渲染，不受此开关影响。野外（大地图）会话本来就不使用全景。" />
+    <string id="AF_ILL_OPEN_EDITOR" text="打开编辑器" />
+    <string id="AF_ILL_PANORAMA_DIRECTION_TIMEOUT" text="全景单方向图片导出超时" />
+    <string id="AF_ILL_PANORAMA_DIRECTION_TIMEOUT_HINT" text="每个全景方向等待原生PNG的上限，默认6秒。六个方向顺序采集，同时受全景总超时限制。下一次采集生效；不能修复原生保存未执行。" />
+    <string id="AF_ILL_PANORAMA_TOTAL_TIMEOUT" text="环境全景采集总超时" />
+    <string id="AF_ILL_PANORAMA_TOTAL_TIMEOUT_HINT" text="包含等待提取舞台、环境副本构建和六方向采集的总预算，默认40秒。下一次采集生效；总预算先到仍会停止，失败不发送缺面或重复图片。" />
+    <string id="AF_ILL_PORTRAIT_TIMEOUT" text="人物立绘导出超时" />
+    <string id="AF_ILL_PORTRAIT_TIMEOUT_HINT" text="每个人物离屏立绘的等待上限，默认20秒。下一次提取生效；增大只帮助导出较慢的环境，不能修复原生保存未执行。不是AI接口超时。" />
+    <string id="AF_ILL_QUALITY" text="生成画质预设 (Quality)" />
+    <string id="AF_ILL_QUALITY_HINT" text="standard/hd 对应 DALL-E-3 系；low/medium/high/auto 对应 gpt-image-1 系及支持这些枚举的中转模型。选“默认”时不发送该参数，避免不支持的模型报错。Gemini 等对话生图通道自动换算为画质提示词注入。" />
+    <string id="AF_ILL_RANDOMNESS" text="随机" />
+    <string id="AF_ILL_RANDOMNESS_HINT" text="0 沿用旧版，不追加随机提示词。数值越高，越鼓励取景、留白、景深与光影表现的变化；人物外貌、装备、纹章和已确认游戏事实仍须保持一致。这是提示词指导强度，不是模型采样参数。" />
+    <string id="AF_ILL_REFERENCE_IMAGE" text="向生图模型附带参考图 (垫图/图生图)" />
+    <string id="AF_ILL_REFERENCE_IMAGE_HINT" text="开启后，截取的人物3D立绘参考图将一并发送给生图模型（支持对话多模态及兼容的 ImagesEdits 通道）。关闭则仅把参考图用于提示词导演扩写。" />
+    <string id="AF_ILL_SELECT_DIRECTOR_MODEL" text="选择导演模型 (下拉选单)" />
+    <string id="AF_ILL_SELECT_DIRECTOR_MODEL_HINT" text="点击上方“拉取导演模型列表”后可从下拉菜单点选。若选“*手动输入*”，则使用上方文本框输入的模型名；若选“*默认(复用正文API)*”，则留空复用主模块。" />
+    <string id="AF_ILL_SELECT_IMAGE_MODEL" text="选择生图模型 (下拉选单)" />
+    <string id="AF_ILL_SELECT_IMAGE_MODEL_HINT" text="点击上方“拉取生图模型列表”后，可从本下拉菜单中直接快速点选可用模型。若选“*手动输入*”，则使用上方文本框中输入的模型名称。" />
+    <string id="AF_ILL_STYLE" text="生成风格画风 (Style)" />
+    <string id="AF_ILL_STYLE_HINT" text="vivid/natural 为 OpenAI 官方 style 枚举参数；其余预设不作为 style 参数发送（避免非法枚举报错），而是把画风指令与预设负面词注入提示词，对任何模型生效。选“提示词”时使用下方自定义文本。" />
+    <string id="AF_ILL_TEST_API" text="测试生图 API（可能计费）" />
+    <string id="AF_ILL_TEST_API_HINT" text="使用当前填写的配置生成一张测试图，可能产生服务费用。只提交一次出图请求，不自动切换通道重试；会显示成功、失败及耗时。运行中再次点击取消。无需进入存档，不调用视觉导演或采集游戏画面；测试图保存在模组 Cache/Illustrator/ApiTest/last-result.png。" />
+    <string id="AF_ILL_TEST_CANCEL" text="测试 / 取消" />
+    <string id="AF_ILL_UNIT_IMAGES" text="0 张" />
+    <string id="AF_ILL_UNIT_SECONDS" text="0 秒" />
+    <string id="AF_ILL_UI_GALLERY_TITLE" text="卡拉迪亚纪事画廊" />
+    <string id="AF_ILL_UI_ALL" text="全部" />
+    <string id="AF_ILL_UI_FAVORITES" text="收藏" />
+    <string id="AF_ILL_UI_REDRAW" text="重绘" />
+    <string id="AF_ILL_UI_REDRAW_PROMPT" text="重绘（带提示词）" />
+    <string id="AF_ILL_UI_REDRAW_IMAGE" text="重绘（基于本图）" />
+    <string id="AF_ILL_UI_COPY" text="复制" />
+    <string id="AF_ILL_UI_GALLERY" text="纪事画廊" />
+    <string id="AF_ILL_UI_CLOSE" text="关闭" />
+    <string id="AF_ILL_UI_SCENE_PROBE" text="独立场景试采" />
+    <string id="AF_ILL_UI_CONVERT_RP" text="转为 RP 物品" />
+    <string id="AF_ILL_UI_SET_DEFAULT" text="设为默认" />
+    <string id="AF_ILL_UI_DELETE" text="删除" />
+    <string id="AF_ILL_UI_OPEN_FOLDER" text="打开本地图片目录" />
+    <string id="AF_ILL_UI_GALLERY_WELCOME" text="欢迎查阅卡拉迪亚纪事画廊。" />
+    <string id="AF_ILL_UI_GALLERY_READING" text="正在读取画廊…" />
+    <string id="AF_ILL_UI_GALLERY_BUSY" text="画廊后台操作繁忙，请稍后刷新。" />
+    <string id="AF_ILL_UI_GALLERY_LOADING" text="正在载入画卷…" />
+    <string id="AF_ILL_UI_GALLERY_TEXTURE_FAILED" text="图片纹理加载失败，请刷新画廊。" />
+    <string id="AF_ILL_UI_GALLERY_EMPTY_ALL" text="暂无收录画卷，将在快报生成时自动绘制。" />
+    <string id="AF_ILL_UI_GALLERY_EMPTY_FAVORITES" text="暂无收藏画卷，可在“全部”中选中画卷后点击“收藏”。" />
+    <string id="AF_ILL_UI_GALLERY_FAVORITE" text="收藏" />
+    <string id="AF_ILL_UI_GALLERY_UNFAVORITE" text="取消收藏" />
+    <string id="AF_ILL_UI_GALLERY_FAVORITE_FAILED" text="收藏失败" />
+    <string id="AF_ILL_UI_GALLERY_UNFAVORITE_FAILED" text="取消收藏失败" />
+    <string id="AF_ILL_UI_GALLERY_FAVORITE_ADDED" text="已收藏：" />
+    <string id="AF_ILL_UI_GALLERY_FAVORITE_REMOVED" text="已取消收藏：" />
+    <string id="AF_ILL_UI_GALLERY_COUNT_ALL" text="共收录 {COUNT} 幅历史画卷" />
+    <string id="AF_ILL_UI_GALLERY_COUNT_FAVORITES" text="共收藏 {COUNT} 幅画卷" />
+    <string id="AF_ILL_UI_GALLERY_ERROR" text="画廊操作失败：{ERROR}" />
+    <string id="AF_ILL_UI_GALLERY_LOAD_ERROR" text="画卷载入失败：{ERROR}" />
+    <string id="AF_ILL_UI_GALLERY_FAVORITED" text="已收藏：{TITLE}" />
+    <string id="AF_ILL_UI_GALLERY_UNFAVORITED" text="已取消收藏：{TITLE}" />
+    <string id="AF_ILL_UI_GALLERY_CONVERT_TITLE" text="转为 RP 物品" />
+    <string id="AF_ILL_UI_GALLERY_CONVERT_HINT" text="确认画卷介绍后加入背包。向 NPC 展示时会读取这段介绍；可在此修正画面内容。" />
+    <string id="AF_ILL_UI_GALLERY_CONVERT_CANCELLED" text="已取消转换，未添加物品。" />
+    <string id="AF_ILL_UI_GALLERY_CONVERT_UNAVAILABLE" text="无法打开画卷介绍编辑框。" />
+    <string id="AF_ILL_UI_GALLERY_SET_DEFAULT_LOADING" text="正在重新读取本地图并设置默认…" />
+    <string id="AF_ILL_UI_GALLERY_SET_DEFAULT_FAILED" text="设为默认失败。" />
+    <string id="AF_ILL_UI_GALLERY_DELETE_FAILED" text="删除失败" />
+    <string id="AF_ILL_UI_GALLERY_FOLDER_FAILED" text="打开目录失败：{ERROR}" />
+    <string id="AF_ILL_UI_CARD_READY" text="就绪" />
+    <string id="AF_ILL_UI_CARD_COPY_SUCCESS" text="提示词已复制到剪贴板" />
+    <string id="AF_ILL_UI_CARD_COPY_FAILED" text="复制失败：{ERROR}" />
+    <string id="AF_ILL_UI_CARD_PREPARE_FAILED" text="生成准备失败：{ERROR}" />
+    <string id="AF_ILL_UI_CARD_PROBE_FAILED" text="试采失败：{ERROR}" />
+    <string id="AF_ILL_UI_CARD_REDRAW_FAILED" text="重绘准备失败：{ERROR}" />
+    <string id="AF_ILL_UI_REDRAW_IMAGE_HINT" text="描述对当前图片的修改要求；留空不会开始重绘。" />
+    <string id="AF_ILL_UI_REDRAW_PROMPT_HINT" text="填写本次重绘的画面要求；留空不会开始生成。" />
+    <string id="AF_ILL_UI_REDRAW_REQUIRED" text="请填写本次重绘提示词，未开始生成。" />
+    <string id="AF_ILL_UI_SAVE" text="保存" />
+    <string id="AF_ILL_UI_CANCEL" text="取消" />
+    <string id="AF_ILL_UI_WEEKLY_DEFAULT_TITLE" text="帝国纪事油画" />
+    <string id="AF_ILL_UI_WEEKLY_THINKING" text="正在构思本周纪事画卷…" />
+    <string id="AF_ILL_UI_WEEKLY_DRAWING" text="正在为本期快报绘制新插画…" />
+    <string id="AF_ILL_UI_WEEKLY_DELETE_UNSAVED" text="这张插画尚未存档，无法删除。" />
+    <string id="AF_ILL_UI_WEEKLY_DELETE_FAILED" text="删除失败，请到画廊中处理。" />
+    <string id="AF_ILL_UI_WEEKLY_DELETED" text="插画已移入回收区，点击“重绘”重新绘制。" />
+    <string id="AF_ILL_UI_WEEKLY_LOAD_FAILED" text="本期配图加载失败，可点击重绘。" />
+    <string id="AF_ILL_UI_WEEKLY_READ_BUSY" text="配图读取繁忙，请稍后重开本期快报。" />
+    <string id="AF_ILL_UI_WEEKLY_PREPARE_FAILED" text="生成准备失败：{ERROR}" />
+    <string id="AF_ILL_UI_WEEKLY_REDRAW_LOADING" text="正在基于本图重绘…" />
+    <string id="AF_ILL_UI_WEEKLY_REDRAW_SUCCESS" text="重绘完成，已保存为新版本。" />
+    <string id="AF_ILL_UI_WEEKLY_REDRAW_FAILED" text="重绘失败：{ERROR}" />
+    <string id="AF_ILL_UI_WEEKLY_BACKGROUND" text="画卷正在后台生成，完成后会通知并更新画廊。" />
+    <string id="AF_ILL_UI_WEEKLY_COMPLETE" text="本周纪事已绘制完成" />
+    <string id="AF_ILL_UI_WEEKLY_NOT_SAVED" text="绘制未成功，未能保存图像。" />
+    <string id="AF_ILL_UI_ENCYCLOPEDIA_BUTTON" text="【纪事插画】" />
+    <string id="AF_ILL_UI_HERO_UNAVAILABLE" text="无法获取当前英雄信息。" />
+    <string id="AF_ILL_UI_API_TEST_PREFIX" text="生图 API 测试" />
+    <string id="AF_ILL_UI_API_TEST_CANCELING" text="正在取消测试…" />
+    <string id="AF_ILL_UI_API_TEST_ENABLE" text="请先开启生图总开关。" />
+    <string id="AF_ILL_UI_API_TEST_ENDPOINT" text="请先填写有效的 HTTP/HTTPS 生图 API 地址。" />
+    <string id="AF_ILL_UI_API_TEST_CANCELLED" text="测试已取消。" />
+    <string id="AF_ILL_UI_API_TEST_BUSY" text="生图任务正在忙，请稍后重试。" />
+    <string id="AF_ILL_UI_API_TEST_STARTED" text="开始测试，使用当前配置请求一张图片；再次点击可取消。" />
+    <string id="AF_ILL_UI_API_TEST_MODEL" text="请先填写生图模型名称。" />
+    <string id="AF_ILL_UI_API_TEST_CANVAS" text="API测试用空白画布，请在画布上绘制一只苹果。" />
+    <string id="AF_ILL_UI_API_TEST_SUCCESS" text="测试成功（{SECONDS}秒），图片已保存至模组 Cache/Illustrator/ApiTest/last-result.png。" />
+    <string id="AF_ILL_UI_API_TEST_FAILURE" text="{CHANNEL} 测试失败（{SECONDS}秒）：{ERROR}" />
+    <string id="AF_ILL_UI_API_TEST_MODE_PLAYER2_EDIT" text="Player2 /image/edit" />
+    <string id="AF_ILL_UI_API_TEST_MODE_PLAYER2_GENERATE" text="Player2 /image/generate" />
+    <string id="AF_ILL_UI_API_TEST_MODE_IMAGE" text="生图接口" />
+    <string id="AF_ILL_UI_WEEKLY_DEFAULT_CHANGED" text="已显示新设置的默认画卷。" />
+    <string id="AF_ILL_UI_CARD_AUTOSAVE_HINT" text="可关闭面板，完成后自动保存到画廊。" />
+    <string id="AF_ILL_UI_SCENE_TITLE" text="场景画卷" />
+    <string id="AF_ILL_UI_SCENE_PROBE_TITLE" text="【独立场景 · 全景试采】" />
+    <string id="AF_ILL_UI_SCENE_PROBE_COMPLETE" text="全景试采完成：仅预览，未调用模型" />
+    <string id="AF_ILL_UI_PORTRAIT_PREPARING" text="正在整理人物参考…" />
+    <string id="AF_ILL_UI_PORTRAIT_COMPLETE" text="纪事肖像绘制完成" />
+    <string id="AF_ILL_UI_CONVERSATION_COMPLETE" text="会晤插画绘制完成" />
+    <string id="AF_ILL_UI_PORTRAIT_TITLE" text="【纪事肖像 · {HERO}】" />
+    <string id="AF_ILL_UI_CONVERSATION_TITLE" text="【会晤插画 · 与 {HERO}】" />
+    <string id="AF_ILL_UI_GALLERY_TITLE_MARKER" text="{TITLE}{DEFAULT}{FAVORITE}" />
+    <string id="AF_ILL_UI_GALLERY_DELETED" text="已删除：{TITLE}（文件已移入回收区）" />
+    <string id="AF_ILL_UI_GALLERY_DEFAULT_MARKER" text="【默认】" />
+    <string id="AF_ILL_UI_GALLERY_FAVORITE_MARKER" text="【收藏】" />
+    <string id="AF_ILL_UI_BACK" text="返回" />
+    <string id="AF_ILL_UI_SETTINGS_STYLE_TITLE" text="编辑自定义画风提示词" />
+    <string id="AF_ILL_UI_SETTINGS_STYLE_DESCRIPTION" text="仅当画风预设选“提示词”时生效，内容作为【画风指令】注入所有生图通道的提示词末尾。" />
+    <string id="AF_ILL_UI_SETTINGS_STYLE_PLACEHOLDER" text="例如：古典厚涂油画, 水彩淡彩插画, 暗黑史诗写实, 电影级光影, 铅笔素描。留空则不注入。" />
+    <string id="AF_ILL_UI_SETTINGS_STYLE_FAILED" text="[Illustrator] 打开画风提示词编辑器失败: {ERROR}" />
+    <string id="AF_ILL_UI_SETTINGS_DIRECTOR_TITLE" text="编辑自定义导演提示词" />
+    <string id="AF_ILL_UI_SETTINGS_DIRECTOR_DESCRIPTION" text="只给视觉导演：控制构图、动作、景别和叙事，不覆盖真实人物/装备/事件，不改变四段输出格式。导演关闭或未配置时不生效。" />
+    <string id="AF_ILL_UI_SETTINGS_DIRECTOR_PLACEHOLDER" text="例如：优先表现人物之间的互动，避免总是正面站桩；选择能解释当前事件的瞬间。留空恢复默认规则。" />
+    <string id="AF_ILL_UI_SETTINGS_DIRECTOR_FAILED" text="[AI画卷] 打开导演提示词编辑器失败: {ERROR}" />
+    <string id="AF_ILL_UI_SETTINGS_NEGATIVE_TITLE" text="编辑负面提示词" />
+    <string id="AF_ILL_UI_SETTINGS_NEGATIVE_DESCRIPTION" text="内容作为禁止指令注入生图提示词，告诉模型画面中不要出现什么。" />
+    <string id="AF_ILL_UI_SETTINGS_NEGATIVE_PLACEHOLDER" text="例如：模糊, 变形, 多余手指, 现代物品, 水印文字, 低画质。留空则不注入。" />
+    <string id="AF_ILL_UI_SETTINGS_NEGATIVE_FAILED" text="[Illustrator] 打开负面提示词编辑器失败: {ERROR}" />
+    <string id="AF_ILL_UI_SETTINGS_IMAGE_FETCH_PENDING" text="[AI生图] 模型列表正在拉取中，请稍候。" />
+    <string id="AF_ILL_UI_SETTINGS_IMAGE_FETCH_ENDPOINT" text="[AI生图] 请先填写生图 API 端点地址 (Base URL)！" />
+    <string id="AF_ILL_UI_SETTINGS_IMAGE_FETCH_STARTED" text="[AI生图] 正在拉取可用模型列表..." />
+    <string id="AF_ILL_UI_SETTINGS_IMAGE_FETCH_ERROR" text="[AI生图] 拉取模型异常: {ERROR}" />
+    <string id="AF_ILL_UI_SETTINGS_IMAGE_FETCH_BUSY" text="[AI生图] 后台任务繁忙，请稍后重试。" />
+    <string id="AF_ILL_UI_SETTINGS_IMAGE_PLAYER2" text="[AI生图] 已确认Player2：生成/编辑模型请在Player2应用中选择，本页模型名不参与请求。" />
+    <string id="AF_ILL_UI_SETTINGS_IMAGE_FETCH_SUCCESS" text="[AI生图] 成功获取 {COUNT} 个可用模型！保留当前模型: {MODEL}，下拉选单已即时刷新。" />
+    <string id="AF_ILL_UI_SETTINGS_DIRECTOR_FETCH_PENDING" text="[视觉导演] 导演模型列表正在拉取中，请稍候。" />
+    <string id="AF_ILL_UI_SETTINGS_DIRECTOR_FETCH_HOST" text="[视觉导演] 未配置独立端点，正在向主模块正文 API 拉取模型列表..." />
+    <string id="AF_ILL_UI_SETTINGS_DIRECTOR_FETCH_ENDPOINT" text="[视觉导演] 请先填写导演 API 端点地址，或在主模块配置正文 API！" />
+    <string id="AF_ILL_UI_SETTINGS_DIRECTOR_FETCH_STARTED" text="[视觉导演] 正在向独立导演 API 端点拉取模型列表..." />
+    <string id="AF_ILL_UI_SETTINGS_DIRECTOR_FETCH_ERROR" text="[视觉导演] 拉取模型异常: {ERROR}" />
+    <string id="AF_ILL_UI_SETTINGS_DIRECTOR_FETCH_BUSY" text="[视觉导演] 后台任务繁忙，请稍后重试。" />
+    <string id="AF_ILL_UI_SETTINGS_DIRECTOR_FETCH_SUCCESS" text="[视觉导演] 成功获取 {COUNT} 个可用模型！下拉选单已即时刷新。" />
+    <string id="AF_ILL_UI_SETTINGS_FETCH_EMPTY_RESULT" text="空结果" />
+    <string id="AF_ILL_UI_SETTINGS_FETCH_HTTP_ERROR" text="拉取失败 (HTTP {STATUS}): {BODY}" />
+    <string id="AF_ILL_UI_SETTINGS_FETCH_NO_MODELS" text="接口返回成功，但未解析到可用模型数据。" />
+    <string id="AF_ILL_UI_OPTION_MANUAL_MODEL" text="*手动输入*" />
+    <string id="AF_ILL_UI_OPTION_DEFAULT_DIRECTOR" text="*默认(复用正文API)*" />
+    <string id="AF_ILL_UI_OPTION_PLAYER2_MODEL" text="使用 Player2 应用中选择的模型" />
+    <string id="AF_ILL_UI_OPTION_SIZE_SQUARE" text="1024x1024 (1:1 方形)" />
+    <string id="AF_ILL_UI_OPTION_SIZE_WIDE" text="1280x720 (16:9 宽屏横幅)" />
+    <string id="AF_ILL_UI_OPTION_SIZE_PORTRAIT" text="720x1280 (9:16 竖幅立绘)" />
+    <string id="AF_ILL_UI_OPTION_SIZE_EPIC" text="1344x768 (7:4 史诗宽画幅)" />
+    <string id="AF_ILL_UI_OPTION_SIZE_POSTER" text="1024x1536 (2:3 竖版海报)" />
+    <string id="AF_ILL_UI_OPTION_SIZE_UHD" text="2048x2048 (1:1 超高清方形)" />
+    <string id="AF_ILL_UI_OPTION_QUALITY_DEFAULT" text="默认 (不传)" />
+    <string id="AF_ILL_UI_OPTION_QUALITY_STANDARD" text="standard (标准)" />
+    <string id="AF_ILL_UI_OPTION_QUALITY_HD" text="hd (高清细节)" />
+    <string id="AF_ILL_UI_OPTION_QUALITY_LOW" text="low (低-最快出图)" />
+    <string id="AF_ILL_UI_OPTION_QUALITY_MEDIUM" text="medium (中等)" />
+    <string id="AF_ILL_UI_OPTION_QUALITY_HIGH" text="high (高-精细渲染)" />
+    <string id="AF_ILL_UI_OPTION_QUALITY_AUTO" text="auto (交由服务端自动)" />
+    <string id="AF_ILL_UI_OPTION_STYLE_CLASSIC" text="古典油画（默认）" />
+    <string id="AF_ILL_UI_OPTION_STYLE_VIVID" text="vivid (鲜艳生动·API枚举)" />
+    <string id="AF_ILL_UI_OPTION_STYLE_NATURAL" text="natural (自然真实·API枚举)" />
+    <string id="AF_ILL_UI_OPTION_STYLE_DARK" text="暗黑史诗写实 (提示词注入)" />
+    <string id="AF_ILL_UI_OPTION_STYLE_CINEMATIC" text="电影级光影 (提示词注入)" />
+    <string id="AF_ILL_UI_OPTION_STYLE_CUSTOM" text="提示词 (自定义画风)" />
+    <string id="AF_ILL_UI_OPTION_STYLE_MOSAN" text="莫桑艺术·默兹河珐琅彩饰 (提示词注入)" />
+    <string id="AF_ILL_UI_OPTION_STYLE_ANIME" text="日系半写实叙事插画 (提示词注入)" />
+    <string id="AF_ILL_UI_OPTION_DISPLAY_PANEL" text="独立面板" />
+    <string id="AF_ILL_UI_OPTION_DISPLAY_FULLSCREEN" text="全屏覆盖（默认）" />
+    <string id="AF_ILL_MENU_GALLERY" text="卡拉迪亚纪事画廊 (AI 画卷)" />
+    <string id="AF_ILL_NOTIFY_GENERATION_COMPLETE" text="[AI画卷] {TITLE} 绘制完成，已更新到画廊。" />
+    <string id="AF_ILL_NOTIFY_GENERATION_FAILED" text="[AI画卷] 绘制失败：{ERROR}" />
+    <string id="AF_ILL_MISSION_NOTICE" text="[AI画卷] {STATUS}" />
+    <string id="AF_ILL_MISSION_CANCELLED" text="本次取景已取消，未发送生图请求。" />
+    <string id="AF_ILL_MISSION_CAPTURE_FAILED" text="取景失败：{ERROR}" />
+    <string id="AF_ILL_MISSION_START_FAILED" text="生图启动失败：{ERROR}" />
+    <string id="AF_ILL_MISSION_FAILED" text="生图失败：{ERROR}" />
+    <string id="AF_ILL_MISSION_BATTLE_TITLE" text="战斗现场" />
+    <string id="AF_ILL_MISSION_INPUT_HINT" text="点击生图：自由取景，Enter 截取一至两张，确认后由导演推演插画。" />
+    <string id="AF_ILL_MISSION_INPUT_PLACEHOLDER" text="当前模式只提供截图生图，不发送 NPC 喊话。" />
+    <string id="AF_ILL_MISSION_NO_DIALOGUE" text="[场景喊话] 当前自定义战斗没有可用的交流链路。" />
+    <string id="AF_ILL_MISSION_CAPTURING" text="[AI画卷] 正在采集现场，截图完成后即可再次生图。" />
+    <string id="AF_ILL_MISSION_FRAMING" text="自由取景：Enter 截图，最多两张；确认后才发送生成请求。" />
+    <string id="AF_ILL_MISSION_DIRECTING" text="现场截图已确认，导演正在推演…" />
+    <string id="AF_ILL_MISSION_GENERATING" text="导演已完成，正在生成插画；可关闭面板…" />
+    <string id="AF_ILL_MISSION_SAVED" text="插画已保存到画廊。" />
+    <string id="AF_ILL_MISSION_BUSY" text="生图任务繁忙，请等待已有任务完成。" />
+    <string id="AF_ILL_MISSION_PREPARING" text="现场截图已确认，正在准备画卷…" />
+    <string id="AF_ILL_MISSION_PANEL_UNAVAILABLE" text="[AI画卷] 等待面板打开失败，生成仍在后台继续，完成后可到画廊查看。" />
+    <string id="AF_ILL_MISSION_SCOPE_CANCELLED" text="截图生图已取消（生图关闭或宿主切换）。" />
+    <string id="AF_ILL_NOTIFY_SCOPE_EXPIRED" text="生图上下文已失效（界面已切换或弹窗已关闭），请重新打开。" />
+    <string id="AF_ILL_NOTIFY_TIMEOUT" text="生成请求超时：上游模型在限定时间内无响应，请稍后重试。" />
+    <string id="AF_ILL_NOTIFY_BUSY" text="生图任务繁忙，请等待已有任务完成后重试。" />
+  <string id="AF_ILL_UI_CONVERSATION_SESSION_CHANGED" text="原会话画卷已存入画廊，当前会话已变化。" />
+  <string id="AF_ILL_UI_CONVERSATION_FIRST_IMAGE_REQUIRED" text="请点击“重新绘制”生成本次对话的第一张场景插画。" />
+  <string id="AF_ILL_UI_CONVERSATION_PREPARING" text="AI画师正在分析现场交谈与肢体姿势..." />
+  <string id="AF_ILL_UI_CONVERSATION_EQUIPMENT_UNAVAILABLE" text="未能取得双方完整装备快照，已停止生成；不会用兵种模板或另一套服装替代。" />
+  <string id="AF_ILL_UI_CONVERSATION_REFERENCE_REUSE" text="复用本次会话首次环境与人物参考" />
+  <string id="AF_ILL_UI_PORTRAIT_EQUIPMENT_UNAVAILABLE" text="无法读取百科当前展示装备，已停止生成；不会改用猜测的便服或战斗服。" />
+  <string id="AF_ILL_UI_CARD_DRAW_FAILED" text="绘制失败: {ERROR}" />
+  <string id="AF_ILL_UI_CARD_GENERATION_EXCEPTION" text="生成异常: {ERROR}" />
+  <string id="AF_ILL_UI_CARD_NOT_SAVED_OR_DISPLAYED" text="未能保存或显示图片" />
+  <string id="AF_ILL_UI_SCENE_PROBE_LOADING" text="正在重建附近环境并采集完整全景..." />
+  <string id="AF_ILL_UI_SCENE_PROBE_DISPLAY_FAILED" text="未能显示导出的预览" />
+    <string id="AF_ILL_UI_STATUS_CHRONICLE" text="纪事画卷" />
+    <string id="AF_ILL_UI_STATUS_THEME" text="主题：{THEME}" />
+    <string id="AF_ILL_UI_STATUS_STYLE_CHANGED" text="画风设置已更改；点击重新绘制后应用新画风。" />
+    <string id="AF_ILL_UI_STATUS_DIRECTOR_DISABLED" text="导演已关闭" />
+    <string id="AF_ILL_UI_STATUS_DIRECTOR_UNCONFIGURED" text="导演接口未配置" />
+    <string id="AF_ILL_UI_STATUS_DIRECTOR_CONSTRAINT" text="导演正文违反人物或装备约束" />
+    <string id="AF_ILL_UI_STATUS_DIRECTOR_NARRATIVE" text="导演正文未转成画面描述" />
+    <string id="AF_ILL_UI_STATUS_DIRECTOR_STRUCTURE" text="导演正文结构或构图不合要求" />
+    <string id="AF_ILL_UI_STATUS_DIRECTOR_EMPTY" text="导演正文缺少画面描述" />
+    <string id="AF_ILL_UI_STATUS_DIRECTOR_UNAVAILABLE" text="导演正文不可用" />
+    <string id="AF_ILL_UI_STATUS_VISION_PREFIX" text="导演不支持识图；" />
+    <string id="AF_ILL_UI_STATUS_LOCAL_FALLBACK" text="{REASON}，已使用本地构图" />
+    <string id="AF_ILL_UI_STATUS_SCENE_TERRAIN" text="野外对话：按地形事实构图（不截图）" />
+    <string id="AF_ILL_UI_STATUS_SCENE_DISABLED_SCREENSHOT" text="场景全景已关闭：使用当前画面截图" />
+    <string id="AF_ILL_UI_STATUS_SCENE_DISABLED_FACTS" text="场景全景已关闭：按文字事实构图" />
+    <string id="AF_ILL_UI_STATUS_SCENE_PANORAMA" text="任务场景：附近30米全景参考可用" />
+    <string id="AF_ILL_UI_STATUS_SCENE_PANORAMA_NO_SCREENSHOT" text="任务场景：附近30米全景参考可用；当前位置截图未取得" />
+    <string id="AF_ILL_UI_STATUS_SCENE_BUDGET" text="环境物件超过{LIMIT}个预算，已跳过环境采集，继续绘制" />
+    <string id="AF_ILL_UI_STATUS_DIRECTOR_FAILED" text="{REASON}，已停止生图" />
+    <string id="AF_ILL_UI_STATUS_DIRECTOR_TRUNCATED" text="导演输出截断，已停止生图" />
+    <string id="AF_ILL_UI_STATUS_DIRECTOR_TEXT_ONLY" text="导演不支持识图，已使用文字构思" />
+    <string id="AF_ILL_UI_STATUS_DIRECTOR_VALIDATED" text="导演正文已校验（接口未返回结束标记）" />
+    <string id="AF_ILL_UI_STATUS_DIRECTOR_COMPLETE" text="导演构思完成" />
+    <string id="AF_ILL_UI_GALLERY_PREVIEW_UNAVAILABLE" text="图片不存在或无法解码，请刷新画廊。" />
+    <string id="AF_ILL_UI_GALLERY_REDRAW_LOADING" text="正在基于所选画卷重绘，可关闭画廊等待。" />
+    <string id="AF_ILL_UI_GALLERY_REDRAW_COMPLETE" text="重绘完成，已保存新画卷。" />
+    <string id="AF_ILL_UI_GALLERY_CONVERSION_UNAVAILABLE" text="画卷或当前战役已失效，请重新打开画廊。" />
+    <string id="AF_ILL_UI_GALLERY_CONVERSION_SOURCE_MISSING" text="原画文件已不存在，未创建物品。" />
+    <string id="AF_ILL_UI_GALLERY_CONVERSION_DESCRIPTION_REQUIRED" text="请填写画卷介绍，NPC 展示时需要读取这段内容。" />
+    <string id="AF_ILL_UI_GALLERY_CONVERSION_CREATE_FAILED" text="未能创建画卷物品，背包未增加物品。" />
+    <string id="AF_ILL_UI_GALLERY_CONVERSION_DESCRIPTION_FAILED" text="画卷介绍保存失败：{ERROR}" />
+    <string id="AF_ILL_UI_GALLERY_CONVERSION_ALREADY_OWNED" text="背包中已有{ITEM}，已更新介绍，未重复添加。" />
+    <string id="AF_ILL_UI_GALLERY_CONVERSION_DELIVERED" text="已将{ITEM}放入背包；可通过对话中的“展示物品”向 NPC 展示。" />
+    <string id="AF_ILL_UI_GALLERY_CONVERSION_DELIVERY_FAILED" text="画卷未能放入背包，请检查背包后再试。" />
+    <string id="AF_ILL_UI_GALLERY_CONVERSION_DEFAULT_TITLE" text="卡拉迪亚纪事" />
+    <string id="AF_ILL_UI_GALLERY_CONVERSION_ITEM_NAME" text="《{TITLE}》画卷" />
+    <string id="AF_ILL_UI_PHOTO_AIM" text="Enter 回车截取第 {COUNT} 张 · Esc 取消" />
+    <string id="AF_ILL_UI_PHOTO_DECISION" text="已截取 {COUNT} 张，是否开始生成？" />
+    <string id="AF_ILL_UI_PHOTO_STOPPED" text="已中止本次取景" />
+    <string id="AF_ILL_UI_PHOTO_GENERATE" text="生成" />
+    <string id="AF_ILL_UI_PHOTO_CONTINUE" text="继续截取" />
+    <string id="AF_ILL_UI_PHOTO_RESTART" text="重新截取" />
+    <string id="AF_ILL_UI_BULLETIN_PREPARING" text="本期配图正在提前生成…" />
+    <string id="AF_ILL_UI_BULLETIN_DISCARDED" text="本期事件已作废。" />
+    <string id="AF_ILL_UI_BULLETIN_CANCELLED" text="本期配图已取消，可点击重绘。" />
+    <string id="AF_ILL_UI_BULLETIN_MISSING" text="暂无已生成插画，可点击重绘。" />
+    <string id="AF_ILL_UI_BULLETIN_REDRAW_CANCELLED" text="本图重绘已取消。" />
+    <string id="AF_ILL_UI_BULLETIN_REDRAW_COMPLETE" text="重绘完成，已保存为新版本。" />
+    <string id="AF_ILL_UI_BULLETIN_PREPARE_FAILED" text="配图准备失败：{ERROR}；可点击重绘。" />
+    <string id="AF_ILL_UI_BULLETIN_IMAGE_FAILED" text="配图失败：{ERROR}；可点击重绘。" />
+    <string id="AF_ILL_UI_BULLETIN_RETRY" text="{ERROR}；可点击重绘。" />
+    <string id="AF_ILL_UI_BULLETIN_SAVE_IMAGE_FAILED" text="未能保存图片" />
+    <string id="AF_ILL_UI_BULLETIN_SAVE_UNAVAILABLE" text="无法保存" />
+    <string id="AF_ILL_UI_GALLERY_INTRODUCTION_NAME" text="这是一幅名为{ITEM}的画作。" />
+    <string id="AF_ILL_UI_GALLERY_INTRODUCTION_THEME" text="画面主题：{THEME}" />
+    <string id="AF_ILL_UI_GALLERY_INTRODUCTION_ACTION" text="画面描绘：{ACTION}" />
+    <string id="AF_ILL_UI_GALLERY_INTRODUCTION_UNANNOTATED" text="画面内容尚未注明。" />
+    <string id="AF_ILL_UI_GALLERY_INTRODUCTION_FICTION" text="画中的内容属于艺术描绘，不代表其中的事件已经真实发生。" />
+    <string id="AF_ILL_UI_SCENE_PROBE_NOTE" text="【独立场景试采预览】从附近30米的静态副本采集前后左右上下六个90度方向，投影为360×180度全景。中央为前方，左右边缘在后方相接，顶部/底部是上方/下方。展开拉伸不是建筑变形；人物未复制，观察补光不代表现场采光。未调用导演或生图模型，未写入图库或设为默认图。" />
+    <string id="AF_ILL_ERROR_PORTRAIT_REFERENCE" text="百科完整装备离屏立绘未取得，已停止生成；请查看本次 portrait_stage_result 的 failureCode。" />
+    <string id="AF_ILL_ERROR_PLAYER_REFERENCE" text="玩家完整装备离屏立绘失败，已停止生成。" />
+    <string id="AF_ILL_ERROR_PARTNER_REFERENCE" text="对方完整装备离屏立绘失败，已停止生成。" />
+    <string id="AF_ILL_ERROR_PROBE_MISSING" text="独立场景未返回完整的全景参考图。" />
+    <string id="AF_ILL_ERROR_PROBE_EMPTY" text="独立场景返回了空的参考拼图。" />
+    <string id="AF_ILL_ERROR_CAPTURE_QUEUE" text="游戏线程任务队列已满，无法执行插画采集操作。" />
+    <string id="AF_ILL_ERROR_DISABLED" text="AI 生图系统未启用" />
+    <string id="AF_ILL_ERROR_ENDPOINT_MISSING" text="未配置生图 API 端点 (Base URL)" />
+    <string id="AF_ILL_ERROR_MISSION_UNAVAILABLE" text="当前没有可供截图生图的玩家场景，或生图尚未启用。" />
+    <string id="AF_ILL_ERROR_CONFIGURE_API" text="请先配置生图 API。" />
+    <string id="AF_ILL_ERROR_REDRAW_SOURCE" text="基于本图重绘需要一张有效的当前成图，未发送请求。" />
+    <string id="AF_ILL_ERROR_EDITS_REFERENCE" text="images/edits 端点需要可用的参考图；请开启参考图并取得人物或场景参考后再生成。未发送请求。" />
+    <string id="AF_ILL_ERROR_GENERATIONS_REFERENCE" text="精确 images/generations 端点不能携带参考图；请改用 /images/edits 或开启对话多模态生图通道。未发送请求。" />
+    <string id="AF_ILL_ERROR_RESPONSE_IMAGE" text="未能从服务端响应中提取到有效图像数据" />
+    <string id="AF_ILL_ERROR_CANCELLED" text="生图请求已取消" />
+    <string id="AF_ILL_ERROR_TIMEOUT" text="生图请求超过{SECONDS}秒总预算" />
+    <string id="AF_ILL_ERROR_COMMUNICATION" text="生图通信异常: {DETAIL}" />
+    <string id="AF_ILL_UI_GALLERY_LEGACY_DEFAULT_TITLE" text="卡拉迪亚历史画卷" />
+    <string id="AF_ILL_UI_DEFAULT_HERO_NAME" text="英雄" />
+    <string id="AF_ILL_UI_DEFAULT_PARTNER_NAME" text="对方" />
+    <string id="AF_ILL_ERROR_GEMINI_NON_STREAMING" text="原生谷歌生图请使用 :generateContent 非流式端点；未发送请求。" />
+    <string id="AF_ILL_ERROR_GEMINI_EXACT_URL" text="已勾选完整URL，请填写 /models/模型名:generateContent；未发送请求。" />
+    <string id="AF_ILL_ERROR_GEMINI_MODEL_MISSING" text="原生谷歌生图需要模型名称；未发送请求。" />
+    <string id="AF_ILL_ERROR_GEMINI_MODEL_INVALID" text="原生谷歌模型名称格式无效；未发送请求。" />
+    <string id="AF_ILL_ERROR_GEMINI_USER_CONTENT" text="原生谷歌生图请求缺少完整的用户内容；未发送请求。" />
+    <string id="AF_ILL_ERROR_GEMINI_PNG_REFERENCE" text="原生谷歌参考图必须为已验证的PNG数据；未发送请求。" />
+    <string id="AF_ILL_ERROR_GEMINI_CONTENT_BLOCK" text="原生谷歌生图包含未支持的内容块；未发送请求。" />
+    <string id="AF_ILL_ERROR_GEMINI_EMPTY_CONTENT" text="原生谷歌生图内容为空；未发送请求。" />
+    <string id="AF_ILL_ERROR_HTTP_ENDPOINT" text="生图端点必须是完整的 HTTP/HTTPS URL。" />
+    <string id="AF_ILL_ERROR_EDITS_ENDPOINT" text="标准生图编辑端点是 /images/edits（images复数），不是 /image/edits；特殊服务路径请使用完整URL模式。" />
+    <string id="AF_ILL_ERROR_REFERENCE_DECODE" text="图片解码或格式转换失败" />
+    <string id="AF_ILL_ERROR_REFERENCE_EMPTY" text="图片数据为空" />
+    <string id="AF_ILL_ERROR_REFERENCE_DATA_URI" text="data URI 格式错误" />
+    <string id="AF_ILL_ERROR_REFERENCE_SINGLE_LIMIT" text="超过单图24 MiB限制" />
+    <string id="AF_ILL_ERROR_REFERENCE_TOTAL_LIMIT" text="参考图累计超过48 MiB限制" />
+    <string id="AF_ILL_ERROR_PLAYER2_UNCONFIRMED" text="Player2接口未确认，请稍后检查应用状态；未发送生图请求。" />
+    <string id="AF_ILL_ERROR_PLAYER2_UNAVAILABLE" text="无法确认Player2图片接口，请检查应用已运行并登录，以及端口是否正确；未发送生图请求。" />
+    <string id="AF_ILL_ERROR_PLAYER2_UPLOAD_BUDGET" text="Player2请求体仍超过上传预算；已保留全部参考图且不再降低细节，请求未发送。请缩短提示词或自定义规则。" />
+    <string id="AF_ILL_ERROR_GROK_REFERENCE_LIMIT" text="Grok 图片编辑最多支持5张参考图；未丢弃参考图，请求未发送。" />
+    <string id="AF_ILL_ERROR_REFERENCE_UNAVAILABLE" text="没有可用的参考图；请求未发送。" />
+    <string id="AF_ILL_ERROR_SCREENSHOT_COUNT" text="自由取景生图必须取得一至两张现场截图，未发送请求。" />
+    <string id="AF_ILL_ERROR_SCREENSHOT_KIND" text="现场截图参考缺失或类型错误，未发送请求。" />
+    <string id="AF_ILL_ERROR_SCREENSHOT_DUPLICATE" text="两张截图相同，请重新取景；已停止生成。" />
+    <string id="AF_ILL_ERROR_IMAGE_NOT_RETURNED" text="生图未返回图像。" />
+    <string id="AF_ILL_ERROR_GALLERY_SAVE" text="成图未能保存到画廊。" />
+    <string id="AF_ILL_ERROR_IMAGE_SAVE" text="成图保存失败。" />
+    <string id="AF_ILL_ERROR_RESPONSE_EMPTY_BODY" text="服务端返回空响应体" />
+    <string id="AF_ILL_ERROR_RESPONSE_UNRECOGNIZED" text="响应未包含可识别的图片数据" />
+    <string id="AF_ILL_ERROR_RESPONSE_FILTERED" text="服务端拒绝生成图片或触发内容过滤" />
+    <string id="AF_ILL_ERROR_RESPONSE_LENGTH_LIMIT" text="服务端输出达到长度上限，未取得图片" />
+    <string id="AF_ILL_ERROR_RESPONSE_EMPTY_REPLY" text="服务端返回空回复，未提供文字或图片" />
+    <string id="AF_ILL_ERROR_RESPONSE_EXTRACTION" text="服务端返回了内容，但未能提取图片；请检查响应格式或模型输出" />
+    <string id="AF_ILL_ERROR_IMAGE_ENCODING_LIMIT" text="图片编码超过限制。" />
+    <string id="AF_ILL_ERROR_DIRECTOR_DISABLED" text="导演已关闭" />
+    <string id="AF_ILL_ERROR_DIRECTOR_UNCONFIGURED" text="导演接口未配置" />
+    <string id="AF_ILL_ERROR_DIRECTOR_REDRAW_UNAVAILABLE" text="导演未启用或接口未配置，未开始带提示词重绘。" />
+    <string id="AF_ILL_ERROR_DIRECTOR_CAPTURE_UNAVAILABLE" text="现场截图生图需要启用并配置识图导演，未开始采集。" />
+    <string id="AF_ILL_ERROR_DIRECTOR_INCOMPLETE" text="导演未返回完整画面方案" />
+    <string id="AF_ILL_ERROR_DIRECTOR_UNSUPPORTED_FACTS" text="导演输出含无依据盾牌、旗帜或不合要求的肖像动作" />
+    <string id="AF_ILL_ERROR_DIRECTOR_NARRATIVE" text="导演输出复述叙事原文，未转化为画面" />
+    <string id="AF_ILL_ERROR_DIRECTOR_EMPTY" text="导演返回空正文" />
+    <string id="AF_ILL_ERROR_DIRECTOR_SCENE_INCOMPLETE" text="导演正文缺少完整场景、光线与空间描述，或构图不合要求" />
+    <string id="AF_ILL_ERROR_DIRECTOR_TRUNCATED" text="导演输出达到令牌上限而截断，未采用残缺正文" />
+    <string id="AF_ILL_ERROR_DIRECTOR_FILTERED" text="导演拒绝或过滤了本次输出" />
+    <string id="AF_ILL_ERROR_DIRECTOR_UNFINISHED" text="导演未正常结束正文" />
+    <string id="AF_ILL_ERROR_DIRECTOR_TIMEOUT" text="导演请求超时" />
+    <string id="AF_ILL_ERROR_DIRECTOR_QUOTA" text="导演接口限流或额度不足（HTTP 429）" />
+    <string id="AF_ILL_ERROR_GENERATION_STOPPED" text="{REASON}，已停止生图" />
+    <string id="AF_ILL_ERROR_DIAGNOSTIC" text=" 诊断：{ID}" />
+    <string id="AF_ILL_ERROR_NO_AUTOMATIC_RETRY" text="；未自动重试，可稍后手动重绘。" />
+    <string id="AF_ILL_ERROR_REFERENCE_INVALID" text="参考图 {INDEX}（{KIND}）无效：{DETAIL}；已停止生成，未发送请求。" />
+    <string id="AF_ILL_ERROR_FREE_CAMERA_DIRECTOR" text="自由取景模式必须由识图导演完成画面推演：{DETAIL}" />
+    <string id="AF_ILL_ERROR_REDRAW_DIRECTOR" text="带提示词重绘不能使用本地构图：{DETAIL}" />
+    <string id="AF_ILL_ERROR_DIRECTOR_REQUEST_FAILED" text="导演请求失败（{DETAIL}）" />
+    <string id="AF_ILL_ERROR_DIRECTOR_PARSE_FAILED" text="导演请求或响应解析失败（{DETAIL}）" />
+    <string id="AF_ILL_ERROR_DIRECTOR_REGION" text="导演服务拒绝当前区域访问（HTTP {DETAIL}）" />
+    <string id="AF_ILL_ERROR_DIRECTOR_ACCESS" text="导演接口认证或访问权限失败（HTTP {DETAIL}）" />
+    <string id="AF_ILL_ERROR_DIRECTOR_UPSTREAM" text="导演上游服务暂不可用（HTTP {DETAIL}）" />
+    <string id="AF_ILL_ERROR_DIRECTOR_HTTP" text="导演接口返回 HTTP {DETAIL}" />
+    <string id="AF_ILL_UI_DEFAULT_THEME" text="人物与情境" />
+    <string id="AF_ILL_ERROR_PAYLOAD_SIZE" text="图片为空或超过24 MiB限制。" />
+    <string id="AF_ILL_ERROR_PAYLOAD_FORMAT" text="仅接受可解码的PNG或JPEG图片。" />
+    <string id="AF_ILL_ERROR_NORMALIZED_SIZE" text="规范化图片超过24 MiB限制。" />
+    <string id="AF_ILL_ERROR_PAIR_SIZE" text="双视角参考图超过上传图片大小限制；未丢弃参考图。" />
+    <string id="AF_ILL_ERROR_CACHE_SIZE" text="缓存图片超过大小限制。" />
+    <string id="AF_ILL_ERROR_IMAGE_DIMENSIONS" text="图片尺寸超过8192边长或1600万像素限制。" />
+    <string id="AF_ILL_ERROR_RESPONSE_SIZE" text="服务端响应超过大小限制。" />
+    <string id="AF_ILL_ERROR_CAPTURE_SIZE" text="原生截图超过96 MiB采集上限。" />
+    <string id="AF_ILL_ERROR_CAPTURE_BMP_INVALID" text="原生截图不是完整有效的 BMP。" />
+    <string id="AF_ILL_ERROR_CAPTURE_HEIGHT" text="截图高度无效。" />
+    <string id="AF_ILL_ERROR_CAPTURE_BMP_INCOMPLETE" text="原生 BMP 尚不完整或像素格式不受支持。" />
+    <string id="AF_ILL_ERROR_CAPTURE_DIMENSIONS" text="截图像素尺寸无效或超过24百万像素上限。" />
+    <string id="AF_ILL_ERROR_CAPTURE_BLACK" text="现场截图几乎全黑，无法识别人物与环境；已停止生成，未发送导演或生图请求。" />
+    <string id="AF_ILL_ERROR_CAPTURE_MISSION" text="当前任务尚无可采集的单人游戏画面。" />
+    <string id="AF_ILL_ERROR_CAPTURE_PHOTO_MODE" text="请先退出原版摄影模式，再从生图按钮开始取景。" />
+    <string id="AF_ILL_ERROR_CAPTURE_ACTIVE" text="原生图片采集正在进行，请等待后再点击。" />
+    <string id="AF_ILL_ERROR_CAPTURE_PAUSE_OWNER" text="截图暂停请求已被占用。" />
+    <string id="AF_ILL_ERROR_CAPTURE_LEFT_SCENE" text="取景尚未完成时已离开场景，采集已终止。" />
+    <string id="AF_ILL_ERROR_CAPTURE_CAMERA_OWNER" text="取景期间相机被其他功能接管，已终止采集。" />
+    <string id="AF_ILL_ERROR_CAPTURE_TIMEOUT" text="截图导出超时，已恢复原画面；未发送生图请求。" />
+    <string id="AF_ILL_ERROR_CONTEXT_CHANGED" text="本次插画对应的对话或场景已结束、切换，请重新打开场景插画。" />
+    <string id="AF_ILL_ERROR_CONTEXT_STOPPED" text="场景上下文校验已停止，请重新打开场景插画。" />
+    <string id="AF_ILL_ERROR_CONTEXT_MISSING" text="当前没有正在显示的任务场景或地图对话，请在会话中重新打开场景插画。" />
+    <string id="AF_ILL_ERROR_PANORAMA_PROJECTION_BUDGET" text="场景全景超过投影预算，已停止生图。" />
+    <string id="AF_ILL_ERROR_PANORAMA_DUPLICATE" text="前后两张环境图近乎相同，未确认取得不同方向，已停止生成。" />
+    <string id="AF_ILL_ERROR_REFERENCE_UNKNOWN_KIND" text="未知用途" />
+    <string id="AF_ILL_ERROR_PANORAMA_NAME" text="原生全景渲染名称超过安全长度。" />
+    <string id="AF_ILL_ERROR_PANORAMA_BATCH_ACTIVE" text="已有环境快照批次正在执行。" />
+    <string id="AF_ILL_ERROR_LIGHTING_SCENE" text="观察补光需要有效的独立场景副本。" />
+    <string id="AF_ILL_ERROR_LIGHTING_POSITION_MISSING" text="观察补光缺少离屏镜头位置。" />
+    <string id="AF_ILL_ERROR_LIGHTING_POSITION_INVALID" text="观察补光的离屏镜头坐标无效。" />
+    <string id="AF_ILL_ERROR_LIGHTING_COVERAGE" text="观察补光的覆盖范围无效。" />
+    <string id="AF_ILL_ERROR_LIGHTING_CREATE" text="无法在独立场景创建观察灯。" />
+    <string id="AF_ILL_ERROR_LIGHTING_NAME" text="原生观察灯名称超过安全长度。" />
+    <string id="AF_ILL_ERROR_LIGHTING_NATIVE" text="引擎未创建有效的观察灯。" />
+    <string id="AF_ILL_ERROR_LIGHTING_ATTACH" text="无法将观察灯挂载到独立场景。" />
+    <string id="AF_ILL_ERROR_LIGHTING_OWNER" text="观察灯未归属于独立场景实体。" />
+    <string id="AF_ILL_ERROR_SUPPLEMENT_CANCELLED" text="资源补齐已取消。" />
+    <string id="AF_ILL_ERROR_TEMPLATE_NAME" text="资源模板场景名称过长。" />
+    <string id="AF_ILL_ERROR_SUPPLEMENT_ENTITY_BUDGET" text="资源补齐超过实体遍历预算，已停止采集。" />
+    <string id="AF_ILL_ERROR_TEMPLATE_DEPTH" text="资源模板层级超过遍历预算。" />
+    <string id="AF_ILL_ERROR_TEMPLATE_OWNER" text="资源模板不属于自有场景，拒绝设置其变换。" />
+    <string id="AF_ILL_ERROR_TEMPLATE_CREATE" text="无法创建静态资源模板。" />
+    <string id="AF_ILL_ERROR_TEMPLATE_LOAD" text="无法在独立模板场景加载资源几何。" />
+    <string id="AF_ILL_ERROR_RESOURCE_COPY" text="无法取得资源网格的独立副本。" />
+    <string id="AF_ILL_ERROR_RESOURCE_SCENE" text="资源几何未正确进入独立渲染场景。" />
+    <string id="AF_ILL_ERROR_RESOURCE_BOUNDS" text="资源副本网格边界无效。" />
+    <string id="AF_ILL_ERROR_SNAPSHOT_ISOLATION" text="全景快照未获得独立场景，拒绝操作当前任务场景。" />
+    <string id="AF_ILL_ERROR_SCENE_CHANGED" text="当前场景已切换，不能读取其资源。" />
+    <string id="AF_ILL_ERROR_SCENE_RESOURCE_RESOLVE" text="未能解析当前场景实际资源文件，已停止环境重建。" />
+    <string id="AF_ILL_ERROR_SCENE_READ_SCHEDULER" text="场景资源读取调度已停止。" />
+    <string id="AF_ILL_ERROR_SCENE_READ_CHANGED" text="场景或可见等级在资源读取期间改变，请重新采集。" />
+    <string id="AF_ILL_ERROR_SNAPSHOT_CREATE" text="无法在游戏线程创建环境快照。" />
+    <string id="AF_ILL_ERROR_SNAPSHOT_SCHEDULER" text="环境快照分帧调度已停止。" />
+    <string id="AF_ILL_ERROR_SUPPLEMENT_SCHEDULER" text="场景资源补齐调度已停止。" />
+    <string id="AF_ILL_ERROR_SUPPLEMENT_FRAME_SCHEDULER" text="场景资源补齐分帧调度已停止。" />
+    <string id="AF_ILL_ERROR_TEMPLATE_CLEANUP_SCHEDULER" text="场景模板清理调度已停止。" />
+    <string id="AF_ILL_ERROR_SNAPSHOT_GEOMETRY_EMPTY" text="现场与资源中均没有可用静态几何，不能生成空白环境参考。" />
+    <string id="AF_ILL_ERROR_SCENE_VISIBLE_LEVEL" text="场景可见等级在采集期间改变，请重新采集。" />
+    <string id="AF_ILL_ERROR_SNAPSHOT_NAME" text="原生全景场景名称超过安全长度。" />
+    <string id="AF_ILL_ERROR_SNAPSHOT_CENTER_MISSING" text="无法确定玩家附近环境的采集中心。" />
+    <string id="AF_ILL_ERROR_SNAPSHOT_CENTER_INVALID" text="环境采集中心无效。" />
+    <string id="AF_ILL_ERROR_SNAPSHOT_SCENE_ENDED" text="环境快照对应的场景已退出或切换。" />
+    <string id="AF_ILL_ERROR_SNAPSHOT_CANCELLED" text="环境快照已取消。" />
+    <string id="AF_ILL_ERROR_STATIC_COPY" text="无法取得独立的现场静态网格副本。" />
+    <string id="AF_ILL_ERROR_STATIC_SCENE" text="静态网格没有正确进入独立场景。" />
+    <string id="AF_ILL_ERROR_STATIC_BOUNDS" text="静态副本网格边界无效。" />
+    <string id="AF_ILL_ERROR_RESOURCE_PATH_MISSING" text="未取得当前场景资源文件的实际路径。" />
+    <string id="AF_ILL_ERROR_RESOURCE_FILE_MISSING" text="当前场景资源文件不存在。" />
+    <string id="AF_ILL_ERROR_RESOURCE_READ_BUDGET" text="场景资源为空或超过8MiB读取预算。" />
+    <string id="AF_ILL_ERROR_RESOURCE_CHANGED_BEFORE" text="场景资源在读取前发生了变化，请重新采集。" />
+    <string id="AF_ILL_ERROR_RESOURCE_CHANGED_DURING" text="场景资源在读取期间发生了变化，请重新采集。" />
+    <string id="AF_ILL_ERROR_RESOURCE_ACCESS" text="无法读取当前场景资源文件，访问被拒绝。" />
+    <string id="AF_ILL_ERROR_RESOURCE_SCENE_XML" text="当前资源不是有效的scene XML。" />
+    <string id="AF_ILL_ERROR_RESOURCE_ENTITIES_DUPLICATE" text="场景资源包含重复的entities节点。" />
+    <string id="AF_ILL_ERROR_RESOURCE_LEVELS_DUPLICATE" text="场景资源包含重复的levels节点。" />
+    <string id="AF_ILL_ERROR_RESOURCE_NODES_MISSING" text="当前场景资源缺少scene或entities节点。" />
+    <string id="AF_ILL_ERROR_RESOURCE_XML_DEPTH" text="场景XML层级超过64层预算。" />
+    <string id="AF_ILL_ERROR_RESOURCE_XML_ELEMENTS" text="场景XML流式扫描超过524288个元素预算。" />
+    <string id="AF_ILL_ERROR_RESOURCE_XML_NAMESPACE" text="场景XML使用了不支持的命名空间。" />
+    <string id="AF_ILL_ERROR_RESOURCE_SUBTREE_ELEMENTS" text="单个场景实体子树超过32768个元素内存预算。" />
+    <string id="AF_ILL_ERROR_RESOURCE_SUBTREE_END" text="场景实体子树意外结束。" />
+    <string id="AF_ILL_ERROR_RESOURCE_LEVEL_DEFINITION" text="场景升级层级定义无效。" />
+    <string id="AF_ILL_ERROR_RESOURCE_LEVEL_MASK" text="场景升级层级名称或mask定义无效。" />
+    <string id="AF_ILL_ERROR_RESOURCE_GEOMETRY_BUDGET" text="场景静态几何计划超过32768项预算。" />
+    <string id="AF_ILL_ERROR_PANORAMA_NOT_RENDERED" text="当前任务场景尚未完成渲染，暂时无法采集附近环境，请稍后重试。" />
+    <string id="AF_ILL_ERROR_PANORAMA_SCHEDULE" text="无法调度全景采集。" />
+    <string id="AF_ILL_ERROR_PANORAMA_RENDERER_MISSING" text="全景渲染器未建立。" />
+    <string id="AF_ILL_ERROR_PANORAMA_EXPORT_ACTIVE" text="全景镜头切换被未完成的导出阻止。" />
+    <string id="AF_ILL_ERROR_PANORAMA_WAIT_FRAME" text="无法等待全景渲染帧。" />
+    <string id="AF_ILL_ERROR_PANORAMA_RENDER_INCOMPLETE" text="全景镜头未完成渲染，没有发送不完整参考图。" />
+    <string id="AF_ILL_ERROR_PANORAMA_EXPORT_NOT_READY" text="全景导出未就绪。" />
+    <string id="AF_ILL_ERROR_PANORAMA_EXPORT_INCOMPLETE" text="全景导出未取得完整图片，没有用重复视角代替。" />
+    <string id="AF_ILL_ERROR_SCENE_VALIDATION_SCHEDULER" text="场景状态校验调度已停止，不能继续本次插画。" />
+    <string id="AF_ILL_ERROR_PANORAMA_TIMEOUT" text="环境全景采集超过时间预算，已停止；没有发送不完整环境图。" />
+    <string id="AF_ILL_ERROR_RESOURCE_XML_PARSE" text="无法解析当前场景XML资源：{DETAIL}" />
+    <string id="AF_ILL_ERROR_RESOURCE_READ_FAILED" text="读取当前场景资源失败：{DETAIL}" />
+    <string id="AF_ILL_ERROR_RESOURCE_NODE_DUPLICATE" text="场景资源包含重复的{DETAIL}节点。" />
+    <string id="AF_ILL_ERROR_LIGHTING_SCENE_DETAIL" text="观察补光需要有效的独立场景副本。{DETAIL}" />
+    <string id="AF_ILL_ERROR_LIGHTING_POSITION_DETAIL" text="观察补光缺少离屏镜头位置。{DETAIL}" />
+    <string id="AF_ILL_ERROR_EDITS_UNSUPPORTED" text="images/edits 不支持当前参考图请求；为避免静默丢失人物/场景参考，已停止生成。请开启“优先对话多模态生图通道”或配置可用的 /images/edits 端点。" />
+    <string id="AF_ILL_ERROR_DIRECTOR_TEXT_ONLY_ATTEMPT" text="接口明确不支持图片输入，已尝试一次文字构思" />
+    <string id="AF_ILL_ERROR_DIRECTOR_TEXT_ONLY_DETAIL" text="{SUMMARY}；{DETAIL}" />
+      <string id="AF_ILL_MISSION_SHOUT_TITLE" text="场景喊话" />
+    <string id="AF_ILL_ERROR_PANORAMA_ROOTS_BUDGET" text="当前场景根实体超过32768个遍历预算，已停止环境快照，不能将截断副本标为完整全景。" />
+    <string id="AF_ILL_ERROR_PANORAMA_NODES_BUDGET" text="当前环境实体层级超过32768个节点，已停止快照，不能将不完整副本标为完整全景。" />
+    <string id="AF_ILL_ERROR_IMAGE_PROMPT_BUDGET" text="生图提示词超过{LIMIT}字符预算，无法在保留事实、参考图约束和完整段落的前提下缩短；请求未发送。请缩短自定义画风/要求或减少本次素材。" />
+      <string id="AF_ILL_UI_LOCAL_CACHE_PROMPT" text="（本地已留存历史画卷）" />
+  </strings>
+</base>

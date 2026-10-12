@@ -1,0 +1,204 @@
+{
+  "Id": "rule_Spider_Cult",
+  "Keywords": [
+    "Spider Cult_BP",
+    "Many-legged Prophet_BP",
+    "BlackPit_BP"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Spider Cult—commonly known as the Black Pit Tribe in Ork-speak—is an extremely unique organization in the underworld of the Badlands. They are not entirely composed of orcs or goblins, but a mixed tribe with the worship of giant spiders as its core. Its members include forest gnomes who tame giant cave spiders, a few orcs who were transformed by spider venom and became strange and slow, and a mysterious leader called the 'Many-legged Prophet' by the tribe. This prophet is said to have some kind of spiritual communication with the largest mother spider deep in the Badlands, and can predict the direction of the tribe's actions accordingly - this is a unique political organization method in the greenskin world."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "We are in trouble! Other tribes worship Brother Mao, we worship spiders - big spiders, small spiders, hairy spiders, slippery spiders, the more poisonous the better! The multi-legged prophet would go into the deepest and darkest pit to talk to the mother spider, and when he came back, his eyes would be glowing green - he said that the mother spider had weaved a web under the ground so big that he could not even see the edge. Each thread on the web was connected to a person in the bad land, and the denser the weave, the more blood there would be! We rode spiders out of the cave roof and fell into the human convoy from above our heads - they were tangled into rice dumplings by spider silk before they even raised their heads!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Among the tribes in the Badlands, the Spider Cult is the most difficult type to deal with with conventional military means - not only do they possess the rare ability of vertical mobility in caves among greenskins, but they can also establish a covert mobile and communication network under the Badlands through spider webs. An Imperial army marching over the Badlands might be almost completely unaware of what is happening below, until Spider Cavalry emerge from a rocky crevice on its flank. Fighting against the Spider Cult requires a combination of geological reconnaissance - obtaining a rough map of the area's cave systems before marching, and avoiding camping in areas known to be densely populated with underground caves."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "The giant cave spiders of the Spider Cult are classified in Imperial taxonomy as Araneae gigantea subterranea - a taxonomic branch specifically used to name the extremely large arthropods underground in the Badlands. These spiders vary greatly in size, from small jumping spiders used for reconnaissance to giant belly-dragging spiders capable of carrying an orc rider and dragging a human prisoner while crawling. The spider sect's method of domesticating spiders is different from conventional violent domestication - they put newborn forest goblin babies into a group of newly hatched spiderlings to grow together, allowing goblins and spiders to form a symbiotic rather than master-servant relationship in the critical early development stage. The combat effectiveness of this bond in adulthood far exceeds that of ordinary animal domestication - the spider riders of the Spider Cult are able to conduct complex information exchanges with their spider mounts through a low-frequency body signal that has not yet been fully deciphered in Imperial academic literature. In the prophetic system of the Many-Legged Seers, these spider signals are considered to be part of a hierarchical network of messages passed upward from the underground mother spider."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "My fear of the Spider Cult had nothing to do with tactics—it was the purely physical reaction of checking the granary every morning and finding an extra thread of spider silk in the corner. Badland spider silk is so fine, tough, and translucent that it is almost invisible in the gray light of the granary. The administrator of my granary once entered a state of near collapse and paranoia after discovering thin threads attached to the surface of the grain bags early in the morning for seven days in a row. During the seven days, we did not find any grain missing, nor did any spiders appear. There was only one new thread added every day. On the eighth day, my chief hound man found a single-width spider passage led from the direction of the granary in an abandoned underground cellar. The Many-Legged Seer doesn't need to kill your people—he just needs to give your granary keeper a nervous breakdown one morning."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The authenticity of the Many-Legged Seer is one of the most disturbing unknowns in Badlands Frontier. In six generations of my family's frontier reports, the name 'Many-Legged Prophet' has continued to appear for at least one hundred and forty years - but we have not a single definite sighting report that describes his appearance, race or even approximate size. All information about him comes from the confessions of captured members of the Spider Cult, which are surprisingly consistent in content - but they can only describe the instructions they received from the Many-Legged Prophet, never the person who gave the instructions. I organized a special intelligence collection operation sixteen years ago and conducted independent interrogations on three members of the Spider Cult who were captured from different times and places. The three descriptions of the voice of the Multi-legged Prophet were exactly the same: a dry sound that was at the same time like a spider's feet rubbing its abdomen and the throat sound of an old orc, and they all said that the external outline of the Multi-legged Prophet they saw did not seem to be exactly the same every time it appeared. My family's intelligence officer wrote in the conclusion of the above report: 'It is suggested that the [Many-Legged Seer] may not be an individual, but a line of character lineage, or worse - multiple independent husks used by one entity'."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "In the deepest part of the Badlands' underworld is a tunnel completely wrapped in spider silk - I slipped and fell into it while chasing an injured goblin. The inner wall of the tunnel was covered with a layer of silk that was at least one finger thick from top to bottom. It was neither hard nor soft when stepped on. It felt like something between skin and air-dried clay. The tunnel is not black - certain mineral impurities in the silk layer emit a very weak gray-white fluorescence in the dark environment, as if the ground itself is breathing in and out. I didn't walk more than twenty steps in this tunnel. It's not because of fear - it's because I suddenly feel like I'm being stared at from an extremely far distance on the back of my head, and this feeling has no source - it comes from all directions at the same time. It took me five full days after crawling back to the surface to find a human outpost in the western part of the Badlands. After listening to my description, the veteran at the outpost took a bottle of wine without any label from the wall and placed it in front of me. He told me: 'Drink it and forget about the tunnel. This is the standard welcome ceremony for witnesses of the Black Pit at this outpost.'"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Spider Cult's role in the Badlands' underground trade network is distinct from that of any other Greenskin tribe - they are the ultimate operators of underground intelligence. The silk webs woven by the Spider Cult through their giant spiders in the badland cave system are not only physical movement channels, but also a primitive intelligence sensing network - the sensitivity of spider silk to vibrations allows any human passage in the underground caves to be instantly sensed. There is a hidden fee known as the \"Spider Web Toll\" circulated among some large smuggling gangs on the Badlands' borders: if you need to travel safely through the territory of the Spider Cult in underground caves, you must pay a certain amount of live livestock to the Many-Legged Seer through the intervening goblins - as feed for the spiders. Those who did not pay this tax were either stopped or disappeared deep into the cave."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Spider Cult (Black Pit Tribe)—a mixed tribe in the Badlands underground that focuses on the worship and domestication of giant spiders.",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Spider Cult Black Pit Many-Legged Prophet Giant Spider Badlands"
+  ]
+}

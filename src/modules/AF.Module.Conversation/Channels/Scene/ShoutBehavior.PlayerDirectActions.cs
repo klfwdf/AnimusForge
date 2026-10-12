@@ -71,28 +71,28 @@ public partial class ShoutBehavior
             {
                 case PlayerDirectActionKind.Gold: case PlayerDirectActionKind.Item:
                     return reward != null && (hero != null || merchant || TryResolveWildernessNonHeroRewardParty(hero, character, index, out _))
-                        ? null : "原机制只支持英雄、定居点商人或有实际来源的野外部队。";
+                        ? null : ConversationUiLocalization.Text("AF_CONV_UI_Direct_048", "The existing mechanics only support heroes, settlement merchants or wilderness parties with a valid source.");
                 case PlayerDirectActionKind.FixedAsset:
-                    return reward != null && hero != null ? null : "固定资产需要已有英雄及其原机制可转交资产。";
+                    return reward != null && hero != null ? null : ConversationUiLocalization.Text("AF_CONV_UI_Direct_049", "Fixed assets require an existing hero and assets transferable through the original mechanic.");
                 case PlayerDirectActionKind.Troops: case PlayerDirectActionKind.Prisoners:
                     return MyBehavior.IsPartyTransferLordEligibleForExternal(hero, character)
                         || PartyAssetTransferBannerlordAdapter.IsPartyTransferNotableRecruitEligible(hero)
                         || MyBehavior.IsWildernessNonHeroPartyTransferEligibleForExternal(hero, character, index)
-                        ? null : "原机制只支持领主、可招募志愿兵的显贵或有效野外部队来源。";
+                        ? null : ConversationUiLocalization.Text("AF_CONV_UI_Direct_050", "The existing mechanics only support lords, notables eligible to recruit volunteers or valid wilderness party sources.");
                 case PlayerDirectActionKind.Debt: case PlayerDirectActionKind.ResolveDebt:
-                    return reward != null && (hero != null || merchant) ? null : "当前目标没有原机制支持的个人／市场债务账本。";
+                    return reward != null && (hero != null || merchant) ? null : ConversationUiLocalization.Text("AF_CONV_UI_Direct_051", "The current target has no personal or market debt ledger supported by the existing mechanics.");
                 case PlayerDirectActionKind.Companion: case PlayerDirectActionKind.Family:
                     return reward != null && hero != null && hero != Hero.MainHero && Clan.PlayerClan != null && MobileParty.MainParty != null
-                        ? null : "需要已有英雄、玩家家族及玩家队伍；普通 NPC 晋升不在本次范围。";
+                        ? null : ConversationUiLocalization.Text("AF_CONV_UI_Direct_052", "An existing hero, player clan and player party are required. Promoting ordinary NPCs is outside this feature's scope.");
                 case PlayerDirectActionKind.Follow: case PlayerDirectActionKind.StopFollow:
-                    return agent != null && agent != Agent.Main ? null : "需要当前场景中的有效 NPC Agent；原移动标签限制仍适用。";
+                    return agent != null && agent != Agent.Main ? null : ConversationUiLocalization.Text("AF_CONV_UI_Direct_053", "A valid NPC Agent in the current scene is required. The original movement tag restrictions still apply.");
                 case PlayerDirectActionKind.LordsHall:
                     return settlement?.IsTown == true && mission != null && CampaignMission.Current?.Location?.StringId == "center"
                         && LocationComplex.Current?.GetLocationWithId("lordshall") != null && campaign.GameMenuManager != null
-                        ? null : "原机制仅支持有领主大厅入口的城镇中心场景。";
+                        ? null : ConversationUiLocalization.Text("AF_CONV_UI_Direct_054", "The existing mechanics only support town-center scenes with a lord's hall entrance.");
                 case PlayerDirectActionKind.AcceptIssue: case PlayerDirectActionKind.TurnInQuest:
                     return VanillaIssueOfferBridge.GetPlayerDirectIssueUnavailableReason(hero, kind == PlayerDirectActionKind.TurnInQuest);
-                default: return "不支持的直接动作。";
+                default: return ConversationUiLocalization.Text("AF_CONV_UI_Direct_055", "Unsupported direct action.");
             }
         }
         void Finished()
@@ -105,7 +105,7 @@ public partial class ShoutBehavior
             (kind, choice) => choice == null || choice.IsCurrent?.Invoke() == true,
             (kind, choice, raw) => {
                 if (!Current() || (choice != null && choice.IsCurrent?.Invoke() != true))
-                { InformationManager.DisplayMessage(new InformationMessage("当前目标或候选已过期，未执行动作。")); return; }
+                { InformationManager.DisplayMessage(new InformationMessage(ConversationUiLocalization.Text("AF_CONV_UI_Direct_056", "The target or candidate has expired. No action was executed."))); return; }
                 try
                 {
                     if (kind == PlayerDirectActionKind.Follow || kind == PlayerDirectActionKind.StopFollow)
@@ -115,7 +115,7 @@ public partial class ShoutBehavior
                         if (native)
                         {
                             if (!TryQueueNativeSceneMechanismActionAfterConversationExit(npc, null, null, null, ref raw))
-                            { InformationManager.DisplayMessage(new InformationMessage("当前场景动作无法提交。")); return; }
+                            { InformationManager.DisplayMessage(new InformationMessage(ConversationUiLocalization.Text("AF_CONV_UI_Direct_057", "The current scene action could not be submitted."))); return; }
                             CloseNativeConversationForSceneMechanism("player_direct_action");
                         }
                         else _sceneMovement.TryExecuteDeferredSceneFollowTagsDirectly(npc, raw);
@@ -123,12 +123,12 @@ public partial class ShoutBehavior
                     else _nativeGameEffects.ApplyNativeConversationActionTags(hero, character, ref raw, index,
                         expectedConversationManager: manager, expectedConversationToken: native ? token : int.MinValue,
                         actionChainName: "player_direct_action", npcReplyTextOverride: "");
-                    InformationManager.DisplayMessage(new InformationMessage("直接动作已提交；实际结果以原机制提示和状态为准。"));
+                    InformationManager.DisplayMessage(new InformationMessage(ConversationUiLocalization.Text("AF_CONV_UI_Direct_058", "Direct action submitted. Its actual result is determined by the original mechanic's messages and state.")));
                 }
                 catch (Exception ex)
                 {
                     Logger.Log("PlayerDirectActions", "dispatch failed: " + ex.Message);
-                    InformationManager.DisplayMessage(new InformationMessage("动作提交出现异常，请检查原机制状态；不会自动重试。"));
+                    InformationManager.DisplayMessage(new InformationMessage(ConversationUiLocalization.Text("AF_CONV_UI_Direct_059", "An error occurred while submitting the action. Check the original mechanic's state; there will be no automatic retry.")));
                 }
             }, Finished);
         return true;
@@ -158,7 +158,7 @@ public partial class ShoutBehavior
                 {
                     string key = string.IsNullOrWhiteSpace(item.PromptStringId) ? item.StringId : item.PromptStringId;
                     if (string.IsNullOrWhiteSpace(key) || !itemKeys.Add(key)) continue;
-                    result.Add(new PlayerDirectActionChoice(key, item.Name + " ×" + item.Count + (item.IsPrivateEquipment ? "（私人装备）" : ""),
+                    result.Add(new PlayerDirectActionChoice(key, item.Name + " ×" + item.Count + (item.IsPrivateEquipment ? ConversationUiLocalization.Text("AF_CONV_UI_Direct_060", " (private equipment)") : ""),
                         () => Items().Any(x => x.Item == item.Item && x.ModifierStringId == item.ModifierStringId
                             && (string.IsNullOrWhiteSpace(x.PromptStringId) ? x.StringId : x.PromptStringId) == key && x.Count > 0)));
                 }
@@ -166,7 +166,7 @@ public partial class ShoutBehavior
                 var ordinary = items.Where(x => x?.Item != null && x.Count > 0 && !x.IsPrivateEquipment && !string.IsNullOrWhiteSpace(ItemKey(x)))
                     .GroupBy(ItemKey, StringComparer.OrdinalIgnoreCase).Select(x => x.First()).ToList();
                 if (ordinary.Count > 0)
-                    result.Add(new PlayerDirectActionChoice("ALL", "全部普通物品（逐项执行原 :ALL，不含固定资产／私人装备）", () => {
+                    result.Add(new PlayerDirectActionChoice("ALL", ConversationUiLocalization.Text("AF_CONV_UI_Direct_061", "All ordinary items (existing per-item :ALL; excludes fixed assets and private equipment)"), () => {
                         var live = Items().Where(x => x?.Item != null && x.Count > 0 && !x.IsPrivateEquipment && !string.IsNullOrWhiteSpace(ItemKey(x)))
                             .GroupBy(ItemKey, StringComparer.OrdinalIgnoreCase).ToDictionary(x => x.Key, x => x.ToList(), StringComparer.OrdinalIgnoreCase);
                         return ordinary.All(x => live.TryGetValue(ItemKey(x), out var matches)
@@ -207,7 +207,7 @@ public partial class ShoutBehavior
                 var allEntries = prisoners ? snapshot.AllPrisoners : snapshot.AllTroops;
                 var sources = allEntries.Select(x => (x.OwnerParty, x.VolunteerOwner, x.SourceSettlement)).Distinct().ToList();
                 if (allEntries.Count > 0)
-                    result.Add(new PlayerDirectActionChoice("ALL", prisoners ? "全部俘虏（原 ATP:ALL:ALL）" : "全部部队（原 ATT:ALL:ALL）",
+                    result.Add(new PlayerDirectActionChoice("ALL", prisoners ? ConversationUiLocalization.Text("AF_CONV_UI_Direct_062", "All prisoners (existing ATP:ALL:ALL)") : ConversationUiLocalization.Text("AF_CONV_UI_Direct_063", "All troops (existing ATT:ALL:ALL)"),
                         () => {
                             var current = Capture();
                             var entries = prisoners ? current.AllPrisoners : current.AllTroops;
@@ -220,8 +220,8 @@ public partial class ShoutBehavior
                 break;
             case PlayerDirectActionKind.ResolveDebt:
                 foreach (var debt in reward.GetPlayerDirectDebtCandidates(hero, character))
-                    result.Add(new PlayerDirectActionChoice(debt.DebtId, debt.DebtId + "：" + debt.DebtNote + "（剩余 " + debt.RemainingAmount
-                        + (debt.IsGold ? " 第纳尔" : " × " + debt.ItemId) + (debt.IsDueUnlimited ? "，无期限）" : "）"),
+                    result.Add(new PlayerDirectActionChoice(debt.DebtId, debt.DebtId + "：" + debt.DebtNote + ConversationUiLocalization.Text("AF_CONV_UI_Direct_064", " (remaining ") + debt.RemainingAmount
+                        + (debt.IsGold ? ConversationUiLocalization.Text("AF_CONV_UI_Direct_065", " denars") : " × " + debt.ItemId) + (debt.IsDueUnlimited ? ConversationUiLocalization.Text("AF_CONV_UI_Direct_066", ", no deadline)") : "）"),
                         () => reward.GetPlayerDirectDebtCandidates(hero, character).Any(x => x.DebtId == debt.DebtId && x.RemainingAmount > 0)));
                 break;
         }

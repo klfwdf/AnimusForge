@@ -1,0 +1,55 @@
+using System;using System.IO;using System.Collections.Generic;using System.Text.RegularExpressions;using Newtonsoft.Json;using AnimusForge;
+internal static class Program {
+static void Check(bool value,string message){if(!value)throw new Exception(message);}
+static void Main(string[] args){
+AnimusForgeModulePaths.Directory=args[0];
+const string data="Lady {npc_name} {reply} {healthPercent} $1 玩家";
+Check(ActualMethods.FormatDuelHealthTemplate("{npcName} {healthPercent} {healthRatio}",data,.5f).StartsWith(data+" "),"health formatter preserves inserted braces");
+ActualMethods.ActionPostprocessSystemPrompt="rules={tag_rules} mood={mood_rules} name={npc_name}\n"+PromptRetrievalTexts.Prompt("NpcItemsHeader")+"\n{shared_item_list}\n"+PromptRetrievalTexts.Prompt("DebtHeader")+"\n{debt_hint}";
+string result=ActualMethods.BuildActionPostprocessSystemPrompt(data,"mood {npc_name}","Name",data,null,data);
+Check(result.Contains("rules="+data)&&result.Contains("mood=mood {npc_name}")&&result.Contains("name=NPC"),"system core substitutions are single-pass");
+Check(result.Contains(data+"\n")&&result.EndsWith(data),"optional data is literal");
+result=ActualMethods.BuildActionPostprocessSystemPrompt("rule","mood","Name",null,null,null);
+Check(!result.Contains(PromptRetrievalTexts.Prompt("NpcItemsHeader"))&&!result.Contains(PromptRetrievalTexts.Prompt("DebtHeader"))&&!result.Contains("{shared_item_list}"),"empty English optional sections removed");
+result=ActualMethods.BuildActionPostprocessUserPrompt("{tag_rules} | {history} | {reply} | {npc_name} | {shared_item_list} | {runtime_context}",data,"Name",data,data,data,runtimeContext:data);
+Check(result==data+" | "+data+" | "+data+" | NPC | "+data+" | "+data,"user core, history, reply, optional facts literal");
+Check(PromptComposerTexts.FormatTemplate("{unknown} {npc_name}",("npc_name",data))=="{unknown} "+data,"unknown template token preserved");
+foreach(string input in new[]{"yes","okay!","我同意","好的！","I choose mercenary"})Check(BuiltInRuleStickyCarry.IsShortAck(input),"positive acknowledgement: "+input);
+foreach(string input in new[]{"cancel","don't continue","不同意","不要继续","if yes","yes?","我同意但取消","yes, no","okay but stop"})Check(!BuiltInRuleStickyCarry.IsShortAck(input),"negative or conditional acknowledgement: "+input);
+var resources=JsonConvert.DeserializeObject<Dictionary<string,string>>(File.ReadAllText(Path.Combine(args[0],"PromptComposerTexts.json")));
+int courierCount=0;
+foreach(var entry in resources){
+ if(!entry.Key.StartsWith("memory_courier_")||entry.Key.StartsWith("memory_courier_value_"))continue;
+ string raw=PromptComposerTexts.Raw(entry.Key+"_source");
+ string sample=Regex.Replace(raw,@"\{([0-9]+)\}",m=>"Data"+m.Groups[1].Value+" $1 {reply}");
+ string expected=Regex.Replace(entry.Value,@"\{([0-9]+)\}",m=>"Data"+m.Groups[1].Value+" $1 {reply}");
+ Check(MemorySystemFactProjection.ProjectBody(sample)==expected,"Courier template "+entry.Key);
+ foreach(string prefix in new[]{"[AFEF玩家行为补充]","[AFEF NPC行为补充]"})
+  Check(MemorySystemFactProjection.ProjectNpcFact(prefix+" "+sample)==prefix+" "+expected,"Courier AFEF prefix "+entry.Key);
+ courierCount++;
+}
+Check(courierCount>=30,"all Courier variants exercised");
+Check(MemorySystemFactProjection.ProjectBody("unrecognized fact {reply} $1")=="unrecognized fact {reply} $1","unknown facts retained");
+string letterSource=PromptComposerTexts.Raw("memory_courier_player_departed_source").Replace("{0}",data);
+string letterExpected=resources["memory_courier_player_departed"].Replace("{0}",data);
+string fact="[AFEF玩家行为补充] "+letterSource;
+var memory=new ConversationMessage {Role="system",Content=fact+"\n"+fact,SpeakerName="AFEF"};
+Check(ActualMethods.TryConvertCourierMemoryMessageToChatMessage(memory,"NPC","Player",out object converted),"Courier actual final converter");
+string rendered=(string)converted.GetType().GetProperty("content").GetValue(converted);
+Check(rendered.Contains("[AFEF玩家行为补充] "+letterExpected+"\n[AFEF玩家行为补充] "+letterExpected),"Courier multiline final fact projection");
+Check(memory.Content==fact+"\n"+fact,"Courier source history unchanged");
+foreach(var kind in new[]{588,589,590,591}){
+ string raw=PromptComposerTexts.Raw("memory_courier_npc_delivered_source").Replace("{0}",data).Replace("{1}","Player").Replace("{2}",PromptComposerTexts.Raw("memory_courier_raw_"+kind));
+ string expected=resources["memory_courier_npc_delivered"].Replace("{0}",data).Replace("{1}","Player").Replace("{2}",resources["memory_courier_value_"+kind]);
+ Check(MemorySystemFactProjection.ProjectBody(raw)==expected,"actual letter kind projection "+kind);
+}
+var line=new DailyMemoryLine {Text="plain record",Scene="",Speaker="",GameDayIndex=1};
+var uncompressed=UncompressedMemoryMessageAssemblyOwner.BuildUncompressedMemoryConversationMessage(line,"NPC",2,1,"");
+Check(uncompressed.Scene==resources["residual_unknown_scene"]&&uncompressed.SpeakerName==resources["residual_record"],"uncompressed request fallback follows package");
+Check(line.Scene==""&&line.Speaker=="","uncompressed source metadata unchanged");
+line.Text="[Scene shout]";
+uncompressed=UncompressedMemoryMessageAssemblyOwner.BuildUncompressedMemoryConversationMessage(line,"NPC",2,1,"");
+Check(uncompressed.SpeakerName==resources["residual_other_npc"],"unknown shouted speaker follows package");
+Console.WriteLine("Courier templates tested: "+courierCount);
+Console.WriteLine("PASS "+args[1]+" production readers, actual health/system/user template methods, literal data, optional removal and bilingual acknowledgements");
+}}

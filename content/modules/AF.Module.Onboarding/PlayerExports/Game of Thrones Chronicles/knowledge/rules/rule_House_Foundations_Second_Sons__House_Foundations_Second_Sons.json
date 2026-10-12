@@ -1,0 +1,109 @@
+{
+  "Id": "rule_House_Foundations_Second_Sons",
+  "Keywords": [
+    "Second Sons"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Second Sons is a long-standing mercenary group in Essos. Its name comes from a common fact: the eldest son inherits the land, and the second and later sons have to find swords, wealth and position on their own. Members are not all second sons of nobles, runaways, illegitimate sons, veterans and adventurers will also join. Legions were maintained by contracts, military pay, common camps and spoils of war, and fought for different city-states against their employers. Its loyalty is not a sacred bloodline, but a sale written on terms, pay and the reputation of the commander; this does not mean that there are no rules, but requires everyone to know the price of breaking the promise."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Noble employers like the second son regiment to quickly provide experienced troops, but they are always worried about their opponents offering higher prices. A smart person will pay on time, write down the distribution of spoils, and convince the mercenary that completing the contract is more cost-effective than betraying."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Ordinary soldiers looked at the Second Son Regiment and envied the money they could earn, but they also knew that the mercenaries had no land to retire after being disabled. The brotherhood in the regiment was real, but it was based on starving together, marching, and living to get paid."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Civilians did not care much about who the legionary contract was written to, only whether they paid when passing through the village. For farmers, mercenaries who keep their promises are more honorable than the marauding royal army, but mercenaries who are in debt are often the most dangerous guests."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Second Sons The Second Sons Group is a mercenary group with a long history. It is maintained by contracts, military pay and spoils of war, and accepts people who have been excluded from the family by the inherited order. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Second Sons The Second Sons Group is a mercenary group with a long history. It is maintained by contracts, military pay and spoils of war, and accepts people who have been excluded from the family by the inherited order. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Second Sons: The Second Sons Group is a mercenary group with a long history. It is maintained by contracts, military pay and spoils of war, and accepts people who have been excluded from the family by the inherited order."
+  ]
+}

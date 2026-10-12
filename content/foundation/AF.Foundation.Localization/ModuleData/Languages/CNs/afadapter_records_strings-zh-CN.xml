@@ -1,0 +1,12 @@
+<?xml version='1.0' encoding='utf-8'?>
+<base type="string">
+  <tags>
+    <tag language="简体中文" />
+  </tags>
+  <strings>
+    <string id="AF_REC_BulletinScopeFallbackArea" text="玩家所在地区" />
+    <string id="AF_REC_BulletinScopeLine" text="快报视角：天下大事，但以{AREA}读者关心的角度组织；与玩家本人或该国相关的事实优先交代" />
+    <string id="AF_REC_PromotedSkillNone" text="（无）" />
+    <string id="AF_REC_WorldPreviewSummary" text="世界事件将使用世界开局概要，以及本周更能代表大陆格局变化的重大行动、领导层震荡与世界级通用素材。军团从属加入或离开这类细碎动作会被压缩。" />
+  </strings>
+</base>

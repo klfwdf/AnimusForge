@@ -18,11 +18,12 @@ internal sealed class HeroGoldNextDayOnceEffectModule : PolicyEffectModuleBase<H
 		allowedScopes: new[] { PolicyEffectScopes.Kingdom, PolicyEffectScopes.Local, PolicyEffectScopes.Vassal },
 		allowedSelectorKinds: new[] { PolicyEffectTargetKind.Hero, PolicyEffectTargetKind.Settlement },
 		targetKinds: new[] { PolicyEffectTargetKind.Hero },
-		cueTerms: new[] { "内部人物第纳尔一次性" },
-		retrievalText: "内部运行模块：政策通过后下一游戏日的一次性人物第纳尔变化。",
-		catalogSummary: "内部：人物第纳尔一次性变化",
-		mainInstruction: "内部模块，不向模型暴露。",
-		postprocessRule: "内部模块，不得直接输出。",
+		cueTerms: new[] { PolicyCompatibilityTexts.Get("Module_heroGoldNextDayOnce_Original_4") },
+		retrievalText: PolicyGenerationPromptTexts.Get("Module_heroGoldNextDayOnce_retrievalText", "Internal runtime module: a one-time change to personal denars on the game day following policy adoption."),
+		catalogSummary: PolicyGenerationPromptTexts.Get("Module_heroGoldNextDayOnce_catalogSummary", "Internal: one-time personal denar change"),
+		playerDisplayName: PolicyCompatibilityTexts.Get("Module_heroGoldNextDayOnce_OriginalName"),
+		mainInstruction: PolicyGenerationPromptTexts.Get("Module_heroGoldNextDayOnce_mainInstruction", "Internal module; not exposed to the model."),
+		postprocessRule: PolicyGenerationPromptTexts.Get("Module_heroGoldNextDayOnce_postprocessRule", "Internal module; do not output it directly."),
 		payloadPromptSchema: PolicyEffectPayloadSchemas.CreateIntegerValueSchema(),
 		family: PolicyEffectFamily.Fiscal,
 		executionKind: PolicyEffectExecutionKind.ScheduledOnce,
@@ -45,7 +46,7 @@ internal sealed class HeroGoldNextDayOnceEffectModule : PolicyEffectModuleBase<H
 	{
 		if (!HeroGoldPayloadValidation.HasIntegerProperty(rawPayload, "value"))
 		{
-			error = "heroGoldNextDayOnce 的 value 必须是 32 位整数";
+			error = "heroGoldNextDayOnce value must be a 32-bit integer";
 			return false;
 		}
 		error = string.Empty;
@@ -65,7 +66,7 @@ internal sealed class HeroGoldNextDayOnceEffectModule : PolicyEffectModuleBase<H
 		}
 		if (payload.Value == int.MinValue)
 		{
-			error = "heroGoldNextDayOnce 不接受 int.MinValue";
+			error = "heroGoldNextDayOnce does not accept int.MinValue";
 			return false;
 		}
 		error = string.Empty;
@@ -92,7 +93,7 @@ internal sealed class HeroGoldNextDayOnceEffectModule : PolicyEffectModuleBase<H
 		}
 		if (context.GameBridge == null)
 		{
-			return Failed("heroGoldNextDayOnce 缺少 game bridge", false);
+			return Failed("heroGoldNextDayOnce requires a game bridge", false);
 		}
 		List<string> heroIds = DistinctIds(instance.TargetSet?.HeroIds).ToList();
 		if (heroIds.Count == 0)
@@ -145,7 +146,7 @@ internal sealed class HeroGoldNextDayOnceEffectModule : PolicyEffectModuleBase<H
 		HeroGoldDeltaPayload payload = instance?.Payload as HeroGoldDeltaPayload;
 		if (instance == null || payload == null || context.GameBridge == null || context.ExistingReceipt == null)
 		{
-			return Failed("heroGoldNextDayOnce compensation 缺少执行上下文、回执或 game bridge", false);
+			return Failed("heroGoldNextDayOnce compensation requires execution context, receipt and game bridge", false);
 		}
 		string receiptError = string.Empty;
 		if (!string.Equals(instance.ModuleId, ModuleDescriptor.Id, StringComparison.Ordinal)
@@ -211,12 +212,12 @@ internal sealed class HeroGoldNextDayOnceEffectModule : PolicyEffectModuleBase<H
 		payload = instance?.Payload as HeroGoldDeltaPayload;
 		if (instance == null || string.IsNullOrWhiteSpace(context.PreparedInstance.IdempotencyKey))
 		{
-			error = "heroGoldNextDayOnce 缺少执行上下文或幂等键";
+			error = "heroGoldNextDayOnce requires an execution context and idempotency key";
 			return false;
 		}
 		if (!string.Equals(instance.ModuleId, ModuleDescriptor.Id, StringComparison.Ordinal) || payload == null)
 		{
-			error = "heroGoldNextDayOnce payload 与模块不匹配";
+			error = "heroGoldNextDayOnce payload does not match the module";
 			return false;
 		}
 		error = string.Empty;

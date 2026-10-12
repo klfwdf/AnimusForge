@@ -1,0 +1,208 @@
+{
+  "Id": "rule_black_orcs",
+  "Keywords": [
+    "Black Orcs",
+    "Strongest Orcs",
+    "Disciplined Greenskins",
+    "Heavy-Armored Orcs",
+    "Mutant Elite",
+    "Piecemeal Iron Armor",
+    "Ultimate Creation of Gork"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Black Orcs are the tallest, strongest, and most unusual mutant elite among all Greenskins—not only are they bigger in bulk and darker of skin, they also possess the one thing no other Orcs have: discipline. Clad in thick, piecemeal iron armor, these super-soldiers of the Greenskin race crush everything on the battlefield beneath a ruthless military order."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Black Orcs are the absolute top creation of Gork and Mork! Look at those ordinary Greenskin boyz—all they know how to do is jabber and squawk, charge in a big messy mob, and get blown to bits by human cannons—stupid as mud! But Black Orcs are different: they're big, they're black, they're dead 'ard, and they actually know how to form ranks, march in step, and jab their spears in the same direction all at once! While the other boyz are busy brawling and yelling at each other, the Black Orcs have already crept around behind the enemy lines and—WAAAGH!—piled in all together to chop the lot of 'em into mincemeat. Some stunties with rocks in their heads claim Black Orcs were cooked up by Chaos Dwarfs using dark magic—utter zoggin' rubbish! Black Orcs are what happened when Gork and Mork decided ordinary Orcs were too useless and made a batch of proper 'ard ladz who could actually win a big scrap!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Tactically, Black Orcs are the closest thing to regular soldiers in a Greenskin army—and that is not praise, it is a warning. While ordinary Orcs are numerous, their unruliness can be exploited; a phalanx of Black Orc infantry, by contrast, combines Greenskin brute strength with a twisted sort of discipline whose execution and survivability make them a threat that must be taken seriously as heavy infantry. Their weaknesses are as pronounced as their strengths: they are slower than ordinary Orcs, their excessively heavy armor makes it difficult for them to pursue fast-moving troops, and their flexibility in responding to flank and rear attacks is far inferior to their frontal fighting power. The standard counter-strategy is to intensify frontal firepower to wear down the protection of their iron armor while using cavalry to harry their flanks and rear continuously."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "The origin of the Black Orcs is a dark chapter of experimental history within Zharr-Naggrund, the Black Fortress of the Chaos Dwarfs. Around -100 IC, in order to create a caste of slave-warriors capable of toiling efficiently in subterranean mines without rest, Chaos Dwarf Daemonsmiths cast captured ordinary Orcs into dark-magic furnaces known as 'Meat-Grinders' for biological modification. The process involved injecting molten iron compounded with Chaos runes directly into the Orcs' bone marrow—a procedure with a mortality rate of roughly ninety percent, yet in the survivors bone density increased fourfold, muscle fibers were permanently reinforced by dark magical energy, and extreme hyperplasia of epidermal melanin turned their skin pitch-black. What truly caught their creators off guard was the effect of the modification on the Orc brain: while the regions governing impulsive aggression were suppressed, the regions governing planning and coordination were refined and strengthened—the Chaos Dwarfs had inadvertently solved the Orc race's eternal defect of indiscipline. That achievement soon backfired on its creators, however—masses of Black Orcs broke out of the fortress in rebellion, carrying the 'discipline' traits back into Greenskin tribes and making Black Orcs the most menacing mutant subspecies in Orc society."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Black Orcs always make me think of a paradox—if you pour discipline into a race utterly devoid of discipline, what does that actually produce? They are taller and broader than other Orcs because dark magic warped their growth, and their discipline is a mechanical reflex implanted by experimentation rather than true martial ethos. I have been told that an average Black Orc weighs roughly thirty stone and wears cobbled-together iron plate weighing up to a thousand pounds, yet when they charge they can still run at a terrifying speed. I picture the scene when these creatures were first forged in the infernal furnaces of the Black Fortress—when the very first Black Orc opened its red eyes, even the Chaos Dwarfs who made it must have felt a momentary chill of fear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "A Black Orc tribe once entrenched itself along the southern marches of our family's domain, and within ten years they ground every vestige of civilization in that district—farmsteads, mills, watchtowers—into powder. What was most terrifying was that they did not brawl amongst themselves and wander off like ordinary Greenskins; instead, they held fast to that region as if nailed to the spot for eleven straight years, departing only after the entire district had been reduced to barren wasteland. That is the most unusual thing about Black Orcs: they have patience. A single Orc willing to wait in one place for eleven years is more terrifying than ten thousand Orcs who only know how to charge."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "On a mercenary contract in the Worlds Edge Mountains, I once stumbled across a band of Black Orcs—about twenty of them, marching in a single-file column with every step as neat and measured as any Imperial soldiers I had ever seen. Yet when you look at their size—each one like a walking iron tower, gripping a cleaver heavier than my entire body—that neatness is no longer a reassuring display of martial order, but a sight that scares the soul right out of your body. My captain immediately ordered the whole company to retreat, and we forfeited the pay for the mercenary contract on the spot. Not a single man objected."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "On the scrap-metal market, Black Orc gear is the most sought-after commodity—not because the quality is fine, but because the sheer volume of metal is massive. A single Black Orc pauldrons weighs roughly two stone; pried off and melted down, it can be reforged into at least thirty ordinary longswords. My smithy has an entire production line dedicated to processing Greenskin scrap iron scavenged from battlefields, but Black Orc armor demands the highest smelting temperatures of all, because it is not only alloyed using Chaos Dwarf black-iron formulas, it is also encrusted with unknown residues of Dark Magic. Handle it improperly and the molten iron in the entire furnace will explode—I saw it happen once with my own eyes. Since that day, I only buy scrap iron from ordinary Orcs."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "A super-Orc subspecies bred and modified by the Chaos Dwarfs in their dark-magic furnaces",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Black Orcs Strongest Orcs Disciplined Greenskins"
+  ]
+}

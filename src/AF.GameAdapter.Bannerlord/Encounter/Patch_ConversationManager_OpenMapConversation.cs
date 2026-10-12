@@ -29,16 +29,16 @@ public static class Patch_ConversationManager_OpenMapConversation
 			}
 			if (num > 0)
 			{
-				Logger.LogTrace("System", $"✅ 手动注册 Patch_ConversationManager_OpenMapConversation 成功。(count={num})");
+				Logger.LogTrace("System", $"✅ Manual registration of Patch_ConversationManager_OpenMapConversation succeeded.(count={num})");
 			}
 			else
 			{
-				Logger.LogTrace("System", "❌ 未找到 OpenMapConversation 目标方法，跳过手动注册。");
+				Logger.LogTrace("System", "❌ OpenMapConversation target method not found; skipping manual registration.");
 			}
 		}
 		catch (Exception ex)
 		{
-			Logger.LogTrace("System", "❌ 手动注册 Patch_ConversationManager_OpenMapConversation 失败: " + ex.Message);
+			Logger.LogTrace("System", "❌ Manual registration of Patch_ConversationManager_OpenMapConversation failed: " + ex.Message);
 		}
 	}
 
@@ -46,7 +46,7 @@ public static class Patch_ConversationManager_OpenMapConversation
 	{
 		try
 		{
-			Logger.LogTrace("Conversation_Intercept", ">>> OpenMapConversation Prefix 正在执行 (" + __originalMethod?.Name + ") <<<");
+			Logger.LogTrace("Conversation_Intercept", ">>> OpenMapConversation Prefix executing (" + __originalMethod?.Name + ") <<<");
 			if (LordEncounterBehavior.HasPendingNativeEncounterAttackForExternal())
 			{
 				Logger.LogTrace("Conversation_Intercept", "Native encounter attack is pending; suppress OpenMapConversation and skip custom encounter menu redirect.");
@@ -71,7 +71,7 @@ public static class Patch_ConversationManager_OpenMapConversation
 			}
 			if (LordEncounterBehavior.IsOpeningConversation)
 			{
-				Logger.LogTrace("Conversation_Intercept", "检测到 IsOpeningConversation=true，放行对话。");
+				Logger.LogTrace("Conversation_Intercept", "Detected IsOpeningConversation=true; allowing conversation.");
 				return true;
 			}
 			if (PlayerEncounter.Current == null)
@@ -115,17 +115,17 @@ public static class Patch_ConversationManager_OpenMapConversation
 					hero = encounteredParty.LeaderHero;
 					if (hero != null)
 					{
-						Logger.LogTrace("Conversation_Intercept", $"遭遇对象: {hero.Name}, IsLord={hero.IsLord}, IsMainHero={hero == Hero.MainHero}");
+						Logger.LogTrace("Conversation_Intercept", $"encounter target: {hero.Name}, IsLord={hero.IsLord}, IsMainHero={hero == Hero.MainHero}");
 					}
 				}
 				else
 				{
-					Logger.LogTrace("Conversation_Intercept", "PlayerEncounter.EncounteredParty 为空。");
+					Logger.LogTrace("Conversation_Intercept", "PlayerEncounter.EncounteredParty is null.");
 				}
 			}
 			else
 			{
-				Logger.LogTrace("Conversation_Intercept", "PlayerEncounter.Current 为空。");
+				Logger.LogTrace("Conversation_Intercept", "PlayerEncounter.Current is null.");
 			}
 			if (hero == null && __args != null)
 			{
@@ -153,7 +153,7 @@ public static class Patch_ConversationManager_OpenMapConversation
 			}
 			if (hero != null && LordEncounterBehavior.IsNativeSettlementRequestMeetingContext(hero))
 			{
-				Logger.LogTrace("Conversation_Intercept", $"OpenMapConversation 命中敌对定居点原版会面，放行原版对话: {hero.Name}");
+				Logger.LogTrace("Conversation_Intercept", $"OpenMapConversation Matched vanilla meeting in a hostile settlement; allowing vanilla conversation: {hero.Name}");
 				return true;
 			}
 			PartyBase encounterPartyForEligibility = null;
@@ -167,7 +167,7 @@ public static class Patch_ConversationManager_OpenMapConversation
 			}
 			if (hero != null && LordEncounterBehavior.IsEligibleCustomLordEncounterTarget(hero, encounterPartyForEligibility))
 			{
-				Logger.LogTrace("Conversation_Intercept", $"检测到 OpenMapConversation 原版对话调用，重定向至自定义会面菜单: {hero.Name}");
+				Logger.LogTrace("Conversation_Intercept", $"Detected vanilla OpenMapConversation call; redirecting to the custom meeting menu: {hero.Name}");
 				ProactiveNpcRequestBehavior.MarkEncounterOpened(hero);
 				LordEncounterBehavior.SetTarget(hero);
 				if (LordEncounterBehavior.OpenEncounterMenu(hero))
@@ -178,7 +178,7 @@ public static class Patch_ConversationManager_OpenMapConversation
 			}
 			if (hero != null && hero != Hero.MainHero && hero.IsLord)
 			{
-				Logger.LogTrace("Conversation_Intercept", $"OpenMapConversation 遭遇对象不是可接管的王国贵族遭遇，放行原版对话: {hero.Name}");
+				Logger.LogTrace("Conversation_Intercept", $"OpenMapConversation Encounter target is not an eligible kingdom noble encounter; allowing vanilla conversation: {hero.Name}");
 			}
 		}
 		catch (Exception ex)

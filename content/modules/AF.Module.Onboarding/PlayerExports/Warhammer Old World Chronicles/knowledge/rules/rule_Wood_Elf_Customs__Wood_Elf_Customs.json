@@ -1,0 +1,210 @@
+{
+  "Id": "rule_Wood_Elf_Customs",
+  "Keywords": [
+    "Wood Elf Terroir",
+    "Aslay Society",
+    "forest life",
+    "Elven customs",
+    "spirit worship",
+    "living tree hall",
+    "moonlight ceremony",
+    "tree of memory",
+    "blood debt law"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Wood elves live in a very different rhythm from mortals - they live for thousands of years, and therefore never act in a hurry. Aslay ate in living tree halls, danced in moonlit woodlands, and passed down his history orally in poetry rather than words. They do not farm or graze, but get everything they need from the forest and give back to nature with absolute respect. It is difficult for outsiders to understand their culture - because it is a way of life that is completely divorced from the civilized world and uses the forest itself as the only reference."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Our lives cannot be defined by the vulgar terms of the outside world. We don’t build – we invite the trees to grow into the shape we need them to be. We do not plant - Athel Loren's bounty is richer than any plowed earth. We don’t record history—we sing history into the wind, so that future generations can learn from the deeds of their ancestors in the singing of the wind. Time means something different to us than it does to us mortals—a conversation may last for years, a song may still be echoing somewhere in the forest for two generations of human dynasties. Aslay's children are brought to the oldest tree in the forest when they are born, and the spirit of the tree touches the baby's forehead - if the spirit rejects the child, then... some traditions are not suitable for outsiders to elaborate on. In terms of festivals, the eve of the Wild Hunt every midsummer is our Holy Night, when the priestesses of Ariel will hold psychedelic moonlight rituals, and the hunters will smear their weapons with the blood of heroes who died hundreds of years ago."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Understanding the culture of the Wood Elves can be life-or-death knowledge for a border lord. Asrai do not act by human law or logic - they believe that any damage to the forest must be repaid with blood, and this 'blood for leaves' law is strictly enforced. Cutting down a tree on the fringes of Athel Loren could bring vengeance upon the felled's family that would last for generations. At the same time, the wood elves occasionally admit lost foreigners - travelers who are found in the forest and show no hostility are sometimes allowed to leave alive, and in rare cases are even invited into the forest - this shows that Aslay is not simply bloodthirsty, but has a set of extremely strict rules of reception that are difficult for outsiders to understand. If one of your subordinates goes missing near the forest, don't organize a search party - doing so will only add to the list of missing persons; giving up may mean that they may one day be returned by the forest."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 100
+        },
+        "IdentityIds": null
+      },
+      "Content": "Aslay's social structure defies traditional anthropological categories. They do not organize their families according to blood relationships - in fact, the Wood Elves' concept of 'family' is closer to a spirit affinity community, that is, a symbiotic relationship between a certain group of Asrai and a specific type of forest spirit has been established for generations. Their economic system completely subverts the classic paradigm of production and exchange - Asrai neither produces nor trades, and their economy is essentially 'forest reciprocity': directly requesting the forest to provide needed materials through the medium of spirits. The education of Wood Elf children is amazing - Asrai children do not learn in classrooms but master the knowledge of the forest through interaction with spirits. This education method makes the cognitive framework of each Wood Elf deeply embedded in the ecological and magical structure of Athel Loren. In terms of funeral customs, the Asrai dead are not buried - their bodies are placed in the canopy of specific 'trees of memory', where over a period of time the body completely decomposes and is absorbed by the tree, and it is believed that the soul of the deceased is thus permanently fused with the forest."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "As an Asrai woman who has spent three thousand years in Athel Loren, I can tell you that the most misunderstood aspect of our culture is the deep connection between maternal and infant traditions and the view of death. When an Asrai child is born, the mother does not cut the umbilical cord - she buries the placenta along with the umbilical cord under the family tree of memory, so that the child's life force will continue to flow into that tree, and the tree's spirit will guard the child from that moment on. We do not scream or cry during childbirth because mourning disturbs the more sensitive spirits of the forest. Death - when it finally comes - is not an event to be mourned, but a rite of passage: we place the deceased's body high in a woven hammock in the canopy, and sing the hunting song of the first beast he killed in his last wild hunt around the ancient tree, allowing his soul to be absorbed by the trees and keeping his story forever in Athel Loren's collective memory."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "As the patriarch of my family, the most consuming part of my daily life is not war or politics—it is the constant maintenance of the details of the ancient contract between my family and the spirits. Our family is bound to the spirits of fog and streams - stream maidens - spirits that are capricious and have many demands, but the rewards they give are also extremely precious: they purify the rotten water in the forest, create mist around intruders, and sing prophetic songs on moonlit nights. But the tempers of the creek girls are as unpredictable as flash floods - they were kept silent for ten days last month after one of our young hunters accidentally washed a bloody blade in a stream, causing the fog to clear from the borders of the family domain and nearly allowing a team of Imperial scouts to successfully chart our internal path. Living with spirits is more than just a romantic legend - it is an endless mutual obligation that demands the highest level of sophistication."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The weirdest thing I ever experienced on the edge of a forest happened on a moonless night - I was camped under a huge poplar tree and woken up in the middle of the night by a low, heartbeat-like vibration. The entire woodland seemed to be pulsing in sync with the tree roots—not the wind, which didn't create that rhythm in the ground. Later, an old hunter told me that it was the wood elves performing the 'Song of Deep Roots' ceremony - a collective funeral in which the whole clan sent the spirits of their dead to the Tree of Memory at the same time. He said that if you stepped into the depths of the forest at that time, you would be overwhelmed by the low-frequency vibration of collective grief and lose your sense of direction, forever lost in the mercy of the trees. From that day on, I learned to lie down on the ground before setting up camp and listen to see if there was a regular humming on the ground - if there was, something must be happening in the distance."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "From the perspective of the president of the Chamber of Commerce, the wood elves' custom of 'blood for leaves' is the most difficult type of risk assessment object in the old world's insurance industry. When we provide accident insurance for logging contractors on the Bretonnian border, there is a special clause in the insurance contract - any 'bodily loss or mental injury' caused by logging activities within three miles of the Athel Loren forest boundary line is not covered by compensation, because in the past twenty years, the testimony of survivors in claims cases in this area cannot be accepted by any normal logical framework. The most famous case is that thirteen workers of the Kuhl Logging Company disappeared collectively on the same day after working within three miles of the forest. Three months later, two of them walked out of the forest naked - unable to speak a complete sentence, but both had identical bark patterns imprinted on their backs with leaf sap. The insurance company ultimately characterized it as a 'force majeure natural event' and refused to pay compensation."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Spirit worship - the core of the wood elf religious system: worshiping various natural spirits in the forest rather than abstract gods",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Social customs and cultural traditions of wood elves"
+  ]
+}

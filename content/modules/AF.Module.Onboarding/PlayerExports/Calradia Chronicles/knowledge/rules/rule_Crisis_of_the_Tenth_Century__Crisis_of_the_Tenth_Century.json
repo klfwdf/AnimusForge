@@ -1,0 +1,83 @@
+{
+  "Id": "rule_Crisis_of_the_Tenth_Century",
+  "Keywords": [
+    "Crisis of the Tenth Century",
+    "The “Great Interregnum” Period",
+    "The period when the empire has no emperor"
+  ],
+  "RagShortTexts": [
+    "The crisis of the tenth century was the \"Great Vacancy\", and the empire was without an emperor for a long time."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Crisis of the Tenth Century? It’s too profound to understand, but there was indeed a period of time in the history of the empire where there was no emperor. According to what the older generation said, the empire was in chaos during that time, and the surrounding barbarians also invaded, which caused our decline."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Crisis of the Tenth Century? Rather it is a good time for us to be independent. Taking advantage of that period, when the empire itself was in civil strife, we all became independent and established a nation."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Great Interregnum was the period after Emperor Darusus was deposed and killed. It gave us the opportunity to be independent. We took the opportunity to rise up, remove the imperial eagle flag, and replace it with our own flag. We got rid of colonization and ushered in freedom."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "It was the darkest period of the Empire. Emperor Darussus was deposed and hanged by his subordinates. After that, a new emperor was not produced for a long time. We were leaderless and the major factions were fighting each other. We were too busy internally to take care of ourselves, but there was a fire outside. Vlandia, Sturgia, Kuset, and Aserai all became independent. Our empire originally had no borders to defend, but now there is a long line of defense. We have to send troops to defend it. This is the beginning of our decline."
+    }
+  ],
+  "TextMappings": []
+}

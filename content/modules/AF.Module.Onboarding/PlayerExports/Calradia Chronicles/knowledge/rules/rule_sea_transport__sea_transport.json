@@ -1,0 +1,28 @@
+{
+  "Id": "rule_sea_transport",
+  "Keywords": [
+    "Shipping"
+  ],
+  "RagShortTexts": [
+    "Sea transport has a larger carrying capacity than land transport and is faster"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Sea freight is a common mode of transportation in Calradia. Different from land transportation, sea transportation has a large carrying capacity and is relatively fast, but it is limited by water areas, and the strength of pirates and pirates is also higher than that of land bandits."
+    }
+  ],
+  "TextMappings": []
+}

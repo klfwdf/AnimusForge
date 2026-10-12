@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using System.Net;
 using System.Threading;
@@ -12,6 +13,7 @@ using TaleWorlds.Core;
 using TaleWorlds.Core.ViewModelCollection.Selector;
 using TaleWorlds.InputSystem;
 using TaleWorlds.Library;
+using TaleWorlds.Localization;
 
 namespace AnimusForge;
 
@@ -56,7 +58,7 @@ public sealed class AnimusForgeApiOnboardingVM : ViewModel
 	public bool IsSuccessViewVisible => _currentView == OnboardingView.Success;
 
 	// Headers
-	private string _titleText = "AnimusForge - API 快捷配置向导";
+	private string _titleText = Localize("{=AF_UI_Onboarding_Title}AnimusForge - API Setup Wizard");
 	[DataSourceProperty]
 	public string TitleText
 	{
@@ -73,7 +75,7 @@ public sealed class AnimusForgeApiOnboardingVM : ViewModel
 	}
 
 	// Multi-API Panel Details
-	private string _multiApiModeTag = "完全自定义";
+	private string _multiApiModeTag = Localize("{=AF_UI_Onboarding_CustomMode}Fully custom");
 	[DataSourceProperty]
 	public string MultiApiModeTag
 	{
@@ -81,7 +83,7 @@ public sealed class AnimusForgeApiOnboardingVM : ViewModel
 		set => SetField(ref _multiApiModeTag, value, nameof(MultiApiModeTag));
 	}
 
-	private string _multiApiModeNotice = "在一个面板中集中设置 4 条 API 的 Base URL、Key 与绑定模型";
+	private string _multiApiModeNotice = Localize("{=AF_UI_Onboarding_ApiPanelNotice}Configure the Base URL, key, and bound model for four API pipelines in one panel.");
 	[DataSourceProperty]
 	public string MultiApiModeNotice
 	{
@@ -122,7 +124,7 @@ public sealed class AnimusForgeApiOnboardingVM : ViewModel
 		set => SetField(ref _primaryModelSelector, value, nameof(PrimaryModelSelector));
 	}
 
-	private string _primaryStatusText = "待测试";
+	private string _primaryStatusText = Localize("{=AF_UI_Onboarding_Status_Pending}Not tested");
 	[DataSourceProperty]
 	public string PrimaryStatusText
 	{
@@ -187,7 +189,7 @@ public sealed class AnimusForgeApiOnboardingVM : ViewModel
 		set => SetField(ref _auxiliaryModelSelector, value, nameof(AuxiliaryModelSelector));
 	}
 
-	private string _auxiliaryStatusText = "待测试";
+	private string _auxiliaryStatusText = Localize("{=AF_UI_Onboarding_Status_Pending}Not tested");
 	[DataSourceProperty]
 	public string AuxiliaryStatusText
 	{
@@ -252,7 +254,7 @@ public sealed class AnimusForgeApiOnboardingVM : ViewModel
 		set => SetField(ref _postprocessModelSelector, value, nameof(PostprocessModelSelector));
 	}
 
-	private string _postprocessStatusText = "待测试";
+	private string _postprocessStatusText = Localize("{=AF_UI_Onboarding_Status_Pending}Not tested");
 	[DataSourceProperty]
 	public string PostprocessStatusText
 	{
@@ -317,7 +319,7 @@ public sealed class AnimusForgeApiOnboardingVM : ViewModel
 		set => SetField(ref _eventModelSelector, value, nameof(EventModelSelector));
 	}
 
-	private string _eventStatusText = "待测试";
+	private string _eventStatusText = Localize("{=AF_UI_Onboarding_Status_Pending}Not tested");
 	[DataSourceProperty]
 	public string EventStatusText
 	{
@@ -350,7 +352,7 @@ public sealed class AnimusForgeApiOnboardingVM : ViewModel
 	}
 
 	// YJ Single Group Info
-	private string _yjKeyMasked = "未绑定";
+	private string _yjKeyMasked = Localize("{=AF_UI_Onboarding_Yj_Unbound}Not bound");
 	[DataSourceProperty]
 	public string YjKeyMasked
 	{
@@ -359,7 +361,7 @@ public sealed class AnimusForgeApiOnboardingVM : ViewModel
 	}
 
 	// Testing Overall State
-	private string _testOverallNotice = "正在向 4 条 API 管线发送握手测试请求...";
+	private string _testOverallNotice = Localize("{=AF_UI_Onboarding_Testing}Sending handshake test requests to four API pipelines...");
 	[DataSourceProperty]
 	public string TestOverallNotice
 	{
@@ -384,7 +386,7 @@ public sealed class AnimusForgeApiOnboardingVM : ViewModel
 		set => SetField(ref _isKeyPromptVisible, value, nameof(IsKeyPromptVisible));
 	}
 
-	private string _keyPromptTitle = "填写 API Key";
+	private string _keyPromptTitle = Localize("{=AF_UI_Onboarding_KeyPrompt_Title}Enter API key");
 	[DataSourceProperty]
 	public string KeyPromptTitle
 	{
@@ -392,7 +394,7 @@ public sealed class AnimusForgeApiOnboardingVM : ViewModel
 		set => SetField(ref _keyPromptTitle, value, nameof(KeyPromptTitle));
 	}
 
-	private string _keyPromptHint = "请输入 API Key：";
+	private string _keyPromptHint = Localize("{=AF_UI_Onboarding_KeyPrompt_Hint}Enter the API key:");
 	[DataSourceProperty]
 	public string KeyPromptHint
 	{
@@ -442,6 +444,188 @@ public sealed class AnimusForgeApiOnboardingVM : ViewModel
     private string _selectedYjUrl = YjEndpointProbe.DefaultUrl;
     internal Func<CancellationToken, Task<YjEndpointProbe.Result>> ProbeYjEndpoints = YjEndpointProbe.SelectAsync;
 	private readonly OnboardingUiDispatchOwner _uiDispatch = new OnboardingUiDispatchOwner();
+
+	// Static labels from the onboarding prefab are resolved through TextObject so the XML remains language-neutral.
+	[DataSourceProperty]
+	public string AF_UI_Onboarding_Prefab_001Text => Localize("{=AF_UI_Onboarding_Prefab_001}YJ API relay");
+
+	[DataSourceProperty]
+	public string AF_UI_Onboarding_Prefab_002Text => Localize("{=AF_UI_Onboarding_Prefab_002}Custom API setup");
+
+	[DataSourceProperty]
+	public string AF_UI_Onboarding_Prefab_003Text => Localize("{=AF_UI_Onboarding_Prefab_003}Use existing API setup");
+
+	[DataSourceProperty]
+	public string AF_UI_Onboarding_Prefab_004Text => Localize("{=AF_UI_Onboarding_Prefab_004}Direct access through major domestic carriers without a proxy. Enter one key for single-group mode to choose four models, or use the multi-group panel with preset YJ URLs.");
+
+	[DataSourceProperty]
+	public string AF_UI_Onboarding_Prefab_005Text => Localize("{=AF_UI_Onboarding_Prefab_005}1. Single-group mode: enter a key ➔ choose models (recommended)");
+
+	[DataSourceProperty]
+	public string AF_UI_Onboarding_Prefab_006Text => Localize("{=AF_UI_Onboarding_Prefab_006}Enter one key, then choose models for dialogue, preprocessing, postprocessing, and reports in one panel.");
+
+	[DataSourceProperty]
+	public string AF_UI_Onboarding_Prefab_007Text => Localize("{=AF_UI_Onboarding_Prefab_007}Enter key ➔");
+
+	[DataSourceProperty]
+	public string AF_UI_Onboarding_Prefab_008Text => Localize("{=AF_UI_Onboarding_Prefab_008}2. Multi-group mode: open the multi-API panel (YJ URLs preset)");
+
+	[DataSourceProperty]
+	public string AF_UI_Onboarding_Prefab_009Text => Localize("{=AF_UI_Onboarding_Prefab_009}Open the multi-API panel with the YJ Base URL filled in; enter a different key for each of the four routes.");
+
+	[DataSourceProperty]
+	public string AF_UI_Onboarding_Prefab_010Text => Localize("{=AF_UI_Onboarding_Prefab_010}Open multi-API panel ➔");
+
+	[DataSourceProperty]
+	public string AF_UI_Onboarding_Prefab_011Text => Localize("{=AF_UI_Onboarding_Prefab_011}3. Get an API key and credits (open website)");
+
+	[DataSourceProperty]
+	public string AF_UI_Onboarding_Prefab_012Text => Localize("{=AF_UI_Onboarding_Prefab_012}Open the YJ API key management and credit pages in your browser, then return and enter the key.");
+
+	[DataSourceProperty]
+	public string AF_UI_Onboarding_Prefab_013Text => Localize("{=AF_UI_Onboarding_Prefab_013}Open website ↗");
+
+	[DataSourceProperty]
+	public string AF_UI_Onboarding_Prefab_014Text => Localize("{=AF_UI_Onboarding_Prefab_014}4. Copy the YJ player QQ group number");
+
+	[DataSourceProperty]
+	public string AF_UI_Onboarding_Prefab_015Text => Localize("{=AF_UI_Onboarding_Prefab_015}Group: 1097237977. The group provides credit promotions, answers, and maintenance notices.");
+
+	[DataSourceProperty]
+	public string AF_UI_Onboarding_Prefab_016Text => Localize("{=AF_UI_Onboarding_Prefab_016}Copy group number 📋");
+
+	[DataSourceProperty]
+	public string AF_UI_Onboarding_Prefab_017Text => Localize("{=AF_UI_Onboarding_Prefab_017}1. Main API (character dialogue)");
+
+	[DataSourceProperty]
+	public string AF_UI_Onboarding_Prefab_018Text => Localize("{=AF_UI_Onboarding_Prefab_018}Model:");
+
+	[DataSourceProperty]
+	public string AF_UI_Onboarding_Prefab_019Text => Localize("{=AF_UI_Onboarding_Prefab_019}Fetch models");
+
+	[DataSourceProperty]
+	public string AF_UI_Onboarding_Prefab_020Text => Localize("{=AF_UI_Onboarding_Prefab_020}2. Preprocessing API (intent routing)");
+
+	[DataSourceProperty]
+	public string AF_UI_Onboarding_Prefab_021Text => Localize("{=AF_UI_Onboarding_Prefab_021}3. Postprocessing API (action tag extraction)");
+
+	[DataSourceProperty]
+	public string AF_UI_Onboarding_Prefab_022Text => Localize("{=AF_UI_Onboarding_Prefab_022}4. Daily and weekly report API (world overview)");
+
+	[DataSourceProperty]
+	public string AF_UI_Onboarding_Prefab_023Text => Localize("{=AF_UI_Onboarding_Prefab_023}🔑 Bound key:");
+
+	[DataSourceProperty]
+	public string AF_UI_Onboarding_Prefab_024Text => Localize("{=AF_UI_Onboarding_Prefab_024}Refresh all models 🔄");
+
+	[DataSourceProperty]
+	public string AF_UI_Onboarding_Prefab_025Text => Localize("{=AF_UI_Onboarding_Prefab_025}1. Main API dialogue model (immersive roleplay)");
+
+	[DataSourceProperty]
+	public string AF_UI_Onboarding_Prefab_026Text => Localize("{=AF_UI_Onboarding_Prefab_026}Recommended: deepseek-chat or gpt-4o-mini for dialogue with NPCs.");
+
+	[DataSourceProperty]
+	public string AF_UI_Onboarding_Prefab_027Text => Localize("{=AF_UI_Onboarding_Prefab_027}2. Preprocessing intent model (fast routing)");
+
+	[DataSourceProperty]
+	public string AF_UI_Onboarding_Prefab_028Text => Localize("{=AF_UI_Onboarding_Prefab_028}Recommended fast route: deepseek-chat, for player intent and scene mechanisms.");
+
+	[DataSourceProperty]
+	public string AF_UI_Onboarding_Prefab_029Text => Localize("{=AF_UI_Onboarding_Prefab_029}3. Postprocessing action-tag model (action execution)");
+
+	[DataSourceProperty]
+	public string AF_UI_Onboarding_Prefab_030Text => Localize("{=AF_UI_Onboarding_Prefab_030}Extracts duel, trade, recruitment, and other gameplay tags from replies.");
+
+	[DataSourceProperty]
+	public string AF_UI_Onboarding_Prefab_031Text => Localize("{=AF_UI_Onboarding_Prefab_031}4. Daily and weekly writing model (world events)");
+
+	[DataSourceProperty]
+	public string AF_UI_Onboarding_Prefab_032Text => Localize("{=AF_UI_Onboarding_Prefab_032}Summarizes Calradia wars, settlement development, and rebellion reports.");
+
+	[DataSourceProperty]
+	public string AF_UI_Onboarding_Prefab_033Text => Localize("{=AF_UI_Onboarding_Prefab_033}1. Main API handshake status:");
+
+	[DataSourceProperty]
+	public string AF_UI_Onboarding_Prefab_034Text => Localize("{=AF_UI_Onboarding_Prefab_034}2. Preprocessing intent handshake status:");
+
+	[DataSourceProperty]
+	public string AF_UI_Onboarding_Prefab_035Text => Localize("{=AF_UI_Onboarding_Prefab_035}3. Postprocessing action-tag handshake status:");
+
+	[DataSourceProperty]
+	public string AF_UI_Onboarding_Prefab_036Text => Localize("{=AF_UI_Onboarding_Prefab_036}4. Daily and weekly API handshake status:");
+
+	[DataSourceProperty]
+	public string AF_UI_Onboarding_Prefab_037Text => Localize("{=AF_UI_Onboarding_Prefab_037}All four API tests passed; configuration is ready!");
+
+	[DataSourceProperty]
+	public string AF_UI_Onboarding_Prefab_038Text => FormatLocalized("{=AF_UI_Onboarding_Prefab_038}✔ Main API: {MODEL}", "MODEL", PrimaryModel);
+
+	[DataSourceProperty]
+	public string AF_UI_Onboarding_Prefab_039Text => FormatLocalized("{=AF_UI_Onboarding_Prefab_039}✔ Preprocessing API: {MODEL}", "MODEL", AuxiliaryModel);
+
+	[DataSourceProperty]
+	public string AF_UI_Onboarding_Prefab_040Text => FormatLocalized("{=AF_UI_Onboarding_Prefab_040}✔ Postprocessing API: {MODEL}", "MODEL", PostprocessModel);
+
+	[DataSourceProperty]
+	public string AF_UI_Onboarding_Prefab_041Text => FormatLocalized("{=AF_UI_Onboarding_Prefab_041}✔ Daily and weekly API: {MODEL}", "MODEL", EventModel);
+
+	[DataSourceProperty]
+	public string AF_UI_Onboarding_Prefab_042Text => Localize("{=AF_UI_Onboarding_Prefab_042}Click below to save. A new save continues with world-book and character setup; completed saves return to the game.");
+
+	[DataSourceProperty]
+	public string AF_UI_Onboarding_Prefab_043Text => Localize("{=AF_UI_Onboarding_Prefab_043}Support the team");
+
+	[DataSourceProperty]
+	public string AF_UI_Onboarding_Prefab_044Text => Localize("{=AF_UI_Onboarding_Prefab_044}Close and exit");
+
+	[DataSourceProperty]
+	public string AF_UI_Onboarding_Prefab_045Text => Localize("{=AF_UI_Onboarding_Prefab_045}⇦ Back");
+
+	[DataSourceProperty]
+	public string AF_UI_Onboarding_Prefab_046Text => Localize("{=AF_UI_Onboarding_Prefab_046}Run connectivity test now ➔");
+
+	[DataSourceProperty]
+	public string AF_UI_Onboarding_Prefab_047Text => Localize("{=AF_UI_Onboarding_Prefab_047}Finish selection and test connectivity ➔");
+
+	[DataSourceProperty]
+	public string AF_UI_Onboarding_Prefab_048Text => Localize("{=AF_UI_Onboarding_Prefab_048}Cancel test");
+
+	[DataSourceProperty]
+	public string AF_UI_Onboarding_Prefab_049Text => Localize("{=AF_UI_Onboarding_Prefab_049}Save and enter Calradia ➔");
+
+	[DataSourceProperty]
+	public string AF_UI_Onboarding_Prefab_050Text => Localize("{=AF_UI_Onboarding_Prefab_050}Paste");
+
+	[DataSourceProperty]
+	public string AF_UI_Onboarding_Prefab_051Text => Localize("{=AF_UI_Onboarding_Prefab_051}Cancel");
+
+	[DataSourceProperty]
+	public string AF_UI_Onboarding_Prefab_052Text => Localize("{=AF_UI_Onboarding_Prefab_052}Confirm ➔");
+
+	[DataSourceProperty]
+	public string AF_UI_Onboarding_Prefab_053Text => Localize("{=AF_UI_Onboarding_Prefab_053}Support the AnimusForge team");
+
+	[DataSourceProperty]
+	public string AF_UI_Onboarding_Prefab_054Text => Localize("{=AF_UI_Onboarding_Prefab_054}AnimusForge is free and open source. Your support helps us continue immersive AI gameplay, world-map evolution, and new features. Visit Afdian to support us!");
+
+	[DataSourceProperty]
+	public string AF_UI_Onboarding_Prefab_055Text => Localize("{=AF_UI_Onboarding_Prefab_055}Close");
+
+	[DataSourceProperty]
+	public string AF_UI_Onboarding_Prefab_056Text => Localize("{=AF_UI_Onboarding_Prefab_056}Visit Afdian ↗");
+
+	[DataSourceProperty]
+	public string AF_UI_Onboarding_DeepSeekFlashButtonText => Localize("{=AF_UI_Onboarding_DeepSeekFlashButton}DeepSeek Flash");
+
+	[DataSourceProperty]
+	public string AF_UI_Onboarding_DeepSeekProButtonText => Localize("{=AF_UI_Onboarding_DeepSeekProButton}DeepSeek Pro");
+
+	[DataSourceProperty]
+	public string AF_UI_Onboarding_BaseUrlLabelText => Localize("{=AF_UI_Onboarding_BaseUrlLabel}Base URL:");
+
+	[DataSourceProperty]
+	public string AF_UI_Onboarding_ApiKeyLabelText => Localize("{=AF_UI_Onboarding_ApiKeyLabel}API Key:");
+
 
 	public AnimusForgeApiOnboardingVM(bool isApiOnlyFlow, Action onCompleted, Action onCancelled)
 	{
@@ -548,28 +732,32 @@ public sealed class AnimusForgeApiOnboardingVM : ViewModel
 		switch (view)
 		{
 			case OnboardingView.Main:
-				TitleText = "AnimusForge - API 快捷配置向导";
+				TitleText = Localize("{=AF_UI_Onboarding_Title}AnimusForge - API Setup Wizard");
 				SubtitleText = "";
 				break;
 			case OnboardingView.YjMenu:
-				TitleText = "YJ API 中转站 · 配置向导";
-				SubtitleText = "免魔法国内直连，请选择单分组或多分组接入方式";
+				TitleText = Localize("{=AF_UI_Onboarding_YjMenuTitle}YJ API relay - Setup wizard");
+				SubtitleText = Localize("{=AF_UI_Onboarding_YjMenuSubtitle}Direct domestic access without a proxy. Choose single-group or multi-group access.");
 				break;
 			case OnboardingView.MultiApi:
-				TitleText = _isCustomMode ? "完全自定义 API · 多管线集中设置" : "YJ API 多分组模式 · 专线集中配置";
-				SubtitleText = _isCustomMode ? "在一个面板中集中设置 4 条 API 的 Base URL、Key 与绑定模型" : "Base URL 已预设为 YJ 专线，支持 4 条管线分别配置 Key 与模型";
+				TitleText = _isCustomMode
+					? Localize("{=AF_UI_Onboarding_CustomTitle}Fully custom API - Multi-pipeline setup")
+					: Localize("{=AF_UI_Onboarding_YjTitle}YJ API multi-group mode - Dedicated setup");
+				SubtitleText = _isCustomMode
+					? Localize("{=AF_UI_Onboarding_ApiPanelNotice}Configure the Base URL, key, and bound model for four API pipelines in one panel.")
+					: Localize("{=AF_UI_Onboarding_YjNotice}The Base URL is preset to the YJ endpoint. Configure keys and models for all four pipelines.");
 				break;
 			case OnboardingView.YjModels:
-				TitleText = "YJ API 中转专线 · 模型选择";
-				SubtitleText = "已绑定单分组 Key，请为以下 4 处场景挑选模型";
+				TitleText = Localize("{=AF_UI_Onboarding_YjModelsTitle}YJ API dedicated route - Model selection");
+				SubtitleText = Localize("{=AF_UI_Onboarding_YjModelsSubtitle}A single-group key is bound. Choose models for the four pipelines below.");
 				break;
 			case OnboardingView.Testing:
-				TitleText = "API 连通性握手测试";
-				SubtitleText = "正在并行测试 4 路 API 的响应速度与连通状态...";
+				TitleText = Localize("{=AF_UI_Onboarding_TestTitle}API connectivity handshake test");
+				SubtitleText = Localize("{=AF_UI_Onboarding_TestSubtitle}Testing response speed and connectivity for four API routes in parallel...");
 				break;
 			case OnboardingView.Success:
-				TitleText = "🎉 全部 API 连通性测试通过！";
-				SubtitleText = "配置已就绪，点击下方按钮保存设置并进入卡拉迪亚";
+				TitleText = Localize("{=AF_UI_Onboarding_SuccessTitle}🎉 All API connectivity tests passed!");
+				SubtitleText = Localize("{=AF_UI_Onboarding_SuccessSubtitle}The configuration is ready. Click the button below to save it and enter Calradia.");
 				break;
 		}
 	}
@@ -580,7 +768,7 @@ public sealed class AnimusForgeApiOnboardingVM : ViewModel
         if (_yjProbeCts != null) return;
         _usingExistingConfig = false;
         var cts = _yjProbeCts = new CancellationTokenSource();
-        ShowToast("正在测试 YJ 三条线路，完成后进入接入方式选择…");
+        ShowToast(new TextObject("{=AF_UI_Onboarding_YjTesting}Testing the three YJ routes; the access-mode selection will open when it finishes...").ToString());
         _toastTimer = 9f;
         _ = ProbeYjAndOpenAsync(cts);
 	}
@@ -593,14 +781,17 @@ public sealed class AnimusForgeApiOnboardingVM : ViewModel
             _uiDispatch.Post(() => {
                 if (!ReferenceEquals(_yjProbeCts, cts) || cts.IsCancellationRequested) return;
                 _yjProbeCts = null;
-                if (result == null) { ShowToast("YJ 三条线路均未通过测速，请检查网络后重试，或使用自定义配置。"); return; }
+                if (result == null) { ShowToast(new TextObject("{=AF_UI_Onboarding_YjAllFailed}All three YJ routes failed the speed test. Check the network and retry, or use custom configuration.").ToString()); return; }
                 _selectedYjUrl = result.Url;
                 SwitchView(OnboardingView.YjMenu);
-                SubtitleText = "已选线路：" + new Uri(result.Url).Host + " · 响应约 " + Math.Round(result.Milliseconds) + " ms；请选择接入方式";
+                var selectedRoute = new TextObject("{=AF_UI_Onboarding_YjSelectedRoute}Selected route: {HOST} · response about {MS} ms; choose an access mode");
+                selectedRoute.SetTextVariable("HOST", new Uri(result.Url).Host);
+				selectedRoute.SetTextVariable("MS", Math.Round(result.Milliseconds).ToString(CultureInfo.InvariantCulture));
+                SubtitleText = selectedRoute.ToString();
             });
         }
         catch (OperationCanceledException) { }
-        catch (Exception) { _uiDispatch.Post(() => { if (ReferenceEquals(_yjProbeCts, cts)) { _yjProbeCts = null; ShowToast("YJ 线路测速失败，请重试。"); } }); }
+        catch (Exception) { _uiDispatch.Post(() => { if (ReferenceEquals(_yjProbeCts, cts)) { _yjProbeCts = null; ShowToast(new TextObject("{=AF_UI_Onboarding_YjProbeFailed}YJ route speed test failed. Please retry.").ToString()); } }); }
         finally { cts.Dispose(); }
     }
 
@@ -613,11 +804,11 @@ public sealed class AnimusForgeApiOnboardingVM : ViewModel
 	public void ExecuteSelectDeepSeekFlash()
 	{
         _usingExistingConfig = false;
-		OpenKeyPrompt("DeepSeek Flash 极速推荐", "请输入你的 DeepSeek 官方 API Key (sk-...)：", key =>
+		OpenKeyPrompt(new TextObject("{=AF_UI_Onboarding_FlashTitle}DeepSeek Flash - Fast recommendation").ToString(), new TextObject("{=AF_UI_Onboarding_FlashHint}Enter your official DeepSeek API key (sk-...):").ToString(), key =>
 		{
 			if (string.IsNullOrWhiteSpace(key))
 			{
-				ShowToast("API Key 不能为空");
+				ShowToast(new TextObject("{=AF_UI_Onboarding_KeyEmpty}API key cannot be empty.").ToString());
 				return;
 			}
 			string baseUrl = "https://api.deepseek.com";
@@ -666,11 +857,11 @@ public sealed class AnimusForgeApiOnboardingVM : ViewModel
 	public void ExecuteSelectDeepSeekPro()
 	{
         _usingExistingConfig = false;
-		OpenKeyPrompt("DeepSeek Pro 深度智谋", "请输入你的 DeepSeek 官方 API Key (sk-...)：", key =>
+		OpenKeyPrompt(new TextObject("{=AF_UI_Onboarding_ProTitle}DeepSeek Pro - Deep reasoning").ToString(), new TextObject("{=AF_UI_Onboarding_FlashHint}Enter your official DeepSeek API key (sk-...):").ToString(), key =>
 		{
 			if (string.IsNullOrWhiteSpace(key))
 			{
-				ShowToast("API Key 不能为空");
+				ShowToast(new TextObject("{=AF_UI_Onboarding_KeyEmpty}API key cannot be empty.").ToString());
 				return;
 			}
 			string baseUrl = "https://api.deepseek.com";
@@ -720,19 +911,19 @@ public sealed class AnimusForgeApiOnboardingVM : ViewModel
 	{
         _usingExistingConfig = false;
 		_isCustomMode = true;
-		MultiApiModeTag = "完全自定义";
-		MultiApiModeNotice = "在一个面板中集中设置 4 条 API 的 Base URL、Key 与绑定模型";
+		MultiApiModeTag = Localize("{=AF_UI_Onboarding_CustomMode}Fully custom");
+		MultiApiModeNotice = Localize("{=AF_UI_Onboarding_ApiPanelNotice}Configure the Base URL, key, and bound model for four API pipelines in one panel.");
 		SwitchView(OnboardingView.MultiApi);
 	}
 
 	// ================= Actions: YJ Submenu =================
 	public void ExecuteYjSingleGroup()
 	{
-		OpenKeyPrompt("YJ 单分组 Key 接入", "请输入一个 YJ API Key，将自动写入 4 条管线：", key =>
+		OpenKeyPrompt(new TextObject("{=AF_UI_Onboarding_YjSingleTitle}YJ single-group key setup").ToString(), new TextObject("{=AF_UI_Onboarding_YjSingleHint}Enter one YJ API key; it will be applied to all four pipelines:").ToString(), key =>
 		{
 			if (string.IsNullOrWhiteSpace(key))
 			{
-				ShowToast("API Key 不能为空");
+				ShowToast(new TextObject("{=AF_UI_Onboarding_KeyEmpty}API key cannot be empty.").ToString());
 				return;
 			}
 			string yjUrl = _selectedYjUrl;
@@ -763,8 +954,8 @@ public sealed class AnimusForgeApiOnboardingVM : ViewModel
 		PostprocessUrl = yjUrl;
 		EventUrl = yjUrl;
 
-		MultiApiModeTag = "YJ 官方专线预设";
-		MultiApiModeNotice = "已自动填充 YJ Base URL，支持 4 条管线分别填入不同分组 Key";
+		MultiApiModeTag = Localize("{=AF_UI_Onboarding_YjPreset}YJ official route preset");
+		MultiApiModeNotice = Localize("{=AF_UI_Onboarding_YjPresetNotice}YJ Base URLs are filled automatically. Enter a different group key for each of the four pipelines.");
 		SwitchView(OnboardingView.MultiApi);
 	}
 
@@ -772,7 +963,7 @@ public sealed class AnimusForgeApiOnboardingVM : ViewModel
 	{
 		ExternalBrowserLauncher.TryOpen("https://yjapi.manqiaotechnology.com/keys", out _, out _);
 		ExternalBrowserLauncher.TryOpen("https://pay.ldxp.cn/shop/OF6AKWNI", out _, out _);
-		ShowToast("正在打开 YJ API Key 管理页与额度购买页...");
+		ShowToast(new TextObject("{=AF_UI_Onboarding_YjOpenManagement}Opening the YJ API key management and credit page...").ToString());
 	}
 
 	public void ExecuteCopyQqGroup()
@@ -780,11 +971,11 @@ public sealed class AnimusForgeApiOnboardingVM : ViewModel
 		try
 		{
 			TaleWorlds.InputSystem.Input.SetClipboardText("1097237977");
-			ShowToast("已复制 YJ 交流 QQ 群号：1097237977");
+			ShowToast(new TextObject("{=AF_UI_Onboarding_QqCopied}YJ QQ group number copied: 1097237977").ToString());
 		}
 		catch
 		{
-			ShowToast("复制群号失败，请手动添加：1097237977");
+			ShowToast(new TextObject("{=AF_UI_Onboarding_QqCopyFailed}Could not copy the group number. Add it manually: 1097237977").ToString());
 		}
 	}
 
@@ -835,7 +1026,7 @@ public sealed class AnimusForgeApiOnboardingVM : ViewModel
 
 	public void ExecuteFetchAllYjModels()
 	{
-		ShowToast("正在拉取 YJ 可用模型列表...");
+		ShowToast(new TextObject("{=AF_UI_Onboarding_YjFetchingModels}Fetching available YJ models...").ToString());
 		FetchModelsForTarget(PrimaryUrl, PrimaryKey, list =>
 		{
 			PrimaryModelSelector = CreateSelector(list, PrimaryModel, i =>
@@ -861,7 +1052,7 @@ public sealed class AnimusForgeApiOnboardingVM : ViewModel
 	{
 		if (string.IsNullOrWhiteSpace(url) || string.IsNullOrWhiteSpace(key))
 		{
-			ShowToast("请先填写 Base URL 与 API Key");
+			ShowToast(new TextObject("{=AF_UI_Onboarding_MissingEndpoint}Enter the Base URL and API key first.").ToString());
 			return;
 		}
 
@@ -879,17 +1070,19 @@ public sealed class AnimusForgeApiOnboardingVM : ViewModel
 					{
 						_uiDispatch.Post(() =>
 						{
-							ShowToast("成功拉取 " + models.Count + " 个模型");
+							var fetched = new TextObject("{=AF_UI_Onboarding_ModelsFetched}Fetched {COUNT} models successfully");
+							fetched.SetTextVariable("COUNT", models.Count);
+							ShowToast(fetched.ToString());
 							onListFetched?.Invoke(models);
 						});
 						return;
 					}
 				}
-				_uiDispatch.Post(() => ShowToast("未能从接口解析出模型列表"));
+				_uiDispatch.Post(() => ShowToast(new TextObject("{=AF_UI_Onboarding_ModelParseFailed}The endpoint returned no parseable model list.").ToString()));
 			}
 			catch (Exception)
 			{
-				_uiDispatch.Post(() => ShowToast("拉取模型失败，请检查网络和 API 配置"));
+				_uiDispatch.Post(() => ShowToast(new TextObject("{=AF_UI_Onboarding_ModelFetchFailed}Model fetch failed. Check the network and API configuration.").ToString()));
 			}
 		});
 	}
@@ -907,31 +1100,31 @@ public sealed class AnimusForgeApiOnboardingVM : ViewModel
 	{
 		if (string.IsNullOrWhiteSpace(PrimaryKey) || string.IsNullOrWhiteSpace(PrimaryUrl))
 		{
-			ShowToast("主 API 配置不完整，请检查 URL 与 Key");
+			ShowToast(new TextObject("{=AF_UI_Onboarding_PrimaryIncomplete}The main API configuration is incomplete. Check the URL and key.").ToString());
 			return;
 		}
 
 		_testSucceeded = false;
 		SwitchView(OnboardingView.Testing);
-		TestOverallNotice = "正在准备 API 连通性测试...";
+		TestOverallNotice = Localize("{=AF_UI_Onboarding_TestPreparing}Preparing the API connectivity test...");
 		CanCancelTest = true;
 
-		PrimaryStatusText = "正在握手...";
+		PrimaryStatusText = new TextObject("{=AF_UI_Onboarding_Handshaking}Handshaking...").ToString();
 		PrimaryLatencyText = "";
 		IsPrimarySuccess = false;
 		IsPrimaryFailed = false;
 
-		AuxiliaryStatusText = "正在握手...";
+		AuxiliaryStatusText = new TextObject("{=AF_UI_Onboarding_Handshaking}Handshaking...").ToString();
 		AuxiliaryLatencyText = "";
 		IsAuxiliarySuccess = false;
 		IsAuxiliaryFailed = false;
 
-		PostprocessStatusText = "正在握手...";
+		PostprocessStatusText = new TextObject("{=AF_UI_Onboarding_Handshaking}Handshaking...").ToString();
 		PostprocessLatencyText = "";
 		IsPostprocessSuccess = false;
 		IsPostprocessFailed = false;
 
-		EventStatusText = "正在握手...";
+		EventStatusText = new TextObject("{=AF_UI_Onboarding_Handshaking}Handshaking...").ToString();
 		EventLatencyText = "";
 		IsEventSuccess = false;
 		IsEventFailed = false;
@@ -943,19 +1136,19 @@ public sealed class AnimusForgeApiOnboardingVM : ViewModel
 		int generation = _uiDispatch.BeginTest();
 		var targets = new List<ModOnboardingBehavior.ApiValidationTargetInfo>
 		{
-			new ModOnboardingBehavior.ApiValidationTargetInfo { Target = ModOnboardingBehavior.ApiSetupTarget.Primary, DisplayName = "主 API（正文生成）", ApiUrl = PrimaryUrl.Trim(), ApiKey = PrimaryKey.Trim(), ModelName = PrimaryModel.Trim() },
-			new ModOnboardingBehavior.ApiValidationTargetInfo { Target = ModOnboardingBehavior.ApiSetupTarget.Auxiliary, DisplayName = "前处理 API（意图路由）", ApiUrl = AuxiliaryUrl.Trim(), ApiKey = AuxiliaryKey.Trim(), ModelName = AuxiliaryModel.Trim() },
-			new ModOnboardingBehavior.ApiValidationTargetInfo { Target = ModOnboardingBehavior.ApiSetupTarget.ActionPostprocess, DisplayName = "后处理 API（指令标签）", ApiUrl = PostprocessUrl.Trim(), ApiKey = PostprocessKey.Trim(), ModelName = PostprocessModel.Trim() },
-			new ModOnboardingBehavior.ApiValidationTargetInfo { Target = ModOnboardingBehavior.ApiSetupTarget.EventAndRebellion, DisplayName = "每日与周报 API", ApiUrl = EventUrl.Trim(), ApiKey = EventKey.Trim(), ModelName = EventModel.Trim() }
+			new ModOnboardingBehavior.ApiValidationTargetInfo { Target = ModOnboardingBehavior.ApiSetupTarget.Primary, DisplayName = Localize("{=AF_UI_Onboarding_Target_Primary}Main API (response generation)"), ApiUrl = PrimaryUrl.Trim(), ApiKey = PrimaryKey.Trim(), ModelName = PrimaryModel.Trim() },
+			new ModOnboardingBehavior.ApiValidationTargetInfo { Target = ModOnboardingBehavior.ApiSetupTarget.Auxiliary, DisplayName = Localize("{=AF_UI_Onboarding_Target_Auxiliary}Preprocessing API (intent routing)"), ApiUrl = AuxiliaryUrl.Trim(), ApiKey = AuxiliaryKey.Trim(), ModelName = AuxiliaryModel.Trim() },
+			new ModOnboardingBehavior.ApiValidationTargetInfo { Target = ModOnboardingBehavior.ApiSetupTarget.ActionPostprocess, DisplayName = Localize("{=AF_UI_Onboarding_Target_Postprocess}Postprocessing API (action tags)"), ApiUrl = PostprocessUrl.Trim(), ApiKey = PostprocessKey.Trim(), ModelName = PostprocessModel.Trim() },
+			new ModOnboardingBehavior.ApiValidationTargetInfo { Target = ModOnboardingBehavior.ApiSetupTarget.EventAndRebellion, DisplayName = Localize("{=AF_UI_Onboarding_Target_Event}Daily and weekly-report API"), ApiUrl = EventUrl.Trim(), ApiKey = EventKey.Trim(), ModelName = EventModel.Trim() }
 		};
 
         if (_usingExistingConfig && (string.IsNullOrWhiteSpace(EventUrl) || string.IsNullOrWhiteSpace(EventKey) || string.IsNullOrWhiteSpace(EventModel)))
         {
             targets.RemoveAt(targets.Count - 1);
-            EventStatusText = "未配置，跳过可选周报 API";
+            EventStatusText = new TextObject("{=AF_UI_Onboarding_EventSkipped}Not configured; skipping the optional weekly-report API.").ToString();
         }
         int targetCount = targets.Count;
-        TestOverallNotice = "正在并行测试 " + targetCount + " 条 API...";
+		TestOverallNotice = FormatLocalized("{=AF_UI_Onboarding_TestingMany}Testing {COUNT} API pipelines in parallel...", "COUNT", targetCount.ToString());
 		Task.Run(async () =>
 		{
 			var tasks = targets.Select(t => TestSingleTargetAsync(t, token, generation)).ToArray();
@@ -966,12 +1159,12 @@ public sealed class AnimusForgeApiOnboardingVM : ViewModel
 			}
 			catch (OperationCanceledException)
 			{
-				_uiDispatch.PostTest(generation, () => TestOverallNotice = "测试已由用户取消。");
+				_uiDispatch.PostTest(generation, () => TestOverallNotice = Localize("{=AF_UI_Onboarding_TestCancelled}The test was cancelled by the user."));
 				return;
 			}
 			catch (Exception)
 			{
-				_uiDispatch.PostTest(generation, () => TestOverallNotice = "测试发生异常，请检查网络和 API 配置。");
+				_uiDispatch.PostTest(generation, () => TestOverallNotice = Localize("{=AF_UI_Onboarding_TestException}The test encountered an error. Check the network and API configuration."));
 				return;
 			}
 
@@ -981,7 +1174,7 @@ public sealed class AnimusForgeApiOnboardingVM : ViewModel
                 _uiDispatch.PostTest(generation, () =>
                 {
                     _testSucceeded = true;
-                    TestOverallNotice = "✔ " + targetCount + " 条 API 握手成功！即将进入确认界面...";
+                    TestOverallNotice = FormatLocalized("{=AF_UI_Onboarding_HandshakeManySuccess}✔ {COUNT} API handshakes succeeded! Opening the confirmation screen...", "COUNT", targetCount.ToString());
                 });
 				try
 				{
@@ -994,7 +1187,7 @@ public sealed class AnimusForgeApiOnboardingVM : ViewModel
 			}
 			else
 			{
-				_uiDispatch.PostTest(generation, () => TestOverallNotice = "❌ 部分 API 连通性测试未通过，请检查错误提示并返回修改。");
+				_uiDispatch.PostTest(generation, () => TestOverallNotice = Localize("{=AF_UI_Onboarding_TestPartialFailure}❌ Some API connectivity tests failed. Check the error details and return to edit."));
 			}
 		});
 	}
@@ -1013,7 +1206,9 @@ public sealed class AnimusForgeApiOnboardingVM : ViewModel
 
 	private void ApplyTestTargetResult(ModOnboardingBehavior.ApiSetupTarget target, ModOnboardingBehavior.ApiValidationTargetResult res, long ms)
 	{
-		string status = res.Success ? "✔ 握手成功" : ("❌ " + (res.FailureHint ?? "连接失败"));
+		string status = res.Success
+			? Localize("{=AF_UI_Onboarding_HandshakeSuccess}Handshake succeeded")
+			: ("❌ " + (res.FailureHint ?? Localize("{=AF_UI_Onboarding_Status_Failed}Connection failed")));
 		switch (target)
 		{
 			case ModOnboardingBehavior.ApiSetupTarget.Primary:
@@ -1058,7 +1253,7 @@ public sealed class AnimusForgeApiOnboardingVM : ViewModel
 	{
         if (!_testSucceeded || _currentView != OnboardingView.Success)
         {
-            ShowToast("请先完成 API 连通性测试。");
+            ShowToast(new TextObject("{=AF_UI_Onboarding_TestRequired}Complete the API connectivity test first.").ToString());
             return;
         }
 		DuelSettings settings = DuelSettings.GetSettings();
@@ -1126,7 +1321,7 @@ public sealed class AnimusForgeApiOnboardingVM : ViewModel
 	public void ExecuteOpenAfdianWeb()
 	{
 		DuelSettings.OpenAfdianSupportPageForExternal();
-		ShowToast("正在打开爱发电支持页面...");
+		ShowToast(new TextObject("{=AF_UI_Onboarding_OpenSupport}Opening the Afdian support page...").ToString());
 	}
 
 	// Prompt Overlay Helpers
@@ -1153,21 +1348,21 @@ public sealed class AnimusForgeApiOnboardingVM : ViewModel
 	}
 
 	// Direct input helper popups for pasting
-	public void ExecuteEditPrimaryUrl() => OpenTextInquiryForField("编辑主 API Base URL", PrimaryUrl, v => PrimaryUrl = v);
-	public void ExecuteEditPrimaryKey() => OpenTextInquiryForField("编辑主 API Key", PrimaryKey, v => PrimaryKey = v);
-	public void ExecuteEditAuxiliaryUrl() => OpenTextInquiryForField("编辑前处理 Base URL", AuxiliaryUrl, v => AuxiliaryUrl = v);
-	public void ExecuteEditAuxiliaryKey() => OpenTextInquiryForField("编辑前处理 Key", AuxiliaryKey, v => AuxiliaryKey = v);
-	public void ExecuteEditPostprocessUrl() => OpenTextInquiryForField("编辑后处理 Base URL", PostprocessUrl, v => PostprocessUrl = v);
-	public void ExecuteEditPostprocessKey() => OpenTextInquiryForField("编辑后处理 Key", PostprocessKey, v => PostprocessKey = v);
-	public void ExecuteEditEventUrl() => OpenTextInquiryForField("编辑周报 API Base URL", EventUrl, v => EventUrl = v);
-	public void ExecuteEditEventKey() => OpenTextInquiryForField("编辑周报 Key", EventKey, v => EventKey = v);
+	public void ExecuteEditPrimaryUrl() => OpenTextInquiryForField(new TextObject("{=AF_UI_Onboarding_EditPrimaryUrl}Edit main API Base URL").ToString(), PrimaryUrl, v => PrimaryUrl = v);
+	public void ExecuteEditPrimaryKey() => OpenTextInquiryForField(new TextObject("{=AF_UI_Onboarding_EditPrimaryKey}Edit main API key").ToString(), PrimaryKey, v => PrimaryKey = v);
+	public void ExecuteEditAuxiliaryUrl() => OpenTextInquiryForField(new TextObject("{=AF_UI_Onboarding_EditAuxUrl}Edit preprocessing Base URL").ToString(), AuxiliaryUrl, v => AuxiliaryUrl = v);
+	public void ExecuteEditAuxiliaryKey() => OpenTextInquiryForField(new TextObject("{=AF_UI_Onboarding_EditAuxKey}Edit preprocessing key").ToString(), AuxiliaryKey, v => AuxiliaryKey = v);
+	public void ExecuteEditPostprocessUrl() => OpenTextInquiryForField(new TextObject("{=AF_UI_Onboarding_EditPostUrl}Edit postprocessing Base URL").ToString(), PostprocessUrl, v => PostprocessUrl = v);
+	public void ExecuteEditPostprocessKey() => OpenTextInquiryForField(new TextObject("{=AF_UI_Onboarding_EditPostKey}Edit postprocessing key").ToString(), PostprocessKey, v => PostprocessKey = v);
+	public void ExecuteEditEventUrl() => OpenTextInquiryForField(new TextObject("{=AF_UI_Onboarding_EditEventUrl}Edit weekly-report API Base URL").ToString(), EventUrl, v => EventUrl = v);
+	public void ExecuteEditEventKey() => OpenTextInquiryForField(new TextObject("{=AF_UI_Onboarding_EditEventKey}Edit weekly-report key").ToString(), EventKey, v => EventKey = v);
 	public void ExecuteEditPromptKey() => PromptKeyInput = TaleWorlds.InputSystem.Input.GetClipboardText() ?? PromptKeyInput;
 
 	private void OpenTextInquiryForField(string title, string initialText, Action<string> onConfirmed)
 	{
         // Keep field editing inside the owning 4000-layer popup: vanilla inquiries sit below it.
         KeyPromptTitle = title;
-        KeyPromptHint = "请输入或粘贴内容（Ctrl+V），确定保存，取消保留原值。";
+        KeyPromptHint = Localize("{=AF_UI_Onboarding_EditHint}Enter or paste the value (Ctrl+V), then confirm to save or cancel to keep the old value.");
         PromptKeyInput = initialText ?? "";
         _keyPromptConfirmAction = onConfirmed;
         IsKeyPromptVisible = true;
@@ -1188,7 +1383,7 @@ public sealed class AnimusForgeApiOnboardingVM : ViewModel
 		}
 		catch (Exception)
 		{
-			ShowToast("界面更新失败，请重试当前操作");
+			ShowToast(Localize("{=AF_UI_Onboarding_UpdateFailed}The interface update failed. Retry the current operation."));
 		}
 		if (IsToastVisible)
 		{
@@ -1198,6 +1393,13 @@ public sealed class AnimusForgeApiOnboardingVM : ViewModel
 				IsToastVisible = false;
 			}
 		}
+	}
+
+	private static string Localize(string value) => new TextObject(value).ToString();
+
+	private static string FormatLocalized(string value, string variable, string replacement)
+	{
+		return DeveloperUiText.FormatTemplate(value, (variable, (object)replacement));
 	}
 
 	public override void OnFinalize()

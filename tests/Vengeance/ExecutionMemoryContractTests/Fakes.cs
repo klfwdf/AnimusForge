@@ -145,3 +145,14 @@ namespace AnimusForge.Refactor.Contracts
     }
     public sealed class MemoryCommitResult { public bool HistoryWritten; public string ErrorCode; }
 }
+
+
+namespace AnimusForge
+{
+    // The fixture reproduces the package's standard ModuleData path; text comes from real assets.
+    internal static class AnimusForgeModulePaths
+    {
+        internal static string GetModuleDataFilePath(string fileName)
+            => System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "ModuleData", fileName);
+    }
+}

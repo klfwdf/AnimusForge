@@ -1,0 +1,152 @@
+{
+  "Id": "rule_House_Foundations_Dimitis",
+  "Keywords": [
+    "Dimitis",
+    "House Dimitis"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Demitis is the small family of Loras, famous for its blacksmith skills. Every fishing boat on the island needs nails, anchors, chains and tools, and the city gates and arsenals are inseparable from people who can judge the quality of metal; in a place like this, the forge is both livelihood and political capital. Demitis's influence comes from the management of craftsmen, mineral imports and commissioned credits, rather than the feudal legends of distant continents. War may lead to a sudden increase in orders for swords and spears, while peace may turn the furnace back to anchors and agricultural tools; no matter how the situation changes, people who can use limited good iron in the right place will be needed."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nord"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The craftsmen and sailors of Loras judged Demitis not to listen to the boasts at the banquet, but only to see whether the anchor chain would break in the strong tide. Bad iron will kill people, and good craftsmanship will make a small family more respected than a big family name."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nord"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The defenders regarded Demitis as an important link between the arsenal and the shipyard, and were worried about any family monopolizing imported iron. Whoever masters the forge can repair the gate and decide who gets the new spear first."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nord"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Ordinary people preferred the Themitian furnace to keep busy with axes, fishhooks, and pots. If all the good iron is eaten up by the war, the first to feel the power of the family is often not the enemy, but the poor who cannot afford tools."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Dimitis Lorath's craftsman-type family has accumulated status through the demand for forges, ship repair metal parts, and the island city's arsenal. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Dimitis Lorath's craftsman-type family has accumulated status through the demand for forges, ship repair metal parts, and the island city's arsenal. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Dimitis Lorath's craftsman-type family has accumulated status through the demand for forges, ship repair metal parts, and the island city's arsenal. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Dimitis Lorath's craftsman-type family has accumulated status through the demand for forges, ship repair metal parts, and the island city's arsenal. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Dimitis: Lorath's craftsman-type family has accumulated status through the demand for forges, ship repair metal parts, and the island city's arsenal."
+  ]
+}

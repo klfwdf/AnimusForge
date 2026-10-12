@@ -1,0 +1,255 @@
+{
+  "Id": "rule_Derosius_Nereitses",
+  "Keywords": [
+    "Drosius Nereits"
+  ],
+  "RagShortTexts": [
+    "Delosius formed a long snake formation and Pandrak suffered a disastrous defeat",
+    "Delosius insulted Detel and Vlandia defected.",
+    "Drosius suppressed the intelligence and used a knife to kill Galios"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Drosius is a disgrace to our Neretse family. I have been saying this since Pandlak, and my lips are thinning now. During the fifty years of the Great Interregnum, the empire was in chaos, and he was the one who put it down. We recognize this. He was familiar with military art and was skilled in pommel and horsemanship. When he was young, he could make the whole audience stand up and applaud when he gave a speech in the Senate. But the battle he should have won the most in his life was ruined by his own hands. One word long snake formation - when the Senate Military Committee later reviewed this step, the whole audience was silent. The vanguard has entered the dense forest, and the rearguard is still on the plain. This is not a march, but a tearing of the army into pieces and handing them over to the enemy to gnaw on one by one. Galios was ambushed in the front, and he sat motionless in the center. The Kugit scout reported traces of the ambush, and he suppressed the information and did not give it to the forwards. This is not a mistake, this is murder. He wanted to use the arrows of the Battanians to kill Galios, but Galios did not die, he himself died, and the empire was shattered. Prince Peng and Tong were capable. After the war, they managed to kill old Olek and fight Langward, but what was the use? The emperor died, and the prince's prestige collapsed. From then on, the Neretses family could not hold their head high in the Senate. Now Arenicus is dead too, Rhagaea is holding on in the south, Galios is his warrior-emperor in the west, and Lucon is showing off in the north. Three-thirds of the game was all thanks to Drosius alone."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Nereits? That damn emperor. Many people died in Pandrak, and only two of the dozen or so people from the village who went together came back. Later, I heard from soldiers who had escaped that the emperor arranged people in a long line, with the front fighting and the back still walking on the road. There was an ambush in the dense forest, and the general in front didn't even receive a message. What is this emperor? My grandma still spits whenever she mentions this name, saying that he is the most damned person in the empire. He just died and took so many of us to be buried with him."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Drosius Nereits was the greatest gift the Empire could give to Vlandia. This is not sarcasm, it is the truth. At that time, Detail was still hesitating whether to fulfill the contract to support the empire. The barons did not want to go, but Detail suppressed them. As a result, Drosius wrote a letter calling him a coward and a traitor. What's Detail's temper? He can endure it, but we cannot. The next day we joined the Northern Alliance. Without the letter from Drosius, Pandrak's Banner Knights of Vlandia might have sided with the Empire. He personally turned his allies into enemies. If such a person becomes emperor, it will be strange if the empire survives. Our losses were not small. Suilun's Kugit horse archers and Nimr's light infantry pestered us for a long time, but the result was good. Drosius was beheaded, the empire was shattered, and Vlandia's frontiers were relieved. We still owe him a favor, even though he can no longer claim it."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "That imperial emperor Nereitses? Heard of it. In the battle of Pandrak, many of our crossbowmen were requisitioned and many died. The people who came back said that before the fighting started, King Detel almost went to help the empire, but that Nereitses sent a letter scolding the king bloody. The king got angry and in turn attacked the empire. We Vlandians have been fighting the Empire for hundreds of years, but the Empire has always looked down on us and called us barbarians. If you scold us, don't expect us to help you. This man was beheaded in the end, and he deserved it. The old saying is true: emperors who talk bad words will not live long."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania",
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Drosius Neretse was our common benefactor to the Northern League. When Sturgia and Battania joined forces, they were also beating the drum in their hearts - the Empire has more troops and higher morale than us, and we may not win if we fight head-on. As a result, Drosius personally came down to help us. He formed a long line into the forest, where the Fianna warriors of Battania almost laughed. Old Olek led the main force of Sturgia to surround his camp. Grand Duke Vadinslav died in the battle at the top of the city. Old Olek rushed in and chopped off Drosius's head. We also suffered heavy losses. Vadinslav was one of our best commanders in Sturgia, and old Olek also died in Peng Tong's counterattack. But worth it. One emperor's head was exchanged for the lives of two commanders, and the Northern Alliance made a profit from this deal. Delosius wanted to kill three birds with one stone—get rid of Garius, gild Lucon and Penton, and win the war. As a result, all three eagles flew away and the empire was torn apart. He was our best ally in the Northern Confederacy, although he would never admit it to his death."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Drosius Nereitses is a negative example that will be cited again and again in our textbooks on imperial politics. This man had all the superficial qualities of a qualified monarch - good at fighting, knowledgeable, able to quell chaos, and supported by the Senate - but he made a fatal mistake driven by selfish desires in the most critical battle. He suppressed the ambush intelligence in order to kill Galios, a man of great power and power. The price of this decision was the destruction of the main elite force of the empire, his own death, and the end of the dynasty. From the perspective of geographical consequences, the Battle of Pandrak was a historical turning point in the empire's transition from unity to three divisions, and Delosius's personal dark calculation was the direct catalyst for this transition. This man's case also reminds us that a ruler's ability is determined not by his strongest areas but by his chances of making the right decision in his most stressful moments. Drosius performed well during his thirty-year reign after the Great Interregnum, but at Pandrak he gambled wrongly and lost all his money and profits."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": [
+          "clan_vlandia_1"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "hero:lord_4_1"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "He called me a coward. I still remember the wording of that letter - cowards, traitors, Vlandians unworthy of the Empire. I have sat on Sargoth's throne for so many years, and I have heard countless unpleasant words. The barons called me weak and weak, and Aldric laughed at me for not being qualified, but I didn't even get angry. But that letter made me angry. I'm not a coward, I just don't want Vlandia to die for the Empire. Delosius turned me into a member of the Northern Alliance with a letter, and then sent his head to Pandrak. I thought about it for a long time later, if he had not written that letter at that time, whether I would have fulfilled my contract to help him. Maybe it will, maybe it won't. The barons don't want to go, and I can't stop them. But history has no possibility. He scolded me and I beat him. He died while I was still alive. A king cannot refuse to take action even after being scolded. This is my bottom line and also his reminder. His letter was probably the most expensive letter he had ever written in his life. No, it should be said to be the most expensive letter in the empire."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "clan_empire_west_1"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "hero:lord_1_7"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "He wanted me to die in the jungle of Pandrak. I found out later that the Kugit scout had reported traces of the ambush, but he suppressed the information and refused to give it to me. As I led the vanguard into the thicket, the Battanian arrows shot from behind the trees, the shieldmen fell in rows, and my lieutenant was shot through the throat beside me. I escaped among the broken soldiers. That was the most humiliating day in my life. Later, I gathered the remaining soldiers, followed Arenicos to break out of the encirclement, and survived. After Pandrak, I no longer believe in the nonsense of the Senate and the Emperor. I believe in the barracks. I believe in veterans. I trust the sword in my hand. Delosius wanted me dead, but I survived, he died, his family collapsed, and I became emperor. He killed me with conspiracy, and I responded to him with life. The account has been settled."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "clan_empire_north_1"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "hero:lord_1_1"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Emperor Delosius is my old boss and the most difficult person to evaluate in my political career. I joined Pandrak as his staff officer, but the fact that I was appointed as staff officer was a joke in itself - I was a civilian with no experience in leading troops. He put me in that position so that I could get a share of the credit after the war and pave the way for the future of his son Peng Tong. Arenicos was left idle in the camp, I was inserted into the chain of command, and Galios was given to the enemy - this was the personnel arrangement made by Delosius before Pandrak. After the war, I gathered the remaining soldiers to break through, saved the last bit of flesh and blood of the empire, and then maintained order in the north as a senator."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "clan_empire_north_3"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "hero:lord_1_5"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "My father is Drosius Nereitses. I don’t want to say the name, but I can’t get around it. He is my father, the Emperor of the Empire, and the sinner of Pandrak. He arranged for me to be gilded, for Lucon to serve, for Galios to die, for Arenikos to be idle. He arranged everything, and then everything fell apart. I fought tooth and nail to save Pandrak - repelling the Vlandia people with armored cavalry, returning reinforcements to kill old Olek, and fighting Langward. I did everything I could, but I couldn't save his life, nor could I save my throne. After the war, my prestige fell with his head. Arenicos ascended the throne and I withdrew from the seat of power. I don't hate Arenicos, he's a good guy. What I hate is my father. He gave me life, gave me the title of prince, and then crushed my future with his own hands through a disastrous defeat. He is the sinner of the empire, and he is also my sinner. I will live in the shadow of Pandrak for the rest of my life, and I will never be able to cleanse myself of the name Nereitses."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "clan_empire_south_1"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "hero:lord_1_14"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Delosius? Arenikos never said much about him, but I know what Ares thinks. Every time he mentioned Pendrac, a look of exhaustion appeared on his face. He was left idle in the camp by Drosius, without giving him a single soldier, and watched helplessly as the emperor lined up his troops in a line and walked into the ambush circle. After the war, he gathered the remaining soldiers and preserved the empire, and was therefore elected emperor. But Alley never boasted about it. He said something: Pandrak's victory - if the breakout can be regarded as a victory - is not due to anyone, but to the blood of the soldiers. Delosius wanted Ares to sit on the bench, but Alles took the throne. Destiny is sometimes smarter than people. Now Are is gone too, my Ila has not grown up yet, the empire is divided into three parts, Galios is in the west bearing a grudge against Drosius, and Lucon is in the north talking about the old rules of the Senate. The source of all this is Delosius. He has died a hundred times, and we are still finishing it for him."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": [
+          "clan_khuzait_2"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "hero:lord_6_4"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Delosius Nereitses. I gritted my teeth as I silently recited the name. Suilun—my husband—died at Pandrak. He led the Kugit cavalry archers to clear the way in front. When the Vlandia Banner Knights rushed over, it was the Salan light infantry who collapsed first. Nimr retreated, but Suilun did not retreat. He finished shooting two pots of arrows on his horse, then drew his moon sword and rushed into the enemy formation. He was shot to death on horseback by Vlandia's crossbowmen. After the war, someone told me that Drosius's order to him was to \"open a road in front\", with no reinforcements, no retreat, and no telling him that the dense forest had been ambushed - because Drosius himself did not know where the ambush was. He stretched the army into a long snake, and when the front was ambushed, he was still camping in the center. Suilun died for Delosius's stupidity. I hate the Confederates—they killed my husband. But I hated this dead emperor even more. I hated that I was not in Pandlak at that time and could not cut off his head with my own hands. His head was beheaded by a Sturgia, and my only regret is that it was not a Kugit."
+    },
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Nereits? What are you talking about? Oh, the emperor of the empire who has been dead for many years. I'm not sure. Our place is far away from the empire, and the emperors over there have come and gone, and I can't even remember their names. You said he lined up his troops in a line and had them cut off one by one? This sounds so stupid. We all know in our village that when fighting, we can’t stand in a line and let people surround us. Wasn't he beheaded later? That's right, it's only a matter of time before a fool becomes emperor. The empire is so big, if they choose a fool as emperor, they probably don't have many smart people there."
+    }
+  ],
+  "TextMappings": []
+}

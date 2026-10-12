@@ -1,0 +1,213 @@
+{
+  "Id": "rule_Fart_pump_truck",
+  "Keywords": [
+    "fart pump truck",
+    "Scrap Wood Chariot",
+    "pedal power",
+    "Out of control charge",
+    "Goblin Engineering",
+    "Funny weapons",
+    "Pump truck",
+    "wooden chariot",
+    "greenskin chariot",
+    "crazy machine",
+    "pedal",
+    "Waaagh chariot"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Grut Pump Truck is one of the most – and ridiculous – siege engines in Greenskin military history: it is essentially a stack of discarded wood powered by Gruts on pedal wheels and completely unsteerable as they charge. Once it rushes towards the enemy lines, it is impossible to predict whether the driving squad or the vehicle itself will make it to the end."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Snotling Pump Wagons! I tell ya, dat's da most crackin', mental fing among all da Greenskins! Dem Snotlings are usually so thick dey could stick their fingers in their own ears and not figure out how to pull 'em out, but if ya shove 'em inside a treadwheel on a big wooden frame, da little runts start pedalin'! Pedalin' like mad! Why do dey pedal? Who knows! 'Cause da Goblin driver up front is holdin' a stick and bashin' their 'eads, so dey pedal, and da harder he bashes, da faster dey go! Den dat Pump Wagon—BOOM! BOOM! BOOM!—charges straight ahead like a giant arse fired outta a cannon! Steering? None! If ya ask a Pump Wagon where it's goin', it don't even know itself! All it knows is goin' forward! Once on da battlefield I saw a Pump Wagon barrel straight into a massive tree, smash da tree down, and den fall apart itself, sendin' Snotlings flyin' outta da wreckage like popcorn and rollin' all over da ground—I laughed so hard I nearly got me 'ead blown off by a stuntie thunderer across da field! But ya really don't wanna stand in front of it: da front of a Pump Wagon is bristlin' wid all sorts of nails, hooks, and broken shovel heads scavenged from scrap heaps—stuck all over da front like porcupine quills—and whatever gets rammed by it, whether ya be man, horse, or a stuntie tin can, gets poked into a sieve!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Snotling Pump Wagon is a weapon platform that is exceedingly difficult to classify within a standard tactical system. Its advantages lie in its cost—zero metal, zero refined black powder, consuming only Snotlings and scrap timber—and its unpredictability. Against a Greenskin army fielding multiple Pump Wagons, your front line cannot predict which point will be breached by a Pump Wagon—because not even the Pump Wagon itself knows. The most effective method of defending against Pump Wagons is to deploy a dual-layer obstacle of 'cheval de frise + trenches': once a Pump Wagon encounters a trench, its wheels bog down and spin in place until its own wooden frame shakes itself apart. Yet what is truly dangerous is a coordinated attack launched simultaneously by Pump Wagons and a main Orc charge: while countering the Orc heavy infantry, the enemy commander must divert troops to stop a pack of shrieking, careening wooden hedgehogs from piercing the flanks—and divided attention often creates a catastrophic gap in command."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "Tracing the techno-archaeological origins of the Snotling Pump Wagon provides an extreme case study for the research of Greenskin material culture: the design of the Pump Wagon does not stem from any engineering thought, but rather from a chaotic mapping of the concept of 'mobile lethality' by the Greenskin collective subconscious—the 'inspiration of Gork and Mork.' From the perspective of technological constructivism, the transmission system of the Pump Wagon (treadwheel, ratchet, main drive shaft) bears a strong resemblance to the transmission structure of Imperial animal-powered mills, yet the tolerance level of its components is roughly one hundred and fifty times wider than the corresponding Imperial standard—meaning every transmission link in a Pump Wagon is fraught with random energy loss, and in theory its efficiency should not exceed eight percent. Yet it is precisely this inefficiency and randomness that grants the Pump Wagon an almost irresistible battlefield advantage: the unpredictability of its speed and trajectory makes it impossible for the defender to plan counter-positions in advance. Historians of engineering point out that rivet and peg analyses conducted by the Imperial Gunnery School and Engineers' Guild of Nuln on captured Pump Wagon wreckage revealed a deeply unsettling fact—the distribution of wooden pegs on every single Pump Wagon is entirely random, with no two wagons alike, meaning each Pump Wagon is an independent improvised creation reflecting the types of scrap at hand and the random angles at which hammers were swung by the Snotlings who built it. This is no longer engineering—this is organized accident."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "One of my frontline commanders once reported to me with a deadpan face that the Greenskins had deployed 'an unprecedented self-propelled tactical vehicle.' I requisitioned the sketches drawn by the scouts and stared at them for a long time—a wooden cart driven by Snotlings pedaling treadwheels, bristling with kitchen scrap iron. I showed the drawings to my Chief Engineer, who pondered for a long while before saying, 'My lady, I cannot evaluate in engineering terms something that ought not to exist.' Yet that Pump Wagon did indeed punch through our vanguard line and killed three sergeants."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "A border outpost on my family's estates once encountered three Pump Wagons during a night raid—they hurtled out of the darkness without a single torchlight, accompanied only by the creaking, groaning shriek of wooden pedals. After two rows of palisades were smashed to splinters, the garrison opened fire, and even after every last Snotling was shot dead—the Pump Wagons kept moving, because the corpses of the slain Snotlings remained wedged in the treadwheels, momentum jerking their dead legs through two more full rotations. This absurd yet spine-chilling spectacle was entered into the official log by my outpost commander under the note: 'The ultimate insolence of the Greenskins—even their dead keep pedaling into battle.'"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "I fought in a small engagement on the edge of the Badlands where the Greenskins rolled out two Pump Wagons. A third of the way across the field, the first one lost a wheel; the whole contraption tipped onto its side like an upturned cockroach, with the Snotlings inside still pedaling at empty air and spinning in circles—making the human mercenaries around me laugh so hard they forgot they were on a battlefield. Then, while we were all laughing, the second Pump Wagon slammed straight into our crossbowmen's position from the flank, sending a dozen men flying in an instant. I have never dared laugh at anything on a battlefield since."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Imperial Engineers School in Nuln once attempted to reverse-engineer the Pump Wagon—not to manufacture it, but to study whether its pedal-transmission mechanism could be adapted for portable water pumps. They spent two thousand Gold Crowns purchasing the wrecks of two captured Pump Wagons from the Border Princes, spent twelve days dismantling them, and produced a one-line conclusion: 'The mechanical principle of this object does not hold in theory, yet it undeniably moves.' The veteran engineer in charge of the study applied for immediate retirement upon its completion, citing 'irreversible damage to cognitive faculties.'"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Green-skinned improvised creation: a waste wood pedal chariot with no standardized design, driven by the pedal wheel of a grunt",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Fart Pump Truck Scrap Wood Chariot Pedal Power"
+  ]
+}

@@ -44,17 +44,34 @@ public static class SiegeCastlePrisonerDispositionKindProfile
     }
 
     public static string Describe(SiegeCastlePrisonerDispositionKind disposition)
+        => Describe(disposition, false);
+
+    public static string Describe(SiegeCastlePrisonerDispositionKind disposition, bool isEnglish)
     {
+        if (isEnglish)
+        {
+            return disposition switch
+            {
+                SiegeCastlePrisonerDispositionKind.Recruit => "Recruit regular prisoners",
+                SiegeCastlePrisonerDispositionKind.Slaughter => "Slaughter regular prisoners",
+                SiegeCastlePrisonerDispositionKind.Release => "Release regular prisoners",
+                SiegeCastlePrisonerDispositionKind.Sell => "Sell regular prisoners",
+                SiegeCastlePrisonerDispositionKind.Labor => "Penal labor for regular prisoners",
+                SiegeCastlePrisonerDispositionKind.RepairCastle => "Castle repair labor",
+                SiegeCastlePrisonerDispositionKind.Instructor => "Assign regular prisoners as instructors",
+                _ => "None"
+            };
+        }
         return disposition switch
         {
-            SiegeCastlePrisonerDispositionKind.Recruit => "收编普通战俘",
-            SiegeCastlePrisonerDispositionKind.Slaughter => "屠戮普通战俘",
-            SiegeCastlePrisonerDispositionKind.Release => "释放普通战俘",
-            SiegeCastlePrisonerDispositionKind.Sell => "贩卖普通战俘",
-            SiegeCastlePrisonerDispositionKind.Labor => "劳役安置普通战俘",
-            SiegeCastlePrisonerDispositionKind.RepairCastle => "劳役修缮城堡",
-            SiegeCastlePrisonerDispositionKind.Instructor => "安排普通战俘充当教官",
-            _ => "无"
+            SiegeCastlePrisonerDispositionKind.Recruit => CastleAftermathCompatibilityTexts.Raw("disposition_recruit"),
+            SiegeCastlePrisonerDispositionKind.Slaughter => CastleAftermathCompatibilityTexts.Raw("disposition_slaughter"),
+            SiegeCastlePrisonerDispositionKind.Release => CastleAftermathCompatibilityTexts.Raw("disposition_release"),
+            SiegeCastlePrisonerDispositionKind.Sell => CastleAftermathCompatibilityTexts.Raw("disposition_sell"),
+            SiegeCastlePrisonerDispositionKind.Labor => CastleAftermathCompatibilityTexts.Raw("disposition_labor"),
+            SiegeCastlePrisonerDispositionKind.RepairCastle => CastleAftermathCompatibilityTexts.Raw("disposition_repair_castle"),
+            SiegeCastlePrisonerDispositionKind.Instructor => CastleAftermathCompatibilityTexts.Raw("disposition_instructor"),
+            _ => CastleAftermathCompatibilityTexts.Raw("disposition_none")
         };
     }
 }

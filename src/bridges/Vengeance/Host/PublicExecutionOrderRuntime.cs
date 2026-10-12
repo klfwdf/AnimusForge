@@ -107,7 +107,7 @@ internal static class PublicExecutionOrderRuntime
         bool started = permit.Controller.TryBeginExecution(ExecutionActor.Executioner);
         Log("start session=" + permit.Session + " accepted=" + started);
         if (started)
-            ShoutBehavior.AppendExternalTargetedSceneNpcFactForExternal("刽子手已接受玩家命令并开始执行本场公开处刑；此记录只确认开始行刑，不代表死亡已经结算。", permit.Agent.Index);
+            ShoutBehavior.AppendExternalTargetedSceneNpcFactForExternal(LlmSourceTexts.Get("ExecutionBridge_ConfirmedFact_001"), permit.Agent.Index);
     }
     private static void Log(string text) => Logger.Log("PublicExecutionOrder", text);
     private static void ClearConversation()

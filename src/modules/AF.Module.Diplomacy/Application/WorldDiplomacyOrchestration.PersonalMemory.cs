@@ -1,3 +1,4 @@
+using AnimusForge;
 using System;
 using System.Collections.Generic;
 using AnimusForge.Refactor.Contracts;
@@ -46,10 +47,8 @@ internal sealed partial class WorldDiplomacyOrchestration
         bool committed = true;
         if (!string.IsNullOrWhiteSpace(document.Body))
         {
-            string fact = (author ? "本人已正式发布" : "本人所在王庭已正式收到")
-                + "外交公文，来源=" + document.DocumentId + "，日期=" + document.GameDate
-                + "，发文国=" + document.AuthorKingdomName + "，标题=" + document.Title
-                + "。原文：" + Limit(document.Body, 4000) + "。此项只确认公文已发布或收到，不证明提案已经被接受或外交动作已经执行。";
+            string template = author ? DiplomacyMiscPromptTexts.Get("PersonalMemory_DocumentPublished", "I have officially published a diplomatic document, source={0}, date={1}, publishing kingdom={2}, title={3}. Original text: {4}. This entry only confirms the document was published or received; it does not prove the proposal was accepted or diplomatic actions executed.") : DiplomacyMiscPromptTexts.Get("PersonalMemory_DocumentReceived", "The court where I reside has officially received a diplomatic document, source={0}, date={1}, publishing kingdom={2}, title={3}. Original text: {4}. This entry only confirms the document was published or received; it does not prove the proposal was accepted or diplomatic actions executed.");
+            string fact = string.Format(template, document.DocumentId ?? "", document.GameDate ?? "", document.AuthorKingdomName ?? "", document.Title ?? "", Limit(document.Body, 4000));
             committed &= CommitDiplomaticDocumentMemoryOnce(ruler, document, author ? "publication" : "receipt", fact, memoryDay);
         }
         if (document.Actions?.Count > 0)
@@ -58,13 +57,12 @@ internal sealed partial class WorldDiplomacyOrchestration
                 if (action != null && action.ChangedDiplomaticState && !string.IsNullOrWhiteSpace(action.MechanicalResult))
                     committed &= CommitDiplomaticDocumentMemoryOnce(ruler, document,
                         "action:" + action.ActionId + ":result",
-                        "经游戏机制确认的外交结果，来源=" + document.DocumentId + "，动作=" + action.ActionId
-                        + "，对象=" + action.TargetKingdomId + "。" + action.MechanicalResult,
+                        string.Format(DiplomacyMiscPromptTexts.Get("PersonalMemory_MechanicResultWithTarget", "Diplomatic result confirmed by game mechanics, source={0}, action={1}, target={2}: {3}"), document.DocumentId, action.ActionId, action.TargetKingdomId, action.MechanicalResult),
                         memoryDay);
         }
         else if (document.ChangedDiplomaticState && !string.IsNullOrWhiteSpace(document.MechanicalResult))
             committed &= CommitDiplomaticDocumentMemoryOnce(ruler, document, "result",
-                "经游戏机制确认的外交结果，来源=" + document.DocumentId + "。" + document.MechanicalResult,
+                string.Format(DiplomacyMiscPromptTexts.Get("PersonalMemory_MechanicResult", "Diplomatic result confirmed by game mechanics, source={0}, action={1}: {2}"), document.DocumentId, "result", document.MechanicalResult),
                 memoryDay);
         if (committed) document.PendingPersonalMemoryRulers.Remove(ruler);
         else

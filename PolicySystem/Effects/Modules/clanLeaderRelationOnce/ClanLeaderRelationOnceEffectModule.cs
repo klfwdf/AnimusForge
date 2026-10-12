@@ -20,11 +20,11 @@ internal sealed class ClanLeaderRelationOnceEffectModule : NumericPolicyEffectMo
 		allowedScopes: new[] { PolicyEffectScopes.Kingdom, PolicyEffectScopes.Local, PolicyEffectScopes.Vassal },
 		allowedSelectorKinds: new[] { PolicyEffectTargetKind.Settlement, PolicyEffectTargetKind.Clan, PolicyEffectTargetKind.Kingdom, PolicyEffectTargetKind.Hero },
 		targetKinds: new[] { PolicyEffectTargetKind.Clan },
-		cueTerms: new[] { "关系", "好感", "领主态度", "贵族支持", "得罪领主", "赢得拥护" },
-		retrievalText: "其他家族领袖、领主或封臣对政策发布者、颁令者的人际关系、好感、支持、反感、怨恨或感谢。受益受损、剥夺特权、荣誉肯定、政治冒犯与压迫引发的态度变化；不改变家族的政治影响力数值。发布者所属家族不计入，下一个游戏日对每位唯一家族领袖一次性结算关系点。",
-		catalogSummary: "发布者与其他家族领袖的一次性关系变化",
-		mainInstruction: "政策若会让受影响地区或目标王国中除发布者所属家族外的领主更支持或更反感政策发布者，请给出一次性关系变化。正数改善关系，负数恶化关系；效果在政策通过后的下一个游戏日结算一次。玩家政策的发布者固定为发布时玩家，统治者政策固定为通过政策的统治者。",
-		postprocessRule: "value 必须是有限数字，最终按整数关系点结算。目标按家族去重，每个当前家族领袖只结算一次；发布者所属家族整体、已灭亡家族及无有效领袖目标跳过。正向变化保留原版外交模型加成和随机取整，关系仍受原版 -100～100 限制。",
+		cueTerms: new[] { PolicyCompatibilityTexts.Get("Module_clanLeaderRelationOnce_Original_Closeout_0"), PolicyCompatibilityTexts.Get("Module_clanLeaderRelationOnce_Original_Closeout_1"), PolicyCompatibilityTexts.Get("Module_clanLeaderRelationOnce_Original_Closeout_2"), PolicyCompatibilityTexts.Get("Module_clanLeaderRelationOnce_Original_Closeout_3"), PolicyCompatibilityTexts.Get("Module_clanLeaderRelationOnce_Original_Closeout_4"), PolicyCompatibilityTexts.Get("Module_clanLeaderRelationOnce_Original_Closeout_5"), "clan leader relations", "lord support", "noble approval", "hostility" },
+		retrievalText: PolicyGenerationPromptTexts.Get("Module_clanLeaderRelationOnce_retrievalText", "Personal relations, favor, support, aversion, resentment or gratitude of other clan leaders, lords or vassals toward the policy publisher or issuer. Attitude changes caused by benefits or harm, loss of privileges, recognition of honor, political offenses or oppression; does not change the numerical political influence of a clan. Excludes the issuer's clan and settles relation points once per unique clan leader on the next game day."),
+		catalogSummary: PolicyGenerationPromptTexts.Get("Module_clanLeaderRelationOnce_catalogSummary", "One-time issuer relation change with other clan leaders"),
+		mainInstruction: PolicyGenerationPromptTexts.Get("Module_clanLeaderRelationOnce_mainInstruction", "If the policy makes lords in the affected area or target kingdom, excluding the publisher’s clan, more supportive of or hostile toward the publisher, specify a one-time relation change. Positive improves relations, negative worsens them; settle on the next game day after adoption. Player-policy publishers are fixed to the player at publication; ruler-policy publishers are fixed to the ruler who adopted the policy."),
+		postprocessRule: PolicyGenerationPromptTexts.Get("Module_clanLeaderRelationOnce_postprocessRule", "value must be finite and settles as integer relation points. Deduplicate by clan; settle once per current clan leader. Skip the publisher’s entire clan, eliminated clans and targets without valid leaders. Positive changes retain native diplomacy bonuses and randomized rounding, and relations remain limited to the native -100 to 100 range."),
 		payloadPromptSchema: PolicyEffectPayloadSchemas.CreateNumericValueSchema(),
 		family: PolicyEffectFamily.Governance,
 		executionKind: PolicyEffectExecutionKind.ScheduledOnce,
@@ -38,9 +38,9 @@ internal sealed class ClanLeaderRelationOnceEffectModule : NumericPolicyEffectMo
 		supportsIdempotency: true,
 		promptVisible: true,
 		displayGroup: "clanLeaderRelationOnce",
-		playerDisplayName: "家族领袖关系",
-		editableUnderstandingPrompt: "家族领袖关系反映受影响地区或目标王国的其他领主对政策发布者的支持或反感。政策让这些领主直接受益、受损、受辱、获誉、受压迫或卷入利益冲突时，领袖关系就是一次性后果；发布者所属家族整体和没有有效领袖的家族不计入。",
-		editableEvaluationPrompt: "关系改善为正、恶化为负，并按整数关系点判断。变化在政策通过后的下一游戏日发生，发布者所属家族整体不计入，其他每个当前家族领袖只结算一次。轻微礼遇、不便或有限利益通常为每位领袖 ±1 到 ±3；明确受益、受损、荣誉肯定或政治冒犯为 ±4 到 ±8；重大特权、沉重损失、公开羞辱、强力压迫或显著利益冲突为 ±9 到 ±15；救命之恩、严重背叛、系统性迫害或足以改变阵营立场的事件为 ±16 到 ±30。不得因为目标家族数量多或该效果只结算一次而把每位领袖的变化均摊到 1 点；也不得只凭华丽措辞给高值。强度应由每位领袖实际承受的受益、损失、荣誉、压迫和政治风险决定，关系仍受游戏原有上下限约束。",
+		playerDisplayName: PolicyCompatibilityTexts.Get("Module_clanLeaderRelationOnce_playerDisplayName"),
+		editableUnderstandingPrompt: PolicyGenerationPromptTexts.Get("Module_clanLeaderRelationOnce_editableUnderstandingPrompt", "Clan leader relation reflects other lords' support for or resentment toward the publisher in affected areas or target kingdoms. When policies directly benefit, harm, insult, honor or oppress these lords or involve them in conflicts of interest, leader relations are a one-time consequence. Exclude the publisher's entire clan and clans without a valid leader."),
+		editableEvaluationPrompt: PolicyGenerationPromptTexts.Get("Module_clanLeaderRelationOnce_editableEvaluationPrompt", "Positive improves relations and negative worsens them; judge integer relation points. Changes occur on the game day after adoption. Exclude the publisher's entire clan, and settle once per other current clan leader. Mild courtesies, inconvenience or limited benefits usually warrant ±1 to ±3 per leader; clear benefits, losses, honors or political offense ±4 to ±8; major privileges, heavy losses, public humiliation, strong oppression or significant interest conflicts ±9 to ±15; lifesaving gratitude, severe betrayal, systematic persecution or events capable of changing political alignment ±16 to ±30. Do not dilute each leader's change to 1 point because many clans are targeted or the effect settles only once. Do not use high values merely for ornate wording. Intensity follows each leader's actual benefits, losses, honor, oppression and political risks; native relation limits still apply."),
 		excludeActorClanTargets: true,
 		allowCrossKingdomTargets: true);
 
@@ -65,7 +65,7 @@ internal sealed class ClanLeaderRelationOnceEffectModule : NumericPolicyEffectMo
 		normalizedValue = rawValue;
 		if (float.IsNaN(rawValue) || float.IsInfinity(rawValue))
 		{
-			error = "clanLeaderRelationOnce 的 value 必须是有限数字";
+			error = "clanLeaderRelationOnce value must be finite";
 			return false;
 		}
 		normalizedValue = (float)Math.Round(rawValue, MidpointRounding.AwayFromZero);
@@ -89,7 +89,7 @@ internal sealed class ClanLeaderRelationOnceEffectModule : NumericPolicyEffectMo
 		}
 		if (context.GameBridge == null)
 		{
-			return Failed("clanLeaderRelationOnce 缺少 game bridge", false);
+			return Failed("clanLeaderRelationOnce requires a game bridge", false);
 		}
 
 		int requestedDelta = (int)payload.Value;
@@ -192,11 +192,11 @@ internal sealed class ClanLeaderRelationOnceEffectModule : NumericPolicyEffectMo
 		PolicyEffectExecutionReceipt appliedReceipt = context.ExistingReceipt;
 		if (appliedReceipt == null)
 		{
-			return Failed("clanLeaderRelationOnce compensation 缺少执行回执", false);
+			return Failed("clanLeaderRelationOnce compensation requires an execution receipt", false);
 		}
 		if (context.GameBridge == null)
 		{
-			return Failed("clanLeaderRelationOnce compensation 缺少 game bridge", false);
+			return Failed("clanLeaderRelationOnce compensation requires a game bridge", false);
 		}
 		if (appliedReceipt.Status == PolicyEffectExecutionStatus.RolledBack)
 		{
@@ -367,17 +367,17 @@ internal sealed class ClanLeaderRelationOnceEffectModule : NumericPolicyEffectMo
 		payload = instance?.Payload as ClanLeaderRelationOncePayload;
 		if (instance == null || string.IsNullOrWhiteSpace(context.PreparedInstance.IdempotencyKey))
 		{
-			error = "clanLeaderRelationOnce 缺少执行上下文或幂等键";
+			error = "clanLeaderRelationOnce requires an execution context and idempotency key";
 			return false;
 		}
 		if (!string.Equals(instance.ModuleId, ModuleDescriptor.Id, StringComparison.Ordinal) || payload == null)
 		{
-			error = "clanLeaderRelationOnce payload 与模块不匹配";
+			error = "clanLeaderRelationOnce payload does not match the module";
 			return false;
 		}
 		if (string.IsNullOrWhiteSpace(instance.ActorHeroId))
 		{
-			error = "clanLeaderRelationOnce 缺少冻结的政策发布者 Hero ID";
+			error = "clanLeaderRelationOnce requires the frozen policy publisher Hero ID";
 			return false;
 		}
 		if (!HasClanTargets(instance.TargetSet))

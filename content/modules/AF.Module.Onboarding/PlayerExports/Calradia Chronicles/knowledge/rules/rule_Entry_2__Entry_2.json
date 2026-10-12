@@ -1,0 +1,271 @@
+{
+  "Id": "rule_Entry_2",
+  "Keywords": [
+    "Siga"
+  ],
+  "RagShortTexts": [
+    "Siga’s assassination of Wendule led to the execution of his sister Varla"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": [
+          "clan_sturgia_2"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "hero:lord_2_3"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Xika is my proudest sister and also my deepest guilt. After Pandrak, I swallowed my hatred into my stomach, but she was different. She forged her hatred into a knife and stabbed it directly into Wendule's throat. She said she wanted to bring down Langward, to discredit the bastard, and she did her part - Windu was strangled to death, the alliance was broken, and Langward's wishful thinking was pierced by her knife. But I didn't do my part. Valla was hiding under my nose, but Langvald found her, cut off her head and sent her to the grassland. I owe Xijia an explanation, and I owe Valla a life. Now she is wandering on the ice sheet, and I am guarding Omore. We do not meet or communicate, but she knows that I am there, and I know that she is there. We're still doing the same thing - waiting. Wait for Langward to reveal his flaw, wait for the snow on the ice field to melt, wait for the Kulov family's sword to be unsheathed again. She said something that I still remember. She said that my father's head has not yet rested in peace. I can't forget it."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "hero:lord_2_4"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "My name is Siga Kulov. My father taught me a saying: The strong guard everything. I have kept it. Valla is the person I want to protect the most. She is fifteen years younger than me and as soft as spring snow. I tried my best to hide her in the safest place. In the end, she was dragged out of the hiding place and her head was cut off. I have done many things in my life - being a shieldmaiden, a mother, and an assassin. I sneaked into Nayan's castle on the grassland and cut his throat with my own hands; I married someone else and betrayed an engagement; I walked alone on the ice field for countless winters. But every time I closed my eyes, what I saw was not Wendule’s dying face, but Varla’s head being placed in a wooden box and sent back to Omore. Now my daughter Apolanea has grown up. She is in her early twenties. I have not given her a complete home or a stable mother. I have only given her a back figure that is always wandering outside. No one can repay these debts except Langward. I am the shield maiden on the ice field, the sword of the Kulov family. My father's revenge has not yet been avenged, and my knife is not dull yet."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "hero:lord_2_4_1"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "My mother is Siga Kulov. She is always leaving, always leaving. Each time she came back and stayed for only a few days, and then left again in the middle of the night. The sound of horse hooves gradually disappeared into the snow, and I knew that she was chasing her again - chasing her enemies, chasing justice, chasing the goal that could never be finished. Only when I grew up did I gradually understand. She is not running away, she is guarding the Kulov family in her own way. My father died early and my mother did not remarry. She entrusted me to my uncle Olek, and then wandered around the ice sheet, looking for opportunities to bring down the bastard who killed Aunt Valla. I am now in my early twenties and my mother is in her forties. The last time I saw her, she had white hair on her temples and a few scars on her face, but her ice-blue eyes had not changed at all. She said, Apolanea, you should study hard with your uncle. Mother has her own things to do. I said I know. I didn't tell her that I was also learning Shield Girl Kung Fu. I don't want to avenge her, I want to protect her home so that when she can't walk anymore, she still has a home to go to when she comes back."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": [
+          "clan_sturgia_1"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "hero:lord_2_1"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Siga Kulov is the most dangerous woman under my rule, more dangerous than Olek. Olek hates me, but he hates me in a reasonable way. He doesn't pay taxes or go to court, but he doesn't send troops or carry out assassinations. Siga was different, she stabbed Wendule to death directly in the castle. If my undercover hadn't found Varla in time, a war would have begun between Khuzait and Sturgia. The moment Varla's head was sent away, I knew that there was another blood debt that would never be wiped out in the accounts between me and the Kulov family. She's still out there. I've sent bounty hunters to chase her and undercover agents to keep an eye on her, but to no avail. She has lived on the ice field for decades and is more familiar with the snow than any of her pursuers. I'm not afraid that Olek will cut off my taxes. What I'm afraid of is that Siga will appear in my castle one night. She is a ghost on the ice field, the hatred of the Kulov family that refuses to die. The only thing I can do is to continue to raise the walls, light more torches, and wait for her to come."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": [
+          "clan_khuzait_3"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "hero:lord_6_5"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Siga Kulov killed my uncle Wendule. I remember this name better than anything else. She sneaked into his castle, stabbed him three times in the night, and then disappeared across the ice. It was a shame that the Archite tribe would never wash away - our leader was killed by a woman in his own room without even drawing his sword. I hate her, to the core of my being. But I also admit that she has the guts. A Sturgia woman sneaked into Nayan's castle in the grassland alone, completed the assassination, and escaped unscathed. She has not been caught yet. Only the top warriors can do this kind of thing on the grassland. She is an enemy, but she is an enemy that deserves to be taken seriously. I swore an oath in front of my father's grave that I would cut her throat to sacrifice to Uncle Wendule. This vow has not yet been fulfilled, but it will not expire."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": [
+          "clan_khuzait_1"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "hero:lord_6_1"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Siga Kulov is the most uncontrollable variable on the Sturgia ice sheet. Her assassination of Wendule directly destroyed the marriage between Sturgia and the Archite tribe, and indirectly led to Langward's execution of Valla in an attempt to calm things down. The woman has been wandering the ice fields ever since, without being caught or ceasing her activities. It is to our advantage that she hates Langward; it is against us that she killed Wendule. But she is different from Olek. Olek is controllable, and his hatred is frozen in silence. Sika is uncontrollable, and her hatred may turn into action at any time. I will not take the initiative to contact her, nor will I send anyone to hunt her down. As long as the tip of her knife is still pointed at Langward, she poses no threat to the Khanate for the time being. If Turag wants her life, that is the Archite Department's own business. I won't stop it, nor will I stand up for them."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": [
+          "clan_sturgia_2"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Miss Seaga is the sword of the Kulov family and the soul of the Kulov family. Her status in the clan is very special - she is not the clan leader or heir, but everyone in the clan mentions her name with an almost instinctive respect. She killed Wendule, a fact that is still whispered among the clan. But she lost more than any of us. She lost her husband, her sister, and her normal life. She wandered alone on the ice sheet for decades, with scars on her face and gray hair on her temples. But every winter, someone always found the horse hoof prints she left on the snow near Omore. She doesn't come back, but she never goes far. Her daughter, Miss Appolania, is now learning to lead troops in Omore from the clan leader. She has a personality like her, but is calmer than her younger self. People in the clan say that in the future Apolaniya will take over the leadership of the clan leader, and Miss Xiga will take over the leadership of the wind on the ice field."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": [
+          "clan_sturgia_1"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Siga Kulov is a knife that always hangs over our family’s head. She killed Wendule and ruined our marriage to Khuzait; she wanders the ice, ready to do something terrible again. Every time we put pressure on the Kulovs, someone reminds us that Siga is still out there. She wasn't caught, she wasn't killed, she didn't give up. This shadow caused Grand Duke Langward to double the number of guards every time he visited the north. We had privately discussed whether we could negotiate terms with Oleksei and reconcile with him in exchange for Xijia's seclusion. The conclusion is impossible. Siga will not listen to Olek. Even her dead father can't make her stop. She won't stop before Grand Duke Langvald's head falls to the ground."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Siga Kulov is the scariest legend we have ever heard in our lives. Legend has it that she sneaked into Nayan's castle on the grassland alone, slit Nayan's throat, and escaped completely; it was said that she had lived alone on the ice field for so many years, and the bounty hunter of Grand Duke Langward could not even touch her shadow; it was said that she would return to Omore every year, kneel in front of her father's tomb for one night, and then disappear again. Some of us are afraid of her, some of us respect her, and no one dares to look down upon her. The incident of her killing Wendule is still a taboo topic among the Sturgian aristocracy, because no one knows which side to take. She was avenging the Kulov family, but she also offended the royal family. The fact that she hasn't been caught yet speaks volumes."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Siga Kulov? The shield girl who killed the leader of the grassland! She is a legend on the ice field. The old people here tell her stories by the fire, and the young people worship her as a hero. It was said that she rode into the prairie people's castle alone, killed the leader, and then disappeared without a trace in the snowstorm. The Grand Duke sent people to capture her many times, but each time they came back empty-handed. Her story is widely circulated in northern villages. Some versions say that she can talk to wolves, and some versions say that she can walk on the snow without leaving any footprints. We know these exaggerations, but exaggeration is also an attitude - in the north, if a woman dares to confront the Grand Duke or face an entire ice field by herself, she is a living legend."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Siga Kulov was an uncomfortable subject on the steppe. It was disgraceful that Wendulenayan died at the hands of a woman from Sturgia; it was even more disgraceful that the murderer had wandered the ice for decades without being caught. But we secretly have another theory: she was pushed to this point by the Prince of Sturgia. Her father died under the prince's order to cut off the queen, and her sister died under the prince's knife. She killed Wendule to vent her anger on the family, not against the grassland. She was just a woman who refused to fall after being stabbed countless times by her own prince. You can't say this in front of Tu La Ge. Na Yan drew his sword as soon as he heard her name. But we feel less hatred for her and more wariness and a hint of awkward respect."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Siga? The Sturgia woman who killed Wendule of Archite's tribe. When people on the grassland heard this name, they reacted in two ways: those who lived near the Archite tribe all scolded her, saying that she should be tied to the back of a horse and dragged to death; those who lived elsewhere felt that the matter had nothing to do with their family, but felt that it was a bit evil that this woman could single-handedly enter the grassland people's castle."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Siga Kulov is one of the core members of the Kulov family in northern Sturgia and the most famous revenge-driven exile of our time. Her action trajectory condenses the structural conflict between a border noble family and the central royal power: her father was killed by the royal family due to lack of troops during the war, and her sister was executed by the royal family during the peace politics to calm external anger. She interrupted the royal family's diplomatic layout by assassinating the leader of the other party, and continued to wander on the ice sheet, becoming a long-term security risk within Sturgia. She is a woman who refuses to fall after being continuously betrayed by the royal family. She spends her remaining life pursuing an almost impossible justice. Langward has not yet stepped down from office, and Siga has not yet been arrested. Her story isn't over yet."
+    },
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Siga? A female assassin over there in Sturgia. The businessman told this story most enthusiastically - saying that she was a ghost on the ice sheet, who killed a leader on the grassland, then disappeared in the heavy snow, and is still wandering outside. The prince of Sturgia sent several groups of men to capture her, but they all failed. Her sister was beheaded by the prince, and her father was tricked and killed on the battlefield by the prince. The person she killed seemed to be her sister's groom, because the groom also caused trouble in the marriage. Anyway, it's all about blood feuds, and we can't quite understand it. But there is one thing that all businessmen admit - she can live on the ice field for so many years, in the wild no matter summer or winter, without being caught, this person is not ordinary. I heard that she has a daughter who has grown up and stays with her uncle. The running businessman sighed and said that this woman had been filled with hatred all her life and hoped that her daughter would not follow her path."
+    }
+  ],
+  "TextMappings": []
+}

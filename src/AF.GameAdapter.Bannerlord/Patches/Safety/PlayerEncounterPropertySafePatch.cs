@@ -57,7 +57,7 @@ internal static class PlayerEncounterPropertySafePatch
 		}
 		catch (Exception ex)
 		{
-			Logger.LogTrace("System", "❌ PlayerEncounterPropertySafePatch 注册失败: " + ex.Message);
+			Logger.LogTrace("System", "❌ PlayerEncounterPropertySafePatch Registration failed: " + ex.Message);
 		}
 	}
 

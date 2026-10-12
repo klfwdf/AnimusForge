@@ -1,0 +1,131 @@
+{
+  "Id": "rule_House_Foundations_Swyft",
+  "Keywords": [
+    "Swyft",
+    "House Swyft"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Swiffer family is based in Corn City and is the family of knights in the West. The fluttering rooster is its eye-catching symbol. Family history illustrates how money and marriage reshape aristocratic destiny: Harris Swyver took his daughter Donna as a hostage after incurring a debt, and she later married Kevan Lannister, turning the debt relationship into a blood tie. The fields and granaries of Corn City are the foundation of the family business, and the in-law relationship with Casterly Rock allows the family name to enter a higher-level power network."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The nobles of the West saw the reality from Swiffer's marriage: debt can humiliate a family, and marriage can turn humiliation into an alliance. Being married to a Lannister brings protection, but it also means that it will be harder for Corn City to escape the will of Casterly Rock."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Corn City farmers don’t find the rooster heraldry funny, because dawn, planting, and granaries are more important than feasting. They hope that Swiffer will remember that no matter how noble the in-laws are, they cannot allow the confiscated grain to grow back out of thin air."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Swyft The Swiffer family, with Corn City as its seat, is an important knightly family in the West. Its rise and fall involves debts, marriages and Lannister power. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Swyft The Swiffer family, with Corn City as its seat, is an important knightly family in the West. Its rise and fall involves debts, marriages and Lannister power. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Swyft The Swiffer family, with Corn City as its seat, is an important knightly family in the West. Its rise and fall involves debts, marriages and Lannister power. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Swyft The Swiffer family, with Corn City as its seat, is an important knightly family in the West. Its rise and fall involves debts, marriages and Lannister power. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Swyft: The Swiffer family, with Corn City as its seat, is an important knightly family in the West. Its rise and fall involves debts, marriages and Lannister power."
+  ]
+}

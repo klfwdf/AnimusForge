@@ -1,0 +1,155 @@
+{
+  "Id": "rule_House_Foundations_Lo",
+  "Keywords": [
+    "House Lo",
+    "Clan Lo",
+    "Exiles of Yi Ti"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Luo family was once a noble of Yi land, but was later exiled. After leaving their homeland, their families lost not only their land, but also their royal status, clan sacrifices, and the daily order that allowed their identities to be recognized by everyone; all they could take away were genealogies, seals, etiquette, family memories, and a few people who were willing to travel with them. Exile would force the Luo family to choose between two impulses: cling to old rituals to avoid being swallowed up by a foreign land, or learn the new environment in order to survive. It may seek to return, establish a new foundation, or serve a powerful outsider, but any path cannot avoid the same question - is the family name the responsibility of a living person, or is it just an old dream for reminiscence?"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "yiti"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "scholar",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "When Yidi scholars and nobles look at the Luo family, they will first ask why it was expelled, whether the genealogy is trustworthy, and whether the etiquette and laws are still consistent with the status. Some people sympathize with the old clan who have lost power, while others believe that exile itself is a decree of destiny."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "yiti"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "wanderer",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Business is more practical: if the Luo family understands the language, routes, and court etiquette, its exile status can be a bridge; if it only asks others to respect the past, it will soon find that there is no salary reserved for the old title in a foreign land."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "yiti"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "soldier",
+          "artisan"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Ordinary people who fled with their families bear the heaviest price. They are not only concerned about their vows to return home, but also about their accommodation tonight and their food rations tomorrow. If the Luo family forgets this, all they will preserve will be a genealogy without followers."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Lo The old aristocrats who were expelled from the center of power in Yi land preserved their identity through genealogy, etiquette, exile of relatives and the desire to return to order. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Lo The old aristocrats who were expelled from the center of power in Yi land preserved their identity through genealogy, etiquette, exile of relatives and the desire to return to order. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Lo The old aristocrats who were expelled from the center of power in Yi land preserved their identity through genealogy, etiquette, exile of relatives and the desire to return to order. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry House Lo The old aristocrats who were expelled from the center of power in Yi land preserved their identity through genealogy, etiquette, exile of relatives and the desire to return to order. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "House Lo: The old aristocrats who were expelled from the center of power in Yi land preserved their identity through genealogy, etiquette, exile of relatives and the desire to return to order."
+  ]
+}

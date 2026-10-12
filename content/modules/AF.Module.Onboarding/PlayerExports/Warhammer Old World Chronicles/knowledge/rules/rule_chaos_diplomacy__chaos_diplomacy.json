@@ -1,0 +1,209 @@
+{
+  "Id": "rule_chaos_diplomacy",
+  "Keywords": [
+    "chaos diplomacy",
+    "Chaos Diplomacy Tide of Destruction",
+    "North-South opposition",
+    "Chaos Invasion (chaos diplomacy)",
+    "Norsca Trade",
+    "mercenary",
+    "distrust",
+    "temporary truce"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "There is no true diplomacy between Chaos and the civilized worlds - only an endless cycle between tides of destruction and desperate resistance. The Chaos hordes of the north view the southern kingdoms like wheat fields waiting to be harvested, while the Empire, the Kislev, and the Dwarves live forever in the shadow of invasion. Occasionally Norsca tribes would trade or hire with the south, but this was little more than a temporary respite before the next invasion."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "chaos_culture"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "We don’t need diplomacy – we need awe. Southerners will only use their smooth tongues and false treaties to cover up their inner fears. When Norsca's dragon ships appeared on their shores, they begged for peace by offering gold, silver, and slaves, which revealed their fundamental weakness. The real conversation is conducted with ax and fire - every burning town is our message to the gods of the south: your gods are dead, your walls will fall, your civilization is but a sacrifice waiting to be harvested. Under the banner of the Everchosen, any negotiation has only one outcome: unconditional surrender or complete destruction."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Dealing with northern powers required extreme realism. Norsca tribes are not monolithic - during non-invasion cycles, some tribes are willing to work as mercenaries in exchange for gold, silver and supplies, and even serve as a buffer force to the north for a short period of time. But this kind of \"diplomacy\" is extremely dangerous and unreliable: the will of the Chaos Gods can change at any time, and today's mercenaries may become the vanguard of an invasion tomorrow. Any contact with northern forces must be conducted without exposing defensive weaknesses and always be prepared for the worst possible betrayal."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 100
+        },
+        "IdentityIds": null
+      },
+      "Content": "The history of North-South relations is a complex picture. At the Norscan level, coastal tribes have long both raided and traded the southern coastline, forming something of a raiding economy—they viewed southern goods as \"trophies for the brave,\" while southern port cities developed defenses specifically to deal with Norscan raids. Conflicts between the northern provinces of the empire (particularly Nordland and Osterland) and the Norsca people have raged for thousands of years, creating deep-seated racial and cultural hatreds. At the forefront of the North-South confrontation, Kislev developed a unique military culture and legendary ice wizardry tradition. Looking deeper, this opposition is not only military and geographical - it reflects the irreconcilability of two worldviews: the civilization of order believes in law, rationality and stability, while chaos represents a primitive, fluid worldview with force as the sole arbiter."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "There is one dimension of the diplomatic silence between North and South that is rarely documented—women’s informal diplomatic networks. Norsca shieldmaidens sometimes develop a peculiar, personal relationship with their southern captives during raids, based on recognition of personal courage. I once heard of a Norsca chieftain who sacked an imperial fishing village and freed all the women and children in the village - because she thought 'they looked like northerners protecting their children in a snowstorm'. On the Kislev side, the coven occasionally communicated silent messages with the prophets in the north through dreams. This communication did not have any written records, but it affected the border strategy at critical moments - such as the early evacuation of a village or town destined to be plundered."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Diplomacy between the Chaos Horde is far more important - and more deadly - than their 'diplomacy' with the South. I am the leader of the Black Wolf Clan, and I must send envoys to the four adjacent tribes to confirm the boundaries of our 'hunting areas' before each raiding season - this is not a peace agreement, but to prevent it from being exhausted in infighting before sufficient strength is gathered. The messenger system between tribes has its own set of unwritten rules: the messenger must be single and unarmed, put down his helmet on the threshold of the other party's longhouse (meaning 'my head is now in your hands'), and then start with the ancient war song of the other clan - singing the wrong line may mean death. I once spent a whole year learning the entire battle song of the Bingfang Clan, just to ensure that our two tribes could jointly plunder the Nordland of the Empire the next summer."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "I worked as a smuggler on the Kislev-Norsca border for seven years and learned the silent border rules between northern tribes. Norscans never cross the 'bloodstones' - those boundary markers at the edge of the wasteland stained dark brown with old blood. But what shocks me even more is their reaction when faced with fellow tribesmen who have been severely distorted by Chaos: If a Norsca tribe develops excessive mutations - for example, the people in the entire longhouse start to grow extra limbs and eyes - the neighboring tribes will not rescue them, nor will they use their weakness to attack. Instead, they will unanimously silence themselves, pull up all the dogs, and migrate in the opposite direction. Their fear of Chaos is more immediate than that of the South—for they know what it truly means to lose one's humanity."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The underground trade network between the Empire and Norsca is an open secret - but no one wants to admit its extent in official records. The trading guild I belonged to traced a precise pattern of connections between Norscan raids and subsequent trade: within three to six months of a major raid, Marienburg's gray market would be flooded with imperially minted gold crowns—southern coinage unavailable to the Norscans in the north, which they were eager to exchange for iron ingots, shipbuilding nails, and cured meats. The greatest economic irony is this: some merchants in the northern part of the empire actually secretly hoped for small-scale raids—not for fear of being robbed, but because the price elasticity of Norscan demand for southern goods during the post-raid trading season was almost zero, and profit margins far exceeded those in normal years."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "The North-South Opposition—The Irreconcilable Ontological Conflict between Chaos and Order Civilization",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Chaotic foreign relations and alliance system"
+  ]
+}

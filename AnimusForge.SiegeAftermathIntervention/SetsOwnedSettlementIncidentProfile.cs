@@ -14,7 +14,8 @@ public static class SetsOwnedSettlementIncidentProfile
 
     public const string EntryOptionText = "{=!}{AF_SETS_OWNED_INCIDENT_ENTRY_OPTION_TEXT}";
 
-    public const string LeaveOptionText = "收手离开";
+    public const string LeaveOptionText = "Withdraw and leave";
+    public const string LeaveOptionTextEn = "Withdraw and leave";
 
     public const uint MessageColor = 0xFFB6F7A8u;
 
@@ -39,14 +40,31 @@ public static class SetsOwnedSettlementIncidentProfile
 
     public static string BuildEntryOptionText(SetsSettlementSceneKind kind)
     {
+        return BuildEntryOptionText(kind, isEnglish: false);
+    }
+
+    public static string BuildEntryOptionText(SetsSettlementSceneKind kind, bool isEnglish)
+    {
+        if (isEnglish)
+        {
+            switch (kind)
+            {
+                case SetsSettlementSceneKind.Castle:
+                    return "Decide in Person at Castle";
+                case SetsSettlementSceneKind.Village:
+                    return "Decide in Person at Village";
+                default:
+                    return "Decide in Person at Town";
+            }
+        }
         switch (kind)
         {
             case SetsSettlementSceneKind.Castle:
-                return "亲自进堡决定";
+                return SiegeAftermathCompatibilityTexts.Raw("incident_enter_castle");
             case SetsSettlementSceneKind.Village:
-                return "亲自进村决定";
+                return SiegeAftermathCompatibilityTexts.Raw("incident_enter_village");
             default:
-                return "亲自进城决定";
+                return SiegeAftermathCompatibilityTexts.Raw("incident_enter_town");
         }
     }
 
@@ -80,65 +98,149 @@ public static class SetsOwnedSettlementIncidentProfile
 
     public static string BuildMenuText(string playerName, string settlementName)
     {
-        return BuildMenuText(SetsSettlementSceneKind.Town, playerName, settlementName);
+        return BuildMenuText(SetsSettlementSceneKind.Town, playerName, settlementName, isEnglish: false);
     }
 
     public static string BuildMenuText(SetsSettlementSceneKind kind, string playerName, string settlementName)
     {
-        string noun = SetsSettlementEntryProfile.GetSettlementNoun(kind);
-        return NormalizeName(playerName, "玩家") + "在" + NormalizeName(settlementName, "这处" + noun) + "大开杀戒。接下来，剩余居民的命运由你决定。";
+        return BuildMenuText(kind, playerName, settlementName, isEnglish: false);
+    }
+
+    public static string BuildMenuText(string playerName, string settlementName, bool isEnglish)
+    {
+        return BuildMenuText(SetsSettlementSceneKind.Town, playerName, settlementName, isEnglish);
+    }
+
+    public static string BuildMenuText(SetsSettlementSceneKind kind, string playerName, string settlementName, bool isEnglish)
+    {
+        string noun = SetsSettlementEntryProfile.GetSettlementNoun(kind, isEnglish);
+        if (isEnglish)
+        {
+            return NormalizeName(playerName, "The player") + " went on a slaughter in " + NormalizeName(settlementName, "this " + noun) + ". The fate of the remaining residents is yours to decide.";
+        }
+        return NormalizeName(playerName, SiegeAftermathCompatibilityTexts.Raw("player_fallback")) + SiegeAftermathCompatibilityTexts.Raw("incident_menu_in") + NormalizeName(settlementName, SiegeAftermathCompatibilityTexts.Raw("incident_this") + noun) + SiegeAftermathCompatibilityTexts.Raw("incident_menu_suffix");
     }
 
     public static string BuildEntryInstruction()
     {
-        return BuildEntryInstruction(SetsSettlementSceneKind.Town);
+        return BuildEntryInstruction(SetsSettlementSceneKind.Town, isEnglish: false);
     }
 
     public static string BuildEntryInstruction(SetsSettlementSceneKind kind)
     {
+        return BuildEntryInstruction(kind, isEnglish: false);
+    }
+
+    public static string BuildEntryInstruction(bool isEnglish)
+    {
+        return BuildEntryInstruction(SetsSettlementSceneKind.Town, isEnglish);
+    }
+
+    public static string BuildEntryInstruction(SetsSettlementSceneKind kind, bool isEnglish)
+    {
+        string noun = SetsSettlementEntryProfile.GetSettlementNoun(kind, isEnglish);
+        if (isEnglish)
+        {
+            if (kind == SetsSettlementSceneKind.Village)
+            {
+                return "[GCCZ village] This is an incident in an owned or governed village: you can enter in person to continue disposition, or withdraw and leave.";
+            }
+            return "[SETS] This is an incident in an owned/attached " + noun + ": you can enter in person to continue disposition, or withdraw and leave. Native devastation, pillage, and mercy options are hidden.";
+        }
+
         if (kind == SetsSettlementSceneKind.Village)
         {
-            return "【GCCZ村庄】这是自有/辖下村庄事件：你可亲自进村继续处置，也可收手离开。";
+            return SiegeAftermathCompatibilityTexts.Raw("incident_instruction_village");
         }
-        return "【SETS】这是自有/附属" + SetsSettlementEntryProfile.GetSettlementNoun(kind) + "事件：你可亲自进入继续处置，也可收手离开。原版毁坏、掠夺、宽恕选项已隐藏。";
+        return SiegeAftermathCompatibilityTexts.Raw("incident_instruction_prefix") + noun + SiegeAftermathCompatibilityTexts.Raw("incident_instruction_suffix");
     }
 
     public static string BuildLeaveMessage()
     {
-        return BuildLeaveMessage(SetsSettlementSceneKind.Town);
+        return BuildLeaveMessage(SetsSettlementSceneKind.Town, isEnglish: false);
     }
 
     public static string BuildLeaveMessage(SetsSettlementSceneKind kind)
     {
-        return "【SETS】你收手离开，没有再处置" + SetsSettlementEntryProfile.GetSettlementNoun(kind) + "内的剩余居民。";
+        return BuildLeaveMessage(kind, isEnglish: false);
+    }
+
+    public static string BuildLeaveMessage(bool isEnglish)
+    {
+        return BuildLeaveMessage(SetsSettlementSceneKind.Town, isEnglish);
+    }
+
+    public static string BuildLeaveMessage(SetsSettlementSceneKind kind, bool isEnglish)
+    {
+        string noun = SetsSettlementEntryProfile.GetSettlementNoun(kind, isEnglish);
+        if (isEnglish)
+        {
+            return "[SETS] You withdrew and left, taking no further action against the remaining residents of the " + noun + ".";
+        }
+        return SiegeAftermathCompatibilityTexts.Raw("incident_leave_prefix") + noun + SiegeAftermathCompatibilityTexts.Raw("incident_leave_suffix");
     }
 
     public static string BuildRelationPenaltyMessage(int penalty)
     {
-        return "【SETS】附属领地所有者因你的处置与玩家关系变化 " + penalty + "。";
+        return BuildRelationPenaltyMessage(penalty, isEnglish: false);
+    }
+
+    public static string BuildRelationPenaltyMessage(int penalty, bool isEnglish)
+    {
+        if (isEnglish)
+        {
+            return "[SETS] The relation of the attached domain owner with the player changed by " + penalty + " due to your disposition.";
+        }
+        return SiegeAftermathCompatibilityTexts.Raw("incident_penalty_prefix") + penalty + SiegeAftermathCompatibilityTexts.Raw("incident_penalty_suffix");
     }
 
     public static string BuildRuntimeContext(string playerName, string settlementName, bool alliedSoldier, bool civilian)
     {
-        return BuildRuntimeContext(SetsSettlementSceneKind.Town, playerName, settlementName, alliedSoldier, civilian);
+        return BuildRuntimeContext(SetsSettlementSceneKind.Town, playerName, settlementName, alliedSoldier, civilian, isEnglish: false);
+    }
+
+    public static string BuildRuntimeContext(string playerName, string settlementName, bool alliedSoldier, bool civilian, bool isEnglish)
+    {
+        return BuildRuntimeContext(SetsSettlementSceneKind.Town, playerName, settlementName, alliedSoldier, civilian, isEnglish);
     }
 
     public static string BuildRuntimeContext(SetsSettlementSceneKind kind, string playerName, string settlementName, bool alliedSoldier, bool civilian)
     {
-        string player = NormalizeName(playerName, "玩家");
-        string noun = SetsSettlementEntryProfile.GetSettlementNoun(kind);
-        string settlement = NormalizeName(settlementName, "这处" + noun);
-        string context = "【SETS自有/附属" + noun + "事件】当前不是普通攻城胜利后的陌生敌方定居点处置，而是" + player + "已经拥有或以国王身份统治的" + settlement + "内部事件。"
-            + player + "仍是现场最高命令来源，但居民是其领民；若这是附属领主领地，所有者会因玩家的伤害、搜掠或血洗而怨恨玩家。";
+        return BuildRuntimeContext(kind, playerName, settlementName, alliedSoldier, civilian, isEnglish: false);
+    }
+
+    public static string BuildRuntimeContext(SetsSettlementSceneKind kind, string playerName, string settlementName, bool alliedSoldier, bool civilian, bool isEnglish)
+    {
+        string noun = SetsSettlementEntryProfile.GetSettlementNoun(kind, isEnglish);
+        if (isEnglish)
+        {
+            string player = NormalizeName(playerName, "The player");
+            string settlement = NormalizeName(settlementName, "this " + noun);
+            string context = "[SETS OWNED/ATTACHED " + noun.ToUpperInvariant() + " INCIDENT] This is not an ordinary post-siege disposition of a foreign enemy settlement, but an internal incident within " + settlement + " already owned or ruled by " + player + " as monarch. "
+                + player + " remains the highest command authority on-site, but the residents are their subjects; if this is an attached vassal's domain, the owner will hate the player for harm, looting, or massacre.";
+            if (alliedSoldier)
+            {
+                context += " [ALLIED SOLDIER SPECIAL AWARENESS] You are a soldier/companion brought into the " + noun + " by the player, not the local garrison. If the player orders looting or massacre of their own subjects, you will still obey direct orders, but should show shock, hesitation, lowered voice, concern for reputation and the vassal lord's reaction; do not treat this as standard enemy loot rights, and do not escalate disposition on your own.";
+            }
+            if (civilian)
+            {
+                context += " [SUBJECT AWARENESS] You know the player is the master or king of this " + noun + ", not passing bandits; you may show fear, plead, or accuse, but do not deny the player's authority to rule.";
+            }
+            return context;
+        }
+
+        string playerCn = NormalizeName(playerName, SiegeAftermathCompatibilityTexts.Raw("player_fallback"));
+        string settlementCn = NormalizeName(settlementName, SiegeAftermathCompatibilityTexts.Raw("incident_this") + noun);
+        string contextCn = SiegeAftermathCompatibilityTexts.Raw("incident_ctx_prefix") + noun + SiegeAftermathCompatibilityTexts.Raw("incident_ctx_internal") + playerCn + SiegeAftermathCompatibilityTexts.Raw("incident_ctx_owned") + settlementCn + SiegeAftermathCompatibilityTexts.Raw("incident_ctx_incident") + playerCn + SiegeAftermathCompatibilityTexts.Raw("incident_ctx_authority");
         if (alliedSoldier)
         {
-            context += "【己方士兵特殊认知】你是玩家带入" + noun + "的士兵/同伴，不是当地守军。玩家若命令搜掠或血洗自己的领民，你仍会服从直接命令，但应表现出震惊、迟疑、压低声音、担忧名声和附属领主反应；不要把这当成普通敌方战利权，也不要自行升级处置。";
+            contextCn += SiegeAftermathCompatibilityTexts.Raw("incident_soldier_awareness_prefix") + noun + SiegeAftermathCompatibilityTexts.Raw("incident_soldier_awareness_suffix");
         }
         if (civilian)
         {
-            context += "【领民认知】你知道玩家是这处" + noun + "的主人或国王，不是路过强盗；你可以恐惧、求饶或控诉，但不要否认玩家的统治权。";
+            contextCn += SiegeAftermathCompatibilityTexts.Raw("incident_civilian_awareness_prefix") + noun + SiegeAftermathCompatibilityTexts.Raw("incident_civilian_awareness_suffix");
         }
-        return context;
+        return contextCn;
     }
 
     private static string NormalizeName(string value, string fallback)

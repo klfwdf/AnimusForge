@@ -1,0 +1,213 @@
+{
+  "Id": "rule_Cave_Ghoul",
+  "Keywords": [
+    "Tomb Ghoul",
+    "Devouring remains",
+    "distortion mutation",
+    "bite in groups",
+    "underground creatures",
+    "Tomb Monster",
+    "ghoul",
+    "Tomb Predator",
+    "underground horror",
+    "Hunting in packs",
+    "corpse eater",
+    "Mutations"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Catacomb Ghouls are twisted humanoid creatures that lurk in cemeteries, ruins, and catacombs, consuming human remains for a long time resulting in horrific physical and mental mutations. They attack in swarms, tearing apart their prey with their sharp claws, and are the bloodiest cannon fodder assault troopers in the undead legions."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Tomb Ghouls - the cheapest new force in our undead army! They were once humans - gravediggers, lunatics and desperadoes living at the bottom of society. Their bodies and souls were gradually distorted by dark energy due to long-term feeding on human corpses. Our vampires only have to cast specific seduction spells around the graveyard, and the ghouls will emerge from the cracks in the ground like maggots scenting carrion. They have no tactics, no discipline, or even a sense of self-preservation in battle - but the visual impact of hundreds of Crypt Ghouls scaling the city walls and pouring into the defenders' positions at the same time is enough to make even the most experienced soldiers lose their minds. The wet crunching sound of their bites and the inarticulate whimpers of their cannibalism can haunt an enemy's nightmares for the rest of their lives."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Tomb Ghouls are a typical low-cost, high-volume impact unit. Their killing efficiency in frontal combat is far inferior to that of regular infantry. Their real value lies in creating chaos and wearing down the enemy's physical strength. The key to dealing with ghouls is intensive long-range firepower and a solid formation - don't let them break through the front line, because once they pour in from the flanks or rear, the individual combat effectiveness of the soldiers will be difficult to exert in a group attack. Also pay special attention: Ghouls carry a variety of putrid diseases, and all ghoul corpses must be burned immediately after the war and the wounded must be isolated."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "The taxonomic status of the tomb ghouls has been a subject of debate among Imperial natural philosophers. They are not undead (based on normal physiological metabolism and reproductive capabilities), but they are not normal natural creatures (based on the fact that their mutations originate from dark energy rather than natural evolution). The transformation process of a ghoul usually takes between three and six months, depending on the individual's original constitution and exposure to corpse food. The first stage of transformation is a change in appetite (loss of interest in normal food), the second stage is physiological changes (loss of body hair, thickening of the skin to grayish white, abnormal growth of teeth and nails), and the third stage is mental deterioration (loss of language, regression of social behavior, emergence of necrophilia). The transformation process is accelerated by a disease called \"Ghoul Fever,\" which is spread through the saliva and claws of ghouls. Once a ghoul enters the second stage, the disposal requirement of imperial law is \"immediate execution and burning\" - because in the second stage and above, the ghoul has been judged to no longer retain a human soul."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Tomb Ghoul represents the most extreme depravity of human nature - first the loss of social identity and social connections, then the loss of the need for normal food, and finally the loss of one's sanity as a human being. I once saw with my own eyes a farmer who had survived a ghoul attack but was bitten during a border patrol - he looked at me with eyes that were no longer human and begged me to give him a clean death. I gave."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "There are three abandoned dwarf mines on the edge of our clan's territory - lairs of ghouls. Every few years when their numbers grow to the point where they start to threaten the villages, we have to organize hunting teams to go out and clean them up. Every time, there are tribesmen who never come out in the darkness. But if not cleaned up, they will be driven to the ground by hunger during the coldest part of winter, when the cost is even greater."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Tomb Ghouls have a habit that makes people feel chills on their backs - they play an unexplainable \"game\" on their prey before eating: they slowly circle around the dying prey and giggle. Some people say that it is the remaining human mind trying to experience happiness in a twisted way under the mutated shell. I don’t know if there is really any mental remnant, but I will remember that laughter for the rest of my life."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Crypt Ghouls themselves have no economic value - they do not buy anything, and they do not trade for anything. But contracts to clear ghoul lairs are a steady source of income in the Sylvanian borderlands. The local lord is willing to pay a considerable \"cleanup fee\" if you can come back alive and bring back evidence. The evidence is usually the ghoul's left ear - they have some kind of non-corruptible cartilage in their ears."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Tomb Ghouls are twisted humanoid underground creatures that have suffered physical and mental mutations caused by long-term cannibalism.",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Tomb Ghouls consume remains and mutate"
+  ]
+}

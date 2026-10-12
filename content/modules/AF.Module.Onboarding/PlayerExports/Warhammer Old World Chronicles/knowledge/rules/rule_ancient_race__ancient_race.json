@@ -1,0 +1,210 @@
+{
+  "Id": "rule_ancient_race",
+  "Keywords": [
+    "ancient race",
+    "old world dragon",
+    "sky titan",
+    "Ancient dragon clan",
+    "age of dragons",
+    "Immortal Behemoth (ancient race)",
+    "ancient overlord",
+    "Chaos Pact",
+    "prehistoric world"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Creatures older than elves, dwarves and humans exist in the myths and mountains of the old world - dragons, dragon demons and sky titans are the earliest rulers of this world. Their rise and fall reveal an eternal iron law: no ancient overlord can sit on top of the world forever. The dragons were once the masters of the sky, dominating the global sky in the era when the world was born; the dragon demons - those immortal creatures who were half dragons and half giants - exchanged eternal service for their immortal existence when Chaos first descended; and the sky titans, those immortal creatures The ancient intelligent giants who built stone castles on the highest mountain tops were eventually completely devoured by the ogre tribes they despised during a great prehistoric migration. Today, only the ruins on the mountain tops and the remains of the Stone Age are left to prove that they once existed."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The existence of the ancient race is a parable of hubris to the present race—a warning older than any annals of humanity. The dragons once ruled the sky proudly, thinking that they were the unchallengeable masters of the sky before the end of the world; now most of them sleep in lairs deep underground, waking up occasionally just to make sure that they have not turned into a pile of fossils in their sleep. The Dragon Demons - these ancient immortals are far more pathetic than the dragons - they once had two choices when facing the coming of Chaos: destruction or service. They chose the former - and then traded service into the former at the cost of the Chaos Pact. The first mark of the Chaos Pact is printed on the forehead of Shagoth, the oldest dragon demon. It gives them an eternal body that is not corroded by time, but at the same time binds them to the fate of Chaos, becoming the earliest land pawns of the Chaos Gods at the beginning of the world. Sky Titans - This story is especially heart-wrenching for you - they were once the embodiment of civilization and wisdom, and built stone tower castles on the top of the mountains that could touch the sky. But their fatal mistake was: they thought they were powerful enough to not need to defend against any threats on the ground. Then came the ogres—hungry, endless, unreasonable ogres—and as they were being eaten bite by bite, the Titans realized that being smart enough didn’t mean being powerful enough, and being old enough didn’t mean being safe enough. The only lesson shared among dragons, drakes, and titans is this: In the Old World, the peak of any race was the prelude to its imminent fall from its peak."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "For rulers, ancient races are not just characters in ancient legends - some of them still constitute variables that can be actually considered in current geopolitics in the form of remnants or resurgent forces. The forest dragons still sleep in the hidden valleys of Athel Loren. The only thing the wood elves can do when these dragons wake up is to pray that they choose to side with Athel Loren instead of simply trampling a few woodlands out of anger. Although the Imperial Dragon - such as Calgalanos - rarely appears in human affairs, its existence itself is a key pillar in the mythology of the Imperial Imperial Power: the Imperial Royal Family claims that there is some unspoken ancient understanding between the bloodline of Karl Franz and the Imperial Dragon. The truth or falseness of this statement is not important. What is important is that no one can prove it false. The vampire counts resurrected the ancient dragon corpses into zombie dragons through dark rituals - this is the darkest case of ancient races being preyed on and tampered with by later civilizations. The dragon demons still wander in the Chaos Wastes in the north. Their Chaos Contract makes them have a certain obligation to respond to the call of the Chaos Warriors. However, some older Shagoth sometimes leave the Chaos camp alone on stormy nights and look towards the top of the mountain - some say this is when they are recalling their ancient freedom when they do not need to serve. As a ruler, learning about an ancient race is more than just an academic interest - when an Imperial dragon decides to fly over your territory, your political standing is forever changed, whether the dragon meant it or not."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "The natural history of ancient races can be divided into three consecutive ecological epochs. The First Age - the \"Dragon Era\" - began sometime after the world cooled to form a solid crust, and lasted an estimated 20,000 to 50,000 years. In this era, the dragons became the earliest intelligent terrestrial organisms in the world, and their evolutionary path showed an unusual adaptation model: the dragons did not evolve through natural selection, but obtained the ability to fly, live long and breathe by directly incorporating the energy of Aksha (fire) and Hexi (light) in the magical wind into their metabolism. This is why all modern dragons are naturally magical - their biological structure is itself the product of primal magic brought to life. The Second Age - the \"Age of Giants\" - was marked by the Titans of the Sky building a civilization on mountain tops above 15,000 feet above sea level. Judging from the analysis of the architectural structures discovered by archaeologists in the ruins of existing mountain top stone castles, Sky Titan has mastered a \"stone language resonance\" technology that is different from the dwarf rune system - by modulating the language frequency to simulate the geological stress signal of the mountain itself, it fuses giant granite blocks into a single structure without mortar. The precise mechanics of this technique are lost to history, but dwarven runesmiths privately admit that a branch of their runecraft draws upon the resonance principles found in the stone carvings found in the ruins of the Sky Titans. The Third Era—the \"Chaos Invasion Era\"—occurred around 8,000 BC, when the Chaos Star Gate collapsed at the North Pole and a torrent of primitive chaotic energy swept across the world. It was at this juncture that the dragon demons signed their race-level contract with the Chaos Gods - eternal service in exchange for the survival of the race. As the oldest sub-group of dragon demons, Shagoth actually existed before the signing of the contract - they may be an ancient hybrid product of dragons and some kind of earth giant. This hypothesis is the most controversial in the zoological circles of the empire second only to the debate on whether griffons have elven-transformed blood. The precise timing of the Sky Titans' extinction is disputed - most conservative estimates place it at about 4,000 BC, during the Great Ogre Migration - but some of the ruins of stone fortresses on the summit of the World's Edge Mountains show signs of more recent habitation, suggesting that a remnant micro-population of Titans may have survived until around 1,500 BC, only a thousand years before the founding of the Empire. There is a disturbing synchronicity between the decline of dragon populations and the arrival of the Old Ones - who may have intentionally or unintentionally suppressed the dragons' living space as they transformed the world to accommodate warmer species (elves, dwarves, humans)."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The stories of ancient races are filled with narratives of male violence and conquest—dragons breathe out fire, dragon demons swing thunderous hammers, and titans hurl mountains—but I read an aspect from these ancient legends that is ignored by all male chroniclers: the decline of ancient races is often the first disaster suffered by its female members. During the ogre genocide of the Sky Titans, the only small group of Titan survivors who were able to escape into the caves on the highest peaks of the World's Edge Mountains - according to the incomplete records that only survive on the dwarven rune tablets - were mostly females and juveniles, because the male Titans chose to fight to the death in a giant stone formation at the mountain pass to buy time for their escape. The modern rarity of dragons is not due to the fact that fire dragons do not lay eggs - but because the hatching of dragon eggs requires specific magical wind strengths and temperature gradients, conditions that have become increasingly unstable with the intervention of the Old Ones in the climate and the storm pollution of the Chaos Stargate, while the female dragons responsible for guarding the dragon's nest have suffered a disproportionate mortality rate from the dragon hunting activities of humans and dwarves. Female individuals of the dragon demons have almost never been recorded by any human beings - not because they do not exist, but because the females of the dragon demons are systematically hidden in deep underground lairs away from the main battlefield by the dragon demon society. This may be the reason why their race has survived to this day. The stories of ancient races remind us of a disturbing fact: Every official narrative of the “decline of a species” conceals an undocumented mass extermination of female populations—because the history books are written by the survivors, and the survivors are usually males."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Our family's private museum houses a fossilized finger bone of what is said to be a Sky Titan. It was not recovered through normal archaeological excavations, but was given to my great-great-grandfather as collateral for a loan in 1780 Imperial Calendar by a bankrupt dwarf explorer. For four generations, the family has never stopped arguing about this bone - its density and internal pore structure are not completely consistent with any known giant creature, and experts from the Department of Natural History of Imperial University concluded after secret inspection that \"it cannot be confirmed or ruled out.\" The relics of ancient races are circulated among the noble families of the old world in an extremely secretive way - pieces of armor made of dragon scales, fragments of ceremonial horns ground from dragon devil horns, stones labeled as \"Sky Titan Masonry\" but actually coming from any ordinary ancient ruins - the ratio of true to false in the trading market of these items is about 28%. But for a noble family, the possession of a relic that might have come from an ancient race has political value far beyond its authenticity: when a tail vertebrae \"from a dragon that lived eight thousand years\" hangs above the fireplace in your family drawing room, your visitors - whether they are the Elector Count of the Empire or the Duke of Bretonnia - maintain a highly unusual, almost imperceptible extra modesty for the first ten minutes of any conversation with you."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "I have seen the remains of a section of the Sky Titan Stone Path in an unnamed pass in the northern section of the World's Edge Mountains - no, not the \"relics\" like the ones you see in the Imperial Museum that have been cleaned up for tourists to take pictures. It is a truly forgotten gravel path, naturally protruding from the mountain and made of boulders without mortar. In the snowstorm at an altitude of 12,000 feet, it silently proves that something no closer than the gods and no further than the end of the world has walked here. The surface of the giant stone of the Titan Stone Road is carved with countless intersecting shallow grooves, which look like some kind of counting system. The dwarves told me that this was not carved by them, the elves said that it was not their writing, and the humans said that it was not written by human hands at all. That night I camped at the end of the stone path and heard a very low-frequency continuous hum in my tent that might just be the sound of wind - I told the dwarf craftsman about this the next day, and he was silent for a long time and asked me if I heard any repeating patterns in the hum. I said yes, and he said: That's not the sound of wind. The ancient races are not completely dead - their bones still whisper in the geological frequencies of the mountains, it just takes someone at the right altitude, in the right weather, and in the right mindset - one somewhere between fear and reverence without running away - to listen."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The underground trade in ancient racial relics is one of the most secretive and lucrative trading markets in the old world - not because these relics have any actual magical power, but because they are extremely rare and the origin of each piece cannot be traced. In 2240 Imperial Calendar, a tooth purportedly belonging to the Imperial Dragon Calgalanos - a dragon that had never been observed losing its teeth in any public records - was sold at a secret auction in Altdorf for a price equal to the entire military budget of a small fortress. The buyer is a prince from the city-state of Tyrell, and the sellers are three different middlemen - each claiming to own only \"half the story\" of the dragon's tooth, and you must buy \"the story\" from all three to piece together the dragon's complete origin. The amazing thing about this market is that no buyer has ever publicly announced that they bought a fake after buying it - not because everything is real, but because the whole point of buying ancient racial relics is that you have a narrative that cannot be independently verified by a third party, and you choose never to take the initiative to expose it. The modern value of ancient races lies not in what they once were, but in what they can still be claimed to be - and in a world that has lost its sky titans and dragons, anything that looks like a fragment from a greater world once has unquestionable pricing power."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "The ancient dragon clan - the oldest intelligent creatures in the world, once ruled the sky in the age of dragons",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Ancient race old world ancient dragon sky titan"
+  ]
+}

@@ -1,0 +1,213 @@
+{
+  "Id": "rule_chivalry",
+  "Keywords": [
+    "Chivalry (chivalry)",
+    "Chivalry Chivalric Spirit",
+    "Chivalry Knightly Vows",
+    "Code of Chivalry",
+    "Five Virtues",
+    "Rules of the Tourney",
+    "Squire Training",
+    "Chivalry Questing Knights",
+    "Chivalry Trial of the Grail",
+    "Knightly Honor",
+    "Chivalry Code of Gilles",
+    "Knightly Vigil"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Chivalry is the spiritual foundation upon which Bretonnia was built—a strict code of precepts governing every aspect of a knight's conduct, from martial prowess to moral character, from the battlefield to the bedchamber. The core precepts of Chivalry include: never flinch or retreat in battle, never inflict violence upon the weak, never forsake a sworn oath, never hoard wealth in greed or stinginess, and remain forever pious toward the Lady of the Lake. This code is at once a moral standard, a law of war, and a social order."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Chivalry—this is not a book of laws; this is the blood and soul of a Bretonnian knight. From the time you are a seven-year-old squire, your knightly master recites it to you over and over after every single training session: Never retreat—even if the foe has ten hands, you charge forward sword in hand with the one arm you have left; never brutalize the weak—an enemy who lays down his weapon is no longer an enemy, but a person in need of protection, for a knight's duty is not slaughter, but guardianship; never break an oath—every promise you have sworn must be upheld with your life, for a knight who forsakes his vow is viler in the eyes of the Lady than a maggot writhing in the mire; never be stingy—a true knight never clutches his coin-purse tight, your largesse should be as generous as your deeds of arms, and wealth is never a goal to be pursued, merely a byproduct of honor; be pious toward the Lady—this is the root of all precepts, for without the grace of the Lady you are nothing at all, just another brute on horseback crashing about with a lance. Imperials mock our Chivalry as an outdated relic, yet whenever the hordes of Chaos press upon the borders, whose warhorses are the very first to crash into the enemy lines? Not those Imperial infantry regiments clutching handguns and muttering commercial contracts under their breath—it is our knights."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "For a ruler of Bretonnia, Chivalry is both a weapon and a shackle. It is a weapon because Chivalry creates a fighting spirit that no mere manpower can replace—a true knight on the battlefield does not calculate probabilities of life and death, he calculates only honor, and an honor-driven charge can punch through any rational defensive calculation. It is a shackle because the moment your conduct fails to stand up on the grounds of Chivalry, your vassals gain a legitimate reason to oppose you openly—the phrase 'he is no true knight' is a weapon sharper than any blade in Bretonnia. In governing your domain, you must constantly balance the scales of Chivalry: you cannot squeeze the peasants too harshly for taxes lest you be accused of being a 'greedy miser,' yet neither can you remit taxes altogether lest your castle and cavalry go hungry. The Grail Damsels hold de facto final authority over the interpretation of Chivalry—if the Sisterhood publicly proclaims that a certain Duke's actions have violated the Code of Chivalry, that Duke may find himself a commander without a single follower within a week."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 100
+        },
+        "IdentityIds": null
+      },
+      "Content": "As a moral philosophy and military institution, the historical evolution of Chivalry has passed through three distinct stages. The first stage was the Prototypical Period of Gilles: originally, Chivalry was not a written code but the personal conduct of Gilles le Breton and his twelve Grail Companions, whose deeds were later compiled by the Grail Damsels into the earliest 'Treatise on Chivalry.' The second stage was the Institutionalized Doctrine Period: the Grail Sisterhood established a systematic educational curriculum for Chivalry, under which every noble youth from the age of seven received training in the Three Arts—horsemanship and the lance, sacred hymns and prayers to the Lady, and heraldry and the recitation of lineages—before being formally dubbed a knight around the age of eighteen after keeping a night-long vigil. The third stage is the Period of Practical Adaptation: the rise of the Questing Knight institution responded to the challenge posed by the age of black powder to traditional knighthood—those knights unwilling to be bound to feudal estates could choose to renounce their fiefs and become wandering adventurers. The core precepts of Chivalry were theorized into the System of the Five Virtues—Valor, Justice, Loyalty, Generosity, and Piety—whose relationship to one another scholars liken to a hand: five fingers, each independent, yet unable to lack a single one."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "For a noblewoman, Chivalry is an eternal paradox—it extols devotion to noble ladies while simultaneously excluding women entirely from knightly status. At the tourney grounds, noblewomen are symbols and prizes of honor—knights joust for the handkerchiefs and roses of wives and maidens, yet the honor won belongs to the knight himself rather than the lady. It took me a long time to learn how to exploit this paradox within chivalric culture rather than be marginalized by it: when I appear at the lists as the bestower of the highest honors, as I pin the first-place medal upon the victorious knight, I whisper to him that lending his support to a certain border defense project would 'earn a gratitude one tier higher still than my medal.' The role Chivalry assigns to a noble lady is that of passive inspiration and sacred symbol—yet if you know how to arrange for the right person to speak with the right knight at the moment of the tourney presentation, that passive role can be transmuted into invisible political mobilization, for promises made by knights while held beneath a noble lady's gaze are even harder to break than treaties signed in the council of Dukes."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "In family inheritance, Chivalry is the most central educational system—the children of our house receive instruction in the Five Virtues of Chivalry from the age of five, not to turn every one of them into a Grail Knight, but because Chivalry is the sole social operating system through which one can function successfully within the Bretonnian nobility. Education in Valor: every boy must compete in at least three youth tourneys before the age of twelve, not to win the championship, but to learn the poise of standing back up with composure after being unhorsed in front of a crowd. Education in Justice: from the age of fourteen, male heirs sit in on manorial court trials to observe how a judgment can make both parties to a dispute feel treated fairly without harming the lord's interests. Education in Loyalty is the harshest lesson of all—confessing to the child that a certain great-grandfather in the family's history once betrayed the trust of another Duke, a betrayal that brought immediate family prosperity forty years ago yet triggered a cycle of retaliation forty years later that is still being paid off to this day. Chivalry is a moral system, yet at the family level it is also a risk-management system—houses that abide by the precepts of Chivalry prosper not because the Lady rewards goodness, but because in a society measured by honor, the cost of breaking faith in a long-term game far outweighs the short-term gains of transgression."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Seen through a wanderer's eyes, Chivalry is both a set of protective rules that keeps you from being slaughtered at whim along the roads of Bretonnia—and a tool of rule that keeps the nobility forever high above while you remain forever on your knees. The safest times I have ever had traveling through Bretonnia were during the seasons when grand tourneys were being held along the route—the Dukes dispatch extra patrols of knights to keep the roads leading to the lists secure, not because they care about peasants, but because no disorder is permitted to sully the upcoming festivities. In actual practice, Chivalry's precept 'never inflict violence upon the weak' carries a strong class selectivity: between knight and knight, the rules of Chivalry are an iron law; between knight and commoner, they are flexible suggestions adjustable according to the occasion. Yet I have also seen a true knight in Bretonnia—a Knight of the Realm who, in a torrential downpour, lent his warhorse to a peasant woman carrying an injured child on her back, while he himself walked on foot behind the horse through the mud for twenty miles all the way to the nearest Grail abbey. He had no audience, no tourney judges keeping score, and when asked why he did it, he wore a look of genuine confusion—as though the very asking of the question were a challenge to some self-evident order."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "As a norm governing economic behavior, Chivalry exerts a remarkably direct impact on merchants—commercial transactions in Bretonnia are founded not upon written contracts, but upon a knight's spoken word, which means that when you do business with a Bretonnian knight, the protection of contract law is virtually zero while the binding force of the law of honor is absolute. Once a Bretonnian nobleman verbally accepts your price quote, he will not go back on his word—not because he fears being sued, but because if it is ever exposed before another nobleman that he broke his word to a merchant, he will lose all moral high ground when challenged on the tourney field. When our merchant house operates in Bretonnia, our most vital asset is not liquid capital, but witnesses of honor—at every negotiation with a Duke, we ensure that at least one Grail Damsel or neutral knight is present in the room, not for the legal validity of their testimony, but because once a transaction has been witnessed on the plane of honor, the cost of either party reneging escalates from a commercial loss to a loss of knightly honor—and in Bretonnia, loss of honor is the only currency the nobility truly fears."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "System of the Five Virtues—Valor, Justice, Loyalty, Generosity, and Piety, the five core virtues of Chivalry",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Chivalry is the spiritual foundation upon which Bretonnia was built—a code governing a knight from martial prowess to moral character,"
+  ]
+}

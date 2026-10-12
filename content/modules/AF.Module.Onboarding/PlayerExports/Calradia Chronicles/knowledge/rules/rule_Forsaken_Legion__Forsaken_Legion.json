@@ -1,0 +1,134 @@
+{
+  "Id": "rule_Forsaken_Legion",
+  "Keywords": [
+    "Legion of the Outcast",
+    "Legion of the Forsaken"
+  ],
+  "RagShortTexts": [
+    "The Forsaken Legion is well-disciplined, reliable, and fights for commissions."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "char:legion_of_the_betrayed_tier_1",
+          "char:legion_of_the_betrayed_tier_2",
+          "char:legion_of_the_betrayed_tier_3"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "I know nothing but fighting. I was still young when the Legion was disbanded. I had no home, no land, and no skills. The Forsaken Legion took me in. We fight when we are paid, and the banners of our employers change. We only recognize the rules of the legion. Blow the trumpet in the morning, practice on time, and get a military stick if you make a mistake. These rules are still there, and we are still an army."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "legion_of_the_betrayed"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "From the perspective of the Forsaken Legion themselves, the answer to this question is simple: they fight for commissions, but their souls belong to the old Legion that has disappeared. They live to fight, fight to live, and the meaning of living is not to forget that they were once a true legionnaire. The soldiers under my command are all from the old army. Their strengths are discipline and battle formation, but their weakness is that they only recognize their own rules and not those of their employer. We rely on contracts to make a living, taking jobs from the empire and foreign countries. As long as the commission is fair and the contract is clear, we will fight."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Forsaken Legion is reliable and far superior to most of the Archon's private armies. Their discipline and battle experience are the legacy of the old legions. But they also accept contracts from foreigners and cannot be treated completely as one of their own. With them it's a deal: we put in the money, they put in the effort, and that's it."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "I heard that they are from the previous legion. Now that the empire has no standing army, they band together as mercenaries. Whoever gives the money will fight for whom. They still look like a legion, but they are no longer soldiers of the empire."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "clan_empire_west_1",
+          "clan_empire_west_2",
+          "clan_empire_west_3",
+          "clan_empire_west_4",
+          "clan_empire_west_6",
+          "clan_empire_west_7",
+          "clan_empire_west_8",
+          "clan_empire_west_9"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Legion of Outcasts? Those old diehards who cling to the old regiment's rules. I respect them three points, but I don’t trust them five points. Respect them because they can fight. The territory of the Western Empire has the most borders with the barbarians, and there has never been any peace on the border. We have hired the Abandoned Legion to fight several battles, and their formation advancement and formation transformation are beyond the capabilities of the newly recruited soldiers who have been trained for ten years. The foundation of the old legion is not given in vain. There is an army of outcasts standing on the battlefield, and you feel at ease. The reason they don’t trust them is because what they have in mind is the empire, not our empire—it’s the old empire that is long gone in their memories. They did not care who was legitimate, Lucon or Rhagaea, or whether General Garius should be emperor. They only care about whether the employer's contract is written clearly, whether the wages can be paid on time, and whether there is a place for them to practice according to the old rules after the war. You can afford such a person, but you cannot rely on him. Today if you give them money, they will beat you. Tomorrow, if someone else gives you more money, they will beat you for others. This is not speculation, it has happened. After all, they are a group of people who don't belong. Those of us who are fighting against Galios are fighting for a piece of territory, a status, and a future. Do they have it? They had nothing but a bunch of old rules and the title of \"outcast.\" The scariest thing about this kind of people is that they don't care about anything except fighting. And those of us who care about territory and status will always have to plot against each other over the things they care about. We can't count them because we have something we want and they don't."
+    },
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Saw them passing by. The rules are stricter than other mercenaries, and they don't cause harm to the people, but they are not close to anyone. The employer's flag changes frequently, and it's hard to tell who they belong to."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Outcast Legion is a mercenary force maintained by the rules of the old Legion. Their fighting strength comes from discipline, but their sense of belonging lies not with their employer, but with the legion itself. This means that they are only loyal to the contract and not to the person."
+    }
+  ],
+  "TextMappings": []
+}

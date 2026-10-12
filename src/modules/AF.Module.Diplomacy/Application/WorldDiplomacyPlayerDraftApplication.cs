@@ -12,15 +12,15 @@ internal static class WorldDiplomacyPlayerDraftApplication
         input = null;
         run = null;
         error = "";
-        if (string.IsNullOrWhiteSpace(body)) { error = "请先写下标题或拟文要点。"; return false; }
-        if (!SaveRuntimeGuard.IsCurrentGeneration(generation)) { error = "当前拟文窗口已因读档失效，请重新打开。"; return false; }
+        if (string.IsNullOrWhiteSpace(body)) { error = DiplomacyUiLocalization.Text("AF_DIP_UI_Compose_DraftNeedBody", "Write a title or draft notes first."); return false; }
+        if (!SaveRuntimeGuard.IsCurrentGeneration(generation)) { error = DiplomacyUiLocalization.Text("AF_DIP_UI_Compose_DraftStaleWindow", "The current draft window was invalidated by loading a game; please reopen it."); return false; }
         WorldDiplomacyBehavior.GetDiplomaticDeclarationCharacterRange(out int minimum, out int maximum);
         WorldDiplomacyPlayerDraftInput snapshot = new WorldDiplomacyPlayerDraftInput(body, minimum, maximum, generation);
         string preference = DuelSettings.GetSettings()?.WorldDiplomacyPrompt ?? "";
         if (!WorldDiplomacyLlmClient.TryPrepareSingleCall(WorldDiplomacyPlayerDraftRules.BuildMessages(snapshot, preference),
             WorldDiplomacyPlayerDraftRules.GetOutputTokenBudget(snapshot), 90000, "WorldDiplomacyPlayerDraft", generation, out var call, out _))
         {
-            error = "书记官暂时无法拟稿，请检查外交使用的事件/叛乱API或主API设置。";
+            error = DiplomacyUiLocalization.Text("AF_DIP_UI_Compose_DraftApiMissing", "The scribe cannot draft documents right now. Check the event/rebellion API or main API settings.");
             return false;
         }
         input = snapshot;
@@ -29,9 +29,9 @@ internal static class WorldDiplomacyPlayerDraftApplication
             WorldDiplomacyApiCallResult result = await call(token).ConfigureAwait(false);
             token.ThrowIfCancellationRequested();
             if (result?.IsOutputTruncated == true)
-                return WorldDiplomacyPlayerDraftResult.Failed("稿件因输出上限被截断，原文已保留。请检查API输出上限。");
+                return WorldDiplomacyPlayerDraftResult.Failed(DiplomacyUiLocalization.Text("AF_DIP_UI_Compose_DraftTruncated", "The draft was truncated by the output limit; original text was kept. Please raise the API output limit."));
             if (result?.Success != true)
-                return WorldDiplomacyPlayerDraftResult.Failed("书记官拟稿失败，原文已保留。请检查连接设置后重试。");
+                return WorldDiplomacyPlayerDraftResult.Failed(DiplomacyUiLocalization.Text("AF_DIP_UI_Compose_DraftFailed", "The scribe could not draft the document; original text was kept. Try again."));
             return WorldDiplomacyPlayerDraftRules.Parse(result.Content);
         };
         return true;

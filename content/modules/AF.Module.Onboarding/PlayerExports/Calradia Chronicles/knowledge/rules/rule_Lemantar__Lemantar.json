@@ -1,0 +1,94 @@
+{
+  "Id": "rule_Lemantar",
+  "Keywords": [
+    "Lemantar",
+    "Furs"
+  ],
+  "RagShortTexts": [
+    "Lemantar's furs are famous throughout Vlandia."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Lemantar is a village near Ostican, situated amid the mountains of the Ebur Peninsula. Tall, straight spruces and firs cover the steep slopes, where villagers trap fur-bearing animals such as martens, rabbits, and foxes. Recently this wilderness has attracted many new settlers drawn by the relative freedom of the forests."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Lemantar's furs are famous across all of Vlandia. The marten pelts from the Ebur mountains are soft and dense, and the foxes in the fir woods have fine coats that make the prettiest neckpieces. Besides, the nobles don't keep a tight grip on that area, so plenty of folks looking for a freer life head out there."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "townsfolk"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The fur trade in Lemantar is brisk; hunters set traps in the hills, and a prime marten pelt fetches plenty of denars. More and more newcomers are moving there—they say the place may be wild, but it's free, without so many tax collectors breathing down your neck."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Lemantar is a fine place to lie low. The mountains of the Ebur Peninsula are deep and cold, with spruce forests blotting out the sky so anyone unfamiliar with the terrain gets lost right away. I met a hunter there who told me he only comes down from the mountain twice a year, spending the rest of his time dealing with fur beasts in the woods. There are more and more people like him—folks who don't want to be bossed around by nobles."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Lemantar",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "Ostican",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

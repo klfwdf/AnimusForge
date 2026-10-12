@@ -1,0 +1,150 @@
+{
+  "Id": "rule_Commodities_and_Trade_Grain_Heartland_of_the_Riverlands",
+  "Keywords": [
+    "Grain Heartland of the Riverlands"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Entry The Riverlands had abundant water and fertile soil, and mills and wheat fields would have made it a prosperous place. But it happened to be located where the army could easily pass: the lord counted the harvest, and the farmers prayed that the military flag would not cross the field ridge again. Therefore, the granary was both a treasure and the first to be targeted"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "river"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Grain Heartland of the Riverlands"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "river"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "artisan",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Grain Heartland of the Riverlands"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "sailor",
+          "wanderer",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Grain Heartland of the Riverlands"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Grain Heartland of the Riverlands The Riverlands had abundant water and fertile soil, and mills and wheat fields would have made it a prosperous place. But it happened to be located where the army could easily pass: the lord counted the harvest, and the farmers prayed that the military flag would not cross the field ridge again. Therefore, the granary was both a treasure and the first to be targeted. Any break in the place of origin, checkpoints, shipping schedules, debts and protection fees will immediately make the nobles in the distance feel the changes in price and power."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Grain Heartland of the Riverlands The Riverlands had abundant water and fertile soil, and mills and wheat fields would have made it a prosperous place. But it happened to be located where the army could easily pass: the lord counted the harvest, and the farmers prayed that the military flag would not cross the field ridge again. Therefore, the granary was both a treasure and the first to be targeted. They may not necessarily understand ledgers, but they know the true weight of a bag of salt and a nail on the road."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Grain Heartland of the Riverlands The Riverlands had abundant water and fertile soil, and mills and wheat fields would have made it a prosperous place. But it happened to be located where the army could easily pass: the lord counted the harvest, and the farmers prayed that the military flag would not cross the field ridge again. Therefore, the granary was both a treasure and the first to be targeted. Some people turn raw materials into tools, cloth and medicine, others set festivals and taboos for exchange; wealth is piled up by many hands, and rarely belongs to just one name."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Grain Heartland of the Riverlands The Riverlands had abundant water and fertile soil, and mills and wheat fields would have made it a prosperous place. But it happened to be located where the army could easily pass: the lord counted the harvest, and the farmers prayed that the military flag would not cross the field ridge again. Therefore, the granary was both a treasure and the first to be targeted. If prices rise but wages do not, prosperity in distant places will only become thinner bread; if roads are safe, even small villages can get a little spring from trade."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Grain Heartland of the Riverlands: The Riverlands had abundant water and fertile soil, and mills and wheat fields would have made it a prosperous place. But it happened to be located where the army could easily pass: the lord counted the harvest, and the farmers prayed that the military flag would not cross the field ridge again. Therefore, the granary was both a treasure and the first to be targeted."
+  ]
+}

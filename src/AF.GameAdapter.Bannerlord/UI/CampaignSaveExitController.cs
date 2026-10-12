@@ -5,12 +5,21 @@ using TaleWorlds.Core;
 using TaleWorlds.MountAndBlade;
 using TaleWorlds.SaveSystem;
 using TaleWorlds.Library;
+using TaleWorlds.Localization;
 using SaveAndExitStage = AnimusForge.MyBehavior.SaveAndExitStage;
 using SaveAndExitReason = AnimusForge.MyBehavior.SaveAndExitReason;
 namespace AnimusForge;
 // Transient ONNX admission and save completion state. No persistence containers or campaign host ownership.
 internal sealed class CampaignSaveExitController
 {
+    private static string Localized(string id, string fallback)
+        => new TextObject("{=" + id + "}" + fallback).ToString();
+
+    private static string LocalizedError(string id, string fallback, string error)
+    {
+        return DeveloperUiText.Format(id, fallback, ("ERROR", (object)error));
+    }
+
  private readonly Action _showWeeklyFailure;
  internal CampaignSaveExitController(Action showWeeklyFailure) { _showWeeklyFailure=showWeeklyFailure; }
 	internal bool _missingOnnxGateActive;
@@ -74,13 +83,13 @@ internal void ProcessPendingMissingOnnxGateCheck()
             if (available)
             {
                 Logger.Log("OnnxGate", "background initialization complete");
-                InformationManager.DisplayMessage(new InformationMessage("本地知识模型已就绪。"));
+                InformationManager.DisplayMessage(new InformationMessage(Localized("AF_UI_SaveExit_OnnxReady", "The local knowledge model is ready.")));
             }
             else
             {
                 _onnxFailureMessage = completed
-                    ? "本地知识模型缺失或加载失败。请检查 Modules\\AnimusForge\\ONNX 模型包和 Mod_Logic.txt，修复后重新启动游戏。"
-                    : "本地知识模型初始化超过 60 秒，已停止等待。游戏界面仍可操作，请保存退出并检查模型包和 Mod_Logic.txt 后重启。";
+                    ? Localized("AF_UI_SaveExit_OnnxUnavailable", "The local knowledge model is missing or failed to load. Check the Modules\\AnimusForge\\ONNX model package and Mod_Logic.txt, then restart the game.")
+                    : Localized("AF_UI_SaveExit_OnnxTimeout", "Local knowledge model initialization exceeded 60 seconds and stopped waiting. The game remains usable; save and exit, then check the model package and Mod_Logic.txt before restarting.");
                 Logger.Log("OnnxGate", completed ? "background initialization unavailable" : "background initialization timed out; native worker not aborted");
             }
             return;
@@ -95,11 +104,11 @@ internal void ProcessPendingMissingOnnxGateCheck()
             _onnxStartedAtUtcTicks = DateTime.UtcNow.Ticks;
             _onnxInitialization = OnnxEmbeddingEngine.Instance.InitializeAsync(moduleRoot);
             Logger.Log("OnnxGate", "background initialization started");
-            InformationManager.DisplayMessage(new InformationMessage("正在初始化本地知识模型，首次加载可能较慢；完成前暂不可使用 AF 对话。"));
+            InformationManager.DisplayMessage(new InformationMessage(Localized("AF_UI_SaveExit_OnnxInitializing", "Initializing the local knowledge model. The first load may take a while; AF conversations are unavailable until it finishes.")));
         }
         catch (Exception ex)
         {
-            _onnxFailureMessage = "无法启动本地知识模型加载，请检查 Mod_Logic.txt 后重启游戏。";
+            _onnxFailureMessage = Localized("AF_UI_SaveExit_OnnxStartFailed", "Could not start the local knowledge model loader. Check Mod_Logic.txt and restart the game.");
             Logger.Log("OnnxGate", "initialization could not start: " + ex.Message);
         }
     }
@@ -129,12 +138,12 @@ internal void ShowMissingOnnxGatePopup()
     {
         if (_onnxInitialization != null)
         {
-            InformationManager.DisplayMessage(new InformationMessage("本地知识模型仍在加载，请稍候；无需重新填写玩家背景。"));
+            InformationManager.DisplayMessage(new InformationMessage(Localized("AF_UI_SaveExit_OnnxStillLoading", "The local knowledge model is still loading. Please wait; you do not need to re-enter the player's background.")));
             return;
         }
 		_missingOnnxGateResumeAfterUtcTicks = DateTime.UtcNow.Ticks + TimeSpan.FromMilliseconds(100.0).Ticks;
 		InformationManager.HideInquiry();
-		InformationManager.ShowInquiry(new InquiryData("本地知识模型不可用", _onnxFailureMessage ?? "请将完整 RAG 模型包解压到 Modules\\AnimusForge\\ONNX 后重新启动游戏。", isAffirmativeOptionShown: true, isNegativeOptionShown: false, "保存并退出", "", ExitCurrentGameBecauseOnnxMissing, null), pauseGameActiveState: true);
+		InformationManager.ShowInquiry(new InquiryData(Localized("AF_UI_SaveExit_OnnxPopupTitle", "Local knowledge model unavailable"), _onnxFailureMessage ?? Localized("AF_UI_SaveExit_OnnxPopupBody", "Extract the complete RAG model package into Modules\\AnimusForge\\ONNX, then restart the game."), isAffirmativeOptionShown: true, isNegativeOptionShown: false, Localized("AF_UI_SaveExit_SaveAndExit", "Save and exit"), "", ExitCurrentGameBecauseOnnxMissing, null), pauseGameActiveState: true);
 	}
 
 internal void ExitCurrentGameBecauseOnnxMissing()
@@ -150,7 +159,7 @@ internal void ExitCurrentGameBecauseOnnxMissing()
 		}
 		catch (Exception ex)
 		{
-			HandleSaveAndExitFailure(SaveAndExitReason.MissingOnnx, "保存并退出失败：" + ex.Message);
+			HandleSaveAndExitFailure(SaveAndExitReason.MissingOnnx, LocalizedError("AF_UI_SaveExit_Failed", "Save and exit failed: {ERROR}", ex.Message));
 		}
 	}
 
@@ -167,12 +176,12 @@ internal void BeginSaveAndExitCurrentGame(SaveAndExitReason reason)
 		if (saveHandler.IsSaving)
 		{
 			_saveAndExitStage = SaveAndExitStage.WaitingForCurrentSave;
-			InformationManager.DisplayMessage(new InformationMessage("检测到当前已有保存进行中，完成后将再保存一次并自动退出。"));
+			InformationManager.DisplayMessage(new InformationMessage(Localized("AF_UI_SaveExit_SaveInProgress", "A save is already in progress. Another save will run after it finishes, then the game will exit automatically.")));
 			return;
 		}
 		_saveAndExitStage = SaveAndExitStage.WaitingForRequestedQuickSave;
 		saveHandler.QuickSaveCurrentGame();
-		InformationManager.DisplayMessage(new InformationMessage("正在保存当前存档，保存完成后将自动退出。"));
+		InformationManager.DisplayMessage(new InformationMessage(Localized("AF_UI_SaveExit_Saving", "Saving the current game. The game will exit automatically when saving is complete.")));
 	}
 
 internal void OnSaveOver(bool isSuccessful, string saveName)
@@ -191,12 +200,12 @@ internal void OnSaveOver(bool isSuccessful, string saveName)
 					SaveAndExitReason saveAndExitReason = _saveAndExitReason;
 					_saveAndExitStage = SaveAndExitStage.None;
 					_saveAndExitReason = SaveAndExitReason.None;
-					HandleSaveAndExitFailure(saveAndExitReason, "保存并退出失败：未找到存档保存器。");
+					HandleSaveAndExitFailure(saveAndExitReason, Localized("AF_UI_SaveExit_SaveHandlerMissing", "Save and exit failed: no save handler was found."));
 					return;
 				}
 				_saveAndExitStage = SaveAndExitStage.WaitingForRequestedQuickSave;
 				saveHandler.QuickSaveCurrentGame();
-				InformationManager.DisplayMessage(new InformationMessage("正在保存当前存档，保存完成后将自动退出。"));
+				InformationManager.DisplayMessage(new InformationMessage(Localized("AF_UI_SaveExit_Saving", "Saving the current game. The game will exit automatically when saving is complete.")));
 				return;
 			}
 			SaveAndExitReason saveAndExitReason2 = _saveAndExitReason;
@@ -207,14 +216,14 @@ internal void OnSaveOver(bool isSuccessful, string saveName)
 				MBGameManager.EndGame();
 				return;
 			}
-			HandleSaveAndExitFailure(saveAndExitReason2, "保存当前存档失败，已取消退出。");
+			HandleSaveAndExitFailure(saveAndExitReason2, Localized("AF_UI_SaveExit_SaveFailed", "Saving the current game failed; exit cancelled."));
 		}
 		catch (Exception ex)
 		{
 			SaveAndExitReason saveAndExitReason3 = _saveAndExitReason;
 			_saveAndExitStage = SaveAndExitStage.None;
 			_saveAndExitReason = SaveAndExitReason.None;
-			HandleSaveAndExitFailure(saveAndExitReason3, "保存并退出失败：" + ex.Message);
+			HandleSaveAndExitFailure(saveAndExitReason3, LocalizedError("AF_UI_SaveExit_Failed", "Save and exit failed: {ERROR}", ex.Message));
 		}
 	}
 

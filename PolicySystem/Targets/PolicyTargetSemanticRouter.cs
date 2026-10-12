@@ -127,7 +127,7 @@ internal static class PolicyTargetObjectiveEvidence
 {
 	private static readonly HashSet<string> GenericAliases = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
 	{
-		"帝国", "王国", "国家", "本国", "我国", "国内", "政权"
+		PolicyCompatibilityTexts.Get("Targets_Compat_24c60e89e082"), PolicyCompatibilityTexts.Get("Legacy_BuildRawPolicyTargetLabel_097"), PolicyCompatibilityTexts.Get("Targets_Compat_0cc659a9f57c"), PolicyCompatibilityTexts.Get("Targets_Compat_f752e00f622d"), PolicyCompatibilityTexts.Get("Targets_Compat_2f293016a5ff"), PolicyCompatibilityTexts.Get("Targets_Compat_cec69ce03690"), PolicyCompatibilityTexts.Get("Targets_Compat_f1377277c151")
 	};
 
 	internal static IReadOnlyList<PolicyTargetEntitySnapshot> FindStrictMentionedEntities(
@@ -419,11 +419,11 @@ internal static class PolicyTargetSemanticRouter
 	{
 		if (queryVector == null || queryVector.Length <= 0)
 		{
-			throw new ArgumentException("政策目标 query embedding 无效。", nameof(queryVector));
+			throw new ArgumentException("Policy target query embedding is invalid.", nameof(queryVector));
 		}
 		if (context?.Snapshot?.Entities == null)
 		{
-			throw new InvalidOperationException("政策目标语义快照不可用。");
+			throw new InvalidOperationException("Policy target semantic snapshot is unavailable.");
 		}
 		PolicyTargetSemanticIndex index = GetOrBuildIndex(context.Snapshot);
 		Dictionary<string, PolicyTargetEntitySnapshot> currentEntities = context.Snapshot.Entities
@@ -504,7 +504,7 @@ internal static class PolicyTargetSemanticRouter
 	{
 		if (recall?.Items == null)
 		{
-			throw new ArgumentException("政策目标语义召回结果无效。", nameof(recall));
+			throw new ArgumentException("Policy target semantic recall result is invalid.", nameof(recall));
 		}
 		List<ScoredRecallItem> scored = recall.Items
 			.Select(item => new ScoredRecallItem { Item = item, Score = item.RecallScore })
@@ -600,7 +600,7 @@ internal static class PolicyTargetSemanticRouter
 				EntityId = kingdom.StringId,
 				OwnerKingdomId = kingdom.StringId,
 				DisplayName = kingdomName,
-				RetrievalText = "国家 王国 政权 " + kingdomName + " ID " + kingdom.StringId + " 统治者 " + SafeText(kingdom.Leader?.Name, "") + " 文化 " + cultureName,
+				RetrievalText = PolicyCompatibilityTexts.Get("Targets_Compat_2edeee0ab5d6") + kingdomName + " ID " + kingdom.StringId + PolicyCompatibilityTexts.Get("Targets_Compat_a1a73e16845f") + SafeText(kingdom.Leader?.Name, "") + PolicyCompatibilityTexts.Get("Targets_Compat_9d52c73ade76") + cultureName,
 				MentionAliases = BuildMentionAliases(kingdomName, kingdom.StringId),
 				HasPosition = hasKingdomPosition,
 				PositionX = kingdomX,
@@ -629,7 +629,7 @@ internal static class PolicyTargetSemanticRouter
 					OwnerClanId = clan.StringId,
 					OwnerKingdomId = kingdom.StringId,
 					DisplayName = clanName,
-					RetrievalText = "家族 氏族 贵族 " + clanName + " 别名 " + informalName + " ID " + clan.StringId + " 领袖 " + leaderName + " 所属国家 " + kingdomName + " 文化 " + clanCulture,
+					RetrievalText = PolicyCompatibilityTexts.Get("Targets_Compat_6da1befe1a08") + clanName + PolicyCompatibilityTexts.Get("Targets_Compat_448cf7f4df07") + informalName + " ID " + clan.StringId + PolicyCompatibilityTexts.Get("Targets_Compat_692cc786cc5c") + leaderName + PolicyCompatibilityTexts.Get("Targets_Compat_edc62ff1f0cd") + kingdomName + PolicyCompatibilityTexts.Get("Targets_Compat_9d52c73ade76") + clanCulture,
 					MentionAliases = BuildMentionAliases(clanName, informalName, clan.StringId),
 					HasPosition = hasClanPosition,
 					PositionX = clanX,
@@ -649,8 +649,8 @@ internal static class PolicyTargetSemanticRouter
 						EntityId = clan.StringId,
 						OwnerClanId = clan.StringId,
 						OwnerKingdomId = kingdom.StringId,
-						DisplayName = leaderName + "→其氏族领地",
-						RetrievalText = "领袖 统治者 贵族 " + leaderName + " ID " + clan.Leader.StringId + " 所属氏族 " + clanName + " 所属国家 " + kingdomName,
+						DisplayName = leaderName + PolicyGenerationPromptTexts.Get("Targets_Text_a38ce950cf79", " -> their clan's fiefs"),
+						RetrievalText = PolicyCompatibilityTexts.Get("Targets_Compat_b7ab70e7378b") + leaderName + " ID " + clan.Leader.StringId + PolicyCompatibilityTexts.Get("Targets_Compat_115d55d24500") + clanName + PolicyCompatibilityTexts.Get("Targets_Compat_edc62ff1f0cd") + kingdomName,
 						MentionAliases = BuildMentionAliases(leaderName, clan.Leader.StringId),
 						HasPosition = hasClanPosition,
 						PositionX = clanX,
@@ -717,7 +717,7 @@ internal static class PolicyTargetSemanticRouter
 		Vec2 position = settlement.GetPosition2D;
 		string settlementName = SafeText(settlement.Name, settlement.StringId);
 		string ownerClanId = settlement.OwnerClan?.StringId ?? "";
-		string typeText = settlement.IsCastle ? "城堡" : "城市";
+		string typeText = settlement.IsCastle ? PolicyCompatibilityTexts.Get("Legacy_GetPolicyPromptFiefType_049") : PolicyCompatibilityTexts.Get("Targets_Compat_ed84a1665f79");
 		IReadOnlyList<string> mentionAliases = BuildPrimaryFiefMentionAliases(
 			settlement,
 			settlementName,
@@ -731,7 +731,7 @@ internal static class PolicyTargetSemanticRouter
 			OwnerClanId = ownerClanId,
 			OwnerKingdomId = kingdom?.StringId ?? string.Empty,
 			DisplayName = settlementName,
-			RetrievalText = "定居点 " + typeText + " 领地 " + settlementName + " ID " + settlement.StringId + " 所属氏族 " + SafeText(settlement.OwnerClan?.Name, "") + " 所属国家 " + kingdomName + " 文化 " + SafeText(settlement.Culture?.Name, cultureName),
+			RetrievalText = PolicyCompatibilityTexts.Get("Targets_Compat_7f13c8c5383c") + typeText + PolicyCompatibilityTexts.Get("Targets_Compat_de7fbc881bdc") + settlementName + " ID " + settlement.StringId + PolicyCompatibilityTexts.Get("Targets_Compat_115d55d24500") + SafeText(settlement.OwnerClan?.Name, "") + PolicyCompatibilityTexts.Get("Targets_Compat_edc62ff1f0cd") + kingdomName + PolicyCompatibilityTexts.Get("Targets_Compat_9d52c73ade76") + SafeText(settlement.Culture?.Name, cultureName),
 			MentionAliases = mentionAliases,
 			IsCity = settlement.IsTown,
 			IsCastle = settlement.IsCastle,
@@ -760,14 +760,14 @@ internal static class PolicyTargetSemanticRouter
 			OnnxEmbeddingEngine embedding = OnnxEmbeddingEngine.Instance;
 			if (embedding == null || !embedding.IsAvailable)
 			{
-				throw new InvalidOperationException("政策目标 ONNX embedding 不可用：" + (embedding?.LastError ?? "unknown"));
+				throw new InvalidOperationException("Policy target ONNX embedding is unavailable: " + (embedding?.LastError ?? "unknown"));
 			}
 			List<IndexedEntity> items = new List<IndexedEntity>(snapshot.Entities.Count);
 			foreach (PolicyTargetEntitySnapshot entity in snapshot.Entities)
 			{
 				if (!embedding.TryGetEmbedding(entity.RetrievalText, out float[] vector) || vector == null || vector.Length <= 0)
 				{
-					throw new InvalidOperationException("政策目标实体向量构建失败：" + entity.DocumentId + "：" + (embedding.LastError ?? "unknown"));
+					throw new InvalidOperationException("Policy target entity vector build failed: " + entity.DocumentId + ": " + (embedding.LastError ?? "unknown"));
 				}
 				items.Add(new IndexedEntity { DocumentId = entity.DocumentId, Vector = vector });
 			}
@@ -782,14 +782,14 @@ internal static class PolicyTargetSemanticRouter
 		OnnxEmbeddingEngine embedding = OnnxEmbeddingEngine.Instance;
 		if (embedding == null || !embedding.IsAvailable)
 		{
-			throw new InvalidOperationException("政策目标 Facet ONNX embedding 不可用：" + (embedding?.LastError ?? "unknown"));
+			throw new InvalidOperationException("Policy target Facet ONNX embedding is unavailable: " + (embedding?.LastError ?? "unknown"));
 		}
 		Dictionary<string, float[]> result = new Dictionary<string, float[]>(StringComparer.Ordinal);
 		foreach (PolicyTargetSemanticFacet facet in Facets)
 		{
 			if (!embedding.TryGetEmbedding(facet.RetrievalText, out float[] vector) || vector == null || vector.Length <= 0)
 			{
-				throw new InvalidOperationException("政策目标 Facet 向量构建失败：" + facet.Id + "：" + (embedding.LastError ?? "unknown"));
+				throw new InvalidOperationException("Policy target Facet vector build failed: " + facet.Id + ": " + (embedding.LastError ?? "unknown"));
 			}
 			result.Add(facet.Id, vector);
 		}
@@ -803,7 +803,7 @@ internal static class PolicyTargetSemanticRouter
 			.OrderByDescending(item => item.Score)
 			.ThenByDescending(item => item.Item.RecallScore)
 			.Take(3)
-			.Select(item => ProjectProposal(item.Item.Entity, context.Scope, item.Score, "实体语义:" + item.Item.Entity.DisplayName))
+			.Select(item => ProjectProposal(item.Item.Entity, context.Scope, item.Score, PolicyGenerationPromptTexts.Get("Targets_Text_054c02d5e9bd", "Entity semantics: ") + item.Item.Entity.DisplayName))
 			.Where(item => item != null)
 			.ToList();
 		List<ScoredRecallItem> orderedFacets = scored
@@ -940,7 +940,7 @@ internal static class PolicyTargetSemanticRouter
 				ordered[0].Item.Entity,
 				context.Scope,
 				ordered[0].Score,
-				"实体名称近似命中:" + ordered[0].Item.Entity.DisplayName);
+				PolicyGenerationPromptTexts.Get("Targets_Text_20a08576c8f0", "Approximate entity-name match: ") + ordered[0].Item.Entity.DisplayName);
 			if (proposal != null)
 			{
 				result.Add(proposal);
@@ -1023,12 +1023,12 @@ internal static class PolicyTargetSemanticRouter
 		}
 		switch (facet.Id)
 		{
-			case "type_kingdom": return normalizedQuery.Contains("国家") || normalizedQuery.Contains("王国") || normalizedQuery.Contains("政权") || normalizedQuery.Contains("kingdom");
-			case "type_clan": return normalizedQuery.Contains("家族") || normalizedQuery.Contains("氏族") || normalizedQuery.Contains("贵族") || normalizedQuery.Contains("clan");
-			case "type_ruler": return normalizedQuery.Contains("统治者") || normalizedQuery.Contains("领袖") || normalizedQuery.Contains("领主") || normalizedQuery.Contains("君主") || normalizedQuery.Contains("国王") || normalizedQuery.Contains("女王") || normalizedQuery.Contains("ruler");
-			case "type_settlement": return normalizedQuery.Contains("定居点") || normalizedQuery.Contains("领地") || normalizedQuery.Contains("settlement");
-			case "type_city": return normalizedQuery.Contains("城市") || normalizedQuery.Contains("城镇") || normalizedQuery.Contains("都市") || normalizedQuery.Contains("城区") || normalizedQuery.Contains("city");
-			case "type_castle": return normalizedQuery.Contains("城堡") || normalizedQuery.Contains("堡") || normalizedQuery.Contains("要塞") || normalizedQuery.Contains("关隘") || normalizedQuery.Contains("castle");
+			case "type_kingdom": return normalizedQuery.Contains(PolicyCompatibilityTexts.Get("Targets_Compat_0cc659a9f57c")) || normalizedQuery.Contains(PolicyCompatibilityTexts.Get("Legacy_BuildRawPolicyTargetLabel_097")) || normalizedQuery.Contains(PolicyCompatibilityTexts.Get("Targets_Compat_f1377277c151")) || normalizedQuery.Contains("kingdom");
+			case "type_clan": return normalizedQuery.Contains(PolicyCompatibilityTexts.Get("Legacy_BuildRawPolicyTargetLabel_091")) || normalizedQuery.Contains(PolicyCompatibilityTexts.Get("Targets_Compat_12af41cb2d29")) || normalizedQuery.Contains(PolicyCompatibilityTexts.Get("Targets_Compat_f49dc9dc440f")) || normalizedQuery.Contains("clan");
+			case "type_ruler": return normalizedQuery.Contains(PolicyCompatibilityTexts.Get("Generation_RulerFallback")) || normalizedQuery.Contains(PolicyCompatibilityTexts.Get("Targets_Compat_f9f0546e964e")) || normalizedQuery.Contains(PolicyCompatibilityTexts.Get("Targets_Compat_90c42cbd6c54")) || normalizedQuery.Contains(PolicyCompatibilityTexts.Get("Targets_Compat_37ab35120d1a")) || normalizedQuery.Contains(PolicyCompatibilityTexts.Get("Targets_Compat_38e917f02192")) || normalizedQuery.Contains(PolicyCompatibilityTexts.Get("Targets_Compat_8655bf651c8c")) || normalizedQuery.Contains("ruler");
+			case "type_settlement": return normalizedQuery.Contains(PolicyCompatibilityTexts.Get("Legacy_BuildRawPolicyTargetLabel_095")) || normalizedQuery.Contains(PolicyCompatibilityTexts.Get("Targets_Compat_f9bab1c5399d")) || normalizedQuery.Contains("settlement");
+			case "type_city": return normalizedQuery.Contains(PolicyCompatibilityTexts.Get("Targets_Compat_ed84a1665f79")) || normalizedQuery.Contains(PolicyCompatibilityTexts.Get("Legacy_GetPolicyPromptFiefType_050")) || normalizedQuery.Contains(PolicyCompatibilityTexts.Get("Targets_Compat_d7eef7209e79")) || normalizedQuery.Contains(PolicyCompatibilityTexts.Get("Targets_Compat_a10c545fdb9c")) || normalizedQuery.Contains("city");
+			case "type_castle": return normalizedQuery.Contains(PolicyCompatibilityTexts.Get("Legacy_GetPolicyPromptFiefType_049")) || normalizedQuery.Contains(PolicyCompatibilityTexts.Get("Targets_Compat_61a401cf32d4")) || normalizedQuery.Contains(PolicyCompatibilityTexts.Get("Targets_Compat_5ec7f9ec424e")) || normalizedQuery.Contains(PolicyCompatibilityTexts.Get("Targets_Compat_7f3b34fa6d00")) || normalizedQuery.Contains("castle");
 			default: return true;
 		}
 	}
@@ -1039,22 +1039,22 @@ internal static class PolicyTargetSemanticRouter
 		{
 			return true;
 		}
-		if (normalizedQuery.Contains("村") || normalizedQuery.Contains("village"))
+		if (normalizedQuery.Contains(PolicyCompatibilityTexts.Get("Targets_Compat_32bd97013331")) || normalizedQuery.Contains("village"))
 		{
 			return false;
 		}
-		bool castleCue = normalizedQuery.Contains("城堡")
-			|| normalizedQuery.Contains("堡")
-			|| normalizedQuery.Contains("要塞")
-			|| normalizedQuery.Contains("关隘")
+		bool castleCue = normalizedQuery.Contains(PolicyCompatibilityTexts.Get("Legacy_GetPolicyPromptFiefType_049"))
+			|| normalizedQuery.Contains(PolicyCompatibilityTexts.Get("Targets_Compat_61a401cf32d4"))
+			|| normalizedQuery.Contains(PolicyCompatibilityTexts.Get("Targets_Compat_5ec7f9ec424e"))
+			|| normalizedQuery.Contains(PolicyCompatibilityTexts.Get("Targets_Compat_7f3b34fa6d00"))
 			|| normalizedQuery.Contains("castle");
 		if (castleCue)
 		{
 			return entity.IsCastle;
 		}
-		bool cityCue = normalizedQuery.Contains("城市")
-			|| normalizedQuery.Contains("城镇")
-			|| normalizedQuery.Contains("城区")
+		bool cityCue = normalizedQuery.Contains(PolicyCompatibilityTexts.Get("Targets_Compat_ed84a1665f79"))
+			|| normalizedQuery.Contains(PolicyCompatibilityTexts.Get("Legacy_GetPolicyPromptFiefType_050"))
+			|| normalizedQuery.Contains(PolicyCompatibilityTexts.Get("Targets_Compat_a10c545fdb9c"))
 			|| normalizedQuery.Contains("city");
 		if (cityCue)
 		{
@@ -1250,7 +1250,7 @@ internal static class PolicyTargetSemanticRouter
 				EntityId = entity.OwnerKingdomId,
 				OwnerKingdomId = entity.OwnerKingdomId,
 				DisplayName = entity.OwnerKingdomId,
-				Evidence = evidence + "→所属王国",
+				Evidence = evidence + PolicyGenerationPromptTexts.Get("Targets_Text_99a8beafaddd", " -> owning kingdom"),
 				Score = score,
 				CurrentSettlementCount = 0
 			};
@@ -1344,43 +1344,43 @@ internal static class PolicyTargetSemanticRouter
 	{
 		return new[]
 		{
-			Facet("relation_enemy", "relation", "敌国 敌对国家 交战国 战争对手 敌方势力"),
-			Facet("relation_ally", "relation", "盟国 同盟国家 友好盟友 联盟伙伴"),
-			Facet("relation_foreign", "relation", "外国 海外国家 其他国家 外部势力"),
-			Facet("relation_domestic", "relation", "本国 国内 自己国家 境内"),
-			Facet("direction_north", "direction", "北方 北部 以北 北境"),
-			Facet("direction_south", "direction", "南方 南部 以南 南境"),
-			Facet("direction_east", "direction", "东方 东部 以东 东境"),
-			Facet("direction_west", "direction", "西方 西部 以西 西境"),
-			Facet("type_kingdom", "type", "政策机械目标是整个国家、整个王国、整个政权或整个势力"),
-			Facet("type_clan", "type", "家族 氏族 贵族家族"),
-			Facet("type_ruler", "type", "领袖 统治者 君主 家族首领"),
-			Facet("type_settlement", "type", "定居点 领地 城镇 城堡"),
-			Facet("type_city", "type", "城市 城镇 都市 商业城市"),
-			Facet("type_castle", "type", "城堡 要塞 堡垒"),
-			Facet("geography_border", "geography", "边境 前线 边疆 接壤地区 边防"),
-			Facet("metric_wealth_high", "metric", "政策明确要求按家族当前金币财富排序，选择最富有、财富最高、金钱最多或财力最雄厚的家族", true),
-			Facet("metric_wealth_low", "metric", "最贫穷 财富最低 缺钱 财力最弱"),
-			Facet("metric_influence_high", "metric", "影响力最高 最有权势 政治影响最大", true),
-			Facet("metric_influence_low", "metric", "影响力最低 最无权势 政治影响最弱"),
-			Facet("metric_strength_high", "metric", "最强大 实力最高 军力最强", true),
-			Facet("metric_strength_low", "metric", "最弱小 实力最低 军力最弱"),
-			Facet("metric_fiefs_high", "metric", "封地最多 领地最多 控制地区最多", true),
-			Facet("metric_fiefs_low", "metric", "封地最少 领地最少 控制地区最少"),
-			Facet("metric_food_high", "metric", "粮食最多 粮仓充足 储粮最高", true),
-			Facet("metric_food_low", "metric", "粮食最少 缺粮 饥荒 储粮最低"),
-			Facet("metric_prosperity_high", "metric", "最繁荣 繁荣度最高 经济最发达", true),
-			Facet("metric_prosperity_low", "metric", "最贫困 繁荣度最低 经济最落后"),
-			Facet("metric_loyalty_high", "metric", "忠诚最高 最忠诚", true),
-			Facet("metric_loyalty_low", "metric", "忠诚最低 最不忠 叛乱风险"),
-			Facet("metric_security_high", "metric", "治安最好 安全度最高 最安全", true),
-			Facet("metric_security_low", "metric", "治安最差 安全度最低 最危险"),
-			Facet("metric_hearth_high", "metric", "附属村庄平均户数最高 炉户最多 hearth最高", true),
-			Facet("metric_hearth_low", "metric", "附属村庄平均户数最低 炉户最少 hearth最低"),
-			Facet("metric_militia_high", "metric", "民兵最多 民兵最高 militia最高", true),
-			Facet("metric_militia_low", "metric", "民兵最少 民兵最低 militia最低"),
-			Facet("distance_nearest", "distance", "最近 距离最近 邻近 就近"),
-			Facet("distance_farthest", "distance", "最远 距离最远 偏远", true)
+			Facet("relation_enemy", "relation", PolicyCompatibilityTexts.Get("Targets_Compat_1bc2520e8c07")),
+			Facet("relation_ally", "relation", PolicyCompatibilityTexts.Get("Targets_Compat_b5a43c1f6c81")),
+			Facet("relation_foreign", "relation", PolicyCompatibilityTexts.Get("Targets_Compat_e342c5a250b1")),
+			Facet("relation_domestic", "relation", PolicyCompatibilityTexts.Get("Targets_Compat_f3ce27edac60")),
+			Facet("direction_north", "direction", PolicyCompatibilityTexts.Get("Targets_Compat_7a1771e49662")),
+			Facet("direction_south", "direction", PolicyCompatibilityTexts.Get("Targets_Compat_c0654d3463e8")),
+			Facet("direction_east", "direction", PolicyCompatibilityTexts.Get("Targets_Compat_d464628fa125")),
+			Facet("direction_west", "direction", PolicyCompatibilityTexts.Get("Targets_Compat_c55f0d0a134e")),
+			Facet("type_kingdom", "type", PolicyCompatibilityTexts.Get("Targets_Compat_1df93f7754e3")),
+			Facet("type_clan", "type", PolicyCompatibilityTexts.Get("Targets_Compat_9aea7d8d75dc")),
+			Facet("type_ruler", "type", PolicyCompatibilityTexts.Get("Targets_Compat_660407989dcb")),
+			Facet("type_settlement", "type", PolicyCompatibilityTexts.Get("Targets_Compat_80ee5523b224")),
+			Facet("type_city", "type", PolicyCompatibilityTexts.Get("Targets_Compat_c90ebc9d2704")),
+			Facet("type_castle", "type", PolicyCompatibilityTexts.Get("Targets_Compat_82c99ff833b4")),
+			Facet("geography_border", "geography", PolicyCompatibilityTexts.Get("Targets_Compat_48dc984d92f7")),
+			Facet("metric_wealth_high", "metric", PolicyCompatibilityTexts.Get("Targets_Compat_c58a53e58c38"), true),
+			Facet("metric_wealth_low", "metric", PolicyCompatibilityTexts.Get("Targets_Compat_e9721faa1464")),
+			Facet("metric_influence_high", "metric", PolicyCompatibilityTexts.Get("Targets_Compat_f1aaab848f61"), true),
+			Facet("metric_influence_low", "metric", PolicyCompatibilityTexts.Get("Targets_Compat_6e15fe6194ae")),
+			Facet("metric_strength_high", "metric", PolicyCompatibilityTexts.Get("Targets_Compat_e26bee2f3829"), true),
+			Facet("metric_strength_low", "metric", PolicyCompatibilityTexts.Get("Targets_Compat_7da87d04bfc9")),
+			Facet("metric_fiefs_high", "metric", PolicyCompatibilityTexts.Get("Targets_Compat_fbe392c081bc"), true),
+			Facet("metric_fiefs_low", "metric", PolicyCompatibilityTexts.Get("Targets_Compat_584c38dc9a4f")),
+			Facet("metric_food_high", "metric", PolicyCompatibilityTexts.Get("Targets_Compat_22bfd140d6cc"), true),
+			Facet("metric_food_low", "metric", PolicyCompatibilityTexts.Get("Targets_Compat_7344d4fe06fe")),
+			Facet("metric_prosperity_high", "metric", PolicyCompatibilityTexts.Get("Targets_Compat_31fe4cb9e70c"), true),
+			Facet("metric_prosperity_low", "metric", PolicyCompatibilityTexts.Get("Targets_Compat_a1ddcfcdafa6")),
+			Facet("metric_loyalty_high", "metric", PolicyCompatibilityTexts.Get("Targets_Compat_fdad03c4bee1"), true),
+			Facet("metric_loyalty_low", "metric", PolicyCompatibilityTexts.Get("Targets_Compat_3a577c875ddd")),
+			Facet("metric_security_high", "metric", PolicyCompatibilityTexts.Get("Targets_Compat_942b8fd6032b"), true),
+			Facet("metric_security_low", "metric", PolicyCompatibilityTexts.Get("Targets_Compat_bb5bf9a9bd85")),
+			Facet("metric_hearth_high", "metric", PolicyCompatibilityTexts.Get("Targets_Compat_ae7739822531"), true),
+			Facet("metric_hearth_low", "metric", PolicyCompatibilityTexts.Get("Targets_Compat_036e88ef2afb")),
+			Facet("metric_militia_high", "metric", PolicyCompatibilityTexts.Get("Targets_Compat_e61213bf1404"), true),
+			Facet("metric_militia_low", "metric", PolicyCompatibilityTexts.Get("Targets_Compat_9222b05f325a")),
+			Facet("distance_nearest", "distance", PolicyCompatibilityTexts.Get("Targets_Compat_affe8b9f933b")),
+			Facet("distance_farthest", "distance", PolicyCompatibilityTexts.Get("Targets_Compat_15185b07b5f6"), true)
 		};
 	}
 
@@ -1551,7 +1551,7 @@ internal static class PolicyTargetSemanticRouter
 			|| KingdomSemanticAdditionLimit > 3
 			|| Facets.Count != Facets.Select(facet => facet.Id).Distinct(StringComparer.Ordinal).Count())
 		{
-			throw new InvalidOperationException("政策目标语义路由内部约束无效。");
+			throw new InvalidOperationException("Policy target semantic routing internal contract is invalid.");
 		}
 	}
 

@@ -45,7 +45,7 @@ internal static class ReplyShortcutReplay
                 ? new WorldDiplomacyPlayerDocumentCommand("我想向b国提出贸易。", 7, "source", "stale-ui-round")
                 : new WorldDiplomacyPlayerDocumentCommand("我想向b国提出贸易。", 7);
             int jobs = owner.CurrentStorage.Jobs.Count;
-            Test.True(WorldDiplomacyPlayerApplication.Execute(world, command, owner).Contains("已经公开发布"),
+            Test.True(WorldDiplomacyPlayerApplication.Execute(world, command, owner).Contains(SmokeLocalizationEnvironment.EnglishUi ? "has been published" : "已经公开发布"),
                 "both compose entries accept a ruler regardless of old round or independence");
             var published = owner.CurrentStorage.Documents.Single(x => x.IsPlayerAuthored);
             Test.True(owner.CurrentStorage.Documents.Count == 2 && published.IsReadyForPublication
@@ -63,7 +63,7 @@ internal static class ReplyShortcutReplay
             Test.True(old.Participants.Single(x => x.KingdomId == "p").MandatoryReplyPending && old.State == state,
                 "submission alone does not settle the old event or revive closed state");
             world.Player = new(7, "p", false, true, "p");
-            Test.True(WorldDiplomacyPlayerApplication.Execute(world, command, owner).Contains("不再是王国统治者")
+            Test.True(WorldDiplomacyPlayerApplication.Execute(world, command, owner).Contains(SmokeLocalizationEnvironment.EnglishUi ? "no longer the ruler of your kingdom" : "不再是王国统治者")
                 && owner.CurrentStorage.Documents.Count == 2 && owner.CurrentStorage.Jobs.Count == jobs + 1,
                 "vassal cannot submit from either entry after losing ruler authority");
         }
@@ -76,9 +76,8 @@ internal static class ReplyShortcutReplay
             IsPlayerAuthored = true, Body = "我想向b国提出贸易。"
         };
         string prompt = WorldDiplomacyPromptComposer.BuildAnalysisPrompt(promptWorld, promptOrch, draft);
-        Test.True(prompt.Contains("背景公文ID：source") && prompt.Contains(promptWorld.Document.Body)
-            && prompt.Contains("是否回应、回应对象与动作均以玩家正文为准")
-            && prompt.Contains("不因入口恢复旧提案或强制加入原交涉") && prompt.Contains(draft.Body),
+        Test.True(prompt.Contains(DiplomacyPromptTexts.Get("PlayerReply_ContextDocumentId", "") + "source") && prompt.Contains(promptWorld.Document.Body)
+            && prompt.Contains(DiplomacyPromptTexts.Get("PlayerReply_AdvisoryContext", "")) && prompt.Contains(draft.Body),
             "real analysis prompt carries original text as advisory context and keeps player prose authoritative");
     }
 }

@@ -1,3 +1,4 @@
+using AnimusForge;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -45,7 +46,7 @@ internal sealed partial class WorldDiplomacyOrchestration
          || IsPlayerDiplomacyDocument(ResolveDocument(job.SourceDocumentId))
          || WorldDiplomacyPlayerApplication.InvolvesPlayer(null, ResolveRound(job.RoundId), _host.IsPlayerAffiliatedParty));
     private bool IsDirectPlayerSchedulingJob(WorldDiplomacyJob job) => job != null &&
-        (IsPlayerDiplomacyJob(job)
+        (IsOralDeclarationJob(job) || IsPlayerDiplomacyJob(job)
          || ((job.Kind == "analyze" || job.Kind == "round_plan") && ResolveDocument(job.DocumentId)?.IsPlayerAuthored == true)
          || (job.Kind == "generate" && (ResolveRound(job.RoundId)?.PlayerResponses?.Any(x => x != null
              && x.Status == "pending" && x.KingdomId == job.AuthorKingdomId
@@ -84,10 +85,8 @@ internal sealed partial class WorldDiplomacyOrchestration
         string target = FirstNonEmpty(document.TargetKingdomId, source?.AuthorKingdomId);
         var round = CreateIndependentDialogueRound(document.AuthorKingdomId, target, "player_manual_declaration");
         round.RootDocumentId = document.DocumentId;
-        round.RoundTopic = FirstNonEmpty(document.Title, "玩家外交回应");
-        round.ExternalOpeningContext = "玩家发言已独立成案；原事件=" + (previous?.RoundId ?? "")
-            + "；背景公文=" + (source?.DocumentId ?? document.SourceDocumentId ?? "")
-            + "。背景联系不恢复已关闭事件或过期提案；任何接受仍须核验原案当前有效性。";
+        round.RoundTopic = FirstNonEmpty(document.Title, DiplomacyMiscPromptTexts.Get("Document_DefaultReplyTitle", "Diplomatic Reply"));
+        round.ExternalOpeningContext = string.Format(DiplomacyMiscPromptTexts.Get("Scheduling_PlayerReplyIndependentFormat", "Player statement established independently; original round={0}; context document={1}. Context connection does not reopen closed rounds or expired proposals; any acceptance still requires validating current validity of original terms."), previous?.RoundId ?? "", source?.DocumentId ?? document.SourceDocumentId ?? "");
         MovePlayerDocumentRouting(document, round);
         document.ResultSettlementSlotId = "";
         document.IsRelayTurn = false;
@@ -263,8 +262,8 @@ internal sealed partial class WorldDiplomacyOrchestration
         {
             _diplomacyWorkNeedsReconcile = true;
             _host.Notify(firstReason == "source_author_unavailable"
-                ? "你的原宣言所属王国已不存在，尚未答复的外交回应已停止；旧承诺不会转给宗主国。"
-                : "原宣言或回应国已不存在，尚未完成的回应已停止。请查看原公文与当前外交局势。");
+                ? DiplomacyUiLocalization.Text("AF_DIP_UI_Orch_SourceAuthorUnavailable", "The kingdom of your original declaration no longer exists; unanswered diplomatic responses have stopped. Prior commitments are not transferred to the suzerain.")
+                : DiplomacyUiLocalization.Text("AF_DIP_UI_Orch_SourceOrTargetUnavailable", "The original declaration or responding kingdom no longer exists; incomplete responses have stopped. Check the original document and current situation."));
         }
     }
 
@@ -336,7 +335,7 @@ internal sealed partial class WorldDiplomacyOrchestration
             if (receiver == null || _host.IsEliminatedParty(receiver))
             {
                 foreach (var item in group) item.Status = "unavailable";
-                _host.Notify("宣言的原回应国已不存在；该国回应无法继续。");
+                _host.Notify(DiplomacyUiLocalization.Text("AF_DIP_UI_Orch_TargetUnavailable", "The original responding kingdom no longer exists; that kingdom's response cannot continue."));
                 continue;
             }
             var received = group.Where(x => DialogueDocumentKnown(receiver, x.SourceDocumentId)).ToList();
@@ -396,26 +395,25 @@ internal sealed partial class WorldDiplomacyOrchestration
         var knownDocuments = Storage.Documents.Where(x => x != null && x.IsReadyForPublication
             && (x.AuthorKingdomId == job.AuthorKingdomId || knownIds.Contains(x.DocumentId))).ToList();
         job.PlayerResponseSourceIds = DiplomacyRoundWorkRules.SelectResponseBatch(round, job.AuthorKingdomId, knownDocuments, _host.CurrentDay());
-        string tail = DiplomacyRoundWorkRules.BuildRequestTail(round, knownDocuments, job.PlayerResponseSourceIds);
+        string tail = DiplomacyRoundWorkRules.BuildRequestTail(round, knownDocuments, job.PlayerResponseSourceIds, _host.PromptWorld().LocalizePrompt);
         int modeMarker = job.UserPrompt.LastIndexOf("【MODE=DECLARE】", StringComparison.Ordinal);
         string basePrompt = modeMarker >= 0 ? job.UserPrompt.Substring(0, modeMarker) : job.UserPrompt;
-        job.UserPrompt = BuildDeclareModePrompt(basePrompt + tail);
+        job.UserPrompt = BuildDeclareModePrompt(basePrompt + tail, _host.PromptWorld().LocalizePrompt);
         if (job.PlayerResponseSourceIds.Count > 0) job.Priority = Math.Max(job.Priority, 95);
     }
 
     private string BuildPlayerRoundRoutingContext(WorldDiplomacyDocument document)
     {
         if (document?.IsPlayerAuthored != true) return "";
-        var sb = new StringBuilder("\n【玩家发言与当前公开交涉的归属判断】\n");
+        var sb = new StringBuilder(DiplomacyMiscPromptTexts.Get("Scheduling_HeaderPlayerAttribution", "\n[Player Statement Attribution to Public Negotiations]\n"));
         foreach (var round in GetLiveRounds().Where(x => x.RoundId != document.RoundId).Take(32))
         {
             var root = ResolveDocument(round.RootDocumentId);
             if (root?.IsReadyForPublication != true || !DialogueDocumentKnown(document.AuthorKingdomId, root.DocumentId)) continue;
-            sb.AppendLine("事件=" + round.RoundId + "；公开来源=" + root.DocumentId + "；主题=" + round.RoundTopic
-                + "；当事国=" + string.Join(",", round.Participants.Select(x => x.KingdomId)) + "\n"
-                + Limit(root.Body, 700));
+            sb.AppendLine(string.Format(DiplomacyMiscPromptTexts.Get("Scheduling_RoundListingFormat", "Round={0}; public source={1}; topic={2}; involved kingdoms={3}\n{4}"), round.RoundId, root.DocumentId, round.RoundTopic, string.Join(",", round.Participants.Select(x => x.KingdomId)), Limit(root.Body, 700)));
+
         }
-        sb.AppendLine("若玩家是在上述某场交涉中提供担保、调整条件、评论正在讨论的事情或作出回应，JSON增加 related_round_id 与 related_public_document_id，填写唯一匹配的事件和其公开来源ID；不要只因国家相同或某案较新就关联。无法唯一确定时两个字段留空，玩家宣言仍然公开并开启独立回合。此关联只决定讨论归属，不能替代原有接受条款、来源核验及动作判定。");
+        sb.AppendLine(DiplomacyMiscPromptTexts.Get("Scheduling_InstructionAttributionRules", "If the player provides guarantees, modifies terms, comments on the matter under discussion, or responds in one of the negotiations above, add related_round_id and related_public_document_id in JSON with the unique matching event and source IDs; do not associate merely because kingdom is same or case is newer. Leave both fields empty if cannot uniquely determine; player declaration remains public in an independent round. This association only determines discussion attribution and does not substitute for acceptance terms, source verification, or action determinations."));
         return sb.ToString();
     }
 
@@ -463,7 +461,7 @@ internal sealed partial class WorldDiplomacyOrchestration
             foreach (var item in closed.PlayerResponses ?? Enumerable.Empty<WorldDiplomacyPlayerResponse>())
                 if (item != null && item.Status == "pending" && string.IsNullOrWhiteSpace(item.AnswerDocumentId))
                 { item.Status = "unanswered"; item.FailureReason = closed.CloseReason ?? "closed"; unresolved = true; }
-            if (unresolved) _host.Notify("后续外交回应已结束，但仍有国家未能答复；原宣言和未完成记录已保留，可重新发布宣言，不会恢复旧提议。");
+            if (unresolved) _host.Notify(DiplomacyUiLocalization.Text("AF_DIP_UI_Orch_ResponsesEndedUnresolved", "Follow-up diplomatic responses have concluded, but some kingdoms could not reply; original declarations and incomplete records are preserved and new declarations may be issued without restoring prior proposals."));
             return;
         }
         var pending = (closed.PlayerResponses ?? new List<WorldDiplomacyPlayerResponse>()).Where(x => x != null
@@ -474,8 +472,8 @@ internal sealed partial class WorldDiplomacyOrchestration
             State = "active", StartedDay = _host.CurrentDay(), LastActivityDay = _host.CurrentDay(),
             SoftEndDay = _host.CurrentDay() + _host.RoundTargetDurationDays(), HardEndDay = _host.CurrentDay() + _host.RoundHardDurationDays(_host.RoundTargetDurationDays()),
             RelayPassDurationDays = _host.CourtMaxDeliveryDays(),
-            RoundTopic = "对原交涉中玩家宣言的后续回应", RelayPlanned = true, RootDocumentId = pending[0].SourceDocumentId,
-            ExternalOpeningContext = "原事件=" + closed.RoundId + " 已按原规则结束；这里只回应尚未答复的公开宣言。旧提议已失效，不得恢复或直接接受原协议。" };
+            RoundTopic = DiplomacyMiscPromptTexts.Get("Scheduling_FollowupReplyTitle", "Follow-up reply to player declaration in original negotiation"), RelayPlanned = true, RootDocumentId = pending[0].SourceDocumentId,
+            ExternalOpeningContext = string.Format(DiplomacyMiscPromptTexts.Get("Scheduling_OriginalEventClosedFormat", "Original round={0} ended under original rules; this only responds to unanswered public declarations. Legacy proposals are invalid and cannot be restored or directly accepted."), closed.RoundId) };
         foreach (var item in pending)
         {
             item.Status = "transferred";
@@ -491,6 +489,6 @@ internal sealed partial class WorldDiplomacyOrchestration
         Storage.ConcurrentRounds.Add(followup);
         _diplomacyWorkNeedsReconcile = true;
         InvalidateDialogueIndex();
-        _host.Notify("原外交交涉已结束；尚未回应你的宣言已转入优先后续回应。");
+        _host.Notify(DiplomacyUiLocalization.Text("AF_DIP_UI_Orch_RoundTransitionFollowup", "The prior diplomatic exchange has ended; declarations that have not yet replied to you have been transferred to priority follow-up."));
     }
 }

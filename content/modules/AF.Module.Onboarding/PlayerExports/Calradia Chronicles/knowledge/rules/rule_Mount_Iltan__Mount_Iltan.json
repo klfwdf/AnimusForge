@@ -1,0 +1,62 @@
+{
+  "Id": "rule_Mount_Iltan",
+  "Keywords": [
+    "Mount Iltan"
+  ],
+  "RagShortTexts": [
+    "The Iltan Supply Line transports cattle, sheep, and grain from Mount Iltan to the Empire."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Where is Mount Iltan? No idea—sounds like a Khuzait mountain from the name."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Hey now, Mount Iltan is the border mountain between us and Sturgia!"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "scouting": 120
+        }
+      },
+      "Content": "Mount Iltan stands in the northeastern corner of the Calradian continent as the border mountain between the Khuzait and Sturgia. The famous Iltan Supply Line originates here, shipping a steady stream of cattle, sheep, and grain to the Empire."
+    }
+  ],
+  "TextMappings": []
+}

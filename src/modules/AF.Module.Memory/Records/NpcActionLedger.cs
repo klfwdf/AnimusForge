@@ -136,20 +136,20 @@ internal static class NpcActionLedger
 		}
 		if (string.IsNullOrWhiteSpace(place))
 		{
-			place = "当地村庄";
+			place = MemoryTextResources.Raw("MEM_Raw_046");
 		}
 		bool? won = entry?.Won;
 		string corrected = isAftermath
 			? (won == true
-				? (place + "的袭掠已经结束，你协助守军击退了袭掠者，正在整顿部队。")
+				? (place + MemoryTextResources.Raw("MEM_Raw_047"))
 				: (won == false
-					? (place + "的袭掠已经结束，袭掠者已经得手；你正在收拢部队并处理残局。")
-					: (place + "的袭掠已经结束，你正在协助守军整顿部队。")))
+					? (place + MemoryTextResources.Raw("MEM_Raw_048"))
+					: (place + MemoryTextResources.Raw("MEM_Raw_049"))))
 			: (won == true
-				? ("你在" + place + "参与村庄保卫战，击退了袭掠者。")
+				? (MemoryTextResources.Raw("MEM_Raw_050") + place + MemoryTextResources.Raw("MEM_Raw_051"))
 				: (won == false
-					? ("你在" + place + "参与村庄保卫战时失利，未能阻止袭掠者。")
-					: ("你在" + place + "参与了村庄保卫战。")));
+					? (MemoryTextResources.Raw("MEM_Raw_050") + place + MemoryTextResources.Raw("MEM_Raw_052"))
+					: (MemoryTextResources.Raw("MEM_Raw_050") + place + MemoryTextResources.Raw("MEM_Raw_053"))));
 		int sentenceEnd = text.IndexOf('。');
 		if (sentenceEnd < 0 || sentenceEnd >= text.Length - 1)
 		{
@@ -178,10 +178,10 @@ internal static class NpcActionLedger
 		}
 		if (isAftermath)
 		{
-			return text.IndexOf("的袭掠已经结束", StringComparison.OrdinalIgnoreCase) >= 0
-				&& (text.IndexOf("清点缴获", StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf("收拢部队并处理残局", StringComparison.OrdinalIgnoreCase) >= 0);
+			return text.IndexOf(MemoryTextResources.Raw("MEM_Raw_054"), StringComparison.OrdinalIgnoreCase) >= 0
+				&& (text.IndexOf(MemoryTextResources.Raw("MEM_Raw_055"), StringComparison.OrdinalIgnoreCase) >= 0 || text.IndexOf(MemoryTextResources.Raw("MEM_Raw_056"), StringComparison.OrdinalIgnoreCase) >= 0);
 		}
-		return text.IndexOf("发动的袭掠中", StringComparison.OrdinalIgnoreCase) >= 0;
+		return text.IndexOf(MemoryTextResources.Raw("MEM_Raw_057"), StringComparison.OrdinalIgnoreCase) >= 0;
 	}
 
 	internal static List<NpcActionEntry> SanitizeNpcActionEntries(List<NpcActionEntry> source, bool keepOnlyRecentWindow, int currentGameDayIndex)
@@ -267,7 +267,7 @@ internal static class NpcActionLedger
 			return true;
 		}
 		string text4 = (text ?? "").Trim();
-		return (text4.IndexOf("俘虏了", StringComparison.OrdinalIgnoreCase) >= 0 || text4.IndexOf("被", StringComparison.OrdinalIgnoreCase) >= 0 && text4.IndexOf("俘虏", StringComparison.OrdinalIgnoreCase) >= 0 || text4.IndexOf("获释", StringComparison.OrdinalIgnoreCase) >= 0 || text4.IndexOf("成功逃脱", StringComparison.OrdinalIgnoreCase) >= 0 || text4.IndexOf("不再是你的囚犯", StringComparison.OrdinalIgnoreCase) >= 0 || text4.IndexOf("组建并统领了", StringComparison.OrdinalIgnoreCase) >= 0 || text4.IndexOf("加入了", StringComparison.OrdinalIgnoreCase) >= 0 && text4.IndexOf("军团", StringComparison.OrdinalIgnoreCase) >= 0);
+		return (text4.IndexOf(MemoryTextResources.Raw("MEM_Raw_058"), StringComparison.OrdinalIgnoreCase) >= 0 || text4.IndexOf(MemoryTextResources.Raw("MEM_Raw_059"), StringComparison.OrdinalIgnoreCase) >= 0 && text4.IndexOf(MemoryTextResources.Raw("MEM_Raw_060"), StringComparison.OrdinalIgnoreCase) >= 0 || text4.IndexOf(MemoryTextResources.Raw("MEM_Raw_061"), StringComparison.OrdinalIgnoreCase) >= 0 || text4.IndexOf(MemoryTextResources.Raw("MEM_Raw_062"), StringComparison.OrdinalIgnoreCase) >= 0 || text4.IndexOf(MemoryTextResources.Raw("MEM_Raw_063"), StringComparison.OrdinalIgnoreCase) >= 0 || text4.IndexOf(MemoryTextResources.Raw("MEM_Raw_064"), StringComparison.OrdinalIgnoreCase) >= 0 || text4.IndexOf(MemoryTextResources.Raw("MEM_Raw_065"), StringComparison.OrdinalIgnoreCase) >= 0 && text4.IndexOf(MemoryTextResources.Raw("MEM_Raw_066"), StringComparison.OrdinalIgnoreCase) >= 0);
 	}
 
 	private static void CopyFactIds(List<string> source, List<string> destination)

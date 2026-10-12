@@ -1,0 +1,65 @@
+{
+  "Id": "rule_Aserai_class_and_slavery",
+  "Keywords": [
+    "Possession",
+    "Right of possession",
+    "Slavery",
+    "slave owner"
+  ],
+  "RagShortTexts": [
+    "Aserai have only two kinds of people: masters and slaves. The Sultan is the master of all masters. A man's size represents status, and a spade tattoo on a woman represents belonging. There are both main wives and spade sows from foreign races in the harem, which are the status symbols of desert men."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "It's no secret that on the Aserai, the bottom of the class are slaves. Our sultans and amirs owned hundreds of slaves, half of them captured on the battlefield and half bought from the tribes south of the desert. Slaves are not divided into men and women, but the price of a female slave is ten times higher than that of a male slave - because a beautiful female slave can enter the harem and bear offspring for her master. The rules of the harem are very simple: the main wife is married to a matchmaker, and the children she gives birth to have inheritance rights; the female slaves are possessed, and the children they give birth to are the property of the master. If a female slave gave birth to a son for her master, she might be promoted to a concubine, but she could never become a wife. This is Aserai's class, written from the moment of birth. A"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Anyone who is a businessman in the desert knows that in Aserai, where there is money, there are women. A sultan can raise thirty beauties in his harem, and a poor camel driver may only touch his camels in his life. On the Jawwal tribe's side, it's more direct - they don't call it a harem, they call it a bitch pen, and women are branded with the mark of their masters. I was transporting goods from Houssen Fulegg to Sanala and saw many female slaves being resold along the way. Some were prisoners of war, some were sold by their parents, and some were unable to repay their debts and were charged off. The most pitiable are those women who were once noble ladies - they lost the battle and turned from stars in the sky to mud on the ground overnight. A"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Aserai slavery is the oldest and most well-established system of personal dependence in all of Calradia. It included not only prisoner-of-war slavery, but also multiple levels such as debt slaves, hereditary slaves, and court slaves. In terms of sexual politics, the Aserai harem system was a sophisticated social management tool - the sultan controlled the harem to stabilize his rule: the head wife came from a powerful tribal alliance to ensure political marriage, and the concubines and female slaves came from conquered areas to demonstrate authority. There are strict hierarchies for women in the harem, and the rights and obligations of each class have unwritten regulations. It is worth noting that Aserai slaves do not have no upward path - if a female slave gives birth to excellent offspring for her master, she and her family may be liberated and promoted. A"
+    }
+  ],
+  "TextMappings": []
+}

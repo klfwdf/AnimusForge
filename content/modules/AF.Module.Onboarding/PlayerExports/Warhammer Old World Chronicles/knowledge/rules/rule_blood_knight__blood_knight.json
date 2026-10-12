@@ -1,0 +1,208 @@
+{
+  "Id": "rule_blood_knight",
+  "Keywords": [
+    "Blood Knight",
+    "Vampire Heavy Cavalry",
+    "martial arts master",
+    "Blood Dragon Knights (blood knight)",
+    "Undead Charge",
+    "dark knight (blood knight)",
+    "Immortal Rider"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Blood Knights are the most terrifying heavy cavalry in the old world. They are the most exquisite martial arts masters among vampires. They wear dark red plate armor, ride huge skeleton horses, and launch devastating charges with swordsmanship honed for thousands of years. Any living knights will face an overwhelming force gap when encountering the blood knights."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Blood Knights are the most brilliant glory of our clan - they are vampires who have given up politics and conspiracy, choosing to pursue the peak of immortal martial arts through pure force. Each member of the Blood Dragon Knights has experienced hundreds or even thousands of years of swordsmanship training. They ride the most fierce nightmare horses and charge in the dark like bloody comets hitting the earth. We consider them living legends because they have proven that vampires need not give in to a morbid thirst for blood but can devote eternity to the supreme pursuit of martial arts. As the red-armored riders sweep across the plains, even the lowliest zombies among the undead legions will raise their heads in silent respect."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Confronting a Blood Knight is any commander's nightmare. They combined all the advantages of heavy cavalry - speed, impact, armor strength - while eliminating all the weaknesses of heavy cavalry - fatigue, morale, fear. All you can do is delay their charge with a deep array of spearmen, while hoping your mages can deal enough damage to them before engaging. One point worth noting is that blood knights are often extremely arrogant and will refuse to fight 'unworthy' opponents. This character flaw can be turned into a trap for the enemy. But make no mistake, once the Blood Knights identify their target, nothing can stop them from tearing it to pieces."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "The origins of the Blood Knights can be traced back to approximately 400 years before the Empire. At that time, the elite warrior of the Lahmian Vampires, Ablash Blood Dragon, overcame the vampire's thirst for blood after drinking the blood of the ancient dragon sealed in the Silver Mountain Peak, and turned to martial arts to tame the dark instincts in his body. Ablash founded the Blood Dragon Knights and set an iron rule: each member must use swordsmanship to defeat their opponents who want to drink blood, and only absorb the blood of the strongest. This makes the selection mechanism of the Blood Knights the most cruel elimination system in the old world-any candidate who wishes to join must defeat an existing knight in a single duel. As the Knights spread over the millennia, the Blood Knights gradually split into different factions. Some still followed Ablash's martial philosophy, while others became pure killers. The most famous branch among them is undoubtedly the 'Brotherhood of Blood'. In the Siege of Helmgart in 2017 in the Imperial Calendar, they wiped out a large swordsman infantry regiment in thirty minutes against one hundred enemies."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Some members of the Blood Knights remind me of those Breton champions who dominated the tourney - the same pride, the same aesthetic of violence oozing from the blood. But the difference is that the Brittanian Knights will eventually grow old, while the Blood Knights will only get stronger as they fight. I met a member of the Blood Dragon Knights at a dinner party. Although he drank blood, his posture was elegant and his words were full of a warrior's sense of honor. He said that he has been looking for an opponent who can kill him for six hundred years, but has not been able to do so. The words gave me chills—not because he was scary, but because of the quiet desperation in his voice."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Obtaining the allegiance of the Blood Knights has never been achieved through fiefdom or gold coins - they are not mercenaries, but martial monks. It took three generations of our family to win the service of a band of five blood knights, at the price of providing proof that my great-grandfather fought under Ablash, the founder of the Order of the Blood Dragon, and the promise of twelve worthy opponents each year. This means that we must carefully arrange border conflicts every year to 'feed' their desire to fight, which costs a lot of money. However, if anyone in the clan raises objections, they will be scared off by the name of the Blood Knight - as long as they are here, they are guaranteed to be invincible."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "I once helped a band of Breton rangers bury their comrades in the passes of the Gray Mountains - a whole band of twelve blessed Grail pilgrim knights, all slain by a Blood Knight in less than a glass of wine. The surviving old ranger said that the blood knight even bowed before charging, as politely as in a tournament. Then a red light passed by, and twelve heads fell to the ground at the same time. From then on, whenever the words 'vampire cavalry' were mentioned in any employment contract, I immediately demanded three times the remuneration, plus an advance payment. A living person fighting the Blood Knight? That's not fighting, that's being used as target practice for others."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Do you know how much a complete set of Blood Knight plate armor can fetch on the black market? Stop dreaming, there is no completeness at all. Each time a Blood Knight is defeated, their armor - if any fragments remain - is immediately confiscated by the Church of Sigmar and melted down. But I once fished a piece in the Talabek River. It was only as big as a palm. It was made of red copper-colored metal. It was surprisingly light, but even musket bullets could not penetrate it. I sent it to the Imperial Engineering Academy in Altdorf for appraisal. The alchemist there said that this thing was not iron at all, but a forged product mixed with dragon blood and shadow magic. The recipe had long been lost. This discovery made me ponder for a long time - the enemy you face, you don't even know the secret of the armor."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "A terrifying heavy cavalry composed of vampire martial arts masters",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "The Blood Knight is the most terrifying heavy cavalry in the old world."
+  ]
+}

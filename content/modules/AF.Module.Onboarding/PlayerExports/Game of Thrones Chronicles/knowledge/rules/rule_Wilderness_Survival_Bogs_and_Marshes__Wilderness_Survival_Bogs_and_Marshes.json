@@ -1,0 +1,147 @@
+{
+  "Id": "rule_Wilderness_Survival_Bogs_and_Marshes",
+  "Keywords": [
+    "Bogs and Marshes"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The surface of the swamp appears to be flat, but is actually covered with soft mud, dark water, insect swarms, and moving safe paths. The Ningze people rely on canoes, wooden roads and local memories to travel; once the heavily armored cavalry and baggage vehicles leave the causeway, their speed and combat effectiveness will quickly disappear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Bogs and Marshes The surface of the swamp appears to be flat, but is actually covered with soft mud, dark water, insect swarms, and moving safe paths. The Ningze people rely on canoes, wooden roads and local memories to travel; once the heavily armored cavalry and baggage vehicles leave the causeway, their speed and combat effectiveness will quickly disappear. Wilderness does not mitigate the consequences of being cold, hungry, or lost because of your status."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Bogs and Marshes The surface of the swamp appears to be flat, but is actually covered with soft mud, dark water, insect swarms, and moving safe paths. The Ningze people rely on canoes, wooden roads and local memories to travel; once the heavily armored cavalry and baggage vehicles leave the causeway, their speed and combat effectiveness will quickly disappear. Without preparation, weather and terrain can kill more men than enemy troops."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Bogs and Marshes The surface of the swamp appears to be flat, but is actually covered with soft mud, dark water, insect swarms, and moving safe paths. The Ningze people rely on canoes, wooden roads and local memories to travel; once the heavily armored cavalry and baggage vehicles leave the causeway, their speed and combat effectiveness will quickly disappear. Reliable experience must be able to be verified repeatedly, not just rely on tall tales in the pub."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Bogs and Marshes The surface of the swamp appears to be flat, but is actually covered with soft mud, dark water, insect swarms, and moving safe paths. The Ningze people rely on canoes, wooden roads and local memories to travel; once the heavily armored cavalry and baggage vehicles leave the causeway, their speed and combat effectiveness will quickly disappear. If a disaster cuts off transportation, the consequences will be felt in distant cities."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Bogs and Marshes The surface of the swamp appears to be flat, but is actually covered with soft mud, dark water, insect swarms, and moving safe paths. The Ningze people rely on canoes, wooden roads and local memories to travel; once the heavily armored cavalry and baggage vehicles leave the causeway, their speed and combat effectiveness will quickly disappear. The most expensive equipment in the wilderness cannot replace the correct timing of stopping."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Bogs and Marshes The surface of the swamp appears to be flat, but is actually covered with soft mud, dark water, insect swarms, and moving safe paths. The Ningze people rely on canoes, wooden roads and local memories to travel; once the heavily armored cavalry and baggage vehicles leave the causeway, their speed and combat effectiveness will quickly disappear. Someone explains why the disaster happened, and someone is responsible for letting the victims survive the night."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Bogs and Marshes The surface of the swamp appears to be flat, but is actually covered with soft mud, dark water, insect swarms, and moving safe paths. The Ningze people rely on canoes, wooden roads and local memories to travel; once the heavily armored cavalry and baggage vehicles leave the causeway, their speed and combat effectiveness will quickly disappear. They looked at how much grain was left in the fields, whether the livestock could survive the winter, and whether the lord was willing to assume responsibility for its protection."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Bogs and Marshes: The surface of the swamp appears to be flat, but is actually covered with soft mud, dark water, insect swarms, and moving safe paths. The Ningze people rely on canoes, wooden roads and local memories to travel; once the heavily armored cavalry and baggage vehicles leave the causeway, their speed and combat effectiveness will quickly disappear."
+  ]
+}

@@ -21,7 +21,7 @@ ui=read('src/AF.GameAdapter.Bannerlord/UI/Common/McmDropdownRuntimeRefresh.cs')
 parts=[]
 def block(s,a,b): parts.append(s[s.index(a):s.index(b)])
 block(src,'private sealed class ModelDropdownCacheSnapshot','private Dropdown<string> _shoutInputUiBackgroundDropdown')
-block(src,'private bool _modelDropdownCacheHydrated','private const string UnsupportedContextExtractionApiWarningMessage')
+block(src,'private bool _modelDropdownCacheHydrated','private const string AfdianSupportUrl')
 block(src,'private void EnsureModelDropdownCacheHydrated()','public static string NormalizeShoutInputUiBackground(')
 block(src,'private static List<string> BuildModelOptionList(','private static string BuildModelListApiUrl(')
 for name in ['Main','Auxiliary','ActionPostprocess','EventAndRebellion','TownAmbientAi']:
@@ -38,15 +38,17 @@ for name in ['Main','Auxiliary','ActionPostprocess','EventAndRebellion','TownAmb
     parts.append(ex.declaration(s,'public string '+effective+'('))
 code='\n'.join(parts)
 prefix='internal static void ModelPresetIndexPrefix(IRef __0, ref object __1) {}' if args.baseline else ex.declaration(ui,'internal static void ModelPresetIndexPrefix(')
-header='using System; using System.IO; using System.Text; using System.Linq; using System.Collections.Generic; using MCM.Common; using MCM.Abstractions.Attributes; using MCM.Abstractions.Attributes.v2; using Newtonsoft.Json;\n'
+header='using System; using System.IO; using System.Text; using System.Linq; using System.Collections.Generic; using MCM.Common; using MCM.Abstractions.Attributes; using MCM.Abstractions.Attributes.v2; using Newtonsoft.Json; using Newtonsoft.Json.Linq;\n'
 (out/'Production.cs').write_text(header+'namespace AnimusForge { public class DuelSettings {\n'+code+'\n} public static class McmDropdownRuntimeRefresh { '+prefix+' } }',encoding='utf-8')
 (out/'Program.cs').write_text((HERE/'Program.cs').read_text(encoding='utf-8'),encoding='utf-8')
+(out/'ModulePathLeaf.cs').write_text('namespace AnimusForge { internal static class AnimusForgeModulePaths { public static string GetModuleDataFilePath(string file)=>System.IO.Path.Combine(AnimusForgeDataPaths.GetCurrentRoot(), \"ModuleData\", file); } }',encoding='utf-8')
+
 assets=json.loads((ROOT/'tools/Coup.RuntimeProbe/obj/project.assets.json').read_text(encoding='utf-8-sig'))
 refdir=next(Path(x)/'microsoft.netframework.referenceassemblies.net472/1.0.3/build/.NETFramework/v4.7.2' for x in assets['packageFolders'] if (Path(x)/'microsoft.netframework.referenceassemblies.net472/1.0.3/build/.NETFramework/v4.7.2/mscorlib.dll').exists())
 deps=[args.mcm.resolve(),args.mcm.parent/'Newtonsoft.Json.dll',refdir/'Facades/netstandard.dll']+list(args.mcm.parent.glob('0Harmony.dll'))+list(args.mcm.parent.glob('Mono*.dll'))
 deps+=list(args.mcm.parent.glob('Bannerlord.MBOptionScreen.v*.dll'))
 refs=''.join(f'<Reference Include="{x.stem}"><HintPath>{escape(str(x.resolve()))}</HintPath></Reference>' for x in deps)
-(out/'Test.csproj').write_text(f'<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net472</TargetFramework><PlatformTarget>x64</PlatformTarget><LangVersion>10</LangVersion><Nullable>disable</Nullable><AutomaticallyUseReferenceAssemblyPackages>false</AutomaticallyUseReferenceAssemblyPackages><FrameworkPathOverride>{escape(str(refdir))}</FrameworkPathOverride></PropertyGroup><ItemGroup>{refs}</ItemGroup></Project>',encoding='utf-8')
+(out/'Test.csproj').write_text(f'<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net472</TargetFramework><PlatformTarget>x64</PlatformTarget><LangVersion>10</LangVersion><Nullable>disable</Nullable><AutomaticallyUseReferenceAssemblyPackages>false</AutomaticallyUseReferenceAssemblyPackages><FrameworkPathOverride>{escape(str(refdir))}</FrameworkPathOverride></PropertyGroup><ItemGroup>{refs}<Compile Include="{escape(str(ROOT / "src/AF.Persistence/AnimusForgeDataPaths.cs"))}" Link="AnimusForgeDataPaths.cs" /><Compile Include="{escape(str(ROOT / "src/AF.GameAdapter.Bannerlord/Configuration/Mcm/McmPromptDefaults.cs"))}" Link="McmPromptDefaults.cs" /><EmbeddedResource Include="{escape(str(ROOT / "content/foundation/AF.Foundation.Localization/ModuleData/McmPromptSourceCompatibility.json"))}" LogicalName="AnimusForge.Mcm.PromptSourceCompatibility.json" WithCulture="false" /></ItemGroup></Project>',encoding='utf-8')
 env=minimal_test_environment(dotnet,out)
 result=subprocess.run([str(dotnet),'build',str(out/'Test.csproj')],cwd=out,env=env,capture_output=True,text=True,encoding='utf-8',errors='replace')
 (out/'build.log').write_text(result.stdout+result.stderr,encoding='utf-8')

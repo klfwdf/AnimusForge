@@ -1,0 +1,151 @@
+{
+  "Id": "rule_Gold_Veined_Westerlands_Faircastle",
+  "Keywords": [
+    "Faircastle"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Fairy City is located on the west coast of the West. It is the island castle and port of the Farman family. It faces the Sunset Sea, and its wealth comes not only from its territory and lands, but also from its ships, fishing grounds, shipbuilding and coastal trade. Coast aristocrats had a different vision than inland mine owners: they had to understand winds, tides, rocks, and distant sails, and they also understood that a fleet or a pirate attack could determine the safety of their family much earlier than rumors from the palace could. The fairy city's legendary color should not overshadow its pragmatic role - it is the Westerlands' finger reaching out to the sea, connecting Lannisport, the Iron Islands and the routes beyond."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Faircastle Local families also relied on mining tunnels, pastures, mountain roads, gold and silver circulation and the market sheltered by Casterly Rock; if any road, well or dock failed, the price would fall first on them."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Faircastle Entry Faircastle"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Faircastle They also recognize the accents, laws, and credentials of the West; reputations can travel great distances from taverns, but true distances must still be measured by wheel, oar, or horse's hooves."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Faircastle Entry Faircastle"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Faircastle If you can supply supplies, avoid danger, and find a guide, it is worth marking in your itinerary; if you don't have these three things, no matter how loud your family name is, it won't be able to save the lost."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The traces left by generations of people in Fairy City are half hidden in the ship repair wood, canvas, salt, fish catch and stones used to resist the sea breeze, and the other half are hidden in the stone carvings left by the Seven Gods, family tombs and the authority of the lords. A stronghold was therefore not just a lord's hall, but also a place where weddings and funerals, vows, labor and local memories recurred."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Faircastle They care about the mines, pastures, mountain roads, the circulation of gold and silver, and the market under the protection of Casterly Rock. They also look at whether seeds are left after the grain collection and whether the city gates are open in times of disaster. When people from afar see the coat of arms, what they see is whether there will be food to eat tomorrow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Faircastle: Fairy City is located on the west coast of the West. It is the island castle and port of the Farman family. It faces the Sunset Sea, and its wealth comes not only from its territory and lands, but also from its ships, fishing grounds, shipbuilding and coastal trade. Coast aristocrats had a different vision than inland mine owners: they had to understand winds, tides, rocks, and distant sails, and they also understood that a fleet or a pirate attack could determine the safety of their family much earlier than rumors from the palace could. The fairy city's legendary color should not overshadow its pragmatic role - it is the Westerlands' finger reaching out to the sea, connecting Lannisport, the Iron Islands and the routes beyond."
+  ]
+}

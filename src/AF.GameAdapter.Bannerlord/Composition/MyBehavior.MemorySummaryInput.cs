@@ -54,6 +54,7 @@ public partial class MyBehavior
         internal MemorySummaryInput Source;
         internal object Value;
         internal string Error = "";
+        [Newtonsoft.Json.JsonIgnore] internal MemoryFailureUiText ErrorDisplay;
         internal bool IsObsolete;
     }
 

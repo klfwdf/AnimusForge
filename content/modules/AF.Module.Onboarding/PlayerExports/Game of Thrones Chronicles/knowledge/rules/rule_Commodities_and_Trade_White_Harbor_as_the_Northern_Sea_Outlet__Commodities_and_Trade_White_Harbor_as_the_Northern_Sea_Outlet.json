@@ -1,0 +1,150 @@
+{
+  "Id": "rule_Commodities_and_Trade_White_Harbor_as_the_Northern_Sea_Outlet",
+  "Keywords": [
+    "White Harbor as the Northern Sea Outlet"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Entry White Harbor freed the North from having to rely entirely on the long overland route. The Manderly family's harbor, warehouses and merchant ships exchanged grain, timber, furs and exotic luxuries on the same wharf; northern lords saw it as a gateway to wealth and news, and sailors knew Seal Bay's origins"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry White Harbor as the Northern Sea Outlet"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "artisan",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry White Harbor as the Northern Sea Outlet"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "sailor",
+          "wanderer",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry White Harbor as the Northern Sea Outlet"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry White Harbor as the Northern Sea Outlet White Harbor freed the North from having to rely entirely on the long overland route. The Manderly family's harbor, warehouses and merchant ships exchanged grain, timber, furs and exotic luxuries on the same wharf; northern lords saw it as a gateway to wealth and news, and sailors knew Seal Bay's origins. Any break in the place of origin, checkpoints, shipping schedules, debts and protection fees will immediately make the nobles in the distance feel the changes in price and power."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry White Harbor as the Northern Sea Outlet White Harbor freed the North from having to rely entirely on the long overland route. The Manderly family's harbor, warehouses and merchant ships exchanged grain, timber, furs and exotic luxuries on the same wharf; northern lords saw it as a gateway to wealth and news, and sailors knew Seal Bay's origins. They may not necessarily understand ledgers, but they know the true weight of a bag of salt and a nail on the road."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry White Harbor as the Northern Sea Outlet White Harbor freed the North from having to rely entirely on the long overland route. The Manderly family's harbor, warehouses and merchant ships exchanged grain, timber, furs and exotic luxuries on the same wharf; northern lords saw it as a gateway to wealth and news, and sailors knew Seal Bay's origins. Some people turn raw materials into tools, cloth and medicine, others set festivals and taboos for exchange; wealth is piled up by many hands, and rarely belongs to just one name."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry White Harbor as the Northern Sea Outlet White Harbor freed the North from having to rely entirely on the long overland route. The Manderly family's harbor, warehouses and merchant ships exchanged grain, timber, furs and exotic luxuries on the same wharf; northern lords saw it as a gateway to wealth and news, and sailors knew Seal Bay's origins. If prices rise but wages do not, prosperity in distant places will only become thinner bread; if roads are safe, even small villages can get a little spring from trade."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "White Harbor as the Northern Sea Outlet: White Harbor freed the North from having to rely entirely on the long overland route. The Manderly family's harbor, warehouses and merchant ships exchanged grain, timber, furs and exotic luxuries on the same wharf; northern lords saw it as a gateway to wealth and news, and sailors knew Seal Bay's origins."
+  ]
+}

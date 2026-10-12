@@ -1,0 +1,160 @@
+{
+  "Id": "rule_Mamluk",
+  "Keywords": [
+    "Mamluk"
+  ],
+  "RagShortTexts": [
+    "The Mamluks were military slaves purchased and strictly trained by the Aserai since childhood."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "steward": 100
+        }
+      },
+      "Content": "Mamluk, the word originally means \"owned\" or \"slave\", specifically referring to the class of military slaves purchased by the Aserai at an early age and incorporated into elite troops after rigorous military training. Most of them come from non-Aserai youths from the Turkic steppes, Caucasus or the northern coast of the Black Sea. They are resold by slave traders to the Aserai palace or military camp. They then receive systematic education in riding, archery, swordsmanship and tactics, and convert to Aserai beliefs. The Mamluks were separated from their original blood ties since childhood, and their social status, wealth and power were completely dependent on their masters or the military system itself, so they were regarded by the rulers as a loyal and reliable core force. When they reach adulthood, they usually gain free status and receive a salary, but the \"Mamluk\" birthmark remains with them throughout their lives. In the Aserai Sultanate, the Mamluks gradually rose from the bodyguards to an important military and political group due to their military exploits and strict military discipline, which had a profound impact on the power structure of the Nahasa region."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "For the emirs and sheikhs, the Mamluks were a clear settlement—they were purchased since childhood, and the food, accommodation, and training were all borne by the palace, and they became pure military assets when they reached adulthood. A Mamluk's loyalty only points to the person who pays him, and he has no support in this world. \"Those who were raised with gold will have to pay with their lives.\" The emirs and sheikhs were unambiguous when calculating this account. From the time a Mamluk is purchased to the time it becomes an army, it takes at least several years of investment in money and food, so it must be a worthwhile battle. Keeping them in peacetime is a loss-making business, which is why the emirs are eager to find wars once they have idle Mamluks. The emirs also knew the limitations of the Mamluks. These guys who grew up in military camps know nothing but fighting, can't give advice on running the country, and can't manage tax accounts. Therefore, the emirs still leave the errands of printing and managing money to their blood relatives. The Mamluks just killed people, and they didn't have to worry about the rest. Occasionally, some Emil would mutter: If these people find the handle of the knife in their hands one day, it will be difficult to deal with it. But then I thought about it, they didn’t even know their last names, what kind of lies could they possibly come up with? So I started counting the employment accounts with peace of mind."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "char:aserai_mameluke_axeman",
+          "char:aserai_mameluke_cavalry",
+          "char:aserai_mameluke_guard",
+          "char:aserai_mameluke_heavy_cavalry",
+          "char:aserai_mameluke_regular",
+          "char:aserai_mameluke_soldier",
+          "char:mamluke_palace_guard"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Those free people outside serve as soldiers to make money, but I am raised by my master with money, which is different. I understand that owners are reluctant to throw away expensive things. I don't like to think about the future. The master has to worry about the future. Today's food is eaten in the stomach, today's knife is sharpened, today's master's instructions are completed, and this day has not been in vain. Who to beat tomorrow, why, and where to go after the beating is the master's business. Instead of using that brain, it is better to practice the sword twice more. A faster sword is worse than anything else. \"I will kill whoever the master points out.\" I am most proud of this sentence. There is no need to distinguish between right and wrong, and there is no need to reason. Right, wrong and reason are things that only masters can talk about. I just kill, and after the killing, I go back to receive the reward and eat. Someone asked: Are you afraid of killing the wrong person? I think this question is ridiculous - the master asked me to kill him, how could it be wrong? I don’t remember what my parents look like. When I was bought as a child, I was so young that I didn’t even know what it was called. The current name was given by the owner, the horse was given by the owner, and the place where he lived was the owner's barracks. I think this is good. Those soldiers who have families and families are still thinking about going back to harvest wheat during the war. I don't have to worry about it. I can just bury them wherever they die, neatly. Sometimes I wonder what I will do when I get old and can no longer wield a knife. I thought about it for a while and then stopped thinking about it—let’s live until that day, maybe we won’t survive at all."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "\"The Aserai have a good pack of dogs.\" This doesn't sound good, but it's true. We trained our own troops, and the peasants we recruited were sent to the battlefield within half a month, and half of them ran away and half died. As for people, they select seedlings from a young age and feed them with food for ten years, and they emerge with the skills to kill. When you encounter Mamluks on the battlefield, you'd better hope that you have more people on your side - even twice as many may not be enough. But having said that, a dog is still a dog no matter how ferocious it is. Whoever bites depends on the person holding the leash. Aserai When those emirs fight first, the dogs bite each other, that's what it looks like."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "\"What bothers me the most is fighting the Mamluks.\" \"What's the matter, are you afraid?\" \"It's not fear, it's a loss. If you kill one of them, his master will go back and buy another one. If he kills one of you, your wife will remarry, your children will change their surnames, and your family's land will be farmed by others. They don't have these burdens, and they charge with their lives. When we charge, all we think about is how to spend money when we go back. When they charge, they don't think about anything - they are just a group of slaves. How can you fight with someone who doesn't think about anything?\""
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "\"Mamluks? They are the golden pimples of the old men, and we are the stones picked up by the roadside.\" When paying, they receive it first, and when they eat meat, they serve it first. Even the horses eat better food than we do. But what can you say? This is what people have been practicing since they were young. We have been working for twenty years before we became soldiers. We just can't compete with each other. But I don’t envy them either, they don’t even know their last names. I have a wife and children, and when I come home from the war, people still call me daddy. What about them? If you win, you will receive the reward, if you lose, you will lose your life. This is how it will be in this life."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "\"Mamluk, good.\" \"What's good? Have you seen it?\" \"Never seen it. I heard he is good at fighting.\" \"What does being able to fight have to do with you?\" \"They fought the war, so there is no need to conscript my son to fight.\" \"Your son has been kept. Did you see that the price of food in the market has doubled? Where does the money to support those people come from? It's not the tax we pay.\" \"That's better than conscription.\" \"You, that's all you make.\""
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "\"I heard that Aserai has a kind of soldier who is bought since he was a child and can do nothing but kill.\" \"Isn't that just like an animal?\" \"It's more expensive than an animal. One of them can buy half of our village.\" \"It's still an animal.\" \"I dare not say it to my face. Those people have no family and no family. They kill people like we kill chickens without blinking an eye.\" \"Then what do they want to live for?\" \"Who knows. Probably to eat.\""
+    }
+  ],
+  "TextMappings": []
+}

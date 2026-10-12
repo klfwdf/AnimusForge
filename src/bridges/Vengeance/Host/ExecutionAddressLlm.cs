@@ -32,7 +32,7 @@ internal sealed class ExecutionAddressFacts
         {
             SessionId = request.SessionId,
             VictimName = Safe(request.Victim?.Name?.ToString()),
-            Language = Safe(MBTextManager.ActiveTextLanguage)
+            Language = LlmPromptTexts.Get("AF_LLM_PROMPT_Execution_Language", "English")
         };
         if (string.IsNullOrWhiteSpace(facts.Language)) facts.Language = "English";
         facts._body = BuildBody(request, facts.VictimName);
@@ -41,7 +41,7 @@ internal sealed class ExecutionAddressFacts
         try
         {
             facts._recall = MyBehavior.CaptureHistoryContextWorkForHero(request.Victim,
-                "公开处决 最后陈述 " + request.Charge?.GetName() + " " + request.Executor?.Name,
+                LlmPromptTexts.Get("AF_LLM_PROMPT_Execution_RecallQuery", "Public execution final statement ") + ExecutionPromptDefinitionText.Project(request.Charge?.GetName()?.ToString()) + " " + request.Executor?.Name,
                 null, false, SaveRuntimeGuard.CurrentGeneration);
             facts._recent = string.Join("\n", MyBehavior.GetDialogueHistoryEntriesForExternal(request.Victim, 12)
                 .Select(x => x.Speaker + ": " + x.Text));
@@ -68,38 +68,38 @@ internal sealed class ExecutionAddressFacts
     {
         var victim = request.Victim;
         var builder = new StringBuilder();
-        builder.AppendLine("【死刑犯】");
-        builder.AppendLine("姓名：" + OrUnknown(victimName));
-        builder.AppendLine("性别：" + (victim.IsFemale ? "女" : "男"));
-        builder.AppendLine("年龄：" + AgeLabel(victim.Age));
-        builder.AppendLine("文化：" + OrUnknown(victim.Culture?.Name?.ToString()));
-        builder.AppendLine("王国：" + OrUnknown(victim.Clan?.Kingdom?.Name?.ToString()));
-        builder.AppendLine("氏族：" + OrUnknown(victim.Clan?.Name?.ToString()));
-        builder.AppendLine("氏族等级：" + Safe(() => MyBehavior.GetClanTierReputationLabelForExternal(victim.Clan?.Tier ?? 0)));
-        builder.AppendLine("身份：" + Safe(() => MyBehavior.BuildHeroIdentityTitleForExternal(victim)));
-        builder.AppendLine("贵族：" + (request.VictimIsNoble ? "是" : "否"));
+        builder.AppendLine(LlmPromptTexts.Get("AF_LLM_PROMPT_Execution_VictimHeading", "[Condemned prisoner]"));
+        builder.AppendLine(LlmPromptTexts.Get("AF_LLM_PROMPT_Execution_Name", "Name: ") + OrUnknown(victimName));
+        builder.AppendLine(LlmPromptTexts.Get("AF_LLM_PROMPT_Execution_Gender", "Gender: ") + (victim.IsFemale ? LlmPromptTexts.Get("AF_LLM_PROMPT_Execution_Female", "female") : LlmPromptTexts.Get("AF_LLM_PROMPT_Execution_Male", "male")));
+        builder.AppendLine(LlmPromptTexts.Get("AF_LLM_PROMPT_Execution_Age", "Age: ") + AgeLabel(victim.Age));
+        builder.AppendLine(LlmPromptTexts.Get("AF_LLM_PROMPT_Execution_Culture", "Culture: ") + OrUnknown(victim.Culture?.Name?.ToString()));
+        builder.AppendLine(LlmPromptTexts.Get("AF_LLM_PROMPT_Execution_Kingdom", "Kingdom: ") + OrUnknown(victim.Clan?.Kingdom?.Name?.ToString()));
+        builder.AppendLine(LlmPromptTexts.Get("AF_LLM_PROMPT_Execution_Clan", "Clan: ") + OrUnknown(victim.Clan?.Name?.ToString()));
+        builder.AppendLine(LlmPromptTexts.Get("AF_LLM_PROMPT_Execution_ClanTier", "Clan tier: ") + Safe(() => MyBehavior.GetClanTierReputationLabelForExternal(victim.Clan?.Tier ?? 0)));
+        builder.AppendLine(LlmPromptTexts.Get("AF_LLM_PROMPT_Execution_Identity", "Identity: ") + Safe(() => MyBehavior.BuildHeroIdentityTitleForExternal(victim)));
+        builder.AppendLine(LlmPromptTexts.Get("AF_LLM_PROMPT_Execution_Noble", "Noble: ") + (request.VictimIsNoble ? LlmPromptTexts.Get("AF_LLM_PROMPT_Execution_Yes", "yes") : LlmPromptTexts.Get("AF_LLM_PROMPT_Execution_No", "no")));
         MyBehavior.GetNpcPersonaForExternal(victim, out var personality, out var background);
-        if (!string.IsNullOrWhiteSpace(personality)) builder.AppendLine("性格：" + ExecutionAddressContextPolicy.Bound(personality.Trim(), 400));
-        if (!string.IsNullOrWhiteSpace(background)) builder.AppendLine("背景：" + ExecutionAddressContextPolicy.Bound(background.Trim(), 600));
-        builder.AppendLine("英勇：" + TraitLabel(victim, DefaultTraits.Valor));
-        builder.AppendLine("荣誉：" + TraitLabel(victim, DefaultTraits.Honor));
-        builder.AppendLine("与玩家关系：" + RelationLabel(victim, request.Executor));
-        builder.AppendLine("【案件】");
-        builder.AppendLine("罪名：" + OrUnknown(request.Charge?.GetName().ToString()));
-        builder.AppendLine("罪名说明：" + OrUnknown(request.Charge?.GetDescription().ToString()));
-        builder.AppendLine("证据：" + EvidenceLabel(request.Evidence));
-        builder.AppendLine("证据地点：" + OrUnknown(EvidencePlace(request)));
-        builder.AppendLine("审判语气：" + ToneLabel(request.Tone));
-        builder.AppendLine("合法性：" + LegitimacyLabel(request.LegitimacyTier));
-        builder.AppendLine("处刑方式：" + OrUnknown(request.Method?.GetName().ToString()));
-        builder.AppendLine("城镇：" + OrUnknown(request.Venue?.Name?.ToString()));
-        builder.AppendLine("关押：" + (request.PrisonerSource == PrisonerSource.TownDungeon ? "城镇地牢" : "玩家队伍"));
-        builder.AppendLine("【在场】");
-        builder.AppendLine("刽子手：本镇行刑人，没有个人姓名与氏族。");
-        builder.AppendLine("围观：本镇平民，没有具名贵族。");
-        builder.AppendLine("监刑者：" + OrUnknown(request.Executor?.Name?.ToString()) + "，只在场，不发言。");
+        if (!string.IsNullOrWhiteSpace(personality)) builder.AppendLine(LlmPromptTexts.Get("AF_LLM_PROMPT_Execution_Personality", "Personality: ") + ExecutionAddressContextPolicy.Bound(personality.Trim(), 400));
+        if (!string.IsNullOrWhiteSpace(background)) builder.AppendLine(LlmPromptTexts.Get("AF_LLM_PROMPT_Execution_Background", "Background: ") + ExecutionAddressContextPolicy.Bound(background.Trim(), 600));
+        builder.AppendLine(LlmPromptTexts.Get("AF_LLM_PROMPT_Execution_Valor", "Valor: ") + TraitLabel(victim, DefaultTraits.Valor));
+        builder.AppendLine(LlmPromptTexts.Get("AF_LLM_PROMPT_Execution_Honor", "Honor: ") + TraitLabel(victim, DefaultTraits.Honor));
+        builder.AppendLine(LlmPromptTexts.Get("AF_LLM_PROMPT_Execution_Relation", "Relation with the player: ") + RelationLabel(victim, request.Executor));
+        builder.AppendLine(LlmPromptTexts.Get("AF_LLM_PROMPT_Execution_CaseHeading", "[Case]"));
+        builder.AppendLine(LlmPromptTexts.Get("AF_LLM_PROMPT_Execution_Charge", "Charge: ") + OrUnknown(ExecutionPromptDefinitionText.Project(request.Charge?.GetName()?.ToString())));
+        builder.AppendLine(LlmPromptTexts.Get("AF_LLM_PROMPT_Execution_ChargeDescription", "Charge description: ") + OrUnknown(ExecutionPromptDefinitionText.Project(request.Charge?.GetDescription()?.ToString())));
+        builder.AppendLine(LlmPromptTexts.Get("AF_LLM_PROMPT_Execution_Evidence", "Evidence: ") + EvidenceLabel(request.Evidence));
+        builder.AppendLine(LlmPromptTexts.Get("AF_LLM_PROMPT_Execution_EvidencePlace", "Evidence location: ") + OrUnknown(EvidencePlace(request)));
+        builder.AppendLine(LlmPromptTexts.Get("AF_LLM_PROMPT_Execution_Tone", "Judgment tone: ") + ToneLabel(request.Tone));
+        builder.AppendLine(LlmPromptTexts.Get("AF_LLM_PROMPT_Execution_Legitimacy", "Legitimacy: ") + LegitimacyLabel(request.LegitimacyTier));
+        builder.AppendLine(LlmPromptTexts.Get("AF_LLM_PROMPT_Execution_Method", "Execution method: ") + OrUnknown(ExecutionPromptDefinitionText.Project(request.Method?.GetName()?.ToString())));
+        builder.AppendLine(LlmPromptTexts.Get("AF_LLM_PROMPT_Execution_Town", "Town: ") + OrUnknown(request.Venue?.Name?.ToString()));
+        builder.AppendLine(LlmPromptTexts.Get("AF_LLM_PROMPT_Execution_Custody", "Custody: ") + (request.PrisonerSource == PrisonerSource.TownDungeon ? LlmPromptTexts.Get("AF_LLM_PROMPT_Execution_Dungeon", "town dungeon") : LlmPromptTexts.Get("AF_LLM_PROMPT_Execution_PlayerParty", "player party")));
+        builder.AppendLine(LlmPromptTexts.Get("AF_LLM_PROMPT_Execution_PresentHeading", "[Present]"));
+        builder.AppendLine(LlmPromptTexts.Get("AF_LLM_PROMPT_Execution_Executioner", "Executioner: the town executioner, with no personal name or clan."));
+        builder.AppendLine(LlmPromptTexts.Get("AF_LLM_PROMPT_Execution_Crowd", "Onlookers: local townspeople, with no named nobles."));
+        builder.AppendLine(LlmPromptTexts.Get("AF_LLM_PROMPT_Execution_Overseer", "Overseer: ") + OrUnknown(request.Executor?.Name?.ToString()) + LlmPromptTexts.Get("AF_LLM_PROMPT_Execution_SilentOverseer", ", present but does not speak."));
         string body = builder.ToString();
-        int caseStart = body.IndexOf("【案件】", StringComparison.Ordinal);
+        int caseStart = body.IndexOf(LlmPromptTexts.Get("AF_LLM_PROMPT_Execution_CaseHeading", "[Case]"), StringComparison.Ordinal);
         return caseStart < 0 ? body : body.Substring(caseStart) + "\n" + body.Substring(0, caseStart);
     }
 
@@ -118,20 +118,20 @@ internal sealed class ExecutionAddressFacts
     }
 
     private static string AgeLabel(float age) =>
-        Safe(() => MyBehavior.BuildAgeBracketLabelForExternal(age), "年龄不详");
+        Safe(() => MyBehavior.BuildAgeBracketLabelForExternal(age), LlmPromptTexts.Get("AF_LLM_PROMPT_Execution_UnknownAge", "age unknown"));
 
     private static string TraitLabel(Hero hero, TraitObject trait)
     {
         try
         {
             var level = hero.GetTraitLevel(trait);
-            if (level > 0) return "高";
-            if (level < 0) return "低";
-            return "平常";
+            if (level > 0) return LlmPromptTexts.Get("AF_LLM_PROMPT_Execution_High", "high");
+            if (level < 0) return LlmPromptTexts.Get("AF_LLM_PROMPT_Execution_Low", "low");
+            return LlmPromptTexts.Get("AF_LLM_PROMPT_Execution_Ordinary", "ordinary");
         }
         catch
         {
-            return "不详";
+            return LlmPromptTexts.Get("AF_LLM_PROMPT_Execution_Unknown", "unknown");
         }
     }
 
@@ -140,42 +140,43 @@ internal sealed class ExecutionAddressFacts
         try
         {
             var relation = victim.GetRelation(executor);
-            if (relation >= 20) return "亲近";
-            if (relation <= -20) return "敌对";
-            return "平常";
+            if (relation >= 20) return LlmPromptTexts.Get("AF_LLM_PROMPT_Execution_Close", "close");
+            if (relation <= -20) return LlmPromptTexts.Get("AF_LLM_PROMPT_Execution_Hostile", "hostile");
+            return LlmPromptTexts.Get("AF_LLM_PROMPT_Execution_Ordinary", "ordinary");
         }
         catch
         {
-            return "不详";
+            return LlmPromptTexts.Get("AF_LLM_PROMPT_Execution_Unknown", "unknown");
         }
     }
 
     private static string EvidenceLabel(EvidenceStrength evidence) => evidence switch
     {
-        EvidenceStrength.Strong => "确凿",
-        EvidenceStrength.Circumstantial => "间接",
-        _ => "没有呈堂证据"
+        EvidenceStrength.Strong => LlmPromptTexts.Get("AF_LLM_PROMPT_Execution_StrongEvidence", "conclusive"),
+        EvidenceStrength.Circumstantial => LlmPromptTexts.Get("AF_LLM_PROMPT_Execution_CircumstantialEvidence", "circumstantial"),
+        _ => LlmPromptTexts.Get("AF_LLM_PROMPT_Execution_NoEvidence", "no evidence presented")
     };
 
     private static string ToneLabel(ExecutionTone tone) => tone switch
     {
-        ExecutionTone.Spectacle => "示众",
-        ExecutionTone.Terror => "震慑",
-        _ => "司法"
+        ExecutionTone.Spectacle => LlmPromptTexts.Get("AF_LLM_PROMPT_Execution_Spectacle", "public spectacle"),
+        ExecutionTone.Terror => LlmPromptTexts.Get("AF_LLM_PROMPT_Execution_Terror", "intimidation"),
+        _ => LlmPromptTexts.Get("AF_LLM_PROMPT_Execution_Judicial", "judicial")
     };
 
     private static string LegitimacyLabel(LegitimacyTier tier) => tier switch
     {
-        LegitimacyTier.Legal => "合法",
-        LegitimacyTier.Disputed => "有争议",
-        _ => "缺少合法授权"
+        LegitimacyTier.Legal => LlmPromptTexts.Get("AF_LLM_PROMPT_Execution_Legal", "legal"),
+        LegitimacyTier.Disputed => LlmPromptTexts.Get("AF_LLM_PROMPT_Execution_Disputed", "disputed"),
+        _ => LlmPromptTexts.Get("AF_LLM_PROMPT_Execution_Unauthorized", "lacks legal authorization")
     };
 
     private static string OrUnknown(string value) =>
-        string.IsNullOrWhiteSpace(value) ? "不详" : value.Trim();
+        string.IsNullOrWhiteSpace(value) ? LlmPromptTexts.Get("AF_LLM_PROMPT_Execution_Unknown", "unknown") : value.Trim();
 
-    private static string Safe(Func<string> read, string fallback = "不详")
+    private static string Safe(Func<string> read, string fallback = null)
     {
+        fallback ??= LlmPromptTexts.Get("AF_LLM_PROMPT_Execution_Unknown", "unknown");
         try
         {
             var value = read();

@@ -1,0 +1,28 @@
+{
+  "Id": "rule_parma_tinma",
+  "Keywords": [
+    "Parma Tingma"
+  ],
+  "RagShortTexts": [
+    "Is the Parmartine the high-ranking military horse of the empire?"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Parmartine horses are the empire's high-level military horses, and only mounted cavalry can ride them. They are tall and have a very stable lower body, but they are lighter in weight, have a smaller load capacity, and do not run very fast. However, they are well-behaved and easy to control. They have the greatest comparative advantage. They are also horses that are collected by rich people from all over the world. They are high-end products for horse enthusiasts. If you don’t understand Parma Ting horses, you are not qualified to be a qualified horse-shou."
+    }
+  ],
+  "TextMappings": []
+}

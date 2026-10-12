@@ -1,0 +1,149 @@
+{
+  "Id": "rule_World_Mechanics_Kingsroad",
+  "Keywords": [
+    "Kingsroad",
+    "The Wall to King's Landing",
+    "Royal Roads",
+    "Post Roads"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Kingsroad runs the length of eastern Westeros, passing from the direction of the Wall through Winterfell, the Neck, and the Riverlands to King's Landing, forming the most prominent trunk of the royal road network. Great roadworks in the reign of Jaehaerys I made it easier for riders, caravans, and armies to cross the realms than in olden days; yet the highway is not paved with stone throughout, and seasonal mud, broken bridges, outlaws, and war all slow the journey. It brings distant regions closer together, and just as quickly brings taxation, pestilence, and war to the villages along its course. Whoever claims to rule the road must answer who bears the burden of patrols, bridge tolls, post horses, and repairs."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "wanderer",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Merchants and travelers treat the Kingsroad as the easiest route to ask directions along, yet never mistake ease of finding the way for safety. At every bridge and inn, they ask anew who is collecting tolls ahead and where deserters roam."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Lords and armies rely on the highway to muster quickly, only to find that the enemy does the same. A road shortens distance, yet cannot find forage for baggage wagons; once the goodwill and stores of the folk along the way are exhausted, a great host can starve upon the king's own road."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Folk living beside the road judge by the sound of wheels whether trade or disaster is approaching. Caravans bring copper coins, while armies carry off grain and horses; the very same highway is an opportunity in the eyes of an innkeep, and to a poor smallholder a door that can never be shut."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Kingsroad The north-south trunk road linking the Wall, Winterfell, the Riverlands, and King's Landing, carrying royal decrees, merchants, armies, and levies along its length. Whether it is valid depends on who can grant the rights, collect the consideration, and actually make the judgment come to fruition in the event of default."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Kingsroad The north-south trunk road linking the Wall, Winterfell, the Riverlands, and King's Landing, carrying royal decrees, merchants, armies, and levies along its length. The distant system is not empty talk only if it can be implemented in campfires, city gates and inns."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Kingsroad The north-south trunk road linking the Wall, Winterfell, the Riverlands, and King's Landing, carrying royal decrees, merchants, armies, and levies along its length. If a rule is practiced over and over again, it will find its way into rituals, crafts, and prayers; if it is sustained only by fear, cracks will show at the onset of a crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Kingsroad The north-south trunk road linking the Wall, Winterfell, the Riverlands, and King's Landing, carrying royal decrees, merchants, armies, and levies along its length. They remember taxes, grain, labor, relief and who can speak for them; these grand names will eventually fall on the family's rice pot."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Kingsroad: The north-south trunk road linking the Wall, Winterfell, the Riverlands, and King's Landing, carrying royal decrees, merchants, armies, and levies along its length."
+  ]
+}

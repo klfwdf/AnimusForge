@@ -10,10 +10,8 @@ internal static class ExecutionPromptConfiguration
 {
     private static readonly Lazy<JObject> Defaults = new Lazy<JObject>(() =>
     {
-        using var stream = typeof(ExecutionPromptConfiguration).Assembly.GetManifestResourceStream("AnimusForge.Defaults.ExecutionRulePrompts.json");
-        if (stream == null) return new JObject();
-        using var reader = new StreamReader(stream);
-        return JObject.Parse(reader.ReadToEnd());
+        string path = AnimusForgeModulePaths.GetModuleDataFilePath("ExecutionRulePrompts.json");
+        return JObject.Parse(File.ReadAllText(path, System.Text.Encoding.UTF8));
     });
     internal static string SystemPrompt => (string)Defaults.Value["ExecutionCeremonySystemPrompt"] ?? "";
     internal static GuardrailRulePromptConfig CreateOrderRule() => Defaults.Value["RulePrompts"]?

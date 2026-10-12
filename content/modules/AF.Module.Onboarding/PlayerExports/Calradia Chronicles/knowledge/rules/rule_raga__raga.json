@@ -1,0 +1,31 @@
+{
+  "Id": "rule_raga",
+  "Keywords": [
+    "Raghu",
+    "Lagos"
+  ],
+  "RagShortTexts": [
+    "The descendants of Lage hunted whales in Waalvik and Vlandia straits."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nord"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The village of Ragershofen was founded by the explorer and merchant Rager, who threw the seat pillars into the sea and followed them here. From here his brave descendants set sail into the strait between Waalvik and Vlandia, hunting right whales, black whales and other game on their migratory route between the Biari Sea and the northern ocean."
+    }
+  ],
+  "TextMappings": []
+}

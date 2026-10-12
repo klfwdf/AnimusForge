@@ -1,0 +1,101 @@
+{
+  "Id": "rule_son_of_shadow",
+  "Keywords": [
+    "Children of Shadow",
+    "Banu Chiral"
+  ],
+  "RagShortTexts": [
+    "Banu Chiral, also known as the Sons of Shadow, is a secret organization of nobles in the Aserai desert engaged in assassinations and collecting protection fees."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": [
+          "beni_zilal"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "We are Banu Chiral. Outsiders call us the Sons of Shadow, and this name has been passed down among camel traders and oasis elders for decades, turning it into a ghost story. We don't mind. Ghost stories work and make people more obedient than a hundred emirs on horseback. Our ancestor was not that missionary. We told the missionary’s story to outsiders, and even we ourselves almost believed it after telling it so many times. But that's not important. What's important is that stories can scare people, hallucinogenic herbs can make people believe them, and daggers can make people shut up. These three things combined are more effective than the Sultan's edict."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Children of Shadow are the least discussed topic among our Aserai noble circles. They come from noble families like us - the prefix \"Banu\" is enough to send shivers down our spines. This is the symbol of our proud bloodline, and now they are carrying it over their heads for assassination. At the Sultan's royal meeting, no one mentioned the name of this organization, no one admitted that they had paid protection fees to the Sons of Shadow, and no one admitted that they had hired them as assassins. But we all know that the emir next door who is fighting with you for water may have just invited the son of shadow to tea yesterday."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Children of Shadow? Don't mention this name on the road. My grandfather said that they lived in an old fortress in the deepest part of the desert. The fortress was built by ghosts and could not be seen during the day but emerged at night. Their leader is an immortal missionary with purple eyes who cannot move when he looks at anyone. He will use poisonous smoke to stun people. After the smoke, you will not even recognize your own mother, so you will recognize him as your master. Their methods of killing are also weird - instead of chopping with knives, they use poisonous needles, or they put medicine in your tea cup, and you lie down on the table and die while you drink. There are no wounds on your body, and your face is still smiling."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "From an external perspective, Banu Chiral is an organizational form with Aserai characteristics. The combination of noble titles and terrorist tactics, as well as the religious use of hallucinogenic herbs, all point to the unique political ecology of the Nahasa Desert. Banu Chiral's relationship with traditional tribes is similar to a kind of parasitism - they suck blood from tribes and trade routes, but do not destroy their hosts, which makes them essentially different from insurgent movements in other regions. They are more like a spontaneous shadow power within Aserai society, with currently no overt political aspirations and no signs of seeking external alliances. Based on a comprehensive assessment, the Sons of Shadow pose a potential threat to the stability of the Aserai Sultanate, but they will not surface in the short term. Their style of operation emphasizes patience and penetration, which means that any suppression operation against them must take into account that they may have already planted insiders in the suppressor's camp. This is an extremely difficult opponent to deal with, but at least for now, their target is not us."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Children of Shadow? Aserai is an evil gang over there. The businessmen said they lived deep in the desert, specialized in assassinations and poisons, and their leader was an old monster who would never die. However, their protection fee is fairer than others. If you pay the money, they will definitely protect you from their territory and will escort you for a ride. A relative of mine who is a businessman once said that one time his camel team was robbed, not by the Sons of Shadow, but by another group of bandits. After collecting the protection money, the Son of Shadow forced the bandits out from behind the dunes and recovered the goods and returned them to him. He said that at that time he felt that the protection fee was worth paying. However, he said that the people of the Sons of Shadow all spoke in a low voice and looked more like priests than bandits, and were scarier than priests. Anyway, there are a lot of weird things happening in Aserai, so it’s not unusual to have such a group of people in the desert. Staying far away has nothing to do with us."
+    }
+  ],
+  "TextMappings": []
+}

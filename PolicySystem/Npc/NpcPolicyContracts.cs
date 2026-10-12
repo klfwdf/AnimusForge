@@ -377,12 +377,12 @@ internal sealed class NpcPolicyHistoryEntry
 
 	internal float RecallScore { get; set; }
 
-	internal string RetrievalText => "政策状态：" + BuildPolicyStatusRetrievalText(HistoryBucket, RawPolicyStatus, PolicyStatus)
-		+ "；机械效果状态：" + BuildEffectStatusRetrievalText(EffectStatus) + "。\n"
+	internal string RetrievalText => PolicyGenerationPromptTexts.Get("HistoryRetrievalPolicyState", "Policy state: ") + BuildPolicyStatusRetrievalText(HistoryBucket, RawPolicyStatus, PolicyStatus)
+		+ PolicyGenerationPromptTexts.Get("HistoryRetrievalEffectState", "; mechanical effect state: ") + BuildEffectStatusRetrievalText(EffectStatus) + ".\n"
 		+ (PolicyName ?? string.Empty).Trim()
 		+ "\n" + (PolicyContent ?? string.Empty).Trim()
 		+ "\n" + (ImpactSummary ?? string.Empty).Trim()
-		+ "\n" + string.Join("；", EffectSummaries ?? new List<string>());
+		+ "\n" + string.Join(PolicyGenerationPromptTexts.Get("FieldSeparator", "; "), EffectSummaries ?? new List<string>());
 
 	internal string DialogueRetrievalText => PolicyHistoryRetrievalService.BuildDialogueRetrievalText(this);
 
@@ -392,35 +392,35 @@ internal sealed class NpcPolicyHistoryEntry
 		if (string.Equals(bucket, PolicyHistoryRetrievalService.CurrentBucket, StringComparison.OrdinalIgnoreCase)
 			|| string.Equals(status, "active", StringComparison.OrdinalIgnoreCase))
 		{
-			return "现行有效";
+			return PolicyGenerationPromptTexts.Get("HistoryRetrievalCurrent", "Currently in effect");
 		}
 		if (string.Equals(raw, "abolished", StringComparison.OrdinalIgnoreCase)
 			|| (raw.Length == 0 && string.Equals(status, "abolished", StringComparison.OrdinalIgnoreCase)))
 		{
-			return "已经废除";
+			return PolicyGenerationPromptTexts.Get("HistoryRetrievalAbolished", "Already abolished");
 		}
 		if (string.Equals(bucket, PolicyHistoryRetrievalService.HistoricalBucket, StringComparison.OrdinalIgnoreCase))
 		{
-			return "历史结束（" + (raw.Length == 0 ? status : raw) + "）";
+			return PolicyGenerationPromptTexts.Format("HistoryRetrievalHistoricalEnded", "Historical, ended ({STATUS})", "STATUS", raw.Length == 0 ? status : raw);
 		}
-		return "未知";
+		return PolicyGenerationPromptTexts.Get("HistoryRetrievalUnknown", "Unknown");
 	}
 
 	private static string BuildEffectStatusRetrievalText(string status)
 	{
 		if (string.Equals(status, "active", StringComparison.OrdinalIgnoreCase))
 		{
-			return "仍在运行";
+			return PolicyGenerationPromptTexts.Get("HistoryRetrievalEffectRunning", "Still running");
 		}
 		if (string.Equals(status, "expired", StringComparison.OrdinalIgnoreCase))
 		{
-			return "已经到期但政策仍可现行";
+			return PolicyGenerationPromptTexts.Get("HistoryRetrievalEffectExpired", "Effects expired, but the policy may remain in effect");
 		}
 		if (string.Equals(status, "ended_by_abolition", StringComparison.OrdinalIgnoreCase))
 		{
-			return "随政策废除而终止";
+			return PolicyGenerationPromptTexts.Get("HistoryRetrievalEffectEndedByAbolition", "Ended with policy abolition");
 		}
-		return string.IsNullOrWhiteSpace(status) ? "未知" : status.Trim();
+		return string.IsNullOrWhiteSpace(status) ? PolicyGenerationPromptTexts.Get("HistoryRetrievalUnknown", "Unknown") : status.Trim();
 	}
 }
 

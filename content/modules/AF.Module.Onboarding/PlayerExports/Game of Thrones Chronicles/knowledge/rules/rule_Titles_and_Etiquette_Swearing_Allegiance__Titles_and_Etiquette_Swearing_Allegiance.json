@@ -1,0 +1,128 @@
+{
+  "Id": "rule_Titles_and_Etiquette_Swearing_Allegiance",
+  "Keywords": [
+    "Swearing Allegiance"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Entry Kneeling, shaking hands, reciting an oath or making a promise before God are rituals that turn a private relationship into a public responsibility. Nobles know that witnesses and words are equally important, while soldiers remember receiving food and flags; oaths can maintain order and make betrayal seem particularly heavy"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Swearing Allegiance"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Swearing Allegiance"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Swearing Allegiance"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Swearing Allegiance Kneeling, shaking hands, reciting an oath or making a promise before God are rituals that turn a private relationship into a public responsibility. Nobles know that witnesses and words are equally important, while soldiers remember receiving food and flags; oaths can maintain order and make betrayal seem particularly heavy. Whether it is valid depends on who can grant the rights, collect the consideration, and actually make the judgment come to fruition in the event of default."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Swearing Allegiance Kneeling, shaking hands, reciting an oath or making a promise before God are rituals that turn a private relationship into a public responsibility. Nobles know that witnesses and words are equally important, while soldiers remember receiving food and flags; oaths can maintain order and make betrayal seem particularly heavy. If a rule is practiced over and over again, it will find its way into rituals, crafts, and prayers; if it is sustained only by fear, cracks will show at the onset of a crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Swearing Allegiance Kneeling, shaking hands, reciting an oath or making a promise before God are rituals that turn a private relationship into a public responsibility. Nobles know that witnesses and words are equally important, while soldiers remember receiving food and flags; oaths can maintain order and make betrayal seem particularly heavy. They remember taxes, grain, labor, relief and who can speak for them; these grand names will eventually fall on the family's rice pot."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Swearing Allegiance: Kneeling, shaking hands, reciting an oath or making a promise before God are rituals that turn a private relationship into a public responsibility. Nobles know that witnesses and words are equally important, while soldiers remember receiving food and flags; oaths can maintain order and make betrayal seem particularly heavy."
+  ]
+}

@@ -4,6 +4,8 @@ from __future__ import annotations
 import argparse
 import importlib.util
 import os
+import shutil
+import xml.etree.ElementTree as ET
 import sys
 from pathlib import Path
 import subprocess
@@ -63,7 +65,23 @@ def run(dotnet: str, project: Path, output: Path) -> tuple[int, str]:
     build_root = output / ("build-" + project.parent.name + "-" + project.stem)
     build_root.mkdir(exist_ok=False)
     env = minimal_test_environment(Path(dotnet), build_root)
-    command = [dotnet, "build", str(project), "-c", "Release",
+    closure = ET.parse(project)
+    for node in closure.findall('.//Compile'):
+        node.set('Include', str((project.parent / node.get('Include')).resolve()))
+    items = ET.SubElement(closure.getroot(), 'ItemGroup')
+    for name in ('EconomyPromptTexts', 'EconomySourceTexts'):
+        ET.SubElement(items, 'Compile', {'Include': str(ROOT / 'src/modules/AF.Module.Economy/Host' / (name + '.cs'))})
+    paths = build_root / 'PackagePaths.cs'
+    paths.write_text('namespace AnimusForge { internal static class AnimusForgeModulePaths { internal static string Root; internal static string GetModuleDataFilePath(string name) => System.IO.Path.Combine(Root,name); } }', encoding='utf-8')
+    ET.SubElement(items, 'Compile', {'Include': str(paths)})
+    resource = ET.SubElement(items, 'EmbeddedResource', {'Include': str(ROOT / 'content/modules/AF.Module.Economy/ModuleData/EconomySourceTexts.json')})
+    ET.SubElement(resource, 'LogicalName').text = 'AnimusForge.Defaults.EconomySourceTexts.json'
+    reference = ET.SubElement(items, 'Reference', {'Include': 'Newtonsoft.Json'})
+    ET.SubElement(reference, 'HintPath').text = str(ROOT / 'local/dotnet/8.0.425/sdk/8.0.425/Newtonsoft.Json.dll')
+    actual_project = build_root / project.name
+    closure.write(actual_project, encoding='utf-8', xml_declaration=True)
+
+    command = [dotnet, "build", str(actual_project), "-c", "Release",
                "-p:NuGetAudit=false", "-p:RestoreConfigFile=" + str(output / "NuGet.Config"),
                "-p:BaseOutputPath=" + str(build_root / "bin") + "/",
                "-p:BaseIntermediateOutputPath=" + str(build_root / "obj") + "/"]
@@ -74,9 +92,13 @@ def run(dotnet: str, project: Path, output: Path) -> tuple[int, str]:
         return result.returncode, log
     executable = build_root / "bin/Release/net8.0" / (project.stem + ".dll")
     assert executable.is_file(), "Fresh build did not produce runtime DLL: " + str(executable)
-    result = subprocess.run([dotnet, str(executable)], cwd=ROOT, env=env,
-                            capture_output=True, text=True, encoding="utf-8", errors="replace")
-    return result.returncode, log + result.stdout + result.stderr
+    for language, filename in [('CN','EconomyPromptTexts.json'),('EN','EconomyPromptTexts.en.json')]:
+        package=build_root/language;package.mkdir()
+        shutil.copyfile(ROOT/'content/modules/AF.Module.Economy/ModuleData'/filename, package/'EconomyPromptTexts.json')
+        result = subprocess.run([dotnet, str(executable), str(package), language], cwd=ROOT, env=env, capture_output=True, text=True, encoding='utf-8', errors='replace')
+        log += result.stdout + result.stderr
+        if result.returncode: return result.returncode, log
+    return 0, log
 
 
 def main() -> int:
@@ -101,8 +123,8 @@ def main() -> int:
         trust = TRUST_POLICY.read_text(encoding="utf-8-sig")
         mutations = (
             ("merchant_confirmation", "projection",
-             "【债务解除确认】若玩家本轮行为已被系统事实明确记录为偿还、豁免或免除",
-             "【债务确认】已处理", "FAIL merchant confirmation"),
+             'EconomyPromptTexts.Get("S640")',
+             '"【债务确认】已处理"', "FAIL merchant confirmation"),
             ("trust_rounding", "trust", "Math.Floor(normalized * 10.0)",
              "Math.Ceiling(normalized * 10.0)", "FAIL trust level boundaries"),
         )

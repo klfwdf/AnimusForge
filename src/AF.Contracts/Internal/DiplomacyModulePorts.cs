@@ -16,7 +16,8 @@ internal interface IDiplomacyConversationPort
     bool CanUseIndependentClanPeace(string heroId);
     bool IsIndependentClanPeacePostprocessTag(string tag);
     string BuildDiplomacyPostprocessContext(string heroId);
-    void ProcessDiplomacyTags(string heroId, ref string text);
+    void ProcessDiplomacyTags(string heroId, ref string text, List<string> receipts = null);
+    string ComposeDialogueReply(string body, IReadOnlyList<string> receipts, bool forUi);
     bool TryBuildTributePowerContext(string payerId, string receiverId, out AfTributePowerContext context);
 }
 

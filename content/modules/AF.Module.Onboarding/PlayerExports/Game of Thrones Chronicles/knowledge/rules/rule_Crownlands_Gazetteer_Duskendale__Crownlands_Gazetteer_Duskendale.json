@@ -1,0 +1,152 @@
+{
+  "Id": "rule_Crownlands_Gazetteer_Duskendale",
+  "Keywords": [
+    "Duskendale",
+    "Dun Fort of Duskendale"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Dusk Valley Town is located on the north shore of Blackwater Bay and is an important port town in the eastern part of the royal territory. Its docks, barns, fishing boats and ramparts keep it open to the Narrow Sea yet always cast in the shadow of King's Landing. The merchants in the town care about tariffs and shipping routes, the knights care about city gates and the summons of lords, and the common people remember when the price of food increases and when ships bring news from outside. Duskendale has a deep political memory of resistance to the Crown, which means that being \"close to King's Landing\" has never just meant convenience, but also meant being seen, commandeered, or suspected. It was the buffer zone between the port and the royal power."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "crownlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Duskendale Local families also relied on the King's Market, Blackwater Bay shipping, orchards, field rents, and the road to King's Landing; if any road, well, or wharf failed, the cost would fall first on them."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "crownlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Duskendale Entry Duskendale"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Duskendale They also recognize the accents, laws, and credentials of the Crown; reputations can travel great distances from taverns, but true distances must still be measured by wheel, oar, or horse's hooves."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Duskendale Entry Duskendale"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Duskendale If you can supply supplies, avoid danger, and find a guide, it is worth marking in your itinerary; if you don't have these three things, no matter how loud your family name is, it won't be able to save the lost."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The traces left by generations of people in Duskendale Town are half hidden in the ship repair wood, canvas, salt, fish catch, and stones used to resist the sea wind. The other half are hidden in the Seven Gods, the royal family's decrees, and the flags that have been constantly changed since the conquest. A stronghold was therefore not just a lord's hall, but also a place where weddings and funerals, vows, labor and local memories recurred."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Duskendale They care about the King's Capital Market, Blackwater Bay shipping, orchards, field rents and the road leading to King's Landing. They also look at whether seeds are left after the grain collection and whether the city gates are open in times of disaster. When people from afar see the coat of arms, what they see is whether there will be food to eat tomorrow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Duskendale: Dusk Valley Town is located on the north shore of Blackwater Bay and is an important port town in the eastern part of the royal territory. Its docks, barns, fishing boats and ramparts keep it open to the Narrow Sea yet always cast in the shadow of King's Landing. The merchants in the town care about tariffs and shipping routes, the knights care about city gates and the summons of lords, and the common people remember when the price of food increases and when ships bring news from outside. Duskendale has a deep political memory of resistance to the Crown, which means that being \"close to King's Landing\" has never just meant convenience, but also meant being seen, commandeered, or suspected. It was the buffer zone between the port and the royal power."
+  ]
+}

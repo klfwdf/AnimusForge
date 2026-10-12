@@ -1,0 +1,152 @@
+{
+  "Id": "rule_Storm_Coast_Mistwood",
+  "Keywords": [
+    "Mistwood",
+    "Mistwood Forest"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Mistwood City is located on the edge of the woodlands in the southeastern part of the Stormlands. The fog forest is not a forest that is easily tamed by roads: moisture, fog, tree roots, hunting trails, and sudden wind and rain make marching and messaging more difficult than it looks on the map. The castle and the surrounding settlements rely on logging, hunting, small farmlands and coastal exchanges to survive, and they also bear the responsibility of guarding the roads leading to Shipbreaker Bay and the Dorne border. For locals, the familiar fog can cover the return journey; for outsiders, the fog swallows up direction and time. The owner or flag of Mist Forest City can be changed, but its characteristics as a moist woodland node rather than an important town on the open plains will not change."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "stormlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Mistwood Local families also depend on rainforest timber, game, barren farmland, fisheries, and roofs to protect themselves from storms; any time a road, well, or dock fails, the price falls first on them."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "stormlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Mistwood Entry Mistwood"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Mistwood They also recognize the accents, laws, and credentials of the Stormlands; reputations can travel great distances from taverns, but true distances must still be measured by wheel, oar, or horse's hoof."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Mistwood Entry Mistwood"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Mistwood If you can supply supplies, avoid danger, and find a guide, it is worth marking in your itinerary; if you don't have these three things, no matter how loud your family name is, it won't be able to save the lost."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Those who repaired the city of Misty Forest were familiar with shipbuilding wood, canvas, salt, fish catches, and stones used to withstand the sea wind. Those who comforted the families of the deceased were familiar with the old history of the Seven Gods and the Storm King, as well as the thick stone walls used to withstand the sea wind. A stronghold was therefore not just a lord's hall, but also a place where weddings and funerals, vows, labor and local memories recurred."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Mistwood They care about rainforest timber, prey, barren farmland, fish catches, and roofs to shelter from storms. They also look at whether seeds are left after harvesting grain, and whether the city gates are open in times of disaster. When people from afar see coats of arms, what they see is whether there will be food to eat tomorrow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Mistwood: Mistwood City is located on the edge of the woodlands in the southeastern part of the Stormlands. The fog forest is not a forest that is easily tamed by roads: moisture, fog, tree roots, hunting trails, and sudden wind and rain make marching and messaging more difficult than it looks on the map. The castle and the surrounding settlements rely on logging, hunting, small farmlands and coastal exchanges to survive, and they also bear the responsibility of guarding the roads leading to Shipbreaker Bay and the Dorne border. For locals, the familiar fog can cover the return journey; for outsiders, the fog swallows up direction and time. The owner or flag of Mist Forest City can be changed, but its characteristics as a moist woodland node rather than an important town on the open plains will not change."
+  ]
+}

@@ -1,0 +1,128 @@
+{
+  "Id": "rule_Folk_Customs_Pregnancy_Midwifery_and_Motherhood",
+  "Keywords": [
+    "Pregnancy, Midwifery, and Motherhood"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The medical skills of midwives, maids, and bachelors determine many families' most vulnerable nights. Nobles can invite experienced people and expensive medicinal materials, while poor people often can only rely on neighbors and prayers; whether in a castle or a hut, the joy of new life is always accompanied by the fear of death fear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Pregnancy, Midwifery, and Motherhood"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Pregnancy, Midwifery, and Motherhood"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Pregnancy, Midwifery, and Motherhood"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Pregnancy, Midwifery, and Motherhood The medical skills of midwives, maids, and bachelors determine many families' most vulnerable nights. Nobles can invite experienced people and expensive medicinal materials, while poor people often can only rely on neighbors and prayers; whether in a castle or a hut, the joy of new life is always accompanied by the fear of death. Whether it is valid depends on who can grant the rights, collect the consideration, and actually make the judgment come to fruition in the event of default."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Pregnancy, Midwifery, and Motherhood The medical skills of midwives, maids, and bachelors determine many families' most vulnerable nights. Nobles can invite experienced people and expensive medicinal materials, while poor people often can only rely on neighbors and prayers; whether in a castle or a hut, the joy of new life is always accompanied by the fear of death. If a rule is practiced over and over again, it will find its way into rituals, crafts, and prayers; if it is sustained only by fear, cracks will show at the onset of a crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Pregnancy, Midwifery, and Motherhood The medical skills of midwives, maids, and bachelors determine many families' most vulnerable nights. Nobles can invite experienced people and expensive medicinal materials, while poor people often can only rely on neighbors and prayers; whether in a castle or a hut, the joy of new life is always accompanied by the fear of death. They remember taxes, grain, labor, relief and who can speak for them; these grand names will eventually fall on the family's rice pot."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Pregnancy, Midwifery, and Motherhood: The medical skills of midwives, maids, and bachelors determine many families' most vulnerable nights. Nobles can invite experienced people and expensive medicinal materials, while poor people often can only rely on neighbors and prayers; whether in a castle or a hut, the joy of new life is always accompanied by the fear of death."
+  ]
+}

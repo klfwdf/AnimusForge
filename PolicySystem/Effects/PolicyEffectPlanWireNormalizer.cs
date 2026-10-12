@@ -66,21 +66,21 @@ internal static class PolicyEffectPlanWireNormalizer
 			|| effects.Count > PolicyEffectSemanticContract.MaximumLegs
 			|| !TryReadRequiredText(root, "disposition", out disposition))
 		{
-			error = "玩家效果计划根对象、版本、disposition 或 effects 无效。";
+			error = "Player effect plan root object, version, disposition or effects are invalid.";
 			return false;
 		}
 		reason = ReadOptionalNonExecutingText(root, "reason");
 		disposition = disposition.ToLowerInvariant();
 		if (disposition != "executable" && disposition != "narrativeonly" && disposition != "unsupported")
 		{
-			error = "disposition 只能是 executable|narrativeOnly|unsupported。";
+			error = "disposition can only be executable|narrativeOnly|unsupported.";
 			return false;
 		}
 		if (disposition != "executable")
 		{
 			if (effects.Count != 0)
 			{
-				error = "narrativeOnly 或 unsupported 必须使用空 effects。";
+				error = "narrativeOnly or unsupported must have empty effects.";
 				return false;
 			}
 			disposition = disposition == "narrativeonly" ? "narrativeOnly" : disposition;
@@ -89,7 +89,7 @@ internal static class PolicyEffectPlanWireNormalizer
 		}
 		if (effects.Count == 0)
 		{
-			error = "executable 必须至少包含一个效果。";
+			error = "executable must contain at least one effect.";
 			return false;
 		}
 
@@ -98,13 +98,13 @@ internal static class PolicyEffectPlanWireNormalizer
 		{
 			if (effects[index] is not JObject effect)
 			{
-				error = BuildEffectError(index, "必须是对象。");
+				error = BuildEffectError(index, "must be an object.");
 				wires.Clear();
 				return false;
 			}
 			if (HasConflictingKnownFieldAliases(effect, DirectPlayerEffectCanonicalFields))
 			{
-				error = BuildEffectError(index, "包含重复或大小写冲突的已知字段。");
+				error = BuildEffectError(index, "Contains duplicate or casing-conflicting known fields.");
 				wires.Clear();
 				return false;
 			}
@@ -112,19 +112,19 @@ internal static class PolicyEffectPlanWireNormalizer
 				|| !TryReadRequiredText(effect, "role", out string roleText)
 				|| !TryReadRequiredText(effect, "moduleId", out string moduleId))
 			{
-				error = BuildEffectError(index, "缺少 mechanismKind、role 或 moduleId。");
+				error = BuildEffectError(index, "Missing mechanismKind, role or moduleId.");
 				wires.Clear();
 				return false;
 			}
 			if (effect["targetHandles"] is not JArray targetTokens || targetTokens.Count == 0)
 			{
-				error = BuildEffectError(index, "targetHandles 必须是非空数组。");
+				error = BuildEffectError(index, "targetHandles must be a non-empty array.");
 				wires.Clear();
 				return false;
 			}
 			if (effect["payload"]?.Type != JTokenType.Object)
 			{
-				error = BuildEffectError(index, "payload 必须是对象。");
+				error = BuildEffectError(index, "payload must be an object.");
 				wires.Clear();
 				return false;
 			}
@@ -132,13 +132,13 @@ internal static class PolicyEffectPlanWireNormalizer
 			if ((mechanismKind != "independent" && mechanismKind != "linked")
 				|| !TryParseSemanticRole(roleText, out PolicyEffectMechanismRole role))
 			{
-				error = BuildEffectError(index, "mechanismKind 或 role 无效。");
+				error = BuildEffectError(index, "mechanismKind or role is invalid.");
 				wires.Clear();
 				return false;
 			}
 			if (mechanismKind == "independent" && role != PolicyEffectMechanismRole.Subject)
 			{
-				error = BuildEffectError(index, "independent 只能使用 subject role。");
+				error = BuildEffectError(index, "independent can only use subject role.");
 				wires.Clear();
 				return false;
 			}
@@ -147,7 +147,7 @@ internal static class PolicyEffectPlanWireNormalizer
 				&& role != PolicyEffectMechanismRole.Destination
 				&& role != PolicyEffectMechanismRole.Beneficiary)
 			{
-				error = BuildEffectError(index, "linked 只能使用真实 source、destination 或 beneficiary 资源流转腿。");
+				error = BuildEffectError(index, "linked can only use real source, destination or beneficiary resource legs.");
 				wires.Clear();
 				return false;
 			}
@@ -156,20 +156,20 @@ internal static class PolicyEffectPlanWireNormalizer
 			{
 				if (token?.Type != JTokenType.String || string.IsNullOrWhiteSpace(token.Value<string>()))
 				{
-					error = BuildEffectError(index, "targetHandles 只能包含非空字符串。");
+					error = BuildEffectError(index, "targetHandles can only contain non-empty strings.");
 					wires.Clear();
 					return false;
 				}
 				string handle = token.Value<string>();
 				if (!string.Equals(handle, handle.Trim(), StringComparison.Ordinal))
 				{
-					error = BuildEffectError(index, "targetHandles 必须精确使用 canonical handle，不能包含首尾空白。");
+					error = BuildEffectError(index, "targetHandles must use exact canonical handle without leading or trailing whitespace.");
 					wires.Clear();
 					return false;
 				}
 				if (targetHandles.Contains(handle, StringComparer.Ordinal))
 				{
-					error = BuildEffectError(index, "targetHandles 包含重复句柄：" + handle);
+					error = BuildEffectError(index, "targetHandles contains duplicate handle: " + handle);
 					wires.Clear();
 					return false;
 				}
@@ -205,7 +205,7 @@ internal static class PolicyEffectPlanWireNormalizer
 			int labeledCount = linked.Count(shape => shape.ExternalMechanismLabel.Length > 0);
 			if (labeledCount != 0 && labeledCount != linked.Count)
 			{
-				error = "linked effects 混用了有标签和无标签的 mechanismId，无法安全确定分组。";
+				error = "linked effects mixed tagged and untagged mechanismId; cannot safely determine grouping.";
 				return false;
 			}
 			if (labeledCount == 0)
@@ -216,7 +216,7 @@ internal static class PolicyEffectPlanWireNormalizer
 						|| shape.Wire.MechanismRole == PolicyEffectMechanismRole.Beneficiary) == 1;
 				if (!uniquePair)
 				{
-					error = "linked effects 缺少 mechanismId，且无法唯一推导一个 source→destination/beneficiary 分组。";
+					error = "linked effects missing mechanismId and cannot uniquely infer a source->destination/beneficiary grouping.";
 					failureKind = PolicyEffectPlanParseFailureKind.IncompleteLinkedMechanism;
 					return false;
 				}
@@ -233,7 +233,7 @@ internal static class PolicyEffectPlanWireNormalizer
 					failureKind = PolicyEffectPlanParseFailureKind.IncompleteLinkedMechanism;
 					error = "linked mechanism group "
 						+ linkedGroupOrdinal.ToString(CultureInfo.InvariantCulture)
-						+ " 必须包含至少两条真实资源流转腿，并同时包含 source 与 destination/beneficiary。";
+						+ " must contain at least two real resource legs and include both source and destination/beneficiary.";
 					return false;
 				}
 				linkedGroupOrdinal++;
@@ -280,18 +280,18 @@ internal static class PolicyEffectPlanWireNormalizer
 		error = string.Empty;
 		if (effectIntentVersion != PolicyEffectSemanticContract.CurrentVersion)
 		{
-			error = "effectIntentVersion 必须严格等于 "
+			error = "effectIntentVersion must strictly equal "
 				+ PolicyEffectSemanticContract.CurrentVersion.ToString(CultureInfo.InvariantCulture) + "。";
 			return false;
 		}
 		if (effectIntents == null)
 		{
-			error = "effectIntents 必须是数组。";
+			error = "effectIntents must be an array.";
 			return false;
 		}
 		if (effectIntents.Count > PolicyEffectSemanticContract.MaximumIntents)
 		{
-			error = "effectIntents 超过最大机制数量 "
+			error = "effectIntents exceeds maximum mechanism count "
 				+ PolicyEffectSemanticContract.MaximumIntents.ToString(CultureInfo.InvariantCulture) + "。";
 			return false;
 		}
@@ -303,20 +303,20 @@ internal static class PolicyEffectPlanWireNormalizer
 			if (effectIntents[intentIndex] is not JObject intent
 				|| !HasExactFields(intent, SemanticIntentFields))
 			{
-				error = BuildIntentError(intentIndex, "必须且只能包含 omittedSide 和 legs。");
+				error = BuildIntentError(intentIndex, "must contain only omittedSide and legs.");
 				return false;
 			}
 			if (intent["omittedSide"]?.Type != JTokenType.String
 				|| intent["legs"] is not JArray legs
 				|| legs.Count == 0)
 			{
-				error = BuildIntentError(intentIndex, "omittedSide 或 legs 无效。");
+				error = BuildIntentError(intentIndex, "omittedSide or legs is invalid.");
 				return false;
 			}
 			totalLegs += legs.Count;
 			if (totalLegs > PolicyEffectSemanticContract.MaximumLegs)
 			{
-				error = "effectIntents 总语义腿数量超过 "
+				error = "Total semantic legs in effectIntents exceeds "
 					+ PolicyEffectSemanticContract.MaximumLegs.ToString(CultureInfo.InvariantCulture) + "。";
 				return false;
 			}
@@ -324,7 +324,7 @@ internal static class PolicyEffectPlanWireNormalizer
 			string omittedSide = (intent.Value<string>("omittedSide") ?? string.Empty).Trim().ToLowerInvariant();
 			if (omittedSide != "none" && omittedSide != "source" && omittedSide != "destination")
 			{
-				error = BuildIntentError(intentIndex, "omittedSide 只能是 none|source|destination。");
+				error = BuildIntentError(intentIndex, "omittedSide can only be none|source|destination.");
 				return false;
 			}
 			PolicyEffectSemanticIntent normalizedIntent = new PolicyEffectSemanticIntent
@@ -337,7 +337,7 @@ internal static class PolicyEffectPlanWireNormalizer
 			{
 				if (legs[legIndex] is not JObject leg || !HasExactFields(leg, SemanticLegFields))
 				{
-					error = BuildLegError(intentIndex, legIndex, "字段缺失、重复或包含未知字段。");
+					error = BuildLegError(intentIndex, legIndex, "Fields missing, duplicated or contain unknown fields.");
 					return false;
 				}
 				if (!TryReadRequiredText(leg, "role", PolicyEffectSemanticContract.MaximumStrengthLength, out string roleText)
@@ -347,7 +347,7 @@ internal static class PolicyEffectPlanWireNormalizer
 					|| !TryReadRequiredText(leg, "reason", PolicyEffectSemanticContract.MaximumTextLength, out string reason)
 					|| !TryParseSemanticRole(roleText, out PolicyEffectMechanismRole role))
 				{
-					error = BuildLegError(intentIndex, legIndex, "文本字段或 role 无效。");
+					error = BuildLegError(intentIndex, legIndex, "Text field or role is invalid.");
 					return false;
 				}
 				normalizedIntent.Legs.Add(new PolicyEffectSemanticLeg
@@ -370,7 +370,7 @@ internal static class PolicyEffectPlanWireNormalizer
 			{
 				if (hasNonSubject || omittedSide != "none")
 				{
-					error = BuildIntentError(intentIndex, "independent 只能包含 subject 且 omittedSide=none。");
+					error = BuildIntentError(intentIndex, "independent can only contain subject with omittedSide=none.");
 					return false;
 				}
 				normalizedIntent.MechanismKind = PolicyEffectMechanismKind.Independent;
@@ -382,7 +382,7 @@ internal static class PolicyEffectPlanWireNormalizer
 					|| !hasSource && hasDestination && omittedSide == "source";
 				if (!validLinked)
 				{
-					error = BuildIntentError(intentIndex, "linked 的已知腿与 omittedSide 不一致。");
+					error = BuildIntentError(intentIndex, "linked known legs inconsistent with omittedSide.");
 					return false;
 				}
 				normalizedIntent.MechanismKind = PolicyEffectMechanismKind.Linked;
@@ -441,7 +441,7 @@ internal static class PolicyEffectPlanWireNormalizer
 			|| root["assignments"] is not JArray assignments
 			|| assignments.Count > PolicyEffectSemanticContract.MaximumLegs)
 		{
-			error = "效果映射根对象、版本或 assignments 无效。";
+			error = "Effect mapping root object, version or assignments are invalid.";
 			return false;
 		}
 		Dictionary<string, Tuple<PolicyEffectSemanticIntent, PolicyEffectSemanticLeg>> legsById =
@@ -463,7 +463,7 @@ internal static class PolicyEffectPlanWireNormalizer
 				|| assignment["targetHandles"] is not JArray targetTokens
 				|| assignment["payload"]?.Type != JTokenType.Object)
 			{
-				error = BuildMappingError(index, "字段缺失、重复、类型无效或包含未知字段。");
+				error = BuildMappingError(index, "Fields missing, duplicated, invalid type or contain unknown fields.");
 				return false;
 			}
 			string intentLegId = (assignment.Value<string>("intentLeg") ?? string.Empty).Trim();
@@ -473,7 +473,7 @@ internal static class PolicyEffectPlanWireNormalizer
 				|| targetTokens.Count == 0
 				|| (requireSingleTarget && targetTokens.Count != 1))
 			{
-				error = BuildMappingError(index, "intentLeg、moduleId 或 targetHandles 无效：" + intentLegId);
+				error = BuildMappingError(index, "intentLeg, moduleId or targetHandles invalid: " + intentLegId);
 				return false;
 			}
 			List<string> targetHandles = new List<string>(targetTokens.Count);
@@ -481,13 +481,13 @@ internal static class PolicyEffectPlanWireNormalizer
 			{
 				if (targetToken?.Type != JTokenType.String || string.IsNullOrWhiteSpace(targetToken.Value<string>()))
 				{
-					error = BuildMappingError(index, "targetHandles 必须只包含非空字符串。");
+					error = BuildMappingError(index, "targetHandles must contain only non-empty strings.");
 					return false;
 				}
 				string targetHandle = targetToken.Value<string>().Trim();
 				if (targetHandles.Contains(targetHandle, StringComparer.OrdinalIgnoreCase))
 				{
-					error = BuildMappingError(index, "targetHandles 包含重复句柄：" + targetHandle);
+					error = BuildMappingError(index, "targetHandles contains duplicate handle: " + targetHandle);
 					return false;
 				}
 				targetHandles.Add(targetHandle);
@@ -496,7 +496,7 @@ internal static class PolicyEffectPlanWireNormalizer
 				+ string.Join("\u001f", targetHandles.OrderBy(value => value, StringComparer.OrdinalIgnoreCase));
 			if (!exactAssignments.Add(exactKey))
 			{
-				error = BuildMappingError(index, "与先前 assignment 完全重复：" + intentLegId);
+				error = BuildMappingError(index, "Duplicate of previous assignment: " + intentLegId);
 				return false;
 			}
 			mappedLegs.Add(intentLegId);
@@ -520,7 +520,7 @@ internal static class PolicyEffectPlanWireNormalizer
 		if (missingLeg != null)
 		{
 			wires.Clear();
-			error = "效果映射缺少语义腿 " + missingLeg + "。";
+			error = "Effect mapping missing semantic leg " + missingLeg + "。";
 			return false;
 		}
 		return true;

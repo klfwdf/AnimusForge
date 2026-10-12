@@ -112,54 +112,54 @@ internal static class RebellionNamingRules
 			stringBuilder.AppendLine(" ");
 		}
 
-		stringBuilder.AppendLine("输出格式：");
-		stringBuilder.AppendLine("[NAME]正式国名");
-		stringBuilder.AppendLine("[SHORT]简称");
-		stringBuilder.AppendLine("[LORE]百科简介");
-		return stringBuilder.ToString().TrimEnd();
+		stringBuilder.AppendLine(KingdomCivilWarTexts.Prompt("AF_KINGDOM_CW_RebellionNaming_SystemPrompt_OutputFormat"));
+		stringBuilder.AppendLine(KingdomCivilWarTexts.Prompt("AF_KINGDOM_CW_RebellionNaming_SystemPrompt_NameTag"));
+		stringBuilder.AppendLine(KingdomCivilWarTexts.Prompt("AF_KINGDOM_CW_RebellionNaming_SystemPrompt_ShortTag"));
+		stringBuilder.AppendLine(KingdomCivilWarTexts.Prompt("AF_KINGDOM_CW_RebellionNaming_SystemPrompt_LoreTag"));
+		return PromptComposerTexts.ApplyOutputLanguage(stringBuilder.ToString().TrimEnd());
 	}
 
 	internal static string BuildUserPrompt(RebellionNamingFacts f)
 	{
 		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.AppendLine("【叛乱建国命名任务】");
-		stringBuilder.AppendLine("当前周次：第 " + Math.Max(0, f.WeekIndex) + " 周");
-		stringBuilder.AppendLine("主导家族：" + f.ClanName);
-		stringBuilder.AppendLine("主导族长：" + f.LeaderName);
-		stringBuilder.AppendLine("家族文化：" + f.CultureName);
-		stringBuilder.AppendLine("原所属王国：" + f.KingdomName);
-		stringBuilder.AppendLine("原所属王国领袖（被背叛者）：" + f.KingName);
-		stringBuilder.AppendLine("原王国执政家族：" + f.RulingClanName);
-		stringBuilder.AppendLine("当前核心封地：" + f.SettlementNames);
+		stringBuilder.AppendLine(KingdomCivilWarTexts.Prompt("AF_KINGDOM_CW_RebellionNaming_UserPrompt_Header"));
+		stringBuilder.AppendLine(KingdomCivilWarTexts.Prompt("KW_Prompt_064") + Math.Max(0, f.WeekIndex) + KingdomCivilWarTexts.Prompt("KW_Prompt_065"));
+		stringBuilder.AppendLine(KingdomCivilWarTexts.Prompt("KW_Prompt_066") + f.ClanName);
+		stringBuilder.AppendLine(KingdomCivilWarTexts.Prompt("KW_Prompt_067") + f.LeaderName);
+		stringBuilder.AppendLine(KingdomCivilWarTexts.Prompt("KW_Prompt_068") + f.CultureName);
+		stringBuilder.AppendLine(KingdomCivilWarTexts.Prompt("KW_Prompt_069") + f.KingdomName);
+		stringBuilder.AppendLine(KingdomCivilWarTexts.Prompt("KW_Prompt_070") + f.KingName);
+		stringBuilder.AppendLine(KingdomCivilWarTexts.Prompt("KW_Prompt_071") + f.RulingClanName);
+		stringBuilder.AppendLine(KingdomCivilWarTexts.Prompt("KW_Prompt_072") + f.SettlementNames);
 		stringBuilder.AppendLine(f.RebelBackground);
 		stringBuilder.AppendLine();
-		stringBuilder.AppendLine("【叛乱核心定居点百科】");
+		stringBuilder.AppendLine(KingdomCivilWarTexts.Prompt("AF_KINGDOM_CW_RebellionNaming_UserPrompt_SettlementHeader"));
 		stringBuilder.AppendLine(f.SettlementSummary);
 		stringBuilder.AppendLine();
-		stringBuilder.AppendLine("【联合响应家族】");
+		stringBuilder.AppendLine(KingdomCivilWarTexts.Prompt("AF_KINGDOM_CW_RebellionNaming_UserPrompt_FollowerHeader"));
 		stringBuilder.AppendLine(f.FollowerSummary);
 		stringBuilder.AppendLine();
-		stringBuilder.AppendLine("【叛乱家族族长背景】");
+		stringBuilder.AppendLine(KingdomCivilWarTexts.Prompt("AF_KINGDOM_CW_RebellionNaming_UserPrompt_LeaderBackgroundHeader"));
 		stringBuilder.AppendLine(f.LeaderBackground);
 		stringBuilder.AppendLine();
-		stringBuilder.AppendLine("【原王国统治者背景】");
+		stringBuilder.AppendLine(KingdomCivilWarTexts.Prompt("AF_KINGDOM_CW_RebellionNaming_UserPrompt_KingBackgroundHeader"));
 		stringBuilder.AppendLine(f.KingBackground);
 		stringBuilder.AppendLine();
-		stringBuilder.AppendLine("【原王国背景】");
+		stringBuilder.AppendLine(KingdomCivilWarTexts.Prompt("AF_KINGDOM_CW_RebellionNaming_UserPrompt_KingdomBackgroundHeader"));
 		stringBuilder.AppendLine(f.KingdomBackground);
 		stringBuilder.AppendLine();
-		stringBuilder.AppendLine("【上周世界周报】");
+		stringBuilder.AppendLine(KingdomCivilWarTexts.Prompt("AF_KINGDOM_CW_RebellionNaming_UserPrompt_WorldWeeklyHeader"));
 		stringBuilder.AppendLine(f.WorldWeekly);
 		stringBuilder.AppendLine();
-		stringBuilder.AppendLine("【上周原王国周报】");
+		stringBuilder.AppendLine(KingdomCivilWarTexts.Prompt("AF_KINGDOM_CW_RebellionNaming_UserPrompt_KingdomWeeklyHeader"));
 		stringBuilder.AppendLine(f.KingdomWeekly);
 		if (!string.IsNullOrWhiteSpace(f.ExistingNames))
 		{
 			stringBuilder.AppendLine();
-			stringBuilder.AppendLine("现有王国名称（禁止重名）：" + f.ExistingNames);
+			stringBuilder.AppendLine(KingdomCivilWarTexts.Prompt("KW_Prompt_073") + f.ExistingNames);
 		}
 
-		stringBuilder.AppendLine("请生成一个正式名、一个简称，以及一段百科简介。");
+		stringBuilder.AppendLine(KingdomCivilWarTexts.Prompt("AF_KINGDOM_CW_RebellionNaming_UserPrompt_Footer"));
 		return stringBuilder.ToString().TrimEnd();
 	}
 
@@ -169,7 +169,7 @@ internal static class RebellionNamingRules
 		if (string.IsNullOrWhiteSpace(text))
 			text = NormalizeSource(summary, 500);
 		if (string.IsNullOrWhiteSpace(text))
-			return "无";
+			return KingdomCivilWarTexts.Prompt("AF_KINGDOM_CW_RebellionNaming_Weekly_None");
 		string heading = NormalizeSource(title, 80);
 		return string.IsNullOrWhiteSpace(heading) ? text : heading + "：" + text;
 	}
@@ -178,7 +178,7 @@ internal static class RebellionNamingRules
 	{
 		if (!exists)
 		{
-			return "无";
+			return KingdomCivilWarTexts.Prompt("AF_KINGDOM_CW_RebellionNaming_Weekly_None");
 		}
 
 		string text = NormalizeSource(encyclopedia, 900);
@@ -190,15 +190,15 @@ internal static class RebellionNamingRules
 		string heroDisplayName = heroName;
 		string clanDisplayName = clanName;
 		string text2 = (culture ?? "").Trim();
-		string value = string.IsNullOrWhiteSpace(text2) ? "" : (text2 + "文化");
-		return NormalizeSource(heroDisplayName + "出身于" + clanDisplayName + "家族，现为" + value + "背景的领主。", 300);
+		string value = string.IsNullOrWhiteSpace(text2) ? "" : (text2 + KingdomCivilWarTexts.Prompt("KW_Prompt_074"));
+		return NormalizeSource(heroDisplayName + KingdomCivilWarTexts.Prompt("KW_Prompt_075") + clanDisplayName + KingdomCivilWarTexts.Prompt("KW_Prompt_076") + value + KingdomCivilWarTexts.Prompt("KW_Prompt_077"), 300);
 	}
 
 	internal static string KingdomBackground(bool exists, string encyclopedia, string opening, string name)
 	{
 		if (!exists)
 		{
-			return "无";
+			return KingdomCivilWarTexts.Prompt("AF_KINGDOM_CW_RebellionNaming_Weekly_None");
 		}
 
 		string text = NormalizeSource(encyclopedia, 1200);
@@ -214,14 +214,14 @@ internal static class RebellionNamingRules
 			return text;
 		}
 
-		return name + "是当前叛乱所脱离的旧政权。";
+		return name + KingdomCivilWarTexts.Prompt("KW_Prompt_078");
 	}
 
 	internal static string SettlementBackground(bool exists, string encyclopedia, string name, bool town, bool castle, string culture, string kingdom)
 	{
 		if (!exists)
 		{
-			return "无";
+			return KingdomCivilWarTexts.Prompt("AF_KINGDOM_CW_RebellionNaming_Weekly_None");
 		}
 
 		string text = NormalizeSource(encyclopedia, 600);
@@ -231,10 +231,10 @@ internal static class RebellionNamingRules
 		}
 
 		string settlementDisplayName = name;
-		string text2 = town ? "城镇" : (castle ? "城堡" : "定居点");
+		string text2 = town ? KingdomCivilWarTexts.Prompt("AF_KINGDOM_CW_RebellionNaming_Settlement_Town") : (castle ? KingdomCivilWarTexts.Prompt("AF_KINGDOM_CW_RebellionNaming_Settlement_Castle") : KingdomCivilWarTexts.Prompt("AF_KINGDOM_CW_RebellionNaming_Settlement_Default"));
 		string text3 = (culture ?? "").Trim();
 		string kingdomDisplayName = kingdom;
-		return NormalizeSource(settlementDisplayName + "是一处" + text2 + "，文化为" + (string.IsNullOrWhiteSpace(text3) ? "未知" : text3) + "，当前归属于" + kingdomDisplayName + "。", 220);
+		return NormalizeSource(settlementDisplayName + KingdomCivilWarTexts.Prompt("KW_Prompt_079") + text2 + KingdomCivilWarTexts.Prompt("KW_Prompt_080") + (string.IsNullOrWhiteSpace(text3) ? KingdomCivilWarTexts.Prompt("AF_KINGDOM_CW_RebellionNaming_Settlement_CultureUnknown") : text3) + KingdomCivilWarTexts.Prompt("KW_Prompt_081") + kingdomDisplayName + "。", 220);
 	}
 
 	internal static string RebelBackground(string brief, string summary, string name)
@@ -247,23 +247,23 @@ internal static class RebellionNamingRules
 
 		if (!string.IsNullOrWhiteSpace(text))
 		{
-			return "叛乱背景：上周" + name + "周报提到，" + text + "。这场叛乱正是在这样的局势中爆发，主导家族带着现有封地脱离旧王国，准备自立为新的政治实体。";
+			return KingdomCivilWarTexts.Prompt("KW_Prompt_082") + name + KingdomCivilWarTexts.Prompt("KW_Prompt_083") + text + KingdomCivilWarTexts.Prompt("KW_Prompt_084");
 		}
 
-		return "叛乱背景：该家族因与旧王国统治层关系恶化，在王国内部稳定度恶化时带着现有封地脱离旧王国，并准备自立为新的政治实体。";
+		return KingdomCivilWarTexts.Prompt("AF_KINGDOM_CW_RebellionNaming_Background_Fallback");
 	}
 	internal static string SettlementLine(string name, string background) => "- " + name + "：" + background;
 
 	internal static string JoinSettlementSummary(System.Collections.Generic.List<string> list)
 	{
-		return list == null || list.Count == 0 ? "无" : string.Join("\n", list);
+		return list == null || list.Count == 0 ? KingdomCivilWarTexts.Prompt("AF_KINGDOM_CW_RebellionNaming_Weekly_None") : string.Join("\n", list);
 	}
 
-	internal static string FollowerLine(string clan, string hero, string fortifications) => clan + "（族长：" + hero + "；" + fortifications + "）";
+	internal static string FollowerLine(string clan, string hero, string fortifications) => clan + KingdomCivilWarTexts.Prompt("KW_Prompt_085") + hero + "；" + fortifications + "）";
 
 	internal static string JoinFollowerSummary(System.Collections.Generic.List<string> list)
 	{
-		return list == null || list.Count == 0 ? "无" : string.Join("\n", list.Distinct(StringComparer.OrdinalIgnoreCase).Select((string x) => "- " + x));
+		return list == null || list.Count == 0 ? KingdomCivilWarTexts.Prompt("AF_KINGDOM_CW_RebellionNaming_Weekly_None") : string.Join("\n", list.Distinct(StringComparer.OrdinalIgnoreCase).Select((string x) => "- " + x));
 	}
 
 }

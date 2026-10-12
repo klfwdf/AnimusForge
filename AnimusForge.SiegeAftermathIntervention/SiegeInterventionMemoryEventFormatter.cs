@@ -13,12 +13,17 @@ public static class SiegeInterventionMemoryEventFormatter
     private static readonly Regex WhitespaceRegex = new Regex("\\s+", RegexOptions.Compiled);
 
     public static string FormatEntry(string kind, string detail)
+        => FormatEntry(kind, detail, false);
+
+    public static string FormatEntry(string kind, string detail, bool isEnglish)
     {
-        string normalizedKind = string.IsNullOrWhiteSpace(kind) ? "处置" : kind.Trim();
+        string fallbackKind = isEnglish ? "Disposition" : SiegeAftermathCompatibilityTexts.Raw("memory_event_fallback_kind");
+        string separator = isEnglish ? ": " : "：";
+        string normalizedKind = string.IsNullOrWhiteSpace(kind) ? fallbackKind : kind.Trim();
         string normalizedDetail = string.IsNullOrWhiteSpace(detail) ? normalizedKind : detail.Trim();
         normalizedDetail = SiegeActionTagCatalog.StripRecognizedTags(normalizedDetail);
         normalizedDetail = WhitespaceRegex.Replace(normalizedDetail.Replace("\r", " ").Replace("\n", " "), " ").Trim();
-        return normalizedKind + "：" + normalizedDetail;
+        return normalizedKind + separator + normalizedDetail;
     }
 
     public static string StripSequencePrefix(string entry)

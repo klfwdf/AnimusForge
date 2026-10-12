@@ -1,0 +1,128 @@
+{
+  "Id": "rule_Folk_Customs_The_Maimed_and_Their_Care",
+  "Keywords": [
+    "The Maimed and Their Care"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Disability due to war, labor and disease is not uncommon in Westeros, but few are willing to stare at it for a long time. Nobles can maintain their dignity by relying on their family property and retainers, while peasants may lose their livelihood if they lose a hand; some regard disability as a shame, while others learn new things from it’s way of survival."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry The Maimed and Their Care"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry The Maimed and Their Care"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry The Maimed and Their Care"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry The Maimed and Their Care Disability due to war, labor and disease is not uncommon in Westeros, but few are willing to stare at it for a long time. Nobles can maintain their dignity by relying on their family property and retainers, while peasants may lose their livelihood if they lose a hand; some regard disability as a shame, while others learn new things from it. Whether it is valid depends on who can grant the rights, collect the consideration, and actually make the judgment come to fruition in the event of default."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry The Maimed and Their Care Disability due to war, labor and disease is not uncommon in Westeros, but few are willing to stare at it for a long time. Nobles can maintain their dignity by relying on their family property and retainers, while peasants may lose their livelihood if they lose a hand; some regard disability as a shame, while others learn new things from it. If a rule is practiced over and over again, it will find its way into rituals, crafts, and prayers; if it is sustained only by fear, cracks will show at the onset of a crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry The Maimed and Their Care Disability due to war, labor and disease is not uncommon in Westeros, but few are willing to stare at it for a long time. Nobles can maintain their dignity by relying on their family property and retainers, while peasants may lose their livelihood if they lose a hand; some regard disability as a shame, while others learn new things from it. They remember taxes, grain, labor, relief and who can speak for them; these grand names will eventually fall on the family's rice pot."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "The Maimed and Their Care: Disability due to war, labor and disease is not uncommon in Westeros, but few are willing to stare at it for a long time. Nobles can maintain their dignity by relying on their family property and retainers, while peasants may lose their livelihood if they lose a hand; some regard disability as a shame, while others learn new things from it."
+  ]
+}

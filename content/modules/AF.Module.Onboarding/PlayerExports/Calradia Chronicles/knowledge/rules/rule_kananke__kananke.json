@@ -1,0 +1,93 @@
+{
+  "Id": "rule_kananke",
+  "Keywords": [
+    "Kananke"
+  ],
+  "RagShortTexts": [
+    "Cananque pork is famous for its forest stockings and acorn chestnuts."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Cananque is a village near Porto Osti, located in the humid forest hills of northern Llenno. The village is known for raising quality pigs that travel through the dense forest in search of acorns, chestnuts and dragonflies to feed on."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Cananque’s pork is a sought-after commodity in the port of Osti. The pigs there spend their entire lives running in the woods, eating acorns and chestnuts, and their meat is tight and fragrant. When those guys from Port Ousti who were pirates came back from being at sea for several months, the first thing they did was to go to Cananque and get a pig to roast."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "townsfolk"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Cananque's prosciutto can last for several years and is a favorite among sailors on sea ships. The woods to the north of Lianno are a bit tidal, but the pigs thrive in them, and the meat they grow out is better than those raised in captivity."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "I stayed one night in Cananque. The pigs there are leaner than elsewhere, and they burrow in the woods like wild boars. Locals say these pigs can smell truffles better than dogs."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Kananke",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "Ostican",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

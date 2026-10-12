@@ -1,0 +1,210 @@
+{
+  "Id": "rule_Haixi_Guangming_Demonic_Center",
+  "Keywords": [
+    "Haixi Light Demonic Hub",
+    "Light Mage",
+    "lens array",
+    "Hexi light magic chariot",
+    "spear of light",
+    "purifying light",
+    "light magic vehicle",
+    "Heich focusing lens",
+    "holy beam"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Hexi Light Demonic Hub is the most powerful magic war machine of the Academy of Light - an armored chariot driven by a light mage. The roof is equipped with a set of huge lens arrays that are magically attached. It can focus the wind of Hexi to form a destructive pure beam, directly incinerating enemies or chaotic creatures into ashes. It is one of the few devices in the Empire capable of converting magic into directed weapons, and is the ultimate nightmare for any undead and demon."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Hexi Light Demonic Nexus is a holy object that combines the magic and engineering of the Empire - whenever we see its white gold chariot moving slowly behind the state army, every Imperial soldier will feel a kind of calmness without reason, because we know that this car means that the gods are watching us - at least they are watching us through the refraction of the Hexi lens. The core technology of the Light Magic Hub is seven magic crystal lenses arranged according to specific geometric relationships. These lenses are not ordinary glass, but single crystals that were cultivated by the Archmage of the Academy of Light for several years in the Holy Land of Light in Altdorf. They are physically a perfect crystal structure without any flaws or bubbles. When activated by magic, the lens array can collect the wind of Hexi in the surrounding environment and compress it into an extremely thin spear of light, which shoots out from the top of a diamond called the \"Star of Light\" at the top of the Demonic Nexus. The temperature of this beam of light is theoretically infinite because it is not bound by the laws of physical heat energy - it is the pure energy form of Hexi, so it burns not flesh and blood but chaos: when an undead army is penetrated by the spear of light, the skeletons will not be scorched but will directly sublimate into gas and dissipate, because the dark magic that supports their existence is purified by Hexi in an instant. However, the use of the Light Magic Hub also has strict restrictions: it can only be operated by a specially trained light mage alone, and the lens array needs to be cooled down for at least a quarter of an hour after each shot - because if used continuously, the lens will begin to be corroded by pure Hexi from the microscopic level."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Hexi Light Demonic Nexus plays the role of \"precision strike\" in the Imperial Army's tactical combination, complementing the blanket bombardment of conventional artillery. Its light spear has a range longer than any existing artillery - even longer than the elven longbow - but its firing frequency is extremely low and must rely on sufficient natural light above the target - the effectiveness of the Light Nexus will be reduced by two-thirds in dense fog or darkness. The best way to use it is to position the Light Demonic Nexus at the commanding heights behind the battle line, and let the recon unit or the Heavenly Mage indicate the target, and then use the light spear to destroy the enemy's giant units or commanders first - if an Orc war general is suddenly cut in half from the shoulder by a beam of light after the battle begins, it will cause a mental blow to the entire Orc tribe that far exceeds a conventional bombardment. But be especially careful against enemy spellcasters who use shadow or death magic: they will treat the Nexus of Light as a top threat that must be eliminated on the first turn, because an experienced Hexi mage standing behind a lens array is the equivalent of an eagle hovering over a field mouse's nest to any dark magician."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "The technical principles of Hexi's Light Magic Hub involve the most difficult interdisciplinary field of physics in the empire's advanced magic science - optical magic engineering. The arrangement of the seven Hesi crystal lenses is not a random choice, but follows the \"seven-fold cumulative light path law\" clarified by Caspar Himmel, the second archmage of the Academy of Light, in the book \"Light and Wind\" published in 2388 in the Imperial Calendar. This mathematical theory describes the nonlinear refraction laws of light in the Hesi compression field. It is the only academic work in the empire that has both advanced mathematical proof and magical experimental verification. The chassis of the Nexus Chariot was manufactured by the Nunn Arsenal - it uses a steel structure similar to that of the steam tank but lighter to ensure that it can withstand the recoil force without hindering the operation of the magic launcher. The recoil of the Light Demonic Nexus does not come from live weapons, but from the magical vacuum caused by the sharp extraction of the wind of Hexi at the moment the light spear is fired - this vacuum will produce a pulse of reverse magic, enough to stun unprotected mortals. According to the records of the Institute of Light, during the defense battle of Altdorf in 2492 of the Imperial Calendar, the only three Light Demonic Centers at that time fired a total of eighteen light spears in one day, destroying two undead dragons, a vampire count, and a large number of countless skeleton warriors. Two of the three Demonic Centers were permanently decommissioned after the war due to lens fatigue cracks. The Academy of Light currently maintains a total of seven Light Demon Hubs in active service, of which two are deployed on the front line of Sylvania, one is stationed in Altdorf, and the remaining four are deployed on patrol according to orders from the Imperial Military Headquarters."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Nexus of Light evokes a strange emotional attraction in our aristocratic women. Imperial society is often defined by the blood and rust of steel, artillery, and knights—the violent aesthetics of men—but the Nexus of Light carries a different kind of power: it is scorching but pure, destroying but not staining. The Archmage from the School of Light is usually the most socially accepted of all mages - because his magical attribute is \"Light\", a concept that is itself linked to divine will in Sigmar beliefs."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "It is an extremely rare honor to have a family cemetery or territory be granted the right to garrison a Light Nexus. The allocation of magic hubs in Guangming Academy is personally decided by the academy principal - this means that you not only have to seek permission from the military headquarters, but also win the trust of the academy's chief mage. While the family territory with the Magic Nexus garrison is naturally deterred by the undead - vampires and necromancers will actively avoid the patrol range of the Light Magic Nexus - this greatly reduces the security cost of border territories."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "I worked with a Light Nexus once on escort duty on the Sylvanian border - it was the safest job I've ever had. It turned out that the caravan, which was constantly being targeted by vampires, found that it was followed by a light magic hub, and not even the shadow of a bat could be seen along the way. The light mage who operated the Nexus barely spoke—I guess the winds of Hexi scorched his social skills—but he got us all out of that cursed land alive."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The grinding and polishing business of the optical components of the Magic Hub of Light is exclusively undertaken by the Empire's only optical workshop authorized by the Academy of Light - the Altdorf \"Extreme Light\" Workshop. Each Heich lens adapted to the Light Demonic Hub needs to undergo at least seven months of crystal growth and then two months of precision optical grinding. The error accuracy during grinding is calculated to one ten thousandth of the diameter of a human hair. Pricing in this industry is completely undisclosed—because there is only one workshop capable of manufacturing lenses."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Heishi Lens Array - seven magic crystal lenses arranged in a specific geometric relationship, which is the core focusing device of the Light Magic Hub",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Haixi Light Magic Hub Light Mage Lens Array"
+  ]
+}

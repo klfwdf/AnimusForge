@@ -1,0 +1,30 @@
+{
+  "Id": "rule_bandit",
+  "Keywords": [
+    "Bandits",
+    "Bandit",
+    "Robber"
+  ],
+  "RagShortTexts": [
+    "The bandits hide in the Calradia jungle and use the wooden village as their base."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "This group of desperadoes hides deep in the jungles of Calradia all year round, using simple wooden camps as their base. They were dressed in tattered cloth, with a few wearing stolen damaged leather armor, and most of their weapons were hunting bows, rusty axes and pitchforks. They lack discipline and heavy armor, but are good at using trees and rocks as cover. Some are even good at raiding on horseback, often using skirmishing tactics to ambush lone travelers. During the day they scattered and plundered the trade routes, and at night they gathered around the campfire to share the spoils and drink heavily. There is no strict hierarchy within the bandits, and they rely solely on force and courage to convince the crowd. They are not only farmers who have been driven off their land by the war, but also a collection of deserters and criminals. They rely on plundering villages and attacking convoys to survive, becoming a persistent headache for local officials."
+    }
+  ],
+  "TextMappings": []
+}

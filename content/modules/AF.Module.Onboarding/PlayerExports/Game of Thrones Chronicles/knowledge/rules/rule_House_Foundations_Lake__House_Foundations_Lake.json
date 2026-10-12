@@ -1,0 +1,132 @@
+{
+  "Id": "rule_House_Foundations_Lake",
+  "Keywords": [
+    "Lake",
+    "House Lake"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Lake family is based on the fortress of Duskendale Town and is a noble family in the royal territory. Two black warhammers are crossed on a white diagonal cross. Duskendale is an important port town in Blackwater Bay, with walls, workshops, docks and the road to King's Landing; Lake's responsibilities are therefore much more than a country estate. It's where customs, city dignitaries, shipping and royal orders intersect, and the lords must maintain order between local interests and the close pressure of the Iron Throne."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "crownlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Crown's nobles view Duskendale as a town that still has its own traditions in the shadow of King's Landing. Whether Lake can hold on to its position depends on them not neglecting the king's orders, nor letting the royal capital's demands hollow out the local trade routes."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "crownlands"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "artisan",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Merchants and craftsmen in Duskendale are more familiar with dock fees, city gate taxes, and guild disputes. If Riker can ensure that goods are not randomly seized and that there are fewer robberies on the night roads, the cross warhammer will only look like protection; otherwise it is just a mark of the tax collector."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Lake The Lake family rules the castle in Duskendale Town and is a royal noble. The crossed warhammers on the family crest symbolize city defense and military service. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Lake The Lake family rules the castle in Duskendale Town and is a royal noble. The crossed warhammers on the family crest symbolize city defense and military service. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Lake The Lake family rules the castle in Duskendale Town and is a royal noble. The crossed warhammers on the family crest symbolize city defense and military service. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Lake The Lake family rules the castle in Duskendale Town and is a royal noble. The crossed warhammers on the family crest symbolize city defense and military service. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Lake: The Lake family rules the castle in Duskendale Town and is a royal noble. The crossed warhammers on the family crest symbolize city defense and military service."
+  ]
+}

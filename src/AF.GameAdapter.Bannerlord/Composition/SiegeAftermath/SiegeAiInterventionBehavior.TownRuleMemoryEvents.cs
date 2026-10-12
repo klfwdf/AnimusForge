@@ -36,12 +36,12 @@ public partial class SiegeAiInterventionBehavior
         if (_hasPendingAftermath && _activeSettlement == settlement) return;
         GcczTownRuleMemoryRuntimeBridge.RecordConfirmedEvent(settlement,
             "native-aftermath:" + CampaignTime.Now.ToSeconds + ":" + aftermath,
-            SettlementRuleMemoryEventText.Aftermath(attacker?.LeaderHero?.Name?.ToString(), aftermath.ToString()));
+            SiegeAftermathUiText.Aftermath(attacker?.LeaderHero?.Name?.ToString(), aftermath.ToString()));
     }
 
     private static void RecordCompletedTownMemory(Settlement settlement, MobileParty attacker, SiegeAftermathAction.SiegeAftermath aftermath)
     {
-        string facts = SettlementRuleMemoryEventText.CompletedIntervention(
+        string facts = SiegeAftermathUiText.CompletedIntervention(
             attacker?.LeaderHero?.Name?.ToString() ?? Hero.MainHero?.Name?.ToString(), aftermath.ToString(),
             _lastLootValue, _lastMarketGoldLoot + _lastCivilianGoldLoot,
             _lastKilledCivilianUnits, _lastKilledNotables, _appliedSharedCivilianReliefGold,

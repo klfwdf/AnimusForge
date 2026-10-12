@@ -1,0 +1,206 @@
+{
+  "Id": "rule_Necromancer",
+  "Keywords": [
+    "Necromancer",
+    "Necromancy",
+    "Scroll of Nagash",
+    "call the dead",
+    "Warhammer"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Necromancers are mortal spellcasters who study forbidden necromancy. They awaken and command the dead by manipulating Shaya, the wind of death. Under Imperial law, necromancy is the worst form of heresy, and any discovered necromancer is to be summarily executed by the witch hunters of the Church of Sigmar. Yet these callers of the dead often choose to join the vampire lords of Sylvania in exchange for protection and the freedom to delve further into forbidden knowledge."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Necromancers are our most useful servants - they have the power of concentration that we don't have, and can delve into the deep mysteries of necromancy that even we would find boring. Every vampire lord has at least one loyal necromancer who serves as the legion commander, using his own magic to maintain the operation of the skeleton and zombie fronts on the battlefield, so that we can focus on higher-level goals. Do not despise these mortal callers to the dead. Those who choose to join us often go through a long dark pilgrimage - they abandon their families, burn their identities, and risk being burned at the stake across half the empire just to reach Sylvania. This determination makes them dangerous allies, but also equally dangerous tools; an overly powerful necromancer could covet the shards of Nagash beneath your turf. Give them respect, give them bodies, but never give them credit."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Necromancers are an integral part of the vampire army's structure. On the frontal battlefield, the vampire lord himself usually goes to the front line to command the elite troops, while the necromancer maintains the magic supply for large-scale skeleton zombie units in the rear. This means that if an enemy group of Necromancers can be accurately identified and eliminated or dispersed, the basic infantry line of the vampire army will collapse in a short time. However, necromancers are often protected by black knights or other ambushes. They usually choose hidden positions on the battlefield and shroud themselves in dark mist. Against armies of the dead, squads of mage hunters are more valuable than extra hoplites."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 100
+        },
+        "IdentityIds": null
+      },
+      "Content": "The theoretical foundation of necromancy can be traced back to the Nine Books of Nagash - these nine forbidden texts form the philosophical and technical foundation of all necromancy. The contents of the Nagash Scrolls range from the most basic corpse-animating spells to advanced rituals that theoretically allow the caster to transform himself into an immortal lich. The knowledge system of the Necromancer is diametrically opposed to the magical theories of the School of Light and the School of Emerald: the former is essentially a twisted application of Shayar's Wind, which 'forges' souls by infusing will into the energy of death. Advanced necromancy even involves the capture and imprisonment of souls - necromancers can forcibly lock the souls of the recently deceased into their corpses or specially crafted magic weapons, thereby creating soul-bound undead that are more capable of fighting than ordinary zombies. Long-term practice of necromancy has a significant decaying effect on the human body - the body of a senior necromancer will gradually wither, his skin color will turn gray, and his eyes will show an unnatural phosphorescence."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "As the female rulers of Stirland's borders, necromancers are the most real and avoided threat to our realm. The male lords confront the undead army head-on on the battlefield, but they never consider the origin of these undead armies - every zombie and every skeleton was once a mortal awakened from the tomb by the necromancer. In my lands, I allocate annual funds for the consecration of Sigmar in every village cemetery - a better defense against necromancer infiltration than military expansion."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Family lineages among the Necromancers are unlike any mortal family - their inheritance is not through blood but through the Tome of Nagash and the choice of the Dark Master. We, the von Carsteins, have a complex symbiotic relationship with the most powerful necromancers: they need our political patronage and dark tomes, and we need their necromancy to maintain the discipline and numbers of the undead legions."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "While working as a mercenary on the edge of Sylvania I saw too many people who were seduced by necromancers - they were usually not evil, just desperate. A farmer who has lost his entire family to the plague can hardly refuse when a traveler in a black cloak offers hope of resurrecting the dead. Necromancers don't hunt for power - they hunt for sorrow."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The economic impact of the Necromancers on the Old World is extremely strange: the burial insurance industry in the surrounding areas of Sylvania is completely inoperable - no rational underwriter would cover a tomb deed that might have been tampered with by a Necromancer after the policyholder's death. At the same time, professional cemetery guardianship and consecration services became a lucrative industry in the border provinces, often practiced by retired witch hunters or retired Sigmar priests."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Necromancer - Warhammer Old World Core Concept Entry",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Necromancers are mortal spellcasters who study forbidden necromancy."
+  ]
+}

@@ -1,0 +1,93 @@
+{
+  "Id": "rule_callioke",
+  "Keywords": [
+    "Callioke"
+  ],
+  "RagShortTexts": [
+    "Kaliok is a village near Sargot, located in the Nar Valley."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Calioque is a village near Sargot, located in the Naal Valley, a valley between the Epyr Hills and the Biscayne Mountains. Residents here grow flax in the moist valley bottoms, and linen is the main local product."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Callioc’s flax is very popular in the Sargoth area. The humidity at the bottom of the Nar Valley is just right, so the flax fibers grown are long and strong, and the cloth woven into them is very durable. Many of the shirts worn by Sargoth's garrison came from Calliocera."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "townsfolk"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Callioke's linen was thick and durable, and was much used in the mining areas and military camps to the north. The price is not expensive, but it is more durable. In Sargoth's market, cloth from Callioc has always moved quickly."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Callioke is at the bottom of the Naal Valley, with the Epyr Hills and the Biscayne Mountains on both sides. The wind is not strong and the water vapor is heavy. The ground was covered with rows of flax, which grew taller than a man. People in the village are working with flax all year round - growing flax, retting flax, threshing flax, spinning thread, and weaving cloth, and their hands are never idle."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Callioke",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "Sargot",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

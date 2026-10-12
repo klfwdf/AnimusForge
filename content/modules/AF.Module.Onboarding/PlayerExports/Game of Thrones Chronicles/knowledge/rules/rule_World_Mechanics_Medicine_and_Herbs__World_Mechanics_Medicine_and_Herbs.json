@@ -1,0 +1,150 @@
+{
+  "Id": "rule_World_Mechanics_Medicine_and_Herbs",
+  "Keywords": [
+    "Medicine",
+    "Herbs",
+    "Milk of the Poppy",
+    "Maester Treatment",
+    "Amputation"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The healing arts of Westeros draw upon Citadel training, local herbal lore, midwifery experience, and grim practice on the battlefield. Healers wash wounds with boiled wine or hot water, protect sores with honey, salves, and bandages, ease agony with milk of the poppy, and also stitch, bleed, cauterize, or amputate before mortification spreads. Treatment cannot always explain the cause of an illness, much less guarantee recovery; an excessive dose, filthy instruments, and delay can kill just as surely. Great castles can support a maester and a medicine chest, whereas remote villages must often rely on elders versed in herbs, midwives, and the care of kin."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "scholar",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Maesters emphasize observation, dosage, and records, while septons and septas bring prayer and comfort to the bedside. The two need not always exclude each other; when a wounded man burns with fever, both a bowl of clean water and someone keeping watch matter greatly."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "peasant",
+          "artisan"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Soldiers and laborers know the limits of healing best: a small wound can kill if fouled, and a severed limb, even if life is saved, takes away a man's livelihood. They respect a healer with a steady hand, and dread the words that it must come off."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The wealthy can summon a maester, buy rare simples, and convalesce at length, while the poor must often return to work before they are whole. All men are flesh and blood before sickness, yet wealth decides who has more time to wait for the body to mend."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Medicine Medicine and Herbs: Maesters, midwives, and folk healers rely on debridement, sutures, herbs, and experience to treat wounds and illness, where differences in knowledge and resources decide life and death. Whether it is valid depends on who can grant the rights, collect the consideration, and actually make the judgment come to fruition in the event of default."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Medicine Medicine and Herbs: Maesters, midwives, and folk healers rely on debridement, sutures, herbs, and experience to treat wounds and illness, where differences in knowledge and resources decide life and death. The distant system is not empty talk only if it can be implemented in campfires, city gates and inns."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Medicine Medicine and Herbs: Maesters, midwives, and folk healers rely on debridement, sutures, herbs, and experience to treat wounds and illness, where differences in knowledge and resources decide life and death. If a rule is practiced over and over again, it will find its way into rituals, crafts, and prayers; if it is sustained only by fear, cracks will show at the onset of a crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Medicine Medicine and Herbs: Maesters, midwives, and folk healers rely on debridement, sutures, herbs, and experience to treat wounds and illness, where differences in knowledge and resources decide life and death. They remember taxes, grain, labor, relief and who can speak for them; these grand names will eventually fall on the family's rice pot."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Medicine and Herbs: Maesters, midwives, and folk healers rely on debridement, sutures, herbs, and experience to treat wounds and illness, where differences in knowledge and resources decide life and death."
+  ]
+}

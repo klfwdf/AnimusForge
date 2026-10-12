@@ -1,0 +1,213 @@
+{
+  "Id": "rule_Chivalrous_Expedition",
+  "Keywords": [
+    "chivalrous expedition",
+    "A call to jihad",
+    "Knights assemble",
+    "Crusaders",
+    "National mobilization",
+    "King's decree",
+    "expedition",
+    "Jihad",
+    "Knights Assembly Order",
+    "National call-up",
+    "holy war",
+    "kingdom mobilization"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Chivalrous Crusade was a sacred military action declared by the King of Bretonnia, calling on the knights of the country to assemble to attack the kingdom's foreign enemies. This is a nationwide war mobilization, affecting all principalities, and every knight holding a coat of arms is obliged to participate in the war."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Chivalrous expedition! When the king's messenger rides a horse across the borders of the principality and reads the parchment with the royal seal in the castle square, the whole of Bretonnia will boil! I participated in two chivalrous expeditions - one against the beastman warbands on the borders of Athel Loren, and another south to burn down the greenskin lairs in the Badlands. Tens of thousands of knights gathered into a silver torrent, the fields were trampled into mud by horse hooves, and the air was filled with the smell of steel and leather. The same flame burns in everyone's eyes: fighting for the goddess, fighting for the king, fighting for the page written in the epic! No Bretonnian could remain calm to the trumpet call of the chivalrous crusade - a sound engraved in our blood."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Chivalrous expeditions were the most powerful political tool in the hands of kings, and they were also a huge gamble. If it succeeds, the king's authority will reach its peak and the principalities will be united; if it fails, the royal prestige will be reduced, and the dukes may begin to question the king's leadership ability. Launching a chivalrous expedition requires sufficient food reserves, planning of supply routes along the way, and coordination among the principalities - logistical pressure is often more deadly than frontal enemies. Historically, more chivalrous expeditions have failed due to logistical breakdowns than have been defeated."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "The system of chivalrous expeditions in Bretonnia was legally based on the King's Decree and the Statutes of Knightly Service. The king needs to obtain the support of at least seven dukes before declaring war, and a formal blessing ceremony is held at the Holy Grail Cathedral in Curona. During the expedition, all knights' territories will be protected by the royal family's \"Wartime Protection Order\" - anyone who takes the opportunity to invade friendly territory will be punished by deprivation of coats of arms and exile. The largest chivalrous expedition in history was the \"Arabian Crusade\" in the Era of the Conquerors. More than 50,000 knights participated in the battle. It lasted for twelve years and finally captured the capital of Sultan Arabi. In terms of logistics, the standard expedition military requirements are three spare horses per person, sixty days of rations and sufficient arrows. Food and forage stations need to be set up in advance along the way. The punishment discipline of the expeditionary force is extremely strict: those who leave the army without permission are whipped, and those who plunder friendly villages are hanged."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Chivalrous expeditions are a time for men to travel far away from home, and we women must assume all the responsibilities of managing the territory and maintaining production. Many aristocratic ladies displayed amazing statecraft skills during their husbands' expeditions. Expedition is a test for men, staying behind is a test for women - the burdens given to us by the goddess are never lighter than theirs."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The call for a chivalrous expedition has forced our clan to make a difficult choice: leave enough manpower to protect the territory, or devote the entire clan to following the king in exchange for supreme glory? We usually make a compromise - send half the warriors and leave half to defend. This is the wisdom of clan survival and the reason why we are alive today."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Chivalrous Crusade was the best chance for a wanderer like me to gain legal status. As long as you follow the expeditionary force and cut off enough enemy heads, with luck, a knight or lord will be willing to accept you as a follower. Of course, more often than not you will just become a nameless skeleton on the roadside."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Chivalrous expeditions are a carnival for munitions merchants. The demand for grain, horse gear, weapons, armor, and medical supplies is a hundred times higher than usual, and the prices can skyrocket. But the risks were also high: if the expedition failed, the king might refuse to pay the balance, and the bankruptcy of merchants often coincided with the defeat of the expedition."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "The Chivalrous Crusade was a national sacred military action declared by the king, and all knights were obliged to participate in the war",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Chivalrous Crusade: Call for Knights to Gather"
+  ]
+}

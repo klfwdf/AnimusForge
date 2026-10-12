@@ -105,8 +105,8 @@ internal static class PeaceProposalReplay
             Test.True(invalid ? doc.AnalysisStatus == "published_action_rejected" && !Offers(owner, doc).Any()
                     : Offers(owner, doc).Count() == 2 && doc.Actions.Single(x => x.Intent == "propose_peace").PeaceTerms.DailyTribute == 150,
                 "every peace action validates its own terms regardless of order: first=" + peaceFirst + " invalid=" + invalid);
-            if (invalid) Test.True(host.ExecutionPort.Events.Any(x => x.StartsWith("notify:") && x.Contains("支付国")
-                    && !x.Contains("peace_terms_not_executable")) && doc.MechanicalResult.Contains("支付国"),
+            if (invalid) Test.True(host.ExecutionPort.Events.Any(x => x.StartsWith("notify:") && x.Contains(DiplomacyMiscPromptTexts.Get("PeaceAdmission_TributeKingdomsMustDiffer", ""))
+                    && !x.Contains("peace_terms_not_executable")) && doc.MechanicalResult.Contains(DiplomacyMiscPromptTexts.Get("PeaceAdmission_TributeKingdomsMustDiffer", "")),
                 "rejected proposal reports actual clause reason in notification and document");
         }
 
@@ -121,7 +121,7 @@ internal static class PeaceProposalReplay
                 terms["cession_to_kingdom_id"] = "empire_s"; terms["cession_settlement_id"] = "missing"; }
             Commit(owner, doc, json);
             Test.True(doc.AnalysisStatus == "published_action_rejected" && !Offers(owner, doc).Any()
-                && doc.IsReadyForPublication && host.ExecutionPort.Events.Any(x => x.StartsWith("notify:") && x.Contains("和平提案未执行")),
+                && doc.IsReadyForPublication && host.ExecutionPort.Events.Any(x => x.StartsWith("notify:") && x.Contains(SmokeLocalizationEnvironment.EnglishUi ? "Peace proposal not executed" : "和平提案未执行")),
                 "real clause rejection still preserves speech and has a readable reason: " + invalid);
             Commit(owner, doc, json);
             Test.True(!Offers(owner, doc).Any(), "duplicate rejected completion cannot execute: " + invalid);
@@ -148,7 +148,7 @@ internal static class PeaceProposalReplay
         lateHost.Peace.BeforeOwnerRead = () => { if (++ownerReads == 2) lateHost.Peace.Owner = "b"; };
         Commit(lateOwner, lateDoc, lateJson);
         Test.True(ownerReads == 2 && !Offers(lateOwner, lateDoc).Any() && !lateDoc.Actions[0].ChangedDiplomaticState
-            && lateDoc.Actions[0].MechanicalResult.Contains("割地") && !lateDoc.Actions[0].MechanicalResult.Contains("peace_terms_not_executable"),
+            && lateDoc.Actions[0].MechanicalResult.Contains(DiplomacyMiscPromptTexts.Get("PeaceAdmission_CessionClauseUnexecutable", "")) && !lateDoc.Actions[0].MechanicalResult.Contains("peace_terms_not_executable"),
             "actual effect loop revalidates changed cession and retains readable failure without registering an offer");
 
         var (liveHost, liveOwner, liveDoc) = Fixture();
@@ -158,7 +158,7 @@ internal static class PeaceProposalReplay
             "current cession passes the real owner action guard");
         liveHost.Peace.Owner = "b";
         Test.True(liveOwner.TryGetPlayerWorldStateIntentViolation(liveDoc, "propose_peace", "proposal", "new_kingdom", "empire_s", out string staleReason)
-            && staleReason.Contains("割地"), "real action guard rechecks live land ownership rather than cached admission");
+            && staleReason.Contains(DiplomacyMiscPromptTexts.Get("PeaceAdmission_CessionClauseUnexecutable", "")), "real action guard rechecks live land ownership rather than cached admission");
     }
 
     private static JObject Terms(int amount, string payer, string receiver) => new()

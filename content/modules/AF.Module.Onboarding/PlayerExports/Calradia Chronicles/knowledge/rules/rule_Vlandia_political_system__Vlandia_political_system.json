@@ -1,0 +1,125 @@
+{
+  "Id": "rule_Vlandia_political_system",
+  "Keywords": [
+    "Vlandia political system",
+    "Vlandia Politics",
+    "Life in Vlandia",
+    "Basic architecture of Vlandia"
+  ],
+  "RagShortTexts": [
+    "The social structure of Vlandia is a pyramid of kings, barons, knights, and serfs."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "People from Vlandia? I heard from business people that the farmers over there can't go anywhere and will be tied to the village for the rest of their lives, just like cattle and sheep. We can go wherever we want. If we become unhappy and become bandits in the mountains, no one can control us. The people of Vlandia are not even good enough to be bandits, and they can't even run away. The businessmen said that their lord had so much power that he could beat anyone he wanted, sleep with anyone he wanted, and there was no way to complain. That's it, they think it's pretty good - that's what it means to be controlled, and they don't know what freedom is. But they have so many soldiers. Business people said that Vlandia often pulls out thousands of crossbowmen for wars, and they can be assembled in a few days. We are recruiting soldiers here. The recruiters knock on the door of each house. Once the door is locked, they can only stare. They were able to tie so many people to the ground, which was really impressive. But if you ask me to change it, I won’t. A"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Our system? I think it's pretty good. People in the city basically don't have to pay taxes. People in the village own land and work on the public fields for the lord for a few days a week, just to stretch their muscles. The rest of your time is yours, and the harvest from your allotment is also yours. You can sow whatever you want, no one cares about you. Just report to the master when you go out. It's not that you are not allowed to go out. I just ask you to report. What's so difficult about this? The barbarians outside say that we are serfs, slaves of the nobles. What do they know? There was a war there, and the men left as soon as they were told. Who would farm the land at home? We are fighting here, and the lord has recruited you. After the war, you can come back and farm the land. The land is still there, and the land is still yours. Freedom over there means freedom, and people will starve to death in the winter. We are managed by someone, and being managed means that someone is there to block other people from robbing you. Freedom cannot be eaten as food, but sharing land can."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "steward": 140
+        }
+      },
+      "Content": "The social structure of the Vlandians is second to none in the continent of Calradia. They established a complete feudal ruling order on the west coast and were the first region in the entire continent to enter feudal society. The organizational power brought by feudal rule is unmatched by the tribal system (Battania, Nord), the clan city-state system (Sturgia, Aserai, Southern Empire), and the aristocratic republic (Northern Empire). At the same time, it has economic strength and popular support that the military dictatorship (Western Empire) does not have. The pyramid structure of king (queen) - baron (baroness) - knight (female knight) - serf is very stable and efficient. Due to the dependence of the serfs, when the lords sent troops, they were obliged to send troops to fight. This was also the source of Vlandia's levies (mainly crossbowmen). This was much more efficient than the volunteer and mercenary systems of other barbarian countries. In addition, the influence of the martial ethos led to the formation of Vlandia. The army's ability to violently attack was extremely terrifying, and the army's combat effectiveness was also extremely high. In peacetime, serfs were not allowed to leave the land without permission, and were tied to the manor for farming. After completing a certain period of labor in the public fields every week, they could obtain the right to use the allotment. This greatly increased the enthusiasm of the serfs for labor, and was characterized by efficiency and self-sufficiency. The feudal system was the cornerstone of their strength. Vlandia implemented a system of vassalage and vassalage at the local level and a vassalage system at the central level, which directly led to its tendency to have local separatism. The barons are the de facto masters of the fiefdom and have almost all the power, while the king is just the largest feudal lord. When the king's family is not as powerful as the other baron families, the barons will always try to replace it. A"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Vlandia This feudal system, to put it bluntly, means: whoever owns the land has the final say. I am a baron, and I am the law in my land. The king asked me to pay taxes and I sent troops, but I tried cases in my territory, collected tolls, and distributed land to knights without asking him. My ancestors fought this with Osric. Why should I listen to a man sitting in Sargoth City telling me what to do? Of course, it’s not that I don’t recognize the king. Detail is a good man, he doesn't fight much and likes to make peace, which is not bad for a middle-ranking baron like me. When the big battle started, Gatell and Aldric's gang took the credit, and we followed behind and reaped the ashes. If Detel doesn't fight a big war, we won't have to be coerced by the great baron to die. But this system also has flaws. The king is too weak and the great baron is too strong. It's no secret that Aldric has more influence in the north than Detail. One day when Detail is gone, Aldric and Ingatell will definitely fight. The feudal system gives us power but also risks. We are all gamblers, but we are not betting on money, but on land. A"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The feudal system of Vlandia is indeed worthy of our study in terms of efficiency. The Senate once sent an observer to Sargoth, and the report he wrote back was very embarrassing: It took less than one-third of our time for a Vlandia baron to go from the time he ordered to recruit troops to the time they were assembled. The military effectiveness of serfdom was currently beyond the reach of the Empire. Coupled with the fact that their martial tradition is higher than ours in the Central Plains, Vlandia's rampage speed is unparalleled in the world. We have to admit that, even though Garius might have rolled his eyes at that. But from a civilized perspective, this system is exquisite barbarism. Binding civilians to the land for life, depriving them of freedom of movement, and exchanging labor for land - the empire abolished debt slavery as early as the Republic, and the Vlandia people are still living in the same state as we were hundreds of years ago. Their king claimed to be a monarch, but was actually nothing more than the largest landowner. He could not directly tax the residents of the barony, could not override baronial justice, and could not mobilize non-royal troops. Colleagues in the Senate were right when they said that the King of Vlandia was an empty arbitrator - although Galios was also criticized as a dictator, at least his barracks meetings could decide policies, and Detel could not even do this. Having said that, we cannot take it lightly. The empire split into three pieces, we now have three emperors and the people of Vlandia have only one king. The feudal system allowed them to disperse without being separated, while our republican system allowed us to become unified without being united. It's hard to say whether it's good or bad. A"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The feudal system of Vlandia is the most mature land-military bondage system on the continent of Calradia. From the perspective of organizational efficiency, its performance in the speed and scale of recruitment is unmatched - the dependence of serfs and the martial tradition allow Vlandia to mobilize an army with certain combat capabilities in a very short time without relying on unreliable mercenaries. In terms of the ability of violent troops alone, Vlandia is far above all other countries. This system is more stable than the tribal system, more efficient than the city-state system, more economically sustainable than the military dictatorship, and has lower mobilization costs than the imperial republic system. But maturity does not mean solidity. The core contradiction of Vlandia's feudal system was that the tension between decentralization and centralization was never resolved. The baron is the de facto monarch in the territory. The king's authority is legally supreme, but in practice it depends on the strength of the territory directly under the royal family. Detail used arbitration to maintain a superficial balance rather than fundamentally reshaping vassal relations. Aldric's semi-independence in northern Vlandia was an inevitable outcome of the internal logic of this system: once a vassal's territory and military strength exceeded that of the royal family, the king was just another fading competitor. From an external perspective, there will be no civil unrest in Vlandia in the short term, and as long as Detel is still there, the balance can be maintained. But what happens after him? What will happen to this system a hundred years from now? We'll see. A"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "A",
+      "Kind": "status|hero|is_dead",
+      "TargetId": "lord_4_1",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": "Detel has passed away, let’s wait and see what happens next",
+      "FalseText": "That's it"
+    }
+  ]
+}

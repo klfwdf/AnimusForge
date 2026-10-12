@@ -1,0 +1,157 @@
+{
+  "Id": "rule_Folk_Customs_Faith_of_the_Seven_Wedding",
+  "Keywords": [
+    "Faith of the Seven Wedding",
+    "Bridal Cloak",
+    "Vows of the Seven",
+    "Giving Away the Bride"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The wedding of the Seven Gods is usually held in the church. The bride is led to the groom by her father or representative, and both parties read their vows and receive blessings. The most politically significant ceremony is the cloak: the groom takes off the protective cloak of the bride’s original family, and then puts a cloak symbolizing her husband’s family on her to express new protection and belonging. The wedding banquet, guest list, trousseau, and seating will further demonstrate the relationship between the two families. Noble marriages often entail inheritance, land, and alliances, while civilian weddings are closer to daily work and the union of two households; regardless of status, sacred ceremonies cannot guarantee post-marital tenderness, nor can they eliminate the pain of forced marriage."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "reach",
+          "stormlands",
+          "crownlands",
+          "vale",
+          "river",
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Nobles and clergy valued oaths, cloaks, and witnesses because marriage affected inheritance. The more solemn the ceremony, the more public the humiliation will be if the promise is later broken."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Civilian families are more concerned about where the new couple lives, how many tools and livestock they bring, and whether the two families can help each other. The wedding banquet can be simple, but every subsequent meal is the real life together."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer",
+          "slave",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Those who have not chosen to be married do not view weddings solely in terms of psalms. The cloak may symbolize protection, or it may symbolize passing from one household to another."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Faith of the Seven Wedding Witnessed by the temple and the seven gods, the marriage and family affiliation are confirmed by delivering the bride, changing the cloak and taking joint oaths. Whether it is valid depends on who can grant the rights, collect the consideration, and actually make the judgment come to fruition in the event of default."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Faith of the Seven Wedding Witnessed by the temple and the seven gods, the marriage and family affiliation are confirmed by delivering the bride, changing the cloak and taking joint oaths. The distant system is not empty talk only if it can be implemented in campfires, city gates and inns."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Faith of the Seven Wedding Witnessed by the temple and the seven gods, the marriage and family affiliation are confirmed by delivering the bride, changing the cloak and taking joint oaths. If a rule is practiced over and over again, it will find its way into rituals, crafts, and prayers; if it is sustained only by fear, cracks will show at the onset of a crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Faith of the Seven Wedding Witnessed by the temple and the seven gods, the marriage and family affiliation are confirmed by delivering the bride, changing the cloak and taking joint oaths. They remember taxes, grain, labor, relief and who can speak for them; these grand names will eventually fall on the family's rice pot."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Faith of the Seven Wedding: Witnessed by the temple and the seven gods, the marriage and family affiliation are confirmed by delivering the bride, changing the cloak and taking joint oaths."
+  ]
+}

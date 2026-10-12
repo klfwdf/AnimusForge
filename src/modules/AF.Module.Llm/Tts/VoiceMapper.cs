@@ -114,14 +114,14 @@ internal static class VoiceMapper
 		{
 			_sceneCache.Clear();
 		}
-		Logger.Log("VoiceMapper", "场景声音缓存已清空");
+		Logger.Log("VoiceMapper", "Scene voice cache cleared");
 	}
 
 	public static void ReloadConfig()
 	{
 		EnsureLoaded();
 		ClearSceneCache();
-		Logger.Log("VoiceMapper", "运行时 VoiceMapping 已刷新（来源=当前存档/本次导入）");
+		Logger.Log("VoiceMapper", "Runtime VoiceMapping refreshed (source=current save/import)");
 	}
 
 	public static void SetPreferredExportFolder(string exportFolderPath)
@@ -137,12 +137,12 @@ internal static class VoiceMapper
 	{
 		return (key ?? "").ToLowerInvariant() switch
 		{
-			"male_young" => "青年男声 (<30岁)", 
-			"male_middle" => "中年男声 (30-50岁)", 
-			"male_old" => "老年男声 (>50岁)", 
-			"female_young" => "青年女声 (<30岁)", 
-			"female_middle" => "中年女声 (30-50岁)", 
-			"female_old" => "老年女声 (>50岁)", 
+			"male_young" => LlmUiTexts.Text("AF_LLM_UI_VoiceGroup_MaleYoung", "Young male (<30 years)"), 
+			"male_middle" => LlmUiTexts.Text("AF_LLM_UI_VoiceGroup_MaleMiddle", "Middle-aged male (30-50 years)"), 
+			"male_old" => LlmUiTexts.Text("AF_LLM_UI_VoiceGroup_MaleOld", "Elderly male (>50 years)"), 
+			"female_young" => LlmUiTexts.Text("AF_LLM_UI_VoiceGroup_FemaleYoung", "Young female (<30 years)"), 
+			"female_middle" => LlmUiTexts.Text("AF_LLM_UI_VoiceGroup_FemaleMiddle", "Middle-aged female (30-50 years)"), 
+			"female_old" => LlmUiTexts.Text("AF_LLM_UI_VoiceGroup_FemaleOld", "Elderly female (>50 years)"), 
 			_ => key ?? "", 
 		};
 	}
@@ -186,7 +186,7 @@ internal static class VoiceMapper
 				_voicePools[groupKey].Add(text);
 			}
 			ClearSceneCache();
-			Logger.Log("VoiceMapper", "添加声音: group=" + groupKey + " voice=" + text);
+			Logger.Log("VoiceMapper", "Voice added: group=" + groupKey + " voice=" + text);
 		}
 	}
 
@@ -202,7 +202,7 @@ internal static class VoiceMapper
 				_voicePools.Remove(groupKey);
 			}
 			ClearSceneCache();
-			Logger.Log("VoiceMapper", "删除声音: group=" + groupKey + " voice=" + text);
+			Logger.Log("VoiceMapper", "Voice removed: group=" + groupKey + " voice=" + text);
 		}
 	}
 
@@ -211,7 +211,7 @@ internal static class VoiceMapper
 		EnsureLoaded();
 		_fallbackVoice = (voiceId ?? "").Trim();
 		ClearSceneCache();
-		Logger.Log("VoiceMapper", "设置 fallback: " + _fallbackVoice);
+		Logger.Log("VoiceMapper", "Fallback voice set: " + _fallbackVoice);
 	}
 
 	public static int GetTotalVoiceCount()
@@ -309,12 +309,12 @@ internal static class VoiceMapper
 				}
 			}
 			ClearSceneCache();
-			Logger.Log("VoiceMapper", string.Format("导入 VoiceMapping 成功: mode={0}, groups={1}, totalVoices={2}, fallback={3}", overwriteExisting ? "overwrite" : "merge", _voicePools.Count, GetTotalVoiceCount(), _fallbackVoice));
+			Logger.Log("VoiceMapper", string.Format("VoiceMapping imported: mode={0}, groups={1}, totalVoices={2}, fallback={3}", overwriteExisting ? "overwrite" : "merge", _voicePools.Count, GetTotalVoiceCount(), _fallbackVoice));
 			return true;
 		}
 		catch (Exception ex)
 		{
-			Logger.Log("VoiceMapper", "[ERROR] 导入 VoiceMapping JSON 失败: " + ex.Message);
+			Logger.Log("VoiceMapper", "[ERROR] VoiceMapping JSON import failed: " + ex.Message);
 			return false;
 		}
 	}
@@ -325,7 +325,7 @@ internal static class VoiceMapper
 		{
 			if (string.IsNullOrWhiteSpace(filePath) || !File.Exists(filePath))
 			{
-				Logger.Log("VoiceMapper", "[WARN] 导入 VoiceMapping 失败：文件不存在");
+				Logger.Log("VoiceMapper", "[WARN] VoiceMapping import failed: file not found");
 				return false;
 			}
 			string json = File.ReadAllText(filePath, Encoding.UTF8);
@@ -333,7 +333,7 @@ internal static class VoiceMapper
 		}
 		catch (Exception ex)
 		{
-			Logger.Log("VoiceMapper", "[ERROR] 从文件导入 VoiceMapping 失败: " + ex.Message);
+			Logger.Log("VoiceMapper", "[ERROR] VoiceMapping file import failed: " + ex.Message);
 			return false;
 		}
 	}
@@ -348,7 +348,7 @@ internal static class VoiceMapper
 		Dictionary<string, List<string>> dictionary = new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase);
 		if (string.IsNullOrWhiteSpace(json))
 		{
-			throw new Exception("JSON 为空");
+			throw new Exception("JSON is empty");
 		}
 		JObject jObject = JObject.Parse(json);
 		string[] allGroupKeys = AllGroupKeys;
@@ -401,7 +401,7 @@ internal static class VoiceMapper
 				}
 				catch (Exception ex)
 				{
-					Logger.Log("VoiceMapper", "[ERROR] 加载 VoiceMapping.json 失败: " + ex.Message);
+					Logger.Log("VoiceMapper", "[ERROR] VoiceMapping.json load failed: " + ex.Message);
 				}
 				_loaded = true;
 			}
@@ -412,6 +412,6 @@ internal static class VoiceMapper
 	{
 		_voicePools = new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase);
 		_fallbackVoice = "";
-		Logger.Log("VoiceMapper", "运行时 VoiceMapping 已初始化（外部 JSON 仅用于手动导入/导出）");
+		Logger.Log("VoiceMapper", "Runtime VoiceMapping initialized (external JSON is for manual import/export only)");
 	}
 }

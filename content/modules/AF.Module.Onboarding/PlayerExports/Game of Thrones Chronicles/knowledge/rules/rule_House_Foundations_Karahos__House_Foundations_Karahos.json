@@ -1,0 +1,156 @@
+{
+  "Id": "rule_House_Foundations_Karahos",
+  "Keywords": [
+    "Karahos",
+    "House Karahos"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Karahoth is connected to the ruling order of New Ghis. New Gith was founded by the descendants of Ancient Gith, trying to preserve the Giskali language, the symbol of the harpy, the tradition of the legion, and the strict hierarchy. At the same time, it must rely on sea transportation to exchange supplies with Slaver's Bay and Qarth. Karahos' power thus derived both from his nobility and from the ability to maintain a port, military service, food and labor system. A family may choose different partners in city-state competition, but it cannot escape the fact that an order based on forced labor and hierarchical support can not only quickly concentrate resources, but also accumulate deep fear and resistance."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "qartheen",
+          "ghiscari"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The upper echelons of New Ghis regard Karahos as the defender of military orders and ancient systems, requiring it to be tough in the face of external enemies and not lose control of the internal hierarchy. The more you rule by fear, the more you fear a moment of open weakness."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "qartheen",
+          "ghiscari"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Maritime merchants were concerned with Karahos' ability to make ports safe without overtaxing them. If New Ghis only talks about the glory of the Legion but delays unloading, the ship will take the profits elsewhere."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "qartheen",
+          "ghiscari"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "slave",
+          "artisan",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "What the slaves saw was the heaviest side of the ancient system. What Karahos calls order often means the chains, whips, and unchosen labors of others."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Karahos The ruling family of New Gith is based on ports, military service, Ghiscari rank, and the ability to maintain the supply of the island city. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Karahos The ruling family of New Gith is based on ports, military service, Ghiscari rank, and the ability to maintain the supply of the island city. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Karahos The ruling family of New Gith is based on ports, military service, Ghiscari rank, and the ability to maintain the supply of the island city. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Karahos The ruling family of New Gith is based on ports, military service, Ghiscari rank, and the ability to maintain the supply of the island city. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Karahos: The ruling family of New Gith is based on ports, military service, Ghiscari rank, and the ability to maintain the supply of the island city."
+  ]
+}

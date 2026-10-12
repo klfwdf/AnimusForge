@@ -1,0 +1,209 @@
+{
+  "Id": "rule_Chaos_Aberration",
+  "Keywords": [
+    "Chaos Aberration",
+    "excessive blessing",
+    "mutated monster",
+    "tentacle meat",
+    "mental breakdown",
+    "loser",
+    "twisted creature",
+    "Cataclysm of Flesh"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Chaos aberrations are the most disgusting existences on the Chaos Wastes - they were originally mortal warriors thirsty for power, but because they demanded the blessing of darkness beyond their own limits, their bodies collapsed and disintegrated at the moment of glory, collapsing into an amorphous monster that could only squirm, devour and scream."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "chaos_culture"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Don't talk about aberrations with those sympathetic eyes! They are the opposite of greed - the blessings of the gods are endless, but flesh and blood has its limits. Those guys who became aberrations were all idiots who knelt in the Chaos Temple after a battle and arrogantly prayed for the fourth and fifth blessings. Do you think the gods will be soft on ants who don't know how to control themselves? Their bones turned outward from the body, growing seven or eight tentacles and a dozen mouths, and then turned into human shields used by the warband's forwards to escape traps. But then again, although the aberrations are no longer human, they are still useful to the Dark Gods-the sheer biological violence when they rush into the enemy line will shake even the staunchest dwarven shield wall."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "From the perspective of strategic value, Chaos Aberrations are the most special consumables in the Chaos army - they do not need military pay, equipment, or pre-war mobilization. They only need to be driven towards the enemy's lines by the Chaos Warlock using painful spells before the offensive. The frontal battlefield function of aberrations is to create chaos: ordinary soldiers will have instinctive fear when faced with a wall of tumbling tentacles, and cracks can easily appear in the array. But they have no tactical awareness and cannot receive orders. Once released, they can only resign themselves to fate. I recommend mixing Aberrations with Chaos Warhounds, letting the Warhounds fill the gaps between the Aberrations to create a continuous shock wave."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "The phenomenon of aberrations is known as 'Gift Overload Syndrome' in the Imperial Academy and was first systematically described in 1887 AD by Dr. Hermann Kraus of Wolfenbach. In his burned book \"The Boundary of Flesh\", Klaus pointed out: The upper limit of the independent blessings that the human soul can safely carry is three, and the fourth item has a probability of more than 40% triggering a mutation collapse, ranging from deformed folds to complete deformities. The famous \"Greymaw Aberration Group\" incident (2315 AD, northern Midden Territory) is the only recorded large-scale aberration phenomenon. Fifteen warriors of a Norsca warband received the blessing of the evil god at the same time on an ancient holy ruin. Twelve of them collapsed on the spot and merged into a giant aberration aggregate, which was later burned to death by the White Wolf Knights with holy fire. The remains of the smallest aberration preserved in the Altdorf School of Abnormal Biology confirmed the correctness of Krause's theory: each of the cells in the remains contained energy crystals of four different colors - corresponding to the red of Khorne, the green of Nurgle, the blue of Sinléj, and the purple of Slaanesh."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "In the monastery to the south of my domain, the nuns consider aberrations to be 'corporeal sentences for the sins of the soul'. As a female lord who commands troops, I am more concerned about this: even if soldiers who have been exposed to aberrations survive, they will suffer from skin ulcers and mental breakdown within a few weeks. I once ordered to isolate a group of spearmen who retreated from a close encounter with the aberrations. Half of them committed suicide within a month."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "I once watched one of my cousins ​​disintegrate into an aberration during a wasteland ritual - until that moment he had been our family's proudest young warrior, screaming and begging the gods for one more chance. But the gods did not listen to begging and only accepted sacrifices. In the end, he was tied by an iron chain to the first marching baggage cart of the war gang by the family elders, and was used as a living battering ram to clear the way. A Chaos Warrior's path to glory is never kind."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "In the swamp of Osterland, my companions and I found a half-dead aberration - it was stuck in the mire, and its mouth was opening and closing as if it was trying to speak. I recognized the last words in its mouth as the war cry of some Norsca warband. Guess what happened next? The mire suddenly boiled, more aberrations tumbled up from underneath, and we ran until our boots fell off. Now whoever said the swamp is safe is the one I am worried about."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Imperial Alchemist Guild paid a very high price for the aberration organization - they said that the concentrated chaos energy contained in the flesh and blood of the aberrations could be used as a 'control sample' to develop anti-chaos potions. The question is, how quickly do you have to get that stuff to Altdorf? Over six hours, the sample will spontaneously ignite. Veterans in the transportation industry are afraid to take on this kind of work for fear that the entire truck's safe will be corroded from the inside."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Blessing overload: After a mortal warrior receives multiple blessings from chaos that exceed the carrying capacity of his soul in a short period of time, his body and spirit collapse together.",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Chaos aberrations over-bless mutated monsters"
+  ]
+}

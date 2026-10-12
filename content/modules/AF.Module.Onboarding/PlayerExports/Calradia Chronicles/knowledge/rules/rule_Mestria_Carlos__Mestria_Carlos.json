@@ -1,0 +1,58 @@
+{
+  "Id": "rule_Mestria_Carlos",
+  "Keywords": [
+    "Mestrikalos"
+  ],
+  "RagShortTexts": [
+    "The Mestrikalos family, nobles of the Southern Empire, whose territory is centered on Wostrum. Values ​​honor and imperial rule, and supported Queen Rhagaea in the civil war. Known for its military tradition and cavalry, members of the family served as border generals for many times, resisting the invasions of the Aserai, Kuset, and Darcy Shahs of the Far East."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": [
+          "town_es1"
+        ],
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The noble family of the Southern Empire, whose territory is centered on Danustika. He values ​​family honor and imperial rule, and firmly supports Queen Rhagaea in the imperial civil war. Known for its military tradition and cavalry strength, most of the family members served as border generals and had long resisted the invasions of the Aserai and Kuset, as well as the invasions of various Shahs and Padi Shahs of the Dasi people in the Far East. Imperial soldiers stationed in the territory of the Mestri Carlos family often complained about the heat and mosquitoes. However, the local residents had long been accustomed to it and often laughed it off and were proud of their responsibility to protect their homeland. The settlement the family currently rules is a"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "A noble family of the Southern Empire, whose territory is centered on Danustika. The family is loyal to Imperial orthodoxy and staunchly supported Queen Rhagaea during the Imperial Civil War. Known for its military tradition and cavalry strength, many members of the family served as border generals and fought against the invasions of the Aserai and Kuset for a long time. The settlement the family currently rules is a"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "a",
+      "Kind": "clan_all_settlements",
+      "TargetId": "clan_empire_south_3",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

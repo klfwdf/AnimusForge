@@ -1,0 +1,152 @@
+{
+  "Id": "rule_Dynastic_Chronicles_Jaehaerys_Reconciles_the_Realm",
+  "Keywords": [
+    "Jaehaerys I",
+    "The Conciliator",
+    "Unified Code of Laws",
+    "Jaehaerys Reconciles the Realm"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Entry Jah Lys I consolidated the Targaryen dynasty with reconciliation and institutionalization. He and Queen Alexa toured the Seven Kingdoms, listening to the complaints of lords, churches, and ordinary people, and promoting reconciliation between the kingdom's laws, roads, inheritance practices, and the church. Later generations will call him a wise king Many aristocratic rituals, royal customs, and great council precedents derived their authority from his rule; to commoners, the good king's name was often attached to a road, a bridge, or a less onerous edict."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "lyseni"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "scholar",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Jaehaerys Reconciles the Realm"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "lyseni"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Jaehaerys Reconciles the Realm"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Jaehaerys Reconciles the Realm"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Jaehaerys I Jaehaerys Reconciles the Realm: Jah Lys I consolidated the Targaryen dynasty with reconciliation and institutionalization. He and Queen Alexa toured the Seven Kingdoms, listening to the complaints of lords, churches, and ordinary people, and promoting reconciliation between the kingdom's laws, roads, inheritance practices, and the church. Later generations will call him a wise king. A past war or a dynastic change will determine today's tax rates, covenants, roads and who has the right to speak first in the hall."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Jaehaerys I Jaehaerys Reconciles the Realm: Jah Lys I consolidated the Targaryen dynasty with reconciliation and institutionalization. He and Queen Alexa toured the Seven Kingdoms, listening to the complaints of lords, churches, and ordinary people, and promoting reconciliation between the kingdom's laws, roads, inheritance practices, and the church. Later generations will call him a wise king. They remember which flag fell, which bridge was burned, and who shared the last sip of water in the snow; for them, history is first and foremost the memory left by the body."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Jaehaerys I Jaehaerys Reconciles the Realm: Jah Lys I consolidated the Targaryen dynasty with reconciliation and institutionalization. He and Queen Alexa toured the Seven Kingdoms, listening to the complaints of lords, churches, and ordinary people, and promoting reconciliation between the kingdom's laws, roads, inheritance practices, and the church. Later generations will call him a wise king. The winner will write it as a proof of order, the loser will keep it as a warning, and ordinary people will only remember how much the price of food and cemeteries increased that year."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Jaehaerys I Jaehaerys Reconciles the Realm: Jah Lys I consolidated the Targaryen dynasty with reconciliation and institutionalization. He and Queen Alexa toured the Seven Kingdoms, listening to the complaints of lords, churches, and ordinary people, and promoting reconciliation between the kingdom's laws, roads, inheritance practices, and the church. Later generations will call him a wise king. They learn about the past through old houses, family trees, tombstones, and taboos spoken by old men; as long as an event affects taxes, conscription, or marriage, it is not truly over."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Jaehaerys Reconciles the Realm: Jah Lys I consolidated the Targaryen dynasty with reconciliation and institutionalization. He and Queen Alexa toured the Seven Kingdoms, listening to the complaints of lords, churches, and ordinary people, and promoting reconciliation between the kingdom's laws, roads, inheritance practices, and the church. Later generations will call him a wise king."
+  ]
+}

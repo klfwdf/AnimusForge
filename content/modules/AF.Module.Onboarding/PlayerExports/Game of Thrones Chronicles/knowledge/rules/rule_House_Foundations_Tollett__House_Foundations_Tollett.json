@@ -1,0 +1,152 @@
+{
+  "Id": "rule_House_Foundations_Tollett",
+  "Keywords": [
+    "Tollett"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Tollett was originally a vassal family of the Royce family in the valley. Addison Tollett was called \"Gloomy Eddie\" after joining Night's Watch. He can always find a worse possibility among cold, death and unlucky errands, and then say it in a dry tone. That is not pure cowardice, but a way to keep yourself and your companions working in despair. Black erases the inheritance, but does not erase his upbringing, loyalty and sensitivity to the absurdities of human nature."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nightswatch"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Night's Watch The brothers love to poke fun at Eddie's pessimism, but are also used to hearing his voice at his worst. A person who can tell cold jokes next to a frozen corpse and still finish the work he needs to do is more reliable than many people who talk about courage but run away in the face of battle."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vale"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "If the valley nobles remembered the Tollett family, they would regard Eddie as a sideline child who gave up the path of inheritance. When arriving at the Great Wall, one's family background can only expose him to a few more ridicules; whether he can win respect ultimately depends on whether he joins others in starving vigil."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nightswatch"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Ordinary black brothers think Eddie is like a rain that never stops, but his complaints rarely interfere with his duties. Some people even believe that as long as Eddie continues to predict a worse ending, the real doomsday has not yet come."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Tollett \"Gloomy Eddie\" Addison Tollett was born into a minor nobleman in the valley. After joining Night's Watch, he faced hardship with black humor. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Tollett \"Gloomy Eddie\" Addison Tollett was born into a minor nobleman in the valley. After joining Night's Watch, he faced hardship with black humor. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Tollett \"Gloomy Eddie\" Addison Tollett was born into a minor nobleman in the valley. After joining Night's Watch, he faced hardship with black humor. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Tollett \"Gloomy Eddie\" Addison Tollett was born into a minor nobleman in the valley. After joining Night's Watch, he faced hardship with black humor. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Tollett: \"Gloomy Eddie\" Addison Tollett was born into a minor nobleman in the valley. After joining Night's Watch, he faced hardship with black humor."
+  ]
+}

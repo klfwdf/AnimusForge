@@ -1,0 +1,154 @@
+{
+  "Id": "rule_Faith_and_Myth_Sanctity_of_the_Nights_Watch_Vows",
+  "Keywords": [
+    "Night's Watch Vows",
+    "Sworn Brothers",
+    "Wear No Crowns"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Joining the Night's Watch means making a lifelong vow in front of the Seven Sacred Church or the Heart Tree: when night is coming, you will start to watch from now on; you will not marry a wife, you will not have a fief, you will not have children, you will not wear a crown, you will not compete for honors, you will do your duty faithfully, and you will live and die there. The oath turns nobles, criminals, bastards, and volunteers theoretically into the same black brothers, making the Wall's duty higher than that of the old family and the southern throne. In reality, birth prejudice does not disappear overnight. There are still people in the fraternity who strive for power, are timid, or miss the old life. It is precisely because people will waver that the oath becomes the core of the common order. Those who left their posts without permission were considered deserters and were usually required to die as repayment for breaking their oath."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "nightswatch"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "lord",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The brothers in black know that the oath will not patrol, mend walls, or endure cold nights for them, but they can give a common reason after all identities are stripped away. Some come with glory, some come with chains, and they all have to face the same wind after taking the oath."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania",
+          "freefolk"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Northerners tend to take the Night's Watch oath very seriously, while free folk may view it as southerners guarding a border that should not exist. Both sides understand that those who are willing to stay on the ice wall for the rest of their lives have given up what ordinary people value most."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "priest",
+          "notable",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Clergy emphasize that oaths are witnessed by God, while travelers often think of Night's Watch as the hero or criminal in the song. Once one actually reaches the Great Wall, one discovers that sanctity does not come from innocence, but from a group of flawed people still trying to keep their word."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Night's Watch Vows Sanctity of the Night's Watch Vows: The brothers in black gave up their marriages, lands, heirs and crowns to serve for life, and vowed to guard the Great Wall until death. Altars, relics, and prophecies can unite people and give a political claim the appearance of irrefutability."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Night's Watch Vows Sanctity of the Night's Watch Vows: The brothers in black gave up their marriages, lands, heirs and crowns to serve for life, and vowed to guard the Great Wall until death. Some people use it as a talisman, while others use it as the name of fear; the same prayer may make people draw their swords or put them down."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Night's Watch Vows Sanctity of the Night's Watch Vows: The brothers in black gave up their marriages, lands, heirs and crowns to serve for life, and vowed to guard the Great Wall until death. Whether the gods responded or not could not be proven by the account books, but how the rituals were held and who could interpret the omens actually determined the authority of the community."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Night's Watch Vows Sanctity of the Night's Watch Vows: The brothers in black gave up their marriages, lands, heirs and crowns to serve for life, and vowed to guard the Great Wall until death. They seek an explanation they can rely on when it comes to birth, marriage, sowing, illness, and death; the names of gods may not be the same, but their desire to keep their families safe is similar."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Sanctity of the Night's Watch Vows: The brothers in black gave up their marriages, lands, heirs and crowns to serve for life, and vowed to guard the Great Wall until death."
+  ]
+}

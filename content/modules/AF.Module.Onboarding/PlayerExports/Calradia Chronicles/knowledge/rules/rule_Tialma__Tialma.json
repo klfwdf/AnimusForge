@@ -1,0 +1,18 @@
+{
+  "Id": "rule_Tialma",
+  "Keywords": [
+    "Tialma"
+  ],
+  "RagShortTexts": [
+    "Tialma is produced in Sturgia and is of high quality"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Tial horses are very good horses, produced in Sturgia, and are commonly used by Sturgian nobles."
+    }
+  ],
+  "TextMappings": []
+}

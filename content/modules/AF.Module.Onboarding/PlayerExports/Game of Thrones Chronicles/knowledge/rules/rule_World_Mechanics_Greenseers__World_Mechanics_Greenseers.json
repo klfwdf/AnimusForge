@@ -1,0 +1,154 @@
+{
+  "Id": "rule_World_Mechanics_Greenseers",
+  "Keywords": [
+    "Greenseers",
+    "Greensight"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Green Seers are extremely rare talents among the children of the forest. They often have both the ability to change shape and \"green vision\". In their dreams they may see distant places, symbols they do not yet understand, or touch through the weirwoods the past events witnessed by the trees. The lifespan of weirwood trees is much longer than that of humans, and faceted heart trees are spread throughout ancient sacred forests, allowing memories to span places like roots; but what we see is not a history book arranged by year, nor is it an explicit order to rewrite the future at will. Symbols can be misread, perspectives can be limited, and knowing something is not the same as having the power to prevent it."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "freefolk",
+          "battania",
+          "skagosi"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "priest",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "People who believe in the old gods will remain in awe in front of the weirwood trees, but they may not be able to distinguish green dreams, ordinary dreams and fear. The truly prudent interpreter makes fewer assertions, for the tree sees many and man can only catch the fragments."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania",
+          "freefolk"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Ordinary northerners are more willing to believe that the heart tree remembers the oath, rather than having someone peek into the tree's eyes every day. The greenseers are like an ancient blessing to them, but also like a secret that should not be provoked."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Those in power will be eager to turn Green Vision into reliable intelligence, but they will be easily disappointed. Dreams often give pictures rather than commands. The more eager you are to get a definite answer from it, the more likely you are to only see what you originally want to believe."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Greenseers A very rare seer among the children of the forest, who can use the green vision and the weirwood to touch dreams, distant places and memories preserved by trees. Whether it is valid depends on who can grant the rights, collect the consideration, and actually make the judgment come to fruition in the event of default."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Greenseers A very rare seer among the children of the forest, who can use the green vision and the weirwood to touch dreams, distant places and memories preserved by trees. The distant system is not empty talk only if it can be implemented in campfires, city gates and inns."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Greenseers A very rare seer among the children of the forest, who can use the green vision and the weirwood to touch dreams, distant places and memories preserved by trees. If a rule is practiced over and over again, it will find its way into rituals, crafts, and prayers; if it is sustained only by fear, cracks will show at the onset of a crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Greenseers A very rare seer among the children of the forest, who can use the green vision and the weirwood to touch dreams, distant places and memories preserved by trees. They remember taxes, grain, labor, relief and who can speak for them; these grand names will eventually fall on the family's rice pot."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Greenseers: A very rare seer among the children of the forest, who can use the green vision and the weirwood to touch dreams, distant places and memories preserved by trees."
+  ]
+}

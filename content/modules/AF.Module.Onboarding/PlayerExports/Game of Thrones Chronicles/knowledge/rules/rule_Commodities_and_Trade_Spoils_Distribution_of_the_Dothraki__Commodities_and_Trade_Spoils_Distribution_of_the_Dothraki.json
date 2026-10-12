@@ -1,0 +1,150 @@
+{
+  "Id": "rule_Commodities_and_Trade_Spoils_Distribution_of_the_Dothraki",
+  "Keywords": [
+    "Spoils Distribution of the Dothraki"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Entry The distribution of loot in the khalasar is about prestige, loyalty, and internal order. Just because the strong get more does not mean that the rules do not exist, it just means that everyone is looking at who is eligible to take what; outsiders only see plunder, but tribe members remember every allocation"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Spoils Distribution of the Dothraki"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "artisan",
+          "peasant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Spoils Distribution of the Dothraki"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "sailor",
+          "wanderer",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Spoils Distribution of the Dothraki"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Spoils Distribution of the Dothraki The distribution of loot in the khalasar is about prestige, loyalty, and internal order. Just because the strong get more does not mean that the rules do not exist, it just means that everyone is looking at who is eligible to take what; outsiders only see plunder, but tribe members remember every allocation Any break in the place of origin, checkpoints, shipping schedules, debts and protection fees will immediately make the nobles in the distance feel the changes in price and power."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Spoils Distribution of the Dothraki The distribution of loot in the khalasar is about prestige, loyalty, and internal order. Just because the strong get more does not mean that the rules do not exist, it just means that everyone is looking at who is eligible to take what; outsiders only see plunder, but tribe members remember every allocation They may not necessarily understand ledgers, but they know the true weight of a bag of salt and a nail on the road."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Spoils Distribution of the Dothraki The distribution of loot in the khalasar is about prestige, loyalty, and internal order. Just because the strong get more does not mean that the rules do not exist, it just means that everyone is looking at who is eligible to take what; outsiders only see plunder, but tribe members remember every allocation Some people turn raw materials into tools, cloth and medicine, others set festivals and taboos for exchange; wealth is piled up by many hands, and rarely belongs to just one name."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Spoils Distribution of the Dothraki The distribution of loot in the khalasar is about prestige, loyalty, and internal order. Just because the strong get more does not mean that the rules do not exist, it just means that everyone is looking at who is eligible to take what; outsiders only see plunder, but tribe members remember every allocation If prices rise but wages do not, prosperity in distant places will only become thinner bread; if roads are safe, even small villages can get a little spring from trade."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Spoils Distribution of the Dothraki: The distribution of loot in the khalasar is about prestige, loyalty, and internal order. Just because the strong get more does not mean that the rules do not exist, it just means that everyone is looking at who is eligible to take what; outsiders only see plunder, but tribe members remember every allocation"
+  ]
+}

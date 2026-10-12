@@ -1,3 +1,4 @@
+using AnimusForge;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -1639,12 +1640,12 @@ public static class WorldDiplomacyRoundLifecycleRules
 
     public static string DescribeThreatStage(string stage)
     {
-        return stage == "warning" ? "谴责" : "最后通牒";
+        return stage == "warning" ? DiplomacyCompatibilityTexts.Get("Threat_StageDenunciation") : DiplomacyCompatibilityTexts.Get("Threat_StageUltimatum");
     }
 
     public static string DescribeThreatStageDiplomaticLabel(string stage)
     {
-        return stage == "warning" ? "外交谴责" : "最后通牒";
+        return stage == "warning" ? DiplomacyCompatibilityTexts.Get("Threat_StageDiplomaticDenunciation") : DiplomacyCompatibilityTexts.Get("Threat_StageUltimatum");
     }
 
     public static bool IsThreatBetweenParties(
@@ -1880,12 +1881,12 @@ public static class WorldDiplomacyRoundLifecycleRules
 
     public static string DescribeThreatStageFormal(string stage)
     {
-        return string.Equals(stage, "ultimatum", StringComparison.OrdinalIgnoreCase) ? "战争最后通牒" : "谴责";
+        return string.Equals(stage, "ultimatum", StringComparison.OrdinalIgnoreCase) ? DiplomacyCompatibilityTexts.Get("Threat_StageWarUltimatum") : DiplomacyCompatibilityTexts.Get("Threat_StageDenunciation");
     }
 
     public static string DescribeThreatExpectedFollowThrough(string stage)
     {
-        return stage == "ultimatum" ? "宣战" : "升级为最后通牒";
+        return stage == "ultimatum" ? DiplomacyCompatibilityTexts.Get("Threat_ActionDeclareWar") : DiplomacyCompatibilityTexts.Get("Threat_ActionEscalateUltimatum");
     }
 
     public static string ResolveThreatCommitmentLevel(string stage)
@@ -2740,8 +2741,8 @@ public static class WorldDiplomacyRoundLifecycleRules
     public static string DescribeThreatBreachPrestigeReason(string stage)
     {
         return string.Equals(stage, "ultimatum", StringComparison.OrdinalIgnoreCase)
-            ? "最后通牒遭拒后没有在下一篇宣言中宣战"
-            : "外交谴责遭拒后没有在下一篇宣言中升级最后通牒";
+            ? DiplomacyMiscPromptTexts.Get("Threat_NoWarAfterUltimatumRejected", "Did not declare war in the next declaration after ultimatum was rejected")
+            : DiplomacyMiscPromptTexts.Get("Threat_NoEscalationAfterDenunciationRejected", "Did not escalate to ultimatum in the next declaration after denunciation was rejected");
     }
 
     public static string DescribeThreatBreachResolutionReason(string stage)
@@ -3964,9 +3965,9 @@ public static class WorldDiplomacyRoundLifecycleRules
         WorldDiplomacyDocument document = resolveDocument(threat.ComplianceDocumentId);
         if (document == null) return;
         document.ChangedDiplomaticState = true;
-        document.MechanicalResult = "已明确服从" + DescribeThreatStage(threat.Stage)
+        document.MechanicalResult = DiplomacyMiscPromptTexts.Get("Threat_ExplicitlyComplied", "Explicitly complied ") + DescribeThreatStage(threat.Stage)
             + (IsThreatCancellationStatusCancelled(threat.PolicyConditionCancellationStatus)
-                ? "；附带政策《" + FirstNonEmpty(threat.PolicyConditionPolicyName, threat.PolicyConditionPolicyId) + "》已取消"
+                ? string.Format(DiplomacyMiscPromptTexts.Get("ThreatSettlement_AttachedPolicyCancelledFormat", "; Attached policy \"{0}\" was cancelled"), FirstNonEmpty(threat.PolicyConditionPolicyName, threat.PolicyConditionPolicyId))
                 : "");
     }
 	public static void MarkOpenBilateralOffersAccepted(
@@ -4804,7 +4805,7 @@ public static class WorldDiplomacyRoundLifecycleRules
             summary.Facts.Add(new WorldDiplomacyRoundFact
             {
                 Kind = "declaration",
-                Text = "[宣言记录] " + WorldDiplomacyTextRules.BuildCompactDocumentMemoryLine(document, formatDayFallback),
+                Text = DiplomacyCompatibilityTexts.Get("History_LegacyDeclarationRecordPrefix") + WorldDiplomacyTextRules.BuildCompactDocumentMemoryLine(document, formatDayFallback),
                 SourceDocumentIds = new List<string> { document.DocumentId },
                 KingdomIds = declarationKingdomIds
             });
@@ -4813,7 +4814,7 @@ public static class WorldDiplomacyRoundLifecycleRules
                 summary.Facts.Add(new WorldDiplomacyRoundFact
                 {
                     Kind = "confirmed_result",
-                    Text = "[游戏已执行] " + document.MechanicalResult,
+                    Text = DiplomacyCompatibilityTexts.Get("History_LegacyExecutedPrefix") + document.MechanicalResult,
                     SourceDocumentIds = new List<string> { document.DocumentId },
                     KingdomIds = WorldDiplomacyRoundLifecycleRules.NormalizeIdListPreserveOrder(new[] { document.AuthorKingdomId }.Concat(WorldDiplomacyStructureRules.GetDocumentTargetIds(document, changedOnly: true)))
                 });
@@ -4842,11 +4843,11 @@ public static class WorldDiplomacyRoundLifecycleRules
         if (round == null || documents.Count == 0)
         {
             summary.ArchiveSchemaVersion = 1;
-            summary.Summary = "旧版外交摘要，仅表示当时保存的宣言叙述，不能据此认定任何外交机制已经执行：" + WorldDiplomacyTextRules.Limit(summary.Summary, 1200);
+            summary.Summary = DiplomacyCompatibilityTexts.Get("History_LegacySummaryPrefix") + WorldDiplomacyTextRules.Limit(summary.Summary, 1200);
             summary.Facts = (summary.Facts ?? new List<WorldDiplomacyRoundFact>()).Where(x => x != null).Select(x => new WorldDiplomacyRoundFact
             {
                 Kind = "declaration",
-                Text = "[旧版宣言摘要，不代表游戏已执行] " + WorldDiplomacyTextRules.Limit(x.Text, 360),
+                Text = DiplomacyCompatibilityTexts.Get("History_LegacySummaryBracketPrefix") + WorldDiplomacyTextRules.Limit(x.Text, 360),
                 SourceDocumentIds = x.SourceDocumentIds ?? new List<string>(),
                 KingdomIds = x.KingdomIds ?? new List<string>()
             }).ToList();
@@ -4860,13 +4861,13 @@ public static class WorldDiplomacyRoundLifecycleRules
         {
             summary.Facts.Add(new WorldDiplomacyRoundFact
             {
-                Kind = "declaration", Text = "[宣言记录] " + WorldDiplomacyTextRules.BuildCompactDocumentMemoryLine(document, formatDayFallback),
+                Kind = "declaration", Text = DiplomacyCompatibilityTexts.Get("History_LegacyDeclarationRecordPrefix") + WorldDiplomacyTextRules.BuildCompactDocumentMemoryLine(document, formatDayFallback),
                 SourceDocumentIds = new List<string> { document.DocumentId },
                 KingdomIds = WorldDiplomacyRoundLifecycleRules.NormalizeIdListPreserveOrder(new[] { document.AuthorKingdomId }.Concat(WorldDiplomacyStructureRules.GetDocumentTargetIds(document)))
             });
             if (document.ChangedDiplomaticState && !string.IsNullOrWhiteSpace(document.MechanicalResult)) summary.Facts.Add(new WorldDiplomacyRoundFact
             {
-                Kind = "confirmed_result", Text = "[游戏已执行] " + document.MechanicalResult,
+                Kind = "confirmed_result", Text = DiplomacyCompatibilityTexts.Get("History_LegacyExecutedPrefix") + document.MechanicalResult,
                 SourceDocumentIds = new List<string> { document.DocumentId },
                 KingdomIds = WorldDiplomacyRoundLifecycleRules.NormalizeIdListPreserveOrder(new[] { document.AuthorKingdomId }.Concat(WorldDiplomacyStructureRules.GetDocumentTargetIds(document, changedOnly: true)))
             });
@@ -5166,7 +5167,8 @@ public static class WorldDiplomacyRoundLifecycleRules
         string authorKingdomId,
         WorldDiplomacyDocument responseSource,
         string requiredSourceDocumentId,
-        IReadOnlyList<WorldDiplomacyDocument> documents)
+        IReadOnlyList<WorldDiplomacyDocument> documents,
+        Func<string, string, string> localize = null)
     {
         if (sb == null || round == null || string.IsNullOrWhiteSpace(authorKingdomId)) return;
         HashSet<string> sourceIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
@@ -5202,10 +5204,10 @@ public static class WorldDiplomacyRoundLifecycleRules
             .ToList();
         if (sources.Count == 0 && responseSource?.IsReadyForPublication == true) sources.Add(responseSource);
         if (sources.Count == 0) return;
-        sb.AppendLine("【本篇回应依据】");
+        sb.AppendLine(WorldDiplomacyPromptContractRules.ContractText(localize, "RelayResponseBasisHeader", "[Basis for this response]"));
         if (slot?.RelatedKingdomIds?.Count > 0)
         {
-            sb.AppendLine("当前处理义务涉及王国=" + string.Join(",", WorldDiplomacyRoundLifecycleRules.NormalizeIdListPreserveOrder(slot.RelatedKingdomIds)));
+            sb.AppendLine(WorldDiplomacyPromptContractRules.ContractText(localize, "RelayResponseObligationKingdoms", "Kingdoms involved in the current obligation=") + string.Join(",", WorldDiplomacyRoundLifecycleRules.NormalizeIdListPreserveOrder(slot.RelatedKingdomIds)));
         }
         foreach (WorldDiplomacyDocument source in sources)
         {
@@ -5219,13 +5221,13 @@ public static class WorldDiplomacyRoundLifecycleRules
                 || WorldDiplomacyRoundLifecycleRules.MatchesDocumentId(source.DocumentId, responseSource?.DocumentId)
                 ? 1800
                 : 700;
-            string peaceOfferTerms = WorldDiplomacyDocumentFactRules.BuildPeaceOfferTermsFact(source, authorKingdomId);
-            sb.AppendLine("- 来源=" + source.DocumentId
-                + "|发文国=" + source.AuthorKingdomId
-                + "|动作=" + string.Join("/", actionFacts)
-                + "|标题=" + WorldDiplomacyTextRules.Limit(source.Title, 100)
-                + (string.IsNullOrWhiteSpace(peaceOfferTerms) ? "" : "|和平原案条款=" + peaceOfferTerms)
-                + "|正文摘要=" + WorldDiplomacyTextRules.Limit(source.Body, bodyLimit));
+            string peaceOfferTerms = WorldDiplomacyDocumentFactRules.BuildPeaceOfferTermsFact(source, authorKingdomId, localize);
+            sb.AppendLine(WorldDiplomacyPromptContractRules.ContractText(localize, "RelayResponseSource", "- Source=") + source.DocumentId
+                + WorldDiplomacyPromptContractRules.ContractText(localize, "RelayResponseAuthor", "|author kingdom=") + source.AuthorKingdomId
+                + WorldDiplomacyPromptContractRules.ContractText(localize, "RelayResponseActions", "|actions=") + string.Join("/", actionFacts)
+                + WorldDiplomacyPromptContractRules.ContractText(localize, "RelayResponseTitle", "|title=") + WorldDiplomacyTextRules.Limit(source.Title, 100)
+                + (string.IsNullOrWhiteSpace(peaceOfferTerms) ? "" : WorldDiplomacyPromptContractRules.ContractText(localize, "RelayResponseOriginalPeaceTerms", "|original peace proposal terms=") + peaceOfferTerms)
+                + WorldDiplomacyPromptContractRules.ContractText(localize, "RelayResponseBodySummary", "|body summary=") + WorldDiplomacyTextRules.Limit(source.Body, bodyLimit));
         }
     }
 

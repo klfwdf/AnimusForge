@@ -1,0 +1,153 @@
+{
+  "Id": "rule_Northern_Landmarks_Flints_Finger",
+  "Keywords": [
+    "Flint's Finger",
+    "West Coast",
+    "Headland"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Finger of Flinte is the narrow promontory on the west coast of the north that extends into the Sunset Sea. It is also the area where the Flinte families move. It is like a stone finger pointing to the sea. Sea fog, reefs and barren slopes make it difficult to rely on large-scale farming for prosperity, but it is suitable for fishing, hunting, grazing, guarding the sea and maintaining a small harbor. The western coast of the North is far from King's Landing but not far from the old Ironborn raids, so the people living along the coast are more familiar with the dangers posed by sails than many inland Northmen. The power of Flint's Finger comes from the familiarity of the coastal terrain, not the grand city walls."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "artisan",
+          "sailor"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Flint's Finger Local families also rely on firewood, hunting grounds, peat, salt fish, and granaries to survive the long winter; if any road, well, spring, or wharf fails, the price will fall on them first."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Flint's Finger Entry Flint's Finger"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "scholar",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Flint's Finger They also recognize the accents, laws, and credentials of the North; reputations can travel great distances from taverns, but true distances must still be measured by wheel, oar, or horse's hoof."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Flint's Finger Entry Flint's Finger"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Flint's Finger If you can supply supplies, avoid danger, and find a guide, it is worth marking in your itinerary; if you don't have these three things, no matter how loud your family name is, it won't be able to save the lost."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Flint's Finger A stronghold was therefore not just a lord's hall, but also a place where weddings and funerals, vows, labor and local memories recurred."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Flint's Finger They care about firewood, hunting grounds, peat, salt fish, and granaries that can survive the long winter. They also care about whether seeds are left after the grain collection and whether the city gates are open in times of disaster. When people from afar see coats of arms, they see whether there will be food to eat tomorrow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Flint's Finger: The Finger of Flinte is the narrow promontory on the west coast of the north that extends into the Sunset Sea. It is also the area where the Flinte families move. It is like a stone finger pointing to the sea. Sea fog, reefs and barren slopes make it difficult to rely on large-scale farming for prosperity, but it is suitable for fishing, hunting, grazing, guarding the sea and maintaining a small harbor. The western coast of the North is far from King's Landing but not far from the old Ironborn raids, so the people living along the coast are more familiar with the dangers posed by sails than many inland Northmen. The power of Flint's Finger comes from the familiarity of the coastal terrain, not the grand city walls."
+  ]
+}

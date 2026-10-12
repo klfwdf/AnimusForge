@@ -1,0 +1,209 @@
+{
+  "Id": "rule_Runesmith",
+  "Keywords": [
+    "Runesmith",
+    "Runesmith Runeforge",
+    "binding magic",
+    "ancient skills",
+    "dispel magic",
+    "Dwarf Spellcasting Replacement",
+    "Runesmith Rune Power",
+    "Glengill Heritage"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Runesmiths are the most mysterious and respected profession among dwarves—they do not release magic, but instead smash the power of magic into metal with rune hammers. While the human mage is still reciting the spell, a master runesmith has completed an eternal enchantment on the weapon. This enchantment will not dissipate, be countered or dispelled."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Runesmith - that is the ultimate answer for us dwarves to fight against the fancy magic of humans and elves. What are the wind, fire, thunder and lightning of your academy mages in front of the rune blacksmith? You chant spells while we forge iron; your magic is as erratic as candles in the wind, but our runes are as eternal as mountains. A runesmith may only forge a dozen pieces in his lifetime, but each piece will survive generations and countless emperors. Have you heard of Glengil Starhammer? He was the first dwarf to seal magic into meteoric iron, and his hammer is still enshrined in the Rune Hall in the deepest part of Eternal Peak. Runesmiths are not battle mages wielding magic wands on the battlefield - they carry rune hammers as tall as a person onto the battlefield, and when they encounter an enemy's spell, they hit the ground with a hammer: Boom! The moment the ground cracked, all magical effects within a thirty-foot radius were ineffective. This is called 'rune crushing' - it's not dispelling, it's smashing, using the power of ancestors to directly smash the fragile magic structures of human mages into pieces."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The tactical value of Runesmiths on the battlefield is roughly equal to an entire fleet of battle mages from the Imperial Academy of Magic - the difference being that they don't need magical winds, can't be dispelled, and can't blow themselves up due to a miscast. In terms of anti-magic, Runesmith is the first choice in the known world: having a Master Runesmith deployed in the main infantry formation can effectively suppress all enemy forces that rely on magic support. The only limitation is that they need time - the Runesmith's activation of the Rune Array in battle requires a continuous beating of anywhere from thirty breaths to a quarter of an hour, during which time they must be closely protected by heavy infantry. The offensive end is equally important: having a runesmith carve temporary battle runes on the general's weapons and armor before the battle can greatly enhance personal combat effectiveness."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "The basic principle of the runesmithing skill is called the 'rune aggregation theory' - it was systematically compiled into an oral tradition (never written down on paper) by the dwarf scholar Torek Ironhammer in -1500 AD (late Golden Age). The core principle is: Magical energy is free and unstable 'wind' in its natural state, and runes are precisely designed energy containers - after the magic 'wind' is forcibly pushed into the lattice structure of meteorite iron, the rune lines are equivalent to 'energy-binding conduits', allowing magic energy to form a permanent, self-sustaining flow cycle inside the metal. This is completely different from the principle that human mages draw energy from the wind of magic to cast spells instantly. Historically, the runesmiths formed an independent guild system in about 1200 BC, founded by the third disciple of Glengil Starhammer. It is worth noting that the skills of runesmiths suffered devastating losses during the Greenskin Wars and Chaos Invasions - according to an estimate from a joint academic survey between the Empire and the Dwarves (\"White Paper on Rune Relics\" in 2300 AD), there were about forty complete rune lineages in the Golden Age, and only seven are still being passed down today. The training cycle of each rune blacksmith master lasts from two hundred to four hundred years, which makes every living rune blacksmith a non-renewable strategic asset."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Dwarves do not allow women to become runesmiths - leaving many noble women to both respect and despise their culture. But from the perspective of military efficiency, I must admit: Their rune forging system cannot be copied and cannot be competed by human magic academies. I once asked a master runesmith of Kharak Kaderin about their secret, and he replied: 'It's not magic, it's patience.' I have six hundred years to learn one thing - how to let anger live quietly in metal. '"
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The secrets of runesmiths are passed down from generation to generation in dwarf families - fathers teach them to their sons, masters teach them to their apprentices, and they are never written down. Every rune is a legacy. I know that there is a family that specializes in casting 'Guardian Runes' and another family that specializes in 'Fire Runes'. The craftsmanship between the various races is strictly kept secret, and even two rune blacksmith families in the same Kalakree may not talk to each other for three hundred years - this is not called hatred, but business competition and craftsmanship dignity."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "I hired a runesmith apprentice in Barak Vaal to engrave runes on my sword - he warned me that 'it can only be engraved once, runes don't like to be modified repeatedly'. It was indeed different after carving. My sword felt significantly smoother when cutting the chaotic beast, as if the sword knew where to cut. But he took all my savings—an apprentice! I can’t even imagine how much a great tutor charges."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The dean of the Imperial Academy of Magic once said the truth at a private dinner: 'If I were to choose which one is more important, the Imperial Academy of Magic or the Dwarf Rune Forging Guild - I would close the Academy of Magic and replace it with rune equipment. 'Of course he won't say this publicly, but the people of the Sigmar Church have a very complicated attitude towards the runesmith: they feel that the runes are not magic, but they are more powerful than any magic, and the church cannot burn the dwarf runesmith at the stake."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Rune Forging: A unique enchanting technology of the dwarves, where magical energy is hammered into the metal through a rune hammer to form an eternal, irreversible magical effect.",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "runesmith runesmith runeforge binding magic"
+  ]
+}

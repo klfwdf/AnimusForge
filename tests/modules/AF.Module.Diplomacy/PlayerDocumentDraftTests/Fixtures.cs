@@ -66,4 +66,61 @@ namespace AnimusForge
         internal static int EstimateTokens(string value) => 0;
         internal static void RecordTokenStats(int input, int output, JArray messages, string text, string mode, string body) { }
     }
+
+    internal static class AnimusForgeModulePaths
+    {
+        internal static string GetModuleDataFilePath(string name)
+        {
+            string selected = Environment.GetEnvironmentVariable("AF_TEST_PACKAGE_ROOT");
+            if (!string.IsNullOrEmpty(selected)) return System.IO.Path.Combine(selected, name);
+            string dir = System.AppContext.BaseDirectory;
+            while (!string.IsNullOrEmpty(dir) && !System.IO.File.Exists(System.IO.Path.Combine(dir, "AnimusForge.sln")))
+            {
+                string parent = System.IO.Path.GetDirectoryName(dir);
+                if (parent == dir) break;
+                dir = parent;
+            }
+            string package = Environment.GetEnvironmentVariable("AF_TEST_PROMPT_LANGUAGE");
+            string file = package == "en" ? System.IO.Path.GetFileNameWithoutExtension(name) + ".en.json"
+                : name == "PromptComposerTexts.json" ? "PromptComposerTexts.zh-CN.json" : name;
+            return System.IO.Path.Combine(dir ?? "", name == "PromptComposerTexts.json"
+                ? "content/modules/AF.Module.Prompt/ModuleData" : "content/modules/AF.Module.Diplomacy/ModuleData", file);
+        }
+    }
+
+    internal static class DiplomacyUiLocalization
+    {
+        private static readonly System.Collections.Generic.Dictionary<string, string> Zh = LoadZh();
+        private static System.Collections.Generic.Dictionary<string, string> LoadZh()
+        {
+            var dict = new System.Collections.Generic.Dictionary<string, string>();
+            string dir = System.AppContext.BaseDirectory;
+            while (!string.IsNullOrEmpty(dir) && !System.IO.File.Exists(System.IO.Path.Combine(dir, "AnimusForge.sln")))
+            {
+                string parent = System.IO.Path.GetDirectoryName(dir);
+                if (parent == dir) break;
+                dir = parent;
+            }
+            string path = System.IO.Path.Combine(dir ?? "", "content/modules/AF.Module.Diplomacy/ModuleData/Languages/CNs/afdip_ui_strings-zh-CN.xml");
+            if (System.IO.File.Exists(path))
+            {
+                var doc = new System.Xml.XmlDocument();
+                doc.Load(path);
+                foreach (System.Xml.XmlNode el in doc.SelectNodes("//string"))
+                {
+                    if (el is System.Xml.XmlElement elem)
+                        dict[elem.GetAttribute("id")] = elem.GetAttribute("text");
+                }
+            }
+            return dict;
+        }
+
+        internal static string Text(string key, string fallback) => Zh.TryGetValue(key, out var val) ? val : fallback;
+        internal static string Format(string key, string fallback, params (string Name, object Value)[] vars)
+        {
+            string res = Text(key, fallback);
+            foreach (var (n, v) in vars) res = res.Replace("{" + n + "}", v?.ToString() ?? "");
+            return res;
+        }
+    }
 }

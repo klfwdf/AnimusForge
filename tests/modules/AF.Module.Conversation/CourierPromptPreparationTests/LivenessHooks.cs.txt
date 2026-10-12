@@ -18,7 +18,7 @@ namespace AnimusForge {
  internal sealed class MobileParty {internal static MobileParty MainParty=new();internal bool IsActive=true;}
  internal enum CourierStage {GeneratingReply,Returning,WaitingSender,Outbound}
  internal static class ShoutNetwork {internal static void RecordPrimaryRequestBodyForTokenStats(List<object> a,int b,string c){} }
- internal static class LlmRetryPrompt {internal static void ShowFailurePopup(string a,string b){Probe.MainOnly();} }
+ internal static class LlmRetryPrompt {internal static void ShowFailurePopup(string a,string b){Probe.MainOnly();} internal static void ShowLocalizedFailurePopup(string titleTemplate,string diagnostic,string titleSource=null,string reasonTemplate=null,string modelReply=null,string rawResponse=null,string reasonCode=null){Probe.MainOnly();} }
  internal sealed class PromptPackage {} internal sealed class InteractionEnvelope {} internal sealed class LegacyInteractionPipelinePorts {}
  internal interface ILlmGateway {} internal sealed class LegacyShoutNetworkGateway:ILlmGateway {}
  internal static class LegacyPromptPackageAdapter {internal static PromptPackage FromLegacyMessages(List<object> a,int b,string c)=>new();}
@@ -72,6 +72,13 @@ namespace AnimusForge {
 // @@COURIER_CURRENT_LEAVES@@
 using System;using System.Collections.Generic;using System.Collections.Concurrent;using System.Threading;using System.Threading.Tasks;using TaleWorlds.CampaignSystem;using TaleWorlds.CampaignSystem.Party;using AnimusForge.Refactor.Runtime;
 namespace AnimusForge;
+// Current-consumer reporting boundary; language/resource behavior is verified separately.
+internal static partial class LlmRetryPrompt
+{
+    internal static void ShowLocalizedFailurePopup(string titleTemplate, string diagnostic,
+        string titleSource = null, string reasonTemplate = null, string modelReply = null,
+        string rawResponse = null, string reasonCode = null) => NativeHost.Game();
+}
 public sealed partial class CourierDeliveryBehavior
 {
     private static CourierDeliveryBehavior Instance;
@@ -146,7 +153,7 @@ namespace AnimusForge
 
 namespace TaleWorlds.CampaignSystem.Party { public partial class MobileParty { public enum NavigationType { None, Default, Land, Naval, All } } }
 namespace TaleWorlds.CampaignSystem { public enum AiBehavior { Hold, GoToPoint, GoToSettlement, EscortParty, EngageParty, None, BesiegeSettlement,AssaultSettlement,RaidSettlement,DefendSettlement } }
-namespace AnimusForge { internal class ShipHull {internal string StringId="hull";internal int TotalCrewCapacity=10;internal float BaseSpeed=1;} internal class Ship {internal ShipHull ShipHull;internal object Name;internal bool IsUsedByQuest,IsInvulnerable;internal Ship(ShipHull hull){ShipHull=hull;}internal void SetName(object name){Name=name;}} internal partial class MBObjectManager {internal static MBObjectManager Instance=new();internal MBReadOnlyList<T> GetObjectTypeList<T>()=>new();} internal class MBReadOnlyList<T>:List<T>{} internal class TextObject {private readonly string _text;internal static TextObject GetEmpty()=>new("");internal TextObject(string text){_text=text;}public override string ToString()=>_text;}  }
+namespace AnimusForge { internal class ShipHull {internal string StringId="hull";internal int TotalCrewCapacity=10;internal float BaseSpeed=1;} internal class Ship {internal ShipHull ShipHull;internal object Name;internal bool IsUsedByQuest,IsInvulnerable;internal Ship(ShipHull hull){ShipHull=hull;}internal void SetName(object name){Name=name;}} internal partial class MBObjectManager {internal static MBObjectManager Instance=new();internal MBReadOnlyList<T> GetObjectTypeList<T>()=>new();} internal class MBReadOnlyList<T>:List<T>{} internal class TextObject {private string _text;internal static TextObject GetEmpty()=>new("");internal TextObject(string text){_text=text;}internal void SetTextVariable(string name,object value){_text=_text.Replace("{"+name+"}",value?.ToString()??"");}public override string ToString()=>_text;}  }
 
 namespace TaleWorlds.CampaignSystem.Party {
 public partial class MobileParty {

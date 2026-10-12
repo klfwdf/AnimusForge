@@ -1,0 +1,159 @@
+{
+  "Id": "rule_Karak_Hearn",
+  "Keywords": [
+    "Karakhorn_KH",
+    "Herne Castle_KH",
+    "Herne Fortress in Montenegro_KH",
+    "Herne Trade Fortress_KH",
+    "Herne Dwarf Territory_KH",
+    "King Herne_KH"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Karak Hurn is a dwarven commercial stronghold in the Black Mountains, ruled by King Orik Ranufson. This place controls the main land trade route between the Empire and Bretonnia, and is the most open trade center among the dwarf fortresses. Caravans traveling from north to south met here, making Herne's market one of the busiest inland markets in the old world."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Karak Hurn—the crossroads of our trade routes! King Orik Ranufson's name is as loud as the Elector Count of the Empire and the Duke of Bretonnia, for he controls what they all need: the only safe road across the Black Mountains. Herne's market can mark prices in fourteen languages, which is unique in the entire Dwarf Citadel Alliance."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Karak Hurn controls the Old World's most important inland trade routes. The Black Mountains separate the Empire from Bretonnia, and Herne Castle is situated right on the easiest mountain pass to cross. King Auric's transit taxes and commercial trade commissions made Herne one of the wealthiest of the dwarven strongholds."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        }
+      },
+      "Content": "Karak Hearn's economy revolves entirely around business services. The average annual traffic of Herne's trade routes exceeds 3,000 caravans, covering metal products and gunpowder from the Empire, wine and textiles from Bretonnia, weapons and tools from the dwarf fortress, and luxury goods from Tilea. The city's business travel service system is extremely developed - it has the largest cave hotel complex in the old world, which can accommodate more than a thousand caravans and their livestock at the same time. King Orric also issued the Herne Commercial Letter, which could be exchanged for gold or silver of equivalent value at the Herne Market. It was one of the earliest commercial bills in the Old World."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Herne is the most suitable place for women to display their business talents among the dwarf castles. King Orric is very pragmatic - he doesn't care if you are a man or a woman as long as you can continue to create commercial profits. I manage the largest inn alliance in the city, and my name is known to both the Imperial Elector Count's caravan steward and the Duke of Bretonnia's wine merchant."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null
+      },
+      "Content": "Our family has managed trade route security for King Orric for generations - this is not forging or mining, but escorting caravans on mountain roads. The family has produced seventeen warriors who died in ambush on the mountain road. Behind the commercial prosperity of Hearne is the safe trade road paved with blood by our people. This is a price that outsiders cannot see."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Herne's market is the most noisy yet orderly place I have ever seen. Merchants from different countries debated prices here, and dwarf bookkeepers quickly recorded every transaction on a slate. I heard Imperial Mandarin, Bretonnian French, and three different dwarven dialects all at once at the ale stalls of the bazaar—a place that seemed to belong to everyone and not quite anyone."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Hearn's business opportunity lay in the transit trade. You don't need to produce anything yourself - furs from the north of the Empire are in short supply in Bretonnia, Bretonnia's wines sell for high prices in the Empire, and buyers and sellers need to meet at Herne's marketplace. Earning the middle price difference is the specialty of Hearn merchants."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Karak Hurn is a dwarven trading stronghold in the Black Mountains that controls the trade routes between the Empire and Bretonnia. It is ruled by King Orric Lanufson.",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Karakhun Black Mountain Dwarf Trade Fortress Trade Route Hub"
+  ]
+}

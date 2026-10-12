@@ -1,0 +1,97 @@
+{
+  "Id": "rule_Rhodri",
+  "Keywords": [
+    "Rodri",
+    "Laneno Hills",
+    "Iron ore",
+    "Red clay"
+  ],
+  "RagShortTexts": [
+    "The village of Rodri is named after the iron-rich red soil of the Lenno Hills."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Rodri is a village near Vilburg, Tarly, which takes its name from the iron-rich red soil of the Leinno Hills. The mines here supply iron ore to the many forges of the Kingdom of Vlandia, creating weapons and armor found throughout the kingdom."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "In Rodri's place, the ground is red and the soil is full of iron. The ore dug out of the mines in the Lionno Hills is of high quality. Vlandia doesn’t know how many swords and armors are made of materials dug out from here. The garrison of Fort Tarly guards the mines in this area, which is the lifeblood of the country."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "townsfolk"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Rodri's iron ore supplies several forges in Vlandia. The arms dealers in Palawind would go to Rodri before every war, and the mine owners would raise their prices and they would accept it. There is no way, the iron dug out of the red soil of Lenno is better for sword making than elsewhere."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "blacksmith"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "I have been working as an ironsmith all my life, and I can recognize Rodri’s ore when it enters the furnace. The iron from the red soil of the Lionno Hills has few impurities, and the resulting sword blade is hard and tough. Many of the materials for the plate armor worn by Vlandia's Banner Knights were dug out of the red soil pits in Rodri."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Rodri",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": "Tarly Vilburg",
+      "Kind": "bound_settlement_name",
+      "TargetId": "__bound_settlement__",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

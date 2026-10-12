@@ -33,19 +33,22 @@ $new = ([datetime]'2021-01-01T00:00:00Z').ToUniversalTime()
 $relative = 'PlayerExports\worldbook\data.json'
 Put $stage $relative 'default-new' $new
 Put $target $relative 'player-old' $old
-foreach ($name in @('CustomPrompts\keep.json', 'ModuleData\TerminalSettings.json', 'Logs\ModelDropdownCache.json', 'Recovery\private.json')) {
+foreach ($name in @('CustomPrompts\keep.json', 'ModuleData\TerminalSettings.json', 'Logs\ModelDropdownCache.json', 'Configs\TerminalSettings.json', 'Cache\ModelDropdownCache.json', 'Recovery\private.json')) {
     Put $stage $name 'default' $new
     Put $target $name '{broken-player-content' $old
 }
 Put $target 'PlayerExports\extra\private.json' 'EXTRA' $new
+Put $stage 'ModuleData\Defaults\CustomPrompts\PlayerCustomPromptRule.json' 'new-fixed-default' $new
+Put $target 'ModuleData\Defaults\CustomPrompts\PlayerCustomPromptRule.json' 'old-fixed-default' $old
 $sourceHashes = @{}
 foreach ($file in Get-ChildItem -LiteralPath $stage -File -Recurse) { $sourceHashes[$file.FullName] = (Get-FileHash -LiteralPath $file.FullName).Hash }
 Invoke-ManagedStageDeployment -StageModuleDir $stage -TargetModuleDir $target -ModulesDir $modules
 if ([IO.File]::ReadAllText((Join-Path $target $relative)) -ne 'default-new' -or [IO.File]::GetLastWriteTimeUtc((Join-Path $target $relative)) -ne $new) { throw 'Newer default or source timestamp not installed.' }
-foreach ($name in @('CustomPrompts\keep.json', 'ModuleData\TerminalSettings.json', 'Logs\ModelDropdownCache.json', 'Recovery\private.json')) {
+foreach ($name in @('CustomPrompts\keep.json', 'ModuleData\TerminalSettings.json', 'Logs\ModelDropdownCache.json', 'Configs\TerminalSettings.json', 'Cache\ModelDropdownCache.json', 'Recovery\private.json')) {
     if ([IO.File]::ReadAllText((Join-Path $target $name)) -ne '{broken-player-content') { throw "Player file overwritten: $name" }
 }
 if (-not (Test-Path -LiteralPath $recovery) -or (Get-ChildItem -LiteralPath $fakeUser -Force).Count -ne 0) { throw 'Recovery did not stay in Modules.' }
+if ([IO.File]::ReadAllText((Join-Path $target 'ModuleData\Defaults\CustomPrompts\PlayerCustomPromptRule.json')) -ne 'new-fixed-default') { throw 'Fixed defaults failed to update independently of user prompts.' }
 $count = @(Get-ChildItem -LiteralPath $recovery -Directory).Count
 Invoke-ManagedStageDeployment -StageModuleDir $stage -TargetModuleDir $target -ModulesDir $modules
 if (@(Get-ChildItem -LiteralPath $recovery -Directory).Count -ne $count) { throw 'No-op created a recovery record.' }
@@ -109,4 +112,4 @@ New-Item -ItemType Directory -Path $interrupted | Out-Null
 [IO.File]::WriteAllText((Join-Path $interrupted 'activating'), 'synthetic')
 try { Invoke-ManagedStageDeployment -StageModuleDir $stage -TargetModuleDir $target -ModulesDir $modules; throw 'Expected interruption rejection.' }
 catch { if (-not $_.Exception.Message.Contains('interrupted deployment')) { throw } }
-Write-Output 'PASS module storage deploy newerDefault=1 newerPlayer=1 equalTime=1 missing=1 extra=1 protected=4 noop=1 missingAppData=1 invalidAppData=1 rollbackBytesTime=1 sameBytesTimeRollback=1 stageUnchanged=1 reparse=1 readonly=1 interruption=1'
+Write-Output 'PASS module storage deploy newerDefault=1 newerPlayer=1 equalTime=1 missing=1 extra=1 protected=6 noop=1 missingAppData=1 invalidAppData=1 rollbackBytesTime=1 sameBytesTimeRollback=1 stageUnchanged=1 reparse=1 readonly=1 interruption=1'

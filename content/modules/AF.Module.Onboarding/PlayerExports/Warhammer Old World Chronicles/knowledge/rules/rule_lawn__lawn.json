@@ -1,0 +1,213 @@
+{
+  "Id": "rule_lawn",
+  "Keywords": [
+    "Lawn",
+    "Lawn Leo Cornish",
+    "king",
+    "lion heart",
+    "grail king",
+    "Corona royal family",
+    "Bretonnia Monarch",
+    "leo cornish family",
+    "Lionheart",
+    "jousting champion",
+    "Holy Grail Trial",
+    "knight king"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Raun Leocornwall is the current king of Bretonnia, a warrior-lord who has truly drank from the Holy Grail, known as the Lionheart for his lion-like prowess on the battlefield and his impartial judgment in the palace. He rode his purebred Bretonnia steed like a golden storm on the battlefield, and his coronation ceremony was recognized by the Sisters of the Holy Grail as the most favored by the goddess in the past three hundred years."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "King Raun - Lionheart - our King, the greatest gift the Goddess ever gave to Bretonnia. He is not a weakling who came to the throne through inheritance, he is a warrior who won the crown with a spear and a Holy Grail. Raun was born in the Duke of Curona family. When he was young, he showed a completely different temperament from other noble children - he disdained the intrigues and flattery of the court, but rode his horse alone throughout Bretonnia, challenging the strongest knights in the tourneys of each duchy. It is said that in the finals of the tournament in the Duchy of Rushvax, he withstood twelve consecutive spear attacks by the local champion. Finally, when his spear shattered on the thirteenth time, he drew his sword and jumped on the opponent's horse and knocked the opponent to the ground - thus earning the name Lionheart. But his real greatness lies not in the victory in the tournament, but in the quest for the Holy Grail: He wandered alone in the wilderness for a whole year in search of the Holy Grail. The goddess appeared to him on the edge of a cliff on the top of Baldero Mountain and granted him the drink of the Holy Grail. The first thing he did after becoming king was not to strengthen his own fiefdom of Curona, but to convene a council of dukes and announce a series of reforms: he lowered some of the taxes on serfs to quell the unrest in border villages, he increased the kingdom's cavalry establishment and required each duke to provide more knights to the king every year, and he restored formal diplomatic relations with the empire - but all this was predicated on his own supreme prestige as a Grail Knight. Raun was not a perfect king - he trusted his knights too much, sometimes underestimated the greenskin's strength, and occasionally passed judgment too harshly in anger - but he was a true king, and true kings were increasingly rare in the Old World."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Understanding King Raun within the power structure of Bretonnia means understanding the paradox: he is the strongest man in the kingdom, but his strength is based on self-restraint. Any Duke knows that if Lawn decides to lead his Royal Knights to mow down a disobedient duchy, he has the ability to do so - he is a Grail Knight and most Dukes are not. But Lawn never did this, because he knew better than anyone that once the king used force against his vassals, the chain of chivalry's oath would be broken. Raun's strategy of governing the country is to lead by example rather than pressure others: he always rushes to the front of the queue on the battlefield, not to show off but to tell other dukes - I will let your soldiers die for you first, and I will not hide behind the army. He never interrupted others in the Duke's Council. Even if the opponents were saying some stupid nonsense, he would wait for the other party to finish speaking and then refute them one by one in a calm voice - a demeanor that made the opponents feel like a naughty schoolboy being corrected by a teacher. For lords who wanted to make a difference in Bretonnian politics, studying how King Raun employed people was a must: he would appoint a duke in the area in which he was best at it - the Duke of Baldreau in charge of mountain defense, the Duke of Gironde in charge of naval construction, the Duke of Aquitaine in charge of the literary affairs of the kingdom - which both exploited their expertise and reduced their incentives to rebel by conferring honors."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 100
+        },
+        "IdentityIds": null
+      },
+      "Content": "The reign of Raun Leocornwall represents an important evolution in Bretonnian kingship over recent centuries. From a historical and political perspective, Raun's accession to the throne coincided with Bretonnia facing a triple structural crisis: first, the frequency of greenskin activities on the kingdom's eastern border reached a new high since Vogt's era, and the defense system at the Gray Mountain Pass was in urgent need of comprehensive renovation; second, the empire's revival under Karl Franz created a hidden geopolitical pressure - an empire that was too powerful made some Bretonnia The duke began to question the traditional non-alignment policy; thirdly, reformist nobles emerged within the kingdom, and a group of young dukes represented by Duke Palavon believed that Bretonnia's military system relied too much on knightly charges. Raun's response reflected his political wisdom: regarding the greenskin issue, he chose active defense, regarding the empire issue, he chose dignity and intimacy, and regarding the reformist nobles, he did not openly veto the reform but personally led them to the front line of Baldello Pass to see with his own eyes the decisive advantage of the knight's charge. This leadership style is known as Lion-Hearted Leadership by Bretonnian historians."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "King Lawn displayed an almost puzzling integrity in his treatment of Bretonnia's female nobility - he never used his Grail Knight status to force any noble woman to accept a political marriage, which was extremely rare among the kings of Bretonnia. When I was received as a widow in the court of Curona, Raun never conveyed greetings through the steward but asked me about the domain in person. This was extremely rare in the court of Bretonnia, because most male kings would instinctively turn their eyes to the male agents behind the noble widows. Raun's upbringing comes from a deeper level - he came back from a solo spiritual communion with the Lady of the Lake during the Trials of the Holy Grail. There is an unspeakable but real trace of spirituality in the attitude of a man who once had a silent gaze with the goddess after his return to the mortal world - this is why Raun has a natural understanding of ladies and nuns that is unique among the male rulers of Bretonnia."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "There is a core dogma in the tradition of the Leo Cornish family that is rarely understood by the outside world - the royal family is not a bloodline that is superior to others, but a bloodline that is a servant. Raun repeatedly emphasized when delivering family instructions: The crown is not a decoration, it is a sword you borrowed from the goddess to serve Bretonnia for life. The greatest lesson our family, and the other ducal families, learned from the reign of House Leo Cornwall was that in Bretonnia, truly lasting family authority could not be built by intimidation, which would be rebounded exponentially at the slightest hint of vulnerability on the part of the intimidator - it could only be accrued through continual service, practiced to a higher standard each generation. The reason why Raun became the most popular king in three hundred years was not because he won a certain battle that illuminated the annals of history, but because he rode between the duchies every winter in peacetime, organized road construction projects across the duchies in the spring, and allocated relief from the royal granary when the serf villages were wiped out by the plague. These trivial administrative details never entered the chronicles, but were sung repeatedly in serf ballads oral for generations, forming a stronger public base for the Leo Cornish royal family than the coronation ceremony."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "King Raun is one of the rare rulers in Wanderer lore to be portrayed positively rather than ridiculed. Those of us who make our living on the masterless roads between duchies have a reputation for unkindness in our assessment of royal power - but the word of mouth about Lawn is this: he owes no military pay. The Knights of the King of Bretonnia are the only army in the Old World West that has never been in arrears with their samurai pay in the past twenty years, and arrears of military pay in Bretonnia are the default habit of all dukes. I heard a story about Raun among Arabi Jihad veterans: When he was wandering during the Holy Grail Trials, he slept with an unknown serf on a rainy night. The serf did not know his identity, and complained beside the campfire that 'the princes in those palaces will never know what it means for the serfs' harvests to be destroyed in the autumn rain. I don’t know whether this rumor is true or not, but I have seen the way the serfs in that village took the initiative to raise the hens above their heads when the king passed by and offered them to him - that expression was not flattery under fear, but true gratitude, which was the rarest sight in the old world."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "King Raun's economic policies are a key variable that those of us doing business in Bretonnia cannot ignore. Raun was not the type of monarch to seek to use his royal power to intervene directly in the market - he was all too aware that the Bretonnian nobility would resist any move to increase royal economic control - but his indirect economic influence was greatly exerted through the Grail Sisters' charter system and the economic circle of the Holy Lake Pilgrimage. While lowering serf taxes, Raun also increased the concession fees for the development of public forest lands in the dukedom. This was actually an ingenious fiscal reorganization that transferred the kingdom's fiscal revenue from serf taxes to ecological resource taxes without stimulating the backlash of the nobility. Under Raun's rule, the royal caravan obtained the privilege of being exempted from tolls in the fourteen duchies - this was not achieved by legal means, but a gentlemen's agreement verbally concluded between Raun and each duke in private hunting or jousting occasions. For merchants who trade across the duchy, following the royal caravan means free passage throughout the territory. The value of this privilege far exceeds any trade license fee."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Leo Cornwall - the royal family of Bretonnia, the Duke of Curona from which King Lawn was born",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Lawn Lawn Leo King of Cornwall"
+  ]
+}

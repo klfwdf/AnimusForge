@@ -1,0 +1,23 @@
+{
+  "Id": "rule_Sack_of_Baghdad_and_Abbasid_Fall",
+  "Keywords": [
+    "Sack of Baghdad",
+    "Abbasid Caliphate",
+    "Fall of Baghdad 1258",
+    "Hulagu Khan",
+    "House of Wisdom",
+    "Al-Mustasim"
+  ],
+  "RagShortTexts": [
+    "The Mongol sack of Baghdad in 1258 extinguished the five-hundred-year-old Abbasid Caliphate, shattering the traditional spiritual center of the Islamic world."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "In February 1258, the ancient city of Baghdad fell to the besieging tumens of Hulagu Khan. The ensuing sack brought an apocalyptic end to the Abbasid Caliphate, which had stood since 750 as the universal spiritual and intellectual capital of the Islamic world. The Grand Library of Baghdad (the House of Wisdom) was destroyed, its precious manuscripts hurled into the Tigris, while Caliph Al-Musta'sim was rolled in carpets and trampled by Mongol horses to avoid shedding royal blood.\n\nThe fall of Baghdad sent profound shockwaves throughout the Mediterranean and Asia. For the first time in five centuries, Sunni Islam was left without a recognized caliphal seat, creating a crisis of religious legitimacy that ended only when the Mamluk Sultanate established a shadow Abbasid Caliphate in Cairo in 1261."
+    }
+  ],
+  "TextMappings": []
+}

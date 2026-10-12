@@ -1,0 +1,207 @@
+{
+  "Id": "rule_Bretonnia_general_name",
+  "Keywords": [
+    "Kingdom of Bretonnia",
+    "Bretonnia official country name",
+    "Lake Holy Kingdom",
+    "Fourteenth Duchy",
+    "Holy Grail Court",
+    "Throne of Curona"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Bretonnia - officially known as the \"Kingdom of Bretonnia\" or \"Bretonnia Under the Protection of the Lake God\" - is a feudal knightly kingdom in the west of the Old World, founded by Gilles le Breton, the first king chosen by the Lake Goddess. The kingdom is made up of fourteen duchies, and the king rules from his throne in Curona through the authority of the Holy Grail Church of the Lake."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Our kingdom has only one name - Bretonnia, the sacred anointed land of the Lady of the Lake. Our King is not an imperial emperor chosen by money and votes - he is a man chosen by the goddess herself, drank from the Holy Grail Lake, and crowned by the Fey Witch herself in the Cathedral of Curona. The fourteen duchies - from Curona in the north to Aquitaine in the south, from Geelong in the east to Bordeaux in the west - each have their own ancient family crests and millennia-old heritage. We are not a hybrid pieced together by business contracts and parliamentary votes like the Empire - we are a family network woven by the goddess with chivalry as a link. Every duke is a distant relative of the royal family, and every knight is the king's sword."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Bretonnia's state body is positioned in international law as a feudal monarchy with the Holy Grail Church of the Lake as its spiritual authority. Unlike the elective monarchy of the Empire, succession to the throne of Bretonnia must meet two conditions simultaneously: majority approval of the Council of Dukes and confirmation by an oracle from the Fey Witches on behalf of the goddess. Bretonnia is the only country in the Old World where the divine power can directly depose the secular monarch - the Fey Witch has the ultimate power to declare that the king has \"lost the favor of the goddess\", and once such an announcement is made, the oaths of allegiance of all knights are automatically lifted."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "The official diplomatic title of the Kingdom of Bretonnia has changed many times throughout history. The era of Gilles was initially called \"the tribal alliance of Gilles and his comrades\", but around the 100th year of the Bretonnia Annals it was officially identified as \"the Kingdom of Bretonnia under the protection of the Holy Grail of the Lake\". The official signature format of the King of Bretonnia in international treaties is \"King of Bretonnia, Duke of Curona, Supreme Guard of the Lake God XX\" - this title sequence reflects the three pillars of Bretonnia's kingship: the unified sovereignty of the kingdom (King), core territory (Duke of Curona) and theocratic legitimacy (Supreme Guard of the Lake God). The system of the Fourteen Dukedoms was formed after the death of Gilles by the twelve original Grail Knights each taking a territory and adding Curona (kingdom) and Mousilon (deposed)."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Women are completely absent from Bretonnia's official title - but Bretonnia's real diplomatic power is often wielded by women in the banquet halls and jousting arena auditoriums. The nuns and seers of the Church of the Holy Grail of the Lake wield enormous behind-the-scenes influence over succession and declarations of war, an influence that has never been acknowledged in any official title. The handkerchief thrown by a Bretonnian noblewoman at a tourney may have been the most important diplomatic act of the day - but it will never appear in the annals of the kingdom."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The title structure of Bretonnia was crucial to my family's political positioning. As one of the Fourteenth Dukes, we occupy a fixed position in the kingdom's formal pecking order - and this position determines priority in royal ceremonies, knightly jousts and the reception of foreign envoys. The rise and fall of ducal rank is the most subtle change in Bretonnian politics - it usually occurs over the span of two generations, gradually changed by the accumulated achievements and war contributions of many tourneys."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "As you travel through the Bretonnian countryside you will quickly discover that serfs have completely different names for their country than nobles. Nobles said \"kingdom\" or \"Bretonnia\"; serfs said \"this land\" or \"lord's territory\". Most serfs went their entire lives without knowing where the borders of their kingdom were - they only knew the distance from their village to the nearest castle."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The name Bretonnia had unique commercial value in Old World trade. The label \"Made in Bretonnia\" represents a far premium over Imperial products of the same quality in the Empire's high-end wine and spirits market - not because the quality is actually higher but because the Imperial nobles are willing to pay a premium for the knightly cultural atmosphere of Bretonnia. But this name premium could also come back to hurt trade in times of war—when diplomatic relations between Bretonnia and the Empire were strained, Bretonnia goods were boycotted by patriotic consumers in the Imperial market."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Kingdom of Bretonnia - a feudal knightly kingdom under the protection of the Lake God, the most powerful heavy cavalry country in the old world",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Bretonnia's formal name and political status"
+  ]
+}

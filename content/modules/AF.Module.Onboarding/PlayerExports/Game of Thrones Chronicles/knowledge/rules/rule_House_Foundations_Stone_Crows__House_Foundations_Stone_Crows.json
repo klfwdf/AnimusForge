@@ -1,0 +1,153 @@
+{
+  "Id": "rule_House_Foundations_Stone_Crows",
+  "Keywords": [
+    "Stone Crows"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Stone Crow tribe lives in the Mingyue Mountains in the valley, and uses the black basalt crow as their tribal symbol. Shaga, the son of Shaga, is one of the most well-known leaders. He is physically strong and direct in temperament. He wins followers with trophies and personal bravery. After mountain clans obtain steel weapons from outsiders, the old balance of power will quickly change; a good ax will not only increase the number of kills, but may also increase the reputation of the leader. The foundations of the Stone Crow tribe are still kinship, common camps, mountain roads, and warlike and peaceful relationships with neighboring clans."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "hilltribesmen"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "peasant",
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Stonecrow warriors respect leaders who dare to swing their axes in front and who are willing to share their meat fairly. Shaga's rudeness is laughable in the ears of southerners, but in the eyes of mountain people, it is more honest than the roundabout court talk."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vale"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "merchant",
+          "wanderer",
+          "notable"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Valley merchants regard the Stone Crow Tribe as a threat to the mountain roads, and would rather pay more for their guards than meet them in the narrow valley. But experienced guides know that gifts, messages and knowledge of clan taboos are sometimes safer than a band of knights in shining armor."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vale"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "soldier",
+          "scholar"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The nobles of the Vale feared that steel weapons would make the Stone Crows harder to suppress. The lack of equipment in the past does not mean that the mountain people lacked fighting spirit; when the technological gap narrows, the old arrogance may be costly."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "merchant"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Stone Crows The Stone Crow Tribe is an important clan in the Mingyue Mountains. Shaga and other leaders use their bravery, family prestige, and new weapons to expand the tribe's power. The family crest is just a facade, the real weight of the family is whether they can protect their fiefdom, honor their engagements, and rally people in times of crisis."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Stone Crows The Stone Crow Tribe is an important clan in the Mingyue Mountains. Shaga and other leaders use their bravery, family prestige, and new weapons to expand the tribe's power. Family reputation ultimately comes down to specific people and specific orders."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "artisan",
+          "priest"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Stone Crows The Stone Crow Tribe is an important clan in the Mingyue Mountains. Shaga and other leaders use their bravery, family prestige, and new weapons to expand the tribe's power. The ancestors of a family can be praised, or they can become a shackles for future generations; the older the bloodline, the more old debts the successors are required to bear."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "peasant",
+          "villager"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Entry Stone Crows The Stone Crow Tribe is an important clan in the Mingyue Mountains. Shaga and other leaders use their bravery, family prestige, and new weapons to expand the tribe's power. They may not remember the complete family tree, but they remember which family opened a granary in the winter and which family drove the refugees back into the snow."
+    }
+  ],
+  "TextMappings": [],
+  "RagShortTexts": [
+    "Stone Crows: The Stone Crow Tribe is an important clan in the Mingyue Mountains. Shaga and other leaders use their bravery, family prestige, and new weapons to expand the tribe's power."
+  ]
+}

@@ -1,0 +1,213 @@
+{
+  "Id": "rule_Chaos_Culture_Preference",
+  "Keywords": [
+    "Chaos culture",
+    "Chaos preferences",
+    "Strength conquers",
+    "God bless",
+    "Chaos Culture Road to Glory",
+    "variation aesthetics",
+    "Senses to the extreme",
+    "The strong rule",
+    "Chaos Culture Chaos Wastes",
+    "Norsca",
+    "Chaos God",
+    "Chaos culture ascends to magic"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The core driving force of chaos culture is the infinite thirst for power and the complete negation of civilized order. In the tribal societies of Chaos Wastes and Norsca, people worship the four gods of Chaos and regard this as their highest goal in life: they love to crush the enemy's defenses with pure violence, and regard the destruction of the cities and temples in the south as the best sacrifice to the gods. They long for the blessings of the gods - even if this blessing means physical mutation, scales, horns, and extra limbs will be displayed as signs of divine grace. Every Chaos Warrior is walking the road to glory, constantly challenging more powerful monsters and heroes, hoping to one day escape from his mortal body and be promoted to a Demon Prince."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "chaos_culture"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Southerners use the word weak to describe us, but they don't understand at all - we choose the path of the gods, which is the only true law of survival! Among us, the followers of Khorne love the roar of clashing weapons and the pure fury of killing; the followers of Tzeentch are obsessed with weaving complex conspiracies and collecting forbidden secrets; the followers of Nurgle are reborn in despair and use the toughest rotten bodies to show what immortality is; the favorites of Slaanesh refine their martial arts to the extreme and taste the pinnacle of senses that mortals cannot understand at the border of pain and pleasure. Our flesh becomes stronger through mutation - the scales block knives, the horns break armor, and the third arm can stab the enemy through the heart from behind when he thinks he is safe! Every challenge to a more powerful opponent is a sacrifice to the gods, and every victory brings us one step closer to becoming a demon. While the Southerners tremble behind their walls, we have skinned the mutated beasts of the Chaos Wastes and dedicated them to the throne of God with our bare hands."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Chaos Horde's combat preferences determine their tactical characteristics - a key to understanding the threat from the north. The Chaos Legion does not like defensive battles or prolonged attrition. They fanatically pursue surprise, breakthrough and crushing: tearing apart the battle line with the heavy charge of the Chaos Knight, trampling the enemy's core with the Chaos Behemoth, and decapitating the enemy commander in single combat with the powerful Chaos Champion. This preference means that Chaos armies are unstoppable when morale is high, but once the offensive is thwarted and the vanguard is blocked, internal competition between different warbands can lead to internal strife. Norsca's dragonship raids extend this preference to the sea - they do not occupy land, but only harvest loot, honor and heads dedicated to the gods."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "The preference system of a chaotic society can be precisely analyzed according to the divisions between the four gods. The followers of Khorne adhere to the simplest and purest aesthetics of strength - they hate magic and trickery, and only respect bloody victory in frontal battles. Every skull is a ladder dedicated to the Brass Throne; their social structure is completely militarized, and the internal ranks of each warband are arranged based on the number of kills rather than birth. The preferences of followers of Tzeentch lie at the other end of the spectrum - they love a combination of knowledge and subterfuge, believing that a well-planned conspiracy is worth more than a hundred frontal battles, and mutations in their context often manifest themselves as extra eyes or twisted thinking organs, used to discern chains of cause and effect beyond the comprehension of mortals. Followers of Nurgle regard disease and decay as proof of divine love and the cycle of life - they prefer a slow and unstoppable advancement style, using plague to consume enemy supply lines, using their own indestructible durability to drag down all opponents who try to resist, and among the four armies of Chaos, they value group cohesion the most. Cultists of Slaanesh seek the absolute perfection of sense and skill - whether it is the perfect arc of a sword or the experience of pain and ecstasy. They regard every movement in the army as an artistic performance, and the mutations are carefully arranged into symmetrical and intoxicating patterns in their aesthetic. The underlying law of the entire chaotic society is Darwinian survival of the fittest - the weak do not deserve to survive, kindness is betrayal, and compromise is death. The cruelty of this law is also the inner driving force of the Chaos army's endless march south: only in eternal conquest can the strong prove their worth."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The role of women in the Chaos Horde is very different from how the noble women of the South are imagined. The shieldmaidens of Norsca—female warriors who have proven themselves as equal to any male in combat—are entitled to the same path to glory as male warriors. Chaos also measures everything not by gender but by strength: yes, if a woman kills a Chaos Champion in a duel, she can take his armor, his weapons, his warband, and his Mark of the Gods. In the border territories under my jurisdiction, I have witnessed with my own eyes the ferocity of the Norsca female raiders in beach battles - they can kill as fast as any man, because in the chaotic judgment system, there are no men and women, only strong and weak."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "As the clan leader who has guarded the Kislev border for generations, my understanding of Chaos culture comes not from books but from scars and crossed-out names on family trees. The Chaos Horde's worship of strength means they are never internally unstable - a sufficiently powerful Chaos Champion might command three thousand men today, but if he loses a duel tomorrow, those three thousand will follow the new victor. Our clan has been exploiting this for hundreds of years: by passing false information between Chaos warbands and deliberately making one strong man feel insulted by another, we have succeeded in causing at least four large armies that were originally going to unite to go south to disband themselves before setting off. This is not conspiracy, this is survival."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The most important lesson I learned during my three years of wandering on the Norsca Peninsula is: Chaos worship is not ignorance, it is the only reasonable philosophy of survival in that land. When your crops are withered by the wind of chaos every three years, and when all life around you may mutate unpredictably at any time, you will also begin to believe that only power can protect you - because the pages of law cannot stop the fangs of mutated mammoths, and the foundation of the city wall may turn into quicksand after a land dream. The civilized people of the South have the luxury of talking about morality and kindness only because they have never survived a winter on the edge of the Chaos Wastes."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Judging from commercial intelligence on the northern trade routes of the Old World, the preferences of the Chaos tribes profoundly influenced the frontier markets from Kislev to the Empire. Norsca raiders have a fanatical demand for certain southern goods - especially Imperial-forged steel and Dwarf-forged weapons - because while they worship pure violence, they fully understand that good weapons equal greater violence. In years of peace, Kislev traders barter with the Norsca clans at the border crossings; in years of raiding, these same clans trade the gold and silver they loot in the south for the twisted iron and mutated war beasts of the north. This creates a paradoxical market: between Chaos and Civilization, war and trade are never mutually exclusive options, but two sides of the same coin."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "The four gods of Chaos - Khorne (violence/war), Tzeentch (conspiracy/change), Nurgle (plague/tenacity), and Slaanesh (senses/ultimate).",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Chaotic social customs and cultural traditions"
+  ]
+}

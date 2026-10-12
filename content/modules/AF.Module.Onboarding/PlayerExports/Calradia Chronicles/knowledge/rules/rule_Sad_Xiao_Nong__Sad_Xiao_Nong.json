@@ -1,0 +1,134 @@
+{
+  "Id": "rule_Sad_Xiao_Nong",
+  "Keywords": [
+    "Sad Xiao Nong",
+    "Goddess Xiao Nong",
+    "Xiao Nong"
+  ],
+  "RagShortTexts": [
+    "Chaunon is the City of Sorrow in Battania."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": [
+          "town_b4"
+        ],
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "We Xiaonong people are different from other places. We live in a city built in songs. Growing up, we have seen Lake Tavar when we opened our eyes, and Algana's cries when we closed our eyes. We have heard that story since childhood - Algana cried on the top of the tower for her man who died in the battle, and her cry was heard across the lake. As a result, her man's reflection appeared in the lake for a day and a night, and then disappeared, and she herself disappeared with it. Foreigners feel horrified when they hear this, but we don’t. That is the story of our city, as real as the stone in front of our house. Every year at the Spring Equinox, those in the family who have something to do will go to the lake to put out lanterns. When the lanterns float far away, they will shed their tears and let the next year go on. Iron is smelted well here, and the iron-gray water supports the iron-gray city. The surrounding villages produce hardwood and iron ore, and Xiao Nong's blacksmith shop jingles from morning to night, producing swords and axes that no other place in Battania can match. People from Battania from out of town come to buy knives and say that the things we hit are well quenched and have sharp edges that are not broken. This is related to Algana’s tears - they say that the knives quenched by the water of Xiao Nong are different. Probably so. Anyway, we have been working hard all our lives and don’t think there is anything mysterious about it. If I have to say there is something special about it, it is that the water in Lake Tavar is heavier than elsewhere. It is bitter to boil and make tea, but it is suitable for quenching. The old men in the city occasionally talked about King Ariel's disappearance. They said Ariel disappeared in the old forest to the north, and there was no one alive or dead. Not long after that incident, Caladog came up, a foreign kid. Fiona fought all over the place without any opponent, so the old High King gave him his daughter. We Xiaonong people can’t say we like or dislike this matter. Anyway, after he became the High King, there were fewer battles in the north than before, and Xiaonong’s caravan was able to run to Marunas with peace of mind. As for whether Lao Wang's soul is still wandering in the woods, that is a matter for the older generation to worry about. We blacksmiths only care about quenching the iron, not the throne."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Chaunon is the City of Sorrows and the Sword Forge of Battania. The story of Algana has been sung from generation to generation and is a common memory among the people of Battania - we are silent every time we listen to the old man singing this part by the campfire and hear the reflection on the lake disappearing day and night. It was Battania-style sadness: no howling, no roaring, dull in the heart, like the water of Taivar Lake, dark on the surface and full of undercurrents underneath. To us, Shonon represents the two hardest things in Battania: tears and iron. The tears belong to Algana, and the iron belongs to the blacksmith shop of Chaunon. The best two-handed swords in all of Battania are tempered in this sad place, as if the iron ore itself was soaked with something indescribable. Sturgia's plundering teams used to come often, but then they came less often - because the soldiers trained by Xiao Nongye had faster knives than them. On the contrary, the forest where the old High King Ariel disappeared is near Chaunon, which makes us feel heartbroken when we think about it. Caladog ascended the throne from beside Chaunon, the point where Battania passed from the fall of the old king to the rise of the new. A piece of sad water, a piece of hard iron, a city."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null
+      },
+      "Content": "Xiaonong is a delicate place. Each of us chiefs knows in our hearts that the best swords in Battania come from Shawnon, and seven out of ten two-handed swords in the hands of our personal guards are engraved with the mark of the Shawnon blacksmith. We don’t talk about the legend of Algana every day, but the legend is true, the tower is real, the lake is real, and it is also true that Xiaonong people put lanterns by the lake every spring equinox. The people in that place were different from other places, they had something in their eyes, probably because people who grew up listening to Algana's stories saw everything differently. As for the disappearance of old High King Ariel, some of us kept silent about it and pondered it in our hearts. The missing old Lin was not far from Xiaonong. We all still remember how Caladog got there after the old king disappeared - he was a foreign boy who was adopted by the Grufendoc family. After defeating everyone on Fiona, the old High King married his daughter to him. Xiao Nong saw this from beginning to end. We don’t know if there is any trace of Pharaoh Wang in the lake at Chaunon, but we do know that Battania has changed a lot since then. Some people followed Caladog, while others were still wondering where Lao Wang was going. No matter what, Xiaonong is still Xiaonong, and it is still that sad city. It emits white smoke when it is quenched, just like Algana's soul. She was still beating her iron, and the white smoke that came out during the quenching process was like Algana's soul, and no one could disrespect her."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": [
+          "clan_battania_2"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": [
+          "hero:lord_5_3"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Don’t tell me about Xiao Nong. Chaunon is the city of sorrow, and to me it is my brother’s city. Ariel disappeared in the old forest not far from her. No one could be seen alive or dead. The forest could be seen from Chaunon's tower, and the water of Lake Tavar flowed through the edge of the forest. Every time I go to Xiaonong, I feel like my brother’s face will be reflected on the lake at any time. Algana's reflection appeared for a day and then disappeared, but my brother's reflection has not appeared yet. Caladog sat on the High Throne, my niece was married to him, Battania now obeyed his command, and no one asked again about Ariel's whereabouts. Only Xiao Nong still remembers it. I never go to Chaunon to see its iron or its walls. I went to stand by the lake and asked in a low voice: Do you know? The lake did not answer. The tinkle of the blacksmith's shop still rings, just as it did then."
+    },
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Xiao Nong? A city over there in Battania is said to be built on the edge of a large lake. The water in the lake is black and scary to look at. They said that there was a tower in that city, and a woman was crying on it for a long time. There is an old saying here that you should not marry into Xiaonong, saying that there is a lot of yin, too many tears, and a bad smell. But the iron tools they produce are really useful. The wood-cutting ax I have at home was brought from Xiaonong by a businessman. It has been used for several years, and the ax blade is still as good as new. As for how the old king disappeared and how the new king came to power, the people of Battania are not interested in the palace fighting. A good ax will suffice."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "scouting": 100
+        }
+      },
+      "Content": "Chanon, a fortress in central Battania, located on the west shore of Lake Tavar. The city is built on a narrow platform between the cliff and the lake, facing the water to the east and leaning on the cliff to the west. Its natural defense conditions are second to none among the cities in Battania. The lake is open, but the depth has not yet been reliably measured. Locals say there is an undercurrent at the bottom of the lake, which is consistent with the geological structure of the Taivar Lake system - the lake may have been formed by water accumulation in the fault zone, which also explains the year-round low temperature of the lake water and the presence of trace minerals. The area around Xiaonong produces hardwood and high-quality iron ore, as well as abundant water resources, allowing the iron smelting industry to continue to develop. Its iron products have a high market share throughout Battania, and the unique craftsmanship in the quenching process may indeed be related to some kind of natural salt in the lake, but the locals attribute the quality of the blade to the \"tears of Algana\" - which can be recorded as a sample of folk beliefs to support how local tradition explains the advantages of the production process. In addition, the dense forest north of Shannon was the place where Ariel disappeared, which had a profound impact on the succession of the throne of Battania. It is suggested that in contemporary political examinations of Battania, Shaunon remains a key node, not only as a steel center but also as the natural gateway to Marunas in the south."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Chaunon is the armory of Battania. The production capacity and technology of her iron smelting industry affect Battania's equipment supply lines, which can be seen by any force that has border friction with Battania. The iron-gray city, the iron-gray water, but the struck sword glowed with cold light - the quenching process was unique, and it might be due to some mineral dissolved in the lake water. Algana’s story provides cultural non-replicability, and this layer of packaging makes it inconvenient and impossible for outsiders to learn from it. But just in terms of strategy, another key position of Shaunon is that she is extremely close to Marunas, guarding the east-west corridor south of Battania. Occupying Shaunong would be equivalent to stopping half of Battania's ordnance production - it's not that we haven't thought about it, but that city is too difficult to defeat. There is a lake to the east and a cliff to the west. The siege can only be carried out on the narrow front. The crossbowmen at the city head can focus fire from three sides. As for the connection between the disappearance of the old High King and this city, let us regard it as a footnote to the internal power changes in Battania. Caladog emerges from Shawon's shadow and takes his place on the throne, perhaps indicating that Shawon's mysterious capital in Battania goes beyond iron and tears."
+    }
+  ],
+  "TextMappings": []
+}

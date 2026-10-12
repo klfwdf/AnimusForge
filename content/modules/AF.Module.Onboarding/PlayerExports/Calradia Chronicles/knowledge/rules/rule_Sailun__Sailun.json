@@ -1,0 +1,63 @@
+{
+  "Id": "rule_Sailun",
+  "Keywords": [
+    "Suilun",
+    "Da Nayan Suilun"
+  ],
+  "RagShortTexts": [
+    "Suilun was the former head of the Kujit family and died in the Battle of Pandrak"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Suilun was the former head of the Kujit family and the ex-husband of Mosuyi. He died in the Battle of Pandrak along with Mosuyi's two brothers and other male members of the family. His death led to the decline of the number of men in the Kugit family, which caused the family's status among the Kugit tribes to plummet, making it the object of covetousness by the Achit and other families. Mo Suyi was dissatisfied with Monchug because of Suilun's death, but he had to rely on power to continue his family."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": [
+          "town_k1"
+        ],
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Suilun used to be the patriarch of the Kugit family and ruled a, but in the Battle of Pandlak, he and many men of the Kugit family died."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "a",
+      "Kind": "clan_all_settlements",
+      "TargetId": "clan_khuzait_2",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

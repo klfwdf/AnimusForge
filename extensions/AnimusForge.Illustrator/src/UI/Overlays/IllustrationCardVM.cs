@@ -2,6 +2,7 @@ using System;
 using TaleWorlds.InputSystem;
 using TaleWorlds.Library;
 using AnimusForge.Illustrator.UI.Gallery;
+using AnimusForge.Illustrator.UI;
 
 namespace AnimusForge.Illustrator.UI.Overlays
 {
@@ -11,6 +12,13 @@ namespace AnimusForge.Illustrator.UI.Overlays
         private readonly Action _onRegenerate;
         private readonly Action _onSceneProbe;
         private readonly Action _onRegenerateWithPrompt;
+        private readonly string _redrawText;
+        private readonly string _redrawWithPromptText;
+        private readonly string _redrawBasedOnImageText;
+        private readonly string _copyText;
+        private readonly string _galleryText;
+        private readonly string _closeText;
+        private readonly string _sceneProbeText;
         internal Action OnRegenerateBasedOnImage;
         internal bool HasEditableImage;
         internal void SetEditableImage(bool value) { HasEditableImage = value; OnPropertyChanged(nameof(CanRegenerateBasedOnImage)); }
@@ -19,7 +27,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
         public void ExecuteRegenerateBasedOnImage()
         {
             if (!CanRegenerateBasedOnImage) return;
-            try { OnRegenerateBasedOnImage(); } catch (Exception ex) { SetReady("重绘准备失败：" + ex.Message); }
+            try { OnRegenerateBasedOnImage(); } catch (Exception ex) { SetReady(IllustratorUiText.CardRedrawFailed(ex.Message)); }
         }
         private string _titleText = string.Empty;
         private string _statusText = string.Empty;
@@ -41,7 +49,22 @@ namespace AnimusForge.Illustrator.UI.Overlays
             _onRegenerate = onRegenerate;
             _onSceneProbe = onSceneProbe;
             _onRegenerateWithPrompt = onRegenerateWithPrompt;
+            _redrawText = IllustratorUiText.Redraw;
+            _redrawWithPromptText = IllustratorUiText.RedrawWithPrompt;
+            _redrawBasedOnImageText = IllustratorUiText.RedrawBasedOnImage;
+            _copyText = IllustratorUiText.Copy;
+            _galleryText = IllustratorUiText.Gallery;
+            _closeText = IllustratorUiText.Close;
+            _sceneProbeText = IllustratorUiText.SceneProbe;
         }
+
+        [DataSourceProperty] public string RedrawText => _redrawText;
+        [DataSourceProperty] public string RedrawWithPromptText => _redrawWithPromptText;
+        [DataSourceProperty] public string RedrawBasedOnImageText => _redrawBasedOnImageText;
+        [DataSourceProperty] public string CopyText => _copyText;
+        [DataSourceProperty] public string GalleryText => _galleryText;
+        [DataSourceProperty] public string CloseText => _closeText;
+        [DataSourceProperty] public string SceneProbeText => _sceneProbeText;
 
         [DataSourceProperty]
         public string TitleText
@@ -159,7 +182,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
         public void SetIllustration(string key, string spriteName, string prompt)
         {
             _currentKey = key;
-            PromptText = prompt ?? string.Empty;
+            PromptText = IllustratorUiText.ProjectKnownCachedPrompt(prompt) ?? string.Empty;
 
             // 强制 Gauntlet 刷新：先清空并触发属性通知，再重新赋值，彻底解决同名 Sprite 在重画时不刷新画面的问题
             _spriteName = string.Empty;
@@ -187,14 +210,14 @@ namespace AnimusForge.Illustrator.UI.Overlays
         {
             if (!CanRegenerate) return;
             try { _onRegenerate?.Invoke(); }
-            catch (Exception ex) { SetReady("生成准备失败：" + ex.Message); }
+            catch (Exception ex) { SetReady(IllustratorUiText.CardPrepareFailed(ex.Message)); }
         }
 
         public void ExecuteSceneProbe()
         {
             if (!CanExecuteSceneProbe) return;
             try { _onSceneProbe?.Invoke(); }
-            catch (Exception ex) { SetReady("试采准备失败：" + ex.Message); }
+            catch (Exception ex) { SetReady(IllustratorUiText.CardProbeFailed(ex.Message)); }
         }
 
         public void ExecuteTogglePrompt()
@@ -206,7 +229,7 @@ namespace AnimusForge.Illustrator.UI.Overlays
         {
             if (!CanRegenerateWithPrompt) return;
             try { _onRegenerateWithPrompt.Invoke(); }
-            catch (Exception ex) { SetReady("重绘准备失败：" + ex.Message); }
+            catch (Exception ex) { SetReady(IllustratorUiText.CardRedrawFailed(ex.Message)); }
         }
 
         public void ExecuteCopyPrompt()
@@ -215,11 +238,11 @@ namespace AnimusForge.Illustrator.UI.Overlays
             try
             {
                 Input.SetClipboardText(PromptText);
-                StatusText = "提示词已复制到剪贴板";
+                StatusText = IllustratorUiText.CardCopySuccess;
             }
             catch (Exception ex)
             {
-                StatusText = "复制失败: " + ex.Message;
+                StatusText = IllustratorUiText.CardCopyFailed(ex.Message);
             }
         }
 

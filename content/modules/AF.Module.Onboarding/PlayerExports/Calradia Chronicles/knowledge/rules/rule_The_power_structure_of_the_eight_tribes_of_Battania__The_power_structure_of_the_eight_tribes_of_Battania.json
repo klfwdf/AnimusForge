@@ -1,0 +1,61 @@
+{
+  "Id": "rule_The_power_structure_of_the_eight_tribes_of_Battania",
+  "Keywords": [
+    "Grufendoc",
+    "Dengir",
+    "Uwan",
+    "Mokar",
+    "Jill",
+    "Eingal",
+    "Penrack",
+    "Kelnach",
+    "Caladog Powers",
+    "Chief of Battania"
+  ],
+  "RagShortTexts": [
+    "Battania is made up of eight tribes, and Caladog's kingship is based on a complex balance of tribes' beliefs, fears, and interests."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "Battania consists of eight tribes, each with its own chiefs, territories, and janissaries. The High King was elected by the chiefs of each tribe and crowned on the Holy Mountain. He was nominally the supreme leader of all Battania people. But before Caladog, the title had only symbolic meaning - the chiefs worked in their own silos and didn't buy into each other's opinions. Caladog breaks this tradition. He used his reputation as the champion of Fiona, his status as King Ariel's son-in-law and adopted son, and the skull bowl chopped off from the battlefield to turn the royal power from a virtual position into a real one. But the centrifugal force of the Eight Tribes still exists. The person who hates him the most is Fin Denzil, a direct blood relative of the late King Ariel, who openly believes that Caladog killed Ariel to take the throne. Finn Uwan and Finn Gil retain a strong sense of independence and are nominally loyal but never report territorial affairs to the royal court. Prindor, the chief of Fen Mokar, was known for his cruelty. He ruled his tribe with fear, and his obedience to the king's authority only stopped at the level of not sending troops to rebel. The young chieftains of Fin Penrak and Fin Eingar are more sympathetic to centralization - they have seen with their own eyes the powerlessness of tribal divisions in the face of the Empire and Vlandia. And the Grufendoc - the Caladog's own tribe - revolve around him and his heir Minther. The tension between the eight tribes forms the main thread of Battania's politics."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "battania"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "We Battania people have eight tribes, but the High King alone has the final say - or so he wants to. Caladog can indeed fight, he has more skull bowls than anyone else, he is a Fianna champion and the son-in-law of the late king. But you ask the people over at Dunglanis what they think of Caladog? They'll tell you that King Ariel died on the hunting grounds, and Caladog sat on it. The Dengil family hates him, but they dare not rebel - because if they rebel, it will be a civil war, and a civil war will mean the invasion of the Empire. Melidir of the Uwan family and Elon of the Gil family didn't pay much attention to the greetings - they called His Majesty a lot of times, but there was always a reason to be two days late when mobilizing troops. The ones who are really aligned with Caladog are Luyhan of the Penlac family and Aradweir of the Eingal family - they are young, have seen the world, and know that each tribe can't defeat the empire by itself. We Grufendocs certainly support our family, but to be honest, no one can say whether Mincer will be able to hold on to that position once Caladog is gone."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "That stall in Battania is more difficult to deal with than any other faction in our empire. We have the Senate, law and order, what does Battania have? Eight tribes who dislike each other and a king who rises to power by killing people. It was a miracle that Caladog could hold them together - if it were someone else sitting in Marunas, the seven chiefs below would have already stood on their own. But the question is if Caladog can hold it down, can his heir? He left the throne to a clansman named Minser, not his biological son. In our opinion, this incident is a precursor to civil strife - Menges is the eldest son, will he accept it? The Dengil family already hates them, will they take the opportunity to attack? The stability of Battania is entirely tied to the lifespan of Caladog alone."
+    }
+  ],
+  "TextMappings": []
+}

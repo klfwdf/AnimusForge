@@ -1,0 +1,23 @@
+{
+  "Id": "rule_Kingdom_of_England_and_Provisions_of_Oxford",
+  "Keywords": [
+    "Kingdom of England",
+    "Provisions of Oxford",
+    "Henry III",
+    "Simon de Montfort",
+    "Barons' War",
+    "English Parliament"
+  ],
+  "RagShortTexts": [
+    "The Provisions of Oxford of 1258 forced King Henry III to surrender executive governance to a council of fifteen barons, initiating an unprecedented constitutional crisis."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The Kingdom of England in 1259 was embroiled in the greatest constitutional confrontation since Magna Carta. Discontent with King Henry III’s financial insolvency, costly continental ambitions in Sicily and Gascony, and favoritism toward Poitevin and Savoyard foreign courtiers drove the English magnates into open rebellion at the Parliament of Oxford in 1258.\n\nThe resulting Provisions of Oxford forced the Crown to accept governance by an elected baronial council of fifteen, commanded by Simon de Montfort, Earl of Leicester. The reform placed the Chancellor, Justiciar, and local sheriffs under baronial oversight and mandated regular parliamentary assemblies three times a year. In 1259, the subsequent Provisions of Westminster extended legal safeguards to lesser landholders, polarizing the barony and setting the stage for the Second Barons' War."
+    }
+  ],
+  "TextMappings": []
+}

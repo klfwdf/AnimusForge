@@ -1,0 +1,200 @@
+{
+  "Id": "rule_old_style_legion",
+  "Keywords": [
+    "Old Legion"
+  ],
+  "RagShortTexts": [
+    "The old-style legion is an elite professional army in the era of imperial standing armies, and is uniformly supported by the national finance."
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": null,
+      "Content": "The old-style legion is the pride of the Empire's standing army era and was the most powerful military machine ever in the Calradia continent. Before the Battle of Pandrak, these disciplined professional soldiers stood behind every Imperial victory. They are uniformly supported by the national finance, wear standard armor, hold unified shields, and form insurmountable fronts one after another under the flag of the eagle. A full-strength old-style legion was a sophisticated war machine: heavy infantry formed a shield wall and pushed forward, crossbowmen took turns shooting at the rear, and mounted cavalry waited for opportunities to charge on both wings. Every soldier has undergone rigorous training, and every centurion is a veteran who has fought on the battlefield. They are not mercenaries who fight for gold, nor are they farmers who are temporarily recruited - they are professional soldiers of the empire, and war is their only occupation. At the Battle of Pandrak, the old legion shed its last drop of blood. When Emperor Arenicus came to power, he abolished this army which he could no longer maintain. The old regiments disappeared, but the standards they left behind - discipline, tactics, honor - are still the benchmark for every soldier in the Empire."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The old regiments are our grandparents. They say that army fought in a completely different way than it does now. In the past, when a legion set out from Lycaron, the logistics were uniformly deployed by the empire, and military pay was paid on time by the treasury. The soldiers only had to worry about one thing: how to win the next battle. There are engineers in the legion responsible for building roads, engineering teams responsible for building bridges, and doctors and blacksmiths who accompany the army. It was not an army, it was a moving city. Pandrak destroyed the best legions. After Arenicos abolished the standing army, some of the veterans who came back from the battlefield alive returned to their hometowns to farm, some became the consul's private instructors, and some got drunk in the tavern and scolded today's young people for not understanding what true legionary discipline is. The empire's army is not bad now, but compared with the old legion, it lacks the suffocating sense of oppression - the feeling that the ground is shaking when the entire legion is advancing at the same pace."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "soldier"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "When I served, the old regiments were still there. We got up before dawn every day and lined up. The centurion walked in the queue holding a cane. Whoever's armor was not polished or whose shield was not raised in place would be slapped on the head and face. During training, we ran with rocks that were twice as heavy as those in actual combat. We continued running until we vomited, and ran until we stopped vomiting. It felt bitter at the time, but now that I think about it, that bitterness is the soul of the old-style army. If an army cannot endure training, how long can it last on the battlefield? We have never collapsed on the battlefield because formation is our bones and discipline is our breath. If the person in the front row falls, the person in the back row will automatically take over. There is no need for the commander to shout. This is an instinct that has been trained into the muscles. Our regiment was scattered on the day of Pandrak. I don't know how many people survived. All I know is that I have never seen an army like that since."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_s"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The organization and tactics of the old regiments still influence us today. Although Arenicos abolished the standing army, he retained the old legion training methods. The reason why our private soldiers in the south can still maintain good combat effectiveness is largely because we spend a lot of money to hire veterans who are still alive as instructors. They teach our young people how to use shields, how to maintain formation, and how to stay calm in the rain of arrows. But there's one thing they can't teach: the soul of the old regiment is the eagle. When that flag is there, all legionnaires know who they belong to. Now that the eagle flag is broken into three pieces, no matter how good the instructor is, he can't teach him that sense of belonging."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire"
+        ],
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "There are many descendants of the old regiments in the army of the Northern Empire. Their fathers had served before Pandrak, and the legion's traditions were passed down in the family - how to march, how to camp, how to rotate frontline soldiers on the battlefield, how to use crossbowmen and infantry - these can still be seen in our private soldiers in the north. But the old-style legions had one advantage that couldn't be replicated: logistics. In the past, when the legion fought, there was a whole set of imperial bureaucracy running behind it, with a lot of food, weapons, horses, and medicine. Now our private soldiers go out to fight, and each family is responsible for its own logistics. Sometimes there is not even a unified military ration standard. The old Legion was a complete machine, and we are now put together from the parts of that machine."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "empire"
+        ],
+        "KingdomIds": [
+          "empire_w"
+        ],
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The most capable veterans under Emperor Galios are almost all from the old-style legions. They were demobilized after Pandrak, some became mercenaries, some became bandits, and some just drank and waited to die. Garius found them one by one and reorganized them into an army. Therefore, the army of the Western Empire is most like the old army in its bones - not because of the system, but because of the people. Those veterans brought with them the discipline and tactics of the old regiments. But they are also getting older. When the last batch of veterans of the old-style legion can no longer fight, the Western Empire will have to rely on their sons. Their sons had never experienced the era of standing armies and had no idea what a real legion looked like."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "vlandia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The Old Legions are the most respected opponents of our knights of Vlandia on the plains. The frontal charge of our Banner Knights is almost unstoppable, but when they encounter the shield wall of the old-style legion, they still have to weigh it. Their infantry can lock their shields together on the plains, and rushing through them from the front is like hitting an iron wall. The crossbowmen hid behind the shield wall and fired arrows in rows. Our riders had already suffered many casualties during the charge. After the Imperials abolished the old regiments, their infantry never reached that level. Now the private soldiers of the empire can also fight, but they are skirmishers, not legions. We Vlandians know the difference best - the prowess of a single warrior and the oppression of an army are two different things."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "sturgia"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The old legion is the most troublesome enemy for us northerners. Our shield wall is also very hard, but the Imperial Legion's shield wall is not only hard, it is also flexible - they can change formations during the march, can quickly transform from marching formation to combat formation, and can advance instead of retreating when charged by us. This kind of discipline is not innate, it is practiced. Pandrak and we helped the Battanians fight against the Empire. That time, the flanks of the Imperial Legion were torn open by Battania's archers. We took the opportunity to rush in and cut off their eagle flags. That was the first time we defeated the old legion in a head-on battle. But to be honest, if the Emperor hadn't placed the Legion on the most unfavorable terrain that day, we wouldn't have won."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "aserai"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The legend of the old legion is widely circulated in the mercenary market of Sanara. After the Imperials deposed that army, some of the old legionnaires drifted south and became military advisors to some of our Aserai emirs. They taught us some of the empire's tactics - how to use heavy infantry and crossbowmen, how to protect the flanks on the battlefield, and how to set up camp to prevent night attacks. But the real core of the old army is not tactics, but logistics. There is a whole state machine running behind their legions, and our Aserai tribal alliance cannot provide that level of unified supply. So our emir learned the tactics of the empire, but he could only use them on a small scale - without the finances of the empire, he could not afford to support the empire's legions."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "khuzait"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "The old-style regiments fought several tough battles on the grasslands. When their heavy infantry were arrayed on the ground, our cavalry archers could only circle around them. The arrows jingled on their large shields and could not hurt many people. But the old legions had a fatal flaw - they were too slow. On the steppes, their infantry could never catch up with our horses, and their supply lines became more fragile the longer they stretched. Our tactics against the old legions were simple: ignore them, burn their supply lines, and then come back when they were too hungry to move. After the empire abolished its standing army, the new private soldiers of the consuls no longer knew how to fight on the grasslands. The old-style legions at least knew how to march on the grasslands, but the current imperial army didn't even know how to find water on the grasslands."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "steward": 150
+        }
+      },
+      "Content": "The Old Legion is the most systematic professional army in Calradia’s military history, and its organizational model, tactical system and logistics system represent the pinnacle of the empire’s military power. A standard old-style legion has heavy infantry as its core, equipped with crossbowmen to provide long-range firepower, and cavalry responsible for assault and pursuit on both wings. There are strict collaborative training and standardized tactical manuals between various arms. A strict hierarchical system is implemented within the legion. From ordinary soldiers to centurions to legion commanders, each level has clear scope of responsibilities and promotion standards. In terms of logistics, the empire has equipped each legion with specialized engineering, medical and supply units, allowing the legions to maintain long-term combat capabilities on battlefields far away from home. The core of the old-style legion's tactics is formation discipline - the tightness of the shield wall, the speed of switching between marching and fighting formations, and the rotation mechanism of frontline soldiers are all achieved to an almost instinctive level through repeated training. This kind of training intensity requires stable financial support and sufficient training time, which can only be achieved under a standing army system that is uniformly supported by the country. After Arenicos abolished the standing army, the institutional legacy of the old-style legion flowed to the private military systems of local consuls through veterans. However, without the support of central finance and unified logistics, the complete form of the old-style legion could no longer be replicated. In the Calradia military comparison, no one has surpassed the frontal position warfare capabilities of the old-style legion, but its lack of mobility exposed in complex terrain and asymmetric warfare also provided negative experience for subsequent military reforms."
+    }
+  ],
+  "TextMappings": []
+}

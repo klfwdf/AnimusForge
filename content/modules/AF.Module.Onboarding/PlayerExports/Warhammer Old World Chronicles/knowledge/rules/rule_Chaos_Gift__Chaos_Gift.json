@@ -1,0 +1,213 @@
+{
+  "Id": "rule_Chaos_Gift",
+  "Keywords": [
+    "Chaos Gift",
+    "Gift from the Evil God",
+    "physical variation",
+    "scale limbs",
+    "supreme glory",
+    "mark of divine grace",
+    "mutated blessing",
+    "extra limbs",
+    "Copper skin and iron bone",
+    "demonic organ",
+    "Signs of promotion",
+    "genetic distortion"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Gifts of Chaos are supernatural gifts given by evil gods to their loyal followers - from hardening of skin like scales to the growth of extra limbs or organs. These physical mutations are not only a mark of glory, but also a concrete manifestation of the power of chaos in the mortal world, representing the gods' favor and approval."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": [
+          "chaos_culture"
+        ],
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Chaos Gift is our wealth, our status, our identity. You can't buy boons with gold - they can only be obtained by pleasing the evil god in battle. Whenever you cut off the head of a valuable enemy, or complete a feat that the gods appreciate, you may feel a sharp burning or biting cold inside your body - that is, the gift is changing your body. Some grew copper scales that covered their entire body, and when struck with a sword, only sparks popped out; some gained extra eyes or arms; some grew glands in their wounds that could spray acid. This is a true honor. But the gift comes with a price - your body is becoming something that is no longer \"human\". The final stage of receiving too many gifts, and your soul will be completely consumed by Chaos."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Chaos Boon is your key mechanic for developing elite units. After each battle, glory points are allocated to specific evil gods based on your performance. Different evil gods grant different types of boons: Khorne provides melee damage bonus and physical enhancement; Nurgle provides health regeneration and poison immunity; Slaanesh provides speed increase and charm ability; Tzeentch provides magic resistance and precognition. Allocate your boon points wisely - prioritize strengthening your core heroes and elite units."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord",
+          "notable",
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": {
+          "Steward": 120
+        },
+        "IdentityIds": null
+      },
+      "Content": "According to the \"Anatomy of the Classification of Gifts\" compiled by the Imperial War Medical College, Chaos Gifts can be divided into five major categories: the first type of \"epidermal variation\" - such as scaly skin, stone shell, and poisonous sweat glands; the second type of \"skeletal variation\" - such as hyperplastic rib armor, hollow lightweight bones, and extra vertebrae to increase flexibility. degree; the third category of \"organ mutations\" - such as a second heart, acid glands, and sound wave organs that can emit glass-shattering screams; the fourth category of \"sensory mutations\" - such as infrared vision, super hearing, and magic sensing eyes; and the fifth category of \"thought mutations\" - this is the rarest and involves mental abilities such as telepathy or precognition. The most dangerous and irreversible mutation is called the \"chaos critical point\" - when the total amount of a person's gifts exceeds 40% of the body's original biological mass, his or her self-consciousness will be irreversibly replaced by the will of chaos and become a chaotic spirit that cannot think, the so-called abandoned person."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": true,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "My gift is ugly to many - scales cover my cheeks, and the fingers of one hand have turned into claws. But this is the price of power, and I gladly accept this transformation."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "lord"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": true,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "Every member of your tribe who receives a significant gift automatically gains a higher social status - this is the iron law of a chaotic society. Setting up a \"ring of gifts\" allows the tribesmen to display their mutations. This not only boosts morale, but is also a public declaration of allegiance to the evil god. But beware—excessive pursuit of gifts can lead to “abandonment,” and that’s a tragedy you must prevent."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "wanderer"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "You see a Chaos Warrior taking off his helmet - his face is no longer human. Scales cover the original skin, and one eye is replaced by three smaller compound eyes. He seemed pleased with your horrified expression. This is the Gift of Chaos - these mutations are his glory."
+    },
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": [
+          "notable"
+        ],
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null,
+        "IdentityIds": null
+      },
+      "Content": "The Gift of Chaos is regarded as the most direct indicator of social status in the North. The number and prominence of a person's gifts determines his rank in the armies of Chaos. However, southern scholars pointed out that this \"gift\" is actually an external manifestation of the soul being corrupted by chaos, and a sign that self-consciousness is gradually replaced by the will of the evil god."
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "Chaos Gift - a supernatural physical mutation bestowed by the evil god on his followers, a dual symbol of glory and power.",
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    },
+    {
+      "SourceText": null,
+      "Kind": null,
+      "TargetId": null,
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ],
+  "RagShortTexts": [
+    "Chaos Gift Evil God Gift Philosophy Mutation"
+  ]
+}

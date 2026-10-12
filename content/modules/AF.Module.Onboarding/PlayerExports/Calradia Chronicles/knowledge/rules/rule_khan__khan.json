@@ -1,0 +1,39 @@
+{
+  "Id": "rule_Khan",
+  "Keywords": [
+    "Khan"
+  ],
+  "RagShortTexts": [
+    "Khan is the title of the supreme ruler of the Khuzait Khanate"
+  ],
+  "SemanticPrototypes": [],
+  "Variants": [
+    {
+      "Priority": 0,
+      "When": {
+        "HeroIds": null,
+        "Cultures": null,
+        "KingdomIds": null,
+        "SettlementIds": null,
+        "Roles": null,
+        "IdentityIds": null,
+        "IsFemale": null,
+        "IsClanLeader": null,
+        "SkillMin": null
+      },
+      "Content": "Khan is the title of the leader of the Khuzait Khanate, meaning \"king\". He has the power to command the Khuzait tribes and is generally held by the leader of the most powerful tribe. The current Khuzait Khan is A"
+    }
+  ],
+  "TextMappings": [
+    {
+      "SourceText": "A",
+      "Kind": "kingdom_leader_name",
+      "TargetId": "khuzait",
+      "AgeMin": null,
+      "AgeMax": null,
+      "EmptyValueText": null,
+      "TrueText": null,
+      "FalseText": null
+    }
+  ]
+}

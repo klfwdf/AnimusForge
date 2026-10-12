@@ -190,7 +190,7 @@ public static class ShoutNetwork
 
 		private static int GetTrailingPlayerReferencePrefixLength(string text, string actualPlayerName)
 		{
-			int result = GetTrailingProperPrefixLength(text, "玩家");
+			int result = GetTrailingProperPrefixLength(text, LlmSourceTexts.Get("PlayerNameKeyword"));
 			if (!string.IsNullOrWhiteSpace(actualPlayerName))
 			{
 				result = Math.Max(result, GetTrailingProperPrefixLength(text, actualPlayerName));
@@ -348,7 +348,7 @@ public static class ShoutNetwork
 			return false;
 		}
 		selectedOption = (settings.GetMainSelectedModelOption() ?? "").Trim();
-		manualSelected = string.Equals(selectedOption, "*手动填写*", StringComparison.Ordinal);
+		manualSelected = string.Equals(selectedOption, LlmSourceTexts.Get("ManualModelDropdownOption"), StringComparison.Ordinal);
 		if (manualSelected)
 		{
 			modelName = (settings.ModelName ?? "").Trim();
@@ -554,30 +554,30 @@ public static class ShoutNetwork
 			string text3 = ResolvePlayerDynamicNameForOutgoingText();
 			if (string.IsNullOrWhiteSpace(text3))
 			{
-				text3 = "玩家";
+				text3 = LlmSourceTexts.Get("PlayerNameKeyword");
 			}
 			const string text4 = "__AFEF_PLAYER_FACT__";
 			const string text5 = "__PLAYER_MARRIAGE_SECTION__";
-			if (!string.Equals(text3, "玩家", StringComparison.Ordinal))
+			if (!string.Equals(text3, LlmSourceTexts.Get("PlayerNameKeyword"), StringComparison.Ordinal))
 			{
-				text2 = text2.Replace("[AFEF" + text3 + "行为补充]", text4);
-				text2 = text2.Replace("【" + text3 + "家族可婚配未婚成员（事实清单）】", text5);
+				text2 = text2.Replace(LlmSourceTexts.Get("AfefPlayerBehaviorSupplement").Replace(LlmSourceTexts.Get("PlayerNameKeyword"), text3), text4);
+				text2 = text2.Replace(LlmSourceTexts.Get("PlayerFamilyMarriageSection").Replace(LlmSourceTexts.Get("PlayerNameKeyword"), text3), text5);
 			}
-			text2 = text2.Replace("[AFEF玩家行为补充]", text4);
-			text2 = text2.Replace("【玩家家族可婚配未婚成员（事实清单）】", text5);
+			text2 = text2.Replace(LlmSourceTexts.Get("AfefPlayerBehaviorSupplement"), text4);
+			text2 = text2.Replace(LlmSourceTexts.Get("PlayerFamilyMarriageSection"), text5);
 			string actualPlayerName = ResolveLowProfileActualPlayerNameForRedaction();
 			if (!string.IsNullOrWhiteSpace(actualPlayerName) && !string.Equals(actualPlayerName, text3, StringComparison.Ordinal))
 			{
 				text2 = text2.Replace(actualPlayerName, text3);
 			}
-			text2 = NormalizeLegacyDuelStakeText(text2, "玩家");
-			if (!string.Equals(text3, "玩家", StringComparison.Ordinal))
+			text2 = NormalizeLegacyDuelStakeText(text2, LlmSourceTexts.Get("PlayerNameKeyword"));
+			if (!string.Equals(text3, LlmSourceTexts.Get("PlayerNameKeyword"), StringComparison.Ordinal))
 			{
-				text2 = text2.Replace("玩家", text3);
+				text2 = text2.Replace(LlmSourceTexts.Get("PlayerNameKeyword"), text3);
 			}
 			text2 = NormalizeLegacyDuelStakeText(text2, text3);
-			text2 = text2.Replace(text4, "[AFEF玩家行为补充]");
-			text2 = text2.Replace(text5, "【玩家家族可婚配未婚成员（事实清单）】");
+			text2 = text2.Replace(text4, LlmSourceTexts.Get("AfefPlayerBehaviorSupplement"));
+			text2 = text2.Replace(text5, LlmSourceTexts.Get("PlayerFamilyMarriageSection"));
 			return RestorePlayerPersonaRawNameReferencesForExternal(text2, rawPlayerPersonaNames);
 		}
 		catch
@@ -597,10 +597,10 @@ public static class ShoutNetwork
 				return text2;
 			}
 			string pattern = Regex.Escape(text3);
-			text2 = Regex.Replace(text2, "你已经将\\s*(\\d+)\\s*第纳尔交给\\s*" + pattern + "\\s*（决斗赌注）[。.]?", "你在决斗中输给了 " + text3 + "，并已按赌注将 $1 第纳尔交给 " + text3 + "。");
-			text2 = Regex.Replace(text2, "你已经将\\s*(\\d+)\\s*个\\s*([^（\\r\\n]+?)\\s*交给\\s*" + pattern + "\\s*（决斗赌注）[。.]?", "你在决斗中输给了 " + text3 + "，并已按赌注将 $1 个 $2 交给 " + text3 + "。");
-			text2 = Regex.Replace(text2, "你从\\s*([^（\\r\\n]+?)\\s*收到了\\s*(\\d+)\\s*第纳尔（决斗赌注）[。.]?", "你在决斗中击败了 $1，并从 $1 收到了 $2 第纳尔（决斗赌注）。");
-			text2 = Regex.Replace(text2, "你从\\s*([^（\\r\\n]+?)\\s*收到了\\s*(\\d+)\\s*个\\s*([^（\\r\\n]+?)\\s*（决斗赌注）[。.]?", "你在决斗中击败了 $1，并从 $1 收到了 $2 个 $3（决斗赌注）。");
+			text2 = Regex.Replace(text2, LlmSourceTexts.Format("LegacyDuelStakeLostDenarsPattern", ("PLAYER_PATTERN", pattern)), match => LlmPromptTexts.Format("AF_LLM_PROMPT_DuelStakeLostDenars", "You lost the duel to {PLAYER}, and the stake of {AMOUNT} denars was transferred to {PLAYER}.", ("PLAYER", text3), ("AMOUNT", match.Groups[1].Value)));
+			text2 = Regex.Replace(text2, LlmSourceTexts.Format("LegacyDuelStakeLostItemsPattern", ("PLAYER_PATTERN", pattern)), match => LlmPromptTexts.Format("AF_LLM_PROMPT_DuelStakeLostItems", "You lost the duel to {PLAYER}, and the stake of {COUNT} {ITEM} items was transferred to {PLAYER}.", ("PLAYER", text3), ("COUNT", match.Groups[1].Value), ("ITEM", match.Groups[2].Value)));
+			text2 = Regex.Replace(text2, LlmSourceTexts.Get("LegacyDuelStakeWonDenarsPattern"), match => LlmPromptTexts.Format("AF_LLM_PROMPT_DuelStakeWonDenars", "You defeated {OPPONENT} in a duel and received {AMOUNT} denars from {OPPONENT} as the duel stake.", ("OPPONENT", match.Groups[1].Value), ("AMOUNT", match.Groups[2].Value)));
+			text2 = Regex.Replace(text2, LlmSourceTexts.Get("LegacyDuelStakeWonItemsPattern"), match => LlmPromptTexts.Format("AF_LLM_PROMPT_DuelStakeWonItems", "You defeated {OPPONENT} in a duel and received {COUNT} {ITEM} items from {OPPONENT} as the duel stake.", ("OPPONENT", match.Groups[1].Value), ("COUNT", match.Groups[2].Value), ("ITEM", match.Groups[3].Value)));
 			return text2;
 		}
 		catch
@@ -681,7 +681,7 @@ public static class ShoutNetwork
 		string result = await CallApiWithMessagesNonStreamingCore(messages, maxTokens, promptRetryOnError: promptRetryOnError, cancellationToken: cancellationToken);
 		cancellationToken.ThrowIfCancellationRequested();
 		if (SaveRuntimeGuard.IsStale(runtimeGeneration, "primary_chat_non_stream_callback") || string.IsNullOrWhiteSpace(result)) return;
-		if (result.StartsWith("（错误", StringComparison.Ordinal) || LlmRetryPrompt.IsRetryableLlmError(result))
+		if (result.StartsWith(LlmSourceTexts.Get("ErrorPrefixMarker"), StringComparison.Ordinal) || LlmRetryPrompt.IsRetryableLlmError(result))
 			onError?.Invoke(result);
 		else
 			onComplete?.Invoke(result);
@@ -734,8 +734,8 @@ public static class ShoutNetwork
 					["message"] = "missing_api_key"
 				});
 				Logger.Metric("network.non_stream", ok: false, sw.Elapsed.TotalMilliseconds);
-				string configError = LlmRetryPrompt.BuildFailureDetail("（错误：未配置 API Key）", "");
-				if (promptRetryOnError && await LlmRetryPrompt.PromptRetryAsync("正文生成", configError))
+				string configError = LlmRetryPrompt.BuildFailureDetail(LlmSourceTexts.Get("LegacyErrorPrefixMissingApiKey"), "");
+				if (promptRetryOnError && await LlmRetryPrompt.PromptRetryAsync(LlmSourceTexts.Get("MainReplyGenerationLabel"), configError))
 				{
 					return await CallApiWithMessagesNonStreamingCore(messages, maxTokens, recordTokenStats, overrideMaxTokens, forceDisableThinking, promptRetryOnError, cancellationToken, overrideTemperature);
 				}
@@ -753,8 +753,8 @@ public static class ShoutNetwork
 					["manualSelected"] = manualSelected
 				});
 				Logger.Metric("network.non_stream", ok: false, sw.Elapsed.TotalMilliseconds);
-				string configError = LlmRetryPrompt.BuildFailureDetail("（错误：未配置模型名称）", "");
-				if (promptRetryOnError && await LlmRetryPrompt.PromptRetryAsync("正文生成", configError))
+				string configError = LlmRetryPrompt.BuildFailureDetail(LlmSourceTexts.Get("LegacyErrorPrefixMissingModel"), "");
+				if (promptRetryOnError && await LlmRetryPrompt.PromptRetryAsync(LlmSourceTexts.Get("MainReplyGenerationLabel"), configError))
 				{
 					return await CallApiWithMessagesNonStreamingCore(messages, maxTokens, recordTokenStats, overrideMaxTokens, forceDisableThinking, promptRetryOnError, cancellationToken, overrideTemperature);
 				}
@@ -830,8 +830,8 @@ public static class ShoutNetwork
 								}
 								return retryContent;
 							}
-							string emptyError = LlmRetryPrompt.BuildFailureDetail("（API响应格式错误: 模型回复为空）", "", str);
-							if (promptRetryOnError && await LlmRetryPrompt.PromptRetryAsync("正文生成", emptyError))
+							string emptyError = LlmRetryPrompt.BuildFailureDetail(LlmSourceTexts.Get("Legacy_da0f12394e10"), "", str);
+							if (promptRetryOnError && await LlmRetryPrompt.PromptRetryAsync(LlmSourceTexts.Get("MainReplyGenerationLabel"), emptyError))
 							{
 								return await CallApiWithMessagesNonStreamingCore(messages, maxTokens, recordTokenStats, overrideMaxTokens, forceDisableThinking, promptRetryOnError, cancellationToken, overrideTemperature);
 							}
@@ -872,9 +872,9 @@ public static class ShoutNetwork
 							["latencyMs"] = Math.Round(sw.Elapsed.TotalMilliseconds, 2)
 						});
 						Logger.Metric("network.non_stream", ok: false, sw.Elapsed.TotalMilliseconds);
-						string parseError = LlmRetryPrompt.BuildFailureDetail("（API响应格式错误: " + parseEx.Message + "）", "", str);
+						string parseError = LlmRetryPrompt.BuildFailureDetail(LlmSourceTexts.Get("ApiResponseFormatErrorPrefix") + parseEx.Message + "）", "", str);
 						FreezeWatchdog.Mark("PrimaryChat.non_stream.parse_error", "elapsedMs=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2), immediate: true);
-						if (promptRetryOnError && await LlmRetryPrompt.PromptRetryAsync("正文生成", parseError))
+						if (promptRetryOnError && await LlmRetryPrompt.PromptRetryAsync(LlmSourceTexts.Get("MainReplyGenerationLabel"), parseError))
 						{
 							return await CallApiWithMessagesNonStreamingCore(messages, maxTokens, recordTokenStats, overrideMaxTokens, forceDisableThinking, promptRetryOnError, cancellationToken, overrideTemperature);
 						}
@@ -891,9 +891,9 @@ public static class ShoutNetwork
 					["latencyMs"] = Math.Round(sw.Elapsed.TotalMilliseconds, 2)
 				});
 				Logger.Metric("network.non_stream", ok: false, sw.Elapsed.TotalMilliseconds);
-				string httpError = LlmRetryPrompt.BuildFailureDetail($"（API请求失败: {response.StatusCode}）", "", str);
+				string httpError = LlmRetryPrompt.BuildFailureDetail(LlmSourceTexts.Get("ApiRequestFailedPrefix") + response.StatusCode + LlmSourceTexts.Get("ErrorSuffix"), "", str);
 				FreezeWatchdog.Mark("PrimaryChat.non_stream.http_error", "status=" + (int)response.StatusCode + " elapsedMs=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2), immediate: true);
-				if (promptRetryOnError && await LlmRetryPrompt.PromptRetryAsync("正文生成", httpError))
+				if (promptRetryOnError && await LlmRetryPrompt.PromptRetryAsync(LlmSourceTexts.Get("MainReplyGenerationLabel"), httpError))
 				{
 					return await CallApiWithMessagesNonStreamingCore(messages, maxTokens, recordTokenStats, overrideMaxTokens, forceDisableThinking, promptRetryOnError, cancellationToken, overrideTemperature);
 				}
@@ -915,9 +915,9 @@ public static class ShoutNetwork
 				["type"] = ex.GetType().Name
 			});
 			Logger.Metric("network.non_stream", ok: false, sw.Elapsed.TotalMilliseconds);
-			string exceptionError = LlmRetryPrompt.BuildFailureDetail("（程序错误: " + ex.Message + "）", "");
+			string exceptionError = LlmRetryPrompt.BuildFailureDetail(LlmSourceTexts.Get("ProgramErrorPrefix") + ex.Message + "）", "");
 			FreezeWatchdog.Mark("PrimaryChat.non_stream.exception", ex.GetType().Name + ": " + ex.Message + " elapsedMs=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2), immediate: true);
-			if (promptRetryOnError && await LlmRetryPrompt.PromptRetryAsync("正文生成", exceptionError))
+			if (promptRetryOnError && await LlmRetryPrompt.PromptRetryAsync(LlmSourceTexts.Get("MainReplyGenerationLabel"), exceptionError))
 			{
 				return await CallApiWithMessagesNonStreamingCore(messages, maxTokens, recordTokenStats, overrideMaxTokens, forceDisableThinking, promptRetryOnError, cancellationToken, overrideTemperature);
 			}
@@ -965,8 +965,8 @@ public static class ShoutNetwork
 					["message"] = "missing_api_key"
 				});
 				Logger.Metric("network.stream", ok: false, sw.Elapsed.TotalMilliseconds);
-				string configError = LlmRetryPrompt.BuildFailureDetail("（错误：未配置 API Key）", "");
-				if (promptRetryOnError && await LlmRetryPrompt.PromptRetryAsync("正文生成", configError))
+				string configError = LlmRetryPrompt.BuildFailureDetail(LlmSourceTexts.Get("LegacyErrorPrefixMissingApiKey"), "");
+				if (promptRetryOnError && await LlmRetryPrompt.PromptRetryAsync(LlmSourceTexts.Get("MainReplyGenerationLabel"), configError))
 				{
 					await CallApiWithMessagesStreamCore(messages, maxTokens, onChunk, onComplete, onError, cancellationToken, promptRetryOnError, recordTokenStats, overrideMaxTokens, forceDisableThinking, overrideTemperature, requireCompleteReply);
 					return;
@@ -986,8 +986,8 @@ public static class ShoutNetwork
 					["manualSelected"] = manualSelected
 				});
 				Logger.Metric("network.stream", ok: false, sw.Elapsed.TotalMilliseconds);
-				string configError = LlmRetryPrompt.BuildFailureDetail("（错误：未配置模型名称）", "");
-				if (promptRetryOnError && await LlmRetryPrompt.PromptRetryAsync("正文生成", configError))
+				string configError = LlmRetryPrompt.BuildFailureDetail(LlmSourceTexts.Get("LegacyErrorPrefixMissingModel"), "");
+				if (promptRetryOnError && await LlmRetryPrompt.PromptRetryAsync(LlmSourceTexts.Get("MainReplyGenerationLabel"), configError))
 				{
 					await CallApiWithMessagesStreamCore(messages, maxTokens, onChunk, onComplete, onError, cancellationToken, promptRetryOnError, recordTokenStats, overrideMaxTokens, forceDisableThinking, overrideTemperature, requireCompleteReply);
 					return;
@@ -1109,9 +1109,9 @@ public static class ShoutNetwork
                             ["latencyMs"] = Math.Round(sw.Elapsed.TotalMilliseconds, 2)
                         });
                         Logger.Metric("network.stream", ok: false, sw.Elapsed.TotalMilliseconds);
-                        string httpError = LlmRetryPrompt.BuildFailureDetail($"（API请求失败: {streamResult.StatusCode}）", "", errBody);
+                        string httpError = LlmRetryPrompt.BuildFailureDetail(LlmSourceTexts.Get("ApiRequestFailedPrefix") + streamResult.StatusCode + LlmSourceTexts.Get("ErrorSuffix"), "", errBody);
                         FreezeWatchdog.Mark("PrimaryChat.stream.http_error", "attempt=" + attempt + " status=" + (int)streamResult.StatusCode + " elapsedMs=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2), immediate: true);
-                        if (promptRetryOnError && await LlmRetryPrompt.PromptRetryAsync("正文生成", httpError))
+                        if (promptRetryOnError && await LlmRetryPrompt.PromptRetryAsync(LlmSourceTexts.Get("MainReplyGenerationLabel"), httpError))
                         {
                             await CallApiWithMessagesStreamCore(messages, maxTokens, onChunk, onComplete, onError, cancellationToken, promptRetryOnError, recordTokenStats, overrideMaxTokens, forceDisableThinking, overrideTemperature, requireCompleteReply);
                             return;
@@ -1120,7 +1120,7 @@ public static class ShoutNetwork
                         return;
                     }
                     if (requireCompleteReply && (!streamResult.Completed || streamResult.ParseFailure))
-                        throw new System.IO.IOException("正文流式响应未正常结束或包含无法解析的数据，未提交后处理。");
+                        throw new System.IO.IOException(LlmSourceTexts.Get("StreamingErrorIncompleteReply"));
 					string text3 = outputFilter.Flush();
 					if (!string.IsNullOrEmpty(text3))
 					{
@@ -1155,7 +1155,7 @@ public static class ShoutNetwork
                 cancellationToken.ThrowIfCancellationRequested();
                 if (requireCompleteReply && fullText.Length > 0)
                 {
-                    onError?.Invoke(LlmRetryPrompt.BuildFailureDetail("（API请求失败: 正文流式传输中断，未提交后处理）", "", rawStreamResponse.ToString()));
+                    onError?.Invoke(LlmRetryPrompt.BuildFailureDetail(LlmSourceTexts.Get("StreamingErrorTransportInterrupted"), "", rawStreamResponse.ToString()));
                     return;
                 }
 				if (fullText.Length > 0)
@@ -1193,7 +1193,7 @@ public static class ShoutNetwork
 				{
 					return;
 				}
-				if (!string.IsNullOrWhiteSpace(fallback) && !fallback.StartsWith("（错误") && !LlmRetryPrompt.IsRetryableLlmError(fallback))
+				if (!string.IsNullOrWhiteSpace(fallback) && !fallback.StartsWith(LlmSourceTexts.Get("ErrorPrefixMarker")) && !LlmRetryPrompt.IsRetryableLlmError(fallback))
 				{
 					sw.Stop();
 					Logger.Obs("Network", "request_complete", new Dictionary<string, object>
@@ -1228,9 +1228,9 @@ public static class ShoutNetwork
 						["type"] = lastStreamException.GetType().Name
 					});
 					Logger.Metric("network.stream", ok: false, sw.Elapsed.TotalMilliseconds);
-					string streamError = LlmRetryPrompt.BuildFailureDetail("（程序错误: " + lastStreamException.Message + "）", fullText.ToString(), rawStreamResponse.ToString());
+					string streamError = LlmRetryPrompt.BuildFailureDetail(LlmSourceTexts.Get("ProgramErrorPrefix") + lastStreamException.Message + "）", fullText.ToString(), rawStreamResponse.ToString());
 					FreezeWatchdog.Mark("PrimaryChat.stream.exception_no_content", lastStreamException.GetType().Name + ": " + lastStreamException.Message + " elapsedMs=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2), immediate: true);
-					if (promptRetryOnError && await LlmRetryPrompt.PromptRetryAsync("正文生成", streamError))
+					if (promptRetryOnError && await LlmRetryPrompt.PromptRetryAsync(LlmSourceTexts.Get("MainReplyGenerationLabel"), streamError))
 					{
 						await CallApiWithMessagesStreamCore(messages, maxTokens, onChunk, onComplete, onError, cancellationToken, promptRetryOnError, recordTokenStats, overrideMaxTokens, forceDisableThinking, overrideTemperature, requireCompleteReply);
 						return;
@@ -1254,7 +1254,7 @@ public static class ShoutNetwork
 					{
 						return;
 					}
-					if (!string.IsNullOrWhiteSpace(retry) && !retry.StartsWith("（错误") && !LlmRetryPrompt.IsRetryableLlmError(retry))
+					if (!string.IsNullOrWhiteSpace(retry) && !retry.StartsWith(LlmSourceTexts.Get("ErrorPrefixMarker")) && !LlmRetryPrompt.IsRetryableLlmError(retry))
 					{
 						if (!cancellationToken.IsCancellationRequested && !SaveRuntimeGuard.IsStale(runtimeGeneration, "primary_chat_stream_empty_retry_complete"))
 						{
@@ -1267,10 +1267,10 @@ public static class ShoutNetwork
 				string rawAttempts = rawStreamResponse.ToString();
 				if (!string.IsNullOrWhiteSpace(retryFailure))
 				{
-					rawAttempts = rawAttempts + (string.IsNullOrWhiteSpace(rawAttempts) ? "" : "\n\n") + "【非流式空回复重试结果】\n" + retryFailure;
+					rawAttempts = rawAttempts + (string.IsNullOrWhiteSpace(rawAttempts) ? "" : "\n\n") + LlmSourceTexts.Get("Legacy_0a345ae352ae") + retryFailure;
 				}
-				string emptyStreamError = LlmRetryPrompt.BuildFailureDetail("（API响应格式错误: 流式响应没有可解析的模型回复）", "", rawAttempts);
-				if (promptRetryOnError && await LlmRetryPrompt.PromptRetryAsync("正文生成", emptyStreamError))
+				string emptyStreamError = LlmRetryPrompt.BuildFailureDetail(LlmSourceTexts.Get("StreamingErrorEmptyStreamParseFailed"), "", rawAttempts);
+				if (promptRetryOnError && await LlmRetryPrompt.PromptRetryAsync(LlmSourceTexts.Get("MainReplyGenerationLabel"), emptyStreamError))
 				{
 					await CallApiWithMessagesStreamCore(messages, maxTokens, onChunk, onComplete, onError, cancellationToken, promptRetryOnError, recordTokenStats, overrideMaxTokens, forceDisableThinking, overrideTemperature, requireCompleteReply);
 					return;
@@ -1321,7 +1321,7 @@ public static class ShoutNetwork
 		{
             if (requireCompleteReply && fullText.Length > 0)
             {
-                onError?.Invoke(LlmRetryPrompt.BuildFailureDetail("（API请求失败: 正文流式传输中断，未提交后处理）", "", rawStreamResponse.ToString()));
+                onError?.Invoke(LlmRetryPrompt.BuildFailureDetail(LlmSourceTexts.Get("StreamingErrorTransportInterrupted"), "", rawStreamResponse.ToString()));
                 return;
             }
 			string partial = ApplyPlayerDynamicNameToMainText(fullText.ToString()).Trim();
@@ -1356,9 +1356,9 @@ public static class ShoutNetwork
 					["type"] = ex3.GetType().Name
 				});
 				Logger.Metric("network.stream", ok: false, sw.Elapsed.TotalMilliseconds);
-				string streamError = LlmRetryPrompt.BuildFailureDetail("（程序错误: " + ex3.Message + "）", "", rawStreamResponse.ToString());
+				string streamError = LlmRetryPrompt.BuildFailureDetail(LlmSourceTexts.Get("ProgramErrorPrefix") + ex3.Message + "）", "", rawStreamResponse.ToString());
 				FreezeWatchdog.Mark("PrimaryChat.stream.exception", ex3.GetType().Name + ": " + ex3.Message + " elapsedMs=" + Math.Round(sw.Elapsed.TotalMilliseconds, 2), immediate: true);
-				if (promptRetryOnError && await LlmRetryPrompt.PromptRetryAsync("正文生成", streamError))
+				if (promptRetryOnError && await LlmRetryPrompt.PromptRetryAsync(LlmSourceTexts.Get("MainReplyGenerationLabel"), streamError))
 				{
 					await CallApiWithMessagesStreamCore(messages, maxTokens, onChunk, onComplete, onError, cancellationToken, promptRetryOnError, recordTokenStats, overrideMaxTokens, forceDisableThinking, overrideTemperature, requireCompleteReply);
 					return;

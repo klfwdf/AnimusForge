@@ -1,3 +1,4 @@
+using AnimusForge;
 using System;
 using System.Globalization;
 using AnimusForge.Refactor.Domain;
@@ -34,7 +35,7 @@ internal static class WorldDiplomacyFailureApplication
             if (document?.IsPlayerAuthored == true && document.PlayerAnalysisCommitted)
             {
                 document.AnalysisStatus = "analysis_execution_failed";
-                document.MechanicalResult += "\n外交处理未完整结束；为避免重复执行，本篇不自动重试。请核对已发生的外交结果。";
+                document.MechanicalResult += DiplomacyMiscPromptTexts.Get("Failure_IncompleteProcessingWarning", "\nDiplomatic processing did not complete fully; to prevent duplicate execution, this item will not retry automatically. Check existing diplomatic outcomes.");
             }
             commitAnalysis?.Invoke(job, document?.IsPlayerAuthored == true
                 ? (error == "world_diplomacy_output_truncated"
@@ -58,7 +59,7 @@ internal static class WorldDiplomacyFailureApplication
         }
         else if (WorldDiplomacyRoundLifecycleRules.IsJobOfKind(job, "round_plan"))
         {
-            commitRoundPlan?.Invoke(job, "{\"topic\":\"外交交涉\",\"selected_kingdom_ids\":[]}");
+            commitRoundPlan?.Invoke(job, DiplomacyMiscPromptTexts.Get("Failure_DefaultFallbackTopicJson", "{\"topic\":\"Diplomatic Negotiation\",\"selected_kingdom_ids\":[]}"));
         }
         else if (WorldDiplomacyRoundLifecycleRules.IsJobOfKind(job, "round_compress"))
         {
