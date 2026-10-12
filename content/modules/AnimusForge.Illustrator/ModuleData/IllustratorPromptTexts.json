@@ -859,5 +859,6 @@
   "SceneCapture_BudgetFacts": "环境只依据已有文字事实，不补造未知建筑与陈设。",
   "Cache_LocalPromptPlaceholder": "（本地已留存历史画卷）",
   "NearbyPropListSeparator": "、",
-  "UsedMotifListSeparator": "；"
+  "UsedMotifListSeparator": "；",
+  "Direction_TitleMaxCharacters": "18"
 }

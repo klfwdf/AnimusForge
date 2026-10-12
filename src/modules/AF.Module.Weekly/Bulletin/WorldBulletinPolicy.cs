@@ -697,7 +697,10 @@ internal static class WorldBulletinPolicy
 		{
 			return null;
 		}
-		result.Title = Truncate(result.Title, 20);
+		// English headlines use words rather than the compact Chinese character budget;
+		// the parser keeps a bounded 96-character metadata field for both packages.
+		int titleLimit = 96;
+		result.Title = Truncate(result.Title, titleLimit);
 		return result;
 	}
 

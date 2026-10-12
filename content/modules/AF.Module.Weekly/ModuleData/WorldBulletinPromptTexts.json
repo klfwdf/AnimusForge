@@ -43,5 +43,6 @@
   "WBLT_Prompt_041": "某王国",
   "WBLT_Prompt_042": "周报",
   "WBLT_Prompt_043": "无可用素材。",
-  "AF_WBLT_Prompt_NeutralContinent": "大陆"
+  "AF_WBLT_Prompt_NeutralContinent": "大陆",
+  "AF_WBLT_TitleMaxCharacters": "20"
 }

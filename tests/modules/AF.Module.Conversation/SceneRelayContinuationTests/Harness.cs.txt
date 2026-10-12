@@ -4,7 +4,10 @@ using AnimusForge.SiegeAftermathIntervention;
 using AnimusForge;
 
 namespace AnimusForge {
-    internal static class MainPromptMessageAssemblyOwner { @@MAIN_MESSAGE@@ @@MAIN_COMPOSITE@@ @@MAIN_PREFIX@@ }
+    internal static class MainPromptMessageAssemblyOwner { @@MAIN_MESSAGE@@ @@MAIN_COMPOSITE@@ @@MAIN_PREFIX@@ @@MAIN_SYSTEM@@ }
+    // Unrelated gathering/world-map projections are identity leaves in this relay fixture.
+    internal static class NobleGatheringTextProjection { internal static string ProjectFactBodyForPrompt(string text) => text; }
+    internal static class WorldMapFactPromptProjection { internal static string ProjectBodyForPrompt(string text) => text; }
     internal static class ScenePromptMessageProjectionComposer { @@CONTINUATION_INSTRUCTION@@ }
     internal static class ShoutUtils { public static string StripConversationMetadataPrefix(string text) => text; public static string StripNamePrefixedLineSafely(string text, int max = 30) => text; }
     internal static class LlmVisibleReplyNormalizer { internal static string NormalizeComplete(string text) => text; }
@@ -209,6 +212,11 @@ class Program {
         Check(configuredGroup.Contains("当前NPC的回答只代表自己") && configuredGroup.Contains("整个群体都已回应"), "canonical group-address rule does not treat first NPC as everyone's answer");
         Check(configuredSingle.Contains("不能因只有一人被框选就忽略群体问话"), "single framed speaker still recognizes plural audience addressed by latest utterance");
         Check(configuredGroup.Contains("明确告别") && configuredGroup.Contains("没有合适接话者") && configuredGroup.Contains("当前发言者自己的编号"), "configured prompt retains legal self-stop and unsuitable-audience boundary");
+        AIConfigHandler.Rules = new() { new() { Tag=@@CONFIG_EN_Tag@@, Description=@@CONFIG_EN_Description@@, SingleFramedNpcDescription=@@CONFIG_EN_SingleFramedNpcDescription@@ } };
+        Check(Relay.BuildAutoGroupRelayPostprocessRulesForScene(true, false)[0].Description == @@CONFIG_EN_Description@@,
+            "EN catalog retains complete group relay rules instead of fallback");
+        Check(Relay.BuildAutoGroupRelayPostprocessRulesForScene(true, true)[0].Description == @@CONFIG_EN_SingleFramedNpcDescription@@,
+            "EN catalog retains complete single-framed relay rules instead of fallback");
         AIConfigHandler.Rules = new() { new() { Tag="[RELAY:接力编号]", Description="custom", SingleFramedNpcDescription="single-custom" } };
         Check(Relay.BuildAutoGroupRelayPostprocessRulesForScene(true, false)[0].Description == "custom" && Relay.BuildAutoGroupRelayPostprocessRulesForScene(true, true)[0].Description == "single-custom", "existing custom rules retained");
         F.Reset(3, mode:"three"); await Play();

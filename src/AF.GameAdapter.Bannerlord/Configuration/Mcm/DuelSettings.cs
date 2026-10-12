@@ -6359,6 +6359,16 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 		return channelName;
 	}
 
+	private void BindModelListActions()
+	{
+		// Read this settings instance at click time, including unsaved MCM edits.
+		FetchMainModelList = () => StartFetchModelList(McmPromptDefaults.Raw("Mcm_ChannelMain"), ApiUrl, ApiKey, ApplyMainModelList);
+		FetchAuxiliaryModelList = () => StartFetchModelList(McmPromptDefaults.Raw("Mcm_ChannelPreprocess"), AuxiliaryApiUrl, AuxiliaryApiKey, ApplyAuxiliaryModelList);
+		FetchActionPostprocessModelList = () => StartFetchModelList(McmPromptDefaults.Raw("Mcm_ChannelPostprocess"), ActionPostprocessApiUrl, ActionPostprocessApiKey, ApplyActionPostprocessModelList);
+		FetchEventAndRebellionModelList = () => StartFetchModelList(McmPromptDefaults.Raw("Mcm_ChannelEventRebellion"), EventAndRebellionApiUrl, EventAndRebellionApiKey, ApplyEventAndRebellionModelList);
+		FetchTownAmbientAiModelList = () => StartFetchModelList(McmPromptDefaults.Raw("Mcm_ChannelAmbient"), TownAmbientAiApiUrl, TownAmbientAiApiKey, ApplyTownAmbientAiModelList);
+	}
+
 	private void StartFetchModelList(string channelName, string rawApiUrl, string apiKey, Action<List<string>> applyModels)
 	{
 		LlmRetryPrompt.CaptureMainThreadContext();
@@ -6555,6 +6565,7 @@ public partial class DuelSettings : AttributeGlobalSettings<DuelSettings>
 
 	public DuelSettings()
 	{
+		BindModelListActions();
 		OpenAfdianSupportLink = delegate
 		{
 			OpenAfdianSupportPage();
