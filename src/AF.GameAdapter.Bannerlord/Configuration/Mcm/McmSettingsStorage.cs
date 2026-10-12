@@ -60,7 +60,6 @@ internal static class McmSettingsStorage
         // per-ID directory rather than turning every preset into global settings.
         if (IsPresetsDirectory(directory))
             target = Path.Combine(root, "Configs", "ModSettings", "Presets", settings.Id);
-        string legacy = ResolveLegacyDirectory(directory);
         AnimusForgeDataPaths.ValidatePath(target);
         Directory.CreateDirectory(target);
         AnimusForgeDataPaths.ValidatePath(target);
@@ -69,8 +68,6 @@ internal static class McmSettingsStorage
             throw new InvalidOperationException("MCM settings filename must remain inside its owned directory.");
         string destination = Path.Combine(target, fileName);
         AnimusForgeDataPaths.ValidatePath(destination);
-        if (!File.Exists(destination) && !string.IsNullOrWhiteSpace(legacy))
-            AnimusForgeDataPaths.CopyLegacyFileIfMissing(root, Path.Combine(legacy, fileName), destination);
         AnimusForgeDataPaths.ValidatePath(destination);
         directory = ModuleDirectory(target);
     }
@@ -82,9 +79,6 @@ internal static class McmSettingsStorage
         string root = AnimusForgeDataPaths.GetCurrentRoot();
         string target = Path.Combine(root, "Configs", "ModSettings", "Presets", name);
         AnimusForgeDataPaths.ValidatePath(target);
-        string legacy = ResolveLegacyDirectory(directory);
-        if (!string.IsNullOrWhiteSpace(legacy))
-            AnimusForgeDataPaths.MigrateLegacyDirectoryOnce(root, target, Path.Combine(legacy, name));
         Directory.CreateDirectory(target);
         AnimusForgeDataPaths.ValidatePath(target);
         __result = ModuleDirectory(target);
@@ -93,13 +87,6 @@ internal static class McmSettingsStorage
 
     private static bool IsPresetsDirectory(GameDirectory directory)
         => directory != null && directory.Path.Replace('\u005c', '/').IndexOf("/ModSettings/Presets/", StringComparison.OrdinalIgnoreCase) >= 0;
-
-    private static string ResolveLegacyDirectory(GameDirectory directory)
-    {
-        if (directory == null) return null;
-        if (Path.IsPathRooted(directory.Path)) return directory.Path;
-        return AnimusForgeDataPaths.GetLegacyDocumentsPath("Mount and Blade II Bannerlord/" + directory.Path.TrimEnd('\u005c', '/'));
-    }
 
     private static GameDirectory ModuleDirectory(string path)
         => new GameDirectory(PlatformDirectoryType.Application, Path.GetFullPath(path) + Path.DirectorySeparatorChar);

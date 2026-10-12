@@ -10,7 +10,7 @@ ROOT=Path(__file__).resolve().parents[3]
 HERE=Path(__file__).resolve().parent
 sys.path.insert(0,str(ROOT/'tests'))
 from output_isolation import new_run_root, resolve_dotnet, minimal_test_environment
-p=argparse.ArgumentParser();p.add_argument('--baseline');p.add_argument('--mcm',type=Path,default=ROOT/'.tmp/build_check/1.4/MCMv5.dll');args=p.parse_args()
+p=argparse.ArgumentParser();p.add_argument('--baseline');p.add_argument('--mcm',type=Path,default=ROOT/'.tmp/build_check/1.4/MCMv5.dll');p.add_argument('--refresh-only',action='store_true');args=p.parse_args()
 out=new_run_root(ROOT,'model-presets',None);dotnet=resolve_dotnet(ROOT)
 spec=importlib.util.spec_from_file_location('ex',ROOT/'tests/modules/AF.Module.Conversation/ChannelCutoverBoundaryTests/run.py');ex=importlib.util.module_from_spec(spec);spec.loader.exec_module(ex)
 def read(path):
@@ -53,7 +53,7 @@ env=minimal_test_environment(dotnet,out)
 result=subprocess.run([str(dotnet),'build',str(out/'Test.csproj')],cwd=out,env=env,capture_output=True,text=True,encoding='utf-8',errors='replace')
 (out/'build.log').write_text(result.stdout+result.stderr,encoding='utf-8')
 if result.returncode: print(result.stdout+result.stderr);sys.exit(result.returncode)
-result=subprocess.run([str(out/'bin/Debug/net472/Test.exe')],cwd=out,env=env,capture_output=True,text=True,encoding='utf-8',errors='replace')
+result=subprocess.run([str(out/'bin/Debug/net472/Test.exe')]+(['--refresh-only'] if args.refresh_only else []),cwd=out,env=env,capture_output=True,text=True,encoding='utf-8',errors='replace')
 (out/'result.log').write_text(result.stdout+result.stderr,encoding='utf-8')
 (out/'receipt.json').write_text(json.dumps({'baseline':args.baseline,'exit':result.returncode,'production_sha256':hashlib.sha256(code.encode()).hexdigest(),'mcm_sha256':hashlib.sha256(args.mcm.read_bytes()).hexdigest()},indent=2),encoding='utf-8')
 print(result.stdout+result.stderr);print(out);sys.exit(result.returncode)
